@@ -77,7 +77,7 @@ class DataDefinition:
     _datetime_column: Optional[ColumnDefinition]
 
     _task: Optional[str]
-    _classification_labels: Optional[Sequence[str]]
+    _classification_labels: Optional[Dict[Union[str, int], str]]
 
     def __init__(
         self,
@@ -87,7 +87,7 @@ class DataDefinition:
         id_column: Optional[ColumnDefinition],
         datetime_column: Optional[ColumnDefinition],
         task: Optional[str],
-        classification_labels: Optional[Sequence[str]],
+        classification_labels: Optional[Dict[Union[str, int], str]],
     ):
         self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
@@ -132,7 +132,7 @@ class DataDefinition:
     def task(self) -> Optional[str]:
         return self._task
 
-    def classification_labels(self) -> Optional[Sequence[str]]:
+    def classification_labels(self) -> Optional[Dict[Union[str, int], str]]:
         return self._classification_labels
 
 
@@ -162,7 +162,6 @@ def _process_column(
 def _prediction_column(
     prediction: Optional[Union[str, int, Sequence[int], Sequence[str]]],
     target_type: Optional[ColumnType],
-    target_names: Optional[List[str]],
     task: Optional[str],
     data: _InputData,
     mapping: Optional[ColumnMapping] = None,
@@ -193,9 +192,6 @@ def _prediction_column(
                 return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
             return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
     if isinstance(prediction, list):
-        if target_names is not None:
-            if prediction != target_names:
-                raise ValueError("List of prediction columns should be equal to target_names if both set")
         presence = [_get_column_presence(column, data) for column in prediction]
         if all([item == ColumnPresenceState.Missing for item in presence]):
             return None
@@ -224,7 +220,7 @@ def create_data_definition(
     prediction_columns = _prediction_column(
         mapping.prediction,
         target_column.column_type if target_column is not None else None,
-        mapping.target_names,
+        # mapping.target_names,
         mapping.task,
         data,
         mapping,

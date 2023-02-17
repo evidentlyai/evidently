@@ -39,7 +39,7 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
 
 
 def classification_performance_metrics(
-    target: pd.Series, prediction: pd.Series, target_names: Optional[List[str]]
+    target: pd.Series, prediction: pd.Series, target_names: Optional[Dict[Union[str, int], str]]
 ) -> ClassificationPerformanceMetrics:
     # calculate metrics matrix
     metrics_matrix = metrics.classification_report(target, prediction, output_dict=True)
@@ -52,7 +52,7 @@ def classification_performance_metrics(
     # calculate confusion matrix
     confusion_matrix = metrics.confusion_matrix(target, prediction)
     # get labels from data mapping or get all values kinds from target and prediction columns
-    labels = target_names if target_names else sorted(set(target) | set(prediction))
+    labels = list(target_names.keys()) if target_names else sorted(set(target) | set(prediction))
     confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
     return ClassificationPerformanceMetrics(
         accuracy=accuracy_score,
@@ -70,7 +70,7 @@ def _calculate_performance_metrics(
     data: pd.DataFrame,
     target_column: Union[str, Sequence[str]],
     prediction_column: Union[str, Sequence[str]],
-    target_names: Optional[List[str]],
+    target_names: Optional[Dict[Union[str, int], str]],
 ) -> ClassificationPerformanceMetrics:
     # remove all rows with infinite and NaN values from the dataset
     target_and_preds = [target_column]

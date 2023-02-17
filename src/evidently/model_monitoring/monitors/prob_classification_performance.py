@@ -63,8 +63,8 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
         )
 
         # try to move classes names to readable names via ColumnMapping settings
-        if columns.target_names:
-            classes_names = columns.target_names
+        if columns.target_names is not None:
+            classes_names = list(columns.target_names.keys())
 
         else:
             # get classes list from the matrix data

@@ -100,8 +100,11 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         reference_roc_aucs = metric_result.reference_roc_aucs
 
         metrics_frame = pd.DataFrame(current_metrics)
+        names = metrics_frame.columns.tolist()[:-3]
+        if columns.target_names is not None:
+            names = [columns.target_names[int(x)] for x in names]
         z = metrics_frame.iloc[:-1, :-3].values
-        x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
+        x = names
         y = ["precision", "recall", "f1-score"]
         if current_roc_aucs is not None and len(current_roc_aucs) > 2:
             z = np.append(z, [current_roc_aucs], axis=0)
@@ -130,7 +133,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         if reference_metrics is not None:
             ref_metrics_frame = pd.DataFrame(reference_metrics)
             z = ref_metrics_frame.iloc[:-1, :-3].values
-            x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
+            x = names
             y = ["precision", "recall", "f1-score"]
 
             if current_roc_aucs is not None and len(current_roc_aucs) > 2:

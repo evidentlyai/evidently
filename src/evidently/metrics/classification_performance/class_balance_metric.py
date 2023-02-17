@@ -25,10 +25,17 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        curr_target = data.current_data[target_name]
         ref_target = None
         if data.reference_data is not None:
             ref_target = data.reference_data[target_name]
-        plot_data = make_hist_for_cat_plot(data.current_data[target_name], ref_target)
+        target_names = dataset_columns.target_names
+        if target_names is not None:
+            curr_target = curr_target.map(target_names)
+            if ref_target is not None:
+                ref_target = ref_target.map(target_names)
+
+        plot_data = make_hist_for_cat_plot(curr_target, ref_target)
 
         return ClassificationClassBalanceResult(plot_data=plot_data)
 

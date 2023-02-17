@@ -33,7 +33,6 @@ def test_data_drift_profile_section_with_calculated_results():
     data_columns = ColumnMapping(
         numerical_features=["numerical_feature"],
         categorical_features=["categorical_feature"],
-        target_names=["drift_target_result"],
     )
 
     data_drift_profile_section_result = calculate_section_results(
