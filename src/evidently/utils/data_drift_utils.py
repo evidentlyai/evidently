@@ -104,7 +104,10 @@ def roc_auc_domain_classifier(X_train, X_test, y_train, y_test) -> Tuple:
     pipeline = Pipeline(
         [
             ("vectorization", TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words="english")),
-            ("classification", SGDClassifier(alpha=0.0001, max_iter=50, penalty="l1", loss="modified_huber")),
+            (
+                "classification",
+                SGDClassifier(alpha=0.0001, max_iter=50, penalty="l1", loss="modified_huber", random_state=42),
+            ),
         ]
     )
 
