@@ -6,6 +6,7 @@ from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
 
 from evidently.base_metric import additional_feature
+from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -44,3 +45,14 @@ class OOVWordsPercentage(GeneratedFeature):
 
     def get_parameters(self) -> Optional[tuple]:
         return self.column_name, self.ignore_words
+
+
+class OOV(FeatureDescriptor):
+    def feature(self, column_name: str) -> GeneratedFeature:
+        return OOVWordsPercentage(column_name, self.ignore_words)
+
+    def __init__(self, ignore_words=()):
+        self.ignore_words = ignore_words
+
+    def for_column(self, column_name: str):
+        return OOVWordsPercentage(column_name, self.ignore_words).feature_name()

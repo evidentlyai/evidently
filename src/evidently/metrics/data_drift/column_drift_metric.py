@@ -1,8 +1,9 @@
 import dataclasses
-from typing import Dict
+from typing import Dict, Union
 from typing import List
 from typing import Optional
 
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculations.data_drift import get_one_column_drift
@@ -46,13 +47,13 @@ class ColumnDriftMetricResults:
 class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
     """Calculate drift metric for a column"""
 
-    column_name: str
+    column_name: Union[str, ColumnName]
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):

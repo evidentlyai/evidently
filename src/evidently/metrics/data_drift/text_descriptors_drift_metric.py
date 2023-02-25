@@ -13,9 +13,13 @@ from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.features.OOV_words_percentage_feature import OOV
+from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentageDesc
 from evidently.features.text_length_feature import TextLength
+from evidently.features.text_length_feature import TextLengthDesc
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -54,20 +58,25 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     def __init__(
         self,
         column_name: str,
+        descriptors: Optional[Dict[str, FeatureDescriptor]] = None,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
         self.options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
+        self.descriptors = descriptors if descriptors else {
+            "Text Length": TextLengthDesc(),
+            "Non Letter Character %": NonLetterCharacterPercentageDesc(),
+            "OOV %": OOV(),
+        }
         self.generated_text_features = {}
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
-            self.generated_text_features = {}
-            self.generated_text_features["Text Length"] = TextLength(self.column_name)
-            self.generated_text_features["Non Letter Character %"] = NonLetterCharacterPercentage(self.column_name)
-            self.generated_text_features["OOV %"] = OOVWordsPercentage(self.column_name)
+            self.generated_text_features = {
+                name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
+            }
             return list(self.generated_text_features.values())
         return []
 

@@ -38,3 +38,13 @@ class GeneratedFeature:
             logging.warning(f"unhashable params for {type(self)}. Fallback to unique.")
             return None
         return params
+
+
+class FeatureDescriptor:
+    @abc.abstractmethod
+    def for_column(self, column_name: str):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def feature(self, column_name: str) -> GeneratedFeature:
+        raise NotImplementedError()
