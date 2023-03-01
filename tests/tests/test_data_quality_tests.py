@@ -723,6 +723,7 @@ def test_data_quality_test_value_quantile() -> None:
 
     suite = TestSuite(tests=[TestColumnQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()

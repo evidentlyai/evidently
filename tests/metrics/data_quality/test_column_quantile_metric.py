@@ -19,7 +19,7 @@ def test_data_quality_quantile_metric_success() -> None:
     result = metric.get_result()
     assert result is not None
     assert result.quantile == 0.5
-    assert result.current == 2
+    assert result.current.value == 2
 
 
 @pytest.mark.parametrize(
@@ -83,9 +83,10 @@ def test_data_quality_quantile_metric_value_errors(
             ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5),
             {
                 "column_name": "numerical_feature",
-                "current": 1.5,
+                "column_type": "num",
+                "current": {"value":1.5},
                 "quantile": 0.5,
-                "reference": 2.0,
+                "reference": {"value":2.0},
             },
         ),
         (
@@ -100,7 +101,7 @@ def test_data_quality_quantile_metric_value_errors(
             None,
             ColumnMapping(target="my_target"),
             ColumnQuantileMetric(column_name="my_target", quantile=0.5),
-            {"column_name": "my_target", "current": 1.0, "quantile": 0.5, "reference": None},
+            {"column_name": "my_target", "column_type": "num", "current": {"value": 1.0}, "quantile": 0.5, "reference": None},
         ),
         (
             pd.DataFrame(
@@ -121,7 +122,7 @@ def test_data_quality_quantile_metric_value_errors(
             ),
             ColumnMapping(target="my_target", prediction="my_prediction"),
             ColumnQuantileMetric(column_name="my_target", quantile=0.5),
-            {"column_name": "my_target", "current": 2.0, "quantile": 0.5, "reference": 2.0},
+            {"column_name": "my_target", "column_type": "num", "current": {"value": 2.0}, "quantile": 0.5, "reference":{"value":  2.0}},
         ),
     ),
 )

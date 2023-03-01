@@ -1402,7 +1402,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current
+        return self.metric.get_result().current.value
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -1418,13 +1418,13 @@ class TestColumnQuantileRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current_distribution,
-            reference_distribution=metric_result.reference_distribution,
+            current_distribution=metric_result.current.distribution,
+            reference_distribution=metric_result.reference.distribution if metric_result.reference is not None else None,
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         fig = plot_metric_value(
-            fig, obj.metric.get_result().current, f"current {column_name} {metric_result.quantile} quantile"
+            fig, obj.metric.get_result().current.value, f"current {column_name} {metric_result.quantile} quantile"
         )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info

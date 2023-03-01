@@ -29,14 +29,17 @@ def test_same_type_metric_in_one_json_report() -> None:
     assert result["metrics"] == [
         {
             "metric": "ColumnQuantileMetric",
-            "result": {"column_name": "feature1", "current": 2.0, "quantile": 0.5, "reference": 0.5},
+            "result": {"column_name": "feature1", 'column_type': 'num',
+             'current': {'value': 2.0}, "quantile": 0.5, "reference": {'value': 0.5}},
         },
         {
             "metric": "ColumnQuantileMetric",
-            "result": {"column_name": "feature1", "current": 2.4, "quantile": 0.7, "reference": 1.0},
+            "result": {"column_name": "feature1", 'column_type': 'num',
+             'current': {'value': 2.4}, "quantile": 0.7, "reference": {'value': 1.0}},
         },
         {
             "metric": "ColumnQuantileMetric",
-            "result": {"column_name": "feature2", "current": 0.0, "quantile": 0.5, "reference": 1.5},
+            "result": {"column_name": "feature2", 'column_type': 'num',
+             'current': {'value': 0.0}, "quantile": 0.5, "reference": {'value': 1.5}},
         },
     ]

@@ -167,6 +167,8 @@ class Distribution2(MetricResultField):
 
     @classmethod
     def from_old(cls, d: Distribution):
+        if d is None:
+            return None
         if isinstance(d, list):
             return cls(x=d[0], y=d[1])
         return cls(x=d.x, y=d.y)  # todo tmp
