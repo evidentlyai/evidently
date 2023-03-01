@@ -3,6 +3,8 @@ import re
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
+from evidently.base_metric import additional_feature
+from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -43,3 +45,18 @@ class TriggerWordsPresent(GeneratedFeature):
                 ]
             )
         )
+
+    def feature_name(self):
+        return additional_feature(self, self.column_name)
+
+
+class TriggerWordsPresentDesc(FeatureDescriptor):
+    def __init__(self, words_list=(), lemmatisize=True):
+        self.words_list = words_list
+        self.lemmatisize = lemmatisize
+
+    def feature(self, column_name: str) -> GeneratedFeature:
+        return TriggerWordsPresent(column_name, self.words_list, self.lemmatisize)
+
+    def for_column(self, column_name: str):
+        return TriggerWordsPresent(column_name, self.words_list, self.lemmatisize).feature_name()

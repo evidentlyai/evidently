@@ -30,7 +30,6 @@ class NonLetterCharacterPercentage(GeneratedFeature):
 
 
 class NonLetterCharacterPercentageDesc(FeatureDescriptor):
-
     def feature(self, column_name: str) -> GeneratedFeature:
         return NonLetterCharacterPercentage(column_name)
 

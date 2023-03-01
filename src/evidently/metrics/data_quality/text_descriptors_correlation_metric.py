@@ -2,7 +2,6 @@ import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 import pandas as pd
 
@@ -10,9 +9,11 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.text_length_feature import TextLength
+from evidently.descriptors import OOV
+from evidently.descriptors import TextLengthDesc
+from evidently.descriptors import NonLetterCharacterPercentageDesc
+from evidently.features.generated_features import FeatureDescriptor
+from evidently.features.generated_features import GeneratedFeature
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -36,19 +37,26 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
     """Calculates correlations between each auto-generated text feature for column_name and other dataset columns"""
 
     column_name: str
-    generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
+    generated_text_features: Dict[str, GeneratedFeature]
 
-    def __init__(self, column_name: str) -> None:
+    def __init__(self, column_name: str, descriptors: Optional[Dict[str, FeatureDescriptor]] = None) -> None:
         self.column_name = column_name
+        if descriptors:
+            self.descriptors = descriptors
+        else:
+            self.descriptors = {
+                "Text Length": TextLengthDesc(),
+                "Non Letter Character %": NonLetterCharacterPercentageDesc(),
+                "OOV %": OOV(),
+            }
         self.generated_text_features = {}
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
-            self.generated_text_features = {}
-            self.generated_text_features["Text Length"] = TextLength(self.column_name)
-            self.generated_text_features["Non Letter Character %"] = NonLetterCharacterPercentage(self.column_name)
-            self.generated_text_features["OOV %"] = OOVWordsPercentage(self.column_name)
+            self.generated_text_features = {
+                name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
+            }
             return list(self.generated_text_features.values())
         return []
 
