@@ -4,6 +4,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import pandas as pd
+
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 
@@ -35,6 +37,8 @@ class MetricRenderer(BaseRenderer):
     def render_json(self, obj) -> dict:
         raise NotImplementedError()
 
+    def render_pandas(self, obj) -> pd.DataFrame:
+        raise NotImplementedError
 
 @dataclasses.dataclass
 class TestHtmlInfo:

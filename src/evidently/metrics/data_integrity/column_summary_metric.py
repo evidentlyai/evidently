@@ -87,7 +87,7 @@ class DataInTime(MetricResultField):
 
 
 class DataByTarget(MetricResultField):
-    data_for_plots: Union[Dict[str, Union[Dict[str, Union[list, pd.DataFrame, np.ndarray]], pd.DataFrame, ]]]
+    data_for_plots: Union[Dict[str, Union[Dict[str, Union[list, pd.DataFrame, np.ndarray, pd.Categorical]], pd.DataFrame, ]]]
     target_name: str
     target_type: str
 
@@ -407,6 +407,19 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
     def render_json(self, obj: ColumnSummaryMetric) -> dict:
         result = obj.get_result().dict(exclude={"plot_data"})
         return result
+
+    def render_pandas(self, obj: ColumnSummaryMetric) -> pd.DataFrame:
+        column_summary: ColumnSummaryResult = obj.get_result()
+        data = {}
+        ref_dict = column_summary.reference_characteristics.dict() if column_summary.reference_characteristics is not None else {}
+        data[column_summary.column_name] = {
+                **{f"ref_{key}": val for key, val in
+                   ref_dict.items()},
+                **{f"cur_{key}": val for key, val in
+                   column_summary.current_characteristics.dict().items()}
+            }
+
+        return pd.DataFrame.from_dict(data, orient='index')
 
     def render_html(self, obj: ColumnSummaryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()

@@ -1,6 +1,7 @@
 import dataclasses
 import uuid
-from typing import List
+from collections import defaultdict
+from typing import Dict, List
 from typing import Optional
 from typing import Union
 
@@ -104,6 +105,27 @@ class Report(Display):
         return {
             "metrics": metrics,
         }
+
+    def as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
+        metrics = defaultdict(list)
+
+        for metric in self._first_level_metrics:
+            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
+            metric_id = metric.get_id()
+            if group is not None and metric_id != group:
+                continue
+            metrics[metric_id].append(renderer.render_pandas(metric))
+
+        result = {
+            cls: pd.concat(val) for cls, val in metrics.items()
+        }
+        if group is None and len(result) == 1:
+            return next(iter(result.values()))
+        if group is None:
+            return result
+        if group not in result:
+            raise ValueError(f"Metric group {group} not found in this report")
+        return result[group]
 
     def _build_dashboard_info(self):
         metrics_results = []
