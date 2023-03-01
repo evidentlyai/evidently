@@ -1,19 +1,15 @@
 import abc
 import logging
-from dataclasses import dataclass
 from enum import Enum
-from typing import Generic
-from typing import List
-from typing import Optional
-from typing import TypeVar
-from typing import Union
+from typing import Generic, List, Optional, TypeVar, Union
 
 import pandas as pd
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.visualizations import Distribution
 
 TResult = TypeVar("TResult")
 
@@ -130,6 +126,12 @@ class Metric(Generic[TResult]):
                 required_features.append(value.feature_class)
         return required_features
 
+from enum import Enum
+from typing import Union
+
+import numpy as np
+from pydantic import BaseModel
+
 
 class MetricResult(BaseModel):
     class Config:
@@ -140,6 +142,7 @@ class MetricResultField(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class ColumnType(Enum):
     NUM = "num"
     CAT = "cat"
@@ -149,9 +152,21 @@ class ColumnType(Enum):
     ID = "id"
     UNKNOWN = "unknown"
 
+
 class ColumnMetricResult(MetricResultField):
     class Config:
         use_enum_values = True
 
     column_name: str
     column_type: ColumnType
+
+
+class Distribution2(MetricResultField):
+    x: Union[np.ndarray, list]
+    y: Union[np.ndarray, list]
+
+    @classmethod
+    def from_old(cls, d: Distribution):
+        if isinstance(d, list):
+            return cls(x=d[0], y=d[1])
+        return cls(x=d.x, y=d.y)  # todo tmp

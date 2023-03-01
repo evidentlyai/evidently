@@ -29,6 +29,7 @@ from evidently.report import Report
                 target="my_target",
             ),
         ),
+
         (
             pd.DataFrame(
                 {

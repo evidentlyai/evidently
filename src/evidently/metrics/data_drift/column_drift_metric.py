@@ -1,14 +1,10 @@
-import dataclasses
-from typing import Dict
 from typing import List
 from typing import Optional
 
-from pydantic import BaseModel
-
-from evidently.base_metric import ColumnMetricResult, InputData
+from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.calculations.data_drift import ColumnDataDriftMetrics, \
-    get_one_column_drift
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
@@ -22,8 +18,6 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
-from evidently.utils.types import Numeric
-from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 

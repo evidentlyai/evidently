@@ -92,6 +92,8 @@ def test_data_quality_test_min(
 ) -> None:
     suite = TestSuite(tests=[test_object])
     suite.run(current_data=test_dataset, reference_data=reference_dataset)
+    if expected_success:
+        suite._inner_suite.raise_for_error()
     assert bool(suite) is expected_success
 
 

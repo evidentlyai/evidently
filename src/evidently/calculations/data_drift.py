@@ -1,28 +1,21 @@
 """Methods and types for data drift calculations."""
 
-from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Union
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel
+from dataclasses import dataclass
+from pydantic import ValidationError
 
+from evidently.calculations.stattests import get_stattest
 from evidently.base_metric import ColumnMetricResult, ColumnType, \
-    MetricResultField
-from evidently.calculations.stattests import PossibleStatTestType, get_stattest
+    Distribution2, MetricResultField
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import DatasetColumns, \
     recognize_column_type_
-from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
-
 
 Scatter = Dict[str, Union[list, pd.Index, pd.Series]]
 Examples = List[str]
@@ -30,10 +23,10 @@ Words = List[str]
 
 
 class DriftStatsField(MetricResultField):
-    distribution: Optional[Distribution]
+    distribution: Optional[Distribution2]
     examples: Optional[Examples]
     words: Optional[Words]
-    small_distribution: Optional[Distribution]
+    small_distribution: Optional[Distribution2]
     correlations: Optional[Dict[str, float]]
 
 
@@ -244,29 +237,30 @@ def get_one_column_drift(
         typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref = get_text_data_for_plots(
             reference_column, current_column
         )
+    try:
+        metrics = ColumnDataDriftMetrics(column_name=column_name,
+                                     column_type=column_type,
+                                     stattest_name=drift_test_function.display_name,
+                                     drift_score=drift_result.drift_score,
+                                     drift_detected=drift_result.drifted,
+                                     stattest_threshold=drift_result.actual_threshold,
+                                     current=DriftStatsField(
+                                         distribution=Distribution2.from_old(current_distribution),
+                                         small_distribution=Distribution2.from_old(current_small_distribution),
+                                         correlations=current_correlations,
+                                         examples=typical_examples_cur,
+                                         words=typical_words_cur, ),
+                                     reference=DriftStatsField(
+                                         distribution=Distribution2.from_old(reference_distribution),
+                                         small_distribution=Distribution2.from_old(reference_small_distribution),
+                                         examples=typical_examples_ref,
+                                         words=typical_words_ref,
+                                         correlations=reference_correlations, ),
+                                     scatter=scatter, )
 
-    return ColumnDataDriftMetrics(
-        column_name=column_name,
-        column_type=column_type,
-        stattest_name=drift_test_function.display_name,
-        drift_score=drift_result.drift_score,
-        drift_detected=drift_result.drifted,
-        stattest_threshold=drift_result.actual_threshold,
-        current=DriftStatsField(
-        distribution=current_distribution,
-        small_distribution=current_small_distribution,
-        correlations=current_correlations,
-        examples=typical_examples_cur,
-        words=typical_words_cur,
-        ),
-        reference=DriftStatsField(distribution=reference_distribution,
-                                  small_distribution=reference_small_distribution,
-                                  examples=typical_examples_ref,
-                                  words=typical_words_ref,
-                                  correlations=reference_correlations, ),
-
-        scatter=scatter,
-    )
+    except ValidationError as e:
+        raise
+    return metrics
 
 
 def _get_pred_labels_from_prob(dataframe: pd.DataFrame, prediction_column: list) -> List[str]:
