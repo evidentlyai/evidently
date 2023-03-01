@@ -4,7 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import InputData
+from evidently.base_metric import InputData, MetricResult
 from evidently.base_metric import Metric
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
@@ -27,8 +27,7 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
-@dataclass
-class DataDriftTableResults:
+class DataDriftTableResults(MetricResult):
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float
@@ -97,13 +96,11 @@ class DataDriftTable(Metric[DataDriftTableResults]):
 @default_renderer(wrap_type=DataDriftTable)
 class DataDriftTableRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftTable) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-
-        # remove pandas dataset values and other useless for JSON fields
-        result.pop("dataset_columns", None)
+        data = obj.get_result()
+        result = data.dict(exclude={"dataset_columns", "drift_by_columns"})
 
         result["drift_by_columns"] = {
-            k: d.dict(exclude={"current", "reference", "scatter"}) for k, d in result["drift_by_columns"].items()
+            k: d.dict(exclude={"current", "reference", "scatter"}) for k, d in data.drift_by_columns.items()
         }
 
         return result
