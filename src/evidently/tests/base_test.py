@@ -82,6 +82,7 @@ class TestResult:
     status: str
     # grouping parameters
     groups: Dict[str, str] = dataclasses.field(default_factory=dict)
+    exception: Optional[BaseException] = None
 
     def set_status(self, status: str, description: Optional[str] = None) -> None:
         self.status = status

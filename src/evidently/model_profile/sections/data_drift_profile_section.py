@@ -33,8 +33,8 @@ class DataDriftProfileSection(ProfileSection):
         # add metrics to a flat dict with data drift results
         for feature_name, feature_metrics in data_drift_results.metrics.drift_by_columns.items():
             metrics_dict[feature_name] = {
-                "current_small_hist": feature_metrics.current_small_distribution,
-                "ref_small_hist": feature_metrics.reference_small_distribution,
+                "current_small_hist": feature_metrics.current.small_distribution,
+                "ref_small_hist": feature_metrics.reference.small_distribution,
                 "feature_type": feature_metrics.column_type,
                 "stattest_name": feature_metrics.stattest_name,
                 "drift_score": feature_metrics.drift_score,

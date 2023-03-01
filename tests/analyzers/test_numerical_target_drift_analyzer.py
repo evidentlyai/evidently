@@ -35,8 +35,8 @@ def test_different_target_column_name(analyzer: NumTargetDriftAnalyzer):
     assert result.target_metrics.drift_score == 1
     assert result.reference_data_count == 20
     assert result.current_data_count == 20
-    assert result.target_metrics.reference_correlations == {"another_target": 1.0}
-    assert result.target_metrics.current_correlations == {"another_target": 1.0}
+    assert result.target_metrics.reference.correlations == {"another_target": 1.0}
+    assert result.target_metrics.current.correlations == {"another_target": 1.0}
 
 
 def test_different_prediction_column_name(analyzer: NumTargetDriftAnalyzer):
@@ -46,8 +46,8 @@ def test_different_prediction_column_name(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping(prediction="another_prediction"))
     assert result.prediction_metrics.column_name == "another_prediction"
     assert result.prediction_metrics.drift_score == 1
-    assert result.prediction_metrics.reference_correlations == {"another_prediction": 1.0}
-    assert result.prediction_metrics.current_correlations == {"another_prediction": 1.0}
+    assert result.prediction_metrics.reference.correlations == {"another_prediction": 1.0}
+    assert result.prediction_metrics.current.correlations == {"another_prediction": 1.0}
 
 
 def test_basic_structure_no_drift(analyzer: NumTargetDriftAnalyzer):
@@ -57,8 +57,8 @@ def test_basic_structure_no_drift(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == 1.0
-    assert result.target_metrics.reference_correlations == {"target": 1.0}
-    assert result.target_metrics.current_correlations == {"target": 1.0}
+    assert result.target_metrics.reference.correlations == {"target": 1.0}
+    assert result.target_metrics.current.correlations == {"target": 1.0}
 
 
 def test_basic_structure_no_drift_2(analyzer: NumTargetDriftAnalyzer):
@@ -69,8 +69,8 @@ def test_basic_structure_no_drift_2(analyzer: NumTargetDriftAnalyzer):
     # because of ks test, target's distribution is the same, hence no drift
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == 1.0
-    assert result.target_metrics.reference_correlations == {"target": 1.0}
-    assert result.target_metrics.current_correlations == {"target": 1.0}
+    assert result.target_metrics.reference.correlations == {"target": 1.0}
+    assert result.target_metrics.current.correlations == {"target": 1.0}
 
 
 def test_basic_structure_drift(analyzer: NumTargetDriftAnalyzer):
@@ -80,8 +80,8 @@ def test_basic_structure_drift(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.01229, 1e-3)
-    assert result.target_metrics.reference_correlations == {"target": 1.0}
-    assert result.target_metrics.current_correlations == {"target": 1.0}
+    assert result.target_metrics.reference.correlations == {"target": 1.0}
+    assert result.target_metrics.current.correlations == {"target": 1.0}
 
 
 def test_small_sample_size_1(analyzer: NumTargetDriftAnalyzer):
@@ -91,8 +91,8 @@ def test_small_sample_size_1(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.157, abs=1e-3)
-    assert np.isnan(result.target_metrics.reference_correlations["target"])
-    assert np.isnan(result.target_metrics.current_correlations["target"])
+    assert np.isnan(result.target_metrics.reference.correlations["target"])
+    assert np.isnan(result.target_metrics.current.correlations["target"])
 
 
 def test_small_sample_size_2(analyzer: NumTargetDriftAnalyzer):
@@ -102,8 +102,8 @@ def test_small_sample_size_2(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.3636, abs=1e-3)
-    assert np.isnan(result.target_metrics.reference_correlations["target"])
-    assert result.target_metrics.current_correlations == {"target": 1.0}
+    assert np.isnan(result.target_metrics.reference.correlations["target"])
+    assert result.target_metrics.current.correlations == {"target": 1.0}
 
 
 def test_small_sample_size_3(analyzer: NumTargetDriftAnalyzer):
@@ -113,8 +113,8 @@ def test_small_sample_size_3(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.1818, abs=1e-3)
-    assert result.target_metrics.reference_correlations == {"target": 1.0}
-    assert np.isnan(result.target_metrics.current_correlations["target"])
+    assert result.target_metrics.reference.correlations == {"target": 1.0}
+    assert np.isnan(result.target_metrics.current.correlations["target"])
 
 
 def test_computing_of_target_and_prediction(analyzer: NumTargetDriftAnalyzer):
@@ -124,13 +124,13 @@ def test_computing_of_target_and_prediction(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.16782, abs=1e-3)
-    assert result.target_metrics.reference_correlations == {"target": 1.0}
-    assert result.target_metrics.current_correlations == {"target": 1.0}
+    assert result.target_metrics.reference.correlations == {"target": 1.0}
+    assert result.target_metrics.current.correlations == {"target": 1.0}
 
     assert result.prediction_metrics.column_name == "prediction"
     assert result.prediction_metrics.drift_score == 1.0
-    assert result.prediction_metrics.reference_correlations == {"prediction": 1.0}
-    assert result.prediction_metrics.current_correlations == {"prediction": 1.0}
+    assert result.prediction_metrics.reference.correlations == {"prediction": 1.0}
+    assert result.prediction_metrics.current.correlations == {"prediction": 1.0}
 
 
 def test_computing_of_only_prediction(analyzer: NumTargetDriftAnalyzer):
@@ -141,8 +141,8 @@ def test_computing_of_only_prediction(analyzer: NumTargetDriftAnalyzer):
     assert result.target_metrics is None
     assert result.prediction_metrics.column_name == "prediction"
     assert result.prediction_metrics.drift_score == approx(0.99445, abs=1e-3)
-    assert result.prediction_metrics.reference_correlations == {"prediction": 1.0}
-    assert result.prediction_metrics.current_correlations == {"prediction": 1.0}
+    assert result.prediction_metrics.reference.correlations == {"prediction": 1.0}
+    assert result.prediction_metrics.current.correlations == {"prediction": 1.0}
 
 
 def test_computing_with_nans(analyzer: NumTargetDriftAnalyzer):
@@ -151,8 +151,8 @@ def test_computing_with_nans(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.0123, abs=1e-3)
-    assert result.target_metrics.reference_correlations == {"target": 1.0}
-    assert result.target_metrics.current_correlations == {"target": 1.0}
+    assert result.target_metrics.reference.correlations == {"target": 1.0}
+    assert result.target_metrics.current.correlations == {"target": 1.0}
 
 
 def test_computing_uses_a_custom_function(analyzer: NumTargetDriftAnalyzer):
@@ -164,8 +164,8 @@ def test_computing_uses_a_custom_function(analyzer: NumTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(np.pi, abs=1e-4)
-    assert result.target_metrics.reference_correlations == {"target": 1.0}
-    assert result.target_metrics.current_correlations == {"target": 1.0}
+    assert result.target_metrics.reference.correlations == {"target": 1.0}
+    assert result.target_metrics.current.correlations == {"target": 1.0}
 
 
 def test_computing_of_correlations_between_columns(analyzer: NumTargetDriftAnalyzer):
@@ -175,8 +175,8 @@ def test_computing_of_correlations_between_columns(analyzer: NumTargetDriftAnaly
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.06228, abs=1e-4)
-    assert result.target_metrics.reference_correlations == {"num_1": -1.0, "num_2": -1.0, "target": 1.0}
-    assert result.target_metrics.current_correlations == {"num_1": -1.0, "num_2": -1.0, "target": 1.0}
+    assert result.target_metrics.reference.correlations == {"num_1": -1.0, "num_2": -1.0, "target": 1.0}
+    assert result.target_metrics.current.correlations == {"num_1": -1.0, "num_2": -1.0, "target": 1.0}
 
 
 def test_computing_of_correlations_between_columns_fails_for_second_data_when_columns_missing(

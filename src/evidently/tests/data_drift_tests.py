@@ -93,7 +93,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
                 feature: (
                     data.stattest_name,
                     np.round(data.drift_score, 3),
-                    data.threshold,
+                    data.stattest_threshold,
                     "Detected" if data.drift_detected else "Not Detected",
                 )
                 for feature, data in metrics.drift_by_columns.items()
@@ -437,7 +437,7 @@ class TestColumnDriftRenderer(TestRenderer):
         result = obj.metric.get_result()
         column_name = obj.column_name
         if result.column_type == "text":
-            if result.typical_words_cur is not None and result.typical_words_ref is not None:
+            if result.current.words is not None and result.reference.words is not None:
                 info.details = [
                     DetailsInfo(
                         id=f"{column_name} dritf curr",
@@ -445,7 +445,7 @@ class TestColumnDriftRenderer(TestRenderer):
                         info=BaseWidgetInfo(
                             title="",
                             type="table",
-                            params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_cur]},
+                            params={"header": ["", ""], "data": [[el, ""] for el in result.current.words]},
                             size=2,
                         ),
                     ),
@@ -455,7 +455,7 @@ class TestColumnDriftRenderer(TestRenderer):
                         info=BaseWidgetInfo(
                             title="",
                             type="table",
-                            params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_ref]},
+                            params={"header": ["", ""], "data": [[el, ""] for el in result.reference.words]},
                             size=2,
                         ),
                     ),
@@ -463,11 +463,11 @@ class TestColumnDriftRenderer(TestRenderer):
             else:
                 return info
         else:
-            if result.current_distribution is None:
+            if result.current.distribution is None:
                 raise ValueError("Expected data is missing")
             fig = get_distribution_plot_figure(
-                current_distribution=result.current_distribution,
-                reference_distribution=result.reference_distribution,
+                current_distribution=result.current.distribution,
+                reference_distribution=result.reference.distribution,
                 color_options=self.color_options,
             )
             info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))

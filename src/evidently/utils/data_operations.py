@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.base_metric import ColumnType
 
 
 def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -265,11 +266,11 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     return task
 
 
-def recognize_column_type(
+def recognize_column_type_(
     dataset: pd.DataFrame,
     column_name: str,
     columns: DatasetColumns,
-) -> str:
+) -> ColumnType:
     """Try to get the column type."""
     column = dataset[column_name]
     reg_condition = columns.task == "regression" or (
@@ -277,10 +278,10 @@ def recognize_column_type(
     )
     if column_name == columns.utility_columns.target:
         if reg_condition:
-            return "num"
+            return ColumnType.NUM
 
         else:
-            return "cat"
+            return ColumnType.CAT
 
     if isinstance(columns.utility_columns.prediction, str) and column_name == columns.utility_columns.prediction:
         if reg_condition or (
@@ -289,30 +290,37 @@ def recognize_column_type(
             and column.max() <= 1
             and column.min() >= 0
         ):
-            return "num"
+            return ColumnType.NUM
 
         else:
-            return "cat"
+            return ColumnType.CAT
 
     if column_name in columns.num_feature_names:
-        return "num"
+        return ColumnType.NUM
 
     if isinstance(columns.utility_columns.prediction, list) and column_name in columns.utility_columns.prediction:
-        return "num"
+        return ColumnType.NUM
 
     if column_name in columns.cat_feature_names:
-        return "cat"
+        return ColumnType.CAT
 
     if column_name in columns.datetime_feature_names:
-        return "datetime"
+        return ColumnType.DATETIME
 
     if column_name in columns.text_feature_names:
-        return "text"
+        return ColumnType.TEXT
 
     if column_name == columns.utility_columns.id_column:
-        return "id"
+        return ColumnType.ID
 
     if column_name == columns.utility_columns.date:
-        return "date"
+        return ColumnType.DATE
 
-    return "unknown"
+    return ColumnType.UNKNOWN
+
+def recognize_column_type(
+    dataset: pd.DataFrame,
+    column_name: str,
+    columns: DatasetColumns,
+) -> str:
+    return recognize_column_type_(dataset, column_name, columns).value

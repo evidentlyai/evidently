@@ -308,7 +308,7 @@ class Suite:
                 test_results[test] = test.check()
             except BaseException as ex:
                 test_results[test] = TestResult(
-                    name=test.name, status=TestResult.ERROR, description=f"Test failed with exceptions: {ex}"
+                    name=test.name, status=TestResult.ERROR, description=f"Test failed with exceptions: {ex}", exception=ex
                 )
             test_results[test].groups.update(
                 {
@@ -319,3 +319,8 @@ class Suite:
 
         self.context.test_results = test_results
         self.context.state = States.Tested
+
+    def raise_for_error(self):
+        for result in self.context.test_results.values():
+                if result.exception is not None:
+                    raise result.exception

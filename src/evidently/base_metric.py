@@ -9,6 +9,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
 
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -128,3 +129,29 @@ class Metric(Generic[TResult]):
             if issubclass(type(value), ColumnName) and value.feature_class is not None:
                 required_features.append(value.feature_class)
         return required_features
+
+
+class MetricResult(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class MetricResultField(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+class ColumnType(Enum):
+    NUM = "num"
+    CAT = "cat"
+    TEXT = "text"
+    DATETIME = "datetime"
+    DATE = "data"
+    ID = "id"
+    UNKNOWN = "unknown"
+
+class ColumnMetricResult(MetricResultField):
+    class Config:
+        use_enum_values = True
+
+    column_name: str
+    column_type: ColumnType
