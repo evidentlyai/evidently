@@ -1,10 +1,11 @@
 import dataclasses
-from typing import List
+from typing import Dict, List
 from typing import Optional
 from typing import Union
 
-from evidently.base_metric import InputData
-from evidently.calculations.classification_performance import DatasetClassificationQuality
+from pydantic import ValidationError
+
+from evidently.base_metric import InputData, MetricResult, MetricResultField
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
@@ -16,9 +17,27 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
+class DatasetClassificationQuality(MetricResultField):
+    accuracy: float
+    precision: float
+    recall: float
+    f1: float
+    roc_auc: Optional[float] = None
+    log_loss: Optional[float] = None
+    tpr: Optional[float] = None
+    tnr: Optional[float] = None
+    fpr: Optional[float] = None
+    fnr: Optional[float] = None
+    rate_plots_data: Optional[Dict] = None
+    plot_data: Optional[Dict] = None
 
-@dataclasses.dataclass
-class ClassificationQualityMetricResult:
+    @classmethod
+    def from_old(cls, value):
+        if value is None:
+            return None
+        return cls(**dataclasses.asdict(value))
+
+class ClassificationQualityMetricResult(MetricResult):
     current: DatasetClassificationQuality
     reference: Optional[DatasetClassificationQuality]
     target_name: str
@@ -62,13 +81,19 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
                 prediction,
             )
 
-        return ClassificationQualityMetricResult(current=current, reference=reference, target_name=target_name)
+        try:
+            result = ClassificationQualityMetricResult(current=DatasetClassificationQuality.from_old(current),
+                                                   reference=DatasetClassificationQuality.from_old(reference),
+                                                   target_name=target_name)
+        except ValidationError:
+            raise
+        return result
 
 
 @default_renderer(wrap_type=ClassificationQualityMetric)
 class ClassificationQualityMetricRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationQualityMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
+        result = obj.get_result().dict()
         return result
 
     def render_html(self, obj: ClassificationQualityMetric) -> List[BaseWidgetInfo]:

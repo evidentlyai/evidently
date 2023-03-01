@@ -291,7 +291,7 @@ def collect_plot_data(prediction_probas: pd.DataFrame):
 
 
 @dataclasses.dataclass
-class DatasetClassificationQuality:
+class DatasetClassificationQuality:  # todo change to whatever in clf_quality_metric
     accuracy: float
     precision: float
     recall: float
