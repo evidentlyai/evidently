@@ -32,7 +32,7 @@ class TriggerWordsPresent(GeneratedFeature):
             dict(
                 [
                     (
-                        self.column_name,
+                        self._feature_column_name(),
                         data[self.column_name].apply(
                             lambda x: listed_words_present(
                                 x,
@@ -46,4 +46,7 @@ class TriggerWordsPresent(GeneratedFeature):
         )
 
     def feature_name(self):
-        return additional_feature(self, self.column_name + "_".join(self.words_list) + str(self.lemmatisize))
+        return additional_feature(self, self._feature_column_name())
+
+    def _feature_column_name(self):
+        return self.column_name + "_".join(self.words_list) + str(self.lemmatisize)

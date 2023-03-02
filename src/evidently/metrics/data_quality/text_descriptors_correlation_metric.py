@@ -10,8 +10,8 @@ from evidently.base_metric import Metric
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
 from evidently.descriptors import OOV
-from evidently.descriptors.text_length_descriptor import TextLengthDesc
-from evidently.descriptors.non_letter_character_percentage_descriptor import NonLetterCharacterPercentageDesc
+from evidently.descriptors import TextLength
+from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.model.widget import BaseWidgetInfo
@@ -45,8 +45,8 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
             self.descriptors = descriptors
         else:
             self.descriptors = {
-                "Text Length": TextLengthDesc(),
-                "Non Letter Character %": NonLetterCharacterPercentageDesc(),
+                "Text Length": TextLength(),
+                "Non Letter Character %": NonLetterCharacterPercentage(),
                 "OOV %": OOV(),
             }
         self.generated_text_features = {}
