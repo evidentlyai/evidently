@@ -12,6 +12,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.data_quality import calculate_correlations
+from evidently.core import ColumnType
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -25,7 +26,6 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import ColumnDefinition
-from evidently.core import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
 

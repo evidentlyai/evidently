@@ -1,14 +1,25 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 import pandas as pd
 
-from evidently.base_metric import ColumnMetricResult, Distribution2, \
-    InputData, Metric, MetricResultField, NewMetric, NewMetricRenderer
+from evidently.base_metric import ColumnMetricResult
+from evidently.base_metric import Distribution2
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
+from evidently.base_metric import MetricResultField
+from evidently.base_metric import NewMetric
+from evidently.base_metric import NewMetricRenderer
 from evidently.core import ColumnType
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer, default_renderer
-from evidently.renderers.html_widgets import CounterData, HistogramData, \
-    counter, get_histogram_figure_with_quantile, header_text, plotly_figure
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import HistogramData
+from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import get_histogram_figure_with_quantile
+from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
 
 

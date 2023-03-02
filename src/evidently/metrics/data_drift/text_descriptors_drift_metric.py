@@ -13,6 +13,7 @@ from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.core import ColumnType as ColumnType_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -31,7 +32,6 @@ from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
-from evidently.core import ColumnType as ColumnType_data
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 

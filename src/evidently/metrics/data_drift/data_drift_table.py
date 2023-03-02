@@ -4,8 +4,11 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import InputData, MetricResult, NewMetric, NewMetricRenderer
+from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.base_metric import NewMetric
+from evidently.base_metric import NewMetricRenderer
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType

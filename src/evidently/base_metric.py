@@ -1,13 +1,18 @@
 import abc
 import logging
 from copy import copy
+from dataclasses import dataclass
 from enum import Enum
-from typing import ClassVar, Generic, List, Optional, TYPE_CHECKING, Type, TypeVar, Union
+from typing import TYPE_CHECKING
+from typing import ClassVar
+from typing import Generic
+from typing import List
+from typing import Optional
+from typing import Type
+from typing import TypeVar
+from typing import Union
 
 import pandas as pd
-from dataclasses import dataclass
-
-
 
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
@@ -17,7 +22,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import Distribution
 
 if TYPE_CHECKING:
-    from pydantic.typing import AbstractSetIntStr, DictStrAny, MappingIntStrAny
+    from pydantic.typing import AbstractSetIntStr
+    from pydantic.typing import DictStrAny
+    from pydantic.typing import MappingIntStrAny
 
 TResult = TypeVar("TResult")
 
@@ -149,7 +156,8 @@ class Metric(Generic[TResult]):
 from typing import Union
 
 import numpy as np
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseConfig
+from pydantic import BaseModel
 
 
 class MetricResult(BaseModel):

@@ -1,28 +1,43 @@
 import json
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_numeric_dtype, is_string_dtype
+from pandas.api.types import is_numeric_dtype
+from pandas.api.types import is_string_dtype
 from pydantic import ValidationError
 
-from evidently.base_metric import ColumnMetric, ColumnMetricResult, InputData, \
-    MetricResultField, NewMetricRenderer
-from evidently.calculations.data_quality import DataQualityGetPlotData, \
-    FeatureQualityStats, get_features_stats
+from evidently.base_metric import ColumnMetric
+from evidently.base_metric import ColumnMetricResult
+from evidently.base_metric import InputData
+from evidently.base_metric import MetricResultField
+from evidently.base_metric import NewMetricRenderer
+from evidently.calculations.data_quality import DataQualityGetPlotData
+from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.calculations.data_quality import get_features_stats
 from evidently.core import ColumnType
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.non_letter_character_percentage_feature import \
-    NonLetterCharacterPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import plot_boxes, plot_cat_cat_rel, \
-    plot_cat_feature_in_time, plot_distr, plot_distr_with_log_button, \
-    plot_num_feature_in_time, plot_num_num_rel, plot_time_feature_distr
+from evidently.utils.visualizations import plot_boxes
+from evidently.utils.visualizations import plot_cat_cat_rel
+from evidently.utils.visualizations import plot_cat_feature_in_time
+from evidently.utils.visualizations import plot_distr
+from evidently.utils.visualizations import plot_distr_with_log_button
+from evidently.utils.visualizations import plot_num_feature_in_time
+from evidently.utils.visualizations import plot_num_num_rel
+from evidently.utils.visualizations import plot_time_feature_distr
 
 
 class ColumnCharacteristics(MetricResultField):

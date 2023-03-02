@@ -6,6 +6,7 @@ from typing import Union
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.core import ColumnType
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -18,7 +19,6 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
-from evidently.core import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column

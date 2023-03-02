@@ -1,15 +1,23 @@
 import dataclasses
-from typing import Dict, List, Optional, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 from pydantic import ValidationError
 
-from evidently.base_metric import InputData, MetricResult, MetricResultField, NewMetricRenderer
+from evidently.base_metric import InputData
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
+from evidently.base_metric import NewMetricRenderer
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData, counter, header_text
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
 

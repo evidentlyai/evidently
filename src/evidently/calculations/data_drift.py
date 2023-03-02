@@ -1,19 +1,25 @@
 """Methods and types for data drift calculations."""
 
-from typing import Dict, List, Optional, Sequence, Union
+from dataclasses import dataclass
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 from pydantic import ValidationError
 
+from evidently.base_metric import ColumnMetricResult
+from evidently.base_metric import Distribution2
+from evidently.base_metric import MetricResultField
 from evidently.calculations.stattests import get_stattest
-from evidently.base_metric import ColumnMetricResult, Distribution2, MetricResultField
 from evidently.core import ColumnType
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
-from evidently.utils.data_operations import DatasetColumns, \
-    recognize_column_type_
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import recognize_column_type_
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
 

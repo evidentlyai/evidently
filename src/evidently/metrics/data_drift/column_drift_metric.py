@@ -1,14 +1,24 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 import pandas as pd
 
-from evidently.base_metric import ColumnMetric, InputData, NewMetricRenderer
-from evidently.calculations.data_drift import ColumnDataDriftMetrics, get_one_column_drift
+from evidently.base_metric import ColumnMetric
+from evidently.base_metric import InputData
+from evidently.base_metric import NewMetricRenderer
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricRenderer, default_renderer
-from evidently.renderers.html_widgets import CounterData, TabData, counter, plotly_figure, table_data, widget_tabs
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
