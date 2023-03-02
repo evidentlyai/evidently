@@ -1,21 +1,17 @@
 import dataclasses
-from typing import Dict, List
-from typing import Optional
-from typing import Union
+from typing import Dict, List, Optional, Union
 
 from pydantic import ValidationError
 
-from evidently.base_metric import InputData, MetricResult, MetricResultField
+from evidently.base_metric import InputData, MetricResult, MetricResultField, NewMetricRenderer
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import CounterData, counter, header_text
 from evidently.utils.data_operations import process_columns
+
 
 class DatasetClassificationQuality(MetricResultField):
     accuracy: float
@@ -37,6 +33,7 @@ class DatasetClassificationQuality(MetricResultField):
             return None
         return cls(**dataclasses.asdict(value))
 
+
 class ClassificationQualityMetricResult(MetricResult):
     current: DatasetClassificationQuality
     reference: Optional[DatasetClassificationQuality]
@@ -47,9 +44,9 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
     confusion_matrix_metric: ClassificationConfusionMatrix
 
     def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+            self,
+            probas_threshold: Optional[float] = None,
+            k: Optional[Union[float, int]] = None,
     ):
         super().__init__(probas_threshold=probas_threshold, k=k)
         self.confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
@@ -83,19 +80,15 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
 
         try:
             result = ClassificationQualityMetricResult(current=DatasetClassificationQuality.from_old(current),
-                                                   reference=DatasetClassificationQuality.from_old(reference),
-                                                   target_name=target_name)
+                                                       reference=DatasetClassificationQuality.from_old(reference),
+                                                       target_name=target_name)
         except ValidationError:
             raise
         return result
 
 
 @default_renderer(wrap_type=ClassificationQualityMetric)
-class ClassificationQualityMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationQualityMetric) -> dict:
-        result = obj.get_result().dict()
-        return result
-
+class ClassificationQualityMetricRenderer(NewMetricRenderer):
     def render_html(self, obj: ClassificationQualityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         target_name = metric_result.target_name

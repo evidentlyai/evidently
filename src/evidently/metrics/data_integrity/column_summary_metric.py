@@ -6,11 +6,11 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype, is_string_dtype
 from pydantic import ValidationError
 
-from evidently.base_metric import ColumnMetricResult, InputData, \
-    Metric, \
-    MetricResultField
+from evidently.base_metric import ColumnMetric, ColumnMetricResult, InputData, \
+    MetricResultField, NewMetricRenderer
 from evidently.calculations.data_quality import DataQualityGetPlotData, \
     FeatureQualityStats, get_features_stats
+from evidently.core import ColumnType
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.non_letter_character_percentage_feature import \
     NonLetterCharacterPercentage
@@ -19,7 +19,6 @@ from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer, default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
-from evidently.core import ColumnType
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes, plot_cat_cat_rel, \
     plot_cat_feature_in_time, plot_distr, plot_distr_with_log_button, \
@@ -79,8 +78,6 @@ class TextCharacteristics(ColumnCharacteristics):
     non_letter_char_max: Optional[float]
 
 
-
-
 class DataInTime(MetricResultField):
     data_for_plots: Dict[str, Optional[pd.DataFrame]]
     freq: str
@@ -88,12 +85,15 @@ class DataInTime(MetricResultField):
 
 
 class DataByTarget(MetricResultField):
-    data_for_plots: Union[Dict[str, Union[Dict[str, Union[list, pd.DataFrame, np.ndarray, pd.Categorical]], pd.DataFrame, ]]]
+    data_for_plots: Union[Dict[str, Union[Dict[str, Union[list, pd.DataFrame, np.ndarray, pd.Categorical]], pd.DataFrame]]]
     target_name: str
     target_type: str
 
 
 class DataQualityPlot(MetricResultField):
+    class Config:
+        dict_include = False
+
     bins_for_hist: Optional[Dict[str, pd.DataFrame]]
     data_in_time: Optional[DataInTime]
     data_by_target: Optional[DataByTarget]
@@ -106,8 +106,7 @@ class ColumnSummaryResult(ColumnMetricResult):
     plot_data: DataQualityPlot
 
 
-class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
-    column_name: str
+class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
     generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
     def __init__(self, column_name: str):
@@ -117,15 +116,14 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
-            self.generated_text_features = {}
-            self.generated_text_features["text_length"] = TextLength(self.column_name)
-            self.generated_text_features["non_letter_char"] = NonLetterCharacterPercentage(self.column_name)
-            self.generated_text_features["oov"] = OOVWordsPercentage(self.column_name)
+            self.generated_text_features = {"text_length": TextLength(self.column_name),
+                                            "non_letter_char": NonLetterCharacterPercentage(self.column_name),
+                                            "oov": OOVWordsPercentage(self.column_name)}
             return list(self.generated_text_features.values())
         return []
 
     def get_parameters(self) -> tuple:
-        return (self.column_name,)
+        return self.column_name,
 
     @staticmethod
     def acceptable_types() -> List[ColumnType]:
@@ -148,9 +146,9 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
         # define target type and prediction type. TODO move it to process_columns func
         if columns.utility_columns.target is not None:
             reg_condition = data.column_mapping.task == "regression" or (
-                is_numeric_dtype(data.current_data[target_name])
-                and columns.task != "classification"
-                and data.current_data[target_name].nunique() > 5
+                    is_numeric_dtype(data.current_data[target_name])
+                    and columns.task != "classification"
+                    and data.current_data[target_name].nunique() > 5
             )
             if reg_condition:
                 target_type = "num"
@@ -161,32 +159,32 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
 
         if columns.utility_columns.prediction is not None:
             if (
-                isinstance(columns.utility_columns.prediction, str)
-                and columns.utility_columns.prediction == self.column_name
+                    isinstance(columns.utility_columns.prediction, str)
+                    and columns.utility_columns.prediction == self.column_name
             ):
                 if (
-                    is_string_dtype(data.current_data[columns.utility_columns.prediction])
-                    or (
+                        is_string_dtype(data.current_data[columns.utility_columns.prediction])
+                        or (
                         is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
                         and columns.task != "classification"
                         and data.current_data[columns.utility_columns.prediction].nunique() < 5
-                    )
-                    or (
+                )
+                        or (
                         is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
                         and columns.task == "classification"
                         and (
-                            data.current_data[columns.utility_columns.prediction].max() > 1
-                            or data.current_data[columns.utility_columns.prediction].min() < 0
+                                data.current_data[columns.utility_columns.prediction].max() > 1
+                                or data.current_data[columns.utility_columns.prediction].min() < 0
                         )
-                    )
+                )
                 ):
                     column_type = "cat"
                 else:
                     column_type = "num"
 
             if (
-                isinstance(columns.utility_columns.prediction, list)
-                and self.column_name in columns.utility_columns.prediction
+                    isinstance(columns.utility_columns.prediction, list)
+                    and self.column_name in columns.utility_columns.prediction
             ):
                 column_type = "num"
         if self.column_name in columns.num_feature_names:
@@ -194,7 +192,7 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
         elif self.column_name in columns.cat_feature_names:
             column_type = "cat"
         elif self.column_name in columns.datetime_feature_names or (
-            columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
+                columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
         ):
             column_type = "datetime"
         elif self.column_name in columns.text_feature_names:
@@ -247,9 +245,9 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
         bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name, column_type)
         data_in_time = None
         if (
-            columns.utility_columns.date is not None
-            and columns.utility_columns.date != self.column_name
-            and column_type != "datetime"
+                columns.utility_columns.date is not None
+                and columns.utility_columns.date != self.column_name
+                and column_type != "datetime"
         ):
             data_in_time = gpd.calculate_data_in_time(
                 data.current_data,
@@ -268,10 +266,10 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
             )
 
         if (
-            target_name is not None
-            and target_type is not None
-            and columns.utility_columns.target != self.column_name
-            and column_type != "datetime"
+                target_name is not None
+                and target_type is not None
+                and columns.utility_columns.target != self.column_name
+                and column_type != "datetime"
         ):
 
             data_for_plots = gpd.calculate_data_by_target(
@@ -284,10 +282,10 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
             )
             try:
                 data_by_target = DataByTarget(
-                data_for_plots=data_for_plots,
-                target_name=target_name,
-                target_type=target_type,
-            )
+                    data_for_plots=data_for_plots,
+                    target_name=target_name,
+                    target_type=target_type,
+                )
             except ValidationError:
                 raise
         counts_of_values = None
@@ -369,11 +367,11 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
         raise ValueError(f"unknown feature type {stats.feature_type}")
 
     def get_text_stats(
-        self,
-        dataset: str,
-        data: InputData,
-        text_feature: pd.Series,
-        generated_text_features: dict,
+            self,
+            dataset: str,
+            data: InputData,
+            text_feature: pd.Series,
+            generated_text_features: dict,
     ) -> TextCharacteristics:
         number_of_rows = len(text_feature)
         missing = text_feature.isna().sum()
@@ -404,21 +402,17 @@ class ColumnSummaryMetric(Metric[ColumnSummaryResult]):
 
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
-class ColumnSummaryMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnSummaryMetric) -> dict:
-        result = obj.get_result().dict(exclude={"plot_data"})
-        return result
-
+class ColumnSummaryMetricRenderer(NewMetricRenderer):
     def render_pandas(self, obj: ColumnSummaryMetric) -> pd.DataFrame:
         column_summary: ColumnSummaryResult = obj.get_result()
         data = {}
         ref_dict = column_summary.reference_characteristics.dict() if column_summary.reference_characteristics is not None else {}
         data[column_summary.column_name] = {
-                **{f"ref_{key}": val for key, val in
-                   ref_dict.items()},
-                **{f"cur_{key}": val for key, val in
-                   column_summary.current_characteristics.dict().items()}
-            }
+            **{f"ref_{key}": val for key, val in
+               ref_dict.items()},
+            **{f"cur_{key}": val for key, val in
+               column_summary.current_characteristics.dict().items()}
+        }
 
         return pd.DataFrame.from_dict(data, orient='index')
 
@@ -490,8 +484,8 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
 
         if (
-            metric_result.plot_data.data_by_target is not None
-            and metric_result.plot_data.data_by_target.data_for_plots is not None
+                metric_result.plot_data.data_by_target is not None
+                and metric_result.plot_data.data_by_target.data_for_plots is not None
         ):
             ref_data_by_target = None
             if "reference" in metric_result.plot_data.data_by_target.data_for_plots.keys():
@@ -575,9 +569,9 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
 
     @staticmethod
     def _get_stats_with_names(
-        stats_list: List[Tuple[str, str, Optional[str]]],
-        current_stats: ColumnCharacteristics,
-        reference_stats: Optional[ColumnCharacteristics],
+            stats_list: List[Tuple[str, str, Optional[str]]],
+            current_stats: ColumnCharacteristics,
+            reference_stats: Optional[ColumnCharacteristics],
     ) -> List[dict]:
         def get_values_as_string(stats_dict, field_name, field_percentage_name) -> str:
             field_value = stats_dict[field_name]

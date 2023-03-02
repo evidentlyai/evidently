@@ -3,7 +3,7 @@ from typing import List, Optional
 import pandas as pd
 
 from evidently.base_metric import ColumnMetricResult, Distribution2, \
-    InputData, Metric, MetricResultField
+    InputData, Metric, MetricResultField, NewMetric, NewMetricRenderer
 from evidently.core import ColumnType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer, default_renderer
@@ -26,7 +26,7 @@ class ColumnQuantileMetricResult(ColumnMetricResult):
     reference: Optional[QuantileStats] = None
 
 
-class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
+class ColumnQuantileMetric(NewMetric[ColumnQuantileMetricResult]):
     """Calculates quantile with specified range"""
 
     column_name: str
@@ -92,12 +92,7 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
 
 
 @default_renderer(wrap_type=ColumnQuantileMetric)
-class ColumnQuantileMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnQuantileMetric) -> dict:
-        result = obj.get_result().dict(exclude={"current": {"distribution"},
-                                                "reference": {"distribution"}})
-        return result
-
+class ColumnQuantileMetricRenderer(NewMetricRenderer):
     @staticmethod
     def _get_counters(
             metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
