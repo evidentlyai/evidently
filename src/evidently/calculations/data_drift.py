@@ -31,6 +31,7 @@ Words = List[str]
 class DriftStatsField(MetricResultField):
     class Config:
         dict_include = False
+        pd_include = False
     distribution: Optional[Distribution2]
     examples: Optional[Examples]
     words: Optional[Words]
@@ -41,6 +42,7 @@ class DriftStatsField(MetricResultField):
 class ScatterField(MetricResultField):
     class Config:
         dict_include = False
+        pd_include = False
     scatter: Scatter
     x_name: str
     plot_shape: Dict[str, float]

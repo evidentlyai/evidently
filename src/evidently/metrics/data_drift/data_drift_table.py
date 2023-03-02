@@ -32,7 +32,7 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 class DataDriftTableResults(MetricResult):
     class Config:
-        dict_exclude = {"dataset_columns"}
+        dict_exclude_fields = {"dataset_columns"}
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float

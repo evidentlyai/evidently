@@ -4,15 +4,19 @@ from copy import copy
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import ClassVar
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Type
 from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import ValidationError
 
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
@@ -160,11 +164,81 @@ from pydantic import BaseConfig
 from pydantic import BaseModel
 
 
-class MetricResult(BaseModel):
+class MetricResultField(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+        dict_include: bool = True
+        pd_include: bool = True
+        pd_name_mapping: Dict[str, str] = {}
+
+    if TYPE_CHECKING:
+        __config__: ClassVar[Type[Config]] = Config
+
+    def dict(
+            self,
+            *,
+            include: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
+            exclude: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
+            by_alias: bool = False,
+            skip_defaults: Optional[bool] = None,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+    ) -> 'DictStrAny':
+        exclude = copy(exclude) or set()
+
+        for name, field in self.__fields__.items():
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
+                if not field.type_.__config__.dict_include:
+                    if isinstance(exclude, set):
+                        exclude.add(name)
+                    elif isinstance(exclude, dict):
+                        exclude[name] = True
+                    else:
+                        raise ValueError("Unknown exclude value type")
+        return super().dict(include=include, exclude=exclude, by_alias=by_alias, skip_defaults=skip_defaults, exclude_unset=exclude_unset,
+                            exclude_defaults=exclude_defaults, exclude_none=exclude_none)
+
+    def collect_pandas_columns(self, prefix="", include: Set[str] = None, exclude: Set[str] = None) -> Dict[str, Any]:
+        include = include or set(self.__fields__)
+        exclude = exclude or set()
+
+        data = {}
+        for name, field in self.__fields__.items():
+            if name not in include or name in exclude:
+                continue
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
+                if field.type_.__config__.pd_include:
+                    field_value = getattr(self, name)
+                    field_prefix = f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
+                    if field_value is None:
+                        continue
+                    elif isinstance(field_value, MetricResultField):
+                        data.update(field_value.collect_pandas_columns(field_prefix))
+                    elif isinstance(field_value, dict):  # Dict[str, MetricResultField]
+                        # todo: deal with more complex stuff later
+                        assert all(isinstance(v, MetricResultField) for v in field_value.values())
+                        dict_value: MetricResultField
+                        for dict_key, dict_value in field_value.items():
+                            for key, value in dict_value.collect_pandas_columns().items():
+                                data[f"{field_prefix}_{dict_key}_{key}"] = value
+                    elif isinstance(field_value, list):  # List[MetricResultField]
+                        raise NotImplementedError  # todo
+                continue
+            data[prefix + name] = getattr(self, name)
+        return data
+
+
+class MetricResult(MetricResultField):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
-        dict_include: set = set()
-        dict_exclude: set = set()
+        dict_include_fields: set = set()
+        dict_exclude_fields: set = set()
+        pd_include_fields: set = set()
+        pd_exclude_fields: set = set()
+        dict_include: bool = True
+        pd_include: bool = True
+        pd_name_mapping: Dict[str, str] = {}
 
     if TYPE_CHECKING:
         __config__: ClassVar[Type[Config]] = Config
@@ -177,38 +251,13 @@ class MetricResult(BaseModel):
                     exclude.add(name)
         return self.dict(include=self.__config__.dict_include or None, exclude=exclude)
 
+    def get_pandas(self) -> pd.DataFrame:
+        return pd.DataFrame([self.collect_pandas_columns()])
 
-class MetricResultField(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-        dict_include: bool = True
-
-    if TYPE_CHECKING:
-        __config__: ClassVar[Type[Config]] = Config
-
-    def dict(
-        self,
-        *,
-        include: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
-        exclude: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ) -> 'DictStrAny':
-        exclude = copy(exclude) or set()
-
-        for name, field in self.__fields__.items():
-            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
-                if not field.type_.__config__.dict_include:
-                    if isinstance(exclude, set):
-                        exclude.add(name)
-                    elif isinstance(exclude, dict):
-                        exclude[name] = True
-                    else:
-                        raise ValueError("Unknow exclude value type")
-        return super().dict(include=include, exclude=exclude, by_alias=by_alias, skip_defaults=skip_defaults, exclude_unset=exclude_unset, exclude_defaults=exclude_defaults, exclude_none=exclude_none)
+    def collect_pandas_columns(self, prefix="") -> Dict[str, Any]:
+        include = self.__config__.pd_include_fields or set(self.__fields__)
+        exclude = self.__config__.pd_exclude_fields or set()
+        return super().collect_pandas_columns(prefix=prefix, include=include, exclude=exclude)
 
 
 class ColumnMetricResult(MetricResult):
@@ -218,12 +267,17 @@ class ColumnMetricResult(MetricResult):
     column_name: str
     column_type: ColumnType
 
+    def get_pandas(self) -> pd.DataFrame:
+        return pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
+
 
 class Distribution2(MetricResultField):
     class Config:
         dict_include = False
-    x: Union[np.ndarray, list]
-    y: Union[np.ndarray, list]
+        pd_include = False
+
+    x: Union[np.ndarray, list, pd.Categorical]
+    y: Union[np.ndarray, list, pd.Categorical]
 
     @classmethod
     def from_old(cls, d: Distribution):
@@ -231,13 +285,16 @@ class Distribution2(MetricResultField):
             return None
         if isinstance(d, list):
             return cls(x=d[0], y=d[1])
-        return cls(x=d.x, y=d.y)  # todo tmp
+        try:
+            return cls(x=d.x, y=d.y)  # todo tmp
+        except ValidationError as e:
+            raise
 
 
 NewTResult = TypeVar("NewTResult", bound=MetricResult)
 
 
-class NewMetric(Metric, Generic[NewTResult], abc.ABC):
+class NewMetric(Metric[MetricResult], Generic[NewTResult], abc.ABC):
     pass
 
 
@@ -250,7 +307,7 @@ class ColumnMetric(NewMetric, Generic[ColumnTResult], abc.ABC):
 
 class NewMetricRenderer(MetricRenderer, abc.ABC):
     def render_pandas(self, obj: NewMetric) -> pd.DataFrame:
-        raise Exception("not implemented")  # not considered abs
+        return obj.get_result().get_pandas()
 
     def render_json(self, obj: NewMetric) -> dict:
         return obj.get_result().get_dict()

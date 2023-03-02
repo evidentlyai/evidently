@@ -116,6 +116,9 @@ class DataQualityPlot(MetricResultField):
 
 
 class ColumnSummaryResult(ColumnMetricResult):
+    class Config:
+        pd_exclude_fields = {"plot_data"}
+        pd_name_mapping = {"reference_characteristics": "ref", "current_characteristics": "cur"}
     reference_characteristics: Optional[ColumnCharacteristics]
     current_characteristics: ColumnCharacteristics
     plot_data: DataQualityPlot
@@ -418,19 +421,6 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
 class ColumnSummaryMetricRenderer(NewMetricRenderer):
-    def render_pandas(self, obj: ColumnSummaryMetric) -> pd.DataFrame:
-        column_summary: ColumnSummaryResult = obj.get_result()
-        data = {}
-        ref_dict = column_summary.reference_characteristics.dict() if column_summary.reference_characteristics is not None else {}
-        data[column_summary.column_name] = {
-            **{f"ref_{key}": val for key, val in
-               ref_dict.items()},
-            **{f"cur_{key}": val for key, val in
-               column_summary.current_characteristics.dict().items()}
-        }
-
-        return pd.DataFrame.from_dict(data, orient='index')
-
     def render_html(self, obj: ColumnSummaryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_type = metric_result.column_type
