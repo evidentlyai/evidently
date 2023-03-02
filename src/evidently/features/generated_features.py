@@ -50,7 +50,6 @@ class GeneratedFeature:
         return params
 
 
-
 class FeatureDescriptor:
     @abc.abstractmethod
     def for_column(self, column_name: str):
