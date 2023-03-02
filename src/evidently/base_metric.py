@@ -285,10 +285,7 @@ class Distribution2(MetricResultField):
             return None
         if isinstance(d, list):
             return cls(x=d[0], y=d[1])
-        try:
-            return cls(x=d.x, y=d.y)  # todo tmp
-        except ValidationError as e:
-            raise
+        return cls(x=d.x, y=d.y)  # todo tmp
 
 
 NewTResult = TypeVar("NewTResult", bound=MetricResult)

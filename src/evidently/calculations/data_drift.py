@@ -249,8 +249,8 @@ def get_one_column_drift(
         typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref = get_text_data_for_plots(
             reference_column, current_column
         )
-    try:
-        metrics = ColumnDataDriftMetrics(column_name=column_name,
+
+    metrics = ColumnDataDriftMetrics(column_name=column_name,
                                      column_type=column_type,
                                      stattest_name=drift_test_function.display_name,
                                      drift_score=drift_result.drift_score,
@@ -270,8 +270,7 @@ def get_one_column_drift(
                                          correlations=reference_correlations, ),
                                      scatter=scatter, )
 
-    except ValidationError as e:
-        raise
+
     return metrics
 
 

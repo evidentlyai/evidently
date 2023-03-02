@@ -298,14 +298,11 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
                 target_name,
                 target_type,
             )
-            try:
-                data_by_target = DataByTarget(
-                    data_for_plots=data_for_plots,
-                    target_name=target_name,
-                    target_type=target_type,
-                )
-            except ValidationError:
-                raise
+            data_by_target = DataByTarget(
+                data_for_plots=data_for_plots,
+                target_name=target_name,
+                target_type=target_type,
+            )
         counts_of_values = None
         if column_type in ["cat", "num"]:
             counts_of_values = {}

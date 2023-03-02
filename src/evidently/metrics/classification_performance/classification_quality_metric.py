@@ -86,12 +86,11 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
                 prediction,
             )
 
-        try:
-            result = ClassificationQualityMetricResult(current=DatasetClassificationQuality.from_old(current),
+
+        result = ClassificationQualityMetricResult(current=DatasetClassificationQuality.from_old(current),
                                                        reference=DatasetClassificationQuality.from_old(reference),
                                                        target_name=target_name)
-        except ValidationError:
-            raise
+
         return result
 
 
