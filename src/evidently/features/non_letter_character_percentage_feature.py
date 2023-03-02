@@ -2,7 +2,6 @@ import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
-from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -27,11 +26,3 @@ class NonLetterCharacterPercentage(GeneratedFeature):
 
     def feature_name(self) -> ColumnName:
         return additional_feature(self, self.column_name)
-
-
-class NonLetterCharacterPercentageDesc(FeatureDescriptor):
-    def feature(self, column_name: str) -> GeneratedFeature:
-        return NonLetterCharacterPercentage(column_name)
-
-    def for_column(self, column_name: str):
-        return NonLetterCharacterPercentage(column_name).feature_name()

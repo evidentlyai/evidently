@@ -84,7 +84,7 @@ def get_one_column_drift(
 
     if column_type is None:
         column_type = recognize_column_type(
-            dataset=reference_data.append(current_data), column_name=column_name, columns=dataset_columns
+            dataset=pd.concat([reference_data, current_data]), column_name=column_name, columns=dataset_columns
         )
 
     if column_type not in ("cat", "num", "text"):

@@ -1,0 +1,4 @@
+from .text_length_descriptor import TextLength
+from .oov_words_percentage_descriptor import OOV
+from .trigger_words_present_descriptor import TriggerWordsPresent
+from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage

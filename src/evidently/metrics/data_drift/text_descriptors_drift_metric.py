@@ -13,8 +13,8 @@ from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.descriptors import OOV
-from evidently.descriptors import TextLengthDesc
-from evidently.descriptors import NonLetterCharacterPercentageDesc
+from evidently.descriptors.text_length_descriptor import TextLengthDesc
+from evidently.descriptors.non_letter_character_percentage_descriptor import NonLetterCharacterPercentageDesc
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.model.widget import BaseWidgetInfo

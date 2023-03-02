@@ -10,8 +10,8 @@ from evidently.base_metric import Metric
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
 from evidently.descriptors import OOV
-from evidently.descriptors import TextLengthDesc
-from evidently.descriptors import NonLetterCharacterPercentageDesc
+from evidently.descriptors.text_length_descriptor import TextLengthDesc
+from evidently.descriptors.non_letter_character_percentage_descriptor import NonLetterCharacterPercentageDesc
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.model.widget import BaseWidgetInfo

@@ -2,7 +2,7 @@ import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
-from evidently.features.generated_features import GeneratedFeature, FeatureDescriptor
+from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -24,11 +24,3 @@ class TextLength(GeneratedFeature):
 
 def text_length(column_name: str) -> ColumnName:
     return additional_feature(TextLength(column_name), f"{column_name}")
-
-
-class TextLengthDesc(FeatureDescriptor):
-    def feature(self, column_name: str) -> GeneratedFeature:
-        return TextLength(column_name)
-
-    def for_column(self, column_name: str):
-        return TextLength(column_name).feature_name()
