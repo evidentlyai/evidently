@@ -11,19 +11,13 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently import TaskType
+from evidently.core import ColumnType
 
 
 @dataclasses.dataclass
 class _InputData:
     reference: Optional[pd.DataFrame]
     current: pd.DataFrame
-
-
-class ColumnType(Enum):
-    Categorical = "cat"
-    Numerical = "num"
-    Datetime = "datetime"
-    Text = "text"
 
 
 @dataclasses.dataclass

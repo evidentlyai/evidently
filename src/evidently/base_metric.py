@@ -6,6 +6,7 @@ from typing import Generic, List, Optional, TypeVar, Union
 import pandas as pd
 from dataclasses import dataclass
 
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
@@ -126,7 +127,7 @@ class Metric(Generic[TResult]):
                 required_features.append(value.feature_class)
         return required_features
 
-from enum import Enum
+
 from typing import Union
 
 import numpy as np
@@ -141,16 +142,6 @@ class MetricResult(BaseModel):
 class MetricResultField(BaseModel):
     class Config:
         arbitrary_types_allowed = True
-
-
-class ColumnType(Enum):
-    NUM = "num"
-    CAT = "cat"
-    TEXT = "text"
-    DATETIME = "datetime"
-    DATE = "data"
-    ID = "id"
-    UNKNOWN = "unknown"
 
 
 class ColumnMetricResult(MetricResultField):

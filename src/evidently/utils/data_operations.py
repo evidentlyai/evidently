@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.base_metric import ColumnType
+from evidently.core import ColumnType
 
 
 def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -278,10 +278,10 @@ def recognize_column_type_(
     )
     if column_name == columns.utility_columns.target:
         if reg_condition:
-            return ColumnType.NUM
+            return ColumnType.Numerical
 
         else:
-            return ColumnType.CAT
+            return ColumnType.Categorical
 
     if isinstance(columns.utility_columns.prediction, str) and column_name == columns.utility_columns.prediction:
         if reg_condition or (
@@ -290,33 +290,33 @@ def recognize_column_type_(
             and column.max() <= 1
             and column.min() >= 0
         ):
-            return ColumnType.NUM
+            return ColumnType.Numerical
 
         else:
-            return ColumnType.CAT
+            return ColumnType.Categorical
 
     if column_name in columns.num_feature_names:
-        return ColumnType.NUM
+        return ColumnType.Numerical
 
     if isinstance(columns.utility_columns.prediction, list) and column_name in columns.utility_columns.prediction:
-        return ColumnType.NUM
+        return ColumnType.Numerical
 
     if column_name in columns.cat_feature_names:
-        return ColumnType.CAT
+        return ColumnType.Categorical
 
     if column_name in columns.datetime_feature_names:
-        return ColumnType.DATETIME
+        return ColumnType.Datetime
 
     if column_name in columns.text_feature_names:
-        return ColumnType.TEXT
+        return ColumnType.Text
 
     if column_name == columns.utility_columns.id_column:
-        return ColumnType.ID
+        return ColumnType.Id
 
     if column_name == columns.utility_columns.date:
-        return ColumnType.DATE
+        return ColumnType.Date
 
-    return ColumnType.UNKNOWN
+    return ColumnType.Unknown
 
 def recognize_column_type(
     dataset: pd.DataFrame,

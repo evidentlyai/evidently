@@ -2,8 +2,9 @@ from typing import List, Optional
 
 import pandas as pd
 
-from evidently.base_metric import ColumnMetricResult, ColumnType, Distribution2, \
+from evidently.base_metric import ColumnMetricResult, Distribution2, \
     InputData, Metric, MetricResultField
+from evidently.core import ColumnType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer, default_renderer
 from evidently.renderers.html_widgets import CounterData, HistogramData, \
@@ -80,7 +81,7 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
                                   distributions[1]))
         return ColumnQuantileMetricResult(
             column_name=self.column_name,
-            column_type=ColumnType.NUM,
+            column_type=ColumnType.Numerical,
             current=QuantileStats(value=current_quantile,
                                   distribution=Distribution2.from_old(
                                       distributions[0])),

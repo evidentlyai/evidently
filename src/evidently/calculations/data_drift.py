@@ -8,8 +8,8 @@ from dataclasses import dataclass
 from pydantic import ValidationError
 
 from evidently.calculations.stattests import get_stattest
-from evidently.base_metric import ColumnMetricResult, ColumnType, \
-    Distribution2, MetricResultField
+from evidently.base_metric import ColumnMetricResult, Distribution2, MetricResultField
+from evidently.core import ColumnType
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import DatasetColumns, \
@@ -90,15 +90,15 @@ def get_one_column_drift(
             dataset=reference_data.append(current_data), column_name=column_name, columns=dataset_columns
         )
 
-    if column_type not in (ColumnType.NUM, ColumnType.CAT, ColumnType.TEXT):
+    if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
 
     stattest = None
 
-    if column_name == dataset_columns.utility_columns.target and column_type == ColumnType.NUM:
+    if column_name == dataset_columns.utility_columns.target and column_type == ColumnType.Numerical:
         stattest = options.num_target_stattest_func
 
-    elif column_name == dataset_columns.utility_columns.target and column_type == ColumnType.CAT:
+    elif column_name == dataset_columns.utility_columns.target and column_type == ColumnType.Categorical:
         stattest = options.cat_target_stattest_func
 
     if not stattest:
@@ -134,7 +134,7 @@ def get_one_column_drift(
     typical_words_cur = None
     typical_words_ref = None
 
-    if column_type == ColumnType.NUM:
+    if column_type == ColumnType.Numerical:
         if not pd.api.types.is_numeric_dtype(reference_column):
             raise ValueError(f"Column '{column_name}' in reference dataset should contain numerical values only.")
 
@@ -145,7 +145,7 @@ def get_one_column_drift(
     drift_result = drift_test_function(reference_column, current_column, column_type.value, threshold)
 
     scatter: Optional[ScatterField] = None
-    if column_type == ColumnType.NUM:
+    if column_type == ColumnType.Numerical:
         numeric_columns = dataset_columns.num_feature_names
 
         if column_name not in numeric_columns:
@@ -189,7 +189,7 @@ def get_one_column_drift(
                              x_name=x_name,
                              plot_shape=plot_shape)
 
-    elif column_type == ColumnType.CAT:
+    elif column_type == ColumnType.Categorical:
         reference_counts = reference_data[column_name].value_counts(sort=False)
         current_counts = current_data[column_name].value_counts(sort=False)
         keys = set(reference_counts.keys()).union(set(current_counts.keys()))
@@ -206,9 +206,9 @@ def get_one_column_drift(
         current_small_distribution = list(
             reversed(list(map(list, zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))))))
         )
-    if column_type != ColumnType.TEXT:
+    if column_type != ColumnType.Text:
         if (
-            column_type == ColumnType.CAT
+            column_type == ColumnType.Categorical
             and dataset_columns.target_names is not None
             and (
                 column_name == dataset_columns.utility_columns.target
@@ -233,7 +233,7 @@ def get_one_column_drift(
         if reference_distribution is None:
             raise ValueError(f"Cannot calculate reference distribution for column '{column_name}'.")
 
-    elif column_type == ColumnType.TEXT and drift_result.drifted:
+    elif column_type == ColumnType.Text and drift_result.drifted:
         typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref = get_text_data_for_plots(
             reference_column, current_column
         )

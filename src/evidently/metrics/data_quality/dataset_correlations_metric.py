@@ -25,7 +25,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import ColumnDefinition
-from evidently.utils.data_preprocessing import ColumnType
+from evidently.core import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
 

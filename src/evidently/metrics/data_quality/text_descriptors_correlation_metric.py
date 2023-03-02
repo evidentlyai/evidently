@@ -21,7 +21,7 @@ from evidently.renderers.html_widgets import get_histogram_for_distribution
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
-from evidently.utils.data_preprocessing import ColumnType as ColumnType_data
+from evidently.core import ColumnType as ColumnType_data
 from evidently.utils.data_preprocessing import DataDefinition
 
 

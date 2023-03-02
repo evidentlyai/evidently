@@ -6,7 +6,7 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype, is_string_dtype
 from pydantic import ValidationError
 
-from evidently.base_metric import ColumnMetricResult, ColumnType, InputData, \
+from evidently.base_metric import ColumnMetricResult, InputData, \
     Metric, \
     MetricResultField
 from evidently.calculations.data_quality import DataQualityGetPlotData, \
@@ -19,6 +19,7 @@ from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer, default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.core import ColumnType
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes, plot_cat_cat_rel, \
     plot_cat_feature_in_time, plot_distr, plot_distr_with_log_button, \

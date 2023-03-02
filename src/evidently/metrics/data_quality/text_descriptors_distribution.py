@@ -18,7 +18,7 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.data_preprocessing import ColumnType
+from evidently.core import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
