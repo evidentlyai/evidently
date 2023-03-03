@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
+from pandas.api.types import is_integer_dtype
 from pandas.api.types import is_string_dtype
 from plotly.subplots import make_subplots
 
@@ -112,6 +113,13 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
         else:
             if target_name is not None:
                 if curr_df[target_name].nunique() < 5 or is_string_dtype(curr_df[target_name]):
+                    task = "classification"
+                else:
+                    task = "regression"
+            elif curr_predictions is not None:
+                if is_string_dtype(curr_predictions.predictions) or (
+                    is_integer_dtype(curr_predictions.predictions) and curr_predictions.predictions.nunique() < 5
+                ):
                     task = "classification"
                 else:
                     task = "regression"
