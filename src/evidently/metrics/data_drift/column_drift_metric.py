@@ -48,13 +48,13 @@ class ColumnDriftMetricResults:
 class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
     """Calculate drift metric for a column"""
 
-    column_name: Union[str, ColumnName]
+    column_name: str
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
     def __init__(
         self,
-        column_name: Union[str, ColumnName],
+        column_name: str,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
