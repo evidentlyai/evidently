@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 import pandas as pd
 
@@ -13,9 +12,11 @@ from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.text_length_feature import TextLength
+from evidently.descriptors import OOV
+from evidently.descriptors import NonLetterCharacterPercentage
+from evidently.descriptors import TextLength
+from evidently.features.generated_features import FeatureDescriptor
+from evidently.features.generated_features import GeneratedFeature
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -49,25 +50,33 @@ class TextDescriptorsDriftMetricResults:
 class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
     options: DataDriftOptions
-    generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
+    generated_text_features: Dict[str, GeneratedFeature]
 
     def __init__(
         self,
         column_name: str,
+        descriptors: Optional[Dict[str, FeatureDescriptor]] = None,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
         self.options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
+        if descriptors:
+            self.descriptors = descriptors
+        else:
+            self.descriptors = {
+                "Text Length": TextLength(),
+                "Non Letter Character %": NonLetterCharacterPercentage(),
+                "OOV %": OOV(),
+            }
         self.generated_text_features = {}
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
-            self.generated_text_features = {}
-            self.generated_text_features["Text Length"] = TextLength(self.column_name)
-            self.generated_text_features["Non Letter Character %"] = NonLetterCharacterPercentage(self.column_name)
-            self.generated_text_features["OOV %"] = OOVWordsPercentage(self.column_name)
+            self.generated_text_features = {
+                name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
+            }
             return list(self.generated_text_features.values())
         return []
 

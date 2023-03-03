@@ -3,6 +3,7 @@ import re
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
+from evidently.base_metric import additional_feature
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -31,7 +32,7 @@ class TriggerWordsPresent(GeneratedFeature):
             dict(
                 [
                     (
-                        self.column_name,
+                        self._feature_column_name(),
                         data[self.column_name].apply(
                             lambda x: listed_words_present(
                                 x,
@@ -43,3 +44,12 @@ class TriggerWordsPresent(GeneratedFeature):
                 ]
             )
         )
+
+    def get_parameters(self):
+        return self.column_name, tuple(self.words_list), self.lemmatisize
+
+    def feature_name(self):
+        return additional_feature(self, self._feature_column_name())
+
+    def _feature_column_name(self):
+        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatisize)

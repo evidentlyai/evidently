@@ -2,7 +2,9 @@ import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculations.data_drift import get_one_column_drift
