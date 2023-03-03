@@ -9,10 +9,10 @@ class TriggerWordsPresence(FeatureDescriptor):
         self.lemmatisize = lemmatisize
 
     def feature(self, column_name: str) -> GeneratedFeature:
-        return trigger_words_present_feature.TriggerWordsPresent(column_name, self.words_list, self.lemmatisize)
+        return trigger_words_presence_feature.TriggerWordsPresent(column_name, self.words_list, self.lemmatisize)
 
     def for_column(self, column_name: str):
-        return trigger_words_present_feature.TriggerWordsPresent(
+        return trigger_words_presence_feature.TriggerWordsPresent(
             column_name,
             self.words_list,
             self.lemmatisize,
