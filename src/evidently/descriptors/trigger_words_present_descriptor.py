@@ -1,6 +1,6 @@
+from evidently.features import trigger_words_present_feature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
-from evidently.features import trigger_words_present_feature
 
 
 class TriggerWordsPresent(FeatureDescriptor):

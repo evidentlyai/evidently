@@ -1,10 +1,10 @@
 import dataclasses
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -13,8 +13,8 @@ from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.descriptors import OOV
-from evidently.descriptors import TextLength
 from evidently.descriptors import NonLetterCharacterPercentage
+from evidently.descriptors import TextLength
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.model.widget import BaseWidgetInfo

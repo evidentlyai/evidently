@@ -17,4 +17,4 @@ def test_trigger_words_present_feature():
         data=data,
         data_definition=create_data_definition(None, data, ColumnMapping()),
     )
-    assert result.equals(pd.DataFrame(dict(column_1=[1, 0, 0])))
+    assert result.equals(pd.DataFrame(dict(column_1_apple_True=[1, 0, 0])))

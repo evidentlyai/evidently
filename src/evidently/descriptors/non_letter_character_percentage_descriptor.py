@@ -1,6 +1,6 @@
+from evidently.features import non_letter_character_percentage_feature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
-from evidently.features import non_letter_character_percentage_feature
 
 
 class NonLetterCharacterPercentage(FeatureDescriptor):
