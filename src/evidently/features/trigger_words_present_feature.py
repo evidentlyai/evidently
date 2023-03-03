@@ -45,6 +45,9 @@ class TriggerWordsPresent(GeneratedFeature):
             )
         )
 
+    def get_parameters(self):
+        return self.column_name, tuple(self.words_list), self.lemmatisize
+
     def feature_name(self):
         return additional_feature(self, self._feature_column_name())
 
