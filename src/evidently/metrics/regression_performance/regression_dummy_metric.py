@@ -196,6 +196,6 @@ class RegressionDummyMetricRenderer(MetricRenderer):
             columns.append("Model")
 
         return [
-            header_text(label="Dummy Regreesion Quality"),
+            header_text(label="Dummy Regression Quality"),
             table_data(column_names=columns, data=np.around(in_table_data, 3).values, title=""),
         ]
