@@ -1,9 +1,9 @@
-from evidently.features import trigger_words_present_feature
+from evidently.features import trigger_words_presence_feature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 
 
-class TriggerWordsPresent(FeatureDescriptor):
+class TriggerWordsPresence(FeatureDescriptor):
     def __init__(self, words_list=(), lemmatisize=True):
         self.words_list = words_list
         self.lemmatisize = lemmatisize
