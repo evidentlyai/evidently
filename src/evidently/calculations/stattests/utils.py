@@ -25,7 +25,7 @@ def get_binned_data(
     n_vals = reference_data.nunique()
 
     if feature_type == "num" and n_vals > 20:
-        bins = np.histogram_bin_edges(list(reference_data) + list(current_data), bins="sturges")
+        bins = np.histogram_bin_edges(pd.concat([reference_data, current_data], axis=0).values, bins="sturges")
         reference_percents = np.histogram(reference_data, bins)[0] / len(reference_data)
         current_percents = np.histogram(current_data, bins)[0] / len(current_data)
 
