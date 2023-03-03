@@ -113,7 +113,7 @@ def get_prediction_data(
             labels=prediction,
         )
 
-    if isinstance(prediction, str) and not is_float_dtype(data[prediction]):
+    if isinstance(prediction, str) and not is_float_dtype(data[prediction]) and target is not None:
         # if prediction is not probas, get unique values from it and target
         labels = np.union1d(data[target].unique(), data[prediction].unique()).tolist()
         return PredictionData(
@@ -122,18 +122,26 @@ def get_prediction_data(
             labels=labels,
         )
 
-    else:
+    elif isinstance(prediction, str) and not is_float_dtype(data[prediction]) and target is None:
+        # if prediction is not probas, get unique values from it
+        labels = data[prediction].unique().tolist()
+
+    elif isinstance(prediction, str) and is_float_dtype(data[prediction]) and target is not None:
         # if prediction is probas, get unique values from target only
         labels = data[target].unique().tolist()
+
+    elif isinstance(prediction, list):
+        labels = prediction
 
     # binary classification
     # prediction in mapping is a list of two columns:
     # one is positive value probabilities, second is negative value probabilities
     if isinstance(prediction, list) and len(prediction) == 2:
         pos_label = _check_pos_labels(pos_label, labels)
+        labels = pd.Series(labels)
 
         # get negative label for binary classification
-        neg_label = labels[labels != pos_label][0]
+        neg_label = labels[labels != pos_label].iloc[0]
 
         predictions = threshold_probability_labels(data[prediction], pos_label, neg_label, threshold)
         return PredictionData(
@@ -146,11 +154,11 @@ def get_prediction_data(
     # target is strings or other values, prediction is a string with positive label name, one column with probabilities
     if (
         isinstance(prediction, str)
+        and target is not None
         and (is_string_dtype(data[target]) or is_object_dtype(data[target]))
         and is_float_dtype(data[prediction])
     ):
         pos_label = _check_pos_labels(pos_label, labels)
-
         if prediction not in labels:
             raise ValueError(
                 "No prediction for the target labels were found. "
@@ -158,8 +166,8 @@ def get_prediction_data(
             )
 
         # get negative label for binary classification
-        neg_label = labels[labels != pos_label][0]
-
+        labels = pd.Series(labels)
+        neg_label = labels[labels != pos_label].iloc[0]
         if pos_label == prediction:
             pos_preds = data[prediction]
 
@@ -201,6 +209,7 @@ def get_prediction_data(
     # binary target and preds are numbers
     elif (
         isinstance(prediction, str)
+        and target is not None
         and is_integer_dtype(data[target].dtype)
         and data[prediction].dtype == dtype("float")
     ):
