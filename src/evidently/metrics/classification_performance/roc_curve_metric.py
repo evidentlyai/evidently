@@ -7,10 +7,11 @@ from sklearn import metrics
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_roc_auc_tab_data
@@ -19,9 +20,11 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationRocCurveResults:
-    current_roc_curve: Optional[dict] = None
+class ClassificationRocCurveResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current_roc_curve: Optional[dict] = None  # todo CurveField
     reference_roc_curve: Optional[dict] = None
 
 
@@ -77,9 +80,6 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
 
 @default_renderer(wrap_type=ClassificationRocCurve)
 class ClassificationRocCurveRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationRocCurve) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationRocCurve) -> List[BaseWidgetInfo]:
         current_roc_curve = obj.get_result().current_roc_curve
         reference_roc_curve = obj.get_result().reference_roc_curve

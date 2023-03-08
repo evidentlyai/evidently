@@ -1,4 +1,5 @@
 import dataclasses
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -11,9 +12,11 @@ from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
@@ -22,13 +25,17 @@ from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationQualityByClassResult:
+class ClassificationQuality(MetricResultField):
+    metrics: Dict[Union[str, int], Union[float, int]] # ??? not sure about value type
+    roc_aucs: Optional[Dict[Union[str, int], Union[float, int]]]
+
+class ClassificationQualityByClassResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     columns: DatasetColumns
-    current_metrics: dict
-    current_roc_aucs: Optional[list]
-    reference_metrics: Optional[dict]
-    reference_roc_aucs: Optional[dict]
+    current: ClassificationQuality
+    reference: Optional[ClassificationQuality]
 
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
@@ -79,25 +86,21 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 ).tolist()
         return ClassificationQualityByClassResult(
             columns=columns,
-            current_metrics=metrics_matrix,
-            current_roc_aucs=current_roc_aucs,
-            reference_metrics=ref_metrics,
-            reference_roc_aucs=reference_roc_aucs,
+            current=ClassificationQuality(metrics=metrics_matrix, roc_aucs=current_roc_aucs),
+            reference=ClassificationQuality(metrics=ref_metrics, roc_aucs=reference_roc_aucs)
         )
 
 
 @default_renderer(wrap_type=ClassificationQualityByClass)
 class ClassificationQualityByClassRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationQualityByClass) -> dict:
-        return dataclasses.asdict(obj.get_result())
 
     def render_html(self, obj: ClassificationQualityByClass) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         columns = metric_result.columns
-        current_metrics = metric_result.current_metrics
-        current_roc_aucs = metric_result.current_roc_aucs
-        reference_metrics = metric_result.reference_metrics
-        reference_roc_aucs = metric_result.reference_roc_aucs
+        current_metrics = metric_result.current.metrics
+        current_roc_aucs = metric_result.current.roc_aucs
+        reference_metrics = metric_result.reference.metrics
+        reference_roc_aucs = metric_result.reference.roc_aucs
 
         metrics_frame = pd.DataFrame(current_metrics)
         names = metrics_frame.columns.tolist()[:-3]

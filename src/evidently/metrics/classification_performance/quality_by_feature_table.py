@@ -13,27 +13,31 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.calculations.classification_performance import PredictionData
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
+from evidently.metrics.metric_results import PredictionDataField
+from evidently.metrics.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-@dataclasses.dataclass
-class ClassificationQualityByFeatureTableResults:
-    current_plot_data: pd.DataFrame
-    reference_plot_data: Optional[pd.DataFrame]
+class ClassificationQualityByFeatureTableResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current: StatsByFeature
+    reference: Optional[StatsByFeature]
+
     target_name: str
-    curr_predictions: PredictionData
-    ref_predictions: Optional[PredictionData]
     columns: List[str]
 
 
@@ -131,10 +135,8 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                     ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
 
         return ClassificationQualityByFeatureTableResults(
-            current_plot_data=curr_df,
-            reference_plot_data=ref_df,
-            curr_predictions=curr_predictions,
-            ref_predictions=ref_predictions,
+            current=StatsByFeature(plot_data=curr_df, predictions=PredictionDataField.from_dataclass(curr_predictions)),
+            reference=StatsByFeature(plot_data=ref_df, predictions=PredictionDataField.from_dataclass(ref_predictions)),
             columns=columns,
             target_name=target_name,
         )
@@ -142,16 +144,14 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationQualityByFeatureTable) -> dict:
-        return {}
 
     def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_data = result.current_plot_data
-        reference_data = result.reference_plot_data
+        current_data = result.current.plot_data
+        reference_data = result.reference.plot_data
         target_name = result.target_name
-        curr_predictions = result.curr_predictions
-        ref_predictions = result.ref_predictions
+        curr_predictions = result.current.predictions
+        ref_predictions = result.reference.predictions
         columns = result.columns
         labels = curr_predictions.labels
 

@@ -4,15 +4,13 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import ColumnMetricResult
-from evidently.base_metric import Distribution2
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResultField
-from evidently.base_metric import NewMetric
-from evidently.base_metric import NewMetricRenderer
 from evidently.core import ColumnType
+from evidently.metrics.metric_results import DistributionField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import HistogramData
@@ -26,7 +24,7 @@ from evidently.utils.visualizations import get_distribution_for_column
 class QuantileStats(MetricResultField):
     value: float
     # calculated value of the quantile
-    distribution: Distribution2
+    distribution: DistributionField
     # distribution for the column
 
 
@@ -37,7 +35,7 @@ class ColumnQuantileMetricResult(ColumnMetricResult):
     reference: Optional[QuantileStats] = None
 
 
-class ColumnQuantileMetric(NewMetric[ColumnQuantileMetricResult]):
+class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
     """Calculates quantile with specified range"""
 
     column_name: str
@@ -88,13 +86,13 @@ class ColumnQuantileMetric(NewMetric[ColumnQuantileMetricResult]):
         reference = None
         if reference_quantile is not None:
             reference = QuantileStats(value=reference_quantile,
-                              distribution=Distribution2.from_old(
+                              distribution=DistributionField.from_dataclass(
                                   distributions[1]))
         return ColumnQuantileMetricResult(
             column_name=self.column_name,
             column_type=ColumnType.Numerical,
             current=QuantileStats(value=current_quantile,
-                                  distribution=Distribution2.from_old(
+                                  distribution=DistributionField.from_dataclass(
                                       distributions[0])),
             quantile=self.quantile,
 
@@ -103,7 +101,7 @@ class ColumnQuantileMetric(NewMetric[ColumnQuantileMetricResult]):
 
 
 @default_renderer(wrap_type=ColumnQuantileMetric)
-class ColumnQuantileMetricRenderer(NewMetricRenderer):
+class ColumnQuantileMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_counters(
             metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:

@@ -9,6 +9,9 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.data_integration import get_number_of_all_pandas_missed_values
 from evidently.calculations.data_integration import get_number_of_almost_constant_columns
 from evidently.calculations.data_integration import get_number_of_almost_duplicated_columns
@@ -17,16 +20,18 @@ from evidently.calculations.data_integration import get_number_of_duplicated_col
 from evidently.calculations.data_integration import get_number_of_empty_columns
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class DatasetSummary:
+class DatasetSummary(MetricResultField):
     """Columns information in a dataset"""
+
+    class Config:
+        dict_exclude_fields = {"columns_type"}
+        pd_exclude_fields = {"columns_type"}
 
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
@@ -51,8 +56,10 @@ class DatasetSummary:
     number_uniques_by_columns: dict
 
 
-@dataclasses.dataclass
-class DatasetSummaryMetricResult:
+class DatasetSummaryMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     almost_duplicated_threshold: float
     current: DatasetSummary
     reference: Optional[DatasetSummary] = None
@@ -121,16 +128,6 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
 
 @default_renderer(wrap_type=DatasetSummaryMetric)
 class DatasetSummaryMetricRenderer(MetricRenderer):
-    def render_json(self, obj: DatasetSummaryMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        if "reference" in result and result["reference"]:
-            result["reference"].pop("columns_type", None)
-
-        if "current" in result and result["current"]:
-            result["current"].pop("columns_type", None)
-
-        return result
-
     @staticmethod
     def _get_table(metric_result: DatasetSummaryMetricResult) -> BaseWidgetInfo:
         column_names = ["Metric", "Current"]

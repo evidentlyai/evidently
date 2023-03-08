@@ -8,18 +8,23 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.metrics.regression_performance.abs_perc_error_in_time import Scatter
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter
 
 
-@dataclasses.dataclass
-class RegressionPredictedVsActualScatterResults:
-    current_scatter: Dict[str, pd.Series]
-    reference_scatter: Optional[Dict[str, pd.Series]]
+class RegressionPredictedVsActualScatterResults(MetricResult):
+    class Config:
+        dict_include = False
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current_scatter: Scatter
+    reference_scatter: Optional[Scatter]
 
 
 class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatterResults]):
@@ -58,9 +63,6 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
 
 @default_renderer(wrap_type=RegressionPredictedVsActualScatter)
 class RegressionPredictedVsActualScatterRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionPredictedVsActualScatter) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionPredictedVsActualScatter) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter

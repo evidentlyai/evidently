@@ -9,8 +9,10 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
@@ -20,8 +22,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclasses.dataclass
-class ColumnMissingValues:
+class ColumnMissingValues(MetricResultField):
     """Statistics about missing values in a column"""
 
     # count of rows in the column
@@ -36,8 +37,11 @@ class ColumnMissingValues:
     share_of_missing_values: float
 
 
-@dataclasses.dataclass
-class ColumnMissingValuesMetricResult:
+
+class ColumnMissingValuesMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     column_name: str
     current: ColumnMissingValues
     reference: Optional[ColumnMissingValues] = None
@@ -145,9 +149,6 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
 
 @default_renderer(wrap_type=ColumnMissingValuesMetric)
 class ColumnMissingValuesMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnMissingValuesMetric) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
     @staticmethod
     def _get_table_stat(stats: ColumnMissingValues) -> BaseWidgetInfo:
         data = []

@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Any
 from typing import Dict
 from typing import List
@@ -8,9 +7,11 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
@@ -20,8 +21,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclasses.dataclass
-class ValueListStat:
+class ValueListStat(MetricResultField):
     number_in_list: int
     number_not_in_list: int
     share_in_list: float
@@ -31,8 +31,10 @@ class ValueListStat:
     rows_count: int
 
 
-@dataclasses.dataclass
-class ColumnValueListMetricResult:
+class ColumnValueListMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     column_name: str
     values: List[Any]
     current: ValueListStat
@@ -128,10 +130,6 @@ class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
 
 @default_renderer(wrap_type=ColumnValueListMetric)
 class ColumnValueListMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnValueListMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     @staticmethod
     def _get_table_stat(dataset_name: str, stats: ValueListStat) -> BaseWidgetInfo:
         matched_stat_headers = ["Value", "Count"]

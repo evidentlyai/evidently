@@ -1,15 +1,11 @@
-import dataclasses
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic import ValidationError
-
 from evidently.base_metric import InputData
+from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
-from evidently.base_metric import NewMetricRenderer
+from evidently.calculations.classification_performance import DatasetClassificationQuality
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
@@ -19,27 +15,6 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-
-
-class DatasetClassificationQuality(MetricResultField):
-    accuracy: float
-    precision: float
-    recall: float
-    f1: float
-    roc_auc: Optional[float] = None
-    log_loss: Optional[float] = None
-    tpr: Optional[float] = None
-    tnr: Optional[float] = None
-    fpr: Optional[float] = None
-    fnr: Optional[float] = None
-    rate_plots_data: Optional[Dict] = None
-    plot_data: Optional[Dict] = None
-
-    @classmethod
-    def from_old(cls, value):
-        if value is None:
-            return None
-        return cls(**dataclasses.asdict(value))
 
 
 class ClassificationQualityMetricResult(MetricResult):
@@ -87,15 +62,15 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
             )
 
 
-        result = ClassificationQualityMetricResult(current=DatasetClassificationQuality.from_old(current),
-                                                       reference=DatasetClassificationQuality.from_old(reference),
+        result = ClassificationQualityMetricResult(current=current,
+                                                       reference=reference,
                                                        target_name=target_name)
 
         return result
 
 
 @default_renderer(wrap_type=ClassificationQualityMetric)
-class ClassificationQualityMetricRenderer(NewMetricRenderer):
+class ClassificationQualityMetricRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationQualityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         target_name = metric_result.target_name

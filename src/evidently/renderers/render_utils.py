@@ -1,5 +1,8 @@
 from typing import Optional
+from typing import Protocol
+from typing import Union
 
+import numpy as np
 import plotly.graph_objs as go
 
 from evidently.options import ColorOptions
@@ -31,11 +34,14 @@ def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: Colo
 
     return fig
 
+class DistributionProtocol(Protocol):
+    x: Union[np.ndarray, list]
+    y: Union[np.ndarray, list]
 
 def get_distribution_plot_figure(
     *,
-    current_distribution: Distribution,
-    reference_distribution: Optional[Distribution],
+    current_distribution: DistributionProtocol,
+    reference_distribution: Optional[DistributionProtocol],
     color_options: ColorOptions,
     orientation: str = "v",
 ) -> go.Figure:

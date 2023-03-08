@@ -1,20 +1,16 @@
-import dataclasses
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
-from evidently.base_metric import NewMetric
-from evidently.base_metric import NewMetricRenderer
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
 from evidently.renderers.html_widgets import ColumnType
@@ -41,7 +37,7 @@ class DataDriftTableResults(MetricResult):
     dataset_columns: DatasetColumns
 
 
-class DataDriftTable(NewMetric[DataDriftTableResults]):
+class DataDriftTable(Metric[DataDriftTableResults]):
     columns: Optional[List[str]]
     options: DataDriftOptions
 
@@ -99,7 +95,7 @@ class DataDriftTable(NewMetric[DataDriftTableResults]):
 
 
 @default_renderer(wrap_type=DataDriftTable)
-class DataDriftTableRenderer(NewMetricRenderer):
+class DataDriftTableRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftTable) -> dict:
         data = obj.get_result()
         result = data.dict(exclude={"dataset_columns", "drift_by_columns"})

@@ -10,6 +10,9 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.data_quality import calculate_correlations
 from evidently.core import ColumnType
@@ -17,7 +20,6 @@ from evidently.features.non_letter_character_percentage_feature import NonLetter
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import HeatmapData
 from evidently.renderers.html_widgets import TabData
@@ -30,8 +32,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
 
 
-@dataclasses.dataclass
-class CorrelationStats:
+class CorrelationStats(MetricResultField):
     target_prediction_correlation: Optional[float] = None
     abs_max_target_features_correlation: Optional[float] = None
     abs_max_prediction_features_correlation: Optional[float] = None
@@ -39,15 +40,19 @@ class CorrelationStats:
     abs_max_features_correlation: Optional[float] = None
 
 
-@dataclasses.dataclass
-class DatasetCorrelation:
+class DatasetCorrelation(MetricResultField):
+    class Config:
+        dict_exclude_fields = {"correlation", "correlations_calculate"}
+        pd_exclude_fields =  {"correlation", "correlations_calculate"}
     correlation: Dict[str, pd.DataFrame]
     stats: Dict[str, CorrelationStats]
     correlations_calculate: Optional[Dict[str, pd.DataFrame]]
 
 
-@dataclasses.dataclass
-class DatasetCorrelationsMetricResult:
+class DatasetCorrelationsMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {"target_correlation"}
+        pd_exclude_fields =  {"target_correlation"}
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]
     target_correlation: Optional[str]
@@ -271,19 +276,6 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
 @default_renderer(wrap_type=DatasetCorrelationsMetric)
 class DataQualityCorrelationMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DatasetCorrelationsMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        result["current"].pop("correlation", None)
-        result["current"].pop("correlations_calculate", None)
-        result["current"].pop("target_correlation", None)
-
-        if result["reference"]:
-            result["reference"].pop("correlation", None)
-            result["reference"].pop("correlations_calculate", None)
-            result["reference"].pop("target_correlation", None)
-
-        return result
-
     def _get_heatmaps(self, metric_result: DatasetCorrelationsMetricResult) -> BaseWidgetInfo:
         tabs = []
         curr_corr_result = metric_result.current.correlation

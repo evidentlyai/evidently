@@ -6,11 +6,12 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_pr_table
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import WidgetSize
@@ -19,9 +20,11 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationPRTableResults:
-    current_pr_table: Optional[dict] = None
+class ClassificationPRTableResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current_pr_table: Optional[dict] = None  # todo PRTable field
     reference_pr_table: Optional[dict] = None
 
 
@@ -67,9 +70,6 @@ class ClassificationPRTable(Metric[ClassificationPRTableResults]):
 
 @default_renderer(wrap_type=ClassificationPRTable)
 class ClassificationPRTableRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationPRTable) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationPRTable) -> List[BaseWidgetInfo]:
         reference_pr_table = obj.get_result().reference_pr_table
         current_pr_table = obj.get_result().current_pr_table

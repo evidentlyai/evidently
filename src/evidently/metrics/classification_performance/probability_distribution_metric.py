@@ -10,8 +10,9 @@ from plotly import figure_factory as ff
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import WidgetSize
@@ -19,9 +20,11 @@ from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationProbDistributionResults:
-    current_distribution: Optional[Dict[str, list]]
+class ClassificationProbDistributionResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
     reference_distribution: Optional[Dict[str, list]]
 
 
@@ -70,9 +73,6 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
 
 @default_renderer(wrap_type=ClassificationProbDistribution)
 class ClassificationProbDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationProbDistribution) -> dict:
-        return {}
-
     def _plot(self, distribution: Dict[str, list]):
         # plot distributions
         graphs = []

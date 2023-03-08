@@ -4,8 +4,9 @@ from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
@@ -13,8 +14,10 @@ from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ConflictTargetMetricResults:
+class ConflictTargetMetricResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     number_not_stable_target: int
     share_not_stable_target: float
     number_not_stable_target_ref: Optional[int] = None
@@ -54,9 +57,6 @@ class ConflictTargetMetric(Metric[ConflictTargetMetricResults]):
 
 @default_renderer(wrap_type=ConflictTargetMetric)
 class ConflictTargetMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ConflictTargetMetric) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
     def render_html(self, obj: ConflictTargetMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         counters = [

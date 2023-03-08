@@ -1,4 +1,3 @@
-import dataclasses
 import json
 from typing import Dict
 from typing import List
@@ -14,26 +13,28 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
+from evidently.metrics.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-@dataclasses.dataclass
-class TargetByFeaturesTableResults:
-    current_plot_data: pd.DataFrame
-    reference_plot_data: pd.DataFrame
+class TargetByFeaturesTableResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current: StatsByFeature
+    reference: Optional[StatsByFeature]
     target_name: Optional[str]
-    curr_predictions: Optional[PredictionData]
-    ref_predictions: Optional[PredictionData]
     columns: List[str]
     task: str
 
@@ -144,10 +145,8 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                     ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
 
         return TargetByFeaturesTableResults(
-            current_plot_data=curr_df,
-            reference_plot_data=ref_df,
-            curr_predictions=curr_predictions,
-            ref_predictions=ref_predictions,
+            current=StatsByFeature(plot_data=curr_df, predictions=curr_predictions),
+            reference=StatsByFeature(plot_data=ref_df, predictions=ref_predictions),
             columns=columns,
             target_name=target_name,
             task=task,
@@ -156,16 +155,13 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
 
 @default_renderer(wrap_type=TargetByFeaturesTable)
 class TargetByFeaturesTableRenderer(MetricRenderer):
-    def render_json(self, obj: TargetByFeaturesTable) -> dict:
-        return {}
-
     def render_html(self, obj: TargetByFeaturesTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_data = result.current_plot_data
-        reference_data = result.reference_plot_data
+        current_data = result.current.plot_data
+        reference_data = result.reference.plot_data
         target_name = result.target_name
-        curr_predictions = result.curr_predictions
-        ref_predictions = result.ref_predictions
+        curr_predictions = result.current.predictions
+        ref_predictions = result.reference.predictions
         columns = result.columns
         task = result.task
 

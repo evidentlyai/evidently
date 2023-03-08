@@ -12,54 +12,66 @@ from sklearn.metrics import r2_score
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.metrics.metric_results import DatasetColumnsField
+from evidently.metrics.regression_performance.regression_performance_metrics import RegressionMetrics
 from evidently.metrics.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
 
-@dataclasses.dataclass
-class RegressionQualityMetricResults:
-    columns: DatasetColumns
-    r2_score: float
-    rmse: float
+class MoreRegressionMetrics(RegressionMetrics):
+    error_std :float
+    abs_error_std :float
+    abs_perc_error_std :float
+
+class RegressionQualityMetricResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
+        pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
+    columns: DatasetColumnsField
+    current: MoreRegressionMetrics
+    reference: Optional[MoreRegressionMetrics]
+    # r2_score: float
+    # rmse: float
     rmse_default: float
-    mean_error: float
+    # mean_error: float
     me_default_sigma: float
     me_hist_for_plot: Dict[str, pd.Series]
-    mean_abs_error: float
+    # mean_abs_error: float
     mean_abs_error_default: float
-    mean_abs_perc_error: float
+    # mean_abs_perc_error: float
     mean_abs_perc_error_default: float
-    abs_error_max: float
+    # abs_error_max: float
     abs_error_max_default: float
-    error_std: float
-    abs_error_std: float
-    abs_perc_error_std: float
+    # error_std: float
+    # abs_error_std: float
+    # abs_perc_error_std: float
     error_normality: dict
-    underperformance: dict
+    # underperformance: dict
     hist_for_plot: Dict[str, pd.Series]
     vals_for_plots: Dict[str, Dict[str, pd.Series]]
     error_bias: Optional[dict] = None
-    mean_error_ref: Optional[float] = None
-    mean_abs_error_ref: Optional[float] = None
-    mean_abs_perc_error_ref: Optional[float] = None
-    rmse_ref: Optional[float] = None
-    r2_score_ref: Optional[float] = None
-    abs_error_max_ref: Optional[float] = None
-    underperformance_ref: Optional[dict] = None
-    error_std_ref: Optional[float] = None
-    abs_error_std_ref: Optional[float] = None
-    abs_perc_error_std_ref: Optional[float] = None
+
+    # mean_error_ref: Optional[float] = None
+    # mean_abs_error_ref: Optional[float] = None
+    # mean_abs_perc_error_ref: Optional[float] = None
+    # rmse_ref: Optional[float] = None
+    # r2_score_ref: Optional[float] = None
+    # abs_error_max_ref: Optional[float] = None
+    # underperformance_ref: Optional[dict] = None
+    # error_std_ref: Optional[float] = None
+    # abs_error_std_ref: Optional[float] = None
+    # abs_perc_error_std_ref: Optional[float] = None
 
 
 class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
@@ -205,50 +217,57 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             underperformance_ref = reference_metrics.underperformance
 
         return RegressionQualityMetricResults(
-            columns=dataset_columns,
-            r2_score=r2_score_value,
-            rmse=rmse_score_value,
+            columns=DatasetColumnsField.from_dataclass(dataset_columns),
+            current=MoreRegressionMetrics(
+                r2_score=r2_score_value,
+                rmse=rmse_score_value,
+                mean_error=current_metrics.mean_error,
+                mean_abs_error=current_metrics.mean_abs_error,
+                mean_abs_perc_error=current_metrics.mean_abs_perc_error,
+                abs_error_max=current_metrics.abs_error_max,
+                error_std=current_metrics.error_std,
+                abs_error_std=current_metrics.abs_error_std,
+                abs_perc_error_std=current_metrics.abs_perc_error_std,
+                underperformance=current_metrics.underperformance,
+            ),
+            reference=MoreRegressionMetrics(
+                mean_error=mean_error_ref,
+                underperformance=underperformance_ref,
+                mean_abs_error=reference_metrics.mean_abs_error if reference_metrics is not None else None,
+                mean_abs_perc_error=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
+                error_std=reference_metrics.error_std if reference_metrics is not None else None,
+                abs_error_std=reference_metrics.abs_error_std if reference_metrics is not None else None,
+                abs_perc_error_std=reference_metrics.abs_perc_error_std if reference_metrics is not None else None,
+                rmse=rmse_ref,
+                r2_score=r2_score_ref,
+                abs_error_max=abs_error_max_ref,
+            ),
+
             rmse_default=rmse_default,
-            mean_error=current_metrics.mean_error,
-            mean_error_ref=mean_error_ref,
+
+
             me_default_sigma=me_default_sigma,
             me_hist_for_plot=me_hist_for_plot,
-            mean_abs_error=current_metrics.mean_abs_error,
+
             mean_abs_error_default=mean_abs_error_default,
-            mean_abs_perc_error=current_metrics.mean_abs_perc_error,
+
             mean_abs_perc_error_default=mean_abs_perc_error_default,
-            abs_error_max=current_metrics.abs_error_max,
+
             abs_error_max_default=abs_error_max_default,
-            error_std=current_metrics.error_std,
-            abs_error_std=current_metrics.abs_error_std,
-            abs_perc_error_std=current_metrics.abs_perc_error_std,
+
+
             error_normality=current_metrics.error_normality,
-            underperformance=current_metrics.underperformance,
-            underperformance_ref=underperformance_ref,
+
+
             hist_for_plot=hist_for_plot,
             vals_for_plots=vals_for_plots,
             error_bias=error_bias,
-            mean_abs_error_ref=reference_metrics.mean_abs_error if reference_metrics is not None else None,
-            mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
-            error_std_ref=reference_metrics.error_std if reference_metrics is not None else None,
-            abs_error_std_ref=reference_metrics.abs_error_std if reference_metrics is not None else None,
-            abs_perc_error_std_ref=reference_metrics.abs_perc_error_std if reference_metrics is not None else None,
-            rmse_ref=rmse_ref,
-            r2_score_ref=r2_score_ref,
-            abs_error_max_ref=abs_error_max_ref,
+
         )
 
 
 @default_renderer(wrap_type=RegressionQualityMetric)
 class RegressionQualityMetricRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionQualityMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        # remove values with DataFrames or Series
-        result.pop("hist_for_plot")
-        result.pop("vals_for_plots")
-        result.pop("me_hist_for_plot")
-        return result
-
     def render_html(self, obj: RegressionQualityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         target_name = metric_result.columns.utility_columns.target
@@ -257,47 +276,47 @@ class RegressionQualityMetricRenderer(MetricRenderer):
             counter(
                 title="Current: Model Quality (+/- std)",
                 counters=[
-                    CounterData("ME", f"{round(metric_result.mean_error, 2)} ({round(metric_result.error_std, 2)})"),
+                    CounterData("ME", f"{round(metric_result.current.mean_error, 2)} ({round(metric_result.current.error_std, 2)})"),
                     CounterData(
-                        "MAE", f"{round(metric_result.mean_abs_error, 2)} ({round(metric_result.abs_error_std, 2)})"
+                        "MAE", f"{round(metric_result.current.mean_abs_error, 2)} ({round(metric_result.current.abs_error_std, 2)})"
                     ),
                     CounterData(
                         "MAPE",
                         (
-                            f"{round(metric_result.mean_abs_perc_error, 2)}"
-                            f" ({round(metric_result.abs_perc_error_std, 2)})"
+                            f"{round(metric_result.current.mean_abs_perc_error, 2)}"
+                            f" ({round(metric_result.current.abs_perc_error_std, 2)})"
                         ),
                     ),
                 ],
             ),
         ]
         if (
-            metric_result.mean_error_ref is not None
-            and metric_result.error_std_ref is not None
-            and metric_result.mean_abs_error_ref is not None
-            and metric_result.abs_error_std_ref is not None
-            and metric_result.mean_abs_perc_error_ref is not None
-            and metric_result.abs_perc_error_std_ref is not None
+            metric_result.reference.mean_error is not None
+            and metric_result.reference.error_std is not None
+            and metric_result.reference.mean_abs_error is not None
+            and metric_result.reference.abs_error_std is not None
+            and metric_result.reference.mean_abs_perc_error is not None
+            and metric_result.reference.abs_perc_error_std is not None
         ):
             result.append(
                 counter(
                     title="Reference: Model Quality (+/- std)",
                     counters=[
                         CounterData(
-                            "ME", f"{round(metric_result.mean_error_ref, 2)} ({round(metric_result.error_std_ref, 2)})"
+                            "ME", f"{round(metric_result.reference.mean_error, 2)} ({round(metric_result.reference.error_std, 2)})"
                         ),
                         CounterData(
                             "MAE",
                             (
-                                f"{round(metric_result.mean_abs_error_ref, 2)}"
-                                f" ({round(metric_result.abs_error_std_ref, 2)})"
+                                f"{round(metric_result.reference.mean_abs_error, 2)}"
+                                f" ({round(metric_result.reference.abs_error_std, 2)})"
                             ),
                         ),
                         CounterData(
                             "MAPE",
                             (
-                                f"{round(metric_result.mean_abs_perc_error_ref, 2)}"
-                                f" ({round(metric_result.abs_perc_error_std_ref, 2)})"
+                                f"{round(metric_result.reference.mean_abs_perc_error, 2)}"
+                                f" ({round(metric_result.reference.abs_perc_error_std, 2)})"
                             ),
                         ),
                     ],

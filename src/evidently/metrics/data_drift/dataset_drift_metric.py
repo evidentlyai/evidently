@@ -1,24 +1,25 @@
-import dataclasses
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.utils.data_operations import process_columns
 
 
-@dataclass
-class DatasetDriftMetricResults:
+class DatasetDriftMetricResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     drift_share: float
     number_of_columns: int
     number_of_drifted_columns: int
@@ -88,10 +89,6 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
 
 @default_renderer(wrap_type=DatasetDriftMetric)
 class DataDriftMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DatasetDriftMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     def render_html(self, obj: DatasetDriftMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
 

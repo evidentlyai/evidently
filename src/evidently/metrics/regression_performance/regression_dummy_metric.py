@@ -10,17 +10,20 @@ from sklearn.metrics import mean_squared_error
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class RegressionDummyMetricResults:
+class RegressionDummyMetricResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     rmse_default: float
     mean_abs_error_default: float
     mean_abs_perc_error_default: float
@@ -150,10 +153,6 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
 
 @default_renderer(wrap_type=RegressionDummyMetric)
 class RegressionDummyMetricRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionDummyMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     def render_html(self, obj: RegressionDummyMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         in_table_data = pd.DataFrame(data=["MAE", "RMSE", "MAPE", "MAX_ERROR"])

@@ -9,20 +9,28 @@ from plotly import graph_objs as go
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ColumnValuePlotResults:
+class Scatter(MetricResultField):
+    class Config:
+        dict_include = False
+        pd_include = False
+
+    scatter: pd.DataFrame
+
+class ColumnValuePlotResults(MetricResult):
     column_name: str
     datetime_column_name: Optional[str]
-    current_scatter: pd.DataFrame
-    reference_scatter: pd.DataFrame
+    current: Scatter
+    reference: Scatter
 
 
 class ColumnValuePlot(Metric[ColumnValuePlotResults]):
@@ -63,8 +71,8 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         return ColumnValuePlotResults(
             column_name=self.column_name,
             datetime_column_name=datetime_column_name,
-            current_scatter=curr_df,
-            reference_scatter=ref_df,
+            current=Scatter(scatter=curr_df),
+            reference=Scatter(scatter=ref_df)
         )
 
     def _make_df_for_plot(self, df, column_name: str, datetime_column_name: Optional[str]):
@@ -78,14 +86,10 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 
 @default_renderer(wrap_type=ColumnValuePlot)
 class ColumnValuePlotRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnValuePlot) -> dict:
-        obj.get_result()
-        return {}
-
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_scatter = result.current_scatter
-        reference_scatter = result.reference_scatter
+        current_scatter = result.current.scatter
+        reference_scatter = result.reference.scatter
         column_name = result.column_name
 
         mean_ref = reference_scatter[column_name].mean()

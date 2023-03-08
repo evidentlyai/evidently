@@ -6,12 +6,14 @@ from typing import Union
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
+from evidently.metrics.metric_results import DistributionField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
@@ -24,11 +26,13 @@ from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
 
 
-@dataclasses.dataclass
-class TextDescriptorsDistributionResult:
+class TextDescriptorsDistributionResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     column_name: str
-    current: Dict[str, Distribution]
-    reference: Optional[Dict[str, Distribution]] = None
+    current: Dict[str, DistributionField]
+    reference: Optional[Dict[str, DistributionField]] = None
 
 
 class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
@@ -86,19 +90,13 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
 
         return TextDescriptorsDistributionResult(
             column_name=self.column_name,
-            current=current_results,
-            reference=reference_results,
+            current={k: DistributionField.from_dataclass(v) for k, v in current_results.items()},
+            reference={k: DistributionField.from_dataclass(v) for k, v in reference_results.items()},
         )
 
 
 @default_renderer(wrap_type=TextDescriptorsDistribution)
 class TextDescriptorsDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: TextDescriptorsDistribution) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        result.pop("current", None)
-        result.pop("reference", None)
-        return result
-
     def render_html(self, obj: TextDescriptorsDistribution) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [header_text(label=f"Distribution for column '{metric_result.column_name}'.")]

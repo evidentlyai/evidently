@@ -5,11 +5,12 @@ from typing import Optional
 from typing import Union
 
 from evidently.base_metric import InputData
-from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
+from evidently.metrics.metric_results import ConfusionMatrixField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
@@ -18,10 +19,12 @@ from evidently.utils.visualizations import plot_conf_mtrx
 DEFAULT_THRESHOLD = 0.5
 
 
-@dataclasses.dataclass
-class ClassificationConfusionMatrixResult:
-    current_matrix: ConfusionMatrix
-    reference_matrix: Optional[ConfusionMatrix]
+class ClassificationConfusionMatrixResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current_matrix: ConfusionMatrixField
+    reference_matrix: Optional[ConfusionMatrixField]
     target_names: Optional[Dict[Union[str, int], str]] = None
 
 
@@ -58,17 +61,14 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
             )
 
         return ClassificationConfusionMatrixResult(
-            current_matrix=current_results,
-            reference_matrix=reference_results,
+            current_matrix=ConfusionMatrixField.from_dataclass(current_results),
+            reference_matrix=ConfusionMatrixField.from_dataclass(reference_results),
             target_names=target_names,
         )
 
 
 @default_renderer(wrap_type=ClassificationConfusionMatrix)
 class ClassificationConfusionMatrixRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationConfusionMatrix) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationConfusionMatrix) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         target_names = metric_result.target_names

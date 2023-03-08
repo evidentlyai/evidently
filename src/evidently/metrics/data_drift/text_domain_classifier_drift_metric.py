@@ -13,8 +13,10 @@ from sklearn.pipeline import Pipeline
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
@@ -23,16 +25,21 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclasses.dataclass
-class TextDomainClassifierDriftResult:
+class TextDomainField(MetricResultField):
+    examples: Optional[List[str]]
+    words: Optional[List[str]]
+
+
+class TextDomainClassifierDriftResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     text_column_name: str
     domain_classifier_roc_auc: float
     random_classifier_95_percentile: float
     content_drift: bool
-    characteristic_examples_current: Optional[List[str]]
-    characteristic_examples_reference: Optional[List[str]]
-    characteristic_words_current: Optional[List[str]]
-    characteristic_words_reference: Optional[List[str]]
+    current: TextDomainField
+    reference: TextDomainField
 
 
 class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
@@ -161,19 +168,13 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
             domain_classifier_roc_auc=domain_classifier_roc_auc,
             random_classifier_95_percentile=random_classifier_95_percentile,
             content_drift=is_content_drift,
-            characteristic_examples_current=typical_examples_cur,
-            characteristic_examples_reference=typical_examples_ref,
-            characteristic_words_current=typical_words_cur,
-            characteristic_words_reference=typical_words_ref,
+            current=TextDomainField(examples=typical_examples_cur, words=typical_words_cur),
+            reference=TextDomainField(examples=typical_examples_ref, words=typical_words_ref),
         )
 
 
 @default_renderer(wrap_type=TextDomainClassifierDriftMetric)
 class TextDomainClassifierDriftMetricRenderer(MetricRenderer):
-    def render_json(self, obj: TextDomainClassifierDriftMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     @staticmethod
     def _get_table_stat(dataset_name: str, metric_result, content_type="words") -> BaseWidgetInfo:
         if content_type == "words":

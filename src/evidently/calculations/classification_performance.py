@@ -16,6 +16,7 @@ from pandas.core.dtypes.common import is_string_dtype
 from sklearn import metrics
 
 from evidently import ColumnMapping
+from evidently.base_metric import MetricResultField
 from evidently.utils.data_operations import DatasetColumns
 
 
@@ -290,8 +291,7 @@ def collect_plot_data(prediction_probas: pd.DataFrame):
     return res
 
 
-@dataclasses.dataclass
-class DatasetClassificationQuality:  # todo change to whatever in clf_quality_metric
+class DatasetClassificationQuality(MetricResultField):
     accuracy: float
     precision: float
     recall: float

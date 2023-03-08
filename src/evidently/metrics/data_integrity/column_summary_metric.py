@@ -9,13 +9,12 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_string_dtype
-from pydantic import ValidationError
 
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import InputData
+from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResultField
-from evidently.base_metric import NewMetricRenderer
 from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
@@ -25,7 +24,6 @@ from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
@@ -417,7 +415,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
 
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
-class ColumnSummaryMetricRenderer(NewMetricRenderer):
+class ColumnSummaryMetricRenderer(MetricRenderer):
     def render_html(self, obj: ColumnSummaryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_type = metric_result.column_type

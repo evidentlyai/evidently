@@ -4,8 +4,10 @@ from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.metrics.metric_results import DistributionField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
@@ -17,11 +19,13 @@ from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
 
 
-@dataclasses.dataclass
-class ColumnDistributionMetricResult:
+class ColumnDistributionMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     column_name: str
-    current: Distribution
-    reference: Optional[Distribution] = None
+    current: DistributionField
+    reference: Optional[DistributionField] = None
 
 
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
@@ -57,19 +61,13 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
         return ColumnDistributionMetricResult(
             column_name=self.column_name,
-            current=current,
-            reference=reference,
+            current=DistributionField.from_dataclass(current),
+            reference=DistributionField.from_dataclass(reference),
         )
 
 
 @default_renderer(wrap_type=ColumnDistributionMetric)
 class ColumnDistributionMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnDistributionMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        result.pop("current", None)
-        result.pop("reference", None)
-        return result
-
     def render_html(self, obj: ColumnDistributionMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         distr_fig = get_distribution_plot_figure(

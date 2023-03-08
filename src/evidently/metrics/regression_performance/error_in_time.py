@@ -8,18 +8,22 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_line_in_time
 
+Scatter = Dict[str, pd.Series]
 
-@dataclasses.dataclass
-class RegressionErrorPlotResults:
-    current_scatter: Dict[str, pd.Series]
-    reference_scatter: Optional[Dict[str, pd.Series]]
+class RegressionErrorPlotResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"current_scatter", "reference_scatter"}
+        pd_exclude_fields = {}
+    current_scatter: Scatter
+    reference_scatter: Optional[Scatter]
     x_name: str
 
 
@@ -67,9 +71,6 @@ class RegressionErrorPlot(Metric[RegressionErrorPlotResults]):
 
 @default_renderer(wrap_type=RegressionErrorPlot)
 class RegressionErrorPlotRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionErrorPlot) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter

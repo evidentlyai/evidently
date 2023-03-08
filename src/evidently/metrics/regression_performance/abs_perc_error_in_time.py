@@ -8,18 +8,22 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_line_in_time
 
+Scatter = Dict[str, pd.Series]
 
-@dataclasses.dataclass
-class RegressionAbsPercentageErrorPlotResults:
-    current_scatter: Dict[str, pd.Series]
-    reference_scatter: Optional[Dict[str, pd.Series]]
+class RegressionAbsPercentageErrorPlotResults(MetricResult):
+    class Config:
+        dict_include_fields = set()
+        pd_include_fields = set()
+    current_scatter: Scatter
+    reference_scatter: Optional[Scatter]
     x_name: str
 
 
@@ -72,9 +76,6 @@ class RegressionAbsPercentageErrorPlot(Metric[RegressionAbsPercentageErrorPlotRe
 
 @default_renderer(wrap_type=RegressionAbsPercentageErrorPlot)
 class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionAbsPercentageErrorPlot) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionAbsPercentageErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter

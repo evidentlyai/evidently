@@ -7,10 +7,11 @@ from sklearn import metrics
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_pr_rec_plot_data
@@ -19,10 +20,12 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationPRCurveResults:
-    current_pr_curve: Optional[dict] = None
-    reference_pr_curve: Optional[dict] = None
+class ClassificationPRCurveResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    current_pr_curve: Optional[dict] = None  # todo better typing
+    reference_pr_curve: Optional[dict] = None  # maybe CurveField?
 
 
 class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
@@ -78,9 +81,6 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
 
 @default_renderer(wrap_type=ClassificationPRCurve)
 class ClassificationPRCurveRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationPRCurve) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationPRCurve) -> List[BaseWidgetInfo]:
         current_pr_curve = obj.get_result().current_pr_curve
         reference_pr_curve = obj.get_result().reference_pr_curve

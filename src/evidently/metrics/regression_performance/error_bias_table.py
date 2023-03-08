@@ -14,6 +14,8 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import error_bias_table
 from evidently.calculations.regression_performance import error_with_quantiles
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
@@ -21,18 +23,20 @@ from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
+PlotData = pd.DataFrame
 
-@dataclasses.dataclass
-class RegressionErrorBiasTableResults:
+class RegressionErrorBiasTableResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"current_plot_data", "reference_plot_data"}
+        pd_exclude_fields = {"current_plot_data", "reference_plot_data"}
     top_error: float
-    current_plot_data: pd.DataFrame
-    reference_plot_data: Optional[pd.DataFrame]
+    current_plot_data: PlotData
+    reference_plot_data: Optional[PlotData]
     target_name: str
     prediction_name: str
     num_feature_names: List[str]
@@ -211,12 +215,6 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
 @default_renderer(wrap_type=RegressionErrorBiasTable)
 class RegressionErrorBiasTableRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionErrorBiasTable) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        result.pop("current_plot_data", None)
-        result.pop("reference_plot_data", None)
-        return result
-
     def render_html(self, obj: RegressionErrorBiasTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_data = result.current_plot_data

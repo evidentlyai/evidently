@@ -1,7 +1,5 @@
 import collections
-import dataclasses
 import re
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -11,9 +9,11 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
@@ -23,8 +23,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclass
-class DataIntegrityValueByRegexpStat:
+class DataIntegrityValueByRegexpStat(MetricResultField):
     """Statistics about matched by a regular expression values in a column for one dataset"""
 
     # count of matched values in the column, without NaNs
@@ -39,8 +38,10 @@ class DataIntegrityValueByRegexpStat:
     table_of_not_matched: Dict[str, int]
 
 
-@dataclass
-class DataIntegrityValueByRegexpMetricResult:
+class DataIntegrityValueByRegexpMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     # name of the column that we check by the regular expression
     column_name: str
     # the regular expression as a string
@@ -130,9 +131,6 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
 
 @default_renderer(wrap_type=ColumnRegExpMetric)
 class ColumnRegExpMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnRegExpMetric) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
     @staticmethod
     def _get_counters(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> BaseWidgetInfo:
         percents = round(metrics.number_of_not_matched * 100 / metrics.number_of_rows, 3)

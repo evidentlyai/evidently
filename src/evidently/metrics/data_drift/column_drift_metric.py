@@ -1,17 +1,14 @@
 from typing import List
 from typing import Optional
 
-import pandas as pd
-
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import InputData
-from evidently.base_metric import NewMetricRenderer
+from evidently.base_metric import MetricRenderer
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
@@ -24,11 +21,7 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
-class ColumnDriftMetricResults(ColumnDataDriftMetrics):  # ???
-    pass
-
-
-class ColumnDriftMetric(ColumnMetric[ColumnDriftMetricResults]):
+class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
     """Calculate drift metric for a column"""
 
     stattest: Optional[PossibleStatTestType]
@@ -47,7 +40,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDriftMetricResults]):
     def get_parameters(self) -> tuple:
         return self.column_name, self.stattest_threshold, self.stattest
 
-    def calculate(self, data: InputData) -> ColumnDriftMetricResults:
+    def calculate(self, data: InputData) -> ColumnDataDriftMetrics:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
 
@@ -67,7 +60,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDriftMetricResults]):
             options=options,
         )
 
-        return ColumnDriftMetricResults(
+        return ColumnDataDriftMetrics(
             column_name=drift_result.column_name,
             column_type=drift_result.column_type,
             stattest_name=drift_result.stattest_name,
@@ -81,7 +74,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDriftMetricResults]):
 
 
 @default_renderer(wrap_type=ColumnDriftMetric)
-class ColumnDriftMetricRenderer(NewMetricRenderer):
+class ColumnDriftMetricRenderer(MetricRenderer):
     def render_html(self, obj: ColumnDriftMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
 

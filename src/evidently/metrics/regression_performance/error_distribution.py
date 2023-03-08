@@ -7,8 +7,9 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
@@ -16,8 +17,10 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 from evidently.utils.visualizations import plot_distr_subplots
 
 
-@dataclasses.dataclass
-class RegressionErrorDistributionResults:
+class RegressionErrorDistributionResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"current_bins", "reference_bins"}
+        pd_exclude_fields = {}
     current_bins: pd.DataFrame
     reference_bins: Optional[pd.DataFrame]
 
@@ -59,9 +62,6 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
 
 @default_renderer(wrap_type=RegressionErrorDistribution)
 class RegressionErrorDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionErrorDistribution) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionErrorDistribution) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_bins = result.current_bins

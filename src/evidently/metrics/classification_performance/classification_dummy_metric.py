@@ -1,4 +1,3 @@
-import dataclasses
 from typing import List
 from typing import Optional
 from typing import Union
@@ -11,6 +10,8 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 
 from evidently.base_metric import InputData
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import DatasetClassificationQuality
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_matrix
@@ -19,19 +20,21 @@ from evidently.calculations.classification_performance import k_probability_thre
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationDummyMetricResults:
+class ClassificationDummyMetricResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"metrics_matrix"}
+        pd_exclude_fields = {"metrics_matrix"}
+
     dummy: DatasetClassificationQuality
     by_reference_dummy: Optional[DatasetClassificationQuality]
     model_quality: Optional[DatasetClassificationQuality]
-    metrics_matrix: dict
+    metrics_matrix: dict  # todo better typing
 
 
 class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
@@ -189,12 +192,12 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         )
 
     def correction_for_threshold(
-        self,
-        dummy_results: DatasetClassificationQuality,
-        threshold: float,
-        target: pd.Series,
-        labels: list,
-        probas_shape: tuple,
+            self,
+            dummy_results: DatasetClassificationQuality,
+            threshold: float,
+            target: pd.Series,
+            labels: list,
+            probas_shape: tuple,
     ):
         if threshold == 1.0:
             coeff_precision = 1.0
@@ -207,10 +210,10 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         fpr: Optional[float] = None
         fnr: Optional[float] = None
         if (
-            dummy_results.tpr is not None
-            and dummy_results.tnr is not None
-            and dummy_results.fpr is not None
-            and dummy_results.fnr is not None
+                dummy_results.tpr is not None
+                and dummy_results.tnr is not None
+                and dummy_results.fpr is not None
+                and dummy_results.fnr is not None
         ):
             tpr = dummy_results.tpr * coeff_recall
             tnr = dummy_results.tnr * coeff_precision
@@ -222,11 +225,11 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
             precision=dummy_results.precision * coeff_precision,
             recall=dummy_results.recall * coeff_recall,
             f1=2
-            * dummy_results.precision
-            * coeff_precision
-            * dummy_results.recall
-            * coeff_recall
-            / (dummy_results.precision * coeff_precision + dummy_results.recall * coeff_recall),
+               * dummy_results.precision
+               * coeff_precision
+               * dummy_results.recall
+               * coeff_recall
+               / (dummy_results.precision * coeff_precision + dummy_results.recall * coeff_recall),
             roc_auc=0.5,
             log_loss=None,
             tpr=tpr,
@@ -238,10 +241,6 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
 
 @default_renderer(wrap_type=ClassificationDummyMetric)
 class ClassificationDummyMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationDummyMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     def render_html(self, obj: ClassificationDummyMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         in_table_data = pd.DataFrame(data=["accuracy", "precision", "recall", "f1"])

@@ -1,4 +1,3 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
@@ -7,9 +6,10 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_class_separation_plot_data
@@ -18,10 +18,12 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationClassSeparationPlotResults:
+class ClassificationClassSeparationPlotResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"current_plot", "reference_plot"}
+        pd_exclude_fields = {"current_plot", "reference_plot"}
     target_name: str
-    current_plot: Optional[pd.DataFrame] = None
+    current_plot: Optional[pd.DataFrame] = None  # todo plot type?
     reference_plot: Optional[pd.DataFrame] = None
 
 
@@ -57,9 +59,6 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
 
 @default_renderer(wrap_type=ClassificationClassSeparationPlot)
 class ClassificationClassSeparationPlotRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationClassSeparationPlot) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationClassSeparationPlot) -> List[BaseWidgetInfo]:
         current_plot = obj.get_result().current_plot
         reference_plot = obj.get_result().reference_plot

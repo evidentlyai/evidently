@@ -1,11 +1,14 @@
-import dataclasses
 from typing import Dict
 from typing import List
+from typing import Union
+
+import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
@@ -13,9 +16,11 @@ from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import plot_distr_subplots
 
 
-@dataclasses.dataclass
-class ClassificationClassBalanceResult:
-    plot_data: Dict[str, int]
+class ClassificationClassBalanceResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {"plot_data"}
+        pd_exclude_fields = {"plot_data"}
+    plot_data: Dict[str, Union[int, pd.Series]]  # todo PlotDataField? what type of plot?
 
 
 class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
@@ -42,9 +47,6 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
 
 @default_renderer(wrap_type=ClassificationClassBalance)
 class ClassificationClassBalanceRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationClassBalance) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationClassBalance) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         current_plot_data = metric_result.plot_data["current"]

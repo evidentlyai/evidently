@@ -8,8 +8,10 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
@@ -17,13 +19,17 @@ from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_error_bias_colored_scatter
 
+Scatter = Dict[str, pd.Series]
 
-@dataclasses.dataclass
-class RegressionTopErrorMetricResults:
-    curr_mean_err_per_group: Dict[str, Dict[str, float]]
-    curr_scatter: Dict[str, Dict[str, pd.Series]]
-    ref_mean_err_per_group: Optional[Dict[str, Dict[str, float]]]
-    ref_scatter: Optional[Dict[str, Dict[str, pd.Series]]]
+class TopData(MetricResultField):
+    mean_err_per_group: Dict[str, Dict[str, float]]
+    scatter: Dict[str, Scatter]
+
+class RegressionTopErrorMetricResults(MetricResult):
+    class Config:
+        dict_include = False
+    current: TopData
+    reference: Optional[TopData]
 
 
 class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
@@ -72,10 +78,8 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
             ref_scatter = self._get_data_for_scatter(ref_df, target_name, prediction_name)
             ref_mean_err_per_group = self._calculate_underperformance(ref_error, quantile_5, quantile_95)
         return RegressionTopErrorMetricResults(
-            curr_mean_err_per_group=curr_mean_err_per_group,
-            curr_scatter=curr_scatter,
-            ref_mean_err_per_group=ref_mean_err_per_group,
-            ref_scatter=ref_scatter,
+            current=TopData(mean_err_per_group=curr_mean_err_per_group, scatter=curr_scatter),
+            reference=TopData(mean_err_per_group=ref_mean_err_per_group, scatter=ref_scatter)
         )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
@@ -123,15 +127,12 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
 @default_renderer(wrap_type=RegressionTopErrorMetric)
 class RegressionTopErrorMetricRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionTopErrorMetric) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionTopErrorMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        curr_mean_err_per_group = result.curr_mean_err_per_group
-        curr_scatter = result.curr_scatter
-        ref_mean_err_per_group = result.ref_mean_err_per_group
-        ref_scatter = result.ref_scatter
+        curr_mean_err_per_group = result.current.mean_err_per_group
+        curr_scatter = result.current.scatter
+        ref_mean_err_per_group = result.reference.mean_err_per_group
+        ref_scatter = result.reference.scatter
 
         res = [
             header_text(label="Error Bias Table"),

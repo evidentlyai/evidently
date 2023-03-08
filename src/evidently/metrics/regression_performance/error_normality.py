@@ -12,17 +12,20 @@ from scipy.stats import probplot
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
-
-@dataclasses.dataclass
-class RegressionErrorNormalityResults:
-    current_error: pd.Series
-    reference_error: Optional[pd.Series]
+Error = pd.Series
+class RegressionErrorNormalityResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"current_error", "reference_error"}
+        pd_exclude_fields = {"current_error", "reference_error"}
+    current_error: Error
+    reference_error: Optional[Error]
 
 
 class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
@@ -55,9 +58,6 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
 
 @default_renderer(wrap_type=RegressionErrorNormality)
 class RegressionErrorNormalityRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionErrorNormality) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionErrorNormality) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_error = result.current_error

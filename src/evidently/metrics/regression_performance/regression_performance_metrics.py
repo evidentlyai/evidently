@@ -1,5 +1,4 @@
 import dataclasses
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -14,51 +13,55 @@ from sklearn.metrics import r2_score
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.metrics.metric_results import DatasetColumnsField
 from evidently.metrics.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
 
-@dataclass
-class RegressionPerformanceMetricsResults:
-    columns: DatasetColumns
+class RegressionMetrics(MetricResultField):
     r2_score: float
     rmse: float
-    rmse_default: float
     mean_error: float
+    mean_abs_error: float
+    mean_abs_perc_error: float
+    abs_error_max: float
+    underperformance: dict
+
+class RegressionPerformanceMetricsResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
+        pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
+    columns: DatasetColumnsField
+
+    current: RegressionMetrics
+    reference: Optional[RegressionMetrics]
+
+    rmse_default: float
+
     me_default_sigma: float
     me_hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
-    mean_abs_error: float
     mean_abs_error_default: float
-    mean_abs_perc_error: float
     mean_abs_perc_error_default: float
-    abs_error_max: float
     abs_error_max_default: float
     error_std: float
     abs_error_std: float
     abs_perc_error_std: float
     error_normality: dict
-    underperformance: dict
     hist_for_plot: Dict[str, pd.Series]
     vals_for_plots: Dict[str, Dict[str, pd.Series]]
     error_bias: Optional[dict] = None
-    mean_error_ref: Optional[float] = None
-    mean_abs_error_ref: Optional[float] = None
-    mean_abs_perc_error_ref: Optional[float] = None
-    rmse_ref: Optional[float] = None
-    r2_score_ref: Optional[float] = None
-    abs_error_max_ref: Optional[float] = None
-    underperformance_ref: Optional[dict] = None
 
 
 class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
@@ -203,47 +206,50 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             underperformance_ref = reference_metrics.underperformance
 
         return RegressionPerformanceMetricsResults(
-            columns=columns,
-            r2_score=r2_score_value,
-            rmse=rmse_score_value,
+            columns=DatasetColumnsField.from_dataclass(columns),
+            current=RegressionMetrics(
+                r2_score = r2_score_value,
+                rmse = rmse_score_value,
+                mean_error = current_metrics.mean_error,
+                mean_abs_error=current_metrics.mean_abs_error,
+                mean_abs_perc_error=current_metrics.mean_abs_perc_error,
+                abs_error_max=current_metrics.abs_error_max,
+                underperformance=current_metrics.underperformance,
+            ),
+            reference=RegressionMetrics(
+                mean_error=mean_error_ref,
+                underperformance=underperformance_ref,
+                mean_abs_error=reference_metrics.mean_abs_error if reference_metrics is not None else None,
+                mean_abs_perc_error=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
+                rmse=rmse_ref,
+                r2_score=r2_score_ref,
+                abs_error_max=abs_error_max_ref,
+            ),
             rmse_default=rmse_default,
-            mean_error=current_metrics.mean_error,
-            mean_error_ref=mean_error_ref,
+
             me_default_sigma=me_default_sigma,
             me_hist_for_plot=me_hist_for_plot,
-            mean_abs_error=current_metrics.mean_abs_error,
+
             mean_abs_error_default=mean_abs_error_default,
-            mean_abs_perc_error=current_metrics.mean_abs_perc_error,
+
             mean_abs_perc_error_default=mean_abs_perc_error_default,
-            abs_error_max=current_metrics.abs_error_max,
+
             abs_error_max_default=abs_error_max_default,
             error_std=current_metrics.error_std,
             abs_error_std=current_metrics.abs_error_std,
             abs_perc_error_std=current_metrics.abs_perc_error_std,
             error_normality=current_metrics.error_normality,
-            underperformance=current_metrics.underperformance,
-            underperformance_ref=underperformance_ref,
+
+
             hist_for_plot=hist_for_plot,
             vals_for_plots=vals_for_plots,
             error_bias=error_bias,
-            mean_abs_error_ref=reference_metrics.mean_abs_error if reference_metrics is not None else None,
-            mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
-            rmse_ref=rmse_ref,
-            r2_score_ref=r2_score_ref,
-            abs_error_max_ref=abs_error_max_ref,
+
         )
 
 
 @default_renderer(wrap_type=RegressionPerformanceMetrics)
 class RegressionPerformanceMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionPerformanceMetrics) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        # remove values with DataFrames or Series
-        result.pop("hist_for_plot")
-        result.pop("vals_for_plots")
-        result.pop("me_hist_for_plot")
-        return result
-
     @staticmethod
     def _get_underperformance_tails(dataset_name: str, underperformance: dict) -> BaseWidgetInfo:
         return counter(
@@ -263,30 +269,30 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
             counter(
                 title="Current: Regression Performance Metrics",
                 counters=[
-                    CounterData.float("Mean error", metric_result.mean_error, 3),
-                    CounterData.float("MAE", metric_result.mean_abs_error, 3),
-                    CounterData.float("MAPE", metric_result.mean_abs_perc_error, 3),
-                    CounterData.float("RMSE", metric_result.rmse, 3),
-                    CounterData.float("r2 score", metric_result.r2_score, 3),
+                    CounterData.float("Mean error", metric_result.current.mean_error, 3),
+                    CounterData.float("MAE", metric_result.current.mean_abs_error, 3),
+                    CounterData.float("MAPE", metric_result.current.mean_abs_perc_error, 3),
+                    CounterData.float("RMSE", metric_result.current.rmse, 3),
+                    CounterData.float("r2 score", metric_result.current.r2_score, 3),
                 ],
             ),
         ]
         if (
-            metric_result.mean_error_ref is not None
-            and metric_result.mean_abs_error_ref is not None
-            and metric_result.mean_abs_perc_error_ref is not None
-            and metric_result.rmse_ref is not None
-            and metric_result.r2_score_ref is not None
+            metric_result.reference.mean_error is not None
+            and metric_result.reference.mean_abs_error is not None
+            and metric_result.reference.mean_abs_perc_error is not None
+            and metric_result.reference.rmse is not None
+            and metric_result.reference.r2_score is not None
         ):
             result.append(
                 counter(
                     title="Reference: Regression Performance Metrics",
                     counters=[
-                        CounterData.float("Mean error", metric_result.mean_error_ref, 3),
-                        CounterData.float("MAE", metric_result.mean_abs_error_ref, 3),
-                        CounterData.float("MAPE", metric_result.mean_abs_perc_error_ref, 3),
-                        CounterData.float("RMSE", metric_result.rmse_ref, 3),
-                        CounterData.float("r2 score", metric_result.r2_score_ref, 3),
+                        CounterData.float("Mean error", metric_result.reference.mean_error, 3),
+                        CounterData.float("MAE", metric_result.reference.mean_abs_error, 3),
+                        CounterData.float("MAPE", metric_result.reference.mean_abs_perc_error, 3),
+                        CounterData.float("RMSE", metric_result.reference.rmse, 3),
+                        CounterData.float("r2 score", metric_result.reference.r2_score, 3),
                     ],
                 ),
             )

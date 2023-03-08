@@ -8,11 +8,15 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_category_column_correlations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
+from evidently.metrics.metric_results import DistributionField
+from evidently.metrics.metric_results import FromDataclassMixin
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_histogram_for_distribution
@@ -22,11 +26,18 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 
 
-@dataclasses.dataclass
-class ColumnCorrelationsMetricResult:
+class ColumnCorrelationsField(MetricResultField, FromDataclassMixin):
     column_name: str
-    current: Dict[str, ColumnCorrelations]
-    reference: Optional[Dict[str, ColumnCorrelations]] = None
+    kind: str
+    values: DistributionField
+
+class ColumnCorrelationsMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
+    column_name: str
+    current: Dict[str, ColumnCorrelationsField]
+    reference: Optional[Dict[str, ColumnCorrelationsField]] = None
 
 
 class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
@@ -76,17 +87,13 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
 
         return ColumnCorrelationsMetricResult(
             column_name=self.column_name,
-            current=current_correlations,
-            reference=reference_correlations,
+            current=ColumnCorrelationsField.from_dataclass(current_correlations),
+            reference=ColumnCorrelationsField.from_dataclass(reference_correlations),
         )
 
 
 @default_renderer(wrap_type=ColumnCorrelationsMetric)
 class ColumnCorrelationsMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnCorrelationsMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     def _get_plots_correlations(self, metric_result: ColumnCorrelationsMetricResult) -> Optional[BaseWidgetInfo]:
         tabs = []
 

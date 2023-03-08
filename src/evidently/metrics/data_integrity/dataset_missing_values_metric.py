@@ -10,9 +10,11 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricRenderer
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import HistogramData
@@ -24,8 +26,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclass
-class DatasetMissingValues:
+class DatasetMissingValues(MetricResultField):
     """Statistics about missed values in a dataset"""
 
     # set of different missing values in the dataset
@@ -60,8 +61,10 @@ class DatasetMissingValues:
     share_of_columns_with_missing_values: float
 
 
-@dataclass
-class DatasetMissingValuesMetricResult:
+class DatasetMissingValuesMetricResult(MetricResult):
+    class Config:
+        dict_exclude_fields = {}
+        pd_exclude_fields = {}
     current: DatasetMissingValues
     reference: Optional[DatasetMissingValues] = None
 
@@ -219,9 +222,6 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
 @default_renderer(wrap_type=DatasetMissingValuesMetric)
 class DatasetMissingValuesMetricRenderer(MetricRenderer):
-    def render_json(self, obj: DatasetMissingValuesMetric) -> dict:
-        return dataclasses.asdict(obj.get_result().current)
-
     def _get_table_stat(self, dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_missing_values_by_column.items()]
         matched_stat = sorted(matched_stat, key=lambda x: x[1], reverse=True)

@@ -12,10 +12,10 @@ import pandas as pd
 from pydantic import ValidationError
 
 from evidently.base_metric import ColumnMetricResult
-from evidently.base_metric import Distribution2
 from evidently.base_metric import MetricResultField
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
+from evidently.metrics.metric_results import DistributionField
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import DatasetColumns
@@ -32,10 +32,10 @@ class DriftStatsField(MetricResultField):
     class Config:
         dict_include = False
         pd_include = False
-    distribution: Optional[Distribution2]
+    distribution: Optional[DistributionField]
     examples: Optional[Examples]
     words: Optional[Words]
-    small_distribution: Optional[Distribution2]
+    small_distribution: Optional[DistributionField]
     correlations: Optional[Dict[str, float]]
 
 

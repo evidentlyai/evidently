@@ -30,15 +30,7 @@ class DetailsInfo:
     id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
 
 
-class MetricRenderer(BaseRenderer):
-    def render_html(self, obj) -> List[BaseWidgetInfo]:
-        raise NotImplementedError()
 
-    def render_json(self, obj) -> dict:
-        raise NotImplementedError()
-
-    def render_pandas(self, obj) -> pd.DataFrame:
-        raise NotImplementedError
 
 @dataclasses.dataclass
 class TestHtmlInfo:

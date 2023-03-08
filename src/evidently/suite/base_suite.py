@@ -17,7 +17,6 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.options import OptionsProvider
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
-from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.notebook_utils import determine_template

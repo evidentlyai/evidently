@@ -15,13 +15,16 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+import numpy as np
 import pandas as pd
-from pydantic import ValidationError
+from pydantic import BaseConfig
+from pydantic import BaseModel
 
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
+from evidently.model.widget import BaseWidgetInfo
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import BaseRenderer
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import Distribution
 
@@ -30,7 +33,7 @@ if TYPE_CHECKING:
     from pydantic.typing import DictStrAny
     from pydantic.typing import MappingIntStrAny
 
-TResult = TypeVar("TResult")
+TResult = TypeVar("TResult", bound="MetricResult")
 
 
 class ErrorResult:
@@ -157,13 +160,6 @@ class Metric(Generic[TResult]):
         return required_features
 
 
-from typing import Union
-
-import numpy as np
-from pydantic import BaseConfig
-from pydantic import BaseModel
-
-
 class MetricResultField(BaseModel):
     class Config:
         arbitrary_types_allowed = True
@@ -244,7 +240,7 @@ class MetricResult(MetricResultField):
         __config__: ClassVar[Type[Config]] = Config
 
     def get_dict(self):
-        exclude = set(self.__config__.dict_exclude)
+        exclude = set(self.__config__.dict_exclude_fields)
         for name, field in self.__fields__.items():
             if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
                 if not field.type_.__config__.dict_include:
@@ -254,9 +250,9 @@ class MetricResult(MetricResultField):
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame([self.collect_pandas_columns()])
 
-    def collect_pandas_columns(self, prefix="") -> Dict[str, Any]:
-        include = self.__config__.pd_include_fields or set(self.__fields__)
-        exclude = self.__config__.pd_exclude_fields or set()
+    def collect_pandas_columns(self, prefix="", include: Set[str] = None, exclude: Set[str] = None) -> Dict[str, Any]:
+        include = include or self.__config__.pd_include_fields or set(self.__fields__)
+        exclude = exclude or self.__config__.pd_exclude_fields or set()
         return super().collect_pandas_columns(prefix=prefix, include=include, exclude=exclude)
 
 
@@ -271,40 +267,21 @@ class ColumnMetricResult(MetricResult):
         return pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
 
 
-class Distribution2(MetricResultField):
-    class Config:
-        dict_include = False
-        pd_include = False
-
-    x: Union[np.ndarray, list, pd.Categorical]
-    y: Union[np.ndarray, list, pd.Categorical]
-
-    @classmethod
-    def from_old(cls, d: Distribution):
-        if d is None:
-            return None
-        if isinstance(d, list):
-            return cls(x=d[0], y=d[1])
-        return cls(x=d.x, y=d.y)  # todo tmp
-
-
-NewTResult = TypeVar("NewTResult", bound=MetricResult)
-
-
-class NewMetric(Metric[MetricResult], Generic[NewTResult], abc.ABC):
-    pass
-
-
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 
-class ColumnMetric(NewMetric, Generic[ColumnTResult], abc.ABC):
+class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
     column_name: str
 
 
-class NewMetricRenderer(MetricRenderer, abc.ABC):
-    def render_pandas(self, obj: NewMetric) -> pd.DataFrame:
+class MetricRenderer(BaseRenderer):
+    def render_pandas(self, obj: Metric) -> pd.DataFrame:
         return obj.get_result().get_pandas()
 
-    def render_json(self, obj: NewMetric) -> dict:
+    def render_json(self, obj: Metric) -> dict:
         return obj.get_result().get_dict()
+
+    def render_html(self, obj) -> List[BaseWidgetInfo]:
+        raise NotImplementedError()
+
+

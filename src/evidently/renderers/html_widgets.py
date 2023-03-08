@@ -17,6 +17,7 @@ from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
+from evidently.renderers.render_utils import DistributionProtocol
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import Distribution
 
@@ -625,8 +626,8 @@ def histogram(
 
 def get_histogram_for_distribution(
     *,
-    current_distribution: Distribution,
-    reference_distribution: Optional[Distribution] = None,
+    current_distribution: DistributionProtocol,
+    reference_distribution: Optional[DistributionProtocol] = None,
     title: str = "",
     xaxis_title: Optional[str] = None,
     yaxis_title: Optional[str] = None,
