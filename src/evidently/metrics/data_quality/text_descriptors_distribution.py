@@ -1,28 +1,16 @@
 import dataclasses
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Dict, List, Optional
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.descriptors import OOV
-from evidently.descriptors import NonLetterCharacterPercentage
-from evidently.descriptors import TextLength
-from evidently.features.generated_features import FeatureDescriptor
-from evidently.features.generated_features import GeneratedFeature
+from evidently.base_metric import InputData, Metric
+from evidently.descriptors import OOV, NonLetterCharacterPercentage, TextLength
+from evidently.features.generated_features import FeatureDescriptor, GeneratedFeature
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import WidgetSize
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import WidgetSize, header_text, plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.data_preprocessing import ColumnType
-from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.visualizations import Distribution
-from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.data_operations import process_columns, recognize_column_type
+from evidently.utils.data_preprocessing import ColumnType, DataDefinition
+from evidently.utils.visualizations import Distribution, get_distribution_for_column
 
 
 @dataclasses.dataclass
@@ -38,7 +26,11 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
     column_name: str
     generated_text_features: Dict[str, GeneratedFeature]
 
-    def __init__(self, column_name: str, descriptors: Optional[Dict[str, FeatureDescriptor]] = None) -> None:
+    def __init__(
+        self,
+        column_name: str,
+        descriptors: Optional[Dict[str, FeatureDescriptor]] = None,
+    ) -> None:
         self.column_name = column_name
         if descriptors:
             self.descriptors = descriptors
@@ -54,7 +46,8 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
             self.generated_text_features = {
-                name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
+                name: desc.feature(self.column_name)
+                for name, desc in self.descriptors.items()
             }
             return list(self.generated_text_features.values())
         return []
@@ -68,14 +61,20 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
         if data.reference_data is not None:
             reference_results = {}
         if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
+            raise ValueError(
+                f"Column '{self.column_name}' was not found in current data."
+            )
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
+                raise ValueError(
+                    f"Column '{self.column_name}' was not found in reference data."
+                )
 
         columns = process_columns(data.current_data, data.column_mapping)
-        column_type = recognize_column_type(dataset=data.current_data, column_name=self.column_name, columns=columns)
+        column_type = recognize_column_type(
+            dataset=data.current_data, column_name=self.column_name, columns=columns
+        )
         if column_type != "text":
             raise ValueError("Text column expected")
         for key, val in self.generated_text_features.items():
@@ -109,7 +108,9 @@ class TextDescriptorsDistributionRenderer(MetricRenderer):
 
     def render_html(self, obj: TextDescriptorsDistribution) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        result = [header_text(label=f"Distribution for column '{metric_result.column_name}'.")]
+        result = [
+            header_text(label=f"Distribution for column '{metric_result.column_name}'.")
+        ]
         for col in list(metric_result.current.keys()):
             reference = None
             if metric_result.reference is not None:
@@ -119,6 +120,8 @@ class TextDescriptorsDistributionRenderer(MetricRenderer):
                 reference_distribution=reference,
                 color_options=self.color_options,
             )
-            result.append(plotly_figure(title=col, figure=distr_fig, size=WidgetSize.FULL))
+            result.append(
+                plotly_figure(title=col, figure=distr_fig, size=WidgetSize.FULL)
+            )
 
         return result

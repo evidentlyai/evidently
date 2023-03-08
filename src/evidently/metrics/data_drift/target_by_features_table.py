@@ -6,8 +6,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
-from pandas.api.types import is_integer_dtype
-from pandas.api.types import is_string_dtype
+from pandas.api.types import is_integer_dtype, is_string_dtype
 from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData, Metric
@@ -134,7 +133,8 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                     task = "regression"
             elif curr_predictions is not None:
                 if is_string_dtype(curr_predictions.predictions) or (
-                    is_integer_dtype(curr_predictions.predictions) and curr_predictions.predictions.nunique() < 5
+                    is_integer_dtype(curr_predictions.predictions)
+                    and curr_predictions.predictions.nunique() < 5
                 ):
                     task = "classification"
                 else:

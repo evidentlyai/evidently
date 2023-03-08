@@ -1,29 +1,24 @@
 import dataclasses
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Dict, List, Optional, Union
 
-from evidently.base_metric import ColumnName
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import ColumnName, InputData, Metric
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import TabData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import widget_tabs
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import (
+    CounterData,
+    TabData,
+    counter,
+    plotly_figure,
+    table_data,
+    widget_tabs,
+)
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import Distribution
-from evidently.utils.visualizations import plot_scatter_for_data_drift
+from evidently.utils.visualizations import Distribution, plot_scatter_for_data_drift
 
 
 @dataclasses.dataclass
@@ -70,13 +65,19 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             raise ValueError("Reference dataset should be present")
 
         if self.column_name not in data.current_data:
-            raise ValueError(f"Cannot find column '{self.column_name}' in current dataset")
+            raise ValueError(
+                f"Cannot find column '{self.column_name}' in current dataset"
+            )
 
         if self.column_name not in data.reference_data:
-            raise ValueError(f"Cannot find column '{self.column_name}' in reference dataset")
+            raise ValueError(
+                f"Cannot find column '{self.column_name}' in reference dataset"
+            )
 
         dataset_columns = process_columns(data.reference_data, data.column_mapping)
-        options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
+        options = DataDriftOptions(
+            all_features_stattest=self.stattest, threshold=self.stattest_threshold
+        )
         drift_result = get_one_column_drift(
             current_data=data.current_data,
             reference_data=data.reference_data,
@@ -134,7 +135,11 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         tabs = []
 
         # fig_json = fig.to_plotly_json()
-        if result.current_scatter is not None and result.plot_shape is not None and result.x_name is not None:
+        if (
+            result.current_scatter is not None
+            and result.plot_shape is not None
+            and result.x_name is not None
+        ):
             scatter_fig = plot_scatter_for_data_drift(
                 curr_y=result.current_scatter[result.column_name],
                 curr_x=result.current_scatter[result.x_name],
@@ -144,16 +149,23 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 x_name=result.x_name,
                 color_options=self.color_options,
             )
-            tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
+            tabs.append(
+                TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig))
+            )
 
-        if result.current_distribution is not None and result.reference_distribution is not None:
+        if (
+            result.current_distribution is not None
+            and result.reference_distribution is not None
+        ):
             distr_fig = get_distribution_plot_figure(
                 current_distribution=result.current_distribution,
                 reference_distribution=result.reference_distribution,
                 color_options=self.color_options,
             )
             # figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
-            tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
+            tabs.append(
+                TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig))
+            )
 
         if (
             result.typical_examples_cur is not None
@@ -183,10 +195,21 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             )
 
             tabs = [
-                TabData(title="current: characteristic words", widget=current_table_words),
-                TabData(title="reference: characteristic words", widget=reference_table_words),
-                TabData(title="current: characteristic examples", widget=current_table_examples),
-                TabData(title="reference: characteristic examples", widget=reference_table_examples),
+                TabData(
+                    title="current: characteristic words", widget=current_table_words
+                ),
+                TabData(
+                    title="reference: characteristic words",
+                    widget=reference_table_words,
+                ),
+                TabData(
+                    title="current: characteristic examples",
+                    widget=current_table_examples,
+                ),
+                TabData(
+                    title="reference: characteristic examples",
+                    widget=reference_table_examples,
+                ),
             ]
         render_result = [
             counter(

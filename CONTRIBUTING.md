@@ -72,30 +72,16 @@ pip install -e .[dev]
 ```
 
 ## 5. Run formatters, linters, unit tests
-### Running black 
-We use black for code auto formatting.
+We use `pre-commit` to run code formatters and linters.
+
+To run them before every commit automatically, run
 ```sh
-black .
+pre-commit install
 ```
 
-### Running isort 
-We use black for imports auto formatting.
+To run them once, run 
 ```sh
-isort .
-```
-
-### Running flake8 
-We use flake8 for code style checks.
-```sh
-flake8 src
-flake8 tests
-```
-
-### Running mypy
-We use mypy for object types checks.
-```sh
-# if you are running for the first time, use `mypy --install-types` instead
-mypy
+pre-commit run -a
 ```
 
 ### Running unit tests

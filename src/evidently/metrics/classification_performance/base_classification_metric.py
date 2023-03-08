@@ -1,19 +1,17 @@
 from abc import ABC
-from typing import Optional
-from typing import Tuple
-from typing import Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.base_metric import Metric
-from evidently.base_metric import TResult
-from evidently.calculations.classification_performance import PredictionData
-from evidently.calculations.classification_performance import get_prediction_data
-from evidently.calculations.classification_performance import k_probability_threshold
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.base_metric import Metric, TResult
+from evidently.calculations.classification_performance import (
+    PredictionData,
+    get_prediction_data,
+    k_probability_threshold,
+)
+from evidently.utils.data_operations import DatasetColumns, process_columns
 
 
 def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.DataFrame:
@@ -27,7 +25,9 @@ def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.Dat
     if prediction is not None and isinstance(prediction, str):
         subset.append(prediction)
     if len(subset) > 0:
-        return data.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any", subset=subset)
+        return data.replace([np.inf, -np.inf], np.nan).dropna(
+            axis=0, how="any", subset=subset
+        )
     return data
 
 
@@ -35,7 +35,9 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
-    def __init__(self, probas_threshold: Optional[float], k: Optional[Union[float, int]]):
+    def __init__(
+        self, probas_threshold: Optional[float], k: Optional[Union[float, int]]
+    ):
         if probas_threshold is not None and k is not None:
             raise ValueError(
                 f"{self.__class__.__name__}: should provide only stattest_threshold or top_k argument, not both."
@@ -51,12 +53,16 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
     ) -> Tuple[pd.Series, PredictionData]:
         dataset_columns = process_columns(data, column_mapping)
         data = _cleanup_data(data, dataset_columns)
-        prediction = get_prediction_data(data, dataset_columns, column_mapping.pos_label)
+        prediction = get_prediction_data(
+            data, dataset_columns, column_mapping.pos_label
+        )
         if self.probas_threshold is None and self.k is None:
             return data[dataset_columns.utility_columns.target], prediction
 
         if len(prediction.labels) > 2 or prediction.prediction_probas is None:
-            raise ValueError("Top K / Threshold parameter can be used only with binary classification with probas")
+            raise ValueError(
+                "Top K / Threshold parameter can be used only with binary classification with probas"
+            )
 
         pos_label, neg_label = prediction.prediction_probas.columns
         threshold = self.probas_threshold

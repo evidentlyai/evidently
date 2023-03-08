@@ -1,5 +1,4 @@
-from evidently.features.generated_features import FeatureDescriptor
-from evidently.features.generated_features import GeneratedFeature
+from evidently.features.generated_features import FeatureDescriptor, GeneratedFeature
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 
 

@@ -115,7 +115,11 @@ def get_prediction_data(
             labels=prediction,
         )
 
-    if isinstance(prediction, str) and not is_float_dtype(data[prediction]) and target is not None:
+    if (
+        isinstance(prediction, str)
+        and not is_float_dtype(data[prediction])
+        and target is not None
+    ):
         # if prediction is not probas, get unique values from it and target
         labels = np.union1d(data[target].unique(), data[prediction].unique()).tolist()
         return PredictionData(
@@ -124,11 +128,19 @@ def get_prediction_data(
             labels=labels,
         )
 
-    elif isinstance(prediction, str) and not is_float_dtype(data[prediction]) and target is None:
+    elif (
+        isinstance(prediction, str)
+        and not is_float_dtype(data[prediction])
+        and target is None
+    ):
         # if prediction is not probas, get unique values from it
         labels = data[prediction].unique().tolist()
 
-    elif isinstance(prediction, str) and is_float_dtype(data[prediction]) and target is not None:
+    elif (
+        isinstance(prediction, str)
+        and is_float_dtype(data[prediction])
+        and target is not None
+    ):
         # if prediction is probas, get unique values from target only
         labels = data[target].unique().tolist()
 
