@@ -1,24 +1,18 @@
 import dataclasses
 import uuid
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import List, Optional, Union
 
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import DetailsInfo
-from evidently.suite.base_suite import Display
-from evidently.suite.base_suite import Suite
-from evidently.suite.base_suite import find_metric_renderer
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.suite.base_suite import Display, Suite, find_metric_renderer
+from evidently.utils.data_operations import DatasetColumns, process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
@@ -29,7 +23,11 @@ class Report(Display):
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: Optional[List] = None):
+    def __init__(
+        self,
+        metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
+        options: Optional[List] = None,
+    ):
         super().__init__(options)
         # just save all metrics and metric presets
         self.metrics = metrics
@@ -53,8 +51,12 @@ class Report(Display):
 
         self._inner_suite.verify()
 
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
+        data_definition = create_data_definition(
+            reference_data, current_data, column_mapping
+        )
+        data = InputData(
+            reference_data, current_data, None, None, column_mapping, data_definition
+        )
 
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
@@ -73,9 +75,13 @@ class Report(Display):
             elif isinstance(item, MetricPreset):
                 metrics = []
 
-                for metric_item in item.generate_metrics(data=data, columns=self._columns_info):
+                for metric_item in item.generate_metrics(
+                    data=data, columns=self._columns_info
+                ):
                     if isinstance(metric_item, BaseGenerator):
-                        metrics.extend(metric_item.generate(columns_info=self._columns_info))
+                        metrics.extend(
+                            metric_item.generate(columns_info=self._columns_info)
+                        )
 
                     else:
                         metrics.append(metric_item)
@@ -89,17 +95,32 @@ class Report(Display):
                 self._inner_suite.add_metric(item)
 
             else:
-                raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
-        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
+                raise ValueError(
+                    "Incorrect item instead of a metric or metric preset was passed to Report"
+                )
+        curr_add, ref_add = self._inner_suite.create_additional_features(
+            current_data, reference_data, data_definition
+        )
+        data = InputData(
+            reference_data,
+            current_data,
+            ref_add,
+            curr_add,
+            column_mapping,
+            data_definition,
+        )
         self._inner_suite.run_calculate(data)
 
     def as_dict(self) -> dict:
         metrics = []
 
         for metric in self._first_level_metrics:
-            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
-            metrics.append({"metric": metric.get_id(), "result": renderer.render_json(metric)})
+            renderer = find_metric_renderer(
+                type(metric), self._inner_suite.context.renderers
+            )
+            metrics.append(
+                {"metric": metric.get_id(), "result": renderer.render_json(metric)}
+            )
 
         return {
             "metrics": metrics,
@@ -112,7 +133,9 @@ class Report(Display):
         color_options = self.options_provider.get(ColorOptions)
 
         for test in self._first_level_metrics:
-            renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
+            renderer = find_metric_renderer(
+                type(test), self._inner_suite.context.renderers
+            )
             # set the color scheme from the report for each render
             renderer.color_options = color_options
             html_info = renderer.render_html(test)
@@ -120,10 +143,16 @@ class Report(Display):
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():
                     if isinstance(additional_graph, AdditionalGraphInfo):
-                        additional_graphs.append(DetailsInfo("", additional_graph.params, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo(
+                                "", additional_graph.params, additional_graph.id
+                            )
+                        )
 
                     else:
-                        additional_graphs.append(DetailsInfo("", additional_graph, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo("", additional_graph, additional_graph.id)
+                        )
 
             metrics_results.extend(html_info)
 
@@ -131,7 +160,9 @@ class Report(Display):
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result for result in metrics_results]),
             {
-                f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
+                f"{item.id}": dataclasses.asdict(item.info)
+                if dataclasses.is_dataclass(item.info)
+                else item.info
                 for item in additional_graphs
             },
         )

@@ -1,11 +1,5 @@
 import abc
-from typing import Dict
-from typing import Generic
-from typing import List
-from typing import Optional
-from typing import Type
-from typing import TypeVar
-from typing import Union
+from typing import Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from evidently.utils.data_operations import DatasetColumns
 
@@ -81,7 +75,9 @@ def make_generator_by_columns(
                 columns_for_generation = columns
 
             elif columns == "all" or columns is None:
-                columns_for_generation = columns_info.get_all_columns_list(skip_id_column=skip_id_column)
+                columns_for_generation = columns_info.get_all_columns_list(
+                    skip_id_column=skip_id_column
+                )
 
             elif columns == "cat":
                 columns_for_generation = columns_info.cat_feature_names
@@ -93,7 +89,9 @@ def make_generator_by_columns(
                 columns_for_generation = columns_info.text_feature_names
 
             elif columns == "features":
-                columns_for_generation = columns_info.get_all_features_list(include_datetime_feature=True)
+                columns_for_generation = columns_info.get_all_features_list(
+                    include_datetime_feature=True
+                )
 
             else:
                 raise ValueError("Incorrect parameter 'columns' for test generator")
@@ -107,7 +105,9 @@ def make_generator_by_columns(
                     result.append(base_class(**parameters_for_generation))  # type: ignore
 
                 except TypeError as error:
-                    raise TypeError(f"Cannot generate {base_class.__name__}. Error: {error}")
+                    raise TypeError(
+                        f"Cannot generate {base_class.__name__}. Error: {error}"
+                    )
 
             return result
 

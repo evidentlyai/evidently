@@ -1,20 +1,13 @@
 import dataclasses
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import WidgetSize
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import WidgetSize, header_text, plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.visualizations import Distribution
-from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.data_operations import process_columns, recognize_column_type
+from evidently.utils.visualizations import Distribution, get_distribution_for_column
 
 
 @dataclasses.dataclass
@@ -37,14 +30,20 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
+            raise ValueError(
+                f"Column '{self.column_name}' was not found in current data."
+            )
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
+                raise ValueError(
+                    f"Column '{self.column_name}' was not found in reference data."
+                )
 
         columns = process_columns(data.current_data, data.column_mapping)
-        column_type = recognize_column_type(dataset=data.current_data, column_name=self.column_name, columns=columns)
+        column_type = recognize_column_type(
+            dataset=data.current_data, column_name=self.column_name, columns=columns
+        )
         current_column = data.current_data[self.column_name]
         reference_column = None
         if data.reference_data is not None:
@@ -79,7 +78,9 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
         )
 
         result = [
-            header_text(label=f"Distribution for column '{metric_result.column_name}'."),
+            header_text(
+                label=f"Distribution for column '{metric_result.column_name}'."
+            ),
             plotly_figure(title="", figure=distr_fig, size=WidgetSize.FULL),
         ]
         return result

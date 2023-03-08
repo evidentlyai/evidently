@@ -1,7 +1,9 @@
 from datetime import datetime
 
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
+from evidently.analyzers.regression_performance_analyzer import (
+    RegressionPerformanceAnalyzer,
+    RegressionPerformanceMetrics,
+)
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
@@ -18,7 +20,9 @@ class RegressionPerformanceProfileSection(ProfileSection):
         return self.analyzers_types
 
     @staticmethod
-    def _get_regression_performance_metrics_as_dict(metrics: RegressionPerformanceMetrics) -> dict:
+    def _get_regression_performance_metrics_as_dict(
+        metrics: RegressionPerformanceMetrics,
+    ) -> dict:
         return {
             "mean_error": metrics.mean_error,
             "mean_abs_error": metrics.mean_abs_error,
@@ -30,7 +34,9 @@ class RegressionPerformanceProfileSection(ProfileSection):
             "underperformance": metrics.underperformance,
         }
 
-    def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
+    def calculate(
+        self, reference_data, current_data, column_mapping, analyzers_results
+    ):
         result = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         result_json = result.columns.as_dict()
         result_json["metrics"] = {}
@@ -39,14 +45,22 @@ class RegressionPerformanceProfileSection(ProfileSection):
             result_json["metrics"]["error_bias"] = result.error_bias
 
         if result.reference_metrics is not None:
-            result_json["metrics"]["reference"] = self._get_regression_performance_metrics_as_dict(
+            result_json["metrics"][
+                "reference"
+            ] = self._get_regression_performance_metrics_as_dict(
                 result.reference_metrics
             )
 
         if result.current_metrics is not None:
-            result_json["metrics"]["current"] = self._get_regression_performance_metrics_as_dict(result.current_metrics)
+            result_json["metrics"][
+                "current"
+            ] = self._get_regression_performance_metrics_as_dict(result.current_metrics)
 
-        self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_json}
+        self._result = {
+            "name": self.part_id(),
+            "datetime": str(datetime.now()),
+            "data": result_json,
+        }
 
     def get_results(self):
         return self._result

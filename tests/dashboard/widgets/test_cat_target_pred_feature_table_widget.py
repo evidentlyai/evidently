@@ -2,7 +2,9 @@ import pandas as pd
 import pytest
 
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.dashboard.widgets.cat_target_pred_feature_table_widget import CatTargetPredFeatureTable
+from evidently.dashboard.widgets.cat_target_pred_feature_table_widget import (
+    CatTargetPredFeatureTable,
+)
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -16,7 +18,9 @@ def widget() -> CatTargetPredFeatureTable:
     return widget
 
 
-def test_cat_target_pred_feature_table_widget_analyzer_list(widget: CatTargetPredFeatureTable) -> None:
+def test_cat_target_pred_feature_table_widget_analyzer_list(
+    widget: CatTargetPredFeatureTable,
+) -> None:
     assert widget.analyzers() == [CatTargetDriftAnalyzer]
 
 
@@ -135,7 +139,12 @@ def test_cat_target_pred_feature_table_widget(
     analyzer = CatTargetDriftAnalyzer()
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
-    result = widget.calculate(reference_data, current_data, data_mapping, {CatTargetDriftAnalyzer: analyzer_results})
+    result = widget.calculate(
+        reference_data,
+        current_data,
+        data_mapping,
+        {CatTargetDriftAnalyzer: analyzer_results},
+    )
 
     assert result.type == expected_result.type
     assert result.title == expected_result.title
@@ -176,7 +185,14 @@ def test_cat_target_pred_feature_table_widget_value_error(
     else:
         current_data_for_analyzer = current_data
 
-    analyzer_results = analyzer.calculate(reference_data, current_data_for_analyzer, data_mapping)
+    analyzer_results = analyzer.calculate(
+        reference_data, current_data_for_analyzer, data_mapping
+    )
 
     with pytest.raises(ValueError):
-        widget.calculate(reference_data, current_data, data_mapping, {CatTargetDriftAnalyzer: analyzer_results})
+        widget.calculate(
+            reference_data,
+            current_data,
+            data_mapping,
+            {CatTargetDriftAnalyzer: analyzer_results},
+        )

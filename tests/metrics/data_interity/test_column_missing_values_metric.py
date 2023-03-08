@@ -5,9 +5,11 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValues
-from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
-from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValuesMetricResult
+from evidently.metrics.data_integrity.column_missing_values_metric import (
+    ColumnMissingValues,
+    ColumnMissingValuesMetric,
+    ColumnMissingValuesMetricResult,
+)
 from evidently.report import Report
 
 
@@ -47,19 +49,33 @@ from evidently.report import Report
                     "feature": ["a", "a", "c"],
                 }
             ),
-            ColumnMissingValuesMetric(column_name="feature", missing_values=["a"], replace=False),
+            ColumnMissingValuesMetric(
+                column_name="feature", missing_values=["a"], replace=False
+            ),
             ColumnMissingValuesMetricResult(
                 column_name="feature",
                 current=ColumnMissingValues(
                     number_of_rows=5,
-                    different_missing_values={None: 2, "a": 1, "": 0, np.inf: 0, -np.inf: 0},
+                    different_missing_values={
+                        None: 2,
+                        "a": 1,
+                        "": 0,
+                        np.inf: 0,
+                        -np.inf: 0,
+                    },
                     number_of_different_missing_values=2,
                     number_of_missing_values=3,
                     share_of_missing_values=0.6,
                 ),
                 reference=ColumnMissingValues(
                     number_of_rows=3,
-                    different_missing_values={"a": 2, "": 0, None: 0, np.inf: 0, -np.inf: 0},
+                    different_missing_values={
+                        "a": 2,
+                        "": 0,
+                        None: 0,
+                        np.inf: 0,
+                        -np.inf: 0,
+                    },
                     number_of_different_missing_values=1,
                     number_of_missing_values=2,
                     share_of_missing_values=0.6666666666666666,
@@ -75,7 +91,11 @@ def test_column_missing_values_metric_success(
     expected_result: ColumnMissingValuesMetricResult,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     result = metric.get_result()
     assert result == expected_result
 
@@ -125,7 +145,9 @@ def test_column_missing_values_metric_success(
                 }
             ),
             None,
-            ColumnMissingValuesMetric(column_name="col", missing_values=[], replace=True),
+            ColumnMissingValuesMetric(
+                column_name="col", missing_values=[], replace=True
+            ),
         ),
     ),
 )
@@ -136,7 +158,11 @@ def test_column_missing_values_metric_value_error(
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
 
@@ -154,7 +180,12 @@ def test_column_missing_values_metric_value_error(
             {
                 "column_name": "col",
                 "current": {
-                    "different_missing_values": {"": 0, "-Infinity": 0, "Infinity": 0, "null": 0},
+                    "different_missing_values": {
+                        "": 0,
+                        "-Infinity": 0,
+                        "Infinity": 0,
+                        "null": 0,
+                    },
                     "number_of_different_missing_values": 0,
                     "number_of_missing_values": 0,
                     "number_of_rows": 5,
@@ -196,15 +227,39 @@ def test_column_missing_values_metric_value_error(
         (
             pd.DataFrame(
                 {
-                    "col": [1, np.NAN, 3, None, 5, "a", "b", "c", 1, 1234567890, "a", "a", "d", "e", "f"],
+                    "col": [
+                        1,
+                        np.NAN,
+                        3,
+                        None,
+                        5,
+                        "a",
+                        "b",
+                        "c",
+                        1,
+                        1234567890,
+                        "a",
+                        "a",
+                        "d",
+                        "e",
+                        "f",
+                    ],
                 }
             ),
             None,
-            ColumnMissingValuesMetric(column_name="col", missing_values=["a"], replace=False),
+            ColumnMissingValuesMetric(
+                column_name="col", missing_values=["a"], replace=False
+            ),
             {
                 "column_name": "col",
                 "current": {
-                    "different_missing_values": {"": 0, "-Infinity": 0, "Infinity": 0, "a": 3, "null": 2},
+                    "different_missing_values": {
+                        "": 0,
+                        "-Infinity": 0,
+                        "Infinity": 0,
+                        "a": 3,
+                        "null": 2,
+                    },
                     "number_of_different_missing_values": 2,
                     "number_of_missing_values": 5,
                     "number_of_rows": 15,
@@ -216,7 +271,10 @@ def test_column_missing_values_metric_value_error(
     ),
 )
 def test_column_missing_values_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnMissingValuesMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnMissingValuesMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data)

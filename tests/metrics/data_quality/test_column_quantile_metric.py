@@ -15,7 +15,9 @@ def test_data_quality_quantile_metric_success() -> None:
     data_mapping = ColumnMapping()
     metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
     report = Report(metrics=[metric])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     result = metric.get_result()
     assert result is not None
     assert result.quantile == 0.5
@@ -67,7 +69,11 @@ def test_data_quality_quantile_metric_value_errors(
 
     with pytest.raises(ValueError) as error:
         report = Report(metrics=[metric])
-        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        report.run(
+            current_data=current_dataset,
+            reference_data=reference_dataset,
+            column_mapping=data_mapping,
+        )
         metric.get_result()
 
     assert error.value.args[0] == error_message
@@ -100,7 +106,12 @@ def test_data_quality_quantile_metric_value_errors(
             None,
             ColumnMapping(target="my_target"),
             ColumnQuantileMetric(column_name="my_target", quantile=0.5),
-            {"column_name": "my_target", "current": 1.0, "quantile": 0.5, "reference": None},
+            {
+                "column_name": "my_target",
+                "current": 1.0,
+                "quantile": 0.5,
+                "reference": None,
+            },
         ),
         (
             pd.DataFrame(
@@ -121,7 +132,12 @@ def test_data_quality_quantile_metric_value_errors(
             ),
             ColumnMapping(target="my_target", prediction="my_prediction"),
             ColumnQuantileMetric(column_name="my_target", quantile=0.5),
-            {"column_name": "my_target", "current": 2.0, "quantile": 0.5, "reference": 2.0},
+            {
+                "column_name": "my_target",
+                "current": 2.0,
+                "quantile": 0.5,
+                "reference": 2.0,
+            },
         ),
     ),
 )
@@ -133,7 +149,9 @@ def test_column_quantile_metric_with_report(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
+    report.run(
+        current_data=current, reference_data=reference, column_mapping=column_mapping
+    )
     assert report.show()
     result_json = report.json()
     assert len(result_json) > 0

@@ -86,7 +86,9 @@ class CatOutputDriftWidget(Widget):
         )
 
         fig.update_layout(
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
             xaxis_title=output_name.title(),
             yaxis_title="Share",
         )
@@ -96,5 +98,8 @@ class CatOutputDriftWidget(Widget):
             title=f"{self.kind.title()} Drift: {output_sim_test}, drift score={round(drift_score, 6)} ({stattest_name})",
             type="big_graph",
             size=2,
-            params={"data": output_drift_json["data"], "layout": output_drift_json["layout"]},
+            params={
+                "data": output_drift_json["data"],
+                "layout": output_drift_json["layout"],
+            },
         )

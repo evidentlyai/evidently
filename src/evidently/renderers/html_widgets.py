@@ -1,10 +1,6 @@
 import dataclasses
 from enum import Enum
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import Union
+from typing import Iterable, List, Optional, Tuple, Union
 from uuid import uuid4
 
 import numpy as np
@@ -12,10 +8,7 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
-from evidently.model.widget import BaseWidgetInfo
-from evidently.model.widget import PlotlyGraphInfo
-from evidently.model.widget import TabInfo
-from evidently.model.widget import WidgetType
+from evidently.model.widget import BaseWidgetInfo, PlotlyGraphInfo, TabInfo, WidgetType
 from evidently.options import ColorOptions
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import Distribution
@@ -56,7 +49,9 @@ class GraphData:
         return GraphData(title, data["data"], data["layout"])
 
 
-def plotly_graph(*, graph_data: GraphData, size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
+def plotly_graph(
+    *, graph_data: GraphData, size: WidgetSize = WidgetSize.FULL
+) -> BaseWidgetInfo:
     """
     generate plotly plot with given GraphData object.
 
@@ -78,7 +73,9 @@ def plotly_graph(*, graph_data: GraphData, size: WidgetSize = WidgetSize.FULL) -
     )
 
 
-def plotly_data(*, title: str, data: dict, layout: dict, size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
+def plotly_data(
+    *, title: str, data: dict, layout: dict, size: WidgetSize = WidgetSize.FULL
+) -> BaseWidgetInfo:
     """
     generate plotly plot with given data and layout (can be generated from plotly).
 
@@ -96,7 +93,9 @@ def plotly_data(*, title: str, data: dict, layout: dict, size: WidgetSize = Widg
     return plotly_graph(graph_data=GraphData(title, data, layout), size=size)
 
 
-def plotly_figure(*, title: str, figure: go.Figure, size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
+def plotly_figure(
+    *, title: str, figure: go.Figure, size: WidgetSize = WidgetSize.FULL
+) -> BaseWidgetInfo:
     """
     generate plotly plot based on given plotly figure object.
 
@@ -109,10 +108,14 @@ def plotly_figure(*, title: str, figure: go.Figure, size: WidgetSize = WidgetSiz
         >>> bar_figure = go.Figure(go.Bar(name="Bar plot", x=[1, 2, 3, 4], y=[10, 11, 20, 11]))
         >>> widget_info = plotly_figure(title="Bar plot widget", figure=bar_figure, size=WidgetSize.FULL)
     """
-    return plotly_graph(graph_data=GraphData.figure(title=title, figure=figure), size=size)
+    return plotly_graph(
+        graph_data=GraphData.figure(title=title, figure=figure), size=size
+    )
 
 
-def plotly_graph_tabs(*, title: str, figures: List[GraphData], size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
+def plotly_graph_tabs(
+    *, title: str, figures: List[GraphData], size: WidgetSize = WidgetSize.FULL
+) -> BaseWidgetInfo:
     """
     generate Tab widget with multiple graphs
 
@@ -221,7 +224,11 @@ def counter(
         title=title,
         type=WidgetType.COUNTER.value,
         size=size.value,
-        params={"counters": [{"value": item.value, "label": item.label} for item in counters]},
+        params={
+            "counters": [
+                {"value": item.value, "label": item.label} for item in counters
+            ]
+        },
     )
 
 
@@ -243,7 +250,11 @@ def header_text(*, label: str, title: str = "", size: WidgetSize = WidgetSize.FU
 
 
 def table_data(
-    *, column_names: Iterable[str], data: Iterable[Iterable], title: str = "", size: WidgetSize = WidgetSize.FULL
+    *,
+    column_names: Iterable[str],
+    data: Iterable[Iterable],
+    title: str = "",
+    size: WidgetSize = WidgetSize.FULL,
 ) -> BaseWidgetInfo:
     """
     generate simple table with given columns and data
@@ -307,7 +318,9 @@ class TabData:
     widget: BaseWidgetInfo
 
 
-def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: List[TabData]) -> BaseWidgetInfo:
+def widget_tabs(
+    *, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: List[TabData]
+) -> BaseWidgetInfo:
     """
     generate widget with tabs which can contain any other widget.
 
@@ -418,7 +431,11 @@ def rich_table_data(
 
     converted_data = []
     for row in data:
-        if row.details is None or row.details.parts is None or len(row.details.parts) == 0:
+        if (
+            row.details is None
+            or row.details.parts is None
+            or len(row.details.parts) == 0
+        ):
             converted_data.append(dict(**row.fields))
             continue
         parts = []
@@ -523,7 +540,13 @@ def get_histogram_figure_with_range(
             name="range right value",
         )
     )
-    figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
+    figure.add_vrect(
+        x0=left,
+        x1=right,
+        fillcolor=color_options.fill_color,
+        opacity=0.25,
+        line_width=0,
+    )
     return figure
 
 
@@ -563,7 +586,11 @@ def get_histogram_figure_with_quantile(
                 x=[reference_quantile, reference_quantile],
                 y=[min_y, max_y],
                 mode="lines",
-                line={"color": color_options.vertical_lines, "width": 2, "dash": "solid"},
+                line={
+                    "color": color_options.vertical_lines,
+                    "width": 2,
+                    "dash": "solid",
+                },
                 name="current quantile",
             )
         )
@@ -684,7 +711,9 @@ def get_heatmaps_widget(
         subplot_titles = [""]
         heatmaps_count = 1
 
-    figure = make_subplots(rows=1, cols=heatmaps_count, subplot_titles=subplot_titles, shared_yaxes=True)
+    figure = make_subplots(
+        rows=1, cols=heatmaps_count, subplot_titles=subplot_titles, shared_yaxes=True
+    )
 
     for idx, heatmap_data in enumerate([primary_data, secondary_data]):
         if heatmap_data is None:
@@ -730,7 +759,9 @@ def get_roc_auc_tab_data(
         cols = 2
         subplot_titles = ["current", "reference"]
     for label in curr_roc_curve.keys():
-        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        fig = make_subplots(
+            rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+        )
         trace = go.Scatter(
             x=curr_roc_curve[label]["fpr"],
             y=curr_roc_curve[label]["tpr"],
@@ -766,7 +797,9 @@ def get_roc_auc_tab_data(
 
 
 def get_pr_rec_plot_data(
-    current_pr_curve: dict, reference_pr_curve: Optional[dict], color_options: ColorOptions
+    current_pr_curve: dict,
+    reference_pr_curve: Optional[dict],
+    color_options: ColorOptions,
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -775,7 +808,9 @@ def get_pr_rec_plot_data(
         cols = 2
         subplot_titles = ["current", "reference"]
     for label in current_pr_curve.keys():
-        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        fig = make_subplots(
+            rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+        )
         trace = go.Scatter(
             x=current_pr_curve[label]["rcl"],
             y=current_pr_curve[label]["pr"],
@@ -811,7 +846,10 @@ def get_pr_rec_plot_data(
 
 
 def get_class_separation_plot_data(
-    current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str, color_options: ColorOptions
+    current_plot: pd.DataFrame,
+    reference_plot: Optional[pd.DataFrame],
+    target_name: str,
+    color_options: ColorOptions,
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -820,9 +858,13 @@ def get_class_separation_plot_data(
         cols = 2
         subplot_titles = ["current", "reference"]
     for label in current_plot.columns.drop(target_name):
-        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        fig = make_subplots(
+            rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+        )
         trace = go.Scatter(
-            x=np.random.random(current_plot[current_plot[target_name] == label].shape[0]),
+            x=np.random.random(
+                current_plot[current_plot[target_name] == label].shape[0]
+            ),
             y=current_plot[current_plot[target_name] == label][label],
             mode="markers",
             name=str(label),
@@ -832,7 +874,9 @@ def get_class_separation_plot_data(
         fig.add_trace(trace, 1, 1)
 
         trace = go.Scatter(
-            x=np.random.random(current_plot[current_plot[target_name] != label].shape[0]),
+            x=np.random.random(
+                current_plot[current_plot[target_name] != label].shape[0]
+            ),
             y=current_plot[current_plot[target_name] != label][label],
             mode="markers",
             name="other",
@@ -844,7 +888,9 @@ def get_class_separation_plot_data(
 
         if reference_plot is not None:
             trace = go.Scatter(
-                x=np.random.random(reference_plot[reference_plot[target_name] == label].shape[0]),
+                x=np.random.random(
+                    reference_plot[reference_plot[target_name] == label].shape[0]
+                ),
                 y=reference_plot[reference_plot[target_name] == label][label],
                 mode="markers",
                 name=str(label),
@@ -855,7 +901,9 @@ def get_class_separation_plot_data(
             fig.add_trace(trace, 1, 2)
 
             trace = go.Scatter(
-                x=np.random.random(reference_plot[reference_plot[target_name] != label].shape[0]),
+                x=np.random.random(
+                    reference_plot[reference_plot[target_name] != label].shape[0]
+                ),
                 y=reference_plot[reference_plot[target_name] != label][label],
                 mode="markers",
                 name="other",

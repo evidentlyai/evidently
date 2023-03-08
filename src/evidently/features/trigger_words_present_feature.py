@@ -14,7 +14,9 @@ class TriggerWordsPresent(GeneratedFeature):
         self.words_list = words_list
         self.lemmatisize = lemmatisize
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
         def listed_words_present(s, words_list=(), lemmatisize=True):
             if s is None:
                 return 0

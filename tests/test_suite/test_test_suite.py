@@ -5,42 +5,44 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.test_suite import TestSuite
-from evidently.tests import TestColumnAllConstantValues
-from evidently.tests import TestColumnAllUniqueValues
-from evidently.tests import TestColumnDrift
-from evidently.tests import TestColumnQuantile
-from evidently.tests import TestColumnRegExp
-from evidently.tests import TestColumnShareOfMissingValues
-from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnValueMax
-from evidently.tests import TestColumnValueMean
-from evidently.tests import TestColumnValueMedian
-from evidently.tests import TestColumnValueMin
-from evidently.tests import TestColumnValueStd
-from evidently.tests import TestConflictPrediction
-from evidently.tests import TestConflictTarget
-from evidently.tests import TestMeanInNSigmas
-from evidently.tests import TestMostCommonValueShare
-from evidently.tests import TestNumberOfColumns
-from evidently.tests import TestNumberOfColumnsWithMissingValues
-from evidently.tests import TestNumberOfConstantColumns
-from evidently.tests import TestNumberOfDriftedColumns
-from evidently.tests import TestNumberOfDuplicatedColumns
-from evidently.tests import TestNumberOfDuplicatedRows
-from evidently.tests import TestNumberOfEmptyColumns
-from evidently.tests import TestNumberOfEmptyRows
-from evidently.tests import TestNumberOfMissingValues
-from evidently.tests import TestNumberOfOutListValues
-from evidently.tests import TestNumberOfOutRangeValues
-from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfRowsWithMissingValues
-from evidently.tests import TestNumberOfUniqueValues
-from evidently.tests import TestShareOfDriftedColumns
-from evidently.tests import TestShareOfOutListValues
-from evidently.tests import TestShareOfOutRangeValues
-from evidently.tests import TestUniqueValuesShare
-from evidently.tests import TestValueList
-from evidently.tests import TestValueRange
+from evidently.tests import (
+    TestColumnAllConstantValues,
+    TestColumnAllUniqueValues,
+    TestColumnDrift,
+    TestColumnQuantile,
+    TestColumnRegExp,
+    TestColumnShareOfMissingValues,
+    TestColumnsType,
+    TestColumnValueMax,
+    TestColumnValueMean,
+    TestColumnValueMedian,
+    TestColumnValueMin,
+    TestColumnValueStd,
+    TestConflictPrediction,
+    TestConflictTarget,
+    TestMeanInNSigmas,
+    TestMostCommonValueShare,
+    TestNumberOfColumns,
+    TestNumberOfColumnsWithMissingValues,
+    TestNumberOfConstantColumns,
+    TestNumberOfDriftedColumns,
+    TestNumberOfDuplicatedColumns,
+    TestNumberOfDuplicatedRows,
+    TestNumberOfEmptyColumns,
+    TestNumberOfEmptyRows,
+    TestNumberOfMissingValues,
+    TestNumberOfOutListValues,
+    TestNumberOfOutRangeValues,
+    TestNumberOfRows,
+    TestNumberOfRowsWithMissingValues,
+    TestNumberOfUniqueValues,
+    TestShareOfDriftedColumns,
+    TestShareOfOutListValues,
+    TestShareOfOutRangeValues,
+    TestUniqueValuesShare,
+    TestValueList,
+    TestValueRange,
+)
 from evidently.tests.base_test import Test
 
 
@@ -121,7 +123,11 @@ def test_export_to_json():
         ErrorTest(),
     ]
     suite = TestSuite(tests=tests)
-    suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    suite.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
 
     # assert suite
 

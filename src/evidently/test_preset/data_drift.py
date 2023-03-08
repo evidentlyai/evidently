@@ -1,14 +1,14 @@
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Dict, List, Optional
 
 from evidently import TaskType
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestAllFeaturesValueDrift
-from evidently.tests import TestColumnDrift
-from evidently.tests import TestShareOfDriftedColumns
+from evidently.tests import (
+    TestAllFeaturesValueDrift,
+    TestColumnDrift,
+    TestShareOfDriftedColumns,
+)
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_operations import DatasetColumns
 
@@ -106,7 +106,9 @@ class DataDriftTestPreset(TestPreset):
                 )
             )
 
-        if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
+        if columns.utility_columns.prediction is not None and isinstance(
+            columns.utility_columns.prediction, str
+        ):
             stattest, threshold = resolve_stattest_threshold(
                 columns.utility_columns.prediction,
                 "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",

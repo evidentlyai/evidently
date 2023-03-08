@@ -1,7 +1,9 @@
 import pandas as pd
 import pytest
 
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
+from evidently.analyzers.classification_performance_analyzer import (
+    ClassificationPerformanceAnalyzer,
+)
 from evidently.dashboard.widgets.class_confusion_based_feature_distr_table_widget import (
     ClassConfusionBasedFeatureDistrTable,
 )
@@ -19,7 +21,9 @@ def widget() -> ClassConfusionBasedFeatureDistrTable:
     return widget
 
 
-def test_reg_pred_actual_widget_analyzer_list(widget: ClassConfusionBasedFeatureDistrTable) -> None:
+def test_reg_pred_actual_widget_analyzer_list(
+    widget: ClassConfusionBasedFeatureDistrTable,
+) -> None:
     assert widget.analyzers() == [ClassificationPerformanceAnalyzer]
 
 
@@ -78,7 +82,10 @@ def test_reg_pred_actual_widget_simple_case(
 
     assert widget.analyzers() == [ClassificationPerformanceAnalyzer]
     result = widget.calculate(
-        reference_data, current_data, column_mapping, {ClassificationPerformanceAnalyzer: results}
+        reference_data,
+        current_data,
+        column_mapping,
+        {ClassificationPerformanceAnalyzer: results},
     )
     assert result is not None
     assert result.title == "test_widget"

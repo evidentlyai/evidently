@@ -6,11 +6,13 @@
 import os
 from os.path import join as pjoin
 
-from setupbase import HERE
-from setupbase import combine_commands
-from setupbase import create_cmdclass
-from setupbase import ensure_targets
-from setupbase import install_npm
+from setupbase import (
+    HERE,
+    combine_commands,
+    create_cmdclass,
+    ensure_targets,
+    install_npm,
+)
 from setuptools import setup
 
 nb_path = pjoin(HERE, "src", "evidently", "nbextension", "static")
@@ -33,7 +35,9 @@ data_files_spec = [
     ("etc/jupyter/nbconfig/notebook.d", HERE, "evidently.json"),
 ]
 
-cmdclass = create_cmdclass("jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec)
+cmdclass = create_cmdclass(
+    "jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec
+)
 cmdclass["jsdeps"] = combine_commands(
     install_npm(os.path.join(HERE, "ui"), build_cmd="build"),
     ensure_targets(jstargets),

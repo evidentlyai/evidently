@@ -3,8 +3,12 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.dashboard.widgets.reg_pred_and_actual_in_time_widget import RegPredActualTimeWidget
+from evidently.analyzers.regression_performance_analyzer import (
+    RegressionPerformanceAnalyzer,
+)
+from evidently.dashboard.widgets.reg_pred_and_actual_in_time_widget import (
+    RegPredActualTimeWidget,
+)
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -19,7 +23,9 @@ def widget() -> RegPredActualTimeWidget:
     return widget
 
 
-def test_reg_pred_actual_time_widget_analyzer_list(widget: RegPredActualTimeWidget) -> None:
+def test_reg_pred_actual_time_widget_analyzer_list(
+    widget: RegPredActualTimeWidget,
+) -> None:
     assert widget.analyzers() == [RegressionPerformanceAnalyzer]
 
 
@@ -57,7 +63,10 @@ def test_reg_pred_actual_time_widget_simple_case(
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
     result = widget.calculate(
-        reference_data, current_data, data_mapping, {RegressionPerformanceAnalyzer: analyzer_results}
+        reference_data,
+        current_data,
+        data_mapping,
+        {RegressionPerformanceAnalyzer: analyzer_results},
     )
 
     if expected_result is not None:

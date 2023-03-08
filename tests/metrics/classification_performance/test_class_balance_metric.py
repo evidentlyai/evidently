@@ -42,9 +42,15 @@ from evidently.report import Report
 def test_class_balance_metric(reference, current, expected_plot_data):
     metric = ClassificationClassBalance()
     report = Report(metrics=[metric])
-    report.run(current_data=current, reference_data=reference, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current, reference_data=reference, column_mapping=ColumnMapping()
+    )
     results = metric.get_result()
 
-    pd.testing.assert_frame_equal(results.plot_data["current"], expected_plot_data["current"])
+    pd.testing.assert_frame_equal(
+        results.plot_data["current"], expected_plot_data["current"]
+    )
     if "reference" in expected_plot_data.keys():
-        pd.testing.assert_frame_equal(results.plot_data["reference"], expected_plot_data["reference"])
+        pd.testing.assert_frame_equal(
+            results.plot_data["reference"], expected_plot_data["reference"]
+        )

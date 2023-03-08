@@ -3,8 +3,12 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.dashboard.widgets.prob_class_pr_table_widget import ProbClassPRTableWidget
+from evidently.analyzers.prob_classification_performance_analyzer import (
+    ProbClassificationPerformanceAnalyzer,
+)
+from evidently.dashboard.widgets.prob_class_pr_table_widget import (
+    ProbClassPRTableWidget,
+)
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -19,7 +23,9 @@ def widget() -> ProbClassPRTableWidget:
     return widget
 
 
-def test_prob_class_pr_table_widget_analyzer_list(widget: ProbClassPRTableWidget) -> None:
+def test_prob_class_pr_table_widget_analyzer_list(
+    widget: ProbClassPRTableWidget,
+) -> None:
     assert widget.analyzers() == [ProbClassificationPerformanceAnalyzer]
 
 
@@ -29,7 +35,14 @@ def test_prob_class_pr_table_widget_analyzer_list(widget: ProbClassPRTableWidget
         (
             pd.DataFrame(
                 {
-                    "target": ["label_a", "label_a", "label_a", "label_b", "label_b", "label_b"],
+                    "target": [
+                        "label_a",
+                        "label_a",
+                        "label_a",
+                        "label_b",
+                        "label_b",
+                        "label_b",
+                    ],
                     "label_a": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
                     "label_b": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
                 }
@@ -45,14 +58,28 @@ def test_prob_class_pr_table_widget_analyzer_list(widget: ProbClassPRTableWidget
         (
             pd.DataFrame(
                 {
-                    "target": ["label_a", "label_a", "label_a", "label_b", "label_b", "label_b"],
+                    "target": [
+                        "label_a",
+                        "label_a",
+                        "label_a",
+                        "label_b",
+                        "label_b",
+                        "label_b",
+                    ],
                     "label_a": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
                     "label_b": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
                 }
             ),
             pd.DataFrame(
                 {
-                    "target": ["label_a", "label_a", "label_a", "label_b", "label_b", "label_b"],
+                    "target": [
+                        "label_a",
+                        "label_a",
+                        "label_a",
+                        "label_b",
+                        "label_b",
+                        "label_b",
+                    ],
                     "label_a": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
                     "label_b": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
                 }
@@ -81,7 +108,10 @@ def test_prob_class_pr_table_widget_simple_case(
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
     result = widget.calculate(
-        reference_data, current_data, data_mapping, {ProbClassificationPerformanceAnalyzer: analyzer_results}
+        reference_data,
+        current_data,
+        data_mapping,
+        {ProbClassificationPerformanceAnalyzer: analyzer_results},
     )
 
     assert result.type == expected_result.type

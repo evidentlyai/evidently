@@ -5,8 +5,7 @@ import plotly.graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 
 
 class TestSuiteWidget(Widget):
@@ -27,8 +26,16 @@ class TestSuiteWidget(Widget):
             size=2,
             params={
                 "tests": [
-                    {"title": "Test Case #1", "description": "Some long description of test case", "state": "success"},
-                    {"title": "Test Case #2", "description": "Some long description of test case", "state": "warning"},
+                    {
+                        "title": "Test Case #1",
+                        "description": "Some long description of test case",
+                        "state": "success",
+                    },
+                    {
+                        "title": "Test Case #2",
+                        "description": "Some long description of test case",
+                        "state": "warning",
+                    },
                     {
                         "title": "Test Case #3",
                         "description": "Some long description of test case",

@@ -12,8 +12,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
-from evidently.options import QualityMetricsOptions
+from evidently.options import ColorOptions, QualityMetricsOptions
 
 
 class NumOutputValuesWidget(Widget):
@@ -51,12 +50,16 @@ class NumOutputValuesWidget(Widget):
                 return None
 
             if not isinstance(results.columns.utility_columns.prediction, str):
-                raise ValueError(f"Widget [{self.title}] requires one str value for 'prediction' column")
+                raise ValueError(
+                    f"Widget [{self.title}] requires one str value for 'prediction' column"
+                )
 
             column_name = results.columns.utility_columns.prediction
 
         else:
-            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+            raise ValueError(
+                f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value"
+            )
 
         utility_columns_date = results.columns.utility_columns.date
         # plot values
@@ -68,7 +71,9 @@ class NumOutputValuesWidget(Widget):
 
         output_values.add_trace(
             go.Scattergl(
-                x=reference_data[utility_columns_date] if utility_columns_date else reference_data.index,
+                x=reference_data[utility_columns_date]
+                if utility_columns_date
+                else reference_data.index,
                 y=reference_data[column_name],
                 mode="markers",
                 name="Reference",
@@ -78,7 +83,9 @@ class NumOutputValuesWidget(Widget):
 
         output_values.add_trace(
             go.Scattergl(
-                x=current_data[utility_columns_date] if utility_columns_date else current_data.index,
+                x=current_data[utility_columns_date]
+                if utility_columns_date
+                else current_data.index,
                 y=current_data[column_name],
                 mode="markers",
                 name="Current",
@@ -100,7 +107,9 @@ class NumOutputValuesWidget(Widget):
                 ],
                 mode="markers",
                 name="Current",
-                marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
+                marker=dict(
+                    size=0.01, color=color_options.non_visible_color, opacity=0.005
+                ),
                 showlegend=False,
             )
         )
@@ -109,7 +118,9 @@ class NumOutputValuesWidget(Widget):
             xaxis_title=x_title,
             yaxis_title=self.kind.title() + " Value",
             showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
             shapes=[
                 dict(
                     type="rect",
@@ -146,5 +157,8 @@ class NumOutputValuesWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={"data": output_values_json["data"], "layout": output_values_json["layout"]},
+            params={
+                "data": output_values_json["data"],
+                "layout": output_values_json["layout"],
+            },
         )

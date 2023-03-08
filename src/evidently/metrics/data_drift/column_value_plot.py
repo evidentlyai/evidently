@@ -1,19 +1,15 @@
 import dataclasses
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from plotly import graph_objs as go
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import WidgetSize
-from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import WidgetSize, plotly_figure
 from evidently.utils.data_operations import process_columns
 
 
@@ -33,32 +29,44 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 
     def calculate(self, data: InputData) -> ColumnValuePlotResults:
         if self.column_name not in data.current_data.columns:
-            raise ValueError(f"Column '{self.column_name}' should present in the current dataset")
+            raise ValueError(
+                f"Column '{self.column_name}' should present in the current dataset"
+            )
 
         if data.reference_data is None:
             raise ValueError("Reference data should be present")
 
         if self.column_name not in data.reference_data.columns:
-            raise ValueError(f"Column '{self.column_name}' should present in the reference dataset")
+            raise ValueError(
+                f"Column '{self.column_name}' should present in the reference dataset"
+            )
 
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         if not (
             self.column_name in dataset_columns.num_feature_names
             or (
                 self.column_name == dataset_columns.utility_columns.target
-                and (data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[self.column_name]))
+                and (
+                    data.column_mapping.task == "regression"
+                    or is_numeric_dtype(data.current_data[self.column_name])
+                )
             )
             or (
                 isinstance(dataset_columns.utility_columns.prediction, str)
                 and self.column_name == dataset_columns.utility_columns.prediction
-                and (data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[self.column_name]))
+                and (
+                    data.column_mapping.task == "regression"
+                    or is_numeric_dtype(data.current_data[self.column_name])
+                )
             )
         ):
             raise ValueError("Expected numerical feature")
         datetime_column_name = dataset_columns.utility_columns.date
         curr_df = data.current_data
         ref_df = data.reference_data
-        curr_df = self._make_df_for_plot(curr_df, self.column_name, datetime_column_name)
+        curr_df = self._make_df_for_plot(
+            curr_df, self.column_name, datetime_column_name
+        )
         ref_df = self._make_df_for_plot(ref_df, self.column_name, datetime_column_name)
         return ColumnValuePlotResults(
             column_name=self.column_name,
@@ -67,10 +75,17 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
             reference_scatter=ref_df,
         )
 
-    def _make_df_for_plot(self, df, column_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self, df, column_name: str, datetime_column_name: Optional[str]
+    ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[column_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[column_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
         result.dropna(axis=0, how="any", inplace=True, subset=[column_name])
         return result.sort_index()
@@ -134,7 +149,9 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 y=[y0, y1],
                 mode="markers",
                 name="Current",
-                marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
+                marker=dict(
+                    size=0.01, color=color_options.non_visible_color, opacity=0.005
+                ),
                 showlegend=False,
             )
         )
@@ -143,7 +160,9 @@ class ColumnValuePlotRenderer(MetricRenderer):
             xaxis_title=x_name,
             yaxis_title=f"{column_name} value",
             showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
             shapes=[
                 dict(
                     type="rect",
@@ -173,4 +192,8 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 ),
             ],
         )
-        return [plotly_figure(title=f"Column '{column_name}' Values", figure=fig, size=WidgetSize.FULL)]
+        return [
+            plotly_figure(
+                title=f"Column '{column_name}' Values", figure=fig, size=WidgetSize.FULL
+            )
+        ]

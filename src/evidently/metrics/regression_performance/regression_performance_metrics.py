@@ -1,32 +1,32 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import mean_absolute_percentage_error
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import r2_score
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_absolute_percentage_error,
+    mean_squared_error,
+    r2_score,
+)
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.calculations.regression_performance import calculate_regression_performance
-from evidently.metrics.utils import apply_func_to_binned_data
-from evidently.metrics.utils import make_target_bins_for_reg_plots
+from evidently.base_metric import InputData, Metric
+from evidently.calculations.regression_performance import (
+    calculate_regression_performance,
+)
+from evidently.metrics.utils import (
+    apply_func_to_binned_data,
+    make_target_bins_for_reg_plots,
+)
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import make_hist_for_cat_plot
-from evidently.utils.visualizations import make_hist_for_num_plot
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import CounterData, counter, header_text
+from evidently.utils.data_operations import DatasetColumns, process_columns
+from evidently.utils.visualizations import (
+    make_hist_for_cat_plot,
+    make_hist_for_num_plot,
+)
 
 
 @dataclass
@@ -77,7 +77,9 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         if data.reference_data is not None:
             ref_columns = process_columns(data.reference_data, data.column_mapping)
             reference_metrics = calculate_regression_performance(
-                dataset=data.reference_data, columns=ref_columns, error_bias_prefix="ref_"
+                dataset=data.reference_data,
+                columns=ref_columns,
+                error_bias_prefix="ref_",
             )
 
             if reference_metrics is not None and reference_metrics.error_bias:
@@ -100,7 +102,8 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         # mae default values
         dummy_preds = data.current_data[data.column_mapping.target].median()
         mean_abs_error_default = mean_absolute_error(
-            y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[data.column_mapping.target],
+            y_pred=[dummy_preds] * data.current_data.shape[0],
         )
         # rmse default values
         rmse_ref = None
@@ -111,7 +114,8 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             )
         dummy_preds = data.current_data[data.column_mapping.target].mean()
         rmse_default = mean_squared_error(
-            y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[data.column_mapping.target],
+            y_pred=[dummy_preds] * data.current_data.shape[0],
         )
         # mape default values
         # optimal constant for mape
@@ -157,12 +161,19 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         # visualisation
 
         df_target_binned = make_target_bins_for_reg_plots(
-            data.current_data, data.column_mapping.target, data.column_mapping.prediction, data.reference_data
+            data.current_data,
+            data.column_mapping.target,
+            data.column_mapping.prediction,
+            data.reference_data,
         )
-        curr_target_bins = df_target_binned.loc[df_target_binned.data == "curr", "target_binned"]
+        curr_target_bins = df_target_binned.loc[
+            df_target_binned.data == "curr", "target_binned"
+        ]
         ref_target_bins = None
         if data.reference_data is not None:
-            ref_target_bins = df_target_binned.loc[df_target_binned.data == "ref", "target_binned"]
+            ref_target_bins = df_target_binned.loc[
+                df_target_binned.data == "ref", "target_binned"
+            ]
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
         vals_for_plots = {}
@@ -175,19 +186,32 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 
         for name, func in zip(
             ["r2_score", "rmse", "mean_abs_error", "mean_abs_perc_error"],
-            [r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error],
+            [
+                r2_score,
+                mean_squared_error,
+                mean_absolute_error,
+                mean_absolute_percentage_error,
+            ],
         ):
             vals_for_plots[name] = apply_func_to_binned_data(
-                df_target_binned, func, data.column_mapping.target, data.column_mapping.prediction, is_ref_data
+                df_target_binned,
+                func,
+                data.column_mapping.target,
+                data.column_mapping.prediction,
+                is_ref_data,
             )
 
         # me plot
-        err_curr = data.current_data[data.column_mapping.prediction] - data.current_data[data.column_mapping.target]
+        err_curr = (
+            data.current_data[data.column_mapping.prediction]
+            - data.current_data[data.column_mapping.target]
+        )
         err_ref = None
 
         if is_ref_data:
             err_ref = (
-                data.reference_data[data.column_mapping.prediction] - data.reference_data[data.column_mapping.target]
+                data.reference_data[data.column_mapping.prediction]
+                - data.reference_data[data.column_mapping.target]
             )
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
@@ -226,8 +250,12 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             hist_for_plot=hist_for_plot,
             vals_for_plots=vals_for_plots,
             error_bias=error_bias,
-            mean_abs_error_ref=reference_metrics.mean_abs_error if reference_metrics is not None else None,
-            mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
+            mean_abs_error_ref=reference_metrics.mean_abs_error
+            if reference_metrics is not None
+            else None,
+            mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error
+            if reference_metrics is not None
+            else None,
             rmse_ref=rmse_ref,
             r2_score_ref=r2_score_ref,
             abs_error_max_ref=abs_error_max_ref,
@@ -245,13 +273,25 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_underperformance_tails(dataset_name: str, underperformance: dict) -> BaseWidgetInfo:
+    def _get_underperformance_tails(
+        dataset_name: str, underperformance: dict
+    ) -> BaseWidgetInfo:
         return counter(
             title=f"{dataset_name.capitalize()}: Mean Error per Group (+/- std)",
             counters=[
-                CounterData.float("Majority(90%)", underperformance["majority"]["mean_error"], 2),
-                CounterData.float("Underestimation(5%)", underperformance["underestimation"]["mean_error"], 2),
-                CounterData.float("Overestimation(5%)", underperformance["overestimation"]["mean_error"], 2),
+                CounterData.float(
+                    "Majority(90%)", underperformance["majority"]["mean_error"], 2
+                ),
+                CounterData.float(
+                    "Underestimation(5%)",
+                    underperformance["underestimation"]["mean_error"],
+                    2,
+                ),
+                CounterData.float(
+                    "Overestimation(5%)",
+                    underperformance["overestimation"]["mean_error"],
+                    2,
+                ),
             ],
         )
 
@@ -282,9 +322,13 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                 counter(
                     title="Reference: Regression Performance Metrics",
                     counters=[
-                        CounterData.float("Mean error", metric_result.mean_error_ref, 3),
+                        CounterData.float(
+                            "Mean error", metric_result.mean_error_ref, 3
+                        ),
                         CounterData.float("MAE", metric_result.mean_abs_error_ref, 3),
-                        CounterData.float("MAPE", metric_result.mean_abs_perc_error_ref, 3),
+                        CounterData.float(
+                            "MAPE", metric_result.mean_abs_perc_error_ref, 3
+                        ),
                         CounterData.float("RMSE", metric_result.rmse_ref, 3),
                         CounterData.float("r2 score", metric_result.r2_score_ref, 3),
                     ],

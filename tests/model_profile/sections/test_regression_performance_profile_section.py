@@ -1,14 +1,17 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pandas
 import pytest
 
-from evidently.model_profile.sections.regression_performance_profile_section import RegressionPerformanceProfileSection
+from evidently.model_profile.sections.regression_performance_profile_section import (
+    RegressionPerformanceProfileSection,
+)
 
-from .helpers import calculate_section_results
-from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_without_calculation_results
+from .helpers import (
+    calculate_section_results,
+    check_profile_section_result_common_part,
+    check_section_without_calculation_results,
+)
 
 
 def check_regression_performance_metrics_dict(metrics: Dict[str, Any]) -> None:
@@ -23,7 +26,9 @@ def check_regression_performance_metrics_dict(metrics: Dict[str, Any]) -> None:
 
 
 def test_no_calculation_results() -> None:
-    check_section_without_calculation_results(RegressionPerformanceProfileSection, "regression_performance")
+    check_section_without_calculation_results(
+        RegressionPerformanceProfileSection, "regression_performance"
+    )
 
 
 @pytest.mark.parametrize(
@@ -37,7 +42,9 @@ def test_no_calculation_results() -> None:
     ),
 )
 def test_profile_section_with_calculated_results(reference_data, current_data) -> None:
-    section_result = calculate_section_results(RegressionPerformanceProfileSection, reference_data, current_data)
+    section_result = calculate_section_results(
+        RegressionPerformanceProfileSection, reference_data, current_data
+    )
     check_profile_section_result_common_part(section_result, "regression_performance")
     result_data = section_result["data"]
 

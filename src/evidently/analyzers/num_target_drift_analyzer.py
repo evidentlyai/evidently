@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from typing import Optional
-from typing import Sequence
+from typing import Optional, Sequence
 
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import get_one_column_drift
+from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
+from evidently.calculations.data_drift import (
+    ColumnDataDriftMetrics,
+    get_one_column_drift,
+)
 from evidently.calculations.data_quality import get_rows_count
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import process_columns
@@ -36,7 +36,10 @@ class NumTargetDriftAnalyzer(Analyzer):
         return analyzer_results[NumTargetDriftAnalyzer]
 
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> NumTargetDriftAnalyzerResults:
         """Calculate the target and prediction drifts.
 
@@ -79,10 +82,14 @@ class NumTargetDriftAnalyzer(Analyzer):
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
 
-        if not isinstance(target_column, str) and isinstance(columns.utility_columns.target, Sequence):
+        if not isinstance(target_column, str) and isinstance(
+            columns.utility_columns.target, Sequence
+        ):
             raise ValueError("target should not be a sequence")
 
-        if not isinstance(prediction_column, str) and isinstance(prediction_column, Sequence):
+        if not isinstance(prediction_column, str) and isinstance(
+            prediction_column, Sequence
+        ):
             raise ValueError("prediction should not be a sequence")
 
         if set(columns.num_feature_names) - set(current_data.columns):
@@ -109,6 +116,8 @@ class NumTargetDriftAnalyzer(Analyzer):
             )
 
         if prediction_column is not None:
+            if not isinstance(prediction_column, str):
+                prediction_column = prediction_column[0]
             result.prediction_metrics = get_one_column_drift(
                 current_data=current_data,
                 reference_data=reference_data,

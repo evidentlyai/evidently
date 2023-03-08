@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import Type
-from typing import Union
+from typing import Dict, List, Optional, Tuple, Type, Union
 
 import pandas
 
@@ -29,7 +24,11 @@ class Tab(PipelineStage):
     _widgets: List[Widget]
     _widget_results: List[Optional[BaseWidgetInfo]]
 
-    def __init__(self, verbose_level: VerboseLevel = None, include_widgets: List[Union[str, Widget]] = None):
+    def __init__(
+        self,
+        verbose_level: VerboseLevel = None,
+        include_widgets: List[Union[str, Widget]] = None,
+    ):
         super().__init__()
         if verbose_level is None:
             verbose_level = Verbose.FULL
@@ -66,7 +65,9 @@ class Tab(PipelineStage):
         for widget in self._widgets:
             widget.options_provider = self.options_provider
             self._widget_results.append(
-                widget.calculate(reference_data, current_data, column_mapping, analyzers_results)
+                widget.calculate(
+                    reference_data, current_data, column_mapping, analyzers_results
+                )
             )
 
     def info(self) -> List[Optional[BaseWidgetInfo]]:

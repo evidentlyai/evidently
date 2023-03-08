@@ -1,11 +1,6 @@
 import json
 from datetime import datetime
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Type
+from typing import Any, Dict, List, Optional, Sequence, Type
 
 import pandas
 
@@ -20,7 +15,9 @@ class Profile(Pipeline):
     result: Dict[str, Any]
     stages: Sequence[ProfileSection]
 
-    def __init__(self, sections: Sequence[ProfileSection], options: Optional[list] = None) -> None:
+    def __init__(
+        self, sections: Sequence[ProfileSection], options: Optional[list] = None
+    ) -> None:
         if options is None:
             options = []
         super().__init__(sections, options if options is not None else [])
@@ -40,6 +37,8 @@ class Profile(Pipeline):
         return json.dumps(self.object(), cls=NumpyEncoder)
 
     def object(self) -> Dict[str, Any]:
-        result: Dict[str, Any] = {part.part_id(): part.get_results() for part in self.stages}
+        result: Dict[str, Any] = {
+            part.part_id(): part.get_results() for part in self.stages
+        }
         result["timestamp"] = str(datetime.now())
         return result

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
-from typing import Sequence
+from typing import Optional, Sequence
 
 RED = "#ed0400"
 GREY = "#4d4d4d"

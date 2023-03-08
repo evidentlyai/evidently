@@ -1,15 +1,21 @@
 import pandas
 import pytest
 
-from evidently.model_profile.sections.num_target_drift_profile_section import NumTargetDriftProfileSection
+from evidently.model_profile.sections.num_target_drift_profile_section import (
+    NumTargetDriftProfileSection,
+)
 
-from .helpers import calculate_section_results
-from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_without_calculation_results
+from .helpers import (
+    calculate_section_results,
+    check_profile_section_result_common_part,
+    check_section_without_calculation_results,
+)
 
 
 def test_no_calculation_results() -> None:
-    check_section_without_calculation_results(NumTargetDriftProfileSection, "num_target_drift")
+    check_section_without_calculation_results(
+        NumTargetDriftProfileSection, "num_target_drift"
+    )
 
 
 @pytest.mark.parametrize(
@@ -32,7 +38,9 @@ def test_no_calculation_results() -> None:
 def test_profile_section_with_calculated_results(reference_data, current_data) -> None:
     is_target_data_presented = "target" in reference_data
     is_prediction_data_presented = "prediction" in reference_data
-    section_result = calculate_section_results(NumTargetDriftProfileSection, reference_data, current_data)
+    section_result = calculate_section_results(
+        NumTargetDriftProfileSection, reference_data, current_data
+    )
     check_profile_section_result_common_part(section_result, "num_target_drift")
     result_data = section_result["data"]
 

@@ -1,23 +1,20 @@
 import dataclasses
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import TabData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import widget_tabs
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import (
+    CounterData,
+    TabData,
+    counter,
+    header_text,
+    table_data,
+    widget_tabs,
+)
 
 
 @dataclasses.dataclass
@@ -91,7 +88,10 @@ class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
         )
 
     def calculate(self, data: InputData) -> ColumnValueListMetricResult:
-        if data.reference_data is not None and self.column_name not in data.reference_data:
+        if (
+            data.reference_data is not None
+            and self.column_name not in data.reference_data
+        ):
             raise ValueError(f"Column '{self.column_name}' is not in reference data.")
 
         if self.values is None:
@@ -108,7 +108,9 @@ class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
         if self.column_name not in data.current_data:
             raise ValueError(f"Column '{self.column_name}' is not in current data.")
 
-        current_stats = self._calculate_stats(values, data.current_data[self.column_name])
+        current_stats = self._calculate_stats(
+            values, data.current_data[self.column_name]
+        )
 
         if data.reference_data is not None:
             reference_stats: Optional[ValueListStat] = self._calculate_stats(
@@ -141,7 +143,9 @@ class ColumnValueListMetricRenderer(MetricRenderer):
                 widget=table_data(
                     title="",
                     column_names=matched_stat_headers,
-                    data=[(k, v) for k, v in stats.values_in_list.items() if v > 0][:10],
+                    data=[(k, v) for k, v in stats.values_in_list.items() if v > 0][
+                        :10
+                    ],
                 ),
             ),
             TabData(
@@ -149,7 +153,9 @@ class ColumnValueListMetricRenderer(MetricRenderer):
                 widget=table_data(
                     title="",
                     column_names=matched_stat_headers,
-                    data=[(k, v) for k, v in stats.values_in_list.items() if v <= 0][:10],
+                    data=[(k, v) for k, v in stats.values_in_list.items() if v <= 0][
+                        :10
+                    ],
                 ),
             ),
             TabData(
@@ -168,7 +174,9 @@ class ColumnValueListMetricRenderer(MetricRenderer):
         percents = round(stat.share_in_list * 100, 3)
         return f"{stat.number_in_list} ({percents}%)"
 
-    def _get_counters(self, metric_result: ColumnValueListMetricResult) -> BaseWidgetInfo:
+    def _get_counters(
+        self, metric_result: ColumnValueListMetricResult
+    ) -> BaseWidgetInfo:
         counters = [
             CounterData.string(
                 label="In list (current)",

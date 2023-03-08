@@ -8,12 +8,10 @@ import plotly.figure_factory as ff
 
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.dashboard.widgets.utils import CutQuantileTransformer
-from evidently.dashboard.widgets.utils import fig_to_json
+from evidently.dashboard.widgets.utils import CutQuantileTransformer, fig_to_json
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
-from evidently.options import QualityMetricsOptions
+from evidently.options import ColorOptions, QualityMetricsOptions
 
 
 class NumOutputDriftWidget(Widget):
@@ -51,13 +49,17 @@ class NumOutputDriftWidget(Widget):
                 return None
 
             if not isinstance(results.columns.utility_columns.prediction, str):
-                raise ValueError(f"Widget [{self.title}] requires one str value for 'prediction' column")
+                raise ValueError(
+                    f"Widget [{self.title}] requires one str value for 'prediction' column"
+                )
 
             column_name = results.columns.utility_columns.prediction
             metrics = results.prediction_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+            raise ValueError(
+                f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value"
+            )
 
         if metrics is None:
             return None
@@ -83,14 +85,19 @@ class NumOutputDriftWidget(Widget):
         output_distr = ff.create_distplot(
             [reference_data_to_plot, current_data_to_plot],
             ["Reference", "Current"],
-            colors=[color_options.get_reference_data_color(), color_options.get_current_data_color()],
+            colors=[
+                color_options.get_reference_data_color(),
+                color_options.get_current_data_color(),
+            ],
             show_rug=True,
         )
 
         output_distr.update_layout(
             xaxis_title="Value",
             yaxis_title="Share",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
         )
 
         # output_drift_json = json.loads(output_distr.to_json())
@@ -105,6 +112,9 @@ class NumOutputDriftWidget(Widget):
             alertsPosition="row",
             insights=[],
             size=2,
-            params={"data": output_drift_json["data"], "layout": output_drift_json["layout"]},
+            params={
+                "data": output_drift_json["data"],
+                "layout": output_drift_json["layout"],
+            },
             additionalGraphs=[],
         )

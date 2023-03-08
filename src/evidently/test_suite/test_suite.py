@@ -2,9 +2,7 @@ import copy
 import dataclasses
 import uuid
 from collections import Counter
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import List, Optional, Union
 
 import pandas as pd
 
@@ -14,15 +12,10 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
-from evidently.suite.base_suite import Display
-from evidently.suite.base_suite import Suite
-from evidently.suite.base_suite import find_test_renderer
+from evidently.suite.base_suite import Display, Suite, find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests.base_test import DEFAULT_GROUP
-from evidently.tests.base_test import Test
-from evidently.tests.base_test import TestResult
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.tests.base_test import DEFAULT_GROUP, Test, TestResult
+from evidently.utils.data_operations import DatasetColumns, process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
@@ -58,7 +51,10 @@ class TestSuite(Display):
         self._inner_suite.add_test(new_test)
 
     def __bool__(self):
-        return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
+        return all(
+            test_result.is_passed()
+            for _, test_result in self._inner_suite.context.test_results.items()
+        )
 
     def _add_tests_from_generator(self, test_generator: BaseGenerator):
         for test_item in test_generator.generate(columns_info=self._columns_info):
@@ -75,8 +71,12 @@ class TestSuite(Display):
             column_mapping = ColumnMapping()
 
         self._columns_info = process_columns(current_data, column_mapping)
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
+        data_definition = create_data_definition(
+            reference_data, current_data, column_mapping
+        )
+        data = InputData(
+            reference_data, current_data, None, None, column_mapping, data_definition
+        )
         for preset in self._test_presets:
             tests = preset.generate_tests(data, self._columns_info)
 
@@ -90,18 +90,32 @@ class TestSuite(Display):
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
         self._inner_suite.verify()
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
-        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
+        curr_add, ref_add = self._inner_suite.create_additional_features(
+            current_data, reference_data, data_definition
+        )
+        data = InputData(
+            reference_data,
+            current_data,
+            ref_add,
+            curr_add,
+            column_mapping,
+            data_definition,
+        )
 
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
     def as_dict(self) -> dict:
         test_results = []
-        counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
+        counter = Counter(
+            test_result.status
+            for test_result in self._inner_suite.context.test_results.values()
+        )
 
         for test in self._inner_suite.context.test_results:
-            renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            renderer = find_test_renderer(
+                type(test), self._inner_suite.context.renderers
+            )
             try:
                 test_data = renderer.render_json(test)
                 test_results.append(test_data)
@@ -131,7 +145,9 @@ class TestSuite(Display):
         color_options = self.options_provider.get(ColorOptions)
 
         for test, test_result in self._inner_suite.context.test_results.items():
-            renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            renderer = find_test_renderer(
+                type(test), self._inner_suite.context.renderers
+            )
             renderer.color_options = color_options
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             test_results.append(renderer.render_html(test))
@@ -143,8 +159,16 @@ class TestSuite(Display):
             params={
                 "counters": [{"value": f"{total_tests}", "label": "Tests"}]
                 + [
-                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()}"}
-                    for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
+                    {
+                        "value": f"{by_status.get(status, 0)}",
+                        "label": f"{status.title()}",
+                    }
+                    for status in [
+                        TestResult.SUCCESS,
+                        TestResult.WARNING,
+                        TestResult.FAIL,
+                        TestResult.ERROR,
+                    ]
                 ]
             },
         )
@@ -159,7 +183,10 @@ class TestSuite(Display):
                         description=test_info.description,
                         state=test_info.status.lower(),
                         details=dict(
-                            parts=[dict(id=item.id, title=item.title, type="widget") for item in test_info.details]
+                            parts=[
+                                dict(id=item.id, title=item.title, type="widget")
+                                for item in test_info.details
+                            ]
                         ),
                         groups=test_info.groups,
                     )
@@ -172,5 +199,9 @@ class TestSuite(Display):
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
-            {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
+            {
+                item.id: dataclasses.asdict(item.info)
+                for idx, info in enumerate(test_results)
+                for item in info.details
+            },
         )

@@ -1,10 +1,12 @@
 import pandas as pd
 import pytest
 
-from evidently.metric_preset import ClassificationPreset
-from evidently.metric_preset import DataDriftPreset
-from evidently.metric_preset import DataQualityPreset
-from evidently.metric_preset import RegressionPreset
+from evidently.metric_preset import (
+    ClassificationPreset,
+    DataDriftPreset,
+    DataQualityPreset,
+    RegressionPreset,
+)
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
@@ -38,6 +40,10 @@ def test_metric_presets(preset: MetricPreset):
     )
     data_mapping = ColumnMapping()
     report = Report(metrics=[preset])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()

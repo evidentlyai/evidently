@@ -4,34 +4,30 @@ import dataclasses
 import json
 import logging
 from datetime import datetime
-from typing import Iterator
-from typing import Optional
-from typing import Tuple
-from typing import Union
+from typing import Iterator, Optional, Tuple, Union
 
 import pandas as pd
 
 import evidently
-from evidently.base_metric import ErrorResult
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import ErrorResult, InputData, Metric
 from evidently.options import OptionsProvider
-from evidently.renderers.base_renderer import DEFAULT_RENDERERS
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import RenderersDefinitions
-from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import (
+    DEFAULT_RENDERERS,
+    MetricRenderer,
+    RenderersDefinitions,
+    TestRenderer,
+)
 from evidently.renderers.notebook_utils import determine_template
-from evidently.suite.execution_graph import ExecutionGraph
-from evidently.suite.execution_graph import SimpleExecutionGraph
-from evidently.tests.base_test import GroupingTypes
-from evidently.tests.base_test import Test
-from evidently.tests.base_test import TestResult
+from evidently.suite.execution_graph import ExecutionGraph, SimpleExecutionGraph
+from evidently.tests.base_test import GroupingTypes, Test, TestResult
 from evidently.utils import NumpyEncoder
-from evidently.utils.dashboard import SaveMode
-from evidently.utils.dashboard import SaveModeMap
-from evidently.utils.dashboard import TemplateParams
-from evidently.utils.dashboard import save_data_file
-from evidently.utils.dashboard import save_lib_files
+from evidently.utils.dashboard import (
+    SaveMode,
+    SaveModeMap,
+    TemplateParams,
+    save_data_file,
+    save_lib_files,
+)
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -66,7 +62,9 @@ def find_metric_renderer(obj, renderers: RenderersDefinitions) -> MetricRenderer
     raise KeyError(f"No renderer found for {obj}")
 
 
-def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Union[Metric, Test]]]:
+def _discover_dependencies(
+    test: Union[Metric, Test]
+) -> Iterator[Tuple[str, Union[Metric, Test]]]:
     for field_name, field in test.__dict__.items():
         if issubclass(type(field), (Metric, Test)):
             yield field_name, field
@@ -109,14 +107,18 @@ class Display:
     def _repr_html_(self):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs,
         )
         return self._render(determine_template("auto"), template_params)
 
     def show(self, mode="auto"):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs,
         )
         # pylint: disable=import-outside-toplevel
         try:
@@ -124,14 +126,20 @@ class Display:
 
             return HTML(self._render(determine_template(mode), template_params))
         except ImportError as err:
-            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
+            raise Exception(
+                "Cannot import HTML from IPython.display, no way to show html"
+            ) from err
 
-    def save_html(self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
+    def save_html(
+        self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE
+    ):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         if isinstance(mode, str):
             _mode = SaveModeMap.get(mode)
             if _mode is None:
-                raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
+                raise ValueError(
+                    f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]"
+                )
             mode = _mode
         if mode == SaveMode.SINGLE_FILE:
             template_params = TemplateParams(
@@ -140,10 +148,14 @@ class Display:
                 additional_graphs=graphs,
             )
             with open(filename, "w", encoding="utf-8") as out_file:
-                out_file.write(self._render(determine_template("inline"), template_params))
+                out_file.write(
+                    self._render(determine_template("inline"), template_params)
+                )
         else:
             font_file, lib_file = save_lib_files(filename, mode)
-            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, graphs)
+            data_file = save_data_file(
+                filename, mode, dashboard_id, dashboard_info, graphs
+            )
             template_params = TemplateParams(
                 dashboard_id=dashboard_id,
                 dashboard_info=dashboard_info,
@@ -155,7 +167,9 @@ class Display:
                 include_js_files=[lib_file, data_file],
             )
             with open(filename, "w", encoding="utf-8") as out_file:
-                out_file.write(self._render(determine_template("inline"), template_params))
+                out_file.write(
+                    self._render(determine_template("inline"), template_params)
+                )
 
     @abc.abstractmethod
     def as_dict(self) -> dict:
@@ -226,7 +240,9 @@ class Suite:
         self.context.state = States.Init
 
     def verify(self):
-        self.context.execution_graph = SimpleExecutionGraph(self.context.metrics, self.context.tests)
+        self.context.execution_graph = SimpleExecutionGraph(
+            self.context.metrics, self.context.tests
+        )
         self.context.state = States.Verified
 
     def create_additional_features(
@@ -253,17 +269,25 @@ class Suite:
                         if _id in features:
                             continue
                         features[_id] = feature
-                    feature_data = feature.generate_feature(current_data, data_definition)
-                    feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
+                    feature_data = feature.generate_feature(
+                        current_data, data_definition
+                    )
+                    feature_data.columns = [
+                        f"{feature.__class__.__name__}.{old}"
+                        for old in feature_data.columns
+                    ]
                     if curr_additional_data is None:
                         curr_additional_data = feature_data
                     else:
                         curr_additional_data = curr_additional_data.join(feature_data)
                     if reference_data is None:
                         continue
-                    ref_feature_data = feature.generate_feature(reference_data, data_definition)
+                    ref_feature_data = feature.generate_feature(
+                        reference_data, data_definition
+                    )
                     ref_feature_data.columns = [
-                        f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns
+                        f"{feature.__class__.__name__}.{old}"
+                        for old in ref_feature_data.columns
                     ]
 
                     if ref_additional_data is None:
@@ -308,7 +332,9 @@ class Suite:
                 test_results[test] = test.check()
             except BaseException as ex:
                 test_results[test] = TestResult(
-                    name=test.name, status=TestResult.ERROR, description=f"Test failed with exceptions: {ex}"
+                    name=test.name,
+                    status=TestResult.ERROR,
+                    description=f"Test failed with exceptions: {ex}",
                 )
             test_results[test].groups.update(
                 {

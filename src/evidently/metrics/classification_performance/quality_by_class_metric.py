@@ -1,7 +1,5 @@
 import dataclasses
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -11,15 +9,13 @@ from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
-from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
+from evidently.metrics.classification_performance.base_classification_metric import (
+    ThresholdClassificationMetric,
+)
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import WidgetSize
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import WidgetSize, header_text, plotly_figure
+from evidently.utils.data_operations import DatasetColumns, process_columns
 
 
 @dataclasses.dataclass
@@ -31,7 +27,9 @@ class ClassificationQualityByClassResult:
     reference_roc_aucs: Optional[dict]
 
 
-class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
+class ClassificationQualityByClass(
+    ThresholdClassificationMetric[ClassificationQualityByClassResult]
+):
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
@@ -53,7 +51,10 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
 
         current_roc_aucs = None
         if prediction.prediction_probas is not None:
-            binaraized_target = (target.values.reshape(-1, 1) == list(prediction.prediction_probas.columns)).astype(int)
+            binaraized_target = (
+                target.values.reshape(-1, 1)
+                == list(prediction.prediction_probas.columns)
+            ).astype(int)
             current_roc_aucs = sklearn.metrics.roc_auc_score(
                 binaraized_target, prediction.prediction_probas, average=None
             ).tolist()
@@ -72,7 +73,8 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
             )
             if ref_prediction.prediction_probas is not None:
                 binaraized_target = (
-                    ref_target.values.reshape(-1, 1) == list(ref_prediction.prediction_probas.columns)
+                    ref_target.values.reshape(-1, 1)
+                    == list(ref_prediction.prediction_probas.columns)
                 ).astype(int)
                 reference_roc_aucs = sklearn.metrics.roc_auc_score(
                     binaraized_target, ref_prediction.prediction_probas, average=None
@@ -119,7 +121,9 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         else:
             cols = 1
             subplot_titles = [""]
-        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        fig = make_subplots(
+            rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+        )
         trace = go.Heatmap(
             z=z,
             x=x,
@@ -152,7 +156,10 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             fig.add_trace(trace, 1, 2)
         fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
 
-        return [header_text(label="Quality Metrics by Class"), plotly_figure(figure=fig, title="")]
+        return [
+            header_text(label="Quality Metrics by Class"),
+            plotly_figure(figure=fig, title=""),
+        ]
 
 
 def _plot_metrics(
@@ -165,7 +172,11 @@ def _plot_metrics(
 
     z = metrics_frame.iloc[:-1, :-3].values
 
-    x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
+    x = (
+        columns.target_names
+        if columns.target_names
+        else metrics_frame.columns.tolist()[:-3]
+    )
 
     y = ["precision", "recall", "f1-score"]
 
@@ -173,7 +184,9 @@ def _plot_metrics(
     z_text = [[str(round(y, 3)) for y in x] for x in z]
 
     # set up figure
-    fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True)
+    fig = ff.create_annotated_heatmap(
+        z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True
+    )
     fig.update_layout(xaxis_title="Class", yaxis_title="Metric")
 
     return plotly_figure(

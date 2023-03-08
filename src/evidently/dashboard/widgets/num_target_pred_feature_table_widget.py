@@ -11,8 +11,7 @@ from plotly.subplots import make_subplots
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 from evidently.options import ColorOptions
 
 
@@ -46,7 +45,12 @@ class NumTargetPredFeatureTable(Widget):
             # add data for table in params
             params_data.append(
                 {
-                    "details": {"parts": [{"title": "Feature values", "id": feature_name + "_values"}], "insights": []},
+                    "details": {
+                        "parts": [
+                            {"title": "Feature values", "id": feature_name + "_values"}
+                        ],
+                        "insights": [],
+                    },
                     "f1": feature_name,
                 }
             )
@@ -118,7 +122,10 @@ class NumTargetPredFeatureTable(Widget):
 
             # write plot data in table as additional data
             additional_graphs_data.append(
-                AdditionalGraphInfo(feature_name + "_values", {"data": fig_json["data"], "layout": fig_json["layout"]})
+                AdditionalGraphInfo(
+                    feature_name + "_values",
+                    {"data": fig_json["data"], "layout": fig_json["layout"]},
+                )
             )
 
         return BaseWidgetInfo(

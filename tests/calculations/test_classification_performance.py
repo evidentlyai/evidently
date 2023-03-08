@@ -1,6 +1,8 @@
 import numpy as np
 
-from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.calculations.classification_performance import (
+    calculate_confusion_by_classes,
+)
 
 
 def test_calculate_confusion_by_classes():

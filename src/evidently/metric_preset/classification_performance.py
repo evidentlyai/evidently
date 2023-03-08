@@ -1,19 +1,20 @@
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 from evidently.base_metric import InputData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metrics import ClassificationClassBalance
-from evidently.metrics import ClassificationClassSeparationPlot
-from evidently.metrics import ClassificationConfusionMatrix
-from evidently.metrics import ClassificationPRCurve
-from evidently.metrics import ClassificationProbDistribution
-from evidently.metrics import ClassificationPRTable
-from evidently.metrics import ClassificationQualityByClass
-from evidently.metrics import ClassificationQualityByFeatureTable
-from evidently.metrics import ClassificationQualityMetric
-from evidently.metrics import ClassificationRocCurve
+from evidently.metrics import (
+    ClassificationClassBalance,
+    ClassificationClassSeparationPlot,
+    ClassificationConfusionMatrix,
+    ClassificationPRCurve,
+    ClassificationProbDistribution,
+    ClassificationPRTable,
+    ClassificationQualityByClass,
+    ClassificationQualityByFeatureTable,
+    ClassificationQualityMetric,
+    ClassificationRocCurve,
+)
 from evidently.utils.data_operations import DatasetColumns
 
 
@@ -45,12 +46,20 @@ class ClassificationPreset(MetricPreset):
 
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
-            ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k),
+            ClassificationQualityMetric(
+                probas_threshold=self.probas_threshold, k=self.k
+            ),
             ClassificationClassBalance(),
-            ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k),
-            ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k),
+            ClassificationConfusionMatrix(
+                probas_threshold=self.probas_threshold, k=self.k
+            ),
+            ClassificationQualityByClass(
+                probas_threshold=self.probas_threshold, k=self.k
+            ),
         ]
-        curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
+        curr_predictions = get_prediction_data(
+            data.current_data, columns, data.column_mapping.pos_label
+        )
 
         if curr_predictions.prediction_probas is not None:
             result.extend(

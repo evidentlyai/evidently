@@ -1,21 +1,14 @@
 import dataclasses
-from typing import Dict
-from typing import Iterable
-from typing import List
-from typing import Optional
+from typing import Dict, Iterable, List, Optional
 
 import numpy as np
 import pandas as pd
 from plotly import figure_factory as ff
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import GraphData
-from evidently.renderers.html_widgets import WidgetSize
-from evidently.renderers.html_widgets import plotly_graph_tabs
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import GraphData, WidgetSize, plotly_graph_tabs
 from evidently.utils.data_operations import process_columns
 
 
@@ -27,7 +20,9 @@ class ClassificationProbDistributionResults:
 
 class ClassificationProbDistribution(Metric[ClassificationProbDistributionResults]):
     @staticmethod
-    def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:
+    def get_distribution(
+        dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable
+    ) -> Dict[str, list]:
         result = {}
         dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
 
@@ -53,11 +48,15 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
 
         else:
             current_data_copy = data.current_data.copy()
-            current_distribution = self.get_distribution(current_data_copy, target, prediction)
+            current_distribution = self.get_distribution(
+                current_data_copy, target, prediction
+            )
 
             if data.reference_data is not None:
                 reference_data_copy = data.reference_data.copy()
-                reference_distribution = self.get_distribution(reference_data_copy, target, prediction)
+                reference_distribution = self.get_distribution(
+                    reference_data_copy, target, prediction
+                )
 
             else:
                 reference_distribution = None
@@ -81,7 +80,10 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
             pred_distr = ff.create_distplot(
                 distribution[label],
                 [str(label), "other"],
-                colors=[self.color_options.primary_color, self.color_options.secondary_color],
+                colors=[
+                    self.color_options.primary_color,
+                    self.color_options.secondary_color,
+                ],
                 bin_size=0.05,
                 show_curve=False,
                 show_rug=True,
@@ -90,7 +92,9 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
             pred_distr.update_layout(
                 xaxis_title="Probability",
                 yaxis_title="Share",
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                legend=dict(
+                    orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+                ),
             )
             pred_distr_json = pred_distr.to_plotly_json()
             graphs.append(

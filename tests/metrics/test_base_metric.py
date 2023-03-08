@@ -1,33 +1,41 @@
-from typing import Dict
-from typing import Optional
+from typing import Dict, Optional
 
 import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.base_metric import ColumnName
-from evidently.base_metric import DatasetType
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.base_metric import additional_feature
+from evidently.base_metric import (
+    ColumnName,
+    DatasetType,
+    InputData,
+    Metric,
+    additional_feature,
+)
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.base_metric import generate_column_metrics
 from evidently.report import Report
-from evidently.utils.data_preprocessing import ColumnType
-from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.data_preprocessing import ColumnType, DataDefinition
 
 
 def test_metric_generator():
     test_data = pd.DataFrame({"col1": [3, 2, 3], "col2": [4, 5, 6], "col3": [4, 5, 6]})
-    report = Report(metrics=[generate_column_metrics(ColumnValueRangeMetric, parameters={"left": 0, "right": 10})])
+    report = Report(
+        metrics=[
+            generate_column_metrics(
+                ColumnValueRangeMetric, parameters={"left": 0, "right": 10}
+            )
+        ]
+    )
     report.run(current_data=test_data, reference_data=None)
     assert report.show()
 
     report = Report(
         metrics=[
             generate_column_metrics(
-                metric_class=ColumnValueRangeMetric, columns=["col2", "col3"], parameters={"left": 0, "right": 10}
+                metric_class=ColumnValueRangeMetric,
+                columns=["col2", "col3"],
+                parameters={"left": 0, "right": 10},
             )
         ]
     )
@@ -53,7 +61,10 @@ class SimpleMetricWithFeatures(Metric[int]):
         self.feature = None
 
     def calculate(self, data: InputData) -> int:
-        if data.data_definition.get_column(self.column_name).column_type == ColumnType.Categorical:
+        if (
+            data.data_definition.get_column(self.column_name).column_type
+            == ColumnType.Categorical
+        ):
             return data.get_current_column(self.feature.feature_name()).sum()
         return data.get_current_column(self.column_name).sum()
 
@@ -69,7 +80,10 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
     features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
-        return {k: data.get_current_column(v.feature_name()).sum() for k, v in self.features.items()}
+        return {
+            k: data.get_current_column(v.feature_name()).sum()
+            for k, v in self.features.items()
+        }
 
     def required_features(self, data_definition: DataDefinition):
         self.features = {
@@ -83,7 +97,9 @@ class SimpleGeneratedFeature(GeneratedFeature):
     def __init__(self, column_name: str):
         self.column_name = column_name
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name] * 2)]))
 
     def feature_name(self) -> ColumnName:
@@ -95,8 +111,12 @@ class LengthFeature(GeneratedFeature):
         self.column_name = column_name
         self.max_length = max_length
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(len))]))
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
+        return pd.DataFrame(
+            dict([(self.column_name, data[self.column_name].apply(len))])
+        )
 
     def feature_name(self) -> ColumnName:
         return additional_feature(self, self.column_name)

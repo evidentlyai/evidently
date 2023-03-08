@@ -7,9 +7,7 @@ from plotly import graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
-from evidently.model.widget import Insight
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo, Insight
 
 
 class ExpandableListWidget(Widget):
@@ -47,7 +45,10 @@ class ExpandableListWidget(Widget):
                             {"label": "something", "values": [0.3, 0.6]},
                             {"label": "some string", "values": ["absc", "gar"]},
                         ],
-                        "graph": {"data": fig_dict["data"], "layout": fig_dict["layout"]},
+                        "graph": {
+                            "data": fig_dict["data"],
+                            "layout": fig_dict["layout"],
+                        },
                         "details": {
                             "parts": [
                                 {"title": "First Tab", "id": "first_tab"},
@@ -126,7 +127,10 @@ class ExpandableListWidget(Widget):
                             {"label": "something", "values": [0.3, 0.6]},
                             {"label": "some string", "values": ["absc", "gar"]},
                         ],
-                        "graph": {"data": fig_dict["data"], "layout": fig_dict["layout"]},
+                        "graph": {
+                            "data": fig_dict["data"],
+                            "layout": fig_dict["layout"],
+                        },
                     },
                 ),
                 BaseWidgetInfo(
@@ -159,7 +163,10 @@ class ExpandableListWidget(Widget):
                             {"label": "something", "values": [0.3, 0.6]},
                             {"label": "some string", "values": ["absc", "gar"]},
                         ],
-                        "graph": {"data": fig_dict["data"], "layout": fig_dict["layout"]},
+                        "graph": {
+                            "data": fig_dict["data"],
+                            "layout": fig_dict["layout"],
+                        },
                         "details": {
                             "parts": [
                                 {"title": "First Tab", "id": "first_tab"},
@@ -199,7 +206,10 @@ class ExpandableListWidget(Widget):
                             {"label": "something", "values": [0.3, 0.6, 0.9]},
                             {"label": "some string", "values": ["absc", "gar", "par"]},
                         ],
-                        "graph": {"data": fig_dict["data"], "layout": fig_dict["layout"]},
+                        "graph": {
+                            "data": fig_dict["data"],
+                            "layout": fig_dict["layout"],
+                        },
                         "details": {
                             "parts": [
                                 {"title": "First Tab", "id": "first_tab"},
@@ -238,13 +248,22 @@ class ExpandableListWidget(Widget):
                             {"label": "something", "values": [0.3, 0.6]},
                             {"label": "some string", "values": ["absc", "gar"]},
                         ],
-                        "graph": {"data": fig_dict["data"], "layout": fig_dict["layout"]},
+                        "graph": {
+                            "data": fig_dict["data"],
+                            "layout": fig_dict["layout"],
+                        },
                         "details": {
                             "parts": [
                                 {"title": "First Tab", "id": "first_tab"},
                                 {"title": "Second Tab", "id": "second_tab"},
                             ],
-                            "insights": [Insight("Some notification", "warning", "additional text for insight")],
+                            "insights": [
+                                Insight(
+                                    "Some notification",
+                                    "warning",
+                                    "additional text for insight",
+                                )
+                            ],
                         },
                     },
                     additionalGraphs=[

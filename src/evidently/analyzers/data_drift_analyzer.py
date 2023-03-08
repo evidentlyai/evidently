@@ -7,10 +7,8 @@ from typing import Optional
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import DatasetDriftMetrics
-from evidently.calculations.data_drift import get_drift_for_columns
+from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
+from evidently.calculations.data_drift import DatasetDriftMetrics, get_drift_for_columns
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import process_columns
 
@@ -27,7 +25,10 @@ class DataDriftAnalyzer(Analyzer):
         return analyzer_results[DataDriftAnalyzer]
 
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> DataDriftAnalyzerResults:
         if current_data is None:
             raise ValueError("current_data should be present")

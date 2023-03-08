@@ -36,7 +36,9 @@ def test_data_drift_preset():
         categorical_features=["category_feature_1", "category_feature_2"],
     )
     data_quality_suite.run(
-        current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=column_mapping
+        current_data=test_current_dataset,
+        reference_data=test_reference_dataset,
+        column_mapping=column_mapping,
     )
     assert data_quality_suite
     assert len(data_quality_suite.as_dict()["tests"]) == 7

@@ -1,9 +1,5 @@
 import abc
-from typing import Any
-from typing import Dict
-from typing import Iterable
-from typing import Set
-from typing import Type
+from typing import Any, Dict, Iterable, Set, Type
 
 import pandas
 

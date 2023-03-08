@@ -1,29 +1,28 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Dict, List, Optional
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import get_drift_for_columns
+from evidently.base_metric import InputData, Metric
+from evidently.calculations.data_drift import (
+    ColumnDataDriftMetrics,
+    get_drift_for_columns,
+)
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import ColumnDefinition
-from evidently.renderers.html_widgets import ColumnType
-from evidently.renderers.html_widgets import RichTableDataRow
-from evidently.renderers.html_widgets import RowDetails
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.html_widgets import rich_table_data
-from evidently.renderers.html_widgets import table_data
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import (
+    ColumnDefinition,
+    ColumnType,
+    RichTableDataRow,
+    RowDetails,
+    header_text,
+    plotly_figure,
+    rich_table_data,
+    table_data,
+)
 from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import DatasetColumns, process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
@@ -115,7 +114,9 @@ class DataDriftTableRenderer(MetricRenderer):
 
         return result
 
-    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
+    def _generate_column_params(
+        self, column_name: str, data: ColumnDataDriftMetrics
+    ) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if data.column_type == "text":
             if (
@@ -129,25 +130,33 @@ class DataDriftTableRenderer(MetricRenderer):
                     column_names=["", ""],
                     data=[[el, ""] for el in data.typical_words_cur],
                 )
-                details.with_part("current: characteristic words", info=current_table_words)
+                details.with_part(
+                    "current: characteristic words", info=current_table_words
+                )
                 reference_table_words = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.typical_words_ref],
                 )
-                details.with_part("reference: characteristic words", info=reference_table_words)
+                details.with_part(
+                    "reference: characteristic words", info=reference_table_words
+                )
                 current_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.typical_examples_cur],
                 )
-                details.with_part("current: characteristic examples", info=current_table_examples)
+                details.with_part(
+                    "current: characteristic examples", info=current_table_examples
+                )
                 reference_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.typical_examples_ref],
                 )
-                details.with_part("reference: characteristic examples", info=reference_table_examples)
+                details.with_part(
+                    "reference: characteristic examples", info=reference_table_examples
+                )
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
 
@@ -212,8 +221,14 @@ class DataDriftTableRenderer(MetricRenderer):
                     "column_name": column_name,
                     "column_type": data.column_type,
                     "stattest_name": data.stattest_name,
-                    "reference_distribution": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
-                    "current_distribution": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
+                    "reference_distribution": {
+                        "x": list(ref_small_hist[1]),
+                        "y": list(ref_small_hist[0]),
+                    },
+                    "current_distribution": {
+                        "x": list(current_small_hist[1]),
+                        "y": list(current_small_hist[0]),
+                    },
                     "data_drift": data_drift,
                     "drift_score": round(data.drift_score, 6),
                 },
@@ -246,7 +261,9 @@ class DataDriftTableRenderer(MetricRenderer):
         columns = columns + all_columns
 
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
+            column_params = self._generate_column_params(
+                column_name, results.drift_by_columns[column_name]
+            )
 
             if column_params is not None:
                 params_data.append(column_params)
@@ -265,13 +282,21 @@ class DataDriftTableRenderer(MetricRenderer):
                         "Reference Distribution",
                         "reference_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition(
                         "Current Distribution",
                         "current_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition("Data Drift", "data_drift"),
                     ColumnDefinition("Stat Test", "stattest_name"),

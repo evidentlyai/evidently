@@ -6,8 +6,7 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.calculations.stattests import StatTest
-from evidently.calculations.stattests import psi_stat_test
+from evidently.calculations.stattests import StatTest, psi_stat_test
 from evidently.metrics import ColumnDriftMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
@@ -56,7 +55,9 @@ test_stattest = StatTest(
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [3, 2, 2]}),
             None,
-            ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
+            ColumnDriftMetric(
+                column_name="col", stattest="psi", stattest_threshold=0.1
+            ),
             {
                 "column_name": "col",
                 "column_type": "num",
@@ -70,7 +71,9 @@ test_stattest = StatTest(
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [3, 2, 2]}),
             None,
-            ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
+            ColumnDriftMetric(
+                column_name="col", stattest=test_stattest, stattest_threshold=0.1
+            ),
             {
                 "column_name": "col",
                 "column_type": "num",
@@ -90,7 +93,11 @@ def test_column_drift_metric_success(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     result_json = report.json()
     result = json.loads(result_json)
@@ -153,5 +160,9 @@ def test_column_drift_metric_errors(
     report = Report(metrics=[metric])
 
     with pytest.raises(ValueError, match=expected_error):
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=data_mapping,
+        )
         report.json()

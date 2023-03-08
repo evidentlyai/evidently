@@ -1,36 +1,36 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import get_dataset_drift
-from evidently.calculations.data_drift import get_one_column_drift
+from evidently.base_metric import InputData, Metric
+from evidently.calculations.data_drift import (
+    ColumnDataDriftMetrics,
+    get_dataset_drift,
+    get_one_column_drift,
+)
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.non_letter_character_percentage_feature import (
+    NonLetterCharacterPercentage,
+)
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import ColumnDefinition
-from evidently.renderers.html_widgets import ColumnType
-from evidently.renderers.html_widgets import RichTableDataRow
-from evidently.renderers.html_widgets import RowDetails
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.html_widgets import rich_table_data
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import (
+    ColumnDefinition,
+    ColumnType,
+    RichTableDataRow,
+    RowDetails,
+    header_text,
+    plotly_figure,
+    rich_table_data,
+)
 from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import DatasetColumns, process_columns
 from evidently.utils.data_preprocessing import ColumnType as ColumnType_data
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import plot_scatter_for_data_drift
@@ -49,7 +49,9 @@ class TextDescriptorsDriftMetricResults:
 class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
     options: DataDriftOptions
-    generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
+    generated_text_features: Dict[
+        str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]
+    ]
 
     def __init__(
         self,
@@ -58,7 +60,9 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
-        self.options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
+        self.options = DataDriftOptions(
+            all_features_stattest=stattest, all_features_threshold=stattest_threshold
+        )
         self.generated_text_features = {}
 
     def required_features(self, data_definition: DataDefinition):
@@ -66,7 +70,9 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         if column_type == ColumnType_data.Text:
             self.generated_text_features = {}
             self.generated_text_features["Text Length"] = TextLength(self.column_name)
-            self.generated_text_features["Non Letter Character %"] = NonLetterCharacterPercentage(self.column_name)
+            self.generated_text_features[
+                "Non Letter Character %"
+            ] = NonLetterCharacterPercentage(self.column_name)
             self.generated_text_features["OOV %"] = OOVWordsPercentage(self.column_name)
             return list(self.generated_text_features.values())
         return []
@@ -78,18 +84,26 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
         curr_text_df = pd.concat(
-            [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+            [
+                data.get_current_column(x.feature_name())
+                for x in list(self.generated_text_features.values())
+            ],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
 
         ref_text_df = pd.concat(
-            [data.get_reference_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+            [
+                data.get_reference_column(x.feature_name())
+                for x in list(self.generated_text_features.values())
+            ],
             axis=1,
         )
         ref_text_df.columns = list(self.generated_text_features.keys())
         # text_dataset_columns = DatasetColumns(num_feature_names=curr_text_df.columns)
-        text_dataset_columns = process_columns(ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns))
+        text_dataset_columns = process_columns(
+            ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns)
+        )
 
         drift_by_columns = {}
         for col in curr_text_df.columns:
@@ -133,7 +147,9 @@ class DataDriftTableRenderer(MetricRenderer):
 
         return result
 
-    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
+    def _generate_column_params(
+        self, column_name: str, data: ColumnDataDriftMetrics
+    ) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if (
             data.current_small_distribution is None
@@ -175,8 +191,14 @@ class DataDriftTableRenderer(MetricRenderer):
                     "column_name": column_name,
                     "column_type": data.column_type,
                     "stattest_name": data.stattest_name,
-                    "reference_distribution": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
-                    "current_distribution": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
+                    "reference_distribution": {
+                        "x": list(ref_small_hist[1]),
+                        "y": list(ref_small_hist[0]),
+                    },
+                    "current_distribution": {
+                        "x": list(current_small_hist[1]),
+                        "y": list(current_small_hist[0]),
+                    },
                     "data_drift": data_drift,
                     "drift_score": round(data.drift_score, 6),
                 },
@@ -199,7 +221,9 @@ class DataDriftTableRenderer(MetricRenderer):
         )
 
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
+            column_params = self._generate_column_params(
+                column_name, results.drift_by_columns[column_name]
+            )
 
             if column_params is not None:
                 params_data.append(column_params)
@@ -218,13 +242,21 @@ class DataDriftTableRenderer(MetricRenderer):
                         "Reference Distribution",
                         "reference_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition(
                         "Current Distribution",
                         "current_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition("Data Drift", "data_drift"),
                     ColumnDefinition("Stat Test", "stattest_name"),

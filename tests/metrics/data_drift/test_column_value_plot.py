@@ -36,7 +36,11 @@ def test_column_value_plot_success(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     result_json = report.json()
     result = json.loads(result_json)
@@ -83,5 +87,9 @@ def test_column_value_plot_errors(
     report = Report(metrics=[metric])
 
     with pytest.raises(ValueError, match=expected_error):
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=data_mapping,
+        )
         report.json()

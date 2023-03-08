@@ -8,17 +8,21 @@ from sklearn import datasets
 
 from evidently import ColumnMapping
 from evidently.dashboard import Dashboard
-from evidently.dashboard.tabs import CatTargetDriftTab
-from evidently.dashboard.tabs import ClassificationPerformanceTab
-from evidently.dashboard.tabs import DataDriftTab
-from evidently.dashboard.tabs import ProbClassificationPerformanceTab
-from evidently.dashboard.tabs import RegressionPerformanceTab
+from evidently.dashboard.tabs import (
+    CatTargetDriftTab,
+    ClassificationPerformanceTab,
+    DataDriftTab,
+    ProbClassificationPerformanceTab,
+    RegressionPerformanceTab,
+)
 from evidently.model_profile import Profile
-from evidently.model_profile.sections import CatTargetDriftProfileSection
-from evidently.model_profile.sections import ClassificationPerformanceProfileSection
-from evidently.model_profile.sections import DataDriftProfileSection
-from evidently.model_profile.sections import ProbClassificationPerformanceProfileSection
-from evidently.model_profile.sections import RegressionPerformanceProfileSection
+from evidently.model_profile.sections import (
+    CatTargetDriftProfileSection,
+    ClassificationPerformanceProfileSection,
+    DataDriftProfileSection,
+    ProbClassificationPerformanceProfileSection,
+    RegressionPerformanceProfileSection,
+)
 
 
 def _get_iris():
@@ -93,7 +97,9 @@ def test_data_drift_dashboard(iris_frame) -> None:
 
 def test_data_drift_categorical_target_drift_dashboard(iris_frame) -> None:
     # To generate the **Data Drift** and the **Categorical Target Drift** reports, run:
-    iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab(), CatTargetDriftTab()])
+    iris_data_and_target_drift_report = Dashboard(
+        tabs=[DataDriftTab(), CatTargetDriftTab()]
+    )
     iris_data_and_target_drift_report.calculate(iris_frame[:100], iris_frame[100:])
     actual = json.loads(iris_data_and_target_drift_report._json())
     assert "name" in actual
@@ -140,7 +146,9 @@ def test_classification_performance_dashboard(iris_frame) -> None:
     assert len(actual["widgets"]) == 10
 
 
-def test_probabilistic_classification_performance_dashboard(iris_frame, iris_targets) -> None:
+def test_probabilistic_classification_performance_dashboard(
+    iris_frame, iris_targets
+) -> None:
     # For **Probabilistic Classification Model Performance** report, run:
     random_probs = np.random.random((3, 150))
     random_probs = random_probs / random_probs.sum(0)
@@ -149,8 +157,12 @@ def test_probabilistic_classification_performance_dashboard(iris_frame, iris_tar
     iris_frame["target"] = iris_targets[iris_frame["target"]]
     iris_column_mapping = ColumnMapping()
     iris_column_mapping.prediction = iris_targets
-    classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab()])
-    classification_performance_report.calculate(iris_frame, iris_frame, iris_column_mapping)
+    classification_performance_report = Dashboard(
+        tabs=[ProbClassificationPerformanceTab()]
+    )
+    classification_performance_report.calculate(
+        iris_frame, iris_frame, iris_column_mapping
+    )
 
     actual = json.loads(classification_performance_report._json())
     assert "name" in actual
@@ -160,14 +172,18 @@ def test_probabilistic_classification_performance_dashboard(iris_frame, iris_tar
 def test_classification_performance_on_single_frame_dashboard(iris_frame) -> None:
     # You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
     iris_frame["prediction"] = iris_frame["target"][::-1]
-    classification_single_frame_performance = Dashboard(tabs=[ClassificationPerformanceTab()])
+    classification_single_frame_performance = Dashboard(
+        tabs=[ClassificationPerformanceTab()]
+    )
     classification_single_frame_performance.calculate(iris_frame, None)
     actual = json.loads(classification_single_frame_performance._json())
     assert "name" in actual
     assert len(actual["widgets"]) == 6
 
 
-def test_probabilistic_classification_performance_on_single_frame_dashboard(iris_frame, iris_targets) -> None:
+def test_probabilistic_classification_performance_on_single_frame_dashboard(
+    iris_frame, iris_targets
+) -> None:
     # You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
     # FIXME: like above, when prediction column is not present in the dataset
     random_probs = np.random.random((3, 150))
@@ -177,14 +193,20 @@ def test_probabilistic_classification_performance_on_single_frame_dashboard(iris
     iris_frame["target"] = iris_targets[iris_frame["target"]]
     iris_column_mapping = ColumnMapping()
     iris_column_mapping.prediction = iris_targets
-    prob_classification_single_frame_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
-    prob_classification_single_frame_performance.calculate(iris_frame, None, iris_column_mapping)
+    prob_classification_single_frame_performance = Dashboard(
+        tabs=[ProbClassificationPerformanceTab()]
+    )
+    prob_classification_single_frame_performance.calculate(
+        iris_frame, None, iris_column_mapping
+    )
     actual = json.loads(prob_classification_single_frame_performance._json())
     assert "name" in actual
     assert len(actual["widgets"]) == 11
 
 
-def _check_profile_high_level_fields(actual: dict, expected_profiles: List[str]) -> None:
+def _check_profile_high_level_fields(
+    actual: dict, expected_profiles: List[str]
+) -> None:
     """Test that all common fields and profile sections are presented in the first level of the JSON report"""
     assert "timestamp" in actual
     # one for the `timestamp` field
@@ -238,12 +260,16 @@ def test_data_drift_categorical_target_drift_profile() -> None:
     iris_frame["prediction"] = iris.target[::-1]
     iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
     iris_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
-    iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
+    iris_target_and_data_drift_profile = Profile(
+        sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()]
+    )
     iris_target_and_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
 
     actual = json.loads(iris_target_and_data_drift_profile.json())
     # we leave the actual content test to other tests for widgets
-    _check_profile_high_level_fields(actual, expected_profiles=["data_drift", "cat_target_drift"])
+    _check_profile_high_level_fields(
+        actual, expected_profiles=["data_drift", "cat_target_drift"]
+    )
     _check_profile_section_high_level_fields(actual["data_drift"])
     data_drift_data = actual["data_drift"]["data"]
     # we have only 3 fields
@@ -263,12 +289,16 @@ def test_regression_performance_profile() -> None:
     iris_frame["prediction"] = iris.target[::-1]
     iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
     iris_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
-    regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection()])
+    regression_single_model_performance = Profile(
+        sections=[RegressionPerformanceProfileSection()]
+    )
     regression_single_model_performance.calculate(iris_frame, None)
 
     actual = json.loads(regression_single_model_performance.json())
     # we leave the actual content test to other tests for widgets
-    _check_profile_high_level_fields(actual, expected_profiles=["regression_performance"])
+    _check_profile_high_level_fields(
+        actual, expected_profiles=["regression_performance"]
+    )
     _check_profile_section_high_level_fields(actual["regression_performance"])
     regression_performance_data = actual["regression_performance"]["data"]
     assert len(regression_performance_data) == 7
@@ -281,12 +311,16 @@ def test_regression_performance_single_frame_profile() -> None:
     iris_frame["prediction"] = iris.target[::-1]
     iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
     iris_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
-    regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection()])
+    regression_single_model_performance = Profile(
+        sections=[RegressionPerformanceProfileSection()]
+    )
     regression_single_model_performance.calculate(iris_frame, None)
 
     actual = json.loads(regression_single_model_performance.json())
     # we leave the actual content test to other tests for widgets
-    _check_profile_high_level_fields(actual, expected_profiles=["regression_performance"])
+    _check_profile_high_level_fields(
+        actual, expected_profiles=["regression_performance"]
+    )
     _check_profile_section_high_level_fields(actual["regression_performance"])
     regression_performance_data = actual["regression_performance"]["data"]
     assert len(regression_performance_data) == 7
@@ -299,12 +333,16 @@ def test_classification_performance_profile() -> None:
     iris_frame["prediction"] = iris.target[::-1]
     iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
     iris_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
-    classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
+    classification_performance_profile = Profile(
+        sections=[ClassificationPerformanceProfileSection()]
+    )
     classification_performance_profile.calculate(iris_frame[:100], iris_frame[100:])
 
     actual = json.loads(classification_performance_profile.json())
     # we leave the actual content test to other tests for widgets
-    _check_profile_high_level_fields(actual, expected_profiles=["classification_performance"])
+    _check_profile_high_level_fields(
+        actual, expected_profiles=["classification_performance"]
+    )
     _check_profile_section_high_level_fields(actual["classification_performance"])
     classification_performance_data = actual["classification_performance"]["data"]
     assert len(classification_performance_data) == 7
@@ -316,12 +354,16 @@ def test_classification_performance_single_profile() -> None:
     iris_frame["prediction"] = iris.target[::-1]
     iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
     iris_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
-    classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
+    classification_performance_profile = Profile(
+        sections=[ClassificationPerformanceProfileSection()]
+    )
     classification_performance_profile.calculate(iris_frame[:100], None)
 
     actual = json.loads(classification_performance_profile.json())
     # we leave the actual content test to other tests for widgets
-    _check_profile_high_level_fields(actual, expected_profiles=["classification_performance"])
+    _check_profile_high_level_fields(
+        actual, expected_profiles=["classification_performance"]
+    )
     _check_profile_section_high_level_fields(actual["classification_performance"])
     classification_performance_data = actual["classification_performance"]["data"]
     assert len(classification_performance_data) == 7
@@ -332,17 +374,27 @@ def test_probabilistic_classification_performance_profile() -> None:
     # For **Probabilistic Classification Model Performance** report, run:
     merged_reference, column_mapping = _get_probabilistic_iris()
 
-    iris_prob_classification_profile = Profile(sections=[ProbClassificationPerformanceProfileSection()])
-    iris_prob_classification_profile.calculate(merged_reference, merged_reference, column_mapping)
+    iris_prob_classification_profile = Profile(
+        sections=[ProbClassificationPerformanceProfileSection()]
+    )
+    iris_prob_classification_profile.calculate(
+        merged_reference, merged_reference, column_mapping
+    )
     # FIXME: this does not work! why?
     # iris_prob_classification_profile.calculate(merged_reference[:100], merged_reference[100:].reset_index(drop=True),
     #                                            column_mapping = column_mapping)
 
     actual = json.loads(iris_prob_classification_profile.json())
     # we leave the actual content test to other tests for widgets
-    _check_profile_high_level_fields(actual, expected_profiles=["probabilistic_classification_performance"])
-    _check_profile_section_high_level_fields(actual["probabilistic_classification_performance"])
-    probabilistic_classification_performance_data = actual["probabilistic_classification_performance"]["data"]
+    _check_profile_high_level_fields(
+        actual, expected_profiles=["probabilistic_classification_performance"]
+    )
+    _check_profile_section_high_level_fields(
+        actual["probabilistic_classification_performance"]
+    )
+    probabilistic_classification_performance_data = actual[
+        "probabilistic_classification_performance"
+    ]["data"]
     assert len(probabilistic_classification_performance_data) == 8
     assert "options" in probabilistic_classification_performance_data
     assert "metrics" in probabilistic_classification_performance_data
@@ -355,7 +407,9 @@ def test_probabilistic_classification_single_performance_profile() -> None:
     # For **Probabilistic Classification Model Performance** report, run:
     merged_reference, column_mapping = _get_probabilistic_iris()
 
-    iris_prob_classification_profile = Profile(sections=[ProbClassificationPerformanceProfileSection()])
+    iris_prob_classification_profile = Profile(
+        sections=[ProbClassificationPerformanceProfileSection()]
+    )
     iris_prob_classification_profile.calculate(merged_reference, None, column_mapping)
 
     # FIXME: this does not work! why?
@@ -364,9 +418,15 @@ def test_probabilistic_classification_single_performance_profile() -> None:
 
     actual = json.loads(iris_prob_classification_profile.json())
     # we leave the actual content test to other tests for widgets
-    _check_profile_high_level_fields(actual, expected_profiles=["probabilistic_classification_performance"])
-    _check_profile_section_high_level_fields(actual["probabilistic_classification_performance"])
-    probabilistic_classification_performance_data = actual["probabilistic_classification_performance"]["data"]
+    _check_profile_high_level_fields(
+        actual, expected_profiles=["probabilistic_classification_performance"]
+    )
+    _check_profile_section_high_level_fields(
+        actual["probabilistic_classification_performance"]
+    )
+    probabilistic_classification_performance_data = actual[
+        "probabilistic_classification_performance"
+    ]["data"]
     assert len(probabilistic_classification_performance_data) == 8
     assert "options" in probabilistic_classification_performance_data
     assert "metrics" in probabilistic_classification_performance_data

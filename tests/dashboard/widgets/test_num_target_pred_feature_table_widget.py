@@ -4,7 +4,9 @@ import pandas as pd
 import pytest
 
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.dashboard.widgets.num_target_pred_feature_table_widget import NumTargetPredFeatureTable
+from evidently.dashboard.widgets.num_target_pred_feature_table_widget import (
+    NumTargetPredFeatureTable,
+)
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -19,7 +21,9 @@ def widget() -> NumTargetPredFeatureTable:
     return widget
 
 
-def test_num_target_drift_widget_analyzer_list(widget: NumTargetPredFeatureTable) -> None:
+def test_num_target_drift_widget_analyzer_list(
+    widget: NumTargetPredFeatureTable,
+) -> None:
     assert widget.analyzers() == [NumTargetDriftAnalyzer]
 
 
@@ -77,7 +81,12 @@ def test_num_target_pred_feature_table_widget_simple_case(
     analyzer = NumTargetDriftAnalyzer()
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
-    result = widget.calculate(reference_data, current_data, data_mapping, {NumTargetDriftAnalyzer: analyzer_results})
+    result = widget.calculate(
+        reference_data,
+        current_data,
+        data_mapping,
+        {NumTargetDriftAnalyzer: analyzer_results},
+    )
 
     if expected_result is not None:
         # we have some widget for visualization
@@ -118,7 +127,14 @@ def test_num_target_pred_feature_table_widget_value_error(
     else:
         current_data_for_analyzer = current_data
 
-    analyzer_results = analyzer.calculate(reference_data, current_data_for_analyzer, data_mapping)
+    analyzer_results = analyzer.calculate(
+        reference_data, current_data_for_analyzer, data_mapping
+    )
 
     with pytest.raises(ValueError):
-        widget.calculate(reference_data, current_data, data_mapping, {NumTargetDriftAnalyzer: analyzer_results})
+        widget.calculate(
+            reference_data,
+            current_data,
+            data_mapping,
+            {NumTargetDriftAnalyzer: analyzer_results},
+        )

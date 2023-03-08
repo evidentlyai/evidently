@@ -15,11 +15,13 @@ from .ks_stattest import ks_stat_test
 from .mann_whitney_urank_stattest import mann_whitney_u_stat_test
 from .mmd_stattest import emperical_mmd
 from .psi import psi_stat_test
-from .registry import PossibleStatTestType
-from .registry import StatTest
-from .registry import StatTestFuncType
-from .registry import get_stattest
-from .registry import register_stattest
+from .registry import (
+    PossibleStatTestType,
+    StatTest,
+    StatTestFuncType,
+    get_stattest,
+    register_stattest,
+)
 from .t_test import t_test
 from .text_content_drift import text_content_drift_stat_test
 from .tvd_stattest import tvd_test

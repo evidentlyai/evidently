@@ -9,7 +9,9 @@ import pandas as pd
 import plotly.graph_objs as go
 
 from evidently import ColumnMapping
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
+from evidently.analyzers.regression_performance_analyzer import (
+    RegressionPerformanceAnalyzer,
+)
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
@@ -38,24 +40,32 @@ class RegPredActualWidget(Widget):
 
         if target_name is None or prediction_name is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+                )
 
             return None
 
         if self.dataset == "current":
-            dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+            dataset_to_plot = (
+                current_data.copy(deep=False) if current_data is not None else None
+            )
 
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
+                raise ValueError(
+                    f"Widget [{self.title}] requires reference dataset but it is None"
+                )
 
             return None
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
-        dataset_to_plot.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
+        dataset_to_plot.dropna(
+            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
+        )
 
         # plot output correlations
         pred_actual = go.Figure()
@@ -83,5 +93,8 @@ class RegPredActualWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={"data": pred_actual_json["data"], "layout": pred_actual_json["layout"]},
+            params={
+                "data": pred_actual_json["data"],
+                "layout": pred_actual_json["layout"],
+            },
         )

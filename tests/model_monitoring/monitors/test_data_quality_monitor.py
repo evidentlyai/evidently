@@ -44,8 +44,14 @@ def test_data_quality_monitor_regression() -> None:
         datetime_features=["datetime_feature"],
         task="regression",
     )
-    evidently_monitoring = ModelMonitoring(monitors=[DataQualityMonitor()], options=None)
-    evidently_monitoring.execute(reference_data=reference_data, current_data=current_data, column_mapping=data_mapping)
+    evidently_monitoring = ModelMonitoring(
+        monitors=[DataQualityMonitor()], options=None
+    )
+    evidently_monitoring.execute(
+        reference_data=reference_data,
+        current_data=current_data,
+        column_mapping=data_mapping,
+    )
     result = collect_metrics_results(evidently_monitoring.metrics())
     assert "data_quality:quality_stat" in result
     assert result["data_quality:quality_stat"] == [
@@ -59,7 +65,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 4,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "count"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "count",
+            },
             "value": 4,
         },
         {
@@ -99,7 +110,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "unique_count"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "unique_count",
+            },
             "value": 3,
         },
         {
@@ -139,15 +155,30 @@ def test_data_quality_monitor_regression() -> None:
             "value": 2.5,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "max"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "max",
+            },
             "value": 4,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "min"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "min",
+            },
             "value": 1,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "mean"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "mean",
+            },
             "value": 2.0,
         },
         {
@@ -169,7 +200,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 50.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "std"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "std",
+            },
             "value": 1.41,
         },
         {
@@ -182,7 +218,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 4,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_prediction", "feature_type": "num", "metric": "count"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "count",
+            },
             "value": 4,
         },
         {
@@ -267,15 +308,30 @@ def test_data_quality_monitor_regression() -> None:
             "value": 1.25,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_prediction", "feature_type": "num", "metric": "max"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "max",
+            },
             "value": 2,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_prediction", "feature_type": "num", "metric": "min"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "min",
+            },
             "value": -1,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_prediction", "feature_type": "num", "metric": "mean"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "mean",
+            },
             "value": 0.25,
         },
         {
@@ -297,7 +353,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 50.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "my_prediction", "feature_type": "num", "metric": "std"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "std",
+            },
             "value": 1.5,
         },
         {
@@ -562,15 +623,30 @@ def test_data_quality_monitor_regression() -> None:
             "value": 2.75,
         },
         {
-            "labels": {"dataset": "reference", "feature": "numerical_feature", "feature_type": "num", "metric": "max"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "max",
+            },
             "value": 5,
         },
         {
-            "labels": {"dataset": "reference", "feature": "numerical_feature", "feature_type": "num", "metric": "min"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "min",
+            },
             "value": 0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "numerical_feature", "feature_type": "num", "metric": "mean"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "mean",
+            },
             "value": 1.75,
         },
         {
@@ -592,7 +668,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 50.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "numerical_feature", "feature_type": "num", "metric": "std"},
+            "labels": {
+                "dataset": "reference",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "std",
+            },
             "value": 2.36,
         },
         {
@@ -605,11 +686,21 @@ def test_data_quality_monitor_regression() -> None:
             "value": 1,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "count"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "count",
+            },
             "value": 1,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "infinite_count"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "infinite_count",
+            },
             "value": 0,
         },
         {
@@ -622,7 +713,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "missing_count"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "missing_count",
+            },
             "value": 0,
         },
         {
@@ -635,7 +731,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "unique_count"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "unique_count",
+            },
             "value": 1,
         },
         {
@@ -648,21 +749,57 @@ def test_data_quality_monitor_regression() -> None:
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "percentile_25"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "percentile_25",
+            },
             "value": 1.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "percentile_50"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "percentile_50",
+            },
             "value": 1.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "percentile_75"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "percentile_75",
+            },
             "value": 1.0,
         },
-        {"labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "max"}, "value": 1},
-        {"labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "min"}, "value": 1},
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "mean"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "max",
+            },
+            "value": 1,
+        },
+        {
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "min",
+            },
+            "value": 1,
+        },
+        {
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "mean",
+            },
             "value": 1.0,
         },
         {
@@ -684,7 +821,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "std"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "std",
+            },
             "value": None,
         },
         {
@@ -697,7 +839,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 1,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_prediction", "feature_type": "num", "metric": "count"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "count",
+            },
             "value": 1,
         },
         {
@@ -782,15 +929,30 @@ def test_data_quality_monitor_regression() -> None:
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_prediction", "feature_type": "num", "metric": "max"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "max",
+            },
             "value": 0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_prediction", "feature_type": "num", "metric": "min"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "min",
+            },
             "value": 0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_prediction", "feature_type": "num", "metric": "mean"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "mean",
+            },
             "value": 0.0,
         },
         {
@@ -812,7 +974,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "my_prediction", "feature_type": "num", "metric": "std"},
+            "labels": {
+                "dataset": "current",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "std",
+            },
             "value": None,
         },
         {
@@ -1005,7 +1172,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 1,
         },
         {
-            "labels": {"dataset": "current", "feature": "numerical_feature", "feature_type": "num", "metric": "count"},
+            "labels": {
+                "dataset": "current",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "count",
+            },
             "value": 1,
         },
         {
@@ -1090,15 +1262,30 @@ def test_data_quality_monitor_regression() -> None:
             "value": 5.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "numerical_feature", "feature_type": "num", "metric": "max"},
+            "labels": {
+                "dataset": "current",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "max",
+            },
             "value": 5,
         },
         {
-            "labels": {"dataset": "current", "feature": "numerical_feature", "feature_type": "num", "metric": "min"},
+            "labels": {
+                "dataset": "current",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "min",
+            },
             "value": 5,
         },
         {
-            "labels": {"dataset": "current", "feature": "numerical_feature", "feature_type": "num", "metric": "mean"},
+            "labels": {
+                "dataset": "current",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "mean",
+            },
             "value": 5.0,
         },
         {
@@ -1120,7 +1307,12 @@ def test_data_quality_monitor_regression() -> None:
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "current", "feature": "numerical_feature", "feature_type": "num", "metric": "std"},
+            "labels": {
+                "dataset": "current",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "std",
+            },
             "value": None,
         },
     ]

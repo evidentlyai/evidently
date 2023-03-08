@@ -60,7 +60,9 @@ from evidently.utils.data_operations import process_columns
             },
         ),
         (
-            pandas.DataFrame({"my_target": [], "predictions_1": [], "predictions_2": []}),
+            pandas.DataFrame(
+                {"my_target": [], "predictions_1": [], "predictions_2": []}
+            ),
             ColumnMapping(
                 target="my_target",
                 prediction=["predictions_1", "predictions_2"],

@@ -1,16 +1,12 @@
 import dataclasses
-from typing import Dict
-from typing import List
+from typing import Dict, List
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import make_hist_for_cat_plot
-from evidently.utils.visualizations import plot_distr_subplots
+from evidently.utils.visualizations import make_hist_for_cat_plot, plot_distr_subplots
 
 
 @dataclasses.dataclass
@@ -24,7 +20,9 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         curr_target = data.current_data[target_name]
         ref_target = None
         if data.reference_data is not None:

@@ -11,13 +11,13 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import (
+    ProbClassificationPerformanceAnalyzer,
+)
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
-from evidently.options import QualityMetricsOptions
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
+from evidently.options import ColorOptions, QualityMetricsOptions
 
 
 class ProbClassConfusionBasedFeatureDistrTable(Widget):
@@ -38,31 +38,49 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
         utility_columns = results.columns.utility_columns
 
         if utility_columns.target is None or utility_columns.prediction is None:
-            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' columns")
+            raise ValueError(
+                f"Widget [{self.title}] requires 'target' or 'prediction' columns"
+            )
 
         if current_data is not None:
             ref_array_prediction = reference_data[utility_columns.prediction].to_numpy()
             ref_prediction_ids = np.argmax(ref_array_prediction, axis=-1)
-            ref_prediction_labels = [utility_columns.prediction[x] for x in ref_prediction_ids]
+            ref_prediction_labels = [
+                utility_columns.prediction[x] for x in ref_prediction_ids
+            ]
             reference_data["prediction_labels"] = ref_prediction_labels
 
-            current_array_prediction = current_data[utility_columns.prediction].to_numpy()
+            current_array_prediction = current_data[
+                utility_columns.prediction
+            ].to_numpy()
             current_prediction_ids = np.argmax(current_array_prediction, axis=-1)
-            current_prediction_labels = [utility_columns.prediction[x] for x in current_prediction_ids]
+            current_prediction_labels = [
+                utility_columns.prediction[x] for x in current_prediction_ids
+            ]
             current_data["prediction_labels"] = current_prediction_labels
 
             additional_graphs_data = []
             params_data = []
 
-            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
+            for feature_name in results.columns.get_all_features_list(
+                cat_before_num=False
+            ):
                 # add data for table in params
                 labels = utility_columns.prediction
 
                 params_data.append(
                     {
                         "details": {
-                            "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
-                            + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                            "parts": [
+                                {"title": "All", "id": "All" + "_" + str(feature_name)}
+                            ]
+                            + [
+                                {
+                                    "title": str(label),
+                                    "id": feature_name + "_" + str(label),
+                                }
+                                for label in labels
+                            ],
                             "insights": [],
                         },
                         "f1": feature_name,
@@ -77,7 +95,9 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     side, q = quantile
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
-                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
+                    reference_data_to_plot = cqt.transform_df(
+                        reference_data, feature_name
+                    )
                     current_data_to_plot = cqt.transform_df(current_data, feature_name)
                 else:
                     reference_data_to_plot = reference_data
@@ -105,16 +125,24 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 )
 
                 for label in labels:
-                    fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
+                    fig = make_subplots(
+                        rows=1, cols=2, subplot_titles=("Reference", "Current")
+                    )
 
                     # REF
                     fig.add_trace(
                         go.Scatter(
-                            x=reference_data[reference_data[utility_columns.target] == label][feature_name],
-                            y=reference_data[reference_data[utility_columns.target] == label][label],
+                            x=reference_data[
+                                reference_data[utility_columns.target] == label
+                            ][feature_name],
+                            y=reference_data[
+                                reference_data[utility_columns.target] == label
+                            ][label],
                             mode="markers",
                             name=str(label) + " (ref)",
-                            marker=dict(size=6, color=color_options.get_current_data_color()),
+                            marker=dict(
+                                size=6, color=color_options.get_current_data_color()
+                            ),
                         ),
                         row=1,
                         col=1,
@@ -122,11 +150,17 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
 
                     fig.add_trace(
                         go.Scatter(
-                            x=reference_data[reference_data[utility_columns.target] != label][feature_name],
-                            y=reference_data[reference_data[utility_columns.target] != label][label],
+                            x=reference_data[
+                                reference_data[utility_columns.target] != label
+                            ][feature_name],
+                            y=reference_data[
+                                reference_data[utility_columns.target] != label
+                            ][label],
                             mode="markers",
                             name="other (ref)",
-                            marker=dict(size=6, color=color_options.get_reference_data_color()),
+                            marker=dict(
+                                size=6, color=color_options.get_reference_data_color()
+                            ),
                         ),
                         row=1,
                         col=1,
@@ -142,8 +176,12 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     # current Prediction
                     fig.add_trace(
                         go.Scatter(
-                            x=current_data[current_data[utility_columns.target] == label][feature_name],
-                            y=current_data[current_data[utility_columns.target] == label][label],
+                            x=current_data[
+                                current_data[utility_columns.target] == label
+                            ][feature_name],
+                            y=current_data[
+                                current_data[utility_columns.target] == label
+                            ][label],
                             mode="markers",
                             name=str(label) + " (curr)",
                             marker=dict(
@@ -158,8 +196,12 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
 
                     fig.add_trace(
                         go.Scatter(
-                            x=current_data[current_data[utility_columns.target] != label][feature_name],
-                            y=current_data[current_data[utility_columns.target] != label][label],
+                            x=current_data[
+                                current_data[utility_columns.target] != label
+                            ][feature_name],
+                            y=current_data[
+                                current_data[utility_columns.target] != label
+                            ][label],
                             mode="markers",
                             name="other (curr)",
                             marker=dict(
@@ -180,12 +222,20 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     )
 
                     # Update xaxis properties
-                    fig.update_xaxes(title_text=feature_name, showgrid=True, row=1, col=1)
-                    fig.update_xaxes(title_text=feature_name, showgrid=True, row=1, col=2)
+                    fig.update_xaxes(
+                        title_text=feature_name, showgrid=True, row=1, col=1
+                    )
+                    fig.update_xaxes(
+                        title_text=feature_name, showgrid=True, row=1, col=2
+                    )
 
                     # Update yaxis properties
-                    fig.update_yaxes(title_text="Probability", showgrid=True, row=1, col=1)
-                    fig.update_yaxes(title_text="Probability", showgrid=True, row=1, col=2)
+                    fig.update_yaxes(
+                        title_text="Probability", showgrid=True, row=1, col=1
+                    )
+                    fig.update_yaxes(
+                        title_text="Probability", showgrid=True, row=1, col=2
+                    )
 
                     fig_json = json.loads(fig.to_json())
 
@@ -199,21 +249,33 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
         else:
             ref_array_prediction = reference_data[utility_columns.prediction].to_numpy()
             ref_prediction_ids = np.argmax(ref_array_prediction, axis=-1)
-            ref_prediction_labels = [utility_columns.prediction[x] for x in ref_prediction_ids]
+            ref_prediction_labels = [
+                utility_columns.prediction[x] for x in ref_prediction_ids
+            ]
             reference_data["prediction_labels"] = ref_prediction_labels
 
             additional_graphs_data = []
             params_data = []
 
-            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
+            for feature_name in results.columns.get_all_features_list(
+                cat_before_num=False
+            ):
                 # add data for table in params
                 labels = utility_columns.prediction
 
                 params_data.append(
                     {
                         "details": {
-                            "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
-                            + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                            "parts": [
+                                {"title": "All", "id": "All" + "_" + str(feature_name)}
+                            ]
+                            + [
+                                {
+                                    "title": str(label),
+                                    "id": feature_name + "_" + str(label),
+                                }
+                                for label in labels
+                            ],
                             "insights": [],
                         },
                         "f1": feature_name,
@@ -221,18 +283,31 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 )
 
                 # create confusion based plots
-                fig = px.histogram(reference_data, x=feature_name, color=utility_columns.target, histnorm="")
-                cut_quantile_options = quality_metrics_options.get_cut_quantile(feature_name)
+                fig = px.histogram(
+                    reference_data,
+                    x=feature_name,
+                    color=utility_columns.target,
+                    histnorm="",
+                )
+                cut_quantile_options = quality_metrics_options.get_cut_quantile(
+                    feature_name
+                )
                 if cut_quantile and cut_quantile_options is not None:
                     side, q = cut_quantile_options
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
-                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
+                    reference_data_to_plot = cqt.transform_df(
+                        reference_data, feature_name
+                    )
                 else:
                     reference_data_to_plot = reference_data
 
                 fig = px.histogram(
-                    reference_data_to_plot, x=feature_name, color=utility_columns.target, histnorm="", barmode="overlay"
+                    reference_data_to_plot,
+                    x=feature_name,
+                    color=utility_columns.target,
+                    histnorm="",
+                    barmode="overlay",
                 )
 
                 fig_json = json.loads(fig.to_json())
@@ -250,23 +325,34 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
 
                     fig.add_trace(
                         go.Scatter(
-                            x=reference_data[reference_data[utility_columns.target] == label][feature_name],
-                            y=reference_data[reference_data[utility_columns.target] == label][label],
+                            x=reference_data[
+                                reference_data[utility_columns.target] == label
+                            ][feature_name],
+                            y=reference_data[
+                                reference_data[utility_columns.target] == label
+                            ][label],
                             mode="markers",
                             name=str(label),
                             marker=dict(
-                                size=6, color=color_options.get_current_data_color()  # set color equal to a variable
+                                size=6,
+                                color=color_options.get_current_data_color(),  # set color equal to a variable
                             ),
                         )
                     )
 
                     fig.add_trace(
                         go.Scatter(
-                            x=reference_data[reference_data[utility_columns.target] != label][feature_name],
-                            y=reference_data[reference_data[utility_columns.target] != label][label],
+                            x=reference_data[
+                                reference_data[utility_columns.target] != label
+                            ][feature_name],
+                            y=reference_data[
+                                reference_data[utility_columns.target] != label
+                            ][label],
                             mode="markers",
                             name="other",
-                            marker=dict(size=6, color=color_options.get_reference_data_color()),
+                            marker=dict(
+                                size=6, color=color_options.get_reference_data_color()
+                            ),
                         )
                     )
 

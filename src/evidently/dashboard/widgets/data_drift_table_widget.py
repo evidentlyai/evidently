@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -10,18 +9,17 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.dashboard.widgets.utils import CutQuantileTransformer
-from evidently.dashboard.widgets.utils import fig_to_json
+from evidently.dashboard.widgets.utils import CutQuantileTransformer, fig_to_json
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
-from evidently.options import DataDriftOptions
-from evidently.options import QualityMetricsOptions
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
+from evidently.options import ColorOptions, DataDriftOptions, QualityMetricsOptions
 
 
 def _generate_feature_params(name: str, data: ColumnDataDriftMetrics) -> dict:
-    if data.current_small_distribution is None or data.reference_small_distribution is None:
+    if (
+        data.current_small_distribution is None
+        or data.reference_small_distribution is None
+    ):
         return {}
 
     current_small_hist = data.current_small_distribution
@@ -108,7 +106,9 @@ def _generate_additional_graph_num_feature(
 
     # plot drift
     reference_mean = np.mean(reference_data[name][np.isfinite(reference_data[name])])
-    reference_std = np.std(reference_data[name][np.isfinite(reference_data[name])], ddof=1)
+    reference_std = np.std(
+        reference_data[name][np.isfinite(reference_data[name])], ddof=1
+    )
     x_title = "Timestamp" if date_column else "Index"
 
     fig = go.Figure()
@@ -139,7 +139,9 @@ def _generate_additional_graph_num_feature(
             ],
             mode="markers",
             name="Current",
-            marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
+            marker=dict(
+                size=0.01, color=color_options.non_visible_color, opacity=0.005
+            ),
             showlegend=False,
         )
     )
@@ -183,7 +185,10 @@ def _generate_additional_graph_num_feature(
 
     # add distributions data
     return [
-        AdditionalGraphInfo(f"{name}_distr", {"data": distr_figure["data"], "layout": distr_figure["layout"]}),
+        AdditionalGraphInfo(
+            f"{name}_distr",
+            {"data": distr_figure["data"], "layout": distr_figure["layout"]},
+        ),
         AdditionalGraphInfo(
             f"{name}_drift",
             {
@@ -191,20 +196,30 @@ def _generate_additional_graph_num_feature(
                 "size": 2,
                 "text": "",
                 "type": "big_graph",
-                "params": {"data": drift_figure["data"], "layout": drift_figure["layout"]},
+                "params": {
+                    "data": drift_figure["data"],
+                    "layout": drift_figure["layout"],
+                },
             },
         ),
     ]
 
 
 def _generate_additional_graph_cat_feature(
-    name: str, reference_data: pd.DataFrame, current_data: pd.DataFrame, color_options: ColorOptions
+    name: str,
+    reference_data: pd.DataFrame,
+    current_data: pd.DataFrame,
+    color_options: ColorOptions,
 ) -> List[AdditionalGraphInfo]:
     fig = go.Figure()
     feature_ref_data = reference_data[name].dropna()
     feature_cur_data = current_data[name].dropna()
-    reference_data_to_plot = list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items())))))
-    current_data_to_plot = list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items())))))
+    reference_data_to_plot = list(
+        reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))
+    )
+    current_data_to_plot = list(
+        reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))
+    )
     fig.add_trace(
         go.Bar(
             x=reference_data_to_plot[1],
@@ -231,7 +246,12 @@ def _generate_additional_graph_cat_feature(
     )
 
     distr_figure = fig_to_json(fig)
-    return [AdditionalGraphInfo(f"{name}_distr", {"data": distr_figure["data"], "layout": distr_figure["layout"]})]
+    return [
+        AdditionalGraphInfo(
+            f"{name}_distr",
+            {"data": distr_figure["data"], "layout": distr_figure["layout"]},
+        )
+    ]
 
 
 class DataDriftTableWidget(Widget):
@@ -264,9 +284,12 @@ class DataDriftTableWidget(Widget):
         df_for_sort = pd.DataFrame()
         df_for_sort["features"] = all_features
         df_for_sort["scores"] = [
-            data_drift_results.metrics.drift_by_columns[feature].drift_score for feature in all_features
+            data_drift_results.metrics.drift_by_columns[feature].drift_score
+            for feature in all_features
         ]
-        all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
+        all_features = df_for_sort.sort_values(
+            "scores", ascending=False
+        ).features.tolist()
         columns = []
 
         # move target and prediction to the top of the table
@@ -286,14 +309,20 @@ class DataDriftTableWidget(Widget):
 
         for feature_name in columns:
             params_data.append(
-                _generate_feature_params(feature_name, data_drift_results.metrics.drift_by_columns[feature_name])
+                _generate_feature_params(
+                    feature_name,
+                    data_drift_results.metrics.drift_by_columns[feature_name],
+                )
             )
 
         # set additionalGraphs
         additional_graphs_data = []
         for feature_name in columns:
             # plot distributions
-            if data_drift_results.metrics.drift_by_columns[feature_name].column_type == "num":
+            if (
+                data_drift_results.metrics.drift_by_columns[feature_name].column_type
+                == "num"
+            ):
                 additional_graphs_data += _generate_additional_graph_num_feature(
                     feature_name,
                     reference_data,
@@ -303,7 +332,10 @@ class DataDriftTableWidget(Widget):
                     quality_metrics_options,
                     color_options,
                 )
-            elif data_drift_results.metrics.drift_by_columns[feature_name].column_type == "cat":
+            elif (
+                data_drift_results.metrics.drift_by_columns[feature_name].column_type
+                == "cat"
+            ):
                 additional_graphs_data += _generate_additional_graph_cat_feature(
                     feature_name, reference_data, current_data, color_options
                 )
@@ -316,7 +348,11 @@ class DataDriftTableWidget(Widget):
             f"Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}"
             f" out of {n_features}). "
         )
-        title_suffix = "Dataset Drift is detected." if dataset_drift else "Dataset Drift is NOT detected."
+        title_suffix = (
+            "Dataset Drift is detected."
+            if dataset_drift
+            else "Dataset Drift is NOT detected."
+        )
 
         return BaseWidgetInfo(
             title=title_prefix + title_suffix,
@@ -335,13 +371,21 @@ class DataDriftTableWidget(Widget):
                         "title": "Reference Distribution",
                         "field": "f3",
                         "type": "histogram",
-                        "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        "options": {
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     },
                     {
                         "title": "Current Distribution",
                         "field": "f4",
                         "type": "histogram",
-                        "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        "options": {
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     },
                     {"title": "Data Drift", "field": "f2"},
                     {"title": "Stat Test", "field": "stattest_name"},

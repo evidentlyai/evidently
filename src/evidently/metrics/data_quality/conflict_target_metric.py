@@ -1,15 +1,10 @@
 import dataclasses
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import CounterData, counter, header_text
 from evidently.utils.data_operations import process_columns
 
 
@@ -30,20 +25,34 @@ class ConflictTargetMetric(Metric[ConflictTargetMetricResults]):
         columns = dataset_columns.get_all_features_list()
         if len(columns) == 0:
             raise ValueError("Target conflict is not defined. No features provided")
-        duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
+        duplicates = data.current_data[
+            data.current_data.duplicated(subset=columns, keep=False)
+        ]
         number_not_stable_target = duplicates.drop(
-            data.current_data[data.current_data.duplicated(subset=columns + [target_name], keep=False)].index
+            data.current_data[
+                data.current_data.duplicated(subset=columns + [target_name], keep=False)
+            ].index
         ).shape[0]
-        share_not_stable_target = round(number_not_stable_target / data.current_data.shape[0], 3)
+        share_not_stable_target = round(
+            number_not_stable_target / data.current_data.shape[0], 3
+        )
         # reference
         number_not_stable_target_ref = None
         share_not_stable_target_ref = None
         if data.reference_data is not None:
-            duplicates_ref = data.reference_data[data.reference_data.duplicated(subset=columns, keep=False)]
+            duplicates_ref = data.reference_data[
+                data.reference_data.duplicated(subset=columns, keep=False)
+            ]
             number_not_stable_target_ref = duplicates_ref.drop(
-                data.reference_data[data.reference_data.duplicated(subset=columns + [target_name], keep=False)].index
+                data.reference_data[
+                    data.reference_data.duplicated(
+                        subset=columns + [target_name], keep=False
+                    )
+                ].index
             ).shape[0]
-            share_not_stable_target_ref = round(number_not_stable_target_ref / data.reference_data.shape[0], 3)
+            share_not_stable_target_ref = round(
+                number_not_stable_target_ref / data.reference_data.shape[0], 3
+            )
         return ConflictTargetMetricResults(
             number_not_stable_target=number_not_stable_target,
             share_not_stable_target=share_not_stable_target,
@@ -62,7 +71,10 @@ class ConflictTargetMetricRenderer(MetricRenderer):
         counters = [
             CounterData(
                 "number of conflicts (current)",
-                self._get_string(metric_result.number_not_stable_target, metric_result.share_not_stable_target),
+                self._get_string(
+                    metric_result.number_not_stable_target,
+                    metric_result.share_not_stable_target,
+                ),
             )
         ]
         if (
@@ -73,7 +85,8 @@ class ConflictTargetMetricRenderer(MetricRenderer):
                 CounterData(
                     "number of conflicts (reference)",
                     self._get_string(
-                        metric_result.number_not_stable_target_ref, metric_result.share_not_stable_target_ref
+                        metric_result.number_not_stable_target_ref,
+                        metric_result.share_not_stable_target_ref,
                     ),
                 )
             )

@@ -4,21 +4,16 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import yaml
 
-from evidently._config import TELEMETRY_ADDRESS
-from evidently._config import TELEMETRY_ENABLED
+from evidently._config import TELEMETRY_ADDRESS, TELEMETRY_ENABLED
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.runner.dashboard_runner import DashboardRunner
-from evidently.runner.dashboard_runner import DashboardRunnerOptions
+from evidently.runner.dashboard_runner import DashboardRunner, DashboardRunnerOptions
 from evidently.runner.loader import SamplingOptions
-from evidently.runner.profile_runner import ProfileRunner
-from evidently.runner.profile_runner import ProfileRunnerOptions
-from evidently.runner.runner import DataOptions
-from evidently.runner.runner import parse_options
+from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
+from evidently.runner.runner import DataOptions, parse_options
 from evidently.telemetry import TelemetrySender
 
 
@@ -68,7 +63,9 @@ def __load_config_file(config_file: str):
     return opts_data
 
 
-def calculate_dashboard(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
+def calculate_dashboard(
+    config: str, reference: str, current: str, output_path: str, report_name: str, **_kv
+):
     usage = dict(type="dashboard")
 
     opts_data = __load_config_file(config)
@@ -117,7 +114,9 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
         sender.send(usage)
 
 
-def calculate_profile(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
+def calculate_profile(
+    config: str, reference: str, current: str, output_path: str, report_name: str, **_kv
+):
     usage = dict(type="profile")
 
     opts_data = __load_config_file(config)
@@ -173,13 +172,24 @@ def help_handler(**_kv):
 
 
 def _add_default_parameters(configurable_parser, default_output_name: str):
-    configurable_parser.add_argument("--reference", dest="reference", required=True, help="Path to reference data")
-    configurable_parser.add_argument("--current", dest="current", help="Path to current data")
-    configurable_parser.add_argument("--output_path", dest="output_path", required=True, help="Path to store report")
     configurable_parser.add_argument(
-        "--report_name", dest="report_name", default=default_output_name, help="Report name"
+        "--reference", dest="reference", required=True, help="Path to reference data"
     )
-    configurable_parser.add_argument("--config", dest="config", required=True, help="Path to configuration")
+    configurable_parser.add_argument(
+        "--current", dest="current", help="Path to current data"
+    )
+    configurable_parser.add_argument(
+        "--output_path", dest="output_path", required=True, help="Path to store report"
+    )
+    configurable_parser.add_argument(
+        "--report_name",
+        dest="report_name",
+        default=default_output_name,
+        help="Report name",
+    )
+    configurable_parser.add_argument(
+        "--config", dest="config", required=True, help="Path to configuration"
+    )
 
 
 logging.basicConfig(level=logging.INFO)

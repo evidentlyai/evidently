@@ -7,8 +7,10 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnValueListMetric
-from evidently.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
-from evidently.metrics.data_quality.column_value_list_metric import ValueListStat
+from evidently.metrics.data_quality.column_value_list_metric import (
+    ColumnValueListMetricResult,
+    ValueListStat,
+)
 from evidently.report import Report
 
 
@@ -73,7 +75,12 @@ from evidently.report import Report
             ),
         ),
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 2, 2, 432],
+                }
+            ),
             None,
             ColumnValueListMetric(column_name="category_feature", values=["d"]),
             ColumnValueListMetricResult(
@@ -92,7 +99,12 @@ from evidently.report import Report
             ),
         ),
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 2, 2, 432],
+                }
+            ),
             None,
             ColumnValueListMetric(column_name="numerical_feature", values=[2]),
             ColumnValueListMetricResult(
@@ -111,8 +123,18 @@ from evidently.report import Report
             ),
         ),
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 2, 2, 432],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 2, 2, 432],
+                }
+            ),
             ColumnValueListMetric(column_name="category_feature"),
             ColumnValueListMetricResult(
                 column_name="category_feature",
@@ -147,7 +169,11 @@ def test_data_quality_value_list_metric_success(
 ) -> None:
     data_mapping = ColumnMapping()
     report = Report(metrics=[metric])
-    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=current_dataset,
+        reference_data=reference_dataset,
+        column_mapping=data_mapping,
+    )
     result = metric.get_result()
     assert result == expected_result
 
@@ -195,7 +221,11 @@ def test_data_quality_value_list_metric_value_errors(
 ) -> None:
     with pytest.raises(ValueError) as error:
         report = Report(metrics=[metric])
-        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_dataset,
+            reference_data=reference_dataset,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
     assert error.value.args[0] == error_message
@@ -258,10 +288,17 @@ def test_data_quality_value_list_metric_value_errors(
     ),
 )
 def test_data_quality_value_list_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueListMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnValueListMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     result_json = report.json()
     assert len(result_json) > 0

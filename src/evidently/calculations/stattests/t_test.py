@@ -27,12 +27,14 @@ from typing import Tuple
 import pandas as pd
 from scipy.stats import ttest_ind
 
-from evidently.calculations.stattests.registry import StatTest
-from evidently.calculations.stattests.registry import register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 
 
 def _t_test2samp(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: str,
+    threshold: float,
 ) -> Tuple[float, bool]:
     """Compute the two-sample t test between reference and current
     Args:

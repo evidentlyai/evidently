@@ -1,23 +1,26 @@
 from abc import ABC
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import List, Optional, Union
 
-from evidently.metrics import RegressionDummyMetric
-from evidently.metrics import RegressionQualityMetric
-from evidently.renderers.base_renderer import TestHtmlInfo
-from evidently.renderers.base_renderer import TestRenderer
-from evidently.renderers.base_renderer import default_renderer
+from evidently.metrics import RegressionDummyMetric, RegressionQualityMetric
+from evidently.renderers.base_renderer import (
+    TestHtmlInfo,
+    TestRenderer,
+    default_renderer,
+)
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import plot_distr
-from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import GroupData
-from evidently.tests.base_test import GroupingTypes
-from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import approx
-from evidently.tests.utils import plot_check
-from evidently.tests.utils import plot_metric_value
-from evidently.tests.utils import regression_perf_plot
+from evidently.tests.base_test import (
+    BaseCheckValueTest,
+    GroupData,
+    GroupingTypes,
+    TestValueCondition,
+)
+from evidently.tests.utils import (
+    approx,
+    plot_check,
+    plot_metric_value,
+    regression_perf_plot,
+)
 from evidently.utils.types import Numeric
 
 REGRESSION_GROUP = GroupData("regression", "Regression", "")
@@ -40,7 +43,16 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = RegressionQualityMetric()
         self.dummy_metric = RegressionDummyMetric()
 
@@ -54,7 +66,9 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         ref_mae = self.metric.get_result().mean_abs_error_ref
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_error_default)
+        return TestValueCondition(
+            lt=self.dummy_metric.get_result().mean_abs_error_default
+        )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_abs_error
@@ -102,7 +116,9 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         ref_mae = self.metric.get_result().mean_abs_perc_error_ref
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_perc_error_default)
+        return TestValueCondition(
+            lt=self.dummy_metric.get_result().mean_abs_perc_error_default
+        )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_abs_perc_error
@@ -118,8 +134,12 @@ class TestValueMAPERenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["mean_abs_perc_error"] = metric_result.mean_abs_perc_error
-        base["parameters"]["mean_abs_perc_error_ref"] = metric_result.mean_abs_perc_error_ref
-        base["parameters"]["mean_abs_perc_error_default"] = metric_result.mean_abs_perc_error_default
+        base["parameters"][
+            "mean_abs_perc_error_ref"
+        ] = metric_result.mean_abs_perc_error_ref
+        base["parameters"][
+            "mean_abs_perc_error_default"
+        ] = metric_result.mean_abs_perc_error_default
         return base
 
     def render_html(self, obj: TestValueMAPE) -> TestHtmlInfo:
@@ -195,7 +215,9 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
-        return TestValueCondition(eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma))
+        return TestValueCondition(
+            eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma)
+        )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_error
@@ -220,9 +242,13 @@ class TestValueMeanErrorRenderer(TestRenderer):
         hist_ref = None
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
-        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+        fig = plot_distr(
+            hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
+        )
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        fig = plot_metric_value(fig, obj.metric.get_result().mean_error, "current mean error")
+        fig = plot_metric_value(
+            fig, obj.metric.get_result().mean_error, "current mean error"
+        )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -236,7 +262,9 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
         abs_error_max_ref = self.metric.get_result().abs_error_max_ref
         if abs_error_max_ref is not None:
             return TestValueCondition(lte=approx(abs_error_max_ref, relative=0.1))
-        return TestValueCondition(lte=self.dummy_metric.get_result().abs_error_max_default)
+        return TestValueCondition(
+            lte=self.dummy_metric.get_result().abs_error_max_default
+        )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().abs_error_max
@@ -265,7 +293,9 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
 
-        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+        fig = plot_distr(
+            hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
+        )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -285,7 +315,9 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().r2_score
 
     def get_description(self, value: Numeric) -> str:
-        return f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
+        return (
+            f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestValueR2Score)

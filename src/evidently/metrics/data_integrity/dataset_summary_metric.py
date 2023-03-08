@@ -1,26 +1,22 @@
 import dataclasses
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Union
+from typing import List, Optional, Sequence, Union
 
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.calculations.data_integration import get_number_of_all_pandas_missed_values
-from evidently.calculations.data_integration import get_number_of_almost_constant_columns
-from evidently.calculations.data_integration import get_number_of_almost_duplicated_columns
-from evidently.calculations.data_integration import get_number_of_constant_columns
-from evidently.calculations.data_integration import get_number_of_duplicated_columns
-from evidently.calculations.data_integration import get_number_of_empty_columns
+from evidently.base_metric import InputData, Metric
+from evidently.calculations.data_integration import (
+    get_number_of_all_pandas_missed_values,
+    get_number_of_almost_constant_columns,
+    get_number_of_almost_duplicated_columns,
+    get_number_of_constant_columns,
+    get_number_of_duplicated_columns,
+    get_number_of_empty_columns,
+)
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import table_data
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import header_text, table_data
 from evidently.utils.data_operations import process_columns
 
 
@@ -65,11 +61,17 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
     almost_duplicated_threshold: float
     almost_constant_threshold: float
 
-    def __init__(self, almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95):
+    def __init__(
+        self,
+        almost_duplicated_threshold: float = 0.95,
+        almost_constant_threshold: float = 0.95,
+    ):
         self.almost_duplicated_threshold = almost_duplicated_threshold
         self.almost_constant_threshold = almost_constant_threshold
 
-    def _calculate_dataset_common_stats(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetSummary:
+    def _calculate_dataset_common_stats(
+        self, dataset: pd.DataFrame, column_mapping: ColumnMapping
+    ) -> DatasetSummary:
         columns = process_columns(dataset, column_mapping)
         return DatasetSummary(
             target=columns.utility_columns.target,
@@ -100,17 +102,24 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
         )
 
     def calculate(self, data: InputData) -> DatasetSummaryMetricResult:
-        if self.almost_duplicated_threshold < 0.5 or self.almost_duplicated_threshold > 1:
+        if (
+            self.almost_duplicated_threshold < 0.5
+            or self.almost_duplicated_threshold > 1
+        ):
             raise ValueError("Almost duplicated threshold should be in range [0.5, 1]")
 
         if self.almost_constant_threshold < 0.5 or self.almost_duplicated_threshold > 1:
             raise ValueError("Almost constant threshold should be in range [0.5, 1]")
 
-        current = self._calculate_dataset_common_stats(data.current_data, data.column_mapping)
+        current = self._calculate_dataset_common_stats(
+            data.current_data, data.column_mapping
+        )
         reference = None
 
         if data.reference_data is not None:
-            reference = self._calculate_dataset_common_stats(data.reference_data, data.column_mapping)
+            reference = self._calculate_dataset_common_stats(
+                data.reference_data, data.column_mapping
+            )
 
         return DatasetSummaryMetricResult(
             current=current,
@@ -142,15 +151,24 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
             ["number of columns", metric_result.current.number_of_columns],
             ["number of rows", metric_result.current.number_of_rows],
             ["missing values", metric_result.current.number_of_missing_values],
-            ["categorical columns", metric_result.current.number_of_categorical_columns],
+            [
+                "categorical columns",
+                metric_result.current.number_of_categorical_columns,
+            ],
             ["numeric columns", metric_result.current.number_of_numeric_columns],
             ["text columns", metric_result.current.number_of_text_columns],
             ["datetime columns", metric_result.current.number_of_datetime_columns],
             ["empty columns", metric_result.current.number_of_empty_columns],
             ["constant columns", metric_result.current.number_of_constant_columns],
-            ["almost constant features", metric_result.current.number_of_almost_constant_columns],
+            [
+                "almost constant features",
+                metric_result.current.number_of_almost_constant_columns,
+            ],
             ["duplicated columns", metric_result.current.number_of_duplicated_columns],
-            ["almost duplicated features", metric_result.current.number_of_almost_duplicated_columns],
+            [
+                "almost duplicated features",
+                metric_result.current.number_of_almost_duplicated_columns,
+            ],
         )
         if metric_result.reference is not None:
             column_names.append("Reference")

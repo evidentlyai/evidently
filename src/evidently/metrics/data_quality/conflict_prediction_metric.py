@@ -1,15 +1,10 @@
 import dataclasses
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import CounterData, counter, header_text
 from evidently.utils.data_operations import process_columns
 
 
@@ -34,22 +29,36 @@ class ConflictPredictionMetric(Metric[ConflictPredictionMetricResults]):
             prediction_columns = [prediction_name]
         elif isinstance(prediction_name, list):
             prediction_columns = prediction_name
-        duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
+        duplicates = data.current_data[
+            data.current_data.duplicated(subset=columns, keep=False)
+        ]
         number_not_stable_prediction = duplicates.drop(
-            data.current_data[data.current_data.duplicated(subset=columns + prediction_columns, keep=False)].index
+            data.current_data[
+                data.current_data.duplicated(
+                    subset=columns + prediction_columns, keep=False
+                )
+            ].index
         ).shape[0]
-        share_not_stable_prediction = round(number_not_stable_prediction / data.current_data.shape[0], 3)
+        share_not_stable_prediction = round(
+            number_not_stable_prediction / data.current_data.shape[0], 3
+        )
         # reference
         number_not_stable_prediction_ref = None
         share_not_stable_prediction_ref = None
         if data.reference_data is not None:
-            duplicates_ref = data.reference_data[data.reference_data.duplicated(subset=columns, keep=False)]
+            duplicates_ref = data.reference_data[
+                data.reference_data.duplicated(subset=columns, keep=False)
+            ]
             number_not_stable_prediction_ref = duplicates_ref.drop(
                 data.reference_data[
-                    data.reference_data.duplicated(subset=columns + prediction_columns, keep=False)
+                    data.reference_data.duplicated(
+                        subset=columns + prediction_columns, keep=False
+                    )
                 ].index
             ).shape[0]
-            share_not_stable_prediction_ref = round(number_not_stable_prediction_ref / data.reference_data.shape[0], 3)
+            share_not_stable_prediction_ref = round(
+                number_not_stable_prediction_ref / data.reference_data.shape[0], 3
+            )
         return ConflictPredictionMetricResults(
             number_not_stable_prediction=number_not_stable_prediction,
             share_not_stable_prediction=share_not_stable_prediction,
@@ -68,7 +77,10 @@ class ConflictPredictionMetricRenderer(MetricRenderer):
         counters = [
             CounterData(
                 "number of conflicts (current)",
-                self._get_string(metric_result.number_not_stable_prediction, metric_result.share_not_stable_prediction),
+                self._get_string(
+                    metric_result.number_not_stable_prediction,
+                    metric_result.share_not_stable_prediction,
+                ),
             )
         ]
         if (
@@ -79,7 +91,8 @@ class ConflictPredictionMetricRenderer(MetricRenderer):
                 CounterData(
                     "number of conflicts (reference)",
                     self._get_string(
-                        metric_result.number_not_stable_prediction_ref, metric_result.share_not_stable_prediction_ref
+                        metric_result.number_not_stable_prediction_ref,
+                        metric_result.share_not_stable_prediction_ref,
                     ),
                 )
             )

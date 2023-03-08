@@ -1,7 +1,6 @@
 try:
     import os
-    from datetime import datetime
-    from datetime import timedelta
+    from datetime import datetime, timedelta
 
     import pandas as pd
     from airflow import DAG
@@ -49,7 +48,9 @@ def drift_analysis_execute(**context):
     data_columns = context.get("ti").xcom_pull(key="data_columns")
 
     boston_data_drift_report = Report(metrics=[DataDriftPreset()])
-    boston_data_drift_report.run(reference_data=data[:200], current_data=data[200:], column_mapping=data_columns)
+    boston_data_drift_report.run(
+        reference_data=data[:200], current_data=data[200:], column_mapping=data_columns
+    )
 
     try:
         os.mkdir(dir_path)
@@ -75,7 +76,9 @@ with DAG(
         task_id="load_data_execute",
         python_callable=load_data_execute,
         provide_context=True,
-        op_kwargs={"parameter_variable": "parameter_value"},  # not used now, may be used to specify data
+        op_kwargs={
+            "parameter_variable": "parameter_value"
+        },  # not used now, may be used to specify data
     )
 
     drift_analysis_execute = PythonOperator(

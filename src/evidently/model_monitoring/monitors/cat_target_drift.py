@@ -1,9 +1,11 @@
 from typing import Generator
 
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.model_monitoring.monitoring import MetricsType
-from evidently.model_monitoring.monitoring import ModelMonitor
-from evidently.model_monitoring.monitoring import ModelMonitoringMetric
+from evidently.model_monitoring.monitoring import (
+    MetricsType,
+    ModelMonitor,
+    ModelMonitoringMetric,
+)
 
 
 class CatTargetDriftMonitorMetrics:
@@ -30,8 +32,12 @@ class CatTargetDriftMonitor(ModelMonitor):
         results = CatTargetDriftAnalyzer.get_results(analyzer_results)
 
         # quantity of rows in income data
-        yield CatTargetDriftMonitorMetrics.count.create(results.reference_data_count, dict(dataset="prediction"))
-        yield CatTargetDriftMonitorMetrics.count.create(results.current_data_count, dict(dataset="current"))
+        yield CatTargetDriftMonitorMetrics.count.create(
+            results.reference_data_count, dict(dataset="prediction")
+        )
+        yield CatTargetDriftMonitorMetrics.count.create(
+            results.current_data_count, dict(dataset="current")
+        )
 
         if results.prediction_metrics:
             yield CatTargetDriftMonitorMetrics.drift.create(
@@ -39,4 +45,6 @@ class CatTargetDriftMonitor(ModelMonitor):
             )
 
         if results.target_metrics:
-            yield CatTargetDriftMonitorMetrics.drift.create(results.target_metrics.drift_score, dict(kind="target"))
+            yield CatTargetDriftMonitorMetrics.drift.create(
+                results.target_metrics.drift_score, dict(kind="target")
+            )

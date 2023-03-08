@@ -1,15 +1,14 @@
 """Common methods for monitoring testing"""
 
 from collections import defaultdict
-from typing import Any
-from typing import Dict
-from typing import Generator
-from typing import List
+from typing import Any, Dict, Generator, List
 
 from evidently.model_monitoring.monitoring import MetricsType
 
 
-def collect_metrics_results(metrics: Generator[MetricsType, None, None]) -> Dict[str, List[Dict[str, Any]]]:
+def collect_metrics_results(
+    metrics: Generator[MetricsType, None, None]
+) -> Dict[str, List[Dict[str, Any]]]:
     """Represent monitoring results as a dict with all collected metrics. Group by a metric name.
 
     Returns a dict like:

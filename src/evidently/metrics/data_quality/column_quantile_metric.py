@@ -1,22 +1,20 @@
 import dataclasses
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import HistogramData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import get_histogram_figure_with_quantile
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.visualizations import Distribution
-from evidently.utils.visualizations import get_distribution_for_column
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import (
+    CounterData,
+    HistogramData,
+    counter,
+    get_histogram_figure_with_quantile,
+    header_text,
+    plotly_figure,
+)
+from evidently.utils.visualizations import Distribution, get_distribution_for_column
 
 
 @dataclasses.dataclass
@@ -54,18 +52,24 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
         current_column = data.current_data[self.column_name]
 
         if not pd.api.types.is_numeric_dtype(current_column.dtype):
-            raise ValueError(f"Column '{self.column_name}' in current data is not numeric.")
+            raise ValueError(
+                f"Column '{self.column_name}' in current data is not numeric."
+            )
 
         current_quantile = data.current_data[self.column_name].quantile(self.quantile)
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column '{self.column_name}' is not in reference data.")
+                raise ValueError(
+                    f"Column '{self.column_name}' is not in reference data."
+                )
 
             reference_column = data.reference_data[self.column_name]
 
             if not pd.api.types.is_numeric_dtype(reference_column.dtype):
-                raise ValueError(f"Column '{self.column_name}' in reference data is not numeric.")
+                raise ValueError(
+                    f"Column '{self.column_name}' in reference data is not numeric."
+                )
 
             reference_quantile = reference_column.quantile(self.quantile)
 
@@ -97,17 +101,29 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_counters(metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.float(label="Quantile", value=metric_result.quantile, precision=3),
-            CounterData.float(label="Quantile value (current)", value=metric_result.current, precision=3),
+            CounterData.float(
+                label="Quantile", value=metric_result.quantile, precision=3
+            ),
+            CounterData.float(
+                label="Quantile value (current)",
+                value=metric_result.current,
+                precision=3,
+            ),
         ]
 
         if metric_result.reference is not None:
             counters.append(
-                CounterData.float(label="Quantile value (reference)", value=metric_result.reference, precision=3),
+                CounterData.float(
+                    label="Quantile value (reference)",
+                    value=metric_result.reference,
+                    precision=3,
+                ),
             )
         return counter(counters=counters)
 
-    def _get_histogram(self, metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
+    def _get_histogram(
+        self, metric_result: ColumnQuantileMetricResult
+    ) -> BaseWidgetInfo:
         if metric_result.reference_distribution is not None:
             reference_histogram_data: Optional[HistogramData] = HistogramData(
                 name="reference",

@@ -6,8 +6,10 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import DatasetSummaryMetric
-from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummary
-from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
+from evidently.metrics.data_integrity.dataset_summary_metric import (
+    DatasetSummary,
+    DatasetSummaryMetricResult,
+)
 from evidently.report import Report
 
 
@@ -49,7 +51,9 @@ from evidently.report import Report
         ),
         (
             pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
-            pd.DataFrame({"target": [1, 2, 3, 4, 5], "prediction": [np.NaN, 2, 3, 4, 5]}),
+            pd.DataFrame(
+                {"target": [1, 2, 3, 4, 5], "prediction": [np.NaN, 2, 3, 4, 5]}
+            ),
             ColumnMapping(),
             DatasetSummaryMetric(),
             DatasetSummaryMetricResult(
@@ -96,7 +100,10 @@ from evidently.report import Report
                     number_of_empty_rows=0,
                     number_of_empty_columns=0,
                     number_of_duplicated_rows=0,
-                    columns_type={"target": np.dtype("int64"), "prediction": np.dtype("float64")},
+                    columns_type={
+                        "target": np.dtype("int64"),
+                        "prediction": np.dtype("float64"),
+                    },
                     nans_by_columns={"target": 0, "prediction": 1},
                     number_uniques_by_columns={"target": 5, "prediction": 4},
                 ),
@@ -112,7 +119,11 @@ def test_dataset_summary_metric_success(
     expected_result: DatasetSummaryMetricResult,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     result = metric.get_result()
     assert result == expected_result
 
@@ -147,7 +158,11 @@ def test_dataset_summary_metric_value_error(
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
 
@@ -188,7 +203,9 @@ def test_dataset_summary_metric_value_error(
         ),
         (
             pd.DataFrame({"test1": [1, 2, 3], "test2": [1, 2, 3], "test3": [1, 1, 1]}),
-            pd.DataFrame({"test4": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}),
+            pd.DataFrame(
+                {"test4": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}
+            ),
             ColumnMapping(),
             DatasetSummaryMetric(almost_duplicated_threshold=0.9),
             {
@@ -249,7 +266,11 @@ def test_dataset_summary_metric_with_report(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0

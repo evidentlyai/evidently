@@ -32,7 +32,9 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             ColumnMapping(),
             None,
             BaseWidgetInfo(
-                type="big_graph", title="Target Drift: not detected, drift score=0.999961 (K-S p_value)", size=2
+                type="big_graph",
+                title="Target Drift: not detected, drift score=0.999961 (K-S p_value)",
+                size=2,
             ),
         ),
         (
@@ -41,7 +43,9 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             ColumnMapping(),
             "target",
             BaseWidgetInfo(
-                type="big_graph", title="Target Drift: not detected, drift score=0.999961 (K-S p_value)", size=2
+                type="big_graph",
+                title="Target Drift: not detected, drift score=0.999961 (K-S p_value)",
+                size=2,
             ),
         ),
         (
@@ -57,7 +61,9 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             ColumnMapping(),
             "prediction",
             BaseWidgetInfo(
-                type="big_graph", title="Prediction Drift: not detected, drift score=0.999961 (K-S p_value)", size=2
+                type="big_graph",
+                title="Prediction Drift: not detected, drift score=0.999961 (K-S p_value)",
+                size=2,
             ),
         ),
         (
@@ -83,7 +89,12 @@ def test_num_target_drift_widget_simple_case(
     analyzer = NumTargetDriftAnalyzer()
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
-    result = widget.calculate(reference_data, current_data, data_mapping, {NumTargetDriftAnalyzer: analyzer_results})
+    result = widget.calculate(
+        reference_data,
+        current_data,
+        data_mapping,
+        {NumTargetDriftAnalyzer: analyzer_results},
+    )
 
     if expected_result is not None:
         # we have some widget for visualization
@@ -136,7 +147,14 @@ def test_cat_output_widget_value_error(
     else:
         current_data_for_analyzer = current_data
 
-    analyzer_results = analyzer.calculate(reference_data, current_data_for_analyzer, data_mapping)
+    analyzer_results = analyzer.calculate(
+        reference_data, current_data_for_analyzer, data_mapping
+    )
 
     with pytest.raises(ValueError):
-        widget.calculate(reference_data, current_data, data_mapping, {NumTargetDriftAnalyzer: analyzer_results})
+        widget.calculate(
+            reference_data,
+            current_data,
+            data_mapping,
+            {NumTargetDriftAnalyzer: analyzer_results},
+        )

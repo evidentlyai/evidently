@@ -1,10 +1,7 @@
 import copy
 import dataclasses
 import json
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -12,17 +9,18 @@ import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.calculations.regression_performance import error_bias_table
-from evidently.calculations.regression_performance import error_with_quantiles
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.base_metric import InputData, Metric
+from evidently.calculations.regression_performance import (
+    error_bias_table,
+    error_with_quantiles,
+)
+from evidently.features.non_letter_character_percentage_feature import (
+    NonLetterCharacterPercentage,
+)
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
@@ -49,10 +47,17 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     top_error: float
     columns: Optional[List[str]]
     text_features_gen: Optional[
-        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+        Dict[
+            str,
+            Dict[
+                str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]
+            ],
+        ]
     ]
 
-    def __init__(self, columns: Optional[List[str]] = None, top_error: Optional[float] = None):
+    def __init__(
+        self, columns: Optional[List[str]] = None, top_error: Optional[float] = None
+    ):
         if top_error is None:
             self.top_error = self.TOP_ERROR_DEFAULT
 
@@ -64,13 +69,20 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+            text_cols = [
+                col.column_name for col in data_definition.get_columns("text_features")
+            ]
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
+                col_dict: Dict[
+                    str,
+                    Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
+                ] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
-                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
+                col_dict[
+                    f"{col}: Non Letter Character %"
+                ] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
 
                 text_features_gen_result += [
@@ -114,10 +126,16 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             raise ValueError("Prediction column should be present.")
 
         if not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
 
-        num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
-        cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
+        num_feature_names = list(
+            np.intersect1d(dataset_columns.num_feature_names, columns)
+        )
+        cat_feature_names = list(
+            np.intersect1d(dataset_columns.cat_feature_names, columns)
+        )
         # process text columns
         if (
             self.text_features_gen is not None
@@ -127,11 +145,20 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
                 num_feature_names += list(self.text_features_gen[col].keys())
                 columns += list(self.text_features_gen[col].keys())
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
+                    [
+                        data.get_current_column(x.feature_name())
+                        for x in list(self.text_features_gen[col].values())
+                    ],
                     axis=1,
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
-                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+                curr_df = pd.concat(
+                    [
+                        curr_df.reset_index(drop=True),
+                        curr_text_df.reset_index(drop=True),
+                    ],
+                    axis=1,
+                )
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
@@ -142,16 +169,30 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
                         axis=1,
                     )
                     ref_text_df.columns = list(self.text_features_gen[col].keys())
-                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
+                    ref_df = pd.concat(
+                        [
+                            ref_df.reset_index(drop=True),
+                            ref_text_df.reset_index(drop=True),
+                        ],
+                        axis=1,
+                    )
         columns_ext = np.union1d(columns, [target_name, prediction_name])
-        curr_df = self._make_df_for_plot(curr_df[columns_ext], target_name, prediction_name, None)
+        curr_df = self._make_df_for_plot(
+            curr_df[columns_ext], target_name, prediction_name, None
+        )
 
         if ref_df is not None:
-            ref_df = self._make_df_for_plot(ref_df[columns_ext], target_name, prediction_name, None)
+            ref_df = self._make_df_for_plot(
+                ref_df[columns_ext], target_name, prediction_name, None
+            )
 
-        err_quantiles = error_with_quantiles(curr_df, prediction_name, target_name, quantile=self.top_error)
+        err_quantiles = error_with_quantiles(
+            curr_df, prediction_name, target_name, quantile=self.top_error
+        )
 
-        feature_bias = error_bias_table(curr_df, err_quantiles, num_feature_names, cat_feature_names)
+        feature_bias = error_bias_table(
+            curr_df, err_quantiles, num_feature_names, cat_feature_names
+        )
         error_bias = {
             feature: dict(feature_type=bias.feature_type, **bias.as_dict("current_"))
             for feature, bias in feature_bias.items()
@@ -164,8 +205,12 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             error_bias = None
 
         if ref_df is not None:
-            ref_err_quantiles = error_with_quantiles(ref_df, prediction_name, target_name, quantile=self.top_error)
-            ref_feature_bias = error_bias_table(ref_df, ref_err_quantiles, num_feature_names, cat_feature_names)
+            ref_err_quantiles = error_with_quantiles(
+                ref_df, prediction_name, target_name, quantile=self.top_error
+            )
+            ref_feature_bias = error_bias_table(
+                ref_df, ref_err_quantiles, num_feature_names, cat_feature_names
+            )
             ref_error_bias = {
                 feature: dict(feature_type=bias.feature_type, **bias.as_dict("ref_"))
                 for feature, bias in ref_feature_bias.items()
@@ -199,13 +244,23 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
     @staticmethod
     def _make_df_for_plot(
-        df: pd.DataFrame, target_name: str, prediction_name: str, datetime_column_name: Optional[str]
+        df: pd.DataFrame,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
     ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[target_name, prediction_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
-        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
+        result.dropna(
+            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
+        )
         return result.sort_index()
 
 
@@ -237,12 +292,20 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
             # create subplots
             reference_data["dataset"] = "Reference"
             reference_data["Error bias"] = list(
-                map(self._error_bias_string(ref_quantile_top, ref_quantile_other), ref_error)
+                map(
+                    self._error_bias_string(ref_quantile_top, ref_quantile_other),
+                    ref_error,
+                )
             )
 
             current_data["dataset"] = "Current"
             current_data["Error bias"] = list(
-                map(self._error_bias_string(current_quantile_top, current_quantile_other), current_error)
+                map(
+                    self._error_bias_string(
+                        current_quantile_top, current_quantile_other
+                    ),
+                    current_error,
+                )
             )
             merged_data = pd.concat([reference_data, current_data])
 
@@ -270,7 +333,9 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 feature_hist_json = json.loads(feature_hist.to_json())
 
-                segment_fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
+                segment_fig = make_subplots(
+                    rows=1, cols=2, subplot_titles=("Reference", "Current")
+                )
 
                 segment_fig.add_trace(
                     go.Scatter(
@@ -279,8 +344,14 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                         mode="markers",
                         marker=dict(
                             size=6,
-                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
+                            cmax=max(
+                                max(reference_data[feature_name]),
+                                max(current_data[feature_name]),
+                            ),
+                            cmin=min(
+                                min(reference_data[feature_name]),
+                                min(current_data[feature_name]),
+                            ),
                             color=reference_data[feature_name],
                         ),
                         showlegend=False,
@@ -296,8 +367,14 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                         mode="markers",
                         marker=dict(
                             size=6,
-                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
+                            cmax=max(
+                                max(reference_data[feature_name]),
+                                max(current_data[feature_name]),
+                            ),
+                            cmin=min(
+                                min(reference_data[feature_name]),
+                                min(current_data[feature_name]),
+                            ),
                             color=current_data[feature_name],
                             colorbar=dict(title=feature_name),
                         ),
@@ -308,24 +385,37 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 )
 
                 # Update xaxis properties
-                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=1)
-                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=2)
+                segment_fig.update_xaxes(
+                    title_text="Actual Value", showgrid=True, row=1, col=1
+                )
+                segment_fig.update_xaxes(
+                    title_text="Actual Value", showgrid=True, row=1, col=2
+                )
 
                 # Update yaxis properties
-                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=1)
-                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=2)
+                segment_fig.update_yaxes(
+                    title_text="Predicted Value", showgrid=True, row=1, col=1
+                )
+                segment_fig.update_yaxes(
+                    title_text="Predicted Value", showgrid=True, row=1, col=2
+                )
 
                 segment_json = json.loads(segment_fig.to_json())
 
                 if result.error_bias is None:
-                    raise ValueError("RegressionErrorBiasTableRenderer got no error_bias value")
+                    raise ValueError(
+                        "RegressionErrorBiasTableRenderer got no error_bias value"
+                    )
 
                 params_data.append(
                     {
                         "details": {
                             "parts": [
                                 {"title": "Error bias", "id": feature_name + "_hist"},
-                                {"title": "Predicted vs Actual", "id": feature_name + "_segm"},
+                                {
+                                    "title": "Predicted vs Actual",
+                                    "id": feature_name + "_segm",
+                                },
                             ],
                             "insights": [],
                         },
@@ -335,23 +425,36 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                         "f4": round(result.error_bias[feature_name]["ref_under"], 2),
                         "f5": round(result.error_bias[feature_name]["ref_over"], 2),
                         "f6": round(result.error_bias[feature_name]["ref_range"], 2),
-                        "f7": round(result.error_bias[feature_name]["current_majority"], 2),
-                        "f8": round(result.error_bias[feature_name]["current_under"], 2),
+                        "f7": round(
+                            result.error_bias[feature_name]["current_majority"], 2
+                        ),
+                        "f8": round(
+                            result.error_bias[feature_name]["current_under"], 2
+                        ),
                         "f9": round(result.error_bias[feature_name]["current_over"], 2),
-                        "f10": round(result.error_bias[feature_name]["current_range"], 2),
+                        "f10": round(
+                            result.error_bias[feature_name]["current_range"], 2
+                        ),
                     }
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_hist",
-                        {"data": feature_hist_json["data"], "layout": feature_hist_json["layout"]},
+                        {
+                            "data": feature_hist_json["data"],
+                            "layout": feature_hist_json["layout"],
+                        },
                     )
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_segm", {"data": segment_json["data"], "layout": segment_json["layout"]}
+                        feature_name + "_segm",
+                        {
+                            "data": segment_json["data"],
+                            "layout": segment_json["layout"],
+                        },
                     )
                 )
 
@@ -383,14 +486,19 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 segment_json = json.loads(segment_fig.to_json())
 
                 if result.error_bias is None:
-                    raise ValueError("RegressionErrorBiasTableRenderer got no error_bias value")
+                    raise ValueError(
+                        "RegressionErrorBiasTableRenderer got no error_bias value"
+                    )
 
                 params_data.append(
                     {
                         "details": {
                             "parts": [
                                 {"title": "Error bias", "id": feature_name + "_hist"},
-                                {"title": "Predicted vs Actual", "id": feature_name + "_segm"},
+                                {
+                                    "title": "Predicted vs Actual",
+                                    "id": feature_name + "_segm",
+                                },
                             ],
                             "insights": [],
                         },
@@ -410,13 +518,20 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_hist",
-                        {"data": feature_hist_json["data"], "layout": feature_hist_json["layout"]},
+                        {
+                            "data": feature_hist_json["data"],
+                            "layout": feature_hist_json["layout"],
+                        },
                     )
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_segm", {"data": segment_json["data"], "layout": segment_json["layout"]}
+                        feature_name + "_segm",
+                        {
+                            "data": segment_json["data"],
+                            "layout": segment_json["layout"],
+                        },
                     )
                 )
             if result.columns is None:
@@ -466,7 +581,9 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
             params_data = []
             additional_graphs_data = []
 
-            for feature_name in result.num_feature_names:  # + cat_feature_names: #feature_names:
+            for (
+                feature_name
+            ) in result.num_feature_names:  # + cat_feature_names: #feature_names:
 
                 feature_type = "num"
 
@@ -476,44 +593,61 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                     color="Error bias",
                     histnorm="percent",
                     barmode="overlay",
-                    category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]},
+                    category_orders={
+                        "Error bias": ["Underestimation", "Overestimation", "Majority"]
+                    },
                 )
 
                 hist_figure = json.loads(hist.to_json())
 
-                segm = px.scatter(current_data, x=target_name, y=prediction_name, color=feature_name)
+                segm = px.scatter(
+                    current_data, x=target_name, y=prediction_name, color=feature_name
+                )
                 segm_figure = json.loads(segm.to_json())
 
                 if result.error_bias is None:
-                    raise ValueError("Widget RegressionErrorBiasTableRenderer got no error_bias value")
+                    raise ValueError(
+                        "Widget RegressionErrorBiasTableRenderer got no error_bias value"
+                    )
 
                 params_data.append(
                     {
                         "details": {
                             "parts": [
                                 {"title": "Error bias", "id": feature_name + "_hist"},
-                                {"title": "Predicted vs Actual", "id": feature_name + "_segm"},
+                                {
+                                    "title": "Predicted vs Actual",
+                                    "id": feature_name + "_segm",
+                                },
                             ],
                             "insights": [],
                         },
                         "f1": feature_name,
                         "f2": feature_type,
-                        "f3": round(result.error_bias[feature_name]["current_majority"], 2),
-                        "f4": round(result.error_bias[feature_name]["current_under"], 2),
+                        "f3": round(
+                            result.error_bias[feature_name]["current_majority"], 2
+                        ),
+                        "f4": round(
+                            result.error_bias[feature_name]["current_under"], 2
+                        ),
                         "f5": round(result.error_bias[feature_name]["current_over"], 2),
-                        "f6": round(result.error_bias[feature_name]["current_range"], 2),
+                        "f6": round(
+                            result.error_bias[feature_name]["current_range"], 2
+                        ),
                     }
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_hist", {"data": hist_figure["data"], "layout": hist_figure["layout"]}
+                        feature_name + "_hist",
+                        {"data": hist_figure["data"], "layout": hist_figure["layout"]},
                     )
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_segm", {"data": segm_figure["data"], "layout": segm_figure["layout"]}
+                        feature_name + "_segm",
+                        {"data": segm_figure["data"], "layout": segm_figure["layout"]},
                     )
                 )
 
@@ -527,27 +661,38 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                     color="Error bias",
                     histnorm="percent",
                     barmode="overlay",
-                    category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]},
+                    category_orders={
+                        "Error bias": ["Underestimation", "Overestimation", "Majority"]
+                    },
                 )
 
                 hist_figure = json.loads(hist.to_json())
 
                 initial_type = current_data[feature_name].dtype
                 current_data[feature_name] = current_data[feature_name].astype(str)
-                segm = px.scatter(current_data, x=target_name, y=prediction_name, color=feature_name)
-                current_data[feature_name] = current_data[feature_name].astype(initial_type)
+                segm = px.scatter(
+                    current_data, x=target_name, y=prediction_name, color=feature_name
+                )
+                current_data[feature_name] = current_data[feature_name].astype(
+                    initial_type
+                )
 
                 segm_figure = json.loads(segm.to_json())
 
                 if result.error_bias is None:
-                    raise ValueError("RegressionErrorBiasTableRenderer got no error_bias value")
+                    raise ValueError(
+                        "RegressionErrorBiasTableRenderer got no error_bias value"
+                    )
 
                 params_data.append(
                     {
                         "details": {
                             "parts": [
                                 {"title": "Error bias", "id": feature_name + "_hist"},
-                                {"title": "Predicted vs Actual", "id": feature_name + "_segm"},
+                                {
+                                    "title": "Predicted vs Actual",
+                                    "id": feature_name + "_segm",
+                                },
                             ],
                             "insights": [],
                         },
@@ -562,13 +707,15 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_hist", {"data": hist_figure["data"], "layout": hist_figure["layout"]}
+                        feature_name + "_hist",
+                        {"data": hist_figure["data"], "layout": hist_figure["layout"]},
                     )
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_segm", {"data": segm_figure["data"], "layout": segm_figure["layout"]}
+                        feature_name + "_segm",
+                        {"data": segm_figure["data"], "layout": segm_figure["layout"]},
                     )
                 )
 

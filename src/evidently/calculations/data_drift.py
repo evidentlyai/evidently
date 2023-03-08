@@ -1,11 +1,7 @@
 """Methods and types for data drift calculations."""
 
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Union
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -13,10 +9,8 @@ import pandas as pd
 from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.visualizations import Distribution
-from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.data_operations import DatasetColumns, recognize_column_type
+from evidently.utils.visualizations import Distribution, get_distribution_for_column
 
 
 @dataclass
@@ -84,11 +78,15 @@ def get_one_column_drift(
 
     if column_type is None:
         column_type = recognize_column_type(
-            dataset=reference_data.append(current_data), column_name=column_name, columns=dataset_columns
+            dataset=reference_data.append(current_data),
+            column_name=column_name,
+            columns=dataset_columns,
         )
 
     if column_type not in ("cat", "num", "text"):
-        raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
+        raise ValueError(
+            f"Cannot calculate drift metric for column '{column_name}' with type {column_type}"
+        )
 
     stattest = None
 
@@ -117,7 +115,9 @@ def get_one_column_drift(
     current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if current_column.empty:
-        raise ValueError(f"An empty column '{column_name}' was provided for drift calculation in the current dataset.")
+        raise ValueError(
+            f"An empty column '{column_name}' was provided for drift calculation in the current dataset."
+        )
 
     current_distribution = None
     reference_distribution = None
@@ -135,13 +135,21 @@ def get_one_column_drift(
 
     if column_type == "num":
         if not pd.api.types.is_numeric_dtype(reference_column):
-            raise ValueError(f"Column '{column_name}' in reference dataset should contain numerical values only.")
+            raise ValueError(
+                f"Column '{column_name}' in reference dataset should contain numerical values only."
+            )
 
         if not pd.api.types.is_numeric_dtype(current_column):
-            raise ValueError(f"Column '{column_name}' in current dataset should contain numerical values only.")
+            raise ValueError(
+                f"Column '{column_name}' in current dataset should contain numerical values only."
+            )
 
-    drift_test_function = get_stattest(reference_column, current_column, column_type, stattest)
-    drift_result = drift_test_function(reference_column, current_column, column_type, threshold)
+    drift_test_function = get_stattest(
+        reference_column, current_column, column_type, stattest
+    )
+    drift_result = drift_test_function(
+        reference_column, current_column, column_type, threshold
+    )
 
     if column_type == "num":
         numeric_columns = dataset_columns.num_feature_names
@@ -150,8 +158,12 @@ def get_one_column_drift(
             # for target and prediction cases add the column_name in the numeric columns list
             numeric_columns = numeric_columns + [column_name]
 
-        current_correlations = current_data[numeric_columns].corr()[column_name].to_dict()
-        reference_correlations = reference_data[numeric_columns].corr()[column_name].to_dict()
+        current_correlations = (
+            current_data[numeric_columns].corr()[column_name].to_dict()
+        )
+        reference_correlations = (
+            reference_data[numeric_columns].corr()[column_name].to_dict()
+        )
         current_nbinsx = options.get_nbinsx(column_name)
         current_small_distribution = [
             t.tolist()
@@ -197,10 +209,24 @@ def get_one_column_drift(
                 current_counts.loc[key] = 0
 
         reference_small_distribution = list(
-            reversed(list(map(list, zip(*sorted(reference_counts.items(), key=lambda x: str(x[0]))))))
+            reversed(
+                list(
+                    map(
+                        list,
+                        zip(*sorted(reference_counts.items(), key=lambda x: str(x[0]))),
+                    )
+                )
+            )
         )
         current_small_distribution = list(
-            reversed(list(map(list, zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))))))
+            reversed(
+                list(
+                    map(
+                        list,
+                        zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))),
+                    )
+                )
+            )
         )
     if column_type != "text":
         if (
@@ -214,7 +240,9 @@ def get_one_column_drift(
                 )
             )
         ):
-            column_values = np.union1d(current_column.unique(), reference_column.unique())
+            column_values = np.union1d(
+                current_column.unique(), reference_column.unique()
+            )
             new_values = np.setdiff1d(list(dataset_columns.target_names), column_values)
             if len(new_values) > 0:
                 raise ValueError(f"Values {new_values} not presented in 'target_names'")
@@ -227,12 +255,17 @@ def get_one_column_drift(
             reference=reference_column,
         )
         if reference_distribution is None:
-            raise ValueError(f"Cannot calculate reference distribution for column '{column_name}'.")
+            raise ValueError(
+                f"Cannot calculate reference distribution for column '{column_name}'."
+            )
 
     elif column_type == "text" and drift_result.drifted:
-        typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref = get_text_data_for_plots(
-            reference_column, current_column
-        )
+        (
+            typical_examples_cur,
+            typical_examples_ref,
+            typical_words_cur,
+            typical_words_ref,
+        ) = get_text_data_for_plots(reference_column, current_column)
 
     return ColumnDataDriftMetrics(
         column_name=column_name,
@@ -257,7 +290,9 @@ def get_one_column_drift(
     )
 
 
-def _get_pred_labels_from_prob(dataframe: pd.DataFrame, prediction_column: list) -> List[str]:
+def _get_pred_labels_from_prob(
+    dataframe: pd.DataFrame, prediction_column: list
+) -> List[str]:
     """Get labels from probabilities from columns by prediction columns list"""
     array_prediction = dataframe[prediction_column].to_numpy()
     prediction_ids = np.argmax(array_prediction, axis=-1)
@@ -291,20 +326,30 @@ def ensure_prediction_column_is_string(
 
     elif isinstance(prediction_column, list):
         if len(prediction_column) > 2:
-            reference_data["predicted_labels"] = _get_pred_labels_from_prob(reference_data, prediction_column)
-            current_data["predicted_labels"] = _get_pred_labels_from_prob(current_data, prediction_column)
+            reference_data["predicted_labels"] = _get_pred_labels_from_prob(
+                reference_data, prediction_column
+            )
+            current_data["predicted_labels"] = _get_pred_labels_from_prob(
+                current_data, prediction_column
+            )
             result_prediction_column = "predicted_labels"
 
         elif len(prediction_column) == 2:
-            reference_data["predicted_labels"] = (reference_data[prediction_column[0]] > threshold).astype(int)
-            current_data["predicted_labels"] = (current_data[prediction_column[0]] > threshold).astype(int)
+            reference_data["predicted_labels"] = (
+                reference_data[prediction_column[0]] > threshold
+            ).astype(int)
+            current_data["predicted_labels"] = (
+                current_data[prediction_column[0]] > threshold
+            ).astype(int)
             result_prediction_column = "predicted_labels"
 
     return result_prediction_column
 
 
 def get_dataset_drift(drift_metrics, drift_share=0.5) -> DatasetDrift:
-    number_of_drifted_columns = sum([1 if drift.drift_detected else 0 for _, drift in drift_metrics.items()])
+    number_of_drifted_columns = sum(
+        [1 if drift.drift_detected else 0 for _, drift in drift_metrics.items()]
+    )
     share_drifted_columns = number_of_drifted_columns / len(drift_metrics)
     dataset_drift = bool(share_drifted_columns >= drift_share)
     return DatasetDrift(

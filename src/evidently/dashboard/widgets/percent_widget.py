@@ -4,11 +4,13 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import Alert
-from evidently.model.widget import AlertStats
-from evidently.model.widget import BaseWidgetInfo
-from evidently.model.widget import Insight
-from evidently.model.widget import TriggeredAlertStats
+from evidently.model.widget import (
+    Alert,
+    AlertStats,
+    BaseWidgetInfo,
+    Insight,
+    TriggeredAlertStats,
+)
 
 
 class PercentWidget(Widget):
@@ -32,7 +34,14 @@ class PercentWidget(Widget):
                     period=1,
                 ),
             ),
-            alerts=[Alert(value=5, state="warning", text="short text", longText="some long description of alert")],
+            alerts=[
+                Alert(
+                    value=5,
+                    state="warning",
+                    text="short text",
+                    longText="some long description of alert",
+                )
+            ],
             params={"value": 40, "maxValue": 134, "details": "Some information"},
             insights=[
                 Insight("Info insight", "info", "Example insight information"),

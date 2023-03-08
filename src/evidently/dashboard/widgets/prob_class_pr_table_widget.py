@@ -5,10 +5,11 @@ from typing import Optional
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import (
+    ProbClassificationPerformanceAnalyzer,
+)
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import BaseWidgetInfo
-from evidently.model.widget import TabInfo
+from evidently.model.widget import BaseWidgetInfo, TabInfo
 
 
 class ProbClassPRTableWidget(Widget):
@@ -31,7 +32,9 @@ class ProbClassPRTableWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+                )
 
             return None
 
@@ -48,7 +51,9 @@ class ProbClassPRTableWidget(Widget):
             metrics = results.current_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+            raise ValueError(
+                f"Widget [{self.title}] required 'current' or 'reference' dataset value"
+            )
 
         if metrics is None:
             return None
@@ -58,7 +63,9 @@ class ProbClassPRTableWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] got no pr_table value")
 
             if not isinstance(metrics.pr_table, list):
-                raise ValueError(f"Widget [{self.title}] got incorrect type for pr_table value")
+                raise ValueError(
+                    f"Widget [{self.title}] got incorrect type for pr_table value"
+                )
 
             pr_table_data: list = metrics.pr_table
             params_data = []
@@ -117,7 +124,9 @@ class ProbClassPRTableWidget(Widget):
                     raise ValueError(f"Widget [{self.title}] got no pr_table value")
 
                 if not isinstance(metrics.pr_table, dict):
-                    raise ValueError(f"Widget [{self.title}] got incorrect type of pr_table value")
+                    raise ValueError(
+                        f"Widget [{self.title}] got incorrect type of pr_table value"
+                    )
 
                 pr_table_data_list = metrics.pr_table[label]
 
@@ -169,6 +178,9 @@ class ProbClassPRTableWidget(Widget):
                 )
 
             widget_info = BaseWidgetInfo(
-                type="tabs", title=self.title, size=1 if current_data is not None else 2, tabs=tabs
+                type="tabs",
+                title=self.title,
+                size=1 if current_data is not None else 2,
+                tabs=tabs,
             )
         return widget_info

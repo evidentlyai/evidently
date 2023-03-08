@@ -17,7 +17,11 @@ def test_same_type_metric_in_one_json_report() -> None:
             ColumnQuantileMetric(column_name="feature2", quantile=0.5),
         ]
     )
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     result_json = report.json()
     result = json.loads(result_json)
     assert "timestamp" in result
@@ -29,14 +33,29 @@ def test_same_type_metric_in_one_json_report() -> None:
     assert result["metrics"] == [
         {
             "metric": "ColumnQuantileMetric",
-            "result": {"column_name": "feature1", "current": 2.0, "quantile": 0.5, "reference": 0.5},
+            "result": {
+                "column_name": "feature1",
+                "current": 2.0,
+                "quantile": 0.5,
+                "reference": 0.5,
+            },
         },
         {
             "metric": "ColumnQuantileMetric",
-            "result": {"column_name": "feature1", "current": 2.4, "quantile": 0.7, "reference": 1.0},
+            "result": {
+                "column_name": "feature1",
+                "current": 2.4,
+                "quantile": 0.7,
+                "reference": 1.0,
+            },
         },
         {
             "metric": "ColumnQuantileMetric",
-            "result": {"column_name": "feature2", "current": 0.0, "quantile": 0.5, "reference": 1.5},
+            "result": {
+                "column_name": "feature2",
+                "current": 0.0,
+                "quantile": 0.5,
+                "reference": 1.5,
+            },
         },
     ]

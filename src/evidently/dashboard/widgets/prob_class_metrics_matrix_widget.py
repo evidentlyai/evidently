@@ -9,7 +9,9 @@ import pandas as pd
 import plotly.figure_factory as ff
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import (
+    ProbClassificationPerformanceAnalyzer,
+)
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 
@@ -35,7 +37,9 @@ class ProbClassMetricsMatrixWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+                )
 
             return None
 
@@ -52,7 +56,9 @@ class ProbClassMetricsMatrixWidget(Widget):
             metrics = results.current_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+            raise ValueError(
+                f"Widget [{self.title}] required 'current' or 'reference' dataset value"
+            )
 
         if metrics is None:
             return None
@@ -74,7 +80,9 @@ class ProbClassMetricsMatrixWidget(Widget):
         z_text = [[str(round(y, 3)) for y in x] for x in z]
 
         # set up figure
-        fig = ff.create_annotated_heatmap(z, y=y, x=x, annotation_text=z_text, colorscale="bluered", showscale=True)
+        fig = ff.create_annotated_heatmap(
+            z, y=y, x=x, annotation_text=z_text, colorscale="bluered", showscale=True
+        )
         fig.update_layout(xaxis_title="Class", yaxis_title="Metric")
 
         metrics_matrix_json = json.loads(fig.to_json())
@@ -83,5 +91,8 @@ class ProbClassMetricsMatrixWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={"data": metrics_matrix_json["data"], "layout": metrics_matrix_json["layout"]},
+            params={
+                "data": metrics_matrix_json["data"],
+                "layout": metrics_matrix_json["layout"],
+            },
         )

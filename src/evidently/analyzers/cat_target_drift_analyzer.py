@@ -1,22 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 from dataclasses import dataclass
-from typing import Optional
-from typing import Sequence
+from typing import Optional, Sequence
 
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import ensure_prediction_column_is_string
-from evidently.calculations.data_drift import get_one_column_drift
+from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
+from evidently.calculations.data_drift import (
+    ColumnDataDriftMetrics,
+    ensure_prediction_column_is_string,
+    get_one_column_drift,
+)
 from evidently.calculations.data_quality import get_rows_count
-from evidently.options import DataDriftOptions
-from evidently.options import QualityMetricsOptions
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import replace_infinity_values_to_nan
+from evidently.options import DataDriftOptions, QualityMetricsOptions
+from evidently.utils.data_operations import (
+    process_columns,
+    replace_infinity_values_to_nan,
+)
 
 
 @dataclass
@@ -90,7 +91,9 @@ class CatTargetDriftAnalyzer(Analyzer):
         if not isinstance(target_column, str) and isinstance(target_column, Sequence):
             raise ValueError("target should not be a sequence")
 
-        classification_threshold = self.options_provider.get(QualityMetricsOptions).classification_threshold
+        classification_threshold = self.options_provider.get(
+            QualityMetricsOptions
+        ).classification_threshold
         prediction_column = ensure_prediction_column_is_string(
             prediction_column=columns.utility_columns.prediction,
             current_data=current_data,

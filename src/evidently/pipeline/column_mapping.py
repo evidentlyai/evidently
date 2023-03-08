@@ -1,9 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Union
+from typing import Dict, List, Optional, Sequence, Union
 
 
 class TaskType:
@@ -14,7 +10,9 @@ class TaskType:
 @dataclass
 class ColumnMapping:
     target: Optional[str] = "target"
-    prediction: Optional[Union[str, int, Union[Sequence[str], Sequence[int]]]] = "prediction"
+    prediction: Optional[
+        Union[str, int, Union[Sequence[str], Sequence[int]]]
+    ] = "prediction"
     datetime: Optional[str] = "datetime"
     id: Optional[str] = None
     numerical_features: Optional[List[str]] = None

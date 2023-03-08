@@ -1,13 +1,13 @@
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import List, Optional, Union
 
 import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.calculations.data_drift import ensure_prediction_column_is_string
-from evidently.calculations.data_drift import get_one_column_drift
+from evidently.calculations.data_drift import (
+    ensure_prediction_column_is_string,
+    get_one_column_drift,
+)
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import process_columns
 
@@ -16,7 +16,13 @@ from evidently.utils.data_operations import process_columns
     "prediction_column, current_data, reference_data, threshold, expected_prediction_column",
     (
         (None, pd.DataFrame({}), pd.DataFrame({}), 0.0, None),
-        ("preds", pd.DataFrame({"preds": [1, 2, 3]}), pd.DataFrame({"preds": [1, 2, 3]}), 0.0, "preds"),
+        (
+            "preds",
+            pd.DataFrame({"preds": [1, 2, 3]}),
+            pd.DataFrame({"preds": [1, 2, 3]}),
+            0.0,
+            "preds",
+        ),
         (
             ["pred_a", "pred_b"],
             pd.DataFrame({"pred_a": [1, 0, 1], "pred_b": [1, 0, 1]}),
@@ -71,7 +77,14 @@ def test_ensure_prediction_column_is_string(
 @pytest.mark.parametrize(
     "current_data, reference_data, column_name, options, column_type, expected_drift_detected",
     (
-        (pd.DataFrame({"test": [1, 2, 3]}), pd.DataFrame({"test": [1, 2, 3]}), "test", DataDriftOptions(), None, False),
+        (
+            pd.DataFrame({"test": [1, 2, 3]}),
+            pd.DataFrame({"test": [1, 2, 3]}),
+            "test",
+            DataDriftOptions(),
+            None,
+            False,
+        ),
         (
             pd.DataFrame({"test": [1, 2, 3]}),
             pd.DataFrame({"test": [1, 2, 3]}),

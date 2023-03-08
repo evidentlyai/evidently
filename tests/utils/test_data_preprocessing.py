@@ -4,16 +4,18 @@ import pandas as pd
 import pytest
 
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import NUMBER_UNIQUE_AS_CATEGORICAL
-from evidently.utils.data_preprocessing import ColumnDefinition
-from evidently.utils.data_preprocessing import ColumnPresenceState
-from evidently.utils.data_preprocessing import ColumnType
-from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.data_preprocessing import PredictionColumns
-from evidently.utils.data_preprocessing import _get_column_presence
-from evidently.utils.data_preprocessing import _get_column_type
-from evidently.utils.data_preprocessing import _InputData
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.utils.data_preprocessing import (
+    NUMBER_UNIQUE_AS_CATEGORICAL,
+    ColumnDefinition,
+    ColumnPresenceState,
+    ColumnType,
+    DataDefinition,
+    PredictionColumns,
+    _get_column_presence,
+    _get_column_type,
+    _InputData,
+    create_data_definition,
+)
 
 
 def test_get_columns():
@@ -65,20 +67,36 @@ def test_get_columns():
     ]
     assert all_columns == [cd.column_name for cd in definition.get_columns()]
     cat_columns = ["id", "target", "predicted", "column_1"]
-    assert cat_columns == [cd.column_name for cd in definition.get_columns(filter_def="categorical_columns")]
+    assert cat_columns == [
+        cd.column_name
+        for cd in definition.get_columns(filter_def="categorical_columns")
+    ]
     num_columns = ["class_1", "class_2", "class_3", "column_2", "column_3"]
-    assert num_columns == [cd.column_name for cd in definition.get_columns(filter_def="numerical_columns")]
+    assert num_columns == [
+        cd.column_name for cd in definition.get_columns(filter_def="numerical_columns")
+    ]
     dt_columns = ["datetime", "column_4", "column_5", "column_6"]
-    assert dt_columns == [cd.column_name for cd in definition.get_columns(filter_def="datetime_columns")]
+    assert dt_columns == [
+        cd.column_name for cd in definition.get_columns(filter_def="datetime_columns")
+    ]
 
     features = ["column_1", "column_2", "column_3", "column_4", "column_5", "column_6"]
-    assert features == [cd.column_name for cd in definition.get_columns(filter_def="all_features")]
+    assert features == [
+        cd.column_name for cd in definition.get_columns(filter_def="all_features")
+    ]
     cat_features = ["column_1"]
-    assert cat_features == [cd.column_name for cd in definition.get_columns(filter_def="categorical_features")]
+    assert cat_features == [
+        cd.column_name
+        for cd in definition.get_columns(filter_def="categorical_features")
+    ]
     num_features = ["column_2", "column_3"]
-    assert num_features == [cd.column_name for cd in definition.get_columns(filter_def="numerical_features")]
+    assert num_features == [
+        cd.column_name for cd in definition.get_columns(filter_def="numerical_features")
+    ]
     dt_features = ["column_4", "column_5", "column_6"]
-    assert dt_features == [cd.column_name for cd in definition.get_columns(filter_def="datetime_features")]
+    assert dt_features == [
+        cd.column_name for cd in definition.get_columns(filter_def="datetime_features")
+    ]
 
 
 @pytest.mark.parametrize(
@@ -218,24 +236,34 @@ def test_get_column_type(reference, current, column_name, expected):
             None,
             None,
             [
-                ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
+                ColumnDefinition(
+                    column_name="target", column_type=ColumnType.Categorical
+                ),
                 ColumnDefinition(column_name="a", column_type=ColumnType.Numerical),
             ],
         ),
         (
             None,
-            pd.DataFrame(dict(a=[1], id=["a"], datetime=[datetime(2000, 1, 1)], prediction=[1])),
+            pd.DataFrame(
+                dict(a=[1], id=["a"], datetime=[datetime(2000, 1, 1)], prediction=[1])
+            ),
             ColumnMapping(id="id"),
             None,
             ColumnDefinition(column_name="id", column_type=ColumnType.Categorical),
             ColumnDefinition(column_name="datetime", column_type=ColumnType.Datetime),
             PredictionColumns(
-                predicted_values=ColumnDefinition(column_name="prediction", column_type=ColumnType.Categorical)
+                predicted_values=ColumnDefinition(
+                    column_name="prediction", column_type=ColumnType.Categorical
+                )
             ),
             [
                 ColumnDefinition(column_name="id", column_type=ColumnType.Categorical),
-                ColumnDefinition(column_name="datetime", column_type=ColumnType.Datetime),
-                ColumnDefinition(column_name="prediction", column_type=ColumnType.Categorical),
+                ColumnDefinition(
+                    column_name="datetime", column_type=ColumnType.Datetime
+                ),
+                ColumnDefinition(
+                    column_name="prediction", column_type=ColumnType.Categorical
+                ),
                 ColumnDefinition(column_name="a", column_type=ColumnType.Categorical),
             ],
         ),
@@ -249,12 +277,18 @@ def test_get_column_type(reference, current, column_name, expected):
             PredictionColumns(
                 predicted_values=None,
                 prediction_probas=[
-                    ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical),
+                    ColumnDefinition(
+                        column_name="prediction", column_type=ColumnType.Numerical
+                    ),
                 ],
             ),
             [
-                ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
-                ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical),
+                ColumnDefinition(
+                    column_name="target", column_type=ColumnType.Categorical
+                ),
+                ColumnDefinition(
+                    column_name="prediction", column_type=ColumnType.Numerical
+                ),
             ],
         ),
         (
@@ -265,7 +299,9 @@ def test_get_column_type(reference, current, column_name, expected):
             None,
             None,
             PredictionColumns(
-                predicted_values=ColumnDefinition(column_name="b", column_type=ColumnType.Categorical),
+                predicted_values=ColumnDefinition(
+                    column_name="b", column_type=ColumnType.Categorical
+                ),
                 prediction_probas=None,
             ),
             [
@@ -281,7 +317,9 @@ def test_get_column_type(reference, current, column_name, expected):
             None,
             None,
             PredictionColumns(
-                predicted_values=ColumnDefinition(column_name="b", column_type=ColumnType.Numerical),
+                predicted_values=ColumnDefinition(
+                    column_name="b", column_type=ColumnType.Numerical
+                ),
                 prediction_probas=None,
             ),
             [
@@ -319,7 +357,9 @@ def test_get_column_type(reference, current, column_name, expected):
         ),
     ],
 )
-def test_create_data_definition(reference, current, mapping, target, id, datetime, prediction, columns):
+def test_create_data_definition(
+    reference, current, mapping, target, id, datetime, prediction, columns
+):
     definition = create_data_definition(reference, current, mapping)
     assert definition.get_target_column() == target
     assert definition.get_id_column() == id

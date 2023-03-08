@@ -1,11 +1,7 @@
-from typing import Dict
-from typing import Optional
-from typing import Type
-from typing import Union
+from typing import Dict, Optional, Type, Union
 
 from evidently.base_metric import Metric
-from evidently.utils.generators import BaseGenerator
-from evidently.utils.generators import make_generator_by_columns
+from evidently.utils.generators import BaseGenerator, make_generator_by_columns
 
 
 def generate_column_metrics(

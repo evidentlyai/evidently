@@ -1,5 +1,4 @@
-from evidently.dashboard.tabs.base_tab import Tab
-from evidently.dashboard.tabs.base_tab import Verbose
+from evidently.dashboard.tabs.base_tab import Tab, Verbose
 from evidently.dashboard.widgets.bar_widget import BarWidget
 from evidently.dashboard.widgets.counter_widget import CounterWidget
 from evidently.dashboard.widgets.expandable_list_widget import ExpandableListWidget

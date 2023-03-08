@@ -1,16 +1,10 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Type
+from typing import Dict, List, Optional, Type
 
-from evidently.options import DataDriftOptions
-from evidently.options import QualityMetricsOptions
+from evidently.options import DataDriftOptions, QualityMetricsOptions
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.runner.loader import DataLoader
-from evidently.runner.loader import DataOptions
-from evidently.runner.loader import SamplingOptions
+from evidently.runner.loader import DataLoader, DataOptions, SamplingOptions
 
 
 @dataclass
@@ -52,12 +46,16 @@ class Runner:
         loader = DataLoader()
 
         reference_data = loader.load(
-            self.options.reference_data_path, self.options.reference_data_options, self.options.reference_data_sampling
+            self.options.reference_data_path,
+            self.options.reference_data_options,
+            self.options.reference_data_sampling,
         )
         logging.info(f"reference dataset loaded: {len(reference_data)} rows")
         if self.options.current_data_path:
             current_data = loader.load(
-                self.options.current_data_path, self.options.current_data_options, self.options.current_data_sampling
+                self.options.current_data_path,
+                self.options.current_data_options,
+                self.options.current_data_sampling,
             )
             logging.info(f"current dataset loaded: {len(current_data)} rows")
         else:

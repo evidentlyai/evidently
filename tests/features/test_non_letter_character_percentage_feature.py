@@ -1,7 +1,9 @@
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.non_letter_character_percentage_feature import (
+    NonLetterCharacterPercentage,
+)
 from evidently.utils.data_preprocessing import create_data_definition
 
 

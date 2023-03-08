@@ -4,12 +4,14 @@ import pandas as pd
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
-from evidently.tests import TestValueAbsMaxError
-from evidently.tests import TestValueMAE
-from evidently.tests import TestValueMAPE
-from evidently.tests import TestValueMeanError
-from evidently.tests import TestValueR2Score
-from evidently.tests import TestValueRMSE
+from evidently.tests import (
+    TestValueAbsMaxError,
+    TestValueMAE,
+    TestValueMAPE,
+    TestValueMeanError,
+    TestValueR2Score,
+    TestValueRMSE,
+)
 
 
 def test_value_mae_test() -> None:
@@ -22,11 +24,15 @@ def test_value_mae_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMAE(gte=10)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestValueMAE(eq=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -42,7 +48,11 @@ def test_value_mae_test_render_json() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMAE()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     result_json = suite.json()
     assert isinstance(result_json, str)
 
@@ -70,11 +80,15 @@ def test_value_mape_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMAPE(lt=10)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestValueMAPE(eq=100)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
     assert suite.show()
     assert suite.json()
@@ -90,7 +104,11 @@ def test_value_mape_test_render_json() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMAPE()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     result_json = suite.json()
     assert isinstance(result_json, str)
 
@@ -119,11 +137,15 @@ def test_value_mean_error_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMeanError(gt=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestValueMeanError(eq=0.0)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -139,7 +161,11 @@ def test_value_mean_error_test_render_json() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMeanError()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     result_json = suite.json()
     assert isinstance(result_json, str)
 
@@ -149,7 +175,9 @@ def test_value_mean_error_test_render_json() -> None:
         "group": "regression",
         "name": "Mean Error (ME)",
         "parameters": {
-            "condition": {"eq": {"absolute": 0.08164965809277261, "relative": 1e-06, "value": 0}},
+            "condition": {
+                "eq": {"absolute": 0.08164965809277261, "relative": 1e-06, "value": 0}
+            },
             "mean_error": 0.0,
         },
         "status": "SUCCESS",
@@ -166,7 +194,11 @@ def test_abs_max_error_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueAbsMaxError(lt=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping(prediction="preds"))
+    suite.run(
+        current_data=test_dataset,
+        reference_data=None,
+        column_mapping=ColumnMapping(prediction="preds"),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -182,7 +214,11 @@ def test_abs_max_error_test_render_json() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueAbsMaxError()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
 
     result_json = suite.json()
     assert isinstance(result_json, str)
@@ -211,7 +247,11 @@ def test_r2_score_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueR2Score(lt=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping(prediction="preds"))
+    suite.run(
+        current_data=test_dataset,
+        reference_data=None,
+        column_mapping=ColumnMapping(prediction="preds"),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -227,7 +267,11 @@ def test_r2_score_test_render_json() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueR2Score()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     result_json = suite.json()
@@ -257,7 +301,11 @@ def test_rmse_score_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueRMSE(lt=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping(prediction="preds"))
+    suite.run(
+        current_data=test_dataset,
+        reference_data=None,
+        column_mapping=ColumnMapping(prediction="preds"),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -273,7 +321,11 @@ def test_rmse_score_test_render_json() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueRMSE()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     result_json = suite.json()

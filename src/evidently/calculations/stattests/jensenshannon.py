@@ -22,14 +22,12 @@ Example:
     >>> from evidently.options import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="jensenshannon")
 """
-from typing import Optional
-from typing import Tuple
+from typing import Optional, Tuple
 
 import pandas as pd
 from scipy.spatial import distance
 
-from evidently.calculations.stattests.registry import StatTest
-from evidently.calculations.stattests.registry import register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 from evidently.calculations.stattests.utils import get_binned_data
 
 
@@ -53,8 +51,12 @@ def _jensenshannon(
         jensenshannon: calculated Jensen-Shannon distance
         test_result: whether the drift is detected
     """
-    reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins, False)
-    jensenshannon_value = distance.jensenshannon(reference_percents, current_percents, base)
+    reference_percents, current_percents = get_binned_data(
+        reference_data, current_data, feature_type, n_bins, False
+    )
+    jensenshannon_value = distance.jensenshannon(
+        reference_percents, current_percents, base
+    )
     return jensenshannon_value, jensenshannon_value >= threshold
 
 

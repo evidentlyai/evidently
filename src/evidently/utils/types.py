@@ -1,9 +1,6 @@
 """Additional types, classes, dataclasses, etc."""
 
-from typing import Any
-from typing import Dict
-from typing import Optional
-from typing import Union
+from typing import Any, Dict, Optional, Union
 
 # type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
 Numeric = Union[float, int]
@@ -21,7 +18,12 @@ class ApproxValue:
     _relative: Numeric
     _absolute: Numeric
 
-    def __init__(self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None):
+    def __init__(
+        self,
+        value: Numeric,
+        relative: Optional[Numeric] = None,
+        absolute: Optional[Numeric] = None,
+    ):
         self.value = value
 
         if relative is not None and relative <= 0:
@@ -45,7 +47,9 @@ class ApproxValue:
         return max(relative_value, self._absolute)
 
     def __format__(self, format_spec):
-        return f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
+        return (
+            f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
+        )
 
     def __repr__(self):
         return f"{self.value} ± {self.tolerance}"

@@ -92,7 +92,9 @@ from evidently.utils.data_preprocessing import create_data_definition
         ),
     ],
 )
-def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metrics: FeatureQualityStats) -> None:
+def test_data_profile_analyzer_num_features(
+    dataset: pd.DataFrame, expected_metrics: FeatureQualityStats
+) -> None:
     data_profile_analyzer = DataQualityAnalyzer()
 
     data_mapping = ColumnMapping(
@@ -238,12 +240,16 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
         ),
     ],
 )
-def test_data_profile_analyzer_cat_features(dataset: pd.DataFrame, expected_metrics: FeatureQualityStats) -> None:
+def test_data_profile_analyzer_cat_features(
+    dataset: pd.DataFrame, expected_metrics: FeatureQualityStats
+) -> None:
     data_profile_analyzer = DataQualityAnalyzer()
 
     for task_type in (None, "regression", "classification"):
         result = data_profile_analyzer.calculate(
-            dataset, None, ColumnMapping(categorical_features=["category_feature"], task=task_type)
+            dataset,
+            None,
+            ColumnMapping(categorical_features=["category_feature"], task=task_type),
         )
         assert result.reference_features_stats is not None
         assert result.reference_features_stats.cat_features_stats is not None
@@ -271,7 +277,9 @@ def test_data_profile_analyzer_classification_with_target() -> None:
     result = data_profile_analyzer.calculate(reference_data, current_data, data_mapping)
     assert result.reference_features_stats is not None
     assert result.reference_features_stats.target_stats is not None
-    assert result.reference_features_stats.target_stats["target"] == FeatureQualityStats(
+    assert result.reference_features_stats.target_stats[
+        "target"
+    ] == FeatureQualityStats(
         number_of_rows=5,
         feature_type="cat",
         count=5,
@@ -383,14 +391,19 @@ def test_data_profile_analyzer_classification_with_target() -> None:
     ],
 )
 def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
-    reference_dataset: pd.DataFrame, current_dataset: pd.DataFrame, expected_new: int, expected_unused: int
+    reference_dataset: pd.DataFrame,
+    current_dataset: pd.DataFrame,
+    expected_new: int,
+    expected_unused: int,
 ) -> None:
     data_profile_analyzer = DataQualityAnalyzer()
     data_mapping = ColumnMapping(
         categorical_features=["category_feature"],
         numerical_features=[],
     )
-    result = data_profile_analyzer.calculate(reference_dataset, current_dataset, data_mapping)
+    result = data_profile_analyzer.calculate(
+        reference_dataset, current_dataset, data_mapping
+    )
     assert result.current_features_stats is not None
     assert result.current_features_stats.cat_features_stats is not None
     assert "category_feature" in result.current_features_stats.cat_features_stats
@@ -463,7 +476,9 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
         ),
     ],
 )
-def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected_metrics: FeatureQualityStats) -> None:
+def test_data_profile_analyzer_datetime_features(
+    dataset: pd.DataFrame, expected_metrics: FeatureQualityStats
+) -> None:
     data_profile_analyzer = DataQualityAnalyzer()
 
     data_mapping = ColumnMapping(
@@ -473,7 +488,9 @@ def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected
     assert result.reference_features_stats is not None
     assert result.reference_features_stats.datetime_features_stats is not None
     assert "datetime_feature" in result.reference_features_stats.datetime_features_stats
-    metrics = result.reference_features_stats.datetime_features_stats["datetime_feature"]
+    metrics = result.reference_features_stats.datetime_features_stats[
+        "datetime_feature"
+    ]
     assert metrics == expected_metrics
 
 
@@ -485,7 +502,10 @@ def test_data_profile_analyzer_datetime_features_zero_lenth() -> None:
         datetime_features=["datetime_feature"],
     )
     result = data_profile_analyzer.calculate(reference_data, None, data_mapping)
-    assert "datetime_feature" not in result.reference_features_stats.datetime_features_stats
+    assert (
+        "datetime_feature"
+        not in result.reference_features_stats.datetime_features_stats
+    )
 
 
 def test_data_profile_analyzer_empty_features() -> None:
@@ -501,7 +521,9 @@ def test_data_profile_analyzer_empty_features() -> None:
     result = data_profile_analyzer.calculate(reference_data, None, data_mapping)
 
     assert "datetime_feature" in result.reference_features_stats.datetime_features_stats
-    datetime_feature = result.reference_features_stats.datetime_features_stats["datetime_feature"]
+    datetime_feature = result.reference_features_stats.datetime_features_stats[
+        "datetime_feature"
+    ]
     assert datetime_feature == FeatureQualityStats(
         number_of_rows=3,
         feature_type="datetime",
@@ -564,7 +586,9 @@ def test_data_profile_analyzer_regression() -> None:
     assert result.reference_features_stats is not None
     assert result.reference_features_stats.num_features_stats is not None
     assert "numerical_feature_1" in result.reference_features_stats.num_features_stats
-    numerical_feature_1 = result.reference_features_stats.num_features_stats["numerical_feature_1"]
+    numerical_feature_1 = result.reference_features_stats.num_features_stats[
+        "numerical_feature_1"
+    ]
     assert numerical_feature_1 == FeatureQualityStats(
         number_of_rows=4,
         feature_type="num",
@@ -590,7 +614,9 @@ def test_data_profile_analyzer_regression() -> None:
         unused_in_current_values_count=None,
     )
     assert "numerical_feature_2" in result.reference_features_stats.num_features_stats
-    numerical_feature_2 = result.reference_features_stats.num_features_stats["numerical_feature_2"]
+    numerical_feature_2 = result.reference_features_stats.num_features_stats[
+        "numerical_feature_2"
+    ]
     assert numerical_feature_2 == FeatureQualityStats(
         number_of_rows=4,
         feature_type="num",
@@ -616,7 +642,9 @@ def test_data_profile_analyzer_regression() -> None:
 
     assert result.reference_features_stats.cat_features_stats is not None
     assert "categorical_feature_1" in result.reference_features_stats.cat_features_stats
-    categorical_feature_1 = result.reference_features_stats.cat_features_stats["categorical_feature_1"]
+    categorical_feature_1 = result.reference_features_stats.cat_features_stats[
+        "categorical_feature_1"
+    ]
     assert categorical_feature_1 == FeatureQualityStats(
         number_of_rows=4,
         feature_type="cat",
@@ -641,7 +669,9 @@ def test_data_profile_analyzer_regression() -> None:
     )
 
     assert "categorical_feature_2" in result.reference_features_stats.cat_features_stats
-    categorical_feature_2 = result.reference_features_stats.cat_features_stats["categorical_feature_2"]
+    categorical_feature_2 = result.reference_features_stats.cat_features_stats[
+        "categorical_feature_2"
+    ]
     assert categorical_feature_2 == FeatureQualityStats(
         number_of_rows=4,
         feature_type="cat",
@@ -666,8 +696,12 @@ def test_data_profile_analyzer_regression() -> None:
     )
 
     assert result.reference_features_stats.datetime_features_stats is not None
-    assert "datetime_feature_1" in result.reference_features_stats.datetime_features_stats
-    datetime_feature_1 = result.reference_features_stats.datetime_features_stats["datetime_feature_1"]
+    assert (
+        "datetime_feature_1" in result.reference_features_stats.datetime_features_stats
+    )
+    datetime_feature_1 = result.reference_features_stats.datetime_features_stats[
+        "datetime_feature_1"
+    ]
     assert datetime_feature_1 == FeatureQualityStats(
         number_of_rows=4,
         feature_type="datetime",
@@ -690,8 +724,12 @@ def test_data_profile_analyzer_regression() -> None:
         most_common_not_null_value=None,
         most_common_not_null_value_percentage=None,
     )
-    assert "datetime_feature_2" in result.reference_features_stats.datetime_features_stats
-    datetime_feature_2 = result.reference_features_stats.datetime_features_stats["datetime_feature_2"]
+    assert (
+        "datetime_feature_2" in result.reference_features_stats.datetime_features_stats
+    )
+    datetime_feature_2 = result.reference_features_stats.datetime_features_stats[
+        "datetime_feature_2"
+    ]
     assert datetime_feature_2 == FeatureQualityStats(
         number_of_rows=4,
         feature_type="datetime",
@@ -789,7 +827,9 @@ def test_select_features_for_corr() -> None:
         task="regression",
     )
     columns = create_data_definition(None, reference_data, column_mapping)
-    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(reference_data, columns)
+    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(
+        reference_data, columns
+    )
     assert num_for_corr == ["my_target", "numerical_feature_1", "numerical_feature_2"]
     assert cat_for_corr == ["categorical_feature_1", "categorical_feature_2"]
 
@@ -812,7 +852,13 @@ def test_cramer_v() -> None:
                     "z": ["f"] * 14 + ["e"] * 14,
                 }
             ),
-            np.array([[1.0, 0.39498278, 0.93094934], [0.39498278, 1.0, 0.2981424], [0.93094934, 0.2981424, 1.0]]),
+            np.array(
+                [
+                    [1.0, 0.39498278, 0.93094934],
+                    [0.39498278, 1.0, 0.2981424],
+                    [0.93094934, 0.2981424, 1.0],
+                ]
+            ),
         ),
         (pd.DataFrame({}), np.array([])),
         (pd.DataFrame({"x": ["a", "b", "c"]}), np.array([])),
@@ -836,8 +882,20 @@ def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
                     [1.0, 1.0, np.nan, 1.0, 1.0],
                     [0.06286946, -0.13547661, 0.12038585, 1.0, 1.0],
                 ],
-                columns=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
-                index=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
+                columns=[
+                    "num_feature_1",
+                    "num_feature_2",
+                    "num_feature_3",
+                    "num_feature_4",
+                    "target",
+                ],
+                index=[
+                    "num_feature_1",
+                    "num_feature_2",
+                    "num_feature_3",
+                    "num_feature_4",
+                    "target",
+                ],
             ),
         ),
         (
@@ -850,8 +908,20 @@ def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
                     [1.0, 1.0, np.nan, 1.0, 1.0],
                     [0.05778856, -0.19500675, 0.11065667, 1.0, 1.0],
                 ],
-                columns=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
-                index=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
+                columns=[
+                    "num_feature_1",
+                    "num_feature_2",
+                    "num_feature_3",
+                    "num_feature_4",
+                    "target",
+                ],
+                index=[
+                    "num_feature_1",
+                    "num_feature_2",
+                    "num_feature_3",
+                    "num_feature_4",
+                    "target",
+                ],
             ),
         ),
         (
@@ -864,8 +934,20 @@ def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
                     [1.0, 1.0, np.nan, 1.0, 1.0],
                     [0.07784989, -0.13430383, 0.10444659, 1.0, 1.0],
                 ],
-                columns=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
-                index=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
+                columns=[
+                    "num_feature_1",
+                    "num_feature_2",
+                    "num_feature_3",
+                    "num_feature_4",
+                    "target",
+                ],
+                index=[
+                    "num_feature_1",
+                    "num_feature_2",
+                    "num_feature_3",
+                    "num_feature_4",
+                    "target",
+                ],
             ),
         ),
         (
@@ -877,8 +959,18 @@ def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
                     [0.81649658, 0.70710678, 1.0, np.nan],
                     [np.nan, 1.0, np.nan, 1.0],
                 ],
-                columns=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
-                index=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
+                columns=[
+                    "cat_feature_1",
+                    "cat_feature_2",
+                    "cat_feature_3",
+                    "cat_feature_4",
+                ],
+                index=[
+                    "cat_feature_1",
+                    "cat_feature_2",
+                    "cat_feature_3",
+                    "cat_feature_4",
+                ],
             ),
         ),
     ],
@@ -889,13 +981,35 @@ def test_calculate_correlations(kind: str, expected_corr_df: np.array) -> None:
             "num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             "num_feature_2": [0.1, 0.2, 0.3, 1, 0.5, 0.6, 0.7, 1, 0.9, 1],
             "num_feature_3": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-            "num_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+            "num_feature_4": [
+                1,
+                2,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+            ],
             "num_feature_constant": [1] * 10,
             "num_feature_empty": [np.nan] * 10,
             "cat_feature_1": ["a", "a", "a", "a", "a", "b", "b", "b", "b", "b"],
             "cat_feature_2": ["c", "d", "c", "f", "c", "g", "c", "h", "c", "j"],
             "cat_feature_3": [1, 1, 1, 1, 2, 2, 2, 2, 2, 2],
-            "cat_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+            "cat_feature_4": [
+                1,
+                2,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+            ],
             "cat_feature_constant": [1] * 10,
             "cat_feature_empty": [np.nan] * 10,
             "datetime_feature": [datetime(year=2123, month=12, day=12)] * 10,
@@ -926,8 +1040,19 @@ def test_calculate_correlations(kind: str, expected_corr_df: np.array) -> None:
     columns = create_data_definition(None, df, column_mapping)
     num_for_corr, cat_for_corr = data_quality._select_features_for_corr(df, columns)
     corr_df = data_quality._calculate_correlations(df, num_for_corr, cat_for_corr, kind)
-    assert num_for_corr == ["target", "num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4"]
-    assert cat_for_corr == ["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"]
+    assert num_for_corr == [
+        "target",
+        "num_feature_1",
+        "num_feature_2",
+        "num_feature_3",
+        "num_feature_4",
+    ]
+    assert cat_for_corr == [
+        "cat_feature_1",
+        "cat_feature_2",
+        "cat_feature_3",
+        "cat_feature_4",
+    ]
     assert np.allclose(
         corr_df[expected_corr_df.columns].loc[expected_corr_df.columns],
         expected_corr_df,

@@ -11,8 +11,7 @@ from plotly.subplots import make_subplots
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 
 
 class DataQualityCorrelationsWidget(Widget):
@@ -41,7 +40,9 @@ class DataQualityCorrelationsWidget(Widget):
         parts = []
         for kind in ["pearson", "spearman", "kendall", "cramer_v"]:
             if reference_correlations[kind].shape[0] > 1:
-                correlation_figure = self._plot_correlation_figure(kind, reference_correlations, current_correlations)
+                correlation_figure = self._plot_correlation_figure(
+                    kind, reference_correlations, current_correlations
+                )
                 additional_graphs.append(
                     AdditionalGraphInfo(
                         kind,
@@ -93,7 +94,10 @@ class DataQualityCorrelationsWidget(Widget):
         return wi
 
     def _plot_correlation_figure(
-        self, kind: str, reference_correlations: dict, current_correlations: Optional[dict]
+        self,
+        kind: str,
+        reference_correlations: dict,
+        current_correlations: Optional[dict],
     ) -> dict:
         columns = reference_correlations[kind].columns
         heatmap_text = None
@@ -105,7 +109,9 @@ class DataQualityCorrelationsWidget(Widget):
             cols = 1
             subplot_titles = [""]
 
-        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        fig = make_subplots(
+            rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+        )
         if len(columns) < 15:
             heatmap_text = np.round(reference_correlations[kind], 2).astype(str)
             heatmap_texttemplate = "%{text}"
@@ -149,16 +155,26 @@ class DataQualityCorrelationsWidget(Widget):
         df_corr["features"] = df_corr["col_1"] + ", " + df_corr["col_2"]
         return df_corr[["features", "value"]]
 
-    def _get_rel_diff_corr_features_sorted(self, ref_corr: pd.DataFrame, curr_corr: pd.DataFrame) -> pd.DataFrame:
-        ref_corr = self._get_df_corr_features_sorted(ref_corr).rename(columns={"value": "value_ref"})
-        curr_corr = self._get_df_corr_features_sorted(curr_corr).rename(columns={"value": "value_curr"})
+    def _get_rel_diff_corr_features_sorted(
+        self, ref_corr: pd.DataFrame, curr_corr: pd.DataFrame
+    ) -> pd.DataFrame:
+        ref_corr = self._get_df_corr_features_sorted(ref_corr).rename(
+            columns={"value": "value_ref"}
+        )
+        curr_corr = self._get_df_corr_features_sorted(curr_corr).rename(
+            columns={"value": "value_curr"}
+        )
         com_corr = ref_corr.merge(curr_corr, on="features", how="left")
-        com_corr["value_diff"] = np.round((com_corr["value_ref"] - com_corr["value_curr"]), 3)
+        com_corr["value_diff"] = np.round(
+            (com_corr["value_ref"] - com_corr["value_curr"]), 3
+        )
         com_corr["abs_value_diff"] = np.abs(com_corr["value_diff"])
         com_corr = com_corr.sort_values("abs_value_diff", ascending=False)
         return com_corr[["features", "value_ref", "value_curr", "value_diff"]]
 
-    def _make_metrics(self, reference_correlations: dict, current_correlations: Optional[dict]):
+    def _make_metrics(
+        self, reference_correlations: dict, current_correlations: Optional[dict]
+    ):
         metrics = []
         if current_correlations is not None:
             if reference_correlations["spearman"].shape[0] > 1:
@@ -190,11 +206,15 @@ class DataQualityCorrelationsWidget(Widget):
                 )
         else:
             if reference_correlations["spearman"].shape[0] > 0:
-                ref_num_corr = self._get_df_corr_features_sorted(reference_correlations["spearman"])
+                ref_num_corr = self._get_df_corr_features_sorted(
+                    reference_correlations["spearman"]
+                )
             else:
                 ref_num_corr = pd.DataFrame()
             if reference_correlations["cramer_v"].shape[0] > 0:
-                ref_cat_corr = self._get_df_corr_features_sorted(reference_correlations["cramer_v"])
+                ref_cat_corr = self._get_df_corr_features_sorted(
+                    reference_correlations["cramer_v"]
+                )
             else:
                 ref_cat_corr = pd.DataFrame()
             for i in range(5):

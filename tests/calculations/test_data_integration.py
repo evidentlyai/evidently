@@ -2,9 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.calculations.data_integration import get_number_of_all_pandas_missed_values
-from evidently.calculations.data_integration import get_number_of_almost_constant_columns
-from evidently.calculations.data_integration import get_number_of_almost_duplicated_columns
+from evidently.calculations.data_integration import (
+    get_number_of_all_pandas_missed_values,
+    get_number_of_almost_constant_columns,
+    get_number_of_almost_duplicated_columns,
+)
 
 
 @pytest.mark.parametrize(
@@ -13,10 +15,17 @@ from evidently.calculations.data_integration import get_number_of_almost_duplica
         (pd.DataFrame(), 0),
         (pd.DataFrame({"feature": []}), 0),
         (pd.DataFrame({"feature": [1, 2, 3]}), 0),
-        (pd.DataFrame({"feature1": [1, None, pd.NA], "feature2": [np.NaN, None, pd.NaT]}), 5),
+        (
+            pd.DataFrame(
+                {"feature1": [1, None, pd.NA], "feature2": [np.NaN, None, pd.NaT]}
+            ),
+            5,
+        ),
     ),
 )
-def test_get_number_of_all_pandas_missed_values(dataset: pd.DataFrame, expected_missed: int) -> None:
+def test_get_number_of_all_pandas_missed_values(
+    dataset: pd.DataFrame, expected_missed: int
+) -> None:
     assert get_number_of_all_pandas_missed_values(dataset) == expected_missed
 
 
@@ -64,7 +73,10 @@ def test_get_number_of_all_pandas_missed_values(dataset: pd.DataFrame, expected_
 def test_get_number_of_almost_duplicated_columns(
     dataset: pd.DataFrame, threshold: float, expected_almost_constant: int
 ) -> None:
-    assert get_number_of_almost_duplicated_columns(dataset, threshold) == expected_almost_constant
+    assert (
+        get_number_of_almost_duplicated_columns(dataset, threshold)
+        == expected_almost_constant
+    )
 
 
 @pytest.mark.parametrize(
@@ -99,4 +111,7 @@ def test_get_number_of_almost_duplicated_columns(
 def test_get_number_of_almost_constant_columns(
     dataset: pd.DataFrame, threshold: float, expected_almost_constant: int
 ) -> None:
-    assert get_number_of_almost_constant_columns(dataset, threshold) == expected_almost_constant
+    assert (
+        get_number_of_almost_constant_columns(dataset, threshold)
+        == expected_almost_constant
+    )

@@ -6,8 +6,10 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnValueRangeMetric
-from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
-from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
+from evidently.metrics.data_quality.column_value_range_metric import (
+    ColumnValueRangeMetricResult,
+    ValuesInRangeStat,
+)
 from evidently.report import Report
 from evidently.utils.visualizations import Distribution
 
@@ -68,7 +70,11 @@ def test_data_quality_values_in_range_metric_success(
     expected_result: ColumnValueRangeMetricResult,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     result = metric.get_result()
     assert result == expected_result
 
@@ -127,7 +133,11 @@ def test_data_quality_values_in_range_metric_errors(
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
 
@@ -185,10 +195,17 @@ def test_data_quality_values_in_range_metric_errors(
     ),
 )
 def test_data_quality_values_in_range_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueRangeMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnValueRangeMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     result_json = report.json()
     assert len(result_json) > 0

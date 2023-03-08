@@ -8,7 +8,9 @@ import pandas as pd
 import plotly.graph_objs as go
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import (
+    ProbClassificationPerformanceAnalyzer,
+)
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
@@ -35,7 +37,9 @@ class ProbClassPRCurveWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+                )
 
             return None
 
@@ -52,7 +56,9 @@ class ProbClassPRCurveWidget(Widget):
             metrics = results.current_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+            raise ValueError(
+                f"Widget [{self.title}] required 'current' or 'reference' dataset value"
+            )
 
         if metrics is None:
             return None
@@ -77,7 +83,9 @@ class ProbClassPRCurveWidget(Widget):
                 )
             )
 
-            fig.update_layout(yaxis_title="Precision", xaxis_title="Recall", showlegend=True)
+            fig.update_layout(
+                yaxis_title="Precision", xaxis_title="Recall", showlegend=True
+            )
 
             fig_json = json.loads(fig.to_json())
 
@@ -92,7 +100,9 @@ class ProbClassPRCurveWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] got no pr_curve value")
 
             if not isinstance(metrics.pr_curve, dict):
-                raise ValueError(f"Widget [{self.title}] got incorrect type for pr_curve value")
+                raise ValueError(
+                    f"Widget [{self.title}] got incorrect type for pr_curve value"
+                )
 
             graphs = []
 
@@ -112,7 +122,9 @@ class ProbClassPRCurveWidget(Widget):
                     )
                 )
 
-                fig.update_layout(yaxis_title="Precision", xaxis_title="Recall", showlegend=True)
+                fig.update_layout(
+                    yaxis_title="Precision", xaxis_title="Recall", showlegend=True
+                )
 
                 fig_json = json.loads(fig.to_json())
 

@@ -1,19 +1,14 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Dict, List, Optional
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import counter
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import CounterData, counter
 from evidently.utils.data_operations import process_columns
 
 
@@ -62,7 +57,11 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
         self.drift_share = drift_share
 
     def get_parameters(self) -> tuple:
-        return self.drift_share, None if self.columns is None else tuple(self.columns), self.options
+        return (
+            self.drift_share,
+            None if self.columns is None else tuple(self.columns),
+            self.options,
+        )
 
     def calculate(self, data: InputData) -> DatasetDriftMetricResults:
         if data.reference_data is None:
@@ -104,7 +103,9 @@ class DataDriftMetricsRenderer(MetricRenderer):
         counters = [
             CounterData.int("Columns", result.number_of_columns),
             CounterData.int("Drifted Columns", result.number_of_drifted_columns),
-            CounterData.float("Share of Drifted Columns", result.share_of_drifted_columns, 3),
+            CounterData.float(
+                "Share of Drifted Columns", result.share_of_drifted_columns, 3
+            ),
         ]
 
         return [

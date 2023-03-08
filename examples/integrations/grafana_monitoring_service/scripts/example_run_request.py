@@ -37,7 +37,7 @@ def send_data_row(dataset_name: str, data: Dict) -> None:
         )
 
         if response.status_code == 200:
-            print(f"Success.")
+            print("Success.")
 
         else:
             print(
@@ -61,7 +61,9 @@ def main(sleep_timeout: int) -> None:
     max_index = 0
 
     for dataset_name in os.listdir(datasets_path):
-        production_data_path = os.path.join(datasets_path, dataset_name, "production.csv")
+        production_data_path = os.path.join(
+            datasets_path, dataset_name, "production.csv"
+        )
         new_data = pd.read_csv(production_data_path)
         datasets[dataset_name] = new_data
         max_index = max(max_index, new_data.shape[0])

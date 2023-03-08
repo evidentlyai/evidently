@@ -23,17 +23,14 @@ Example:
     >>> options = DataDriftOptions(all_features_stattest="cramer_von_mises")
 """
 from itertools import combinations
-from typing import Generator
-from typing import Tuple
+from typing import Generator, Tuple
 
 import numpy as np
 import pandas as pd
-from scipy.special import gammaln
-from scipy.special import kv
+from scipy.special import gammaln, kv
 from scipy.stats import rankdata
 
-from evidently.calculations.stattests.registry import StatTest
-from evidently.calculations.stattests.registry import register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 
 
 def _all_partitions(nx: int, ny: int) -> Generator[Tuple[int, int], None, None]:
@@ -83,7 +80,10 @@ class CramerVonMisesResult:
         self.pvalue = pvalue
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(statistic={self.statistic}, " f"pvalue={self.pvalue})"
+        return (
+            f"{self.__class__.__name__}(statistic={self.statistic}, "
+            f"pvalue={self.pvalue})"
+        )
 
 
 def _cdf_cvm_inf(x: float) -> float:
@@ -114,7 +114,9 @@ def _cdf_cvm_inf(x: float) -> float:
     return tot
 
 
-def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
+def _cvm_2samp(
+    x: np.ndarray, y: np.ndarray, method: str = "auto"
+) -> CramerVonMisesResult:
     """Perform the two-sample Cramér-von Mises test
     Args:
         x : array_like

@@ -25,8 +25,14 @@ def test_num_target_drift_monitor() -> None:
         }
     )
     data_mapping = ColumnMapping()
-    evidently_monitoring = ModelMonitoring(monitors=[NumTargetDriftMonitor()], options=None)
-    evidently_monitoring.execute(reference_data=reference_data, current_data=current_data, column_mapping=data_mapping)
+    evidently_monitoring = ModelMonitoring(
+        monitors=[NumTargetDriftMonitor()], options=None
+    )
+    evidently_monitoring.execute(
+        reference_data=reference_data,
+        current_data=current_data,
+        column_mapping=data_mapping,
+    )
     result = collect_metrics_results(evidently_monitoring.metrics())
     assert "num_target_drift:count" in result
     assert result["num_target_drift:count"] == [
@@ -41,11 +47,31 @@ def test_num_target_drift_monitor() -> None:
 
     assert "num_target_drift:current_correlations" in result
     assert result["num_target_drift:current_correlations"] == [
-        {"labels": {"feature": "prediction", "feature_type": "num", "kind": "prediction"}, "value": 1.0},
-        {"labels": {"feature": "target", "feature_type": "num", "kind": "target"}, "value": 1.0},
+        {
+            "labels": {
+                "feature": "prediction",
+                "feature_type": "num",
+                "kind": "prediction",
+            },
+            "value": 1.0,
+        },
+        {
+            "labels": {"feature": "target", "feature_type": "num", "kind": "target"},
+            "value": 1.0,
+        },
     ]
     assert "num_target_drift:reference_correlations" in result
     assert result["num_target_drift:reference_correlations"] == [
-        {"labels": {"feature": "prediction", "feature_type": "num", "kind": "prediction"}, "value": 1.0},
-        {"labels": {"feature": "target", "feature_type": "num", "kind": "target"}, "value": 1.0},
+        {
+            "labels": {
+                "feature": "prediction",
+                "feature_type": "num",
+                "kind": "prediction",
+            },
+            "value": 1.0,
+        },
+        {
+            "labels": {"feature": "target", "feature_type": "num", "kind": "target"},
+            "value": 1.0,
+        },
     ]

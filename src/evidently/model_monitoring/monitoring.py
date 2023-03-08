@@ -1,12 +1,5 @@
 import abc
-from typing import Any
-from typing import Dict
-from typing import Generator
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Tuple
-from typing import Type
+from typing import Any, Dict, Generator, List, Optional, Sequence, Tuple, Type
 
 import pandas
 
@@ -60,7 +53,9 @@ class ModelMonitor(PipelineStage):
 
 
 class ModelMonitoring(Pipeline):
-    def __init__(self, monitors: Sequence[ModelMonitor], options: Optional[list] = None):
+    def __init__(
+        self, monitors: Sequence[ModelMonitor], options: Optional[list] = None
+    ):
         if options is None:
             options = []
 

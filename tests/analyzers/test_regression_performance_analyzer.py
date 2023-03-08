@@ -3,12 +3,13 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzerResults
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
+from evidently.analyzers.regression_performance_analyzer import (
+    RegressionPerformanceAnalyzer,
+    RegressionPerformanceAnalyzerResults,
+    RegressionPerformanceMetrics,
+)
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import DatasetUtilityColumns
+from evidently.utils.data_operations import DatasetColumns, DatasetUtilityColumns
 
 
 @pytest.fixture
@@ -28,7 +29,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 columns=DatasetColumns(
                     target_type="cat",
                     utility_columns=DatasetUtilityColumns(
-                        date=None, id_column=None, target="target", prediction="prediction"
+                        date=None,
+                        id_column=None,
+                        target="target",
+                        prediction="prediction",
                     ),
                     num_feature_names=[],
                     cat_feature_names=[],
@@ -59,8 +63,14 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     abs_error_max=1,
                     underperformance={
                         "majority": {"mean_error": 0.0, "std_error": 0.0},
-                        "underestimation": {"mean_error": -1.0, "std_error": approx(np.nan, nan_ok=True)},
-                        "overestimation": {"mean_error": 1.0, "std_error": approx(np.nan, nan_ok=True)},
+                        "underestimation": {
+                            "mean_error": -1.0,
+                            "std_error": approx(np.nan, nan_ok=True),
+                        },
+                        "overestimation": {
+                            "mean_error": 1.0,
+                            "std_error": approx(np.nan, nan_ok=True),
+                        },
                     },
                     error_bias={},
                 ),
@@ -77,7 +87,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 columns=DatasetColumns(
                     target_type="cat",
                     utility_columns=DatasetUtilityColumns(
-                        date=None, id_column=None, target="target", prediction="prediction"
+                        date=None,
+                        id_column=None,
+                        target="target",
+                        prediction="prediction",
                     ),
                     num_feature_names=[],
                     cat_feature_names=[],
@@ -124,7 +137,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     abs_error_std=0.0,
                     abs_perc_error_std=0.0,
                     error_normality={
-                        "order_statistic_medians_x": [-0.5449521356173604, 0.5449521356173604],
+                        "order_statistic_medians_x": [
+                            -0.5449521356173604,
+                            0.5449521356173604,
+                        ],
                         "order_statistic_medians_y": [0.0, 0.0],
                         "slope": 0.0,
                         "intercept": 0.0,
@@ -176,7 +192,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 columns=DatasetColumns(
                     target_type="cat",
                     utility_columns=DatasetUtilityColumns(
-                        date=None, id_column=None, target="test_target", prediction="test_prediction"
+                        date=None,
+                        id_column=None,
+                        target="test_target",
+                        prediction="test_prediction",
                     ),
                     num_feature_names=["numeric_feature_1", "numeric_feature_2"],
                     cat_feature_names=["category_feature_1", "category_feature_2"],
@@ -206,9 +225,15 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "r": 0.9380933329232763,
                     },
                     underperformance={
-                        "majority": {"mean_error": 0.0, "std_error": approx(np.NAN, nan_ok=True)},
+                        "majority": {
+                            "mean_error": 0.0,
+                            "std_error": approx(np.NAN, nan_ok=True),
+                        },
                         "underestimation": {"mean_error": -1.0, "std_error": 0.0},
-                        "overestimation": {"mean_error": 1.0, "std_error": approx(np.NAN, nan_ok=True)},
+                        "overestimation": {
+                            "mean_error": 1.0,
+                            "std_error": approx(np.NAN, nan_ok=True),
+                        },
                     },
                     error_bias={
                         "numeric_feature_1": {
@@ -250,7 +275,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     abs_error_std=0.0,
                     abs_perc_error_std=3184525836262885.5,
                     error_normality={
-                        "order_statistic_medians_x": [-0.5449521356173604, 0.5449521356173604],
+                        "order_statistic_medians_x": [
+                            -0.5449521356173604,
+                            0.5449521356173604,
+                        ],
                         "order_statistic_medians_y": [-1.0, 1.0],
                         "slope": 1.8350235454479484,
                         "intercept": 0.0,
@@ -261,8 +289,14 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                             "mean_error": approx(np.NAN, nan_ok=True),
                             "std_error": approx(np.NAN, nan_ok=True),
                         },
-                        "underestimation": {"mean_error": -1.0, "std_error": approx(np.NAN, nan_ok=True)},
-                        "overestimation": {"mean_error": 1.0, "std_error": approx(np.NAN, nan_ok=True)},
+                        "underestimation": {
+                            "mean_error": -1.0,
+                            "std_error": approx(np.NAN, nan_ok=True),
+                        },
+                        "overestimation": {
+                            "mean_error": 1.0,
+                            "std_error": approx(np.NAN, nan_ok=True),
+                        },
                     },
                     error_bias={
                         "numeric_feature_1": {

@@ -3,9 +3,11 @@ import pandas as pd
 import pytest
 
 from evidently.calculations.stattests.tvd_stattest import _total_variation_distance
-from evidently.calculations.stattests.utils import generate_fisher2x2_contingency_table
-from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
-from evidently.calculations.stattests.utils import permutation_test
+from evidently.calculations.stattests.utils import (
+    generate_fisher2x2_contingency_table,
+    get_unique_not_nan_values_list_from_series,
+    permutation_test,
+)
 
 
 @pytest.mark.parametrize(
@@ -13,14 +15,22 @@ from evidently.calculations.stattests.utils import permutation_test
     (
         (pd.Series([1, 2, 3, 3, 5]), pd.Series([1, 2, 3, 4, 5]), [1, 2, 3, 4, 5]),
         (pd.Series([1, 2, 3, 4]), pd.Series([5, 5]), [1, 2, 3, 4, 5]),
-        (pd.Series(["a", "b", "a", "c"]), pd.Series(["d", "e"]), ["b", "d", "e", "c", "a"]),
+        (
+            pd.Series(["a", "b", "a", "c"]),
+            pd.Series(["d", "e"]),
+            ["b", "d", "e", "c", "a"],
+        ),
         (pd.Series(["a", None, "a", np.NAN]), pd.Series([4, 5]), [4, 5, "a"]),
         (pd.Series([pd.NA, pd.NaT, np.NAN]), pd.Series([pd.NA, pd.NaT, np.NAN]), []),
     ),
 )
-def test_get_unique_not_nan_values_list_from_series(current_data: pd.Series, reference_data: pd.Series, expected_list):
+def test_get_unique_not_nan_values_list_from_series(
+    current_data: pd.Series, reference_data: pd.Series, expected_list
+):
     assert set(
-        get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
+        get_unique_not_nan_values_list_from_series(
+            current_data=current_data, reference_data=reference_data
+        )
     ) == set(expected_list)
 
 
@@ -71,9 +81,14 @@ def test_permutation_test(reference, current, observed, test_statistic_func, pva
     ),
 )
 def test_generate_fisher2x2_contingency_table(
-    current_data: pd.Series, reference_data: pd.Series, expected_contingency_table: np.ndarray
+    current_data: pd.Series,
+    reference_data: pd.Series,
+    expected_contingency_table: np.ndarray,
 ):
-    assert (generate_fisher2x2_contingency_table(reference_data, current_data) == expected_contingency_table).all()
+    assert (
+        generate_fisher2x2_contingency_table(reference_data, current_data)
+        == expected_contingency_table
+    ).all()
 
 
 @pytest.mark.parametrize(

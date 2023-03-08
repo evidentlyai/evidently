@@ -4,12 +4,16 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.model_profile.sections.data_quality_profile_section import DataQualityProfileSection
+from evidently.model_profile.sections.data_quality_profile_section import (
+    DataQualityProfileSection,
+)
 from evidently.utils.data_operations import ColumnMapping
 
-from .helpers import calculate_section_results
-from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_without_calculation_results
+from .helpers import (
+    calculate_section_results,
+    check_profile_section_result_common_part,
+    check_section_without_calculation_results,
+)
 
 
 def test_no_calculation_results() -> None:
@@ -287,13 +291,35 @@ def test_data_quality_profile_section_correlations(kind: str) -> None:
             "num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             "num_feature_2": [0.1, 0.2, 0.3, 1, 0.5, 0.6, 0.7, 1, 0.9, 1],
             "num_feature_3": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-            "num_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+            "num_feature_4": [
+                1,
+                2,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+            ],
             "num_feature_constant": [1] * 10,
             "num_feature_empty": [np.nan] * 10,
             "cat_feature_1": ["a", "a", "a", "a", "a", "b", "b", "b", "b", "b"],
             "cat_feature_2": ["c", "d", "c", "f", "c", "g", "c", "h", "c", "j"],
             "cat_feature_3": [1, 1, 1, 1, 2, 2, 2, 2, 2, 2],
-            "cat_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+            "cat_feature_4": [
+                1,
+                2,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+            ],
             "cat_feature_constant": [1] * 10,
             "cat_feature_empty": [np.nan] * 10,
             "datetime_feature": [datetime(year=2123, month=12, day=12)] * 10,
@@ -321,7 +347,9 @@ def test_data_quality_profile_section_correlations(kind: str) -> None:
         datetime_features=["datetime_feature"],
         task="regression",
     )
-    profile_section_result = calculate_section_results(DataQualityProfileSection, df, None, column_mapping)
+    profile_section_result = calculate_section_results(
+        DataQualityProfileSection, df, None, column_mapping
+    )
     assert kind in profile_section_result["data"]["correlations"]["reference"]
     result = profile_section_result["data"]["correlations"]["reference"][kind]
     assert isinstance(result, dict)

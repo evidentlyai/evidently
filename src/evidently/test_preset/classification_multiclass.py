@@ -3,14 +3,16 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestAccuracyScore
-from evidently.tests import TestColumnDrift
-from evidently.tests import TestF1Score
-from evidently.tests import TestLogLoss
-from evidently.tests import TestNumberOfRows
-from evidently.tests import TestPrecisionByClass
-from evidently.tests import TestRecallByClass
-from evidently.tests import TestRocAuc
+from evidently.tests import (
+    TestAccuracyScore,
+    TestColumnDrift,
+    TestF1Score,
+    TestLogLoss,
+    TestNumberOfRows,
+    TestPrecisionByClass,
+    TestRecallByClass,
+    TestRocAuc,
+)
 from evidently.utils.data_operations import DatasetColumns
 
 
@@ -50,7 +52,9 @@ class MulticlassClassificationTestPreset(TestPreset):
         target = columns.utility_columns.target
 
         if target is None:
-            raise ValueError("Target column should be set in mapping and be present in data")
+            raise ValueError(
+                "Target column should be set in mapping and be present in data"
+            )
 
         labels = set(data.current_data[target].unique())
 
@@ -63,7 +67,11 @@ class MulticlassClassificationTestPreset(TestPreset):
             *[TestPrecisionByClass(str(label)) for label in labels],
             *[TestRecallByClass(str(label)) for label in labels],
             TestNumberOfRows(),
-            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
+            TestColumnDrift(
+                column_name=target,
+                stattest=self.stattest,
+                stattest_threshold=self.stattest_threshold,
+            ),
         ]
 
         prediction_columns = data.data_definition.get_prediction_columns()

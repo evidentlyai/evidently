@@ -5,13 +5,15 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.model_profile import Profile
-from evidently.model_profile.sections import CatTargetDriftProfileSection
-from evidently.model_profile.sections import ClassificationPerformanceProfileSection
-from evidently.model_profile.sections import DataDriftProfileSection
-from evidently.model_profile.sections import DataQualityProfileSection
-from evidently.model_profile.sections import NumTargetDriftProfileSection
-from evidently.model_profile.sections import ProbClassificationPerformanceProfileSection
-from evidently.model_profile.sections import RegressionPerformanceProfileSection
+from evidently.model_profile.sections import (
+    CatTargetDriftProfileSection,
+    ClassificationPerformanceProfileSection,
+    DataDriftProfileSection,
+    DataQualityProfileSection,
+    NumTargetDriftProfileSection,
+    ProbClassificationPerformanceProfileSection,
+    RegressionPerformanceProfileSection,
+)
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
@@ -26,16 +28,25 @@ from evidently.model_profile.sections.base_profile_section import ProfileSection
         (NumTargetDriftProfileSection, True),
     ),
 )
-def test_model_profile_without_current_data(section_class: Type[ProfileSection], raises_value_error: bool) -> None:
+def test_model_profile_without_current_data(
+    section_class: Type[ProfileSection], raises_value_error: bool
+) -> None:
     """Check that profiles
     - that can be executed with one dataset only do not get an error
     - that cannot be executed with one dataset raise correct error
     """
     my_profile = Profile([section_class()])
     test_data = pd.DataFrame(
-        {"target": [1, 0, 1], "prediction": [1, 0, 0], "num_feature": [1, 2, 3], "cat_feature": [3, 2, 1]}
+        {
+            "target": [1, 0, 1],
+            "prediction": [1, 0, 0],
+            "num_feature": [1, 2, 3],
+            "cat_feature": [3, 2, 1],
+        }
     )
-    data_mapping = ColumnMapping(numerical_features=["num_feature"], categorical_features=["cat_feature"])
+    data_mapping = ColumnMapping(
+        numerical_features=["num_feature"], categorical_features=["cat_feature"]
+    )
 
     if raises_value_error:
         with pytest.raises(ValueError) as error:

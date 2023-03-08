@@ -4,15 +4,25 @@ import pandas as pd
 from pytest import approx
 from sklearn.datasets import fetch_20newsgroups
 
-from evidently.metrics.data_drift.text_domain_classifier_drift_metric import TextDomainClassifierDriftMetric
+from evidently.metrics.data_drift.text_domain_classifier_drift_metric import (
+    TextDomainClassifierDriftMetric,
+)
 from evidently.report import Report
 
 
 def test_text_domain_classifier_drift_metric():
     categories_ref = ["alt.atheism", "talk.religion.misc"]
     categories_cur = ["comp.graphics", "sci.space"]
-    reference = fetch_20newsgroups(subset="train", remove=("headers", "footers", "quotes"), categories=categories_ref)
-    current = fetch_20newsgroups(subset="test", remove=("headers", "footers", "quotes"), categories=categories_cur)
+    reference = fetch_20newsgroups(
+        subset="train",
+        remove=("headers", "footers", "quotes"),
+        categories=categories_ref,
+    )
+    current = fetch_20newsgroups(
+        subset="test",
+        remove=("headers", "footers", "quotes"),
+        categories=categories_cur,
+    )
     reference_data = pd.DataFrame({"text": reference.data})
     current_data = pd.DataFrame({"text": current.data})
 

@@ -1,14 +1,15 @@
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 from evidently.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestAllColumnsMostCommonValueShare
-from evidently.tests import TestAllColumnsShareOfMissingValues
-from evidently.tests import TestHighlyCorrelatedColumns
-from evidently.tests import TestNumberOfConstantColumns
-from evidently.tests import TestNumberOfDuplicatedColumns
-from evidently.tests import TestNumberOfDuplicatedRows
+from evidently.tests import (
+    TestAllColumnsMostCommonValueShare,
+    TestAllColumnsShareOfMissingValues,
+    TestHighlyCorrelatedColumns,
+    TestNumberOfConstantColumns,
+    TestNumberOfDuplicatedColumns,
+    TestNumberOfDuplicatedRows,
+)
 from evidently.utils.data_operations import DatasetColumns
 
 

@@ -2,11 +2,7 @@ import abc
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generic
-from typing import List
-from typing import Optional
-from typing import TypeVar
-from typing import Union
+from typing import Generic, List, Optional, TypeVar, Union
 
 import pandas as pd
 
@@ -54,7 +50,9 @@ class InputData:
     data_definition: DataDefinition
 
     @staticmethod
-    def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
+    def _get_by_column_name(
+        dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName
+    ) -> pd.Series:
         if column.dataset == DatasetType.MAIN:
             return dataset[column.name]
         if column.dataset == DatasetType.ADDITIONAL:
@@ -66,18 +64,27 @@ class InputData:
             _column = ColumnName(column, DatasetType.MAIN, None)
         else:
             _column = column
-        return self._get_by_column_name(self.current_data, self.current_additional_features, _column)
+        return self._get_by_column_name(
+            self.current_data, self.current_additional_features, _column
+        )
 
-    def get_reference_column(self, column: Union[str, ColumnName]) -> Optional[pd.Series]:
+    def get_reference_column(
+        self, column: Union[str, ColumnName]
+    ) -> Optional[pd.Series]:
         if self.reference_data is None:
             return None
         if isinstance(column, str):
             _column = ColumnName(column, DatasetType.MAIN, None)
         else:
             _column = column
-        if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
+        if (
+            self.reference_additional_features is None
+            and _column.dataset == DatasetType.ADDITIONAL
+        ):
             return None
-        return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
+        return self._get_by_column_name(
+            self.reference_data, self.reference_additional_features, _column
+        )
 
 
 class Metric(Generic[TResult]):
@@ -100,7 +107,9 @@ class Metric(Generic[TResult]):
         if isinstance(result, ErrorResult):
             raise result.exception
         if result is None:
-            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
+            raise ValueError(
+                f"No result found for metric {self} of type {type(self).__name__}"
+            )
         return result
 
     def get_parameters(self) -> Optional[tuple]:
@@ -120,7 +129,9 @@ class Metric(Generic[TResult]):
             return None
         return params
 
-    def required_features(self, data_definition: DataDefinition) -> List[GeneratedFeature]:
+    def required_features(
+        self, data_definition: DataDefinition
+    ) -> List[GeneratedFeature]:
         required_features = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:

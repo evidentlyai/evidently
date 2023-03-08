@@ -6,7 +6,9 @@ from evidently.options import ColorOptions
 from evidently.utils.visualizations import Distribution
 
 
-def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions):
+def plot_distr(
+    *, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions
+):
     fig = go.Figure()
 
     fig.add_trace(

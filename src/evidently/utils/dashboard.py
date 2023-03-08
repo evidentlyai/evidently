@@ -5,9 +5,7 @@ import os
 import shutil
 from dataclasses import asdict
 from enum import Enum
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Dict, List, Optional
 
 import evidently
 from evidently.model.dashboard import DashboardInfo
@@ -59,7 +57,13 @@ def save_lib_files(filename: str, mode: SaveMode):
     return font_file, lib_file
 
 
-def save_data_file(filename: str, mode: SaveMode, dashboard_id, dashboard_info: DashboardInfo, additional_graphs: Dict):
+def save_data_file(
+    filename: str,
+    mode: SaveMode,
+    dashboard_id,
+    dashboard_info: DashboardInfo,
+    additional_graphs: Dict,
+):
     if mode == SaveMode.SINGLE_FILE:
         return None
     parent_dir = os.path.dirname(filename)
@@ -130,7 +134,11 @@ domReady(function () {{
 
 
 def file_html_template(params: TemplateParams):
-    lib_block = f"""<script>{__load_js()}</script>""" if params.embed_lib else "<!-- no embedded lib -->"
+    lib_block = (
+        f"""<script>{__load_js()}</script>"""
+        if params.embed_lib
+        else "<!-- no embedded lib -->"
+    )
     data_block = (
         f"""<script>
     var {params.dashboard_id} = {dashboard_info_to_json(params.dashboard_info)};
@@ -139,7 +147,9 @@ def file_html_template(params: TemplateParams):
         if params.embed_data
         else "<!-- no embedded data -->"
     )
-    js_files_block = "\n".join([f'<script src="{file}"></script>' for file in params.include_js_files])
+    js_files_block = "\n".join(
+        [f'<script src="{file}"></script>' for file in params.include_js_files]
+    )
     return f"""
 <html>
 <head>
@@ -191,4 +201,6 @@ def __load_js():
 
 
 def __load_font():
-    return base64.b64encode(open(os.path.join(STATIC_PATH, "material-ui-icons.woff2"), "rb").read()).decode()
+    return base64.b64encode(
+        open(os.path.join(STATIC_PATH, "material-ui-icons.woff2"), "rb").read()
+    ).decode()

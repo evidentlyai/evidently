@@ -1,7 +1,6 @@
 try:
     import os
-    from datetime import datetime
-    from datetime import timedelta
+    from datetime import datetime, timedelta
 
     import numpy as np
     import pandas as pd
@@ -11,7 +10,15 @@ try:
 
     from evidently import ColumnMapping
     from evidently.test_suite import TestSuite
-    from evidently.tests import *
+    from evidently.tests import (
+        TestColumnsType,
+        TestHighlyCorrelatedColumns,
+        TestNumberOfColumns,
+        TestNumberOfConstantColumns,
+        TestNumberOfDuplicatedColumns,
+        TestShareOfDriftedColumns,
+        TestTargetFeaturesCorrelations,
+    )
 
 except Exception as e:
     print("Error  {} ".format(e))
@@ -101,7 +108,9 @@ with DAG(
     )
 
     test_suite_html = PythonOperator(
-        task_id="test_suite_html", provide_context=True, python_callable=test_suite_html_execute
+        task_id="test_suite_html",
+        provide_context=True,
+        python_callable=test_suite_html_execute,
     )
 
 load_data >> data_quality_tests >> [test_suite_html]

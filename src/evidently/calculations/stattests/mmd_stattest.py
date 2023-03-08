@@ -1,11 +1,9 @@
-from typing import Optional
-from typing import Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
 
-from evidently.calculations.stattests.registry import StatTest
-from evidently.calculations.stattests.registry import register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 
 
 def squared_paired_dist(x: np.ndarray, y: np.ndarray) -> np.ndarray:
@@ -35,7 +33,9 @@ def sigma_median(dist: np.ndarray) -> float:
     return sigma
 
 
-def rbf(x: np.ndarray, y: np.ndarray, pass_sigma: Optional[float]) -> Tuple[np.ndarray, float]:
+def rbf(
+    x: np.ndarray, y: np.ndarray, pass_sigma: Optional[float]
+) -> Tuple[np.ndarray, float]:
     """compute the RBF kernel
     Args:
         x:reference data
@@ -63,11 +63,16 @@ def kernel_matrix(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     kxx, kxxsigma = rbf(x, x, pass_sigma=None)
     kxy, tmp = rbf(x, y, pass_sigma=kxxsigma)
     kyy, tmp = rbf(y, y, pass_sigma=kxxsigma)
-    kernel_matrix = np.concatenate((np.concatenate((kxx, kxy), axis=1), np.concatenate((kxy.T, kyy), axis=1)), axis=0)
+    kernel_matrix = np.concatenate(
+        (np.concatenate((kxx, kxy), axis=1), np.concatenate((kxy.T, kyy), axis=1)),
+        axis=0,
+    )
     return kernel_matrix
 
 
-def mmd_2samp(kernel_matrix: np.ndarray, no_y_values: int, permute: bool = False) -> float:
+def mmd_2samp(
+    kernel_matrix: np.ndarray, no_y_values: int, permute: bool = False
+) -> float:
     """Perform the mmd test without permutation
     Args:
         kernel_matrix: the concatenated similarity matrix(i.e. xx,xy and yy)
@@ -103,7 +108,9 @@ def mmd_pval(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
     kernel_mat = kernel_mat - np.diag(np.diagonal(kernel_mat))
 
     mmd = mmd_2samp(kernel_mat, y.shape[0], permute=False)
-    mmd_permuted = np.array([mmd_2samp(kernel_mat, y.shape[0], permute=True) for _ in range(100)])
+    mmd_permuted = np.array(
+        [mmd_2samp(kernel_mat, y.shape[0], permute=True) for _ in range(100)]
+    )
 
     p_val = (mmd <= mmd_permuted).mean()
 

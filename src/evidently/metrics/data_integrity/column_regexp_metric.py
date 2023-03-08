@@ -2,25 +2,22 @@ import collections
 import dataclasses
 import re
 from dataclasses import dataclass
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Pattern
+from typing import Dict, List, Optional, Pattern
 
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import TabData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import widget_tabs
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import (
+    CounterData,
+    TabData,
+    counter,
+    header_text,
+    table_data,
+    widget_tabs,
+)
 
 
 @dataclass
@@ -69,7 +66,9 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
         self.column_name = column_name
         self._reg_exp_compiled = re.compile(reg_exp)
 
-    def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
+    def _calculate_stats_by_regexp(
+        self, column: pd.Series
+    ) -> DataIntegrityValueByRegexpStat:
         number_of_matched = 0
         number_of_na = 0
         number_of_not_matched = 0
@@ -93,7 +92,9 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
         matched = sorted(table_of_matched.items(), key=lambda x: x[1], reverse=True)
         table_of_matched = {k: v for k, v in matched[: self.top]}
 
-        not_matched = sorted(table_of_not_matched.items(), key=lambda x: x[1], reverse=True)
+        not_matched = sorted(
+            table_of_not_matched.items(), key=lambda x: x[1], reverse=True
+        )
         table_of_not_matched = {k: v for k, v in not_matched[: self.top]}
 
         return DataIntegrityValueByRegexpStat(
@@ -109,7 +110,9 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
             raise ValueError("Parameter top must be >= 1")
 
         if not self.reg_exp:
-            raise ValueError("Parameter reg_exp must be not empty for ColumnRegExpMetric")
+            raise ValueError(
+                "Parameter reg_exp must be not empty for ColumnRegExpMetric"
+            )
 
         if self.column_name not in data.current_data:
             raise ValueError(f"Column {self.column_name} not found in current dataset.")
@@ -119,12 +122,20 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column {self.column_name} was not found in reference dataset.")
+                raise ValueError(
+                    f"Column {self.column_name} was not found in reference dataset."
+                )
 
-            reference = self._calculate_stats_by_regexp(data.reference_data[self.column_name])
+            reference = self._calculate_stats_by_regexp(
+                data.reference_data[self.column_name]
+            )
 
         return DataIntegrityValueByRegexpMetricResult(
-            column_name=self.column_name, reg_exp=self.reg_exp, top=self.top, current=current, reference=reference
+            column_name=self.column_name,
+            reg_exp=self.reg_exp,
+            top=self.top,
+            current=current,
+            reference=reference,
         )
 
 
@@ -134,11 +145,18 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_counters(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> BaseWidgetInfo:
-        percents = round(metrics.number_of_not_matched * 100 / metrics.number_of_rows, 3)
+    def _get_counters(
+        dataset_name: str, metrics: DataIntegrityValueByRegexpStat
+    ) -> BaseWidgetInfo:
+        percents = round(
+            metrics.number_of_not_matched * 100 / metrics.number_of_rows, 3
+        )
         counters = [
             CounterData(label="Number of Values", value=f"{metrics.number_of_rows}"),
-            CounterData(label="Mismatched", value=f"{metrics.number_of_not_matched} ({percents}%)"),
+            CounterData(
+                label="Mismatched",
+                value=f"{metrics.number_of_not_matched} ({percents}%)",
+            ),
         ]
         return counter(
             counters=counters,
@@ -146,7 +164,9 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
         )
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, top: int, metrics: DataIntegrityValueByRegexpStat) -> BaseWidgetInfo:
+    def _get_table_stat(
+        dataset_name: str, top: int, metrics: DataIntegrityValueByRegexpStat
+    ) -> BaseWidgetInfo:
         return table_data(
             title=f"{dataset_name.capitalize()} Dataset: top {top} mismatched values",
             column_names=["Value", "Count"],
@@ -165,14 +185,18 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
         if metric_result.reference is not None:
             result.append(self._get_counters("reference", metric_result.reference))
 
-        current_table = self._get_table_stat("current", metric_result.top, metric_result.current)
+        current_table = self._get_table_stat(
+            "current", metric_result.top, metric_result.current
+        )
 
         if metric_result.reference is not None:
             tables_tabs = [
                 TabData(title="Current dataset", widget=current_table),
                 TabData(
                     title="Reference dataset",
-                    widget=self._get_table_stat("reference", metric_result.top, metric_result.reference),
+                    widget=self._get_table_stat(
+                        "reference", metric_result.top, metric_result.reference
+                    ),
                 ),
             ]
             tables = widget_tabs(tabs=tables_tabs)

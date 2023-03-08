@@ -27,13 +27,16 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from evidently.calculations.stattests.registry import StatTest
-from evidently.calculations.stattests.registry import register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 from evidently.calculations.stattests.utils import get_binned_data
 
 
 def _psi(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float, n_bins: int = 30
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: str,
+    threshold: float,
+    n_bins: int = 30,
 ) -> Tuple[float, bool]:
     """Calculate the PSI
     Args:
@@ -46,7 +49,9 @@ def _psi(
         psi_value: calculated PSI
         test_result: whether the drift is detected
     """
-    reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
+    reference_percents, current_percents = get_binned_data(
+        reference_data, current_data, feature_type, n_bins
+    )
 
     def sub_psi(ref_perc, curr_perc):
         """Calculate the actual PSI value from comparing the values.

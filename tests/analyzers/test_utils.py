@@ -5,9 +5,11 @@ import pandas as pd
 import pytest
 
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import DatasetUtilityColumns
-from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import (
+    DatasetColumns,
+    DatasetUtilityColumns,
+    process_columns,
+)
 
 
 @pytest.mark.parametrize(
@@ -35,7 +37,12 @@ from evidently.utils.data_operations import process_columns
                 target="my_target",
                 prediction="my_prediction",
                 numerical_features=["num_feature_1", "num_feature_2"],
-                categorical_features=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
+                categorical_features=[
+                    "cat_feature_1",
+                    "cat_feature_2",
+                    "cat_feature_3",
+                    "cat_feature_4",
+                ],
                 datetime="datetime_column",
                 id="some_id",
                 target_names=["apple", "lemon", "peach"],
@@ -44,10 +51,18 @@ from evidently.utils.data_operations import process_columns
             DatasetColumns(
                 target_type="cat",
                 utility_columns=DatasetUtilityColumns(
-                    date="datetime_column", id_column="some_id", target="my_target", prediction="my_prediction"
+                    date="datetime_column",
+                    id_column="some_id",
+                    target="my_target",
+                    prediction="my_prediction",
                 ),
                 num_feature_names=["num_feature_1", "num_feature_2"],
-                cat_feature_names=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
+                cat_feature_names=[
+                    "cat_feature_1",
+                    "cat_feature_2",
+                    "cat_feature_3",
+                    "cat_feature_4",
+                ],
                 datetime_feature_names=[],
                 target_names=["apple", "lemon", "peach"],
                 task="classification",
@@ -74,7 +89,10 @@ from evidently.utils.data_operations import process_columns
             DatasetColumns(
                 target_type="num",
                 utility_columns=DatasetUtilityColumns(
-                    date="datetime", id_column="index", target="el_target", prediction="el_prediction"
+                    date="datetime",
+                    id_column="index",
+                    target="el_target",
+                    prediction="el_prediction",
                 ),
                 num_feature_names=[],
                 cat_feature_names=["cat_feature_1"],
@@ -87,7 +105,9 @@ from evidently.utils.data_operations import process_columns
     ),
 )
 def test_process_columns(
-    test_dataset: pd.DataFrame, data_mapping: ColumnMapping, expected_columns: DatasetColumns
+    test_dataset: pd.DataFrame,
+    data_mapping: ColumnMapping,
+    expected_columns: DatasetColumns,
 ) -> None:
     """Test applying data mapping for a different datasets cases"""
     columns = process_columns(test_dataset, data_mapping)
@@ -150,7 +170,11 @@ def test_process_columns(
         ),
         (
             pd.DataFrame({"my_target": [], "predictions_1": [], "predictions_2": []}),
-            ColumnMapping(target="my_target", prediction=["predictions_1", "predictions_2"], id="test_id"),
+            ColumnMapping(
+                target="my_target",
+                prediction=["predictions_1", "predictions_2"],
+                id="test_id",
+            ),
             {
                 "cat_feature_names": [],
                 "num_feature_names": [],

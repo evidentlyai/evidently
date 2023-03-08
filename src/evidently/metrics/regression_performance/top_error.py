@@ -1,19 +1,13 @@
 import dataclasses
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
+from evidently.renderers.html_widgets import CounterData, counter, header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_error_bias_colored_scatter
 
@@ -34,9 +28,13 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         curr_df = data.current_data
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         if not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         curr_error = curr_df[prediction_name] - curr_df[target_name]
         quantile_5 = np.quantile(curr_error, 0.05)
@@ -44,12 +42,18 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
         curr_df["Error bias"] = list(
             map(
-                lambda x: "Underestimation" if x <= quantile_5 else "Majority" if x < quantile_95 else "Overestimation",
+                lambda x: "Underestimation"
+                if x <= quantile_5
+                else "Majority"
+                if x < quantile_95
+                else "Overestimation",
                 curr_error,
             )
         )
         curr_scatter = self._get_data_for_scatter(curr_df, target_name, prediction_name)
-        curr_mean_err_per_group = self._calculate_underperformance(curr_error, quantile_5, quantile_95)
+        curr_mean_err_per_group = self._calculate_underperformance(
+            curr_error, quantile_5, quantile_95
+        )
 
         ref_scatter = None
         ref_mean_err_per_group = None
@@ -69,8 +73,12 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
                     ref_error,
                 )
             )
-            ref_scatter = self._get_data_for_scatter(ref_df, target_name, prediction_name)
-            ref_mean_err_per_group = self._calculate_underperformance(ref_error, quantile_5, quantile_95)
+            ref_scatter = self._get_data_for_scatter(
+                ref_df, target_name, prediction_name
+            )
+            ref_mean_err_per_group = self._calculate_underperformance(
+                ref_error, quantile_5, quantile_95
+            )
         return RegressionTopErrorMetricResults(
             curr_mean_err_per_group=curr_mean_err_per_group,
             curr_scatter=curr_scatter,
@@ -78,18 +86,35 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
             ref_scatter=ref_scatter,
         )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[target_name, prediction_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
-        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
+        result.dropna(
+            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
+        )
         return result.sort_index()
 
-    def _get_data_for_scatter(self, df: pd.DataFrame, target_name: str, prediction_name: str):
+    def _get_data_for_scatter(
+        self, df: pd.DataFrame, target_name: str, prediction_name: str
+    ):
         scatter = {}
         scatter["Underestimation"] = {
-            "Predicted value": df.loc[df["Error bias"] == "Underestimation", prediction_name],
+            "Predicted value": df.loc[
+                df["Error bias"] == "Underestimation", prediction_name
+            ],
             "Actual value": df.loc[df["Error bias"] == "Underestimation", target_name],
         }
         scatter["Majority"] = {
@@ -97,13 +122,19 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
             "Actual value": df.loc[df["Error bias"] == "Majority", target_name],
         }
         scatter["Overestimation"] = {
-            "Predicted value": df.loc[df["Error bias"] == "Overestimation", prediction_name],
+            "Predicted value": df.loc[
+                df["Error bias"] == "Overestimation", prediction_name
+            ],
             "Actual value": df.loc[df["Error bias"] == "Overestimation", target_name],
         }
         return scatter
 
     def _calculate_underperformance(
-        self, error: pd.Series, quantile_5: float, quantile_95: float, conf_interval_n_sigmas: int = 1
+        self,
+        error: pd.Series,
+        quantile_5: float,
+        quantile_95: float,
+        conf_interval_n_sigmas: int = 1,
     ):
 
         mae_under = np.mean(error[error <= quantile_5])
@@ -115,9 +146,18 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         sd_over = np.std(error[error >= quantile_95], ddof=1)
 
         return {
-            "majority": {"mean_error": float(mae_exp), "std_error": conf_interval_n_sigmas * float(sd_exp)},
-            "underestimation": {"mean_error": float(mae_under), "std_error": conf_interval_n_sigmas * float(sd_under)},
-            "overestimation": {"mean_error": float(mae_over), "std_error": conf_interval_n_sigmas * float(sd_over)},
+            "majority": {
+                "mean_error": float(mae_exp),
+                "std_error": conf_interval_n_sigmas * float(sd_exp),
+            },
+            "underestimation": {
+                "mean_error": float(mae_under),
+                "std_error": conf_interval_n_sigmas * float(sd_under),
+            },
+            "overestimation": {
+                "mean_error": float(mae_over),
+                "std_error": conf_interval_n_sigmas * float(sd_over),
+            },
         }
 
 
@@ -138,9 +178,18 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
             counter(
                 title="Current: Mean Error per Group (+/- std)",
                 counters=[
-                    CounterData("Majority(90%)", self._format_value(curr_mean_err_per_group, "majority")),
-                    CounterData("Underestimation(5%)", self._format_value(curr_mean_err_per_group, "underestimation")),
-                    CounterData("Overestimation(5%)", self._format_value(curr_mean_err_per_group, "overestimation")),
+                    CounterData(
+                        "Majority(90%)",
+                        self._format_value(curr_mean_err_per_group, "majority"),
+                    ),
+                    CounterData(
+                        "Underestimation(5%)",
+                        self._format_value(curr_mean_err_per_group, "underestimation"),
+                    ),
+                    CounterData(
+                        "Overestimation(5%)",
+                        self._format_value(curr_mean_err_per_group, "overestimation"),
+                    ),
                 ],
             ),
         ]
@@ -149,16 +198,29 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
                 counter(
                     title="Reference: Mean Error per Group (+/- std)",
                     counters=[
-                        CounterData("Majority(90%)", self._format_value(ref_mean_err_per_group, "majority")),
                         CounterData(
-                            "Underestimation(5%)", self._format_value(ref_mean_err_per_group, "underestimation")
+                            "Majority(90%)",
+                            self._format_value(ref_mean_err_per_group, "majority"),
                         ),
-                        CounterData("Overestimation(5%)", self._format_value(ref_mean_err_per_group, "overestimation")),
+                        CounterData(
+                            "Underestimation(5%)",
+                            self._format_value(
+                                ref_mean_err_per_group, "underestimation"
+                            ),
+                        ),
+                        CounterData(
+                            "Overestimation(5%)",
+                            self._format_value(
+                                ref_mean_err_per_group, "overestimation"
+                            ),
+                        ),
                     ],
                 )
             )
         res.append(header_text(label="Predicted vs Actual per Group"))
-        fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter, color_options=self.color_options)
+        fig = plot_error_bias_colored_scatter(
+            curr_scatter, ref_scatter, color_options=self.color_options
+        )
 
         res.append(
             BaseWidgetInfo(
@@ -171,4 +233,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         return res
 
     def _format_value(self, result, counter_type):
-        return f"{round(result[counter_type]['mean_error'], 2)}" f" ({round(result[counter_type]['std_error'], 2)})"
+        return (
+            f"{round(result[counter_type]['mean_error'], 2)}"
+            f" ({round(result[counter_type]['std_error'], 2)})"
+        )

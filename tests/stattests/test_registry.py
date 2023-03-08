@@ -3,27 +3,37 @@ from typing import Tuple
 import pandas as pd
 import pytest
 
-from evidently.calculations.stattests import StatTest
-from evidently.calculations.stattests import chi_stat_test
-from evidently.calculations.stattests import get_stattest
-from evidently.calculations.stattests import jensenshannon_stat_test
-from evidently.calculations.stattests import kl_div_stat_test
-from evidently.calculations.stattests import ks_stat_test
-from evidently.calculations.stattests import psi_stat_test
-from evidently.calculations.stattests import wasserstein_stat_test
-from evidently.calculations.stattests import z_stat_test
-from evidently.calculations.stattests.registry import StatTestInvalidFeatureTypeError
-from evidently.calculations.stattests.registry import StatTestNotFoundError
+from evidently.calculations.stattests import (
+    StatTest,
+    chi_stat_test,
+    get_stattest,
+    jensenshannon_stat_test,
+    kl_div_stat_test,
+    ks_stat_test,
+    psi_stat_test,
+    wasserstein_stat_test,
+    z_stat_test,
+)
+from evidently.calculations.stattests.registry import (
+    StatTestInvalidFeatureTypeError,
+    StatTestNotFoundError,
+)
 
 
-def _custom_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> Tuple[float, bool]:
+def _custom_stattest(
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str
+) -> Tuple[float, bool]:
     pass
 
 
 @pytest.mark.parametrize(
     "stattest_func, feature_type, expected",
     [
-        (_custom_stattest, "num", StatTest("", "custom function '_custom_stattest'", _custom_stattest, [])),
+        (
+            _custom_stattest,
+            "num",
+            StatTest("", "custom function '_custom_stattest'", _custom_stattest, []),
+        ),
         ("ks", "num", ks_stat_test),
         ("z", "cat", z_stat_test),
         ("chisquare", "cat", chi_stat_test),
@@ -34,7 +44,12 @@ def _custom_stattest(reference_data: pd.Series, current_data: pd.Series, feature
     ],
 )
 def test_get_stattest_valid_resolve(stattest_func, feature_type, expected):
-    test = get_stattest(pd.Series(dtype="float64"), pd.Series(dtype="float64"), feature_type, stattest_func)
+    test = get_stattest(
+        pd.Series(dtype="float64"),
+        pd.Series(dtype="float64"),
+        feature_type,
+        stattest_func,
+    )
     assert test.display_name == expected.display_name
     assert test.func == expected.func
 
@@ -55,10 +70,25 @@ def test_get_stattest_valid_resolve(stattest_func, feature_type, expected):
             "num",
             wasserstein_stat_test,
         ),
-        (pd.Series([1, 2, 3, 4, 5] * 1000), pd.Series([1, 2, 3, 4, 5] * 1000), "num", jensenshannon_stat_test),
-        (pd.Series(["a", "b", "c"] * 10), pd.Series(["a", "b", "c"] * 10), "cat", chi_stat_test),
+        (
+            pd.Series([1, 2, 3, 4, 5] * 1000),
+            pd.Series([1, 2, 3, 4, 5] * 1000),
+            "num",
+            jensenshannon_stat_test,
+        ),
+        (
+            pd.Series(["a", "b", "c"] * 10),
+            pd.Series(["a", "b", "c"] * 10),
+            "cat",
+            chi_stat_test,
+        ),
         (pd.Series(["a", "b"] * 10), pd.Series(["a", "b"] * 10), "cat", z_stat_test),
-        (pd.Series(["a", "b"] * 10000), pd.Series(["a", "b"] * 10000), "cat", jensenshannon_stat_test),
+        (
+            pd.Series(["a", "b"] * 10000),
+            pd.Series(["a", "b"] * 10000),
+            "cat",
+            jensenshannon_stat_test,
+        ),
     ],
 )
 def test_get_default_stattest(reference_data, current_data, feature_type, expected):
@@ -76,7 +106,12 @@ def test_get_default_stattest(reference_data, current_data, feature_type, expect
 )
 def test_get_stattest_invalid_type(stattest_func, feature_type):
     with pytest.raises(StatTestInvalidFeatureTypeError):
-        get_stattest(pd.Series(dtype="float64"), pd.Series(dtype="float64"), feature_type, stattest_func)
+        get_stattest(
+            pd.Series(dtype="float64"),
+            pd.Series(dtype="float64"),
+            feature_type,
+            stattest_func,
+        )
 
 
 @pytest.mark.parametrize(
@@ -88,7 +123,12 @@ def test_get_stattest_invalid_type(stattest_func, feature_type):
 )
 def test_get_stattest_missing_stattest(stattest_func, feature_type):
     with pytest.raises(StatTestNotFoundError):
-        get_stattest(pd.Series(dtype="float64"), pd.Series(dtype="float64"), feature_type, stattest_func)
+        get_stattest(
+            pd.Series(dtype="float64"),
+            pd.Series(dtype="float64"),
+            feature_type,
+            stattest_func,
+        )
 
 
 @pytest.mark.parametrize(
@@ -100,5 +140,7 @@ def test_get_stattest_missing_stattest(stattest_func, feature_type):
     ],
 )
 def test_stattest_default_threshold(stat_test, override_threshold, expected_threshold):
-    result = stat_test(pd.Series(dtype="float64"), pd.Series(dtype="float64"), "", override_threshold)
+    result = stat_test(
+        pd.Series(dtype="float64"), pd.Series(dtype="float64"), "", override_threshold
+    )
     assert result.drift_score == expected_threshold

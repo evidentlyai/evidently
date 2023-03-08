@@ -5,11 +5,7 @@ import dataclasses
 import uuid
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Any, Iterable, List, Optional, Union
 
 
 @dataclass()
@@ -86,13 +82,17 @@ class BaseWidgetInfo:
     alertStats: Optional[AlertStats] = None
     params: Any = None
     insights: Iterable[Insight] = ()
-    additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = ()
+    additionalGraphs: Iterable[
+        Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]
+    ] = ()
     alerts: Iterable[Alert] = ()
     tabs: Iterable["TabInfo"] = ()
     widgets: Iterable["BaseWidgetInfo"] = ()
     pageSize: int = 5
 
-    def get_additional_graphs(self) -> List[Union[AdditionalGraphInfo, PlotlyGraphInfo, "BaseWidgetInfo"]]:
+    def get_additional_graphs(
+        self,
+    ) -> List[Union[AdditionalGraphInfo, PlotlyGraphInfo, "BaseWidgetInfo"]]:
         return list(self.additionalGraphs) + [
             graph for widget in self.widgets for graph in widget.get_additional_graphs()
         ]

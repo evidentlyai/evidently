@@ -14,7 +14,9 @@ pd.options.mode.chained_assignment = None
 
 def setup_logger():
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", handlers=[logging.StreamHandler()]
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.StreamHandler()],
     )
 
 
@@ -45,7 +47,10 @@ def check_dataset(
             return
 
     logging.info("Download dataset %s", dataset_name)
-    run_script(cmd=["scripts/prepare_datasets.py", "-d", dataset_name, "-p", dataset_path], wait=True)
+    run_script(
+        cmd=["scripts/prepare_datasets.py", "-d", dataset_name, "-p", dataset_path],
+        wait=True,
+    )
 
 
 def download_test_datasets(force: bool):
@@ -59,7 +64,11 @@ def download_test_datasets(force: bool):
     else:
         logging.info("Datasets directory already exists")
 
-    for dataset_name in ("bike_random_forest", "bike_gradient_boosting", "kdd_k_neighbors_classifier"):
+    for dataset_name in (
+        "bike_random_forest",
+        "bike_gradient_boosting",
+        "kdd_k_neighbors_classifier",
+    ):
         check_dataset(force, datasets_path, dataset_name)
 
 

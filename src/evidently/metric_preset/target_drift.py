@@ -1,18 +1,16 @@
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
+from typing import Dict, List, Optional, Sequence
 
 from evidently import TaskType
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.calculations.data_drift import ensure_prediction_column_is_string
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metrics import ColumnCorrelationsMetric
-from evidently.metrics import ColumnDriftMetric
-from evidently.metrics import ColumnValuePlot
-from evidently.metrics import TargetByFeaturesTable
+from evidently.metrics import (
+    ColumnCorrelationsMetric,
+    ColumnDriftMetric,
+    ColumnValuePlot,
+    TargetByFeaturesTable,
+)
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_operations import DatasetColumns
 
@@ -66,7 +64,9 @@ class TargetDriftPreset(MetricPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
+    def generate_metrics(
+        self, data: InputData, columns: DatasetColumns
+    ) -> Sequence[Metric]:
         target = columns.utility_columns.target
         prediction = columns.utility_columns.prediction
         result: List[Metric] = []

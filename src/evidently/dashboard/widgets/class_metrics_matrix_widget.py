@@ -8,7 +8,9 @@ import pandas as pd
 import plotly.figure_factory as ff
 
 from evidently import ColumnMapping
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
+from evidently.analyzers.classification_performance_analyzer import (
+    ClassificationPerformanceAnalyzer,
+)
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 
@@ -35,7 +37,9 @@ class ClassMetricsMatrixWidget(Widget):
 
         if target_name is None or prediction_name is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns."
+                )
 
             return None
 
@@ -52,7 +56,9 @@ class ClassMetricsMatrixWidget(Widget):
                 )
 
         else:
-            raise ValueError(f"Widget [{self.title}] requires 'current' or 'reference' dataset value")
+            raise ValueError(
+                f"Widget [{self.title}] requires 'current' or 'reference' dataset value"
+            )
 
         if result_metrics is None:
             return None
@@ -63,7 +69,11 @@ class ClassMetricsMatrixWidget(Widget):
 
         z = metrics_frame.iloc[:-1, :-3].values
 
-        x = results.columns.target_names if results.columns.target_names else metrics_frame.columns.tolist()[:-3]
+        x = (
+            results.columns.target_names
+            if results.columns.target_names
+            else metrics_frame.columns.tolist()[:-3]
+        )
 
         y = ["precision", "recall", "f1-score"]
 
@@ -71,7 +81,9 @@ class ClassMetricsMatrixWidget(Widget):
         z_text = [[str(round(y, 3)) for y in x] for x in z]
 
         # set up figure
-        fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True)
+        fig = ff.create_annotated_heatmap(
+            z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True
+        )
         fig.update_layout(xaxis_title="Class", yaxis_title="Metric")
 
         metrics_matrix_json = json.loads(fig.to_json())
@@ -80,5 +92,8 @@ class ClassMetricsMatrixWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={"data": metrics_matrix_json["data"], "layout": metrics_matrix_json["layout"]},
+            params={
+                "data": metrics_matrix_json["data"],
+                "layout": metrics_matrix_json["layout"],
+            },
         )

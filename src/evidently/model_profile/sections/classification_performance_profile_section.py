@@ -1,7 +1,9 @@
 from datetime import datetime
 
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceMetrics
+from evidently.analyzers.classification_performance_analyzer import (
+    ClassificationPerformanceAnalyzer,
+    ClassificationPerformanceMetrics,
+)
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
@@ -31,18 +33,28 @@ class ClassificationPerformanceProfileSection(ProfileSection):
             },
         }
 
-    def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
+    def calculate(
+        self, reference_data, current_data, column_mapping, analyzers_results
+    ):
         result = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
         result_for_json = result.columns.as_dict()
         result_for_json["metrics"] = {}
 
         if result.reference_metrics:
-            result_for_json["metrics"]["reference"] = self._get_performance_metrics_as_dict(result.reference_metrics)
+            result_for_json["metrics"][
+                "reference"
+            ] = self._get_performance_metrics_as_dict(result.reference_metrics)
 
         if result.current_metrics:
-            result_for_json["metrics"]["current"] = self._get_performance_metrics_as_dict(result.current_metrics)
+            result_for_json["metrics"][
+                "current"
+            ] = self._get_performance_metrics_as_dict(result.current_metrics)
 
-        self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_for_json}
+        self._result = {
+            "name": self.part_id(),
+            "datetime": str(datetime.now()),
+            "data": result_for_json,
+        }
 
     def get_results(self):
         return self._result

@@ -1,8 +1,12 @@
 import pandas as pd
 import pytest
 
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.dashboard.widgets.class_metrics_matrix_widget import ClassMetricsMatrixWidget
+from evidently.analyzers.classification_performance_analyzer import (
+    ClassificationPerformanceAnalyzer,
+)
+from evidently.dashboard.widgets.class_metrics_matrix_widget import (
+    ClassMetricsMatrixWidget,
+)
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
 
@@ -17,7 +21,9 @@ def widget() -> ClassMetricsMatrixWidget:
 
 
 @pytest.mark.parametrize("dataset", ("reference", "current"))
-def test_class_quality_metrics_bar_widget_simple_case(widget: ClassMetricsMatrixWidget, dataset: str) -> None:
+def test_class_quality_metrics_bar_widget_simple_case(
+    widget: ClassMetricsMatrixWidget, dataset: str
+) -> None:
     reference_data = pd.DataFrame(
         {
             "target": ["a", "b", "c"],
@@ -32,7 +38,10 @@ def test_class_quality_metrics_bar_widget_simple_case(widget: ClassMetricsMatrix
     widget.dataset = dataset
     assert widget.analyzers() == [ClassificationPerformanceAnalyzer]
     result = widget.calculate(
-        reference_data, reference_data, column_mapping, {ClassificationPerformanceAnalyzer: results}
+        reference_data,
+        reference_data,
+        column_mapping,
+        {ClassificationPerformanceAnalyzer: results},
     )
     assert result is not None
     assert result.title == "test_widget"

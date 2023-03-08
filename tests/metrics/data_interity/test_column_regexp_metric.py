@@ -6,8 +6,10 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnRegExpMetric
-from evidently.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpMetricResult
-from evidently.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpStat
+from evidently.metrics.data_integrity.column_regexp_metric import (
+    DataIntegrityValueByRegexpMetricResult,
+    DataIntegrityValueByRegexpStat,
+)
 from evidently.report import Report
 
 
@@ -83,7 +85,11 @@ def test_column_regexp_metric_success(
 ) -> None:
     metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     result = metric.get_result()
     assert result == expected_result
 
@@ -140,7 +146,11 @@ def test_column_regexp_metric_value_error(
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
 
@@ -204,7 +214,23 @@ def test_column_regexp_metric_value_error(
         (
             pd.DataFrame(
                 {
-                    "col": [1, 2, 3, 4, 5, "a", "b", "c", 1, 1234567890, "a", "a", "d", "e", "f"],
+                    "col": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        "a",
+                        "b",
+                        "c",
+                        1,
+                        1234567890,
+                        "a",
+                        "a",
+                        "d",
+                        "e",
+                        "f",
+                    ],
                 }
             ),
             None,
@@ -226,10 +252,17 @@ def test_column_regexp_metric_value_error(
     ),
 )
 def test_column_regexp_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnRegExpMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnRegExpMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0

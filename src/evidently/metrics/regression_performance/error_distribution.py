@@ -1,19 +1,15 @@
 import dataclasses
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricRenderer, default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import make_hist_for_num_plot
-from evidently.utils.visualizations import plot_distr_subplots
+from evidently.utils.visualizations import make_hist_for_num_plot, plot_distr_subplots
 
 
 @dataclasses.dataclass
@@ -30,9 +26,13 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
         curr_df = data.current_data
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         if not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         curr_error = curr_df[prediction_name] - curr_df[target_name]
         ref_error = None
@@ -46,14 +46,29 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
         if "reference" in result.keys():
             reference_bins = result["reference"]
 
-        return RegressionErrorDistributionResults(current_bins=current_bins, reference_bins=reference_bins)
+        return RegressionErrorDistributionResults(
+            current_bins=current_bins, reference_bins=reference_bins
+        )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[target_name, prediction_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
-        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
+        result.dropna(
+            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
+        )
         return result.sort_index()
 
 
