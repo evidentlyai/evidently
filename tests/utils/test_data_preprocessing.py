@@ -167,10 +167,36 @@ def test_column_presence(reference, current, column_name, expected):
             "c",
             ColumnType.Datetime,
         ),
+        (
+            pd.DataFrame(dict(a=[1.0], b=pd.Series(["a"], dtype="string"), c=[datetime(2000, 1, 1)])),
+            pd.DataFrame(dict(a=[1.0], b=pd.Series(["a"], dtype="string"), c=[datetime(2000, 1, 1)])),
+            "b",
+            ColumnType.Categorical,
+        ),
     ],
 )
 def test_get_column_type(reference, current, column_name, expected):
     assert _get_column_type(column_name, _InputData(reference, current)) == expected
+
+
+@pytest.mark.parametrize(
+    "reference,current,column_name",
+    [
+        (
+            pd.DataFrame(dict(a=[1.0], b=pd.Series(["a"], dtype="string"), c=[datetime(2000, 1, 1)])),
+            pd.DataFrame(dict(a=[1.0], b=["a"], c=[datetime(2000, 1, 1)])),
+            "b",
+        ),
+        (
+            pd.DataFrame(dict(a=[1.0], b=pd.Series(["a"], dtype="string"), c=[datetime(2000, 1, 1)])),
+            pd.DataFrame(dict(a=["1"], b=["a"], c=[datetime(2000, 1, 1)])),
+            "a",
+        ),
+    ],
+)
+def test_get_column_type_failed(reference, current, column_name):
+    with pytest.raises(ValueError):
+        _get_column_type(column_name, _InputData(reference, current))
 
 
 @pytest.mark.parametrize(

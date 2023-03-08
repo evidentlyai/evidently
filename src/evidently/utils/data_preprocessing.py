@@ -334,12 +334,17 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
     if column_name in data.current.columns:
         cur_type = data.current[column_name].dtype
         cur_unique = data.current[column_name].nunique()
-    if (
-        ref_type is not None
-        and cur_type is not None
-        and (ref_type != cur_type and not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type))
-    ):
-        raise ValueError(f"Column {column_name} have different types in reference {ref_type} and current {cur_type}")
+    if ref_type is not None and cur_type is not None:
+        if ref_type != cur_type:
+            available_set = ["i", "u", "f", "c", "m", "M"]
+            if ref_type.kind not in available_set or cur_type.kind not in available_set:
+                raise ValueError(
+                    f"Column {column_name} have different types in reference {ref_type} and current {cur_type}"
+                )
+            if not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type):
+                raise ValueError(
+                    f"Column {column_name} have different types in reference {ref_type} and current {cur_type}"
+                )
 
     nunique = ref_unique or cur_unique
     # special case: target
