@@ -24,6 +24,16 @@ class GeneratedFeature:
         """
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    def feature_name(self):
+        """
+        get feature name for given features and parameters.
+
+        Returns:
+            Special feature name for unique identification results of give feature.
+        """
+        raise NotImplementedError()
+
     def get_parameters(self) -> Optional[tuple]:
         attributes = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
@@ -40,3 +50,13 @@ class GeneratedFeature:
             logging.warning(f"unhashable params for {type(self)}. Fallback to unique.")
             return None
         return params
+
+
+class FeatureDescriptor:
+    @abc.abstractmethod
+    def for_column(self, column_name: str):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def feature(self, column_name: str) -> GeneratedFeature:
+        raise NotImplementedError()
