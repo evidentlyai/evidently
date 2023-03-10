@@ -141,9 +141,7 @@ def test_dataset_summary_metric_success(
     ),
 )
 def test_dataset_summary_metric_value_error(
-    current_data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    metric: DatasetSummaryMetric,
+    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DatasetSummaryMetric
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])

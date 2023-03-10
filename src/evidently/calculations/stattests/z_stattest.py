@@ -59,10 +59,7 @@ def proportions_diff_z_test(z_stat, alternative="two-sided"):
 
 
 def _z_stat_test(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the Z test between two arrays
     Args:

@@ -33,11 +33,7 @@ from evidently.calculations.stattests.utils import get_binned_data
 
 
 def _psi(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
-    n_bins: int = 30,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float, n_bins: int = 30
 ) -> Tuple[float, bool]:
     """Calculate the PSI
     Args:

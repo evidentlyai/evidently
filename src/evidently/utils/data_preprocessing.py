@@ -202,9 +202,7 @@ def _filter_by_type(column: Optional[ColumnDefinition], column_type: ColumnType,
 
 
 def create_data_definition(
-    reference_data: Optional[pd.DataFrame],
-    current_data: pd.DataFrame,
-    mapping: ColumnMapping,
+    reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame, mapping: ColumnMapping
 ) -> DataDefinition:
     data = _InputData(reference_data, current_data)
     id_column = _process_column(mapping.id, data)

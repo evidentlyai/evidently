@@ -214,10 +214,7 @@ def plot_num_feature_in_time(
 
 
 def plot_time_feature_distr(
-    curr_data: pd.DataFrame,
-    ref_data: Optional[pd.DataFrame],
-    feature_name: str,
-    color_options: ColorOptions,
+    curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str, color_options: ColorOptions
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name, "number_of_items"
@@ -299,11 +296,7 @@ def plot_cat_feature_in_time(
 
 
 def plot_boxes(
-    curr_for_plots: dict,
-    ref_for_plots: Optional[dict],
-    yaxis_title: str,
-    xaxis_title: str,
-    color_options: ColorOptions,
+    curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str, color_options: ColorOptions
 ):
     """
     Accepts current and reference data as dicts with box parameters ("mins", "lowers", "uppers", "means", "maxs")
@@ -353,11 +346,7 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
 
 
 def plot_cat_cat_rel(
-    curr: pd.DataFrame,
-    ref: pd.DataFrame,
-    target_name: str,
-    feature_name: str,
-    color_options: ColorOptions,
+    curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str, color_options: ColorOptions
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
@@ -453,8 +442,7 @@ def get_distribution_for_category_column(column: pd.Series, normalize: bool = Fa
 
 
 def get_distribution_for_numerical_column(
-    column: pd.Series,
-    bins: Optional[Union[list, np.ndarray]] = None,
+    column: pd.Series, bins: Optional[Union[list, np.ndarray]] = None
 ) -> Distribution:
     if bins is None:
         bins = np.histogram_bin_edges(column, bins="doane")
@@ -757,13 +745,7 @@ def plot_error_bias_colored_scatter(
 
 
 def plot_scatter_for_data_drift(
-    curr_y: list,
-    curr_x: list,
-    y0: float,
-    y1: float,
-    y_name: str,
-    x_name: str,
-    color_options: ColorOptions,
+    curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: ColorOptions
 ):
     fig = go.Figure()
     fig.add_trace(

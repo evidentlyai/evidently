@@ -59,13 +59,7 @@ def save_lib_files(filename: str, mode: SaveMode):
     return font_file, lib_file
 
 
-def save_data_file(
-    filename: str,
-    mode: SaveMode,
-    dashboard_id,
-    dashboard_info: DashboardInfo,
-    additional_graphs: Dict,
-):
+def save_data_file(filename: str, mode: SaveMode, dashboard_id, dashboard_info: DashboardInfo, additional_graphs: Dict):
     if mode == SaveMode.SINGLE_FILE:
         return None
     parent_dir = os.path.dirname(filename)

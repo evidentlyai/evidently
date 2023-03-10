@@ -327,9 +327,7 @@ class BaseCheckValueTest(BaseConditionsTest):
 
 
 def generate_column_tests(
-    test_class: Type[Test],
-    columns: Optional[Union[str, list]] = None,
-    parameters: Optional[Dict] = None,
+    test_class: Type[Test], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None
 ) -> BaseGenerator:
     """Function for generating tests for columns"""
     return make_generator_by_columns(

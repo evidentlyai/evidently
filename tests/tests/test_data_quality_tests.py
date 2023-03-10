@@ -85,10 +85,7 @@ from evidently.tests.utils import approx
     ),
 )
 def test_data_quality_test_min(
-    test_dataset: pd.DataFrame,
-    reference_dataset: pd.DataFrame,
-    test_object: TestColumnValueMin,
-    expected_success: bool,
+    test_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, test_object: TestColumnValueMin, expected_success: bool
 ) -> None:
     suite = TestSuite(tests=[test_object])
     suite.run(current_data=test_dataset, reference_data=reference_dataset)
@@ -111,10 +108,7 @@ def test_data_quality_test_min(
     ),
 )
 def test_data_quality_test_min_exception(
-    test_dataset: pd.DataFrame,
-    reference_dataset: pd.DataFrame,
-    test_object: TestColumnValueMin,
-    expected_success: bool,
+    test_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, test_object: TestColumnValueMin, expected_success: bool
 ) -> None:
     suite = TestSuite(tests=[test_object])
     suite.run(current_data=test_dataset, reference_data=reference_dataset)

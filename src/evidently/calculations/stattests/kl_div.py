@@ -33,11 +33,7 @@ from evidently.calculations.stattests.utils import get_binned_data
 
 
 def _kl_div(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
-    n_bins: int = 30,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float, n_bins: int = 30
 ) -> Tuple[float, bool]:
     """Compute the Kullback-Leibler divergence between two arrays
     Args:

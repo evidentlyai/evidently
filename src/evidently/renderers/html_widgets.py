@@ -200,12 +200,7 @@ class CounterData:
         return CounterData(label, f"{value}")
 
 
-def counter(
-    *,
-    counters: List[CounterData],
-    title: str = "",
-    size: WidgetSize = WidgetSize.FULL,
-) -> BaseWidgetInfo:
+def counter(*, counters: List[CounterData], title: str = "", size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
     """
     generate widget with given counters
 
@@ -244,11 +239,7 @@ def header_text(*, label: str, title: str = "", size: WidgetSize = WidgetSize.FU
 
 
 def table_data(
-    *,
-    column_names: Iterable[str],
-    data: Iterable[Iterable],
-    title: str = "",
-    size: WidgetSize = WidgetSize.FULL,
+    *, column_names: Iterable[str], data: Iterable[Iterable], title: str = "", size: WidgetSize = WidgetSize.FULL
 ) -> BaseWidgetInfo:
     """
     generate simple table with given columns and data
@@ -781,9 +772,7 @@ def get_roc_auc_tab_data(
 
 
 def get_pr_rec_plot_data(
-    current_pr_curve: dict,
-    reference_pr_curve: Optional[dict],
-    color_options: ColorOptions,
+    current_pr_curve: dict, reference_pr_curve: Optional[dict], color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -828,10 +817,7 @@ def get_pr_rec_plot_data(
 
 
 def get_class_separation_plot_data(
-    current_plot: pd.DataFrame,
-    reference_plot: Optional[pd.DataFrame],
-    target_name: str,
-    color_options: ColorOptions,
+    current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str, color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1

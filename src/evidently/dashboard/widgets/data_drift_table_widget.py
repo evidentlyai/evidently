@@ -204,10 +204,7 @@ def _generate_additional_graph_num_feature(
 
 
 def _generate_additional_graph_cat_feature(
-    name: str,
-    reference_data: pd.DataFrame,
-    current_data: pd.DataFrame,
-    color_options: ColorOptions,
+    name: str, reference_data: pd.DataFrame, current_data: pd.DataFrame, color_options: ColorOptions
 ) -> List[AdditionalGraphInfo]:
     fig = go.Figure()
     feature_ref_data = reference_data[name].dropna()

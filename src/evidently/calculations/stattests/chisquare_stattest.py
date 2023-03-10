@@ -33,10 +33,7 @@ from evidently.calculations.stattests.utils import get_unique_not_nan_values_lis
 
 
 def _chi_stat_test(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}

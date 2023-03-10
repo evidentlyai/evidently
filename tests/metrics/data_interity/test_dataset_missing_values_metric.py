@@ -137,9 +137,7 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     ),
 )
 def test_dataset_missing_values_metrics_value_error(
-    current_data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    metric: DatasetMissingValuesMetric,
+    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DatasetMissingValuesMetric
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])

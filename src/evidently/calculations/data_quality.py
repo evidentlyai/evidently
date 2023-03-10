@@ -689,9 +689,7 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
 
 
 def calculate_correlations(
-    dataset: pd.DataFrame,
-    data_definition: DataDefinition,
-    add_text_columns: Optional[list] = None,
+    dataset: pd.DataFrame, data_definition: DataDefinition, add_text_columns: Optional[list] = None
 ) -> Dict:
     num_for_corr, cat_for_corr = _select_features_for_corr(dataset, data_definition)
     if add_text_columns is not None:
@@ -794,11 +792,7 @@ def calculate_column_distribution(column: pd.Series, column_type: str) -> Column
     return distribution
 
 
-def get_corr_method(
-    method: Optional[str],
-    target_correlation: Optional[str] = None,
-    pearson_default: bool = True,
-):
+def get_corr_method(method: Optional[str], target_correlation: Optional[str] = None, pearson_default: bool = True):
     if method is not None:
         return method
     if method is None and pearson_default is False:

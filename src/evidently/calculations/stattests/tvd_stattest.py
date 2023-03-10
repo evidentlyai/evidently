@@ -54,10 +54,7 @@ def _total_variation_distance(reference_data, current_data):
 
 
 def _tvd_stattest(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the Total variation distance (TVD) between two arrays
     Args:

@@ -10,11 +10,7 @@ def get_unique_not_nan_values_list_from_series(current_data: pd.Series, referenc
 
 
 def get_binned_data(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    n: int,
-    feel_zeroes: bool = True,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, n: int, feel_zeroes: bool = True
 ):
     """Split variable into n buckets based on reference quantiles
     Args:

@@ -161,12 +161,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         ]
 
 
-def _plot_metrics(
-    columns: DatasetColumns,
-    metrics_matrix: dict,
-    title: str,
-    size: WidgetSize,
-):
+def _plot_metrics(columns: DatasetColumns, metrics_matrix: dict, title: str, size: WidgetSize):
     metrics_frame = pd.DataFrame(metrics_matrix)
 
     z = metrics_frame.iloc[:-1, :-3].values

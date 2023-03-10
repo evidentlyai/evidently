@@ -114,10 +114,7 @@ def mmd_pval(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
 
 
 def _mmd_stattest(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     """Run the  emperical maximum mean discrepancy test.
     Args:

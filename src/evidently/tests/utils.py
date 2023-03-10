@@ -294,12 +294,7 @@ def dataframes_to_table(
 
 
 def plot_dicts_to_table(
-    dict_curr: dict,
-    dict_ref: Optional[dict],
-    columns: list,
-    id_prfx: str,
-    sort_by: str = "curr",
-    asc: bool = False,
+    dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
 ):
     return dataframes_to_table(
         pd.DataFrame.from_dict(dict_curr, orient="index", columns=["value"]),
@@ -474,12 +469,7 @@ def plot_boxes(*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_opt
     return fig
 
 
-def plot_rates(
-    *,
-    curr_rate_plots_data: dict,
-    ref_rate_plots_data: Optional[dict] = None,
-    color_options: ColorOptions,
-):
+def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None, color_options: ColorOptions):
     if ref_rate_plots_data is not None:
         cols = 2
         subplot_titles = ["current", "reference"]

@@ -123,9 +123,7 @@ def test_data_quality_values_in_range_metric_success(
     ),
 )
 def test_data_quality_values_in_range_metric_errors(
-    current_data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    metric: ColumnValueRangeMetric,
+    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueRangeMetric
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])

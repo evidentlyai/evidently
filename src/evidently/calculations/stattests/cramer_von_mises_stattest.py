@@ -177,10 +177,7 @@ def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonM
 
 
 def _cramer_von_mises(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     """Run the two-sample Cramer-Von-mises test of two samples.
     Args:

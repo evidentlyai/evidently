@@ -32,10 +32,7 @@ from evidently.calculations.stattests.registry import register_stattest
 
 
 def _mannwhitneyu_rank(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     """Perform the Mann-Whitney U-rank test between two arrays
     Args:

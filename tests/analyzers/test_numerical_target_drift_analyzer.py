@@ -221,9 +221,7 @@ def test_computing_of_correlations_between_columns_fails_for_second_data_when_co
     ),
 )
 def test_num_target_analyzer_fails_with_not_enough_data(
-    analyzer: NumTargetDriftAnalyzer,
-    reference_data: DataFrame,
-    current_data: DataFrame,
+    analyzer: NumTargetDriftAnalyzer, reference_data: DataFrame, current_data: DataFrame
 ) -> None:
     with pytest.raises(ValueError):
         analyzer.calculate(reference_data, current_data, ColumnMapping())

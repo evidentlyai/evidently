@@ -266,11 +266,7 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     return task
 
 
-def recognize_column_type_(
-    dataset: pd.DataFrame,
-    column_name: str,
-    columns: DatasetColumns,
-) -> ColumnType:
+def recognize_column_type_(dataset: pd.DataFrame, column_name: str, columns: DatasetColumns) -> ColumnType:
     """Try to get the column type."""
     column = dataset[column_name]
     reg_condition = columns.task == "regression" or (
@@ -319,9 +315,5 @@ def recognize_column_type_(
     return ColumnType.Unknown
 
 
-def recognize_column_type(
-    dataset: pd.DataFrame,
-    column_name: str,
-    columns: DatasetColumns,
-) -> str:
+def recognize_column_type(dataset: pd.DataFrame, column_name: str, columns: DatasetColumns) -> str:
     return recognize_column_type_(dataset, column_name, columns).value

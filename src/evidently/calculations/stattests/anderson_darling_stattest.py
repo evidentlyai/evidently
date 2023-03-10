@@ -33,10 +33,7 @@ from evidently.calculations.stattests.registry import register_stattest
 
 
 def _anderson_darling(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     p_value = anderson_ksamp([reference_data.values, current_data.values])[2]
     return p_value, p_value < threshold

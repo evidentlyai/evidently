@@ -81,10 +81,7 @@ def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, fe
 
 
 def get_stattest(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    stattest_func: Optional[PossibleStatTestType],
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, stattest_func: Optional[PossibleStatTestType]
 ) -> StatTest:
     if stattest_func is None:
         return _get_default_stattest(reference_data, current_data, feature_type)

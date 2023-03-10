@@ -33,10 +33,7 @@ from evidently.calculations.stattests.utils import get_unique_not_nan_values_lis
 
 
 def _g_stat_test(
-    reference_data: pd.Series,
-    current_data: pd.Series,
-    feature_type: str,
-    threshold: float,
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the G test between two arrays
     Args:

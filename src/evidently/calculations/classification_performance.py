@@ -28,8 +28,7 @@ class ConfusionMatrix:
 
 
 def calculate_confusion_by_classes(
-    confusion_matrix: np.ndarray,
-    class_names: Sequence[Union[str, int]],
+    confusion_matrix: np.ndarray, class_names: Sequence[Union[str, int]]
 ) -> Dict[Union[str, int], Dict[str, int]]:
     """Calculate metrics:
     - TP (true positive)
@@ -92,10 +91,7 @@ class PredictionData:
 
 
 def get_prediction_data(
-    data: pd.DataFrame,
-    data_columns: DatasetColumns,
-    pos_label: Optional[Union[str, int]],
-    threshold: float = 0.5,
+    data: pd.DataFrame, data_columns: DatasetColumns, pos_label: Optional[Union[str, int]], threshold: float = 0.5
 ) -> PredictionData:
     """Get predicted values and optional prediction probabilities from source data.
     Also take into account a threshold value - if a probability is less than the value, do not take it into account.
@@ -233,10 +229,7 @@ def _check_pos_labels(pos_label: Optional[Union[str, int]], labels: List[str]) -
 
 
 def threshold_probability_labels(
-    prediction_probas: pd.DataFrame,
-    pos_label: Union[str, int],
-    neg_label: Union[str, int],
-    threshold: float,
+    prediction_probas: pd.DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float
 ) -> pd.Series:
     """Get prediction values by probabilities with the threshold apply"""
     return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)
@@ -264,11 +257,7 @@ def calculate_pr_table(binded):
     return result
 
 
-def calculate_matrix(
-    target: pd.Series,
-    prediction: pd.Series,
-    labels: List[Union[str, int]],
-) -> ConfusionMatrix:
+def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Union[str, int]]) -> ConfusionMatrix:
     sorted_labels = sorted(labels)
     matrix = metrics.confusion_matrix(target, prediction, labels=sorted_labels)
     return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
