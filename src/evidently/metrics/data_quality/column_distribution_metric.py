@@ -30,10 +30,7 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     column_name: str
 
-    def __init__(
-        self,
-        column_name: str,
-    ) -> None:
+    def __init__(self, column_name: str) -> None:
         self.column_name = column_name
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:

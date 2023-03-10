@@ -29,11 +29,7 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
-    ):
+    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
         super().__init__(probas_threshold=probas_threshold, k=k)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:

@@ -18,9 +18,7 @@ class RegressionPerformanceProfileSection(ProfileSection):
         return self.analyzers_types
 
     @staticmethod
-    def _get_regression_performance_metrics_as_dict(
-        metrics: RegressionPerformanceMetrics,
-    ) -> dict:
+    def _get_regression_performance_metrics_as_dict(metrics: RegressionPerformanceMetrics) -> dict:
         return {
             "mean_error": metrics.mean_error,
             "mean_abs_error": metrics.mean_abs_error,

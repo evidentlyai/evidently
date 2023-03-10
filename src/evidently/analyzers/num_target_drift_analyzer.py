@@ -36,10 +36,7 @@ class NumTargetDriftAnalyzer(Analyzer):
         return analyzer_results[NumTargetDriftAnalyzer]
 
     def calculate(
-        self,
-        reference_data: pd.DataFrame,
-        current_data: Optional[pd.DataFrame],
-        column_mapping: ColumnMapping,
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> NumTargetDriftAnalyzerResults:
         """Calculate the target and prediction drifts.
 

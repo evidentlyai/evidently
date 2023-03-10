@@ -106,11 +106,7 @@ def get_one_column_drift(
             columns=dataset_columns,
         )
 
-    if column_type not in (
-        ColumnType.Numerical,
-        ColumnType.Categorical,
-        ColumnType.Text,
-    ):
+    if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
 
     stattest = None

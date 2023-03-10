@@ -56,10 +56,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
         return analyzer_results[ProbClassificationPerformanceAnalyzer]
 
     def calculate(
-        self,
-        reference_data: pd.DataFrame,
-        current_data: Optional[pd.DataFrame],
-        column_mapping: ColumnMapping,
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> ProbClassificationPerformanceAnalyzerResults:
         if reference_data is None:
             raise ValueError("reference_data should be present")

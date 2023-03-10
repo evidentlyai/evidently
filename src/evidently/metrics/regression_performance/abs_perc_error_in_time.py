@@ -70,13 +70,7 @@ class RegressionAbsPercentageErrorPlot(Metric[RegressionAbsPercentageErrorPlotRe
             x_name=x_name,
         )
 
-    def _make_df_for_plot(
-        self,
-        df,
-        target_name: str,
-        prediction_name: str,
-        datetime_column_name: Optional[str],
-    ):
+    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(

@@ -69,11 +69,7 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
     almost_duplicated_threshold: float
     almost_constant_threshold: float
 
-    def __init__(
-        self,
-        almost_duplicated_threshold: float = 0.95,
-        almost_constant_threshold: float = 0.95,
-    ):
+    def __init__(self, almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95):
         self.almost_duplicated_threshold = almost_duplicated_threshold
         self.almost_constant_threshold = almost_constant_threshold
 

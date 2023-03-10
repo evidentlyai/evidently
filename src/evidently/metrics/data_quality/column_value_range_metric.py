@@ -53,12 +53,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
     left: Optional[Numeric]
     right: Optional[Numeric]
 
-    def __init__(
-        self,
-        column_name: str,
-        left: Optional[Numeric] = None,
-        right: Optional[Numeric] = None,
-    ) -> None:
+    def __init__(self, column_name: str, left: Optional[Numeric] = None, right: Optional[Numeric] = None) -> None:
         self.left = left
         self.right = right
         self.column_name = column_name
@@ -177,10 +172,7 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             data=matched_stat,
         )
 
-    def _get_tabs(
-        self,
-        metric_result: ColumnValueRangeMetricResult,
-    ) -> BaseWidgetInfo:
+    def _get_tabs(self, metric_result: ColumnValueRangeMetricResult) -> BaseWidgetInfo:
         if metric_result.reference is not None:
             reference_histogram: Optional[HistogramData] = HistogramData(
                 name="reference",

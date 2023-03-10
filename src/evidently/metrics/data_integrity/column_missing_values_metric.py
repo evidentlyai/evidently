@@ -63,12 +63,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
     missing_values: frozenset
     column_name: str
 
-    def __init__(
-        self,
-        column_name: str,
-        missing_values: Optional[list] = None,
-        replace: bool = True,
-    ) -> None:
+    def __init__(self, column_name: str, missing_values: Optional[list] = None, replace: bool = True) -> None:
         self.column_name = column_name
 
         if missing_values is None:

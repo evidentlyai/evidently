@@ -50,13 +50,7 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
             reference_error = ref_df[prediction_name] - ref_df[target_name]
         return RegressionErrorNormalityResults(current_error=current_error, reference_error=reference_error)
 
-    def _make_df_for_plot(
-        self,
-        df,
-        target_name: str,
-        prediction_name: str,
-        datetime_column_name: Optional[str],
-    ):
+    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(

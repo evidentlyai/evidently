@@ -199,10 +199,7 @@ class DataQualityFeaturesWidget(Widget):
         return result
 
     def _metrics_for_table(
-        self,
-        feature_name: str,
-        data_quality_results: DataQualityAnalyzerResults,
-        is_current_data: bool,
+        self, feature_name: str, data_quality_results: DataQualityAnalyzerResults, is_current_data: bool
     ):
         reference_stats = data_quality_results.reference_features_stats[feature_name]
 
@@ -457,10 +454,7 @@ class DataQualityFeaturesWidget(Widget):
 
     @staticmethod
     def assemble_parts(
-        target_column: Optional[str],
-        date_column: Optional[str],
-        feature_name: str,
-        feature_type: str,
+        target_column: Optional[str], date_column: Optional[str], feature_name: str, feature_type: str
     ) -> List:
         parts = []
         if date_column and feature_type != "datetime":
@@ -817,10 +811,7 @@ class DataQualityFeaturesWidget(Widget):
                     )
 
     def _choose_agg_period(
-        self,
-        date_column: str,
-        reference_data: pd.DataFrame,
-        current_data: Optional[pd.DataFrame],
+        self, date_column: str, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame]
     ) -> str:
         optimal_points = 150
         prefix_dict = {

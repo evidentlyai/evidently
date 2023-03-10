@@ -265,13 +265,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             )
         ]
 
-    def _get_regression_fig(
-        self,
-        feature_name: str,
-        main_column: str,
-        curr_data: pd.DataFrame,
-        ref_data: pd.DataFrame,
-    ):
+    def _get_regression_fig(self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame):
         fig = make_subplots(rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True)
         fig.add_trace(
             go.Scattergl(
@@ -303,11 +297,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         return fig
 
     def _get_classification_fig(
-        self,
-        feature_name: str,
-        main_column: str,
-        curr_data: pd.DataFrame,
-        ref_data: pd.DataFrame,
+        self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame
     ):
         curr = curr_data.copy()
         ref = ref_data.copy()

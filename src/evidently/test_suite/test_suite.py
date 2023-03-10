@@ -33,11 +33,7 @@ class TestSuite(Display):
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
 
-    def __init__(
-        self,
-        tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
-        options: Optional[list] = None,
-    ):
+    def __init__(self, tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]], options: Optional[list] = None):
         super().__init__(options)
         self._inner_suite = Suite()
         self._test_presets = []

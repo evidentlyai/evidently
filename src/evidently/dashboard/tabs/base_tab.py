@@ -29,11 +29,7 @@ class Tab(PipelineStage):
     _widgets: List[Widget]
     _widget_results: List[Optional[BaseWidgetInfo]]
 
-    def __init__(
-        self,
-        verbose_level: VerboseLevel = None,
-        include_widgets: List[Union[str, Widget]] = None,
-    ):
+    def __init__(self, verbose_level: VerboseLevel = None, include_widgets: List[Union[str, Widget]] = None):
         super().__init__()
         if verbose_level is None:
             verbose_level = Verbose.FULL

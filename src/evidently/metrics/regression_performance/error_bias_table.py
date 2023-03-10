@@ -223,10 +223,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
     @staticmethod
     def _make_df_for_plot(
-        df: pd.DataFrame,
-        target_name: str,
-        prediction_name: str,
-        datetime_column_name: Optional[str],
+        df: pd.DataFrame, target_name: str, prediction_name: str, datetime_column_name: Optional[str]
     ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:

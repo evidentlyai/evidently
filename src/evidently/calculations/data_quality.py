@@ -473,11 +473,7 @@ class DataQualityGetPlotData:
         return df[df["count_objects"] > 0]
 
     def _prepare_box_data(
-        self,
-        curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame],
-        cat_feature_name: str,
-        num_feature_name: str,
+        self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], cat_feature_name: str, num_feature_name: str
     ) -> Dict[str, Dict[str, list]]:
         dfs = [curr]
         names = ["current"]
@@ -543,10 +539,7 @@ class DataQualityGetPlotData:
         return curr, ref
 
     def _choose_agg_period(
-        self,
-        date_column: str,
-        reference_data: Optional[pd.DataFrame],
-        current_data: pd.DataFrame,
+        self, date_column: str, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame
     ) -> str:
         optimal_points = 150
         prefix_dict = {

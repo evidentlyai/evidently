@@ -85,13 +85,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
             reference=TopData(mean_err_per_group=ref_mean_err_per_group, scatter=ref_scatter),
         )
 
-    def _make_df_for_plot(
-        self,
-        df,
-        target_name: str,
-        prediction_name: str,
-        datetime_column_name: Optional[str],
-    ):
+    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(
@@ -121,11 +115,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         return scatter
 
     def _calculate_underperformance(
-        self,
-        error: pd.Series,
-        quantile_5: float,
-        quantile_95: float,
-        conf_interval_n_sigmas: int = 1,
+        self, error: pd.Series, quantile_5: float, quantile_95: float, conf_interval_n_sigmas: int = 1
     ):
 
         mae_under = np.mean(error[error <= quantile_5])

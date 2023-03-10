@@ -26,11 +26,7 @@ class ClassificationQualityMetricResult(MetricResult):
 class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityMetricResult]):
     confusion_matrix_metric: ClassificationConfusionMatrix
 
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
-    ):
+    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
         super().__init__(probas_threshold=probas_threshold, k=k)
         self.confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
 

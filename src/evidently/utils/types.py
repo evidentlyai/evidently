@@ -21,12 +21,7 @@ class ApproxValue:
     _relative: Numeric
     _absolute: Numeric
 
-    def __init__(
-        self,
-        value: Numeric,
-        relative: Optional[Numeric] = None,
-        absolute: Optional[Numeric] = None,
-    ):
+    def __init__(self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None):
         self.value = value
 
         if relative is not None and relative <= 0:

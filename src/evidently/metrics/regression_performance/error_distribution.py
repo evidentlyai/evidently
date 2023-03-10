@@ -52,13 +52,7 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
 
         return RegressionErrorDistributionResults(current_bins=current_bins, reference_bins=reference_bins)
 
-    def _make_df_for_plot(
-        self,
-        df,
-        target_name: str,
-        prediction_name: str,
-        datetime_column_name: Optional[str],
-    ):
+    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(

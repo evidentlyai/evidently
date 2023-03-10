@@ -27,10 +27,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
         return analyzer_results[RegressionPerformanceAnalyzer]
 
     def calculate(
-        self,
-        reference_data: pd.DataFrame,
-        current_data: Optional[pd.DataFrame],
-        column_mapping: ColumnMapping,
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> RegressionPerformanceAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
         result = RegressionPerformanceAnalyzerResults(columns=columns)

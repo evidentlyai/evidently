@@ -27,9 +27,7 @@ class DatasetUtilityColumns:
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
 
-    def as_dict(
-        self,
-    ) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
+    def as_dict(self) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
         return {
             "date": self.date,
             "id": self.id_column,

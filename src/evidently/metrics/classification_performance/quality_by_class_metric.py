@@ -38,11 +38,7 @@ class ClassificationQualityByClassResult(MetricResult):
 
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
-    ):
+    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
         super().__init__(probas_threshold, k)
 
     def calculate(self, data: InputData) -> ClassificationQualityByClassResult:

@@ -36,11 +36,7 @@ class MulticlassClassificationTestPreset(TestPreset):
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
-    def __init__(
-        self,
-        stattest: Optional[PossibleStatTestType] = None,
-        stattest_threshold: Optional[float] = None,
-    ):
+    def __init__(self, stattest: Optional[PossibleStatTestType] = None, stattest_threshold: Optional[float] = None):
         super().__init__()
 
         self.stattest = stattest

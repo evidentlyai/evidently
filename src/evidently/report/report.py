@@ -31,11 +31,7 @@ class Report(Display):
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(
-        self,
-        metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
-        options: Optional[List] = None,
-    ):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: Optional[List] = None):
         super().__init__(options)
         # just save all metrics and metric presets
         self.metrics = metrics

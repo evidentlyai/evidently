@@ -89,10 +89,7 @@ class ClassificationPerformanceAnalyzer(Analyzer):
         return analyzer_results[ClassificationPerformanceAnalyzer]
 
     def calculate(
-        self,
-        reference_data: pd.DataFrame,
-        current_data: Optional[pd.DataFrame],
-        column_mapping: ColumnMapping,
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> ClassificationPerformanceAnalyzerResults:
         if reference_data is None:
             raise ValueError("reference_data should be present")

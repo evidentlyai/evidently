@@ -180,9 +180,7 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
 class TextDomainClassifierDriftMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_table_stat(
-        dataset_name: str,
-        metric_result: TextDomainClassifierDriftResult,
-        content_type="words",
+        dataset_name: str, metric_result: TextDomainClassifierDriftResult, content_type="words"
     ) -> BaseWidgetInfo:
         if content_type == "words":
             if dataset_name == "current":

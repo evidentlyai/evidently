@@ -118,9 +118,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
 @default_renderer(wrap_type=TextDescriptorsCorrelationMetric)
 class TextDescriptorsCorrelationMetricRenderer(MetricRenderer):
     def _get_plots_correlations(
-        self,
-        curr_metric_result: Dict,
-        ref_metric_result: Optional[Dict],
+        self, curr_metric_result: Dict, ref_metric_result: Optional[Dict]
     ) -> Optional[BaseWidgetInfo]:
         tabs = []
 

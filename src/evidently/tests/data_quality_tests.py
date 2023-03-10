@@ -1046,12 +1046,7 @@ class TestValueRange(Test):
     left: Optional[float]
     right: Optional[float]
 
-    def __init__(
-        self,
-        column_name: str,
-        left: Optional[float] = None,
-        right: Optional[float] = None,
-    ):
+    def __init__(self, column_name: str, left: Optional[float] = None, right: Optional[float] = None):
         self.column_name = column_name
         self.left = left
         self.right = right

@@ -29,11 +29,7 @@ class StatTest:
     default_threshold: float = 0.05
 
     def __call__(
-        self,
-        reference_data: pd.Series,
-        current_data: pd.Series,
-        feature_type: str,
-        threshold: Optional[float],
+        self, reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: Optional[float]
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
         p = self.func(reference_data, current_data, feature_type, actual_threshold)

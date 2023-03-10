@@ -18,9 +18,7 @@ class ProbClassificationPerformanceProfileSection(ProfileSection):
         return self.analyzers_types
 
     @staticmethod
-    def _get_regression_performance_metrics_as_dict(
-        metrics: ProbClassificationPerformanceMetrics,
-    ) -> dict:
+    def _get_regression_performance_metrics_as_dict(metrics: ProbClassificationPerformanceMetrics) -> dict:
         result = {
             "accuracy": metrics.accuracy,
             "precision": metrics.precision,

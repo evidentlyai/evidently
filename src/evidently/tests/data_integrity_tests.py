@@ -189,9 +189,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
     }
 
     @staticmethod
-    def _get_number_and_percents_of_missing_values(
-        missing_values_info: DatasetMissingValues,
-    ) -> pd.DataFrame:
+    def _get_number_and_percents_of_missing_values(missing_values_info: DatasetMissingValues) -> pd.DataFrame:
         """Get a string with missing values numbers and percents from info for results table"""
         result = {}
 
@@ -214,10 +212,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
         )
 
     def get_table_with_missing_values_and_percents_by_column(
-        self,
-        info: TestHtmlInfo,
-        metric_result: DatasetMissingValuesMetricResult,
-        name: str,
+        self, info: TestHtmlInfo, metric_result: DatasetMissingValuesMetricResult, name: str
     ) -> TestHtmlInfo:
         """Get a table with missing values number and percents"""
         columns = ["column name", "current number of missing values"]
@@ -239,11 +234,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
         return {self.MISSING_VALUES_NAMING_MAPPING.get(k, k): v for k, v in values.items()}
 
     def get_table_with_number_of_missing_values_by_one_missing_value(
-        self,
-        info: TestHtmlInfo,
-        current_missing_values: dict,
-        reference_missing_values: Optional[dict],
-        name: str,
+        self, info: TestHtmlInfo, current_missing_values: dict, reference_missing_values: Optional[dict], name: str
     ) -> TestHtmlInfo:
         columns = ["missing value", "current number of missing values"]
         dict_curr = self._replace_missing_values_to_description(current_missing_values)

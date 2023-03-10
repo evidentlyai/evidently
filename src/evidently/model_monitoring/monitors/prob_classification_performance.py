@@ -39,9 +39,7 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
 
     @staticmethod
     def _yield_metrics(
-        metrics: ProbClassificationPerformanceMetrics,
-        dataset: str,
-        columns: DatasetColumns,
+        metrics: ProbClassificationPerformanceMetrics, dataset: str, columns: DatasetColumns
     ) -> Generator[MetricsType, None, None]:
         yield ProbClassificationPerformanceMonitorMetricsMonitor.quality.create(
             metrics.accuracy, dict(dataset=dataset, metric="accuracy")

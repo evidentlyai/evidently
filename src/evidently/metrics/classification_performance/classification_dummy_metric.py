@@ -40,11 +40,7 @@ class ClassificationDummyMetricResults(MetricResult):
 class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
     quality_metric: ClassificationQualityMetric
 
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
-    ):
+    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
         super().__init__(probas_threshold, k)
         self.probas_threshold = probas_threshold
         self.k = k

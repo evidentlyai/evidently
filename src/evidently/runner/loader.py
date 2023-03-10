@@ -25,13 +25,7 @@ class DataOptions:
     # should be list of names, or None if columns should be inferred from data
     column_names: Optional[List[str]]
 
-    def __init__(
-        self,
-        date_column: str = "datetime",
-        separator=",",
-        header=True,
-        column_names=None,
-    ):
+    def __init__(self, date_column: str = "datetime", separator=",", header=True, column_names=None):
         self.date_column = date_column
         self.header = header
         self.separator = separator
@@ -67,12 +61,7 @@ class DataLoader:
     def __init__(self):
         pass
 
-    def load(
-        self,
-        filename: str,
-        data_options: DataOptions,
-        sampling_options: SamplingOptions = None,
-    ):
+    def load(self, filename: str, data_options: DataOptions, sampling_options: SamplingOptions = None):
         sampling_opts = SamplingOptions("none", 0, 0) if sampling_options is None else sampling_options
         parse_dates = [data_options.date_column] if data_options.date_column else False
         return pd.read_csv(

@@ -65,13 +65,7 @@ class Dashboard(Pipeline):
                     additional_graphs[graph.id] = graph
         return dashboard_id, dashboard_info, additional_graphs
 
-    def __render(
-        self,
-        dashboard_id,
-        dashboard_info,
-        additional_graphs,
-        template: Callable[[TemplateParams], str],
-    ):
+    def __render(self, dashboard_id, dashboard_info, additional_graphs, template: Callable[[TemplateParams], str]):
         return template(TemplateParams(dashboard_id, dashboard_info, additional_graphs))
 
     def __no_lib_render(

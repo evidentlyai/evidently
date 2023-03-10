@@ -394,11 +394,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         raise ValueError(f"unknown feature type {stats.feature_type}")
 
     def get_text_stats(
-        self,
-        dataset: str,
-        data: InputData,
-        text_feature: pd.Series,
-        generated_text_features: dict,
+        self, dataset: str, data: InputData, text_feature: pd.Series, generated_text_features: dict
     ) -> TextCharacteristics:
         number_of_rows = len(text_feature)
         missing = text_feature.isna().sum()

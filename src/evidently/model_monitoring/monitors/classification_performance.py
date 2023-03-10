@@ -41,9 +41,7 @@ class ClassificationPerformanceMonitor(ModelMonitor):
 
     @staticmethod
     def _yield_metrics(
-        metrics: ClassificationPerformanceMetrics,
-        dataset: str,
-        columns: evidently.utils.data_operations.DatasetColumns,
+        metrics: ClassificationPerformanceMetrics, dataset: str, columns: evidently.utils.data_operations.DatasetColumns
     ) -> Generator[MetricsType, None, None]:
         yield ClassificationPerformanceMonitorMetricsMonitor.quality.create(
             metrics.accuracy, dict(dataset=dataset, metric="accuracy")

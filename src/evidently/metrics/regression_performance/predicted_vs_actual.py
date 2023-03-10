@@ -51,13 +51,7 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
             current_scatter=current_scatter, reference_scatter=reference_scatter
         )
 
-    def _make_df_for_plot(
-        self,
-        df,
-        target_name: str,
-        prediction_name: str,
-        datetime_column_name: Optional[str],
-    ):
+    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(

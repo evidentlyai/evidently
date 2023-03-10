@@ -93,10 +93,7 @@ class DataQualityCorrelationsWidget(Widget):
         return wi
 
     def _plot_correlation_figure(
-        self,
-        kind: str,
-        reference_correlations: dict,
-        current_correlations: Optional[dict],
+        self, kind: str, reference_correlations: dict, current_correlations: Optional[dict]
     ) -> dict:
         columns = reference_correlations[kind].columns
         heatmap_text = None

@@ -234,10 +234,7 @@ class Suite:
         self.context.state = States.Verified
 
     def create_additional_features(
-        self,
-        current_data: pd.DataFrame,
-        reference_data: Optional[pd.DataFrame],
-        data_definition: DataDefinition,
+        self, current_data: pd.DataFrame, reference_data: Optional[pd.DataFrame], data_definition: DataDefinition
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         curr_additional_data = None
         ref_additional_data = None

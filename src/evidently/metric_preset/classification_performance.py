@@ -33,10 +33,7 @@ class ClassificationPreset(MetricPreset):
     k: Optional[int]
 
     def __init__(
-        self,
-        columns: Optional[List[str]] = None,
-        probas_threshold: Optional[float] = None,
-        k: Optional[int] = None,
+        self, columns: Optional[List[str]] = None, probas_threshold: Optional[float] = None, k: Optional[int] = None
     ):
         super().__init__()
         self.columns = columns

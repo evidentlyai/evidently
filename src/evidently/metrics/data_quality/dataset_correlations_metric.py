@@ -163,10 +163,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         )
 
     def _get_correlations(
-        self,
-        dataset: pd.DataFrame,
-        data_definition: DataDefinition,
-        add_text_columns: Optional[list],
+        self, dataset: pd.DataFrame, data_definition: DataDefinition, add_text_columns: Optional[list]
     ) -> DatasetCorrelation:
         # process predictions. If task == 'classification' add prediction labels
 

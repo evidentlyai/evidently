@@ -123,9 +123,7 @@ class DataQualitySummaryWidget(Widget):
 
     @staticmethod
     def _get_stats_with_names(
-        stats_list: List[str],
-        reference_stats: dict,
-        current_stats: Optional[dict],
+        stats_list: List[str], reference_stats: dict, current_stats: Optional[dict]
     ) -> List[dict]:
 
         result = []
