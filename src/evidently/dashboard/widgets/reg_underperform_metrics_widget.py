@@ -62,18 +62,9 @@ class RegUnderperformMetricsWidget(Widget):
             size=2,
             params={
                 "counters": [
-                    {
-                        "value": _format_value(result_metrics, "majority"),
-                        "label": "Majority(90%)",
-                    },
-                    {
-                        "value": _format_value(result_metrics, "underestimation"),
-                        "label": "Underestimation(5%)",
-                    },
-                    {
-                        "value": _format_value(result_metrics, "overestimation"),
-                        "label": "Overestimation(5%)",
-                    },
+                    {"value": _format_value(result_metrics, "majority"), "label": "Majority(90%)"},
+                    {"value": _format_value(result_metrics, "underestimation"), "label": "Underestimation(5%)"},
+                    {"value": _format_value(result_metrics, "overestimation"), "label": "Overestimation(5%)"},
                 ]
             },
         )

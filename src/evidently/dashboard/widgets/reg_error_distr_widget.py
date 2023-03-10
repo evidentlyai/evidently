@@ -55,10 +55,7 @@ class RegErrorDistrWidget(Widget):
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         dataset_to_plot.dropna(
-            axis=0,
-            how="any",
-            inplace=True,
-            subset=[results_utility_columns.target, results_utility_columns.prediction],
+            axis=0, how="any", inplace=True, subset=[results_utility_columns.target, results_utility_columns.prediction]
         )
 
         # plot distributions
@@ -68,10 +65,7 @@ class RegErrorDistrWidget(Widget):
 
         error_distr.add_trace(
             go.Histogram(
-                x=error,
-                marker_color=color_options.primary_color,
-                name="error distribution",
-                histnorm="percent",
+                x=error, marker_color=color_options.primary_color, name="error distribution", histnorm="percent"
             )
         )
 
@@ -86,8 +80,5 @@ class RegErrorDistrWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": error_distr_json["data"],
-                "layout": error_distr_json["layout"],
-            },
+            params={"data": error_distr_json["data"], "layout": error_distr_json["layout"]},
         )

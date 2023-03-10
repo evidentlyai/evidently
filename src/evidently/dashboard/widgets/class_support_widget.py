@@ -81,9 +81,6 @@ class ClassSupportWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={
-                "data": support_bar_json["data"],
-                "layout": support_bar_json["layout"],
-            },
+            params={"data": support_bar_json["data"], "layout": support_bar_json["layout"]},
             additionalGraphs=[],
         )

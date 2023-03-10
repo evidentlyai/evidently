@@ -26,15 +26,11 @@ class DataQualitySummaryWidget(Widget):
     ) -> Optional[BaseWidgetInfo]:
         data_quality_results = DataQualityAnalyzer.get_results(analyzers_results)
         reference_stats = self._get_df_stats(
-            data_quality_results,
-            reference_data,
-            data_quality_results.reference_features_stats,
+            data_quality_results, reference_data, data_quality_results.reference_features_stats
         )
         if current_data is not None:
             current_stats = self._get_df_stats(
-                data_quality_results,
-                current_data,
-                data_quality_results.current_features_stats,
+                data_quality_results, current_data, data_quality_results.current_features_stats
             )
         else:
             current_stats = None
@@ -104,8 +100,7 @@ class DataQualitySummaryWidget(Widget):
         result["number of observations"] = df.shape[0]
         missing_cells = df[all_features].isnull().sum().sum()
         missing_cells_percentage = np.round(
-            missing_cells / (result["number of variables"] * result["number of observations"]),
-            2,
+            missing_cells / (result["number of variables"] * result["number of observations"]), 2
         )
         result["missing cells"] = f"{missing_cells} ({missing_cells_percentage}%)"
         result["categorical features"] = len(data_quality_results.columns.cat_feature_names)
@@ -123,7 +118,9 @@ class DataQualitySummaryWidget(Widget):
 
     @staticmethod
     def _get_stats_with_names(
-        stats_list: List[str], reference_stats: dict, current_stats: Optional[dict]
+        stats_list: List[str],
+        reference_stats: dict,
+        current_stats: Optional[dict],
     ) -> List[dict]:
 
         result = []

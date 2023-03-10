@@ -63,16 +63,14 @@ class RegressionPerformanceMonitor(ModelMonitor):
             for feature in results.columns.num_feature_names:
                 for field in fields:
                     yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
-                        results.error_bias[feature][field],
-                        dict(feature=feature, feature_type="num", metric=field),
+                        results.error_bias[feature][field], dict(feature=feature, feature_type="num", metric=field)
                     )
 
         if results.error_bias is not None:
             for feature in results.columns.cat_feature_names:
                 for field in fields:
                     yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
-                        results.error_bias[feature][field],
-                        dict(feature=feature, feature_type="cat", metric=field),
+                        results.error_bias[feature][field], dict(feature=feature, feature_type="cat", metric=field)
                     )
 
     @staticmethod
@@ -84,8 +82,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
             metrics.mean_abs_error, dict(dataset=dataset, metric="mean_abs_error")
         )
         yield RegressionPerformanceMonitorMetrics.quality.create(
-            metrics.mean_abs_perc_error,
-            dict(dataset=dataset, metric="mean_abs_perc_error"),
+            metrics.mean_abs_perc_error, dict(dataset=dataset, metric="mean_abs_perc_error")
         )
         yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.error_std, dict(dataset=dataset, metric="error_std")
@@ -94,8 +91,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
             metrics.abs_error_std, dict(dataset=dataset, metric="abs_error_std")
         )
         yield RegressionPerformanceMonitorMetrics.quality.create(
-            metrics.abs_perc_error_std,
-            dict(dataset=dataset, metric="abs_perc_error_std"),
+            metrics.abs_perc_error_std, dict(dataset=dataset, metric="abs_perc_error_std")
         )
 
     @staticmethod

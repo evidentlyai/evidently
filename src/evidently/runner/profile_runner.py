@@ -61,9 +61,4 @@ class ProfileRunner(Runner):
         )
 
         with open(output_path, "w", encoding="utf-8") as out_file:
-            json.dump(
-                profile.object(),
-                out_file,
-                indent=2 if self.options.pretty_print else None,
-                cls=NumpyEncoder,
-            )
+            json.dump(profile.object(), out_file, indent=2 if self.options.pretty_print else None, cls=NumpyEncoder)

@@ -32,14 +32,7 @@ class PercentWidget(Widget):
                     period=1,
                 ),
             ),
-            alerts=[
-                Alert(
-                    value=5,
-                    state="warning",
-                    text="short text",
-                    longText="some long description of alert",
-                )
-            ],
+            alerts=[Alert(value=5, state="warning", text="short text", longText="some long description of alert")],
             params={"value": 40, "maxValue": 134, "details": "Some information"},
             insights=[
                 Insight("Info insight", "info", "Example insight information"),

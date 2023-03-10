@@ -169,9 +169,6 @@ class ProbClassPRTableWidget(Widget):
                 )
 
             widget_info = BaseWidgetInfo(
-                type="tabs",
-                title=self.title,
-                size=1 if current_data is not None else 2,
-                tabs=tabs,
+                type="tabs", title=self.title, size=1 if current_data is not None else 2, tabs=tabs
             )
         return widget_info

@@ -48,11 +48,7 @@ class BinaryClassificationTestPreset(TestPreset):
         is_probas_present = prediction_columns is not None and prediction_columns.prediction_probas is not None
         if not is_probas_present:
             return [
-                TestColumnDrift(
-                    column_name=target,
-                    stattest=self.stattest,
-                    stattest_threshold=self.stattest_threshold,
-                ),
+                TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
                 TestPrecisionScore(probas_threshold=self.probas_threshold),
                 TestRecallScore(probas_threshold=self.probas_threshold),
                 TestF1Score(probas_threshold=self.probas_threshold),
@@ -60,11 +56,7 @@ class BinaryClassificationTestPreset(TestPreset):
             ]
 
         return [
-            TestColumnDrift(
-                column_name=target,
-                stattest=self.stattest,
-                stattest_threshold=self.stattest_threshold,
-            ),
+            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
             TestRocAuc(),
             TestPrecisionScore(probas_threshold=self.probas_threshold),
             TestRecallScore(probas_threshold=self.probas_threshold),

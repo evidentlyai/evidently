@@ -83,8 +83,5 @@ class ProbClassMetricsMatrixWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={
-                "data": metrics_matrix_json["data"],
-                "layout": metrics_matrix_json["layout"],
-            },
+            params={"data": metrics_matrix_json["data"], "layout": metrics_matrix_json["layout"]},
         )

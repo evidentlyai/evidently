@@ -53,10 +53,7 @@ class RegErrorTimeWidget(Widget):
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         dataset_to_plot.dropna(
-            axis=0,
-            how="any",
-            inplace=True,
-            subset=[results_utility_columns.target, results_utility_columns.prediction],
+            axis=0, how="any", inplace=True, subset=[results_utility_columns.target, results_utility_columns.prediction]
         )
 
         # plot error in time
@@ -97,9 +94,6 @@ class RegErrorTimeWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": error_in_time_json["data"],
-                "layout": error_in_time_json["layout"],
-            },
+            params={"data": error_in_time_json["data"], "layout": error_in_time_json["layout"]},
             additionalGraphs=[],
         )

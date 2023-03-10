@@ -22,7 +22,10 @@ class DataQualityMonitor(ModelMonitor):
         return [DataQualityAnalyzer]
 
     @staticmethod
-    def _yield_metrics(data_stats: DataQualityStats, dataset: str) -> Generator[MetricsType, None, None]:
+    def _yield_metrics(
+        data_stats: DataQualityStats,
+        dataset: str,
+    ) -> Generator[MetricsType, None, None]:
         for feature_name, feature_stats in data_stats.get_all_features().items():
             feature_stats_dict = feature_stats.as_dict()
             feature_type = feature_stats_dict.pop("feature_type")

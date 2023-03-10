@@ -52,12 +52,12 @@ class NumOutputCorrWidget(Widget):
             return None
 
         # calculate corr
-        ref_output_corr = metrics.reference.correlations
+        ref_output_corr = metrics.reference_correlations
 
         if ref_output_corr is None:
             return None
 
-        current_output_corr = metrics.current.correlations
+        current_output_corr = metrics.current_correlations
 
         if current_output_corr is None:
             return None
@@ -84,9 +84,7 @@ class NumOutputCorrWidget(Widget):
         )
 
         output_corr.update_layout(
-            xaxis_title="Features",
-            yaxis_title="Correlation",
-            yaxis=dict(range=(-1, 1), showticklabels=True),
+            xaxis_title="Features", yaxis_title="Correlation", yaxis=dict(range=(-1, 1), showticklabels=True)
         )
 
         # output_corr_json = json.loads(output_corr.to_json())
@@ -96,8 +94,5 @@ class NumOutputCorrWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": output_corr_json["data"],
-                "layout": output_corr_json["layout"],
-            },
+            params={"data": output_corr_json["data"], "layout": output_corr_json["layout"]},
         )

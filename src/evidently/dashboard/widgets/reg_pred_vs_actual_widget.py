@@ -83,8 +83,5 @@ class RegPredActualWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": pred_actual_json["data"],
-                "layout": pred_actual_json["layout"],
-            },
+            params={"data": pred_actual_json["data"], "layout": pred_actual_json["layout"]},
         )

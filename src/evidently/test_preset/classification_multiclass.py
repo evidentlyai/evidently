@@ -36,7 +36,11 @@ class MulticlassClassificationTestPreset(TestPreset):
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
-    def __init__(self, stattest: Optional[PossibleStatTestType] = None, stattest_threshold: Optional[float] = None):
+    def __init__(
+        self,
+        stattest: Optional[PossibleStatTestType] = None,
+        stattest_threshold: Optional[float] = None,
+    ):
         super().__init__()
 
         self.stattest = stattest
@@ -59,11 +63,7 @@ class MulticlassClassificationTestPreset(TestPreset):
             *[TestPrecisionByClass(str(label)) for label in labels],
             *[TestRecallByClass(str(label)) for label in labels],
             TestNumberOfRows(),
-            TestColumnDrift(
-                column_name=target,
-                stattest=self.stattest,
-                stattest_threshold=self.stattest_threshold,
-            ),
+            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
         ]
 
         prediction_columns = data.data_definition.get_prediction_columns()

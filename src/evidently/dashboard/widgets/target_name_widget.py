@@ -69,10 +69,7 @@ class TargetNameWidget(Widget):
             size=2,
             params={
                 "counters": [
-                    {
-                        "value": "",
-                        "label": self.title + " Target: '" + results_columns.utility_columns.target + "'",
-                    }
+                    {"value": "", "label": self.title + " Target: '" + results_columns.utility_columns.target + "'"}
                 ]
             },
         )

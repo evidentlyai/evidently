@@ -33,7 +33,11 @@ class TestSuite(Display):
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
 
-    def __init__(self, tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]], options: Optional[list] = None):
+    def __init__(
+        self,
+        tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
+        options: Optional[list] = None,
+    ):
         super().__init__(options)
         self._inner_suite = Suite()
         self._test_presets = []
@@ -87,14 +91,7 @@ class TestSuite(Display):
             self._add_tests_from_generator(test_generator)
         self._inner_suite.verify()
         curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
-        data = InputData(
-            reference_data,
-            current_data,
-            ref_add,
-            curr_add,
-            column_mapping,
-            data_definition,
-        )
+        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
 
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
@@ -146,16 +143,8 @@ class TestSuite(Display):
             params={
                 "counters": [{"value": f"{total_tests}", "label": "Tests"}]
                 + [
-                    {
-                        "value": f"{by_status.get(status, 0)}",
-                        "label": f"{status.title()}",
-                    }
-                    for status in [
-                        TestResult.SUCCESS,
-                        TestResult.WARNING,
-                        TestResult.FAIL,
-                        TestResult.ERROR,
-                    ]
+                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()}"}
+                    for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
                 ]
             },
         )

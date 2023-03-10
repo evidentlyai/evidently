@@ -51,8 +51,5 @@ class Pipeline:
         for stage in self.stages:
             stage.options_provider = self.options_provider
             stage.calculate(
-                rdata.copy(),
-                None if cdata is None else cdata.copy(),
-                column_mapping,
-                self.analyzers_results,
+                rdata.copy(), None if cdata is None else cdata.copy(), column_mapping, self.analyzers_results
             )

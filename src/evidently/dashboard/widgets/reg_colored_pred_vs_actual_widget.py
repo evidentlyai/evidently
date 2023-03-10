@@ -53,10 +53,7 @@ class RegColoredPredActualWidget(Widget):
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         dataset_to_plot.dropna(
-            axis=0,
-            how="any",
-            inplace=True,
-            subset=[results_utility_columns.target, results_utility_columns.prediction],
+            axis=0, how="any", inplace=True, subset=[results_utility_columns.target, results_utility_columns.prediction]
         )
 
         error = dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target]
@@ -121,9 +118,6 @@ class RegColoredPredActualWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={
-                "data": pred_actual_json["data"],
-                "layout": pred_actual_json["layout"],
-            },
+            params={"data": pred_actual_json["data"], "layout": pred_actual_json["layout"]},
             additionalGraphs=[],
         )

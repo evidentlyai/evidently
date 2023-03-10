@@ -62,13 +62,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     {
                         "details": {
                             "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
-                            + [
-                                {
-                                    "title": str(label),
-                                    "id": feature_name + "_" + str(label),
-                                }
-                                for label in labels
-                            ],
+                            + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
                             "insights": [],
                         },
                         "f1": feature_name,
@@ -219,13 +213,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     {
                         "details": {
                             "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
-                            + [
-                                {
-                                    "title": str(label),
-                                    "id": feature_name + "_" + str(label),
-                                }
-                                for label in labels
-                            ],
+                            + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
                             "insights": [],
                         },
                         "f1": feature_name,
@@ -233,12 +221,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 )
 
                 # create confusion based plots
-                fig = px.histogram(
-                    reference_data,
-                    x=feature_name,
-                    color=utility_columns.target,
-                    histnorm="",
-                )
+                fig = px.histogram(reference_data, x=feature_name, color=utility_columns.target, histnorm="")
                 cut_quantile_options = quality_metrics_options.get_cut_quantile(feature_name)
                 if cut_quantile and cut_quantile_options is not None:
                     side, q = cut_quantile_options
@@ -249,11 +232,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     reference_data_to_plot = reference_data
 
                 fig = px.histogram(
-                    reference_data_to_plot,
-                    x=feature_name,
-                    color=utility_columns.target,
-                    histnorm="",
-                    barmode="overlay",
+                    reference_data_to_plot, x=feature_name, color=utility_columns.target, histnorm="", barmode="overlay"
                 )
 
                 fig_json = json.loads(fig.to_json())
@@ -276,8 +255,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                             mode="markers",
                             name=str(label),
                             marker=dict(
-                                size=6,
-                                color=color_options.get_current_data_color(),  # set color equal to a variable
+                                size=6, color=color_options.get_current_data_color()  # set color equal to a variable
                             ),
                         )
                     )

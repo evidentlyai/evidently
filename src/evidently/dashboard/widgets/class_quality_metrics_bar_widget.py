@@ -60,14 +60,8 @@ class ClassQualityMetricsBarWidget(Widget):
             size=2,
             params={
                 "counters": [
-                    {
-                        "value": str(round(result_metrics.accuracy, 3)),
-                        "label": "Accuracy",
-                    },
-                    {
-                        "value": str(round(result_metrics.precision, 3)),
-                        "label": "Precision",
-                    },
+                    {"value": str(round(result_metrics.accuracy, 3)), "label": "Accuracy"},
+                    {"value": str(round(result_metrics.precision, 3)), "label": "Precision"},
                     {"value": str(round(result_metrics.recall, 3)), "label": "Recall"},
                     {"value": str(round(result_metrics.f1, 3)), "label": "F1"},
                 ]

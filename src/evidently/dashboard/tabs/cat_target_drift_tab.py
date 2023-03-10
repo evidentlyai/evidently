@@ -12,12 +12,6 @@ class CatTargetDriftTab(Tab):
         (CatOutputDriftWidget("Target Drift"), Verbose.ALWAYS),
         (CatOutputDriftWidget("Prediction Drift", "prediction"), Verbose.ALWAYS),
         (ProbClassPredDistrWidget("Reference: Probability Distribution"), Verbose.FULL),
-        (
-            ProbClassPredDistrWidget("Current: Probability Distribution", "current"),
-            Verbose.FULL,
-        ),
-        (
-            CatTargetPredFeatureTable("Target (Prediction) Behavior By Feature"),
-            Verbose.FULL,
-        ),
+        (ProbClassPredDistrWidget("Current: Probability Distribution", "current"), Verbose.FULL),
+        (CatTargetPredFeatureTable("Target (Prediction) Behavior By Feature"), Verbose.FULL),
     ]

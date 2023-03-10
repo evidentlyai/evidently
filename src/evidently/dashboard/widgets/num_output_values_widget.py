@@ -146,8 +146,5 @@ class NumOutputValuesWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": output_values_json["data"],
-                "layout": output_values_json["layout"],
-            },
+            params={"data": output_values_json["data"], "layout": output_values_json["layout"]},
         )

@@ -53,14 +53,8 @@ class CatTargetPredFeatureTable(Widget):
                     {
                         "details": {
                             "parts": [
-                                {
-                                    "title": "Target",
-                                    "id": feature_name + "_target_values",
-                                },
-                                {
-                                    "title": "Prediction",
-                                    "id": feature_name + "_prediction_values",
-                                },
+                                {"title": "Target", "id": feature_name + "_target_values"},
+                                {"title": "Prediction", "id": feature_name + "_prediction_values"},
                             ],
                             "insights": [],
                         },
@@ -110,20 +104,14 @@ class CatTargetPredFeatureTable(Widget):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_target_values",
-                        {
-                            "data": target_fig_json["data"],
-                            "layout": target_fig_json["layout"],
-                        },
+                        {"data": target_fig_json["data"], "layout": target_fig_json["layout"]},
                     )
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_prediction_values",
-                        {
-                            "data": pred_fig_json["data"],
-                            "layout": pred_fig_json["layout"],
-                        },
+                        {"data": pred_fig_json["data"], "layout": pred_fig_json["layout"]},
                     )
                 )
 
@@ -148,12 +136,7 @@ class CatTargetPredFeatureTable(Widget):
                 params_data.append(
                     {
                         "details": {
-                            "parts": [
-                                {
-                                    "title": "Target",
-                                    "id": feature_name + "_target_values",
-                                }
-                            ],
+                            "parts": [{"title": "Target", "id": feature_name + "_target_values"}],
                             "insights": [],
                         },
                         "f1": feature_name,
@@ -191,10 +174,7 @@ class CatTargetPredFeatureTable(Widget):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_target_values",
-                        {
-                            "data": target_fig_json["data"],
-                            "layout": target_fig_json["layout"],
-                        },
+                        {"data": target_fig_json["data"], "layout": target_fig_json["layout"]},
                     )
                 )
 
@@ -217,12 +197,7 @@ class CatTargetPredFeatureTable(Widget):
                 params_data.append(
                     {
                         "details": {
-                            "parts": [
-                                {
-                                    "title": "Prediction",
-                                    "id": feature_name + "_prediction_values",
-                                }
-                            ],
+                            "parts": [{"title": "Prediction", "id": feature_name + "_prediction_values"}],
                             "insights": [],
                         },
                         "f1": feature_name,
@@ -259,10 +234,7 @@ class CatTargetPredFeatureTable(Widget):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_prediction_values",
-                        {
-                            "data": prediction_fig_json["data"],
-                            "layout": prediction_fig_json["layout"],
-                        },
+                        {"data": prediction_fig_json["data"], "layout": prediction_fig_json["layout"]},
                     )
                 )
 

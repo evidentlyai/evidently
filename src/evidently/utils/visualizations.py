@@ -155,22 +155,12 @@ def plot_distr_subplots(
         subplot_titles = ["current", "reference"]
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    trace = go.Bar(
-        x=hist_curr["x"],
-        y=hist_curr["count"],
-        marker_color=curr_color,
-        showlegend=False,
-    )
+    trace = go.Bar(x=hist_curr["x"], y=hist_curr["count"], marker_color=curr_color, showlegend=False)
     fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
 
     if hist_ref is not None:
-        trace = go.Bar(
-            x=hist_ref["x"],
-            y=hist_ref["count"],
-            marker_color=ref_color,
-            showlegend=False,
-        )
+        trace = go.Bar(x=hist_ref["x"], y=hist_ref["count"], marker_color=ref_color, showlegend=False)
         fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name)
@@ -257,10 +247,7 @@ def plot_cat_feature_in_time(
     fig = go.Figure()
     values = curr_data[feature_name].astype(str).unique()
     if ref_data is not None:
-        values = np.union1d(
-            curr_data[feature_name].astype(str).unique(),
-            ref_data[feature_name].astype(str).unique(),
-        )
+        values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
     for i, val in enumerate(values):
         fig.add_trace(
             go.Bar(
@@ -442,7 +429,8 @@ def get_distribution_for_category_column(column: pd.Series, normalize: bool = Fa
 
 
 def get_distribution_for_numerical_column(
-    column: pd.Series, bins: Optional[Union[list, np.ndarray]] = None
+    column: pd.Series,
+    bins: Optional[Union[list, np.ndarray]] = None,
 ) -> Distribution:
     if bins is None:
         bins = np.histogram_bin_edges(column, bins="doane")
@@ -483,13 +471,7 @@ def get_distribution_for_column(
 
 def make_hist_df(hist: Tuple[np.ndarray, np.ndarray]) -> pd.DataFrame:
     hist_df = pd.DataFrame(
-        np.array(
-            [
-                hist[1][:-1],
-                hist[0],
-                [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])],
-            ]
-        ).T,
+        np.array([hist[1][:-1], hist[0], [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]]).T,
         columns=["x", "count", "range"],
     )
 
@@ -559,20 +541,9 @@ def plot_pred_actual_time(
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     for name, color in zip(
-        ["Predicted", "Actual"],
-        [
-            color_options.get_current_data_color(),
-            color_options.get_reference_data_color(),
-        ],
+        ["Predicted", "Actual"], [color_options.get_current_data_color(), color_options.get_reference_data_color()]
     ):
-        trace = go.Scatter(
-            x=curr[x_name],
-            y=curr[name],
-            mode="lines",
-            marker_color=color,
-            name=name,
-            legendgroup=name,
-        )
+        trace = go.Scatter(x=curr[x_name], y=curr[name], mode="lines", marker_color=color, name=name, legendgroup=name)
         fig.add_trace(trace, 1, 1)
 
         if ref is not None:
@@ -695,11 +666,7 @@ def plot_error_bias_colored_scatter(
 
     for name, color in zip(
         ["Underestimation", "Overestimation", "Majority"],
-        [
-            color_options.underestimation_color,
-            color_options.overestimation_color,
-            color_options.majority_color,
-        ],
+        [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
     ):
         trace = go.Scatter(
             x=curr_scatter_data[name]["Actual value"],
@@ -716,11 +683,7 @@ def plot_error_bias_colored_scatter(
     if ref_scatter_data is not None:
         for name, color in zip(
             ["Underestimation", "Overestimation", "Majority"],
-            [
-                color_options.underestimation_color,
-                color_options.overestimation_color,
-                color_options.majority_color,
-            ],
+            [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
         ):
             trace = go.Scatter(
                 x=ref_scatter_data[name]["Actual value"],

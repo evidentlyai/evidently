@@ -103,19 +103,10 @@ def _calculate_threshold(
 def roc_auc_domain_classifier(X_train, X_test, y_train, y_test) -> Tuple:
     pipeline = Pipeline(
         [
-            (
-                "vectorization",
-                TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words="english"),
-            ),
+            ("vectorization", TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words="english")),
             (
                 "classification",
-                SGDClassifier(
-                    alpha=0.0001,
-                    max_iter=50,
-                    penalty="l1",
-                    loss="modified_huber",
-                    random_state=42,
-                ),
+                SGDClassifier(alpha=0.0001, max_iter=50, penalty="l1", loss="modified_huber", random_state=42),
             ),
         ]
     )
@@ -163,10 +154,7 @@ def calculate_text_drift_score(reference_data: pd.Series, current_data: pd.Serie
     )
 
     random_classifier_95_percentile = roc_auc_random_classifier_percentile(y_test, p_value=p_value)
-    return (
-        domain_classifier_roc_auc,
-        domain_classifier_roc_auc > random_classifier_95_percentile,
-    )
+    return domain_classifier_roc_auc, domain_classifier_roc_auc > random_classifier_95_percentile
 
 
 def get_typical_examples(X_test, y_test, y_pred_proba, examples_num=10) -> Tuple[List[str], List[str]]:
@@ -231,9 +219,4 @@ def get_text_data_for_plots(reference_data: pd.Series, current_data: pd.Series):
     # get words more characteristic of current or reference dataset
     typical_words_cur, typical_words_ref = get_typical_words(classifier_pipeline)
 
-    return (
-        typical_examples_cur,
-        typical_examples_ref,
-        typical_words_cur,
-        typical_words_ref,
-    )
+    return typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref

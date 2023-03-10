@@ -14,35 +14,14 @@ from evidently.dashboard.widgets.target_name_widget import TargetNameWidget
 
 class ClassificationPerformanceTab(Tab):
     widgets = [
-        (
-            TargetNameWidget("Classification Model Performance Report.", kind="classification"),
-            Verbose.ALWAYS,
-        ),
-        (
-            ClassQualityMetricsBarWidget("Reference: Model Quality With Macro-average Metrics"),
-            Verbose.ALWAYS,
-        ),
-        (
-            ClassQualityMetricsBarWidget("Current: Model Quality With Macro-average Metrics", "current"),
-            Verbose.ALWAYS,
-        ),
+        (TargetNameWidget("Classification Model Performance Report.", kind="classification"), Verbose.ALWAYS),
+        (ClassQualityMetricsBarWidget("Reference: Model Quality With Macro-average Metrics"), Verbose.ALWAYS),
+        (ClassQualityMetricsBarWidget("Current: Model Quality With Macro-average Metrics", "current"), Verbose.ALWAYS),
         (ClassSupportWidget("Reference: Class Representation"), Verbose.ALWAYS),
-        (
-            ClassSupportWidget("Current: Class Representation", "current"),
-            Verbose.ALWAYS,
-        ),
+        (ClassSupportWidget("Current: Class Representation", "current"), Verbose.ALWAYS),
         (ClassConfMatrixWidget("Reference: Confusion Matrix"), Verbose.FULL),
         (ClassConfMatrixWidget("Current: Confusion Matrix", "current"), Verbose.FULL),
-        (
-            ClassMetricsMatrixWidget("Reference: Quality Metrics by Class"),
-            Verbose.ALWAYS,
-        ),
-        (
-            ClassMetricsMatrixWidget("Current: Quality Metrics by Class", "current"),
-            Verbose.ALWAYS,
-        ),
-        (
-            ClassConfusionBasedFeatureDistrTable("Classification Quality By Feature"),
-            Verbose.FULL,
-        ),
+        (ClassMetricsMatrixWidget("Reference: Quality Metrics by Class"), Verbose.ALWAYS),
+        (ClassMetricsMatrixWidget("Current: Quality Metrics by Class", "current"), Verbose.ALWAYS),
+        (ClassConfusionBasedFeatureDistrTable("Classification Quality By Feature"), Verbose.FULL),
     ]

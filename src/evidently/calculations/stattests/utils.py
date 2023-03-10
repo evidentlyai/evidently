@@ -31,14 +31,8 @@ def get_binned_data(
 
     else:
         keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
-        ref_feature_dict = {
-            **dict.fromkeys(keys, 0),
-            **dict(reference_data.value_counts()),
-        }
-        current_feature_dict = {
-            **dict.fromkeys(keys, 0),
-            **dict(current_data.value_counts()),
-        }
+        ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
+        current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
         reference_percents = np.array([ref_feature_dict[key] / len(reference_data) for key in keys])
         current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
 

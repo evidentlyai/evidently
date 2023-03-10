@@ -83,10 +83,7 @@ class NumOutputDriftWidget(Widget):
         output_distr = ff.create_distplot(
             [reference_data_to_plot, current_data_to_plot],
             ["Reference", "Current"],
-            colors=[
-                color_options.get_reference_data_color(),
-                color_options.get_current_data_color(),
-            ],
+            colors=[color_options.get_reference_data_color(), color_options.get_current_data_color()],
             show_rug=True,
         )
 
@@ -108,9 +105,6 @@ class NumOutputDriftWidget(Widget):
             alertsPosition="row",
             insights=[],
             size=2,
-            params={
-                "data": output_drift_json["data"],
-                "layout": output_drift_json["layout"],
-            },
+            params={"data": output_drift_json["data"], "layout": output_drift_json["layout"]},
             additionalGraphs=[],
         )

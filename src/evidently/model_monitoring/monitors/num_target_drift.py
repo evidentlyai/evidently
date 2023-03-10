@@ -39,21 +39,16 @@ class NumTargetDriftMonitor(ModelMonitor):
     def _yield_metrics(metrics: ColumnDataDriftMetrics, kind: str) -> Generator[MetricsType, None, None]:
         yield NumTargetDriftMonitorMetrics.drift.create(metrics.drift_score, dict(kind=kind))
 
-        if metrics.reference.correlations is not None:
-            for (
-                feature_name,
-                correlation_value,
-            ) in metrics.reference.correlations.items():
+        if metrics.reference_correlations is not None:
+            for feature_name, correlation_value in metrics.reference_correlations.items():
                 yield NumTargetDriftMonitorMetrics.reference_correlations.create(
-                    correlation_value,
-                    dict(feature=feature_name, feature_type="num", kind=kind),
+                    correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
                 )
 
-        if metrics.current.correlations is not None:
-            for feature_name, correlation_value in metrics.current.correlations.items():
+        if metrics.current_correlations is not None:
+            for feature_name, correlation_value in metrics.current_correlations.items():
                 yield NumTargetDriftMonitorMetrics.current_correlations.create(
-                    correlation_value,
-                    dict(feature=feature_name, feature_type="num", kind=kind),
+                    correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
                 )
 
     def metrics(self, analyzer_results):

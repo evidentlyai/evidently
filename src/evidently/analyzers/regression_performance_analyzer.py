@@ -52,10 +52,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 )
                 if result.current_metrics.error_bias is not None:
                     if error_bias is not None:
-                        for (
-                            feature_name,
-                            current_bias,
-                        ) in result.current_metrics.error_bias.items():
+                        for feature_name, current_bias in result.current_metrics.error_bias.items():
                             error_bias[feature_name].update(current_bias)
 
                     else:

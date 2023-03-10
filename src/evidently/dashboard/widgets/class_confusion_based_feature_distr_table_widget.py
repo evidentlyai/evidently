@@ -55,13 +55,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     {
                         "details": {
                             "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
-                            + [
-                                {
-                                    "title": str(label),
-                                    "id": feature_name + "_" + str(label),
-                                }
-                                for label in labels
-                            ],
+                            + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
                             "insights": [],
                         },
                         "f1": feature_name,
@@ -117,10 +111,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                         facet_col="dataset",
                         histnorm="",
                         barmode="overlay",
-                        category_orders={
-                            "dataset": ["Reference", "Current"],
-                            "Confusion": ["TP", "TN", "FP", "FN"],
-                        },
+                        category_orders={"dataset": ["Reference", "Current"], "Confusion": ["TP", "TN", "FP", "FN"]},
                     )
                     fig_json = json.loads(fig.to_json())
 
@@ -173,11 +164,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                 reference_data_to_plot = reference_data
 
             fig = px.histogram(
-                reference_data_to_plot,
-                x=feature_name,
-                color=target_name,
-                histnorm="",
-                barmode="overlay",
+                reference_data_to_plot, x=feature_name, color=target_name, histnorm="", barmode="overlay"
             )
 
             fig_json = json.loads(fig.to_json())

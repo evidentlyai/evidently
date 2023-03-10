@@ -39,7 +39,9 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
 
     @staticmethod
     def _yield_metrics(
-        metrics: ProbClassificationPerformanceMetrics, dataset: str, columns: DatasetColumns
+        metrics: ProbClassificationPerformanceMetrics,
+        dataset: str,
+        columns: DatasetColumns,
     ) -> Generator[MetricsType, None, None]:
         yield ProbClassificationPerformanceMonitorMetricsMonitor.quality.create(
             metrics.accuracy, dict(dataset=dataset, metric="accuracy")
@@ -119,11 +121,7 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
                 class_y_name = str(class_y_name)
                 yield ProbClassificationPerformanceMonitorMetricsMonitor.confusion.create(
                     metrics.confusion_matrix.values[idx][idy],
-                    dict(
-                        dataset=dataset,
-                        class_x_name=class_x_name,
-                        class_y_name=class_y_name,
-                    ),
+                    dict(dataset=dataset, class_x_name=class_x_name, class_y_name=class_y_name),
                 )
 
     def metrics(self, analyzer_results):

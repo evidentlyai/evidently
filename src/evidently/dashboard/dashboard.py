@@ -50,10 +50,7 @@ class Dashboard(Pipeline):
     def __dashboard_data(self) -> Tuple[str, DashboardInfo, Dict]:
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
         tab_widgets = [t.info() for t in self.stages]
-        dashboard_info = DashboardInfo(
-            dashboard_id,
-            [item for tab in tab_widgets for item in tab if item is not None],
-        )
+        dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
         additional_graphs = {}
         for widget in [item for tab in tab_widgets for item in tab]:
             if widget is None:
@@ -93,10 +90,7 @@ class Dashboard(Pipeline):
     def _json(self):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
         tab_widgets = [t.info() for t in self.stages]
-        dashboard_info = DashboardInfo(
-            dashboard_id,
-            [item for tab in tab_widgets for item in tab if item is not None],
-        )
+        dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
         return json.dumps(asdict(dashboard_info), cls=NumpyEncoder)
 
     def _save_to_json(self, filename):
@@ -120,14 +114,7 @@ class Dashboard(Pipeline):
                 else:
                     render_mode = "nbextension"
             if render_mode == "inline":
-                return HTML(
-                    self.__render(
-                        dashboard_id,
-                        dashboard_info,
-                        additional_graphs,
-                        file_html_template,
-                    )
-                )
+                return HTML(self.__render(dashboard_id, dashboard_info, additional_graphs, file_html_template))
             if render_mode == "nbextension":
                 return HTML(self.__render(dashboard_id, dashboard_info, additional_graphs, inline_template))
             raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")

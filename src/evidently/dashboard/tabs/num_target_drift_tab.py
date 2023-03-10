@@ -16,8 +16,5 @@ class NumTargetDriftTab(Tab):
         (NumOutputDriftWidget("Prediction Drift", "prediction"), Verbose.ALWAYS),
         (NumOutputCorrWidget("Prediction Correlations", "prediction"), Verbose.FULL),
         (NumOutputValuesWidget("Prediction Values", "prediction"), Verbose.FULL),
-        (
-            NumTargetPredFeatureTable("Target (Prediction) Behavior By Feature"),
-            Verbose.FULL,
-        ),
+        (NumTargetPredFeatureTable("Target (Prediction) Behavior By Feature"), Verbose.FULL),
     ]

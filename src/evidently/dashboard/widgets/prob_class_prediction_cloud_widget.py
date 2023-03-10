@@ -78,10 +78,7 @@ class ProbClassPredictionCloudWidget(Widget):
                 )
             )
 
-            fig.update_layout(
-                yaxis_title="Probability",
-                xaxis=dict(range=(-2, 3), showticklabels=False),
-            )
+            fig.update_layout(yaxis_title="Probability", xaxis=dict(range=(-2, 3), showticklabels=False))
 
             fig_json = json.loads(fig.to_json())
 

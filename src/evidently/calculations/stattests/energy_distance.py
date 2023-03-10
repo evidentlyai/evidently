@@ -48,11 +48,7 @@ def _energy_dist(
 
 
 energy_dist_test = StatTest(
-    name="ed",
-    display_name="Energy-distance",
-    func=_energy_dist,
-    allowed_feature_types=["num"],
-    default_threshold=0.1,
+    name="ed", display_name="Energy-distance", func=_energy_dist, allowed_feature_types=["num"], default_threshold=0.1
 )
 
 register_stattest(energy_dist_test)

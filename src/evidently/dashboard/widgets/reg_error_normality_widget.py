@@ -94,8 +94,5 @@ class RegErrorNormalityWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": error_norm_json["data"],
-                "layout": error_norm_json["layout"],
-            },
+            params={"data": error_norm_json["data"], "layout": error_norm_json["layout"]},
         )

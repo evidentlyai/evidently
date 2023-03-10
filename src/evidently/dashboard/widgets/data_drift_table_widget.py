@@ -21,11 +21,11 @@ from evidently.options import QualityMetricsOptions
 
 
 def _generate_feature_params(name: str, data: ColumnDataDriftMetrics) -> dict:
-    if data.current.small_distribution is None or data.reference.small_distribution is None:
+    if data.current_small_distribution is None or data.reference_small_distribution is None:
         return {}
 
-    current_small_hist = data.current.small_distribution
-    ref_small_hist = data.reference.small_distribution
+    current_small_hist = data.current_small_distribution
+    ref_small_hist = data.reference_small_distribution
     feature_type = data.column_type
     drift_score = data.drift_score
     distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
@@ -40,8 +40,8 @@ def _generate_feature_params(name: str, data: ColumnDataDriftMetrics) -> dict:
         "f1": name,
         "f6": feature_type,
         "stattest_name": data.stattest_name,
-        "f3": {"x": list(ref_small_hist.x), "y": list(ref_small_hist.y)},
-        "f4": {"x": list(current_small_hist.x), "y": list(current_small_hist.y)},
+        "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
+        "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
         "f2": distr_sim_test,
         "f5": round(drift_score, 6),
     }
@@ -183,10 +183,7 @@ def _generate_additional_graph_num_feature(
 
     # add distributions data
     return [
-        AdditionalGraphInfo(
-            f"{name}_distr",
-            {"data": distr_figure["data"], "layout": distr_figure["layout"]},
-        ),
+        AdditionalGraphInfo(f"{name}_distr", {"data": distr_figure["data"], "layout": distr_figure["layout"]}),
         AdditionalGraphInfo(
             f"{name}_drift",
             {
@@ -194,10 +191,7 @@ def _generate_additional_graph_num_feature(
                 "size": 2,
                 "text": "",
                 "type": "big_graph",
-                "params": {
-                    "data": drift_figure["data"],
-                    "layout": drift_figure["layout"],
-                },
+                "params": {"data": drift_figure["data"], "layout": drift_figure["layout"]},
             },
         ),
     ]
@@ -237,12 +231,7 @@ def _generate_additional_graph_cat_feature(
     )
 
     distr_figure = fig_to_json(fig)
-    return [
-        AdditionalGraphInfo(
-            f"{name}_distr",
-            {"data": distr_figure["data"], "layout": distr_figure["layout"]},
-        )
-    ]
+    return [AdditionalGraphInfo(f"{name}_distr", {"data": distr_figure["data"], "layout": distr_figure["layout"]})]
 
 
 class DataDriftTableWidget(Widget):
@@ -297,10 +286,7 @@ class DataDriftTableWidget(Widget):
 
         for feature_name in columns:
             params_data.append(
-                _generate_feature_params(
-                    feature_name,
-                    data_drift_results.metrics.drift_by_columns[feature_name],
-                )
+                _generate_feature_params(feature_name, data_drift_results.metrics.drift_by_columns[feature_name])
             )
 
         # set additionalGraphs
@@ -349,21 +335,13 @@ class DataDriftTableWidget(Widget):
                         "title": "Reference Distribution",
                         "field": "f3",
                         "type": "histogram",
-                        "options": {
-                            "xField": "x",
-                            "yField": "y",
-                            "color": color_options.primary_color,
-                        },
+                        "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
                     },
                     {
                         "title": "Current Distribution",
                         "field": "f4",
                         "type": "histogram",
-                        "options": {
-                            "xField": "x",
-                            "yField": "y",
-                            "color": color_options.primary_color,
-                        },
+                        "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
                     },
                     {"title": "Data Drift", "field": "f2"},
                     {"title": "Stat Test", "field": "stattest_name"},

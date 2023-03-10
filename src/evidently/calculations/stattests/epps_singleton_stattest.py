@@ -35,7 +35,10 @@ from evidently.calculations.stattests.registry import register_stattest
 
 
 def _epps_singleton(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: str,
+    threshold: float,
 ) -> Tuple[float, bool]:
     """Run the Epps-Singleton (ES) test of two samples.
     Args:

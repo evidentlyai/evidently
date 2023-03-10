@@ -133,27 +133,14 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 binaraized_target.columns = ["target"]
 
                 fpr, tpr, thrs = metrics.roc_curve(binaraized_target, reference_data[prediction_column[0]])
-                result.reference_metrics.roc_curve = {
-                    "fpr": fpr.tolist(),
-                    "tpr": tpr.tolist(),
-                    "thrs": thrs.tolist(),
-                }
+                result.reference_metrics.roc_curve = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
 
                 pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, reference_data[prediction_column[0]])
-                result.reference_metrics.pr_curve = {
-                    "pr": pr.tolist(),
-                    "rcl": rcl.tolist(),
-                    "thrs": thrs.tolist(),
-                }
+                result.reference_metrics.pr_curve = {"pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()}
 
                 pr_table = []
                 step_size = 0.05
-                binded = list(
-                    zip(
-                        binaraized_target["target"].tolist(),
-                        reference_data[prediction_column[0]].tolist(),
-                    )
-                )
+                binded = list(zip(binaraized_target["target"].tolist(), reference_data[prediction_column[0]].tolist()))
                 binded.sort(key=lambda item: item[1], reverse=True)
                 data_size = len(binded)
                 target_class_size = sum([x[0] for x in binded])
@@ -196,12 +183,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                     pr_table = []
                     step_size = 0.05
-                    binded = list(
-                        zip(
-                            binaraized_target[label].tolist(),
-                            reference_data[label].tolist(),
-                        )
-                    )
+                    binded = list(zip(binaraized_target[label].tolist(), reference_data[label].tolist()))
                     binded.sort(key=lambda item: item[1], reverse=True)
                     data_size = len(binded)
                     target_class_size = sum([x[0] for x in binded])
@@ -276,28 +258,17 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     binaraized_target.columns = ["target"]
 
                     fpr, tpr, thrs = metrics.roc_curve(binaraized_target, current_data[prediction_column[0]])
-                    result.current_metrics.roc_curve = {
-                        "fpr": fpr.tolist(),
-                        "tpr": tpr.tolist(),
-                        "thrs": thrs.tolist(),
-                    }
+                    result.current_metrics.roc_curve = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
 
                     pr, rcl, thrs = metrics.precision_recall_curve(
                         binaraized_target, current_data[prediction_column[0]]
                     )
-                    result.current_metrics.pr_curve = {
-                        "pr": pr.tolist(),
-                        "rcl": rcl.tolist(),
-                        "thrs": thrs.tolist(),
-                    }
+                    result.current_metrics.pr_curve = {"pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()}
 
                     pr_table = []
                     step_size = 0.05
                     binded = list(
-                        zip(
-                            binaraized_target["target"].tolist(),
-                            current_data[prediction_column[0]].tolist(),
-                        )
+                        zip(binaraized_target["target"].tolist(), current_data[prediction_column[0]].tolist())
                     )
                     binded.sort(key=lambda item: item[1], reverse=True)
                     data_size = len(binded)
@@ -341,12 +312,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                         pr_table = []
                         step_size = 0.05
-                        binded = list(
-                            zip(
-                                binaraized_target[label].tolist(),
-                                current_data[label].tolist(),
-                            )
-                        )
+                        binded = list(zip(binaraized_target[label].tolist(), current_data[label].tolist()))
                         binded.sort(key=lambda item: item[1], reverse=True)
                         data_size = len(binded)
                         target_class_size = sum([x[0] for x in binded])
@@ -360,17 +326,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                             fp = count - tp
                             precision = round(100.0 * tp / count, 1)
                             recall = round(100.0 * tp / target_class_size, 1)
-                            pr_table.append(
-                                [
-                                    top,
-                                    int(count),
-                                    prob,
-                                    int(tp),
-                                    int(fp),
-                                    precision,
-                                    recall,
-                                ]
-                            )
+                            pr_table.append([top, int(count), prob, int(tp), int(fp), precision, recall])
 
                         result.current_metrics.pr_table[label] = pr_table
 

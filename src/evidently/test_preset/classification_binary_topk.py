@@ -52,11 +52,7 @@ class BinaryClassificationTopKTestPreset(TestPreset):
             TestPrecisionScore(k=self.k),
             TestRecallScore(k=self.k),
             TestF1Score(k=self.k),
-            TestColumnDrift(
-                column_name=target,
-                stattest=self.stattest,
-                stattest_threshold=self.stattest_threshold,
-            ),
+            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
             TestRocAuc(),
             TestLogLoss(),
         ]

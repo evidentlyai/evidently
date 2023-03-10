@@ -80,20 +80,11 @@ class DataQualityFeaturesWidget(Widget):
                 if current_data is not None:
                     current_data[date_column + "_period"] = current_data[date_column].dt.to_period(freq=freq)
                     feature_in_time_figure = self._plot_feature_in_time_2_df(
-                        reference_data,
-                        current_data,
-                        date_column,
-                        feature_name,
-                        feature_type,
-                        color_options,
+                        reference_data, current_data, date_column, feature_name, feature_type, color_options
                     )
                 else:
                     feature_in_time_figure = self._plot_feature_in_time_1_df(
-                        reference_data,
-                        date_column,
-                        feature_name,
-                        feature_type,
-                        color_options,
+                        reference_data, date_column, feature_name, feature_type, color_options
                     )
                 additional_graphs.append(
                     AdditionalGraphInfo(
@@ -118,12 +109,7 @@ class DataQualityFeaturesWidget(Widget):
                     )
                 else:
                     feature_and_target_figure = self._plot_feature_and_target_1_df(
-                        reference_data,
-                        target_column,
-                        target_type,
-                        feature_name,
-                        feature_type,
-                        color_options,
+                        reference_data, target_column, target_type, feature_name, feature_type, color_options
                     )
                 additional_graphs.append(
                     AdditionalGraphInfo(
@@ -144,10 +130,7 @@ class DataQualityFeaturesWidget(Widget):
                     "description": feature_type,
                     "metricsValuesHeaders": metrics_values_headers,
                     "metrics": self._metrics_for_table(feature_name, data_quality_results, is_current_data),
-                    "graph": {
-                        "data": fig_main_distr["data"],
-                        "layout": fig_main_distr["layout"],
-                    },
+                    "graph": {"data": fig_main_distr["data"], "layout": fig_main_distr["layout"]},
                     "details": {"parts": parts, "insights": []},
                 },
                 additionalGraphs=additional_graphs,
@@ -266,10 +249,7 @@ class DataQualityFeaturesWidget(Widget):
     ) -> dict:
         if feature_type == "num":
             if current_data is None:
-                trace1 = go.Histogram(
-                    x=reference_data[feature_name],
-                    marker_color=color_options.primary_color,
-                )
+                trace1 = go.Histogram(x=reference_data[feature_name], marker_color=color_options.primary_color)
                 trace2 = go.Histogram(
                     x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]),
                     marker_color=color_options.primary_color,
@@ -284,16 +264,8 @@ class DataQualityFeaturesWidget(Widget):
                         yanchor="top",
                         buttons=list(
                             [
-                                dict(
-                                    label="Linear Scale",
-                                    method="update",
-                                    args=[{"visible": [True, False]}],
-                                ),
-                                dict(
-                                    label="Log Scale",
-                                    method="update",
-                                    args=[{"visible": [False, True]}],
-                                ),
+                                dict(label="Linear Scale", method="update", args=[{"visible": [True, False]}]),
+                                dict(label="Log Scale", method="update", args=[{"visible": [False, True]}]),
                             ]
                         ),
                     )
@@ -312,9 +284,7 @@ class DataQualityFeaturesWidget(Widget):
                     name="reference",
                 )
                 trace3 = go.Histogram(
-                    x=current_data[feature_name],
-                    marker_color=color_options.get_current_data_color(),
-                    name="current",
+                    x=current_data[feature_name], marker_color=color_options.get_current_data_color(), name="current"
                 )
                 trace4 = go.Histogram(
                     x=np.log10(current_data.loc[current_data[feature_name] > 0, feature_name]),
@@ -338,9 +308,7 @@ class DataQualityFeaturesWidget(Widget):
                                     args=[{"visible": [True, False, True, False]}],
                                 ),
                                 dict(
-                                    label="Log Scale",
-                                    method="update",
-                                    args=[{"visible": [False, True, False, True]}],
+                                    label="Log Scale", method="update", args=[{"visible": [False, True, False, True]}]
                                 ),
                             ]
                         ),
@@ -357,12 +325,7 @@ class DataQualityFeaturesWidget(Widget):
                 cats.remove("other")
                 cats = cats + ["other"]
             if current_data is None:
-                fig.add_trace(
-                    go.Histogram(
-                        x=reference_data[feature_name],
-                        marker_color=color_options.primary_color,
-                    )
-                )
+                fig.add_trace(go.Histogram(x=reference_data[feature_name], marker_color=color_options.primary_color))
             else:
                 fig.add_trace(
                     go.Histogram(
@@ -409,20 +372,14 @@ class DataQualityFeaturesWidget(Widget):
                         > tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"].iloc[0]
                     ):
                         tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"] = (
-                            tmp_curr.loc[
-                                tmp_curr[feature_name] == min_curr_date,
-                                "number_of_items",
-                            ]
+                            tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"]
                             + tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"]
                         )
                         tmp_ref = tmp_ref[tmp_ref[feature_name] != max_ref_date]
                     else:
                         tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"] = (
                             tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"]
-                            + tmp_curr.loc[
-                                tmp_curr[feature_name] == min_curr_date,
-                                "number_of_items",
-                            ]
+                            + tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"]
                         )
                         tmp_curr = tmp_curr[tmp_curr[feature_name] != min_curr_date]
 
@@ -430,10 +387,7 @@ class DataQualityFeaturesWidget(Widget):
                     go.Scatter(
                         x=tmp_ref.sort_values(feature_name)[feature_name],
                         y=tmp_ref.sort_values(feature_name)["number_of_items"],
-                        line=dict(
-                            color=color_options.get_reference_data_color(),
-                            shape="spline",
-                        ),
+                        line=dict(color=color_options.get_reference_data_color(), shape="spline"),
                         name="reference",
                     )
                 )
@@ -460,12 +414,7 @@ class DataQualityFeaturesWidget(Widget):
         if date_column and feature_type != "datetime":
             parts.append({"title": feature_name + " in time", "id": feature_name + "_in_time"})
         if target_column and feature_name != target_column:
-            parts.append(
-                {
-                    "title": feature_name + " by target",
-                    "id": feature_name + "_by_target",
-                }
-            )
+            parts.append({"title": feature_name + " by target", "id": feature_name + "_by_target"})
         return parts
 
     @staticmethod
@@ -521,11 +470,7 @@ class DataQualityFeaturesWidget(Widget):
                     )
                 )
             fig.update_traces(marker_line_width=0.01)
-            fig.update_layout(
-                barmode="stack",
-                bargap=0,
-                yaxis_title="count category values per " + self.period_prefix,
-            )
+            fig.update_layout(barmode="stack", bargap=0, yaxis_title="count category values per " + self.period_prefix)
 
             feature_in_time_figure = json.loads(fig.to_json())
 
@@ -630,11 +575,7 @@ class DataQualityFeaturesWidget(Widget):
         if feature_type == "cat":
             if target_type == "num":
                 fig = go.Figure()
-                trace = go.Box(
-                    x=tmp[feature_name],
-                    y=tmp[target_column],
-                    marker_color=color_options.primary_color,
-                )
+                trace = go.Box(x=tmp[feature_name], y=tmp[target_column], marker_color=color_options.primary_color)
                 fig.add_trace(trace)
                 fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name)
                 fig.update_traces(marker_size=3)
@@ -662,19 +603,13 @@ class DataQualityFeaturesWidget(Widget):
                 fig.add_trace(trace)
 
                 fig.update_layout(
-                    yaxis_title=target_column,
-                    xaxis_title=feature_name,
-                    legend={"itemsizing": "constant"},
+                    yaxis_title=target_column, xaxis_title=feature_name, legend={"itemsizing": "constant"}
                 )
                 fig.update_traces(marker_size=4)
 
             else:
                 fig = go.Figure()
-                trace = go.Box(
-                    y=tmp[feature_name],
-                    x=tmp[target_column],
-                    marker_color=color_options.primary_color,
-                )
+                trace = go.Box(y=tmp[feature_name], x=tmp[target_column], marker_color=color_options.primary_color)
                 fig.add_trace(trace)
                 fig.update_layout(yaxis_title=feature_name, xaxis_title=target_column)
                 fig.update_traces(marker_size=3)
@@ -718,12 +653,7 @@ class DataQualityFeaturesWidget(Widget):
             else:
                 tmp_ref = self._transform_df_count_values(tmp_ref, target_column, feature_name)
                 tmp_curr = self._transform_df_count_values(tmp_curr, target_column, feature_name)
-                fig = make_subplots(
-                    rows=1,
-                    cols=2,
-                    shared_yaxes=True,
-                    subplot_titles=["reference", "current"],
-                )
+                fig = make_subplots(rows=1, cols=2, shared_yaxes=True, subplot_titles=["reference", "current"])
 
                 for i, val in enumerate(tmp_ref[target_column].unique()):
                     trace = go.Bar(
@@ -814,14 +744,7 @@ class DataQualityFeaturesWidget(Widget):
         self, date_column: str, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame]
     ) -> str:
         optimal_points = 150
-        prefix_dict = {
-            "A": "year",
-            "Q": "quarter",
-            "M": "month",
-            "W": "week",
-            "D": "day",
-            "H": "hour",
-        }
+        prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour"}
         datetime_feature = reference_data[date_column]
         if current_data is not None:
             datetime_feature = datetime_feature.append(current_data[date_column])

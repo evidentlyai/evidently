@@ -81,11 +81,7 @@ class ProbClassRocCurveWidget(Widget):
                 )
             )
 
-            fig.update_layout(
-                yaxis_title="True Positive Rate",
-                xaxis_title="False Positive Rate",
-                showlegend=True,
-            )
+            fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
 
             fig_json = json.loads(fig.to_json())
 
@@ -124,11 +120,7 @@ class ProbClassRocCurveWidget(Widget):
                     )
                 )
 
-                fig.update_layout(
-                    yaxis_title="True Positive Rate",
-                    xaxis_title="False Positive Rate",
-                    showlegend=True,
-                )
+                fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
 
                 fig_json = json.loads(fig.to_json())
 

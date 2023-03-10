@@ -96,8 +96,5 @@ class CatOutputDriftWidget(Widget):
             title=f"{self.kind.title()} Drift: {output_sim_test}, drift score={round(drift_score, 6)} ({stattest_name})",
             type="big_graph",
             size=2,
-            params={
-                "data": output_drift_json["data"],
-                "layout": output_drift_json["layout"],
-            },
+            params={"data": output_drift_json["data"], "layout": output_drift_json["layout"]},
         )
