@@ -50,7 +50,10 @@ class Dashboard(Pipeline):
     def __dashboard_data(self) -> Tuple[str, DashboardInfo, Dict]:
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
         tab_widgets = [t.info() for t in self.stages]
-        dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
+        dashboard_info = DashboardInfo(
+            dashboard_id,
+            [item for tab in tab_widgets for item in tab if item is not None],
+        )
         additional_graphs = {}
         for widget in [item for tab in tab_widgets for item in tab]:
             if widget is None:
@@ -62,7 +65,13 @@ class Dashboard(Pipeline):
                     additional_graphs[graph.id] = graph
         return dashboard_id, dashboard_info, additional_graphs
 
-    def __render(self, dashboard_id, dashboard_info, additional_graphs, template: Callable[[TemplateParams], str]):
+    def __render(
+        self,
+        dashboard_id,
+        dashboard_info,
+        additional_graphs,
+        template: Callable[[TemplateParams], str],
+    ):
         return template(TemplateParams(dashboard_id, dashboard_info, additional_graphs))
 
     def __no_lib_render(
@@ -90,7 +99,10 @@ class Dashboard(Pipeline):
     def _json(self):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
         tab_widgets = [t.info() for t in self.stages]
-        dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
+        dashboard_info = DashboardInfo(
+            dashboard_id,
+            [item for tab in tab_widgets for item in tab if item is not None],
+        )
         return json.dumps(asdict(dashboard_info), cls=NumpyEncoder)
 
     def _save_to_json(self, filename):
@@ -114,22 +126,39 @@ class Dashboard(Pipeline):
                 else:
                     render_mode = "nbextension"
             if render_mode == "inline":
-                return HTML(self.__render(dashboard_id, dashboard_info, additional_graphs, file_html_template))
+                return HTML(
+                    self.__render(
+                        dashboard_id,
+                        dashboard_info,
+                        additional_graphs,
+                        file_html_template,
+                    )
+                )
             if render_mode == "nbextension":
-                return HTML(self.__render(dashboard_id, dashboard_info, additional_graphs, inline_template))
+                return HTML(
+                    self.__render(
+                        dashboard_id, dashboard_info, additional_graphs, inline_template
+                    )
+                )
             raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")
         except ImportError as err:
-            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
+            raise Exception(
+                "Cannot import HTML from IPython.display, no way to show html"
+            ) from err
 
     def html(self):
         dashboard_id, dashboard_info, additional_graphs = self.__dashboard_data()
-        return self.__render(dashboard_id, dashboard_info, additional_graphs, file_html_template)
+        return self.__render(
+            dashboard_id, dashboard_info, additional_graphs, file_html_template
+        )
 
     def save(self, filename: str, mode: SaveMode = SaveMode.SINGLE_FILE):
         if isinstance(mode, str):
             _mode = SaveModeMap.get(mode)
             if _mode is None:
-                raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
+                raise ValueError(
+                    f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]"
+                )
             mode = _mode
         if mode == SaveMode.SINGLE_FILE:
             with open(filename, "w", encoding="utf-8") as out_file:
@@ -137,7 +166,9 @@ class Dashboard(Pipeline):
         if mode in [SaveMode.FOLDER, SaveMode.SYMLINK_FOLDER]:
             font_file, lib_file = save_lib_files(filename, mode)
             dashboard_id, dashboard_info, additional_graphs = self.__dashboard_data()
-            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, additional_graphs)
+            data_file = save_data_file(
+                filename, mode, dashboard_id, dashboard_info, additional_graphs
+            )
             with open(filename, "w", encoding="utf-8") as out_file:
                 out_file.write(
                     self.__no_lib_render(

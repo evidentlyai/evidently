@@ -27,7 +27,10 @@ class RegressionPerformanceAnalyzer(Analyzer):
         return analyzer_results[RegressionPerformanceAnalyzer]
 
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> RegressionPerformanceAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
         result = RegressionPerformanceAnalyzerResults(columns=columns)
@@ -52,7 +55,10 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 )
                 if result.current_metrics.error_bias is not None:
                     if error_bias is not None:
-                        for feature_name, current_bias in result.current_metrics.error_bias.items():
+                        for (
+                            feature_name,
+                            current_bias,
+                        ) in result.current_metrics.error_bias.items():
                             error_bias[feature_name].update(current_bias)
 
                     else:

@@ -6,11 +6,11 @@ import pandas as pd
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResultField
 from evidently.core import ColumnType
-from evidently.metrics.metric_results import DistributionField
+from evidently.metric_results import DistributionField
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import HistogramData
@@ -50,28 +50,29 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
             raise ValueError("Quantile should all be in the interval (0, 1].")
 
         if self.column_name not in data.current_data:
-            raise ValueError(
-                f"Column '{self.column_name}' is not in current data.")
+            raise ValueError(f"Column '{self.column_name}' is not in current data.")
 
         current_column = data.current_data[self.column_name]
 
         if not pd.api.types.is_numeric_dtype(current_column.dtype):
             raise ValueError(
-                f"Column '{self.column_name}' in current data is not numeric.")
+                f"Column '{self.column_name}' in current data is not numeric."
+            )
 
-        current_quantile = data.current_data[self.column_name].quantile(
-            self.quantile)
+        current_quantile = data.current_data[self.column_name].quantile(self.quantile)
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
                 raise ValueError(
-                    f"Column '{self.column_name}' is not in reference data.")
+                    f"Column '{self.column_name}' is not in reference data."
+                )
 
             reference_column = data.reference_data[self.column_name]
 
             if not pd.api.types.is_numeric_dtype(reference_column.dtype):
                 raise ValueError(
-                    f"Column '{self.column_name}' in reference data is not numeric.")
+                    f"Column '{self.column_name}' in reference data is not numeric."
+                )
 
             reference_quantile = reference_column.quantile(self.quantile)
 
@@ -80,22 +81,22 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
             reference_quantile = None
 
         distributions = get_distribution_for_column(
-            column_type="num", current=current_column,
-            reference=reference_column
+            column_type="num", current=current_column, reference=reference_column
         )
         reference = None
         if reference_quantile is not None:
-            reference = QuantileStats(value=reference_quantile,
-                              distribution=DistributionField.from_dataclass(
-                                  distributions[1]))
+            reference = QuantileStats(
+                value=reference_quantile,
+                distribution=DistributionField.from_dataclass(distributions[1]),
+            )
         return ColumnQuantileMetricResult(
             column_name=self.column_name,
             column_type=ColumnType.Numerical,
-            current=QuantileStats(value=current_quantile,
-                                  distribution=DistributionField.from_dataclass(
-                                      distributions[0])),
+            current=QuantileStats(
+                value=current_quantile,
+                distribution=DistributionField.from_dataclass(distributions[0]),
+            ),
             quantile=self.quantile,
-
             reference=reference,
         )
 
@@ -103,25 +104,31 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
 @default_renderer(wrap_type=ColumnQuantileMetric)
 class ColumnQuantileMetricRenderer(MetricRenderer):
     @staticmethod
-    def _get_counters(
-            metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
+    def _get_counters(metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.float(label="Quantile", value=metric_result.quantile,
-                              precision=3),
-            CounterData.float(label="Quantile value (current)",
-                              value=metric_result.current.value, precision=3),
+            CounterData.float(
+                label="Quantile", value=metric_result.quantile, precision=3
+            ),
+            CounterData.float(
+                label="Quantile value (current)",
+                value=metric_result.current.value,
+                precision=3,
+            ),
         ]
 
         if metric_result.reference is not None:
             counters.append(
-                CounterData.float(label="Quantile value (reference)",
-                                  value=metric_result.reference.value,
-                                  precision=3),
+                CounterData.float(
+                    label="Quantile value (reference)",
+                    value=metric_result.reference.value,
+                    precision=3,
+                ),
             )
         return counter(counters=counters)
 
-    def _get_histogram(self,
-                       metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
+    def _get_histogram(
+        self, metric_result: ColumnQuantileMetricResult
+    ) -> BaseWidgetInfo:
         if metric_result.reference is not None:
             reference_histogram_data: Optional[HistogramData] = HistogramData(
                 name="reference",

@@ -32,9 +32,14 @@ class RegUnderperformMetricsWidget(Widget):
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         results_utility_columns = results.columns.utility_columns
 
-        if results_utility_columns.target is None or results_utility_columns.prediction is None:
+        if (
+            results_utility_columns.target is None
+            or results_utility_columns.prediction is None
+        ):
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+                )
             return None
 
         result_metrics = None
@@ -54,7 +59,9 @@ class RegUnderperformMetricsWidget(Widget):
                 )
 
         if result_metrics is None:
-            raise ValueError(f"Widget [{self.title}] unexpected behaviour. Var 'result_metrics should be set")
+            raise ValueError(
+                f"Widget [{self.title}] unexpected behaviour. Var 'result_metrics should be set"
+            )
 
         return BaseWidgetInfo(
             title=self.title,
@@ -62,9 +69,18 @@ class RegUnderperformMetricsWidget(Widget):
             size=2,
             params={
                 "counters": [
-                    {"value": _format_value(result_metrics, "majority"), "label": "Majority(90%)"},
-                    {"value": _format_value(result_metrics, "underestimation"), "label": "Underestimation(5%)"},
-                    {"value": _format_value(result_metrics, "overestimation"), "label": "Overestimation(5%)"},
+                    {
+                        "value": _format_value(result_metrics, "majority"),
+                        "label": "Majority(90%)",
+                    },
+                    {
+                        "value": _format_value(result_metrics, "underestimation"),
+                        "label": "Underestimation(5%)",
+                    },
+                    {
+                        "value": _format_value(result_metrics, "overestimation"),
+                        "label": "Overestimation(5%)",
+                    },
                 ]
             },
         )

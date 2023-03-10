@@ -27,8 +27,16 @@ class TestSuiteWidget(Widget):
             size=2,
             params={
                 "tests": [
-                    {"title": "Test Case #1", "description": "Some long description of test case", "state": "success"},
-                    {"title": "Test Case #2", "description": "Some long description of test case", "state": "warning"},
+                    {
+                        "title": "Test Case #1",
+                        "description": "Some long description of test case",
+                        "state": "success",
+                    },
+                    {
+                        "title": "Test Case #2",
+                        "description": "Some long description of test case",
+                        "state": "warning",
+                    },
                     {
                         "title": "Test Case #3",
                         "description": "Some long description of test case",

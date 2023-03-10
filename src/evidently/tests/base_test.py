@@ -62,7 +62,12 @@ class GroupingTypes:
     TestType = GroupTypeData("test_type", "By test type", [])
 
 
-DEFAULT_GROUP = [GroupingTypes.ByFeature, GroupingTypes.TestGroup, GroupingTypes.TestType, GroupingTypes.ByClass]
+DEFAULT_GROUP = [
+    GroupingTypes.ByFeature,
+    GroupingTypes.TestGroup,
+    GroupingTypes.TestType,
+    GroupingTypes.ByClass,
+]
 
 
 @dataclass
@@ -70,7 +75,9 @@ class TestResult:
     # Constants for test result status
     SUCCESS = "SUCCESS"  # the test was passed
     FAIL = "FAIL"  # success pass for the test
-    WARNING = "WARNING"  # the test was passed, but we have some issues during the execution
+    WARNING = (
+        "WARNING"  # the test was passed, but we have some issues during the execution
+    )
     ERROR = "ERROR"  # cannot calculate the test result, no data
     SKIPPED = "SKIPPED"  # the test was skipped
 
@@ -127,7 +134,9 @@ class Test:
             raise ValueError("No context is set")
         result = self.context.test_results.get(self, None)
         if result is None:
-            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
+            raise ValueError(
+                f"No result found for metric {self} of type {type(self).__name__}"
+            )
         return result
 
 
@@ -156,7 +165,16 @@ class TestValueCondition:
         """
         return any(
             value is not None
-            for value in (self.eq, self.gt, self.gte, self.is_in, self.lt, self.lte, self.not_in, self.not_eq)
+            for value in (
+                self.eq,
+                self.gt,
+                self.gte,
+                self.is_in,
+                self.lt,
+                self.lte,
+                self.not_in,
+                self.not_eq,
+            )
         )
 
     def check_value(self, value: Numeric) -> bool:
@@ -238,7 +256,14 @@ class BaseConditionsTest(Test, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         self.condition = TestValueCondition(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
         )
 
 
@@ -271,7 +296,11 @@ class BaseCheckValueTest(BaseConditionsTest):
         return {}
 
     def check(self):
-        result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
+        result = TestResult(
+            name=self.name,
+            description="The test was not launched",
+            status=TestResult.SKIPPED,
+        )
         value = self.calculate_value_for_test()
         self.value = value
         result.description = self.get_description(value)

@@ -22,7 +22,9 @@ class NumTargetDriftMonitorMetrics:
     _tag = "num_target_drift"
     count = ModelMonitoringMetric(f"{_tag}:count", ["dataset"])
     drift = ModelMonitoringMetric(f"{_tag}:drift", ["kind"])
-    current_correlations = ModelMonitoringMetric(f"{_tag}:current_correlations", ["feature", "feature_type", "kind"])
+    current_correlations = ModelMonitoringMetric(
+        f"{_tag}:current_correlations", ["feature", "feature_type", "kind"]
+    )
     reference_correlations = ModelMonitoringMetric(
         f"{_tag}:reference_correlations", ["feature", "feature_type", "kind"]
     )
@@ -36,32 +38,49 @@ class NumTargetDriftMonitor(ModelMonitor):
         return [NumTargetDriftAnalyzer]
 
     @staticmethod
-    def _yield_metrics(metrics: ColumnDataDriftMetrics, kind: str) -> Generator[MetricsType, None, None]:
-        yield NumTargetDriftMonitorMetrics.drift.create(metrics.drift_score, dict(kind=kind))
+    def _yield_metrics(
+        metrics: ColumnDataDriftMetrics, kind: str
+    ) -> Generator[MetricsType, None, None]:
+        yield NumTargetDriftMonitorMetrics.drift.create(
+            metrics.drift_score, dict(kind=kind)
+        )
 
         if metrics.reference.correlations is not None:
-            for feature_name, correlation_value in metrics.reference.correlations.items():
+            for (
+                feature_name,
+                correlation_value,
+            ) in metrics.reference.correlations.items():
                 yield NumTargetDriftMonitorMetrics.reference_correlations.create(
-                    correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
+                    correlation_value,
+                    dict(feature=feature_name, feature_type="num", kind=kind),
                 )
 
         if metrics.current.correlations is not None:
             for feature_name, correlation_value in metrics.current.correlations.items():
                 yield NumTargetDriftMonitorMetrics.current_correlations.create(
-                    correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
+                    correlation_value,
+                    dict(feature=feature_name, feature_type="num", kind=kind),
                 )
 
     def metrics(self, analyzer_results):
         results = NumTargetDriftAnalyzer.get_results(analyzer_results)
 
         # quantity of rows in income data
-        yield NumTargetDriftMonitorMetrics.count.create(results.reference_data_count, dict(dataset="reference"))
-        yield NumTargetDriftMonitorMetrics.count.create(results.current_data_count, dict(dataset="current"))
+        yield NumTargetDriftMonitorMetrics.count.create(
+            results.reference_data_count, dict(dataset="reference")
+        )
+        yield NumTargetDriftMonitorMetrics.count.create(
+            results.current_data_count, dict(dataset="current")
+        )
 
         if results.prediction_metrics:
-            for metric in self._yield_metrics(metrics=results.prediction_metrics, kind="prediction"):
+            for metric in self._yield_metrics(
+                metrics=results.prediction_metrics, kind="prediction"
+            ):
                 yield metric
 
         if results.target_metrics:
-            for metric in self._yield_metrics(metrics=results.target_metrics, kind="target"):
+            for metric in self._yield_metrics(
+                metrics=results.target_metrics, kind="target"
+            ):
                 yield metric

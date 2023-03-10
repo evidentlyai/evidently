@@ -8,15 +8,15 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_category_column_correlations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
-from evidently.metrics.metric_results import DistributionField
-from evidently.metrics.metric_results import FromDataclassMixin
+from evidently.metric_results import DistributionField
+from evidently.metric_results import FromDataclassMixin
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_histogram_for_distribution
@@ -26,15 +26,19 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 
 
+# todo need better config overriding logic in metricresult
+class IWillRemoveThisLaterISwear(DistributionField):
+    class Config:
+        dict_include = True
+
+
 class ColumnCorrelationsField(MetricResultField, FromDataclassMixin):
     column_name: str
     kind: str
-    values: DistributionField
+    values: IWillRemoveThisLaterISwear
+
 
 class ColumnCorrelationsMetricResult(MetricResult):
-    class Config:
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
     column_name: str
     current: Dict[str, ColumnCorrelationsField]
     reference: Optional[Dict[str, ColumnCorrelationsField]] = None
@@ -54,31 +58,51 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
         column_name: str, dataset: pd.DataFrame, column_mapping: ColumnMapping
     ) -> Dict[str, ColumnCorrelations]:
         columns = process_columns(dataset, column_mapping)
-        column_type = recognize_column_type(dataset=dataset, column_name=column_name, columns=columns)
+        column_type = recognize_column_type(
+            dataset=dataset, column_name=column_name, columns=columns
+        )
 
         if column_type == "cat":
-            correlation_columns = [name for name in columns.cat_feature_names if name != column_name]
-            return calculate_category_column_correlations(column_name, dataset, correlation_columns)
+            correlation_columns = [
+                name for name in columns.cat_feature_names if name != column_name
+            ]
+            return calculate_category_column_correlations(
+                column_name, dataset, correlation_columns
+            )
 
         elif column_type == "num":
-            correlation_columns = [name for name in columns.num_feature_names if name != column_name]
-            return calculate_numerical_column_correlations(column_name, dataset, correlation_columns)
+            correlation_columns = [
+                name for name in columns.num_feature_names if name != column_name
+            ]
+            return calculate_numerical_column_correlations(
+                column_name, dataset, correlation_columns
+            )
 
         else:
-            raise ValueError(f"Cannot calculate correlations for '{column_type}' column type.")
+            raise ValueError(
+                f"Cannot calculate correlations for '{column_type}' column type."
+            )
 
     def calculate(self, data: InputData) -> ColumnCorrelationsMetricResult:
         if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
+            raise ValueError(
+                f"Column '{self.column_name}' was not found in current data."
+            )
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
+                raise ValueError(
+                    f"Column '{self.column_name}' was not found in reference data."
+                )
 
-        current_correlations = self._calculate_correlation(self.column_name, data.current_data, data.column_mapping)
+        current_correlations = self._calculate_correlation(
+            self.column_name, data.current_data, data.column_mapping
+        )
 
         if data.reference_data is not None:
-            reference_correlations: Optional[Dict[str, ColumnCorrelations]] = self._calculate_correlation(
+            reference_correlations: Optional[
+                Dict[str, ColumnCorrelations]
+            ] = self._calculate_correlation(
                 self.column_name, data.reference_data, data.column_mapping
             )
 
@@ -87,21 +111,33 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
 
         return ColumnCorrelationsMetricResult(
             column_name=self.column_name,
-            current=ColumnCorrelationsField.from_dataclass(current_correlations),
-            reference=ColumnCorrelationsField.from_dataclass(reference_correlations),
+            current={
+                k: ColumnCorrelationsField.from_dataclass(v)
+                for k, v in current_correlations.items()
+            },
+            reference={
+                k: ColumnCorrelationsField.from_dataclass(v)
+                for k, v in reference_correlations.items()
+            }
+            if reference_correlations is not None
+            else None,
         )
 
 
 @default_renderer(wrap_type=ColumnCorrelationsMetric)
 class ColumnCorrelationsMetricRenderer(MetricRenderer):
-    def _get_plots_correlations(self, metric_result: ColumnCorrelationsMetricResult) -> Optional[BaseWidgetInfo]:
+    def _get_plots_correlations(
+        self, metric_result: ColumnCorrelationsMetricResult
+    ) -> Optional[BaseWidgetInfo]:
         tabs = []
 
         for correlation_name, current_correlation in metric_result.current.items():
             reference_correlation_values = None
 
             if metric_result.reference and correlation_name in metric_result.reference:
-                reference_correlation_values = metric_result.reference[correlation_name].values
+                reference_correlation_values = metric_result.reference[
+                    correlation_name
+                ].values
 
             if current_correlation.values or reference_correlation_values:
                 tabs.append(
@@ -129,7 +165,12 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         correlation_plots = self._get_plots_correlations(metric_result)
 
         if correlation_plots:
-            return [header_text(label=f"Correlations for column '{metric_result.column_name}'."), correlation_plots]
+            return [
+                header_text(
+                    label=f"Correlations for column '{metric_result.column_name}'."
+                ),
+                correlation_plots,
+            ]
 
         else:
             # no correlations, draw nothing

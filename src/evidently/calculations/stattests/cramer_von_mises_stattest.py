@@ -83,7 +83,10 @@ class CramerVonMisesResult:
         self.pvalue = pvalue
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(statistic={self.statistic}, " f"pvalue={self.pvalue})"
+        return (
+            f"{self.__class__.__name__}(statistic={self.statistic}, "
+            f"pvalue={self.pvalue})"
+        )
 
 
 def _cdf_cvm_inf(x: float) -> float:
@@ -114,7 +117,9 @@ def _cdf_cvm_inf(x: float) -> float:
     return tot
 
 
-def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
+def _cvm_2samp(
+    x: np.ndarray, y: np.ndarray, method: str = "auto"
+) -> CramerVonMisesResult:
     """Perform the two-sample Cramér-von Mises test
     Args:
         x : array_like

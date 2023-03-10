@@ -36,7 +36,10 @@ class NumTargetDriftAnalyzer(Analyzer):
         return analyzer_results[NumTargetDriftAnalyzer]
 
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> NumTargetDriftAnalyzerResults:
         """Calculate the target and prediction drifts.
 
@@ -79,10 +82,14 @@ class NumTargetDriftAnalyzer(Analyzer):
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
 
-        if not isinstance(target_column, str) and isinstance(columns.utility_columns.target, Sequence):
+        if not isinstance(target_column, str) and isinstance(
+            columns.utility_columns.target, Sequence
+        ):
             raise ValueError("target should not be a sequence")
 
-        if not isinstance(prediction_column, str) and isinstance(prediction_column, Sequence):
+        if not isinstance(prediction_column, str) and isinstance(
+            prediction_column, Sequence
+        ):
             raise ValueError("prediction should not be a sequence")
 
         if set(columns.num_feature_names) - set(current_data.columns):

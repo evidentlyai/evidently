@@ -9,10 +9,10 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
@@ -37,11 +37,7 @@ class ColumnMissingValues(MetricResultField):
     share_of_missing_values: float
 
 
-
 class ColumnMissingValuesMetricResult(MetricResult):
-    class Config:
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
     column_name: str
     current: ColumnMissingValues
     reference: Optional[ColumnMissingValues] = None
@@ -67,7 +63,12 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
     missing_values: frozenset
     column_name: str
 
-    def __init__(self, column_name: str, missing_values: Optional[list] = None, replace: bool = True) -> None:
+    def __init__(
+        self,
+        column_name: str,
+        missing_values: Optional[list] = None,
+        replace: bool = True,
+    ) -> None:
         self.column_name = column_name
 
         if missing_values is None:
@@ -107,11 +108,17 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         # sort by missing values count
         different_missing_values = {
             value: count
-            for value, count in sorted(different_missing_values.items(), key=lambda item: item[1], reverse=True)
+            for value, count in sorted(
+                different_missing_values.items(), key=lambda item: item[1], reverse=True
+            )
         }
 
         number_of_different_missing_values = sum(
-            [1 for value in different_missing_values if different_missing_values[value] > 0]
+            [
+                1
+                for value in different_missing_values
+                if different_missing_values[value] > 0
+            ]
         )
 
         return ColumnMissingValues(
@@ -129,7 +136,9 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         if self.column_name not in data.current_data:
             raise ValueError(f"Column {self.column_name} is not in current data.")
 
-        current_missing_values = self._calculate_missing_values_stats(data.current_data[self.column_name])
+        current_missing_values = self._calculate_missing_values_stats(
+            data.current_data[self.column_name]
+        )
 
         if data.reference_data is None:
             reference_missing_values: Optional[ColumnMissingValues] = None
@@ -138,7 +147,9 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column {self.column_name} is not in reference data.")
 
-            reference_missing_values = self._calculate_missing_values_stats(data.reference_data[self.column_name])
+            reference_missing_values = self._calculate_missing_values_stats(
+                data.reference_data[self.column_name]
+            )
 
         return ColumnMissingValuesMetricResult(
             column_name=self.column_name,
@@ -180,13 +191,21 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
         percents = round(stats.share_of_missing_values * 100, 3)
         return f"{stats.number_of_missing_values} ({percents}%)"
 
-    def _get_details_missing_values_info(self, metric_result: ColumnMissingValuesMetricResult) -> BaseWidgetInfo:
+    def _get_details_missing_values_info(
+        self, metric_result: ColumnMissingValuesMetricResult
+    ) -> BaseWidgetInfo:
         counters = [
-            CounterData.string("Missing values (Current data)", self._get_info_string(metric_result.current)),
+            CounterData.string(
+                "Missing values (Current data)",
+                self._get_info_string(metric_result.current),
+            ),
         ]
         if metric_result.reference is not None:
             counters.append(
-                CounterData.string("Missing values (Reference data)", self._get_info_string(metric_result.reference)),
+                CounterData.string(
+                    "Missing values (Reference data)",
+                    self._get_info_string(metric_result.reference),
+                ),
             )
 
         return counter(
@@ -198,7 +217,9 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
 
         result = [
-            header_text(label=f"Missing values in column '{metric_result.column_name}'"),
+            header_text(
+                label=f"Missing values in column '{metric_result.column_name}'"
+            ),
             self._get_details_missing_values_info(metric_result=metric_result),
         ]
 

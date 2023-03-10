@@ -4,13 +4,13 @@ from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
 from evidently.renderers.html_widgets import ColumnType
@@ -29,6 +29,7 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 class DataDriftTableResults(MetricResult):
     class Config:
         dict_exclude_fields = {"dataset_columns"}
+
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float
@@ -101,12 +102,15 @@ class DataDriftTableRenderer(MetricRenderer):
         result = data.dict(exclude={"dataset_columns", "drift_by_columns"})
 
         result["drift_by_columns"] = {
-            k: d.dict(exclude={"current", "reference", "scatter"}) for k, d in data.drift_by_columns.items()
+            k: d.dict(exclude={"current", "reference", "scatter"})
+            for k, d in data.drift_by_columns.items()
         }
 
         return result
 
-    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
+    def _generate_column_params(
+        self, column_name: str, data: ColumnDataDriftMetrics
+    ) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if data.column_type == "text":
             if (
@@ -120,25 +124,33 @@ class DataDriftTableRenderer(MetricRenderer):
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.words],
                 )
-                details.with_part("current: characteristic words", info=current_table_words)
+                details.with_part(
+                    "current: characteristic words", info=current_table_words
+                )
                 reference_table_words = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.words],
                 )
-                details.with_part("reference: characteristic words", info=reference_table_words)
+                details.with_part(
+                    "reference: characteristic words", info=reference_table_words
+                )
                 current_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.examples],
                 )
-                details.with_part("current: characteristic examples", info=current_table_examples)
+                details.with_part(
+                    "current: characteristic examples", info=current_table_examples
+                )
                 reference_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.examples],
                 )
-                details.with_part("reference: characteristic examples", info=reference_table_examples)
+                details.with_part(
+                    "reference: characteristic examples", info=reference_table_examples
+                )
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
 
@@ -173,10 +185,7 @@ class DataDriftTableRenderer(MetricRenderer):
             current_small_hist = data.current.small_distribution
             ref_small_hist = data.reference.small_distribution
             data_drift = "Detected" if data.drift_detected else "Not Detected"
-            if (
-                data.column_type == "num"
-                and data.scatter is not None
-            ):
+            if data.column_type == "num" and data.scatter is not None:
                 scatter_fig = plot_scatter_for_data_drift(
                     curr_y=data.scatter.scatter[data.column_name],
                     curr_x=data.scatter.scatter[data.scatter.x_name],
@@ -201,8 +210,14 @@ class DataDriftTableRenderer(MetricRenderer):
                     "column_name": column_name,
                     "column_type": data.column_type,
                     "stattest_name": data.stattest_name,
-                    "reference_distribution": {"x": list(ref_small_hist.x), "y": list(ref_small_hist.y)},
-                    "current_distribution": {"x": list(current_small_hist.x), "y": list(current_small_hist.y)},
+                    "reference_distribution": {
+                        "x": list(ref_small_hist.x),
+                        "y": list(ref_small_hist.y),
+                    },
+                    "current_distribution": {
+                        "x": list(current_small_hist.x),
+                        "y": list(current_small_hist.y),
+                    },
                     "data_drift": data_drift,
                     "drift_score": round(data.drift_score, 6),
                 },
@@ -235,7 +250,9 @@ class DataDriftTableRenderer(MetricRenderer):
         columns = columns + all_columns
 
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
+            column_params = self._generate_column_params(
+                column_name, results.drift_by_columns[column_name]
+            )
 
             if column_params is not None:
                 params_data.append(column_params)
@@ -254,13 +271,21 @@ class DataDriftTableRenderer(MetricRenderer):
                         "Reference Distribution",
                         "reference_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition(
                         "Current Distribution",
                         "current_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition("Data Drift", "data_drift"),
                     ColumnDefinition("Stat Test", "stattest_name"),

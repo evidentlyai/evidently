@@ -10,10 +10,10 @@ from sklearn.metrics import mean_squared_error
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
@@ -21,9 +21,6 @@ from evidently.utils.data_operations import process_columns
 
 
 class RegressionDummyMetricResults(MetricResult):
-    class Config:
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
     rmse_default: float
     mean_abs_error_default: float
     mean_abs_perc_error_default: float
@@ -57,18 +54,22 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
         else:
             quality_metric = self.quality_metric
         if prediction_name is not None and not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
 
         # dummy by current
         # mae
         dummy_preds = data.current_data[target_name].median()
         mean_abs_error_default = mean_absolute_error(
-            y_true=data.current_data[target_name], y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[target_name],
+            y_pred=[dummy_preds] * data.current_data.shape[0],
         )
         # rmse
         dummy_preds = data.current_data[target_name].mean()
         rmse_default = mean_squared_error(
-            y_true=data.current_data[target_name], y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[target_name],
+            y_pred=[dummy_preds] * data.current_data.shape[0],
         )
         # mape default values
         # optimal constant for mape
@@ -102,12 +103,14 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
             # mae
             dummy_preds = data.reference_data[target_name].median()
             mean_abs_error_by_ref = mean_absolute_error(
-                y_true=data.current_data[target_name], y_pred=[dummy_preds] * data.current_data.shape[0]
+                y_true=data.current_data[target_name],
+                y_pred=[dummy_preds] * data.current_data.shape[0],
             )
             # rmse
             dummy_preds = data.reference_data[target_name].mean()
             rmse_by_ref = mean_squared_error(
-                y_true=data.current_data[target_name], y_pred=[dummy_preds] * data.current_data.shape[0]
+                y_true=data.current_data[target_name],
+                y_pred=[dummy_preds] * data.current_data.shape[0],
             )
             # mape default values
             # optimal constant for mape
@@ -139,15 +142,27 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
             mean_abs_perc_error_default=mean_abs_perc_error_default,
             abs_error_max_default=abs_error_max_default,
             mean_abs_error_by_ref=mean_abs_error_by_ref,
-            mean_abs_error=(quality_metric.get_result().mean_abs_error if quality_metric is not None else None),
+            mean_abs_error=(
+                quality_metric.get_result().current.mean_abs_error
+                if quality_metric is not None
+                else None
+            ),
             mean_abs_perc_error_by_ref=mean_abs_perc_error_by_ref,
             mean_abs_perc_error=(
-                quality_metric.get_result().mean_abs_perc_error if quality_metric is not None else None
+                quality_metric.get_result().current.mean_abs_perc_error
+                if quality_metric is not None
+                else None
             ),
             rmse_by_ref=rmse_by_ref,
-            rmse=quality_metric.get_result().rmse if quality_metric is not None else None,
+            rmse=quality_metric.get_result().current.rmse
+            if quality_metric is not None
+            else None,
             abs_error_max_by_ref=abs_error_max_by_ref,
-            abs_error_max=(quality_metric.get_result().abs_error_max if quality_metric is not None else None),
+            abs_error_max=(
+                quality_metric.get_result().current.abs_error_max
+                if quality_metric is not None
+                else None
+            ),
         )
 
 
@@ -196,5 +211,7 @@ class RegressionDummyMetricRenderer(MetricRenderer):
 
         return [
             header_text(label="Dummy Regreesion Quality"),
-            table_data(column_names=columns, data=np.around(in_table_data, 3).values, title=""),
+            table_data(
+                column_names=columns, data=np.around(in_table_data, 3).values, title=""
+            ),
         ]

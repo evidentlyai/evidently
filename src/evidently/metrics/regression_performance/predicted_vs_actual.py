@@ -8,10 +8,10 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.metrics.regression_performance.abs_perc_error_in_time import Scatter
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
@@ -21,13 +21,14 @@ from evidently.utils.visualizations import plot_scatter
 class RegressionPredictedVsActualScatterResults(MetricResult):
     class Config:
         dict_include = False
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
+
     current_scatter: Scatter
     reference_scatter: Optional[Scatter]
 
 
-class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatterResults]):
+class RegressionPredictedVsActualScatter(
+    Metric[RegressionPredictedVsActualScatterResults]
+):
     def calculate(self, data: InputData) -> RegressionPredictedVsActualScatterResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
@@ -35,9 +36,13 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
         curr_df = data.current_data
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         if not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         current_scatter = {}
         current_scatter["predicted"] = curr_df[prediction_name]
@@ -52,18 +57,33 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
             current_scatter=current_scatter, reference_scatter=reference_scatter
         )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[target_name, prediction_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
-        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
+        result.dropna(
+            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
+        )
         return result.sort_index()
 
 
 @default_renderer(wrap_type=RegressionPredictedVsActualScatter)
 class RegressionPredictedVsActualScatterRenderer(MetricRenderer):
-    def render_html(self, obj: RegressionPredictedVsActualScatter) -> List[BaseWidgetInfo]:
+    def render_html(
+        self, obj: RegressionPredictedVsActualScatter
+    ) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter
         reference_scatter = None

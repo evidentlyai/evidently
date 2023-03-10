@@ -24,10 +24,18 @@ class ProbClassificationPerformanceMonitorMetricsMonitor:
 
     _tag = "prob_classification_performance"
     quality = ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
-    class_representation = ModelMonitoringMetric(f"{_tag}:class_representation", ["dataset", "class_name", "type"])
-    class_quality = ModelMonitoringMetric(f"{_tag}:class_quality", ["dataset", "class_name", "metric"])
-    confusion = ModelMonitoringMetric(f"{_tag}:confusion", ["dataset", "class_x_name", "class_y_name"])
-    class_confusion = ModelMonitoringMetric(f"{_tag}:class_confusion", ["dataset", "class_name", "metric"])
+    class_representation = ModelMonitoringMetric(
+        f"{_tag}:class_representation", ["dataset", "class_name", "type"]
+    )
+    class_quality = ModelMonitoringMetric(
+        f"{_tag}:class_quality", ["dataset", "class_name", "metric"]
+    )
+    confusion = ModelMonitoringMetric(
+        f"{_tag}:confusion", ["dataset", "class_x_name", "class_y_name"]
+    )
+    class_confusion = ModelMonitoringMetric(
+        f"{_tag}:class_confusion", ["dataset", "class_name", "metric"]
+    )
 
 
 class ProbClassificationPerformanceMonitor(ModelMonitor):
@@ -70,7 +78,9 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
             # get classes list from the matrix data
             # remove the last 3 key - it is avg metrix values 'accuracy', 'macro avg', 'weighted avg'
             classes_names = [
-                key for key in metrics.metrics_matrix.keys() if key not in ("accuracy", "macro avg", "weighted avg")
+                key
+                for key in metrics.metrics_matrix.keys()
+                if key not in ("accuracy", "macro avg", "weighted avg")
             ]
 
         for class_name in classes_names:
@@ -121,15 +131,23 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
                 class_y_name = str(class_y_name)
                 yield ProbClassificationPerformanceMonitorMetricsMonitor.confusion.create(
                     metrics.confusion_matrix.values[idx][idy],
-                    dict(dataset=dataset, class_x_name=class_x_name, class_y_name=class_y_name),
+                    dict(
+                        dataset=dataset,
+                        class_x_name=class_x_name,
+                        class_y_name=class_y_name,
+                    ),
                 )
 
     def metrics(self, analyzer_results):
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzer_results)
 
-        for metric in self._yield_metrics(results.reference_metrics, "reference", columns=results.columns):
+        for metric in self._yield_metrics(
+            results.reference_metrics, "reference", columns=results.columns
+        ):
             yield metric
 
         if results.current_metrics:
-            for metric in self._yield_metrics(results.current_metrics, "current", columns=results.columns):
+            for metric in self._yield_metrics(
+                results.current_metrics, "current", columns=results.columns
+            ):
                 yield metric

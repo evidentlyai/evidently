@@ -13,16 +13,17 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metrics.metric_results import StatsByFeature
+from evidently.metric_results import PredictionDataField
+from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
@@ -30,8 +31,8 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class TargetByFeaturesTableResults(MetricResult):
     class Config:
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
+        dict_include = False
+
     current: StatsByFeature
     reference: Optional[StatsByFeature]
     target_name: Optional[str]
@@ -42,7 +43,12 @@ class TargetByFeaturesTableResults(MetricResult):
 class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
     columns: Optional[List[str]]
     text_features_gen: Optional[
-        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+        Dict[
+            str,
+            Dict[
+                str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]
+            ],
+        ]
     ]
 
     def __init__(self, columns: Optional[List[str]] = None):
@@ -51,13 +57,20 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+            text_cols = [
+                col.column_name for col in data_definition.get_columns("text_features")
+            ]
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
+                col_dict: Dict[
+                    str,
+                    Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
+                ] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
-                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
+                col_dict[
+                    f"{col}: Non Letter Character %"
+                ] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
 
                 text_features_gen_result += [
@@ -88,8 +101,12 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
         curr_predictions = None
         ref_predictions = None
         if prediction_name is not None:
-            curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
-            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            curr_predictions = get_prediction_data(
+                data.current_data, dataset_columns, data.column_mapping.pos_label
+            )
+            ref_predictions = get_prediction_data(
+                data.reference_data, dataset_columns, data.column_mapping.pos_label
+            )
 
         if self.columns is None:
             columns = (
@@ -112,7 +129,9 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
             task = data.column_mapping.task
         else:
             if target_name is not None:
-                if curr_df[target_name].nunique() < 5 or is_string_dtype(curr_df[target_name]):
+                if curr_df[target_name].nunique() < 5 or is_string_dtype(
+                    curr_df[target_name]
+                ):
                     task = "classification"
                 else:
                     task = "regression"
@@ -127,11 +146,20 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                 columns += list(self.text_features_gen[col].keys())
                 columns.remove(col)
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
+                    [
+                        data.get_current_column(x.feature_name())
+                        for x in list(self.text_features_gen[col].values())
+                    ],
                     axis=1,
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
-                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+                curr_df = pd.concat(
+                    [
+                        curr_df.reset_index(drop=True),
+                        curr_text_df.reset_index(drop=True),
+                    ],
+                    axis=1,
+                )
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
@@ -142,11 +170,23 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                         axis=1,
                     )
                     ref_text_df.columns = list(self.text_features_gen[col].keys())
-                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
+                    ref_df = pd.concat(
+                        [
+                            ref_df.reset_index(drop=True),
+                            ref_text_df.reset_index(drop=True),
+                        ],
+                        axis=1,
+                    )
 
         return TargetByFeaturesTableResults(
-            current=StatsByFeature(plot_data=curr_df, predictions=curr_predictions),
-            reference=StatsByFeature(plot_data=ref_df, predictions=ref_predictions),
+            current=StatsByFeature(
+                plot_data=curr_df,
+                predictions=PredictionDataField.from_dataclass(curr_predictions),
+            ),
+            reference=StatsByFeature(
+                plot_data=ref_df,
+                predictions=PredictionDataField.from_dataclass(ref_predictions),
+            ),
             columns=columns,
             target_name=target_name,
             task=task,
@@ -179,21 +219,30 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             if target_name is not None:
                 parts.append({"title": "Target", "id": feature_name + "_target_values"})
                 if task == "regression":
-                    target_fig = self._get_regression_fig(feature_name, target_name, current_data, reference_data)
+                    target_fig = self._get_regression_fig(
+                        feature_name, target_name, current_data, reference_data
+                    )
                 else:
-                    target_fig = self._get_classification_fig(feature_name, target_name, current_data, reference_data)
+                    target_fig = self._get_classification_fig(
+                        feature_name, target_name, current_data, reference_data
+                    )
 
                 target_fig_json = json.loads(target_fig.to_json())
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_target_values",
-                        {"data": target_fig_json["data"], "layout": target_fig_json["layout"]},
+                        {
+                            "data": target_fig_json["data"],
+                            "layout": target_fig_json["layout"],
+                        },
                     )
                 )
 
             if curr_predictions is not None:
-                parts.append({"title": "Prediction", "id": feature_name + "_prediction_values"})
+                parts.append(
+                    {"title": "Prediction", "id": feature_name + "_prediction_values"}
+                )
                 if task == "regression":
                     preds_fig = self._get_regression_fig(
                         feature_name, "prediction_labels", current_data, reference_data
@@ -207,7 +256,10 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_prediction_values",
-                        {"data": preds_fig_json["data"], "layout": preds_fig_json["layout"]},
+                        {
+                            "data": preds_fig_json["data"],
+                            "layout": preds_fig_json["layout"],
+                        },
                     )
                 )
 
@@ -234,8 +286,16 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             )
         ]
 
-    def _get_regression_fig(self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame):
-        fig = make_subplots(rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True)
+    def _get_regression_fig(
+        self,
+        feature_name: str,
+        main_column: str,
+        curr_data: pd.DataFrame,
+        ref_data: pd.DataFrame,
+    ):
+        fig = make_subplots(
+            rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True
+        )
         fig.add_trace(
             go.Scattergl(
                 x=curr_data[feature_name],
@@ -266,7 +326,11 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         return fig
 
     def _get_classification_fig(
-        self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame
+        self,
+        feature_name: str,
+        main_column: str,
+        curr_data: pd.DataFrame,
+        ref_data: pd.DataFrame,
     ):
         curr = curr_data.copy()
         ref = ref_data.copy()

@@ -84,9 +84,9 @@ def test_data_quality_quantile_metric_value_errors(
             {
                 "column_name": "numerical_feature",
                 "column_type": "num",
-                "current": {"value":1.5},
+                "current": {"value": 1.5},
                 "quantile": 0.5,
-                "reference": {"value":2.0},
+                "reference": {"value": 2.0},
             },
         ),
         (
@@ -101,7 +101,13 @@ def test_data_quality_quantile_metric_value_errors(
             None,
             ColumnMapping(target="my_target"),
             ColumnQuantileMetric(column_name="my_target", quantile=0.5),
-            {"column_name": "my_target", "column_type": "num", "current": {"value": 1.0}, "quantile": 0.5, "reference": None},
+            {
+                "column_name": "my_target",
+                "column_type": "num",
+                "current": {"value": 1.0},
+                "quantile": 0.5,
+                "reference": None,
+            },
         ),
         (
             pd.DataFrame(
@@ -122,7 +128,13 @@ def test_data_quality_quantile_metric_value_errors(
             ),
             ColumnMapping(target="my_target", prediction="my_prediction"),
             ColumnQuantileMetric(column_name="my_target", quantile=0.5),
-            {"column_name": "my_target", "column_type": "num", "current": {"value": 2.0}, "quantile": 0.5, "reference":{"value":  2.0}},
+            {
+                "column_name": "my_target",
+                "column_type": "num",
+                "current": {"value": 2.0},
+                "quantile": 0.5,
+                "reference": {"value": 2.0},
+            },
         ),
     ),
 )

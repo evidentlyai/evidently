@@ -13,17 +13,17 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metrics.metric_results import PredictionDataField
-from evidently.metrics.metric_results import StatsByFeature
+from evidently.metric_results import PredictionDataField
+from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
@@ -34,6 +34,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
     class Config:
         dict_exclude_fields = {}
         pd_exclude_fields = {}
+
     current: StatsByFeature
     reference: Optional[StatsByFeature]
 
@@ -41,10 +42,17 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
     columns: List[str]
 
 
-class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults]):
+class ClassificationQualityByFeatureTable(
+    Metric[ClassificationQualityByFeatureTableResults]
+):
     columns: Optional[List[str]]
     text_features_gen: Optional[
-        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+        Dict[
+            str,
+            Dict[
+                str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]
+            ],
+        ]
     ]
 
     def __init__(self, columns: Optional[List[str]] = None):
@@ -53,13 +61,20 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+            text_cols = [
+                col.column_name for col in data_definition.get_columns("text_features")
+            ]
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
+                col_dict: Dict[
+                    str,
+                    Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
+                ] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
-                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
+                col_dict[
+                    f"{col}: Non Letter Character %"
+                ] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
 
                 text_features_gen_result += [
@@ -87,10 +102,14 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
             ref_df = data.reference_data.copy()
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' should be present")
-        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
+        curr_predictions = get_prediction_data(
+            data.current_data, dataset_columns, data.column_mapping.pos_label
+        )
         ref_predictions = None
         if ref_df is not None:
-            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            ref_predictions = get_prediction_data(
+                data.reference_data, dataset_columns, data.column_mapping.pos_label
+            )
         if self.columns is None:
             columns = (
                 dataset_columns.num_feature_names
@@ -117,11 +136,20 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                 columns += list(self.text_features_gen[col].keys())
                 columns.remove(col)
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
+                    [
+                        data.get_current_column(x.feature_name())
+                        for x in list(self.text_features_gen[col].values())
+                    ],
                     axis=1,
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
-                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+                curr_df = pd.concat(
+                    [
+                        curr_df.reset_index(drop=True),
+                        curr_text_df.reset_index(drop=True),
+                    ],
+                    axis=1,
+                )
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
@@ -132,11 +160,23 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                         axis=1,
                     )
                     ref_text_df.columns = list(self.text_features_gen[col].keys())
-                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
+                    ref_df = pd.concat(
+                        [
+                            ref_df.reset_index(drop=True),
+                            ref_text_df.reset_index(drop=True),
+                        ],
+                        axis=1,
+                    )
 
         return ClassificationQualityByFeatureTableResults(
-            current=StatsByFeature(plot_data=curr_df, predictions=PredictionDataField.from_dataclass(curr_predictions)),
-            reference=StatsByFeature(plot_data=ref_df, predictions=PredictionDataField.from_dataclass(ref_predictions)),
+            current=StatsByFeature(
+                plot_data=curr_df,
+                predictions=PredictionDataField.from_dataclass(curr_predictions),
+            ),
+            reference=StatsByFeature(
+                plot_data=ref_df,
+                predictions=PredictionDataField.from_dataclass(ref_predictions),
+            ),
             columns=columns,
             target_name=target_name,
         )
@@ -144,14 +184,19 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
-
-    def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
+    def render_html(
+        self, obj: ClassificationQualityByFeatureTable
+    ) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_data = result.current.plot_data
-        reference_data = result.reference.plot_data
+        reference_data = (
+            result.reference.plot_data if result.reference is not None else None
+        )
         target_name = result.target_name
         curr_predictions = result.current.predictions
-        ref_predictions = result.reference.predictions
+        ref_predictions = (
+            result.reference.predictions if result.reference is not None else None
+        )
         columns = result.columns
         labels = curr_predictions.labels
 
@@ -170,8 +215,13 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
             params_data.append(
                 {
                     "details": {
-                        "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
-                        + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                        "parts": [
+                            {"title": "All", "id": "All" + "_" + str(feature_name)}
+                        ]
+                        + [
+                            {"title": str(label), "id": feature_name + "_" + str(label)}
+                            for label in labels
+                        ],
                         "insights": [],
                     },
                     "f1": feature_name,
@@ -212,13 +262,22 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
             # Probas plots
             if curr_predictions.prediction_probas is not None:
                 ref_columns = columns + ["prediction_labels", target_name]
-                current_data = pd.concat([current_data[ref_columns], curr_predictions.prediction_probas], axis=1)
+                current_data = pd.concat(
+                    [current_data[ref_columns], curr_predictions.prediction_probas],
+                    axis=1,
+                )
                 if (
                     reference_data is not None
                     and ref_predictions is not None
                     and ref_predictions.prediction_probas is not None
                 ):
-                    reference_data = pd.concat([reference_data[ref_columns], ref_predictions.prediction_probas], axis=1)
+                    reference_data = pd.concat(
+                        [
+                            reference_data[ref_columns],
+                            ref_predictions.prediction_probas,
+                        ],
+                        axis=1,
+                    )
 
                 if reference_data is not None:
                     cols = 2
@@ -228,12 +287,19 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     subplot_titles = [""]
 
                 for label in labels:
-                    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+                    fig = make_subplots(
+                        rows=1,
+                        cols=cols,
+                        subplot_titles=subplot_titles,
+                        shared_yaxes=True,
+                    )
 
                     # current Prediction
                     fig.add_trace(
                         go.Scatter(
-                            x=current_data[current_data[target_name] == label][feature_name],
+                            x=current_data[current_data[target_name] == label][
+                                feature_name
+                            ],
                             y=current_data[current_data[target_name] == label][label],
                             mode="markers",
                             name=str(label),
@@ -250,7 +316,9 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
 
                     fig.add_trace(
                         go.Scatter(
-                            x=current_data[current_data[target_name] != label][feature_name],
+                            x=current_data[current_data[target_name] != label][
+                                feature_name
+                            ],
                             y=current_data[current_data[target_name] != label][label],
                             mode="markers",
                             name="other",
@@ -265,19 +333,27 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                         col=1,
                     )
 
-                    fig.update_xaxes(title_text=feature_name, showgrid=True, row=1, col=1)
+                    fig.update_xaxes(
+                        title_text=feature_name, showgrid=True, row=1, col=1
+                    )
 
                     # REF
                     if reference_data is not None:
                         fig.add_trace(
                             go.Scatter(
-                                x=reference_data[reference_data[target_name] == label][feature_name],
-                                y=reference_data[reference_data[target_name] == label][label],
+                                x=reference_data[reference_data[target_name] == label][
+                                    feature_name
+                                ],
+                                y=reference_data[reference_data[target_name] == label][
+                                    label
+                                ],
                                 mode="markers",
                                 name=str(label),
                                 legendgroup=str(label),
                                 showlegend=False,
-                                marker=dict(size=6, color=color_options.get_current_data_color()),
+                                marker=dict(
+                                    size=6, color=color_options.get_current_data_color()
+                                ),
                             ),
                             row=1,
                             col=2,
@@ -285,13 +361,20 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
 
                         fig.add_trace(
                             go.Scatter(
-                                x=reference_data[reference_data[target_name] != label][feature_name],
-                                y=reference_data[reference_data[target_name] != label][label],
+                                x=reference_data[reference_data[target_name] != label][
+                                    feature_name
+                                ],
+                                y=reference_data[reference_data[target_name] != label][
+                                    label
+                                ],
                                 mode="markers",
                                 name="other",
                                 legendgroup="other",
                                 showlegend=False,
-                                marker=dict(size=6, color=color_options.get_reference_data_color()),
+                                marker=dict(
+                                    size=6,
+                                    color=color_options.get_reference_data_color(),
+                                ),
                             ),
                             row=1,
                             col=2,
@@ -317,7 +400,9 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                 for label in labels:
 
                     def confusion_func(row, label=label):
-                        return self._confusion(row, target_name, "prediction_labels", label)
+                        return self._confusion(
+                            row, target_name, "prediction_labels", label
+                        )
 
                     merged_data["Confusion"] = merged_data.apply(confusion_func, axis=1)
 

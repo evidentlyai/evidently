@@ -32,7 +32,10 @@ from evidently.calculations.stattests.registry import register_stattest
 
 
 def _ks_stat_test(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: str,
+    threshold: float,
 ) -> Tuple[float, bool]:
     """Run the two-sample Kolmogorov-Smirnov test of two samples. Alternative: two-sided
     Args:
@@ -49,7 +52,11 @@ def _ks_stat_test(
 
 
 ks_stat_test = StatTest(
-    name="ks", display_name="K-S p_value", func=_ks_stat_test, allowed_feature_types=["num"], default_threshold=0.05
+    name="ks",
+    display_name="K-S p_value",
+    func=_ks_stat_test,
+    allowed_feature_types=["num"],
+    default_threshold=0.05,
 )
 
 register_stattest(ks_stat_test)

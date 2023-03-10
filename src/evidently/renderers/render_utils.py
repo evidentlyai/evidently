@@ -9,7 +9,9 @@ from evidently.options import ColorOptions
 from evidently.utils.visualizations import Distribution
 
 
-def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions):
+def plot_distr(
+    *, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions
+):
     fig = go.Figure()
 
     fig.add_trace(
@@ -34,9 +36,11 @@ def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: Colo
 
     return fig
 
+
 class DistributionProtocol(Protocol):
     x: Union[np.ndarray, list]
     y: Union[np.ndarray, list]
+
 
 def get_distribution_plot_figure(
     *,

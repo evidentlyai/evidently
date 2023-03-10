@@ -35,7 +35,9 @@ class ProbClassRocCurveWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+                )
 
             return None
 
@@ -52,7 +54,9 @@ class ProbClassRocCurveWidget(Widget):
             metrics = results.current_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+            raise ValueError(
+                f"Widget [{self.title}] required 'current' or 'reference' dataset value"
+            )
 
         if metrics is None:
             return None
@@ -65,7 +69,9 @@ class ProbClassRocCurveWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] got no roc_curve value")
 
             if not isinstance(metrics.roc_curve, dict):
-                raise ValueError(f"Widget [{self.title}] got incorrect type for roc_curve value")
+                raise ValueError(
+                    f"Widget [{self.title}] got incorrect type for roc_curve value"
+                )
 
             roc_curve = metrics.roc_curve
             fig.add_trace(
@@ -81,7 +87,11 @@ class ProbClassRocCurveWidget(Widget):
                 )
             )
 
-            fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
+            fig.update_layout(
+                yaxis_title="True Positive Rate",
+                xaxis_title="False Positive Rate",
+                showlegend=True,
+            )
 
             fig_json = json.loads(fig.to_json())
 
@@ -102,7 +112,9 @@ class ProbClassRocCurveWidget(Widget):
                     raise ValueError(f"Widget [{self.title}] got no roc_curve value")
 
                 if not isinstance(metrics.roc_curve, dict):
-                    raise ValueError(f"Widget [{self.title}] got incorrect type for roc_curve value")
+                    raise ValueError(
+                        f"Widget [{self.title}] got incorrect type for roc_curve value"
+                    )
 
                 roc_curve = metrics.roc_curve[label]
                 fig = go.Figure()
@@ -120,7 +132,11 @@ class ProbClassRocCurveWidget(Widget):
                     )
                 )
 
-                fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
+                fig.update_layout(
+                    yaxis_title="True Positive Rate",
+                    xaxis_title="False Positive Rate",
+                    showlegend=True,
+                )
 
                 fig_json = json.loads(fig.to_json())
 

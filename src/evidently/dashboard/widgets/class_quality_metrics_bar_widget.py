@@ -32,7 +32,9 @@ class ClassQualityMetricsBarWidget(Widget):
 
         if target_name is None or prediction_name is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns."
+                )
             return None
 
         if self.dataset == "current":
@@ -48,7 +50,9 @@ class ClassQualityMetricsBarWidget(Widget):
                 )
 
         else:
-            raise ValueError(f"Widget [{self.title}] requires 'current' or 'reference' dataset value")
+            raise ValueError(
+                f"Widget [{self.title}] requires 'current' or 'reference' dataset value"
+            )
 
         if result_metrics is None:
             return None
@@ -60,8 +64,14 @@ class ClassQualityMetricsBarWidget(Widget):
             size=2,
             params={
                 "counters": [
-                    {"value": str(round(result_metrics.accuracy, 3)), "label": "Accuracy"},
-                    {"value": str(round(result_metrics.precision, 3)), "label": "Precision"},
+                    {
+                        "value": str(round(result_metrics.accuracy, 3)),
+                        "label": "Accuracy",
+                    },
+                    {
+                        "value": str(round(result_metrics.precision, 3)),
+                        "label": "Precision",
+                    },
                     {"value": str(round(result_metrics.recall, 3)), "label": "Recall"},
                     {"value": str(round(result_metrics.f1, 3)), "label": "F1"},
                 ]

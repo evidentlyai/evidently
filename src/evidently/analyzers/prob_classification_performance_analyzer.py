@@ -56,7 +56,10 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
         return analyzer_results[ProbClassificationPerformanceAnalyzer]
 
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> ProbClassificationPerformanceAnalyzerResults:
         if reference_data is None:
             raise ValueError("reference_data should be present")
@@ -78,8 +81,12 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             else:
                 target_and_preds += prediction_column
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            reference_data.dropna(axis=0, how="any", inplace=True, subset=target_and_preds)
-            binaraized_target = (reference_data[target_column].values.reshape(-1, 1) == prediction_column).astype(int)
+            reference_data.dropna(
+                axis=0, how="any", inplace=True, subset=target_and_preds
+            )
+            binaraized_target = (
+                reference_data[target_column].values.reshape(-1, 1) == prediction_column
+            ).astype(int)
             array_prediction = reference_data[prediction_column].to_numpy()
 
             if len(prediction_column) > 2:
@@ -88,17 +95,29 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
             else:
                 maper = {True: prediction_column[0], False: prediction_column[1]}
-                prediction_labels = (reference_data[prediction_column[0]] >= classification_threshold).map(maper)
+                prediction_labels = (
+                    reference_data[prediction_column[0]] >= classification_threshold
+                ).map(maper)
 
             labels = sorted(set(reference_data[target_column]))
 
             # calculate quality metrics
-            roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average="macro")
+            roc_auc = metrics.roc_auc_score(
+                binaraized_target, array_prediction, average="macro"
+            )
             log_loss = metrics.log_loss(binaraized_target, array_prediction)
-            accuracy_score = metrics.accuracy_score(reference_data[target_column], prediction_labels)
-            avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels, average="macro")
-            avg_recall = metrics.recall_score(reference_data[target_column], prediction_labels, average="macro")
-            avg_f1 = metrics.f1_score(reference_data[target_column], prediction_labels, average="macro")
+            accuracy_score = metrics.accuracy_score(
+                reference_data[target_column], prediction_labels
+            )
+            avg_precision = metrics.precision_score(
+                reference_data[target_column], prediction_labels, average="macro"
+            )
+            avg_recall = metrics.recall_score(
+                reference_data[target_column], prediction_labels, average="macro"
+            )
+            avg_f1 = metrics.f1_score(
+                reference_data[target_column], prediction_labels, average="macro"
+            )
 
             # calculate class support and metrics matrix
             metrics_matrix = metrics.classification_report(
@@ -108,10 +127,14 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             roc_aucs = None
 
             if len(prediction_column) > 2:
-                roc_aucs = metrics.roc_auc_score(binaraized_target, array_prediction, average=None).tolist()
+                roc_aucs = metrics.roc_auc_score(
+                    binaraized_target, array_prediction, average=None
+                ).tolist()
 
             # calculate confusion matrix
-            conf_matrix = metrics.confusion_matrix(reference_data[target_column], prediction_labels)
+            conf_matrix = metrics.confusion_matrix(
+                reference_data[target_column], prediction_labels
+            )
             confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
 
             result.reference_metrics = ProbClassificationPerformanceMetrics(
@@ -122,7 +145,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 roc_auc=roc_auc,
                 log_loss=log_loss,
                 metrics_matrix=metrics_matrix,
-                confusion_matrix=ConfusionMatrix(labels=labels, values=conf_matrix.tolist()),
+                confusion_matrix=ConfusionMatrix(
+                    labels=labels, values=conf_matrix.tolist()
+                ),
                 roc_aucs=roc_aucs,
                 confusion_by_classes=confusion_by_classes,
             )
@@ -132,15 +157,32 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 binaraized_target = pd.DataFrame(binaraized_target[:, 0])
                 binaraized_target.columns = ["target"]
 
-                fpr, tpr, thrs = metrics.roc_curve(binaraized_target, reference_data[prediction_column[0]])
-                result.reference_metrics.roc_curve = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
+                fpr, tpr, thrs = metrics.roc_curve(
+                    binaraized_target, reference_data[prediction_column[0]]
+                )
+                result.reference_metrics.roc_curve = {
+                    "fpr": fpr.tolist(),
+                    "tpr": tpr.tolist(),
+                    "thrs": thrs.tolist(),
+                }
 
-                pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, reference_data[prediction_column[0]])
-                result.reference_metrics.pr_curve = {"pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()}
+                pr, rcl, thrs = metrics.precision_recall_curve(
+                    binaraized_target, reference_data[prediction_column[0]]
+                )
+                result.reference_metrics.pr_curve = {
+                    "pr": pr.tolist(),
+                    "rcl": rcl.tolist(),
+                    "thrs": thrs.tolist(),
+                }
 
                 pr_table = []
                 step_size = 0.05
-                binded = list(zip(binaraized_target["target"].tolist(), reference_data[prediction_column[0]].tolist()))
+                binded = list(
+                    zip(
+                        binaraized_target["target"].tolist(),
+                        reference_data[prediction_column[0]].tolist(),
+                    )
+                )
                 binded.sort(key=lambda item: item[1], reverse=True)
                 data_size = len(binded)
                 target_class_size = sum([x[0] for x in binded])
@@ -154,7 +196,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     fp = count - tp
                     precision = round(100.0 * tp / count, 1)
                     recall = round(100.0 * tp / target_class_size, 1)
-                    pr_table.append([top, int(count), prob, int(tp), int(fp), precision, recall])
+                    pr_table.append(
+                        [top, int(count), prob, int(tp), int(fp), precision, recall]
+                    )
 
                 result.reference_metrics.pr_table = pr_table
 
@@ -167,14 +211,18 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 result.reference_metrics.pr_table = {}
 
                 for label in prediction_column:
-                    fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], reference_data[label])
+                    fpr, tpr, thrs = metrics.roc_curve(
+                        binaraized_target[label], reference_data[label]
+                    )
                     result.reference_metrics.roc_curve[label] = {
                         "fpr": fpr.tolist(),
                         "tpr": tpr.tolist(),
                         "thrs": thrs.tolist(),
                     }
 
-                    pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target[label], reference_data[label])
+                    pr, rcl, thrs = metrics.precision_recall_curve(
+                        binaraized_target[label], reference_data[label]
+                    )
                     result.reference_metrics.pr_curve[label] = {
                         "pr": pr.tolist(),
                         "rcl": rcl.tolist(),
@@ -183,7 +231,12 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                     pr_table = []
                     step_size = 0.05
-                    binded = list(zip(binaraized_target[label].tolist(), reference_data[label].tolist()))
+                    binded = list(
+                        zip(
+                            binaraized_target[label].tolist(),
+                            reference_data[label].tolist(),
+                        )
+                    )
                     binded.sort(key=lambda item: item[1], reverse=True)
                     data_size = len(binded)
                     target_class_size = sum([x[0] for x in binded])
@@ -197,14 +250,21 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                         fp = count - tp
                         precision = round(100.0 * tp / count, 1)
                         recall = round(100.0 * tp / target_class_size, 1)
-                        pr_table.append([top, int(count), prob, int(tp), int(fp), precision, recall])
+                        pr_table.append(
+                            [top, int(count), prob, int(tp), int(fp), precision, recall]
+                        )
                     result.reference_metrics.pr_table[label] = pr_table
 
             if current_data is not None:
                 current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                current_data.dropna(axis=0, how="any", inplace=True, subset=target_and_preds)
+                current_data.dropna(
+                    axis=0, how="any", inplace=True, subset=target_and_preds
+                )
 
-                binaraized_target = (current_data[target_column].values.reshape(-1, 1) == prediction_column).astype(int)
+                binaraized_target = (
+                    current_data[target_column].values.reshape(-1, 1)
+                    == prediction_column
+                ).astype(int)
 
                 array_prediction = current_data[prediction_column].to_numpy()
 
@@ -214,15 +274,27 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                 else:
                     maper = {True: prediction_column[0], False: prediction_column[1]}
-                    prediction_labels = (current_data[prediction_column[0]] >= classification_threshold).map(maper)
+                    prediction_labels = (
+                        current_data[prediction_column[0]] >= classification_threshold
+                    ).map(maper)
 
                 # calculate quality metrics
-                roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average="macro")
+                roc_auc = metrics.roc_auc_score(
+                    binaraized_target, array_prediction, average="macro"
+                )
                 log_loss = metrics.log_loss(binaraized_target, array_prediction)
-                accuracy_score = metrics.accuracy_score(current_data[target_column], prediction_labels)
-                avg_precision = metrics.precision_score(current_data[target_column], prediction_labels, average="macro")
-                avg_recall = metrics.recall_score(current_data[target_column], prediction_labels, average="macro")
-                avg_f1 = metrics.f1_score(current_data[target_column], prediction_labels, average="macro")
+                accuracy_score = metrics.accuracy_score(
+                    current_data[target_column], prediction_labels
+                )
+                avg_precision = metrics.precision_score(
+                    current_data[target_column], prediction_labels, average="macro"
+                )
+                avg_recall = metrics.recall_score(
+                    current_data[target_column], prediction_labels, average="macro"
+                )
+                avg_f1 = metrics.f1_score(
+                    current_data[target_column], prediction_labels, average="macro"
+                )
 
                 # calculate class support and metrics matrix
                 metrics_matrix = metrics.classification_report(
@@ -232,12 +304,18 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 roc_aucs = None
 
                 if len(prediction_column) > 2:
-                    roc_aucs = metrics.roc_auc_score(binaraized_target, array_prediction, average=None).tolist()
+                    roc_aucs = metrics.roc_auc_score(
+                        binaraized_target, array_prediction, average=None
+                    ).tolist()
 
                 # calculate confusion matrix
-                conf_matrix = metrics.confusion_matrix(current_data[target_column], prediction_labels)
+                conf_matrix = metrics.confusion_matrix(
+                    current_data[target_column], prediction_labels
+                )
                 # get TP, FP, TN, FN metrics for each class
-                confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
+                confusion_by_classes = calculate_confusion_by_classes(
+                    conf_matrix, labels
+                )
 
                 result.current_metrics = ProbClassificationPerformanceMetrics(
                     accuracy=accuracy_score,
@@ -247,7 +325,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     roc_auc=roc_auc,
                     log_loss=log_loss,
                     metrics_matrix=metrics_matrix,
-                    confusion_matrix=ConfusionMatrix(labels=labels, values=conf_matrix.tolist()),
+                    confusion_matrix=ConfusionMatrix(
+                        labels=labels, values=conf_matrix.tolist()
+                    ),
                     roc_aucs=roc_aucs,
                     confusion_by_classes=confusion_by_classes,
                 )
@@ -257,18 +337,31 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     binaraized_target = pd.DataFrame(binaraized_target[:, 0])
                     binaraized_target.columns = ["target"]
 
-                    fpr, tpr, thrs = metrics.roc_curve(binaraized_target, current_data[prediction_column[0]])
-                    result.current_metrics.roc_curve = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
+                    fpr, tpr, thrs = metrics.roc_curve(
+                        binaraized_target, current_data[prediction_column[0]]
+                    )
+                    result.current_metrics.roc_curve = {
+                        "fpr": fpr.tolist(),
+                        "tpr": tpr.tolist(),
+                        "thrs": thrs.tolist(),
+                    }
 
                     pr, rcl, thrs = metrics.precision_recall_curve(
                         binaraized_target, current_data[prediction_column[0]]
                     )
-                    result.current_metrics.pr_curve = {"pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()}
+                    result.current_metrics.pr_curve = {
+                        "pr": pr.tolist(),
+                        "rcl": rcl.tolist(),
+                        "thrs": thrs.tolist(),
+                    }
 
                     pr_table = []
                     step_size = 0.05
                     binded = list(
-                        zip(binaraized_target["target"].tolist(), current_data[prediction_column[0]].tolist())
+                        zip(
+                            binaraized_target["target"].tolist(),
+                            current_data[prediction_column[0]].tolist(),
+                        )
                     )
                     binded.sort(key=lambda item: item[1], reverse=True)
                     data_size = len(binded)
@@ -283,7 +376,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                         fp = count - tp
                         precision = round(100.0 * tp / count, 1)
                         recall = round(100.0 * tp / target_class_size, 1)
-                        pr_table.append([top, int(count), prob, int(tp), int(fp), precision, recall])
+                        pr_table.append(
+                            [top, int(count), prob, int(tp), int(fp), precision, recall]
+                        )
 
                     result.current_metrics.pr_table = pr_table
 
@@ -296,14 +391,18 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     result.current_metrics.pr_table = {}
 
                     for label in prediction_column:
-                        fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], current_data[label])
+                        fpr, tpr, thrs = metrics.roc_curve(
+                            binaraized_target[label], current_data[label]
+                        )
                         result.current_metrics.roc_curve[label] = {
                             "fpr": fpr.tolist(),
                             "tpr": tpr.tolist(),
                             "thrs": thrs.tolist(),
                         }
 
-                        pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target[label], current_data[label])
+                        pr, rcl, thrs = metrics.precision_recall_curve(
+                            binaraized_target[label], current_data[label]
+                        )
                         result.current_metrics.pr_curve[label] = {
                             "pr": pr.tolist(),
                             "rcl": rcl.tolist(),
@@ -312,7 +411,12 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                         pr_table = []
                         step_size = 0.05
-                        binded = list(zip(binaraized_target[label].tolist(), current_data[label].tolist()))
+                        binded = list(
+                            zip(
+                                binaraized_target[label].tolist(),
+                                current_data[label].tolist(),
+                            )
+                        )
                         binded.sort(key=lambda item: item[1], reverse=True)
                         data_size = len(binded)
                         target_class_size = sum([x[0] for x in binded])
@@ -326,7 +430,17 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                             fp = count - tp
                             precision = round(100.0 * tp / count, 1)
                             recall = round(100.0 * tp / target_class_size, 1)
-                            pr_table.append([top, int(count), prob, int(tp), int(fp), precision, recall])
+                            pr_table.append(
+                                [
+                                    top,
+                                    int(count),
+                                    prob,
+                                    int(tp),
+                                    int(fp),
+                                    precision,
+                                    recall,
+                                ]
+                            )
 
                         result.current_metrics.pr_table[label] = pr_table
 

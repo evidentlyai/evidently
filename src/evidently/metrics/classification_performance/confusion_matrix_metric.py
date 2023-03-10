@@ -5,12 +5,12 @@ from typing import Optional
 from typing import Union
 
 from evidently.base_metric import InputData
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
+from evidently.metric_results import ConfusionMatrixField
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
-from evidently.metrics.metric_results import ConfusionMatrixField
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
@@ -20,15 +20,14 @@ DEFAULT_THRESHOLD = 0.5
 
 
 class ClassificationConfusionMatrixResult(MetricResult):
-    class Config:
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
     current_matrix: ConfusionMatrixField
     reference_matrix: Optional[ConfusionMatrixField]
     target_names: Optional[Dict[Union[str, int], str]] = None
 
 
-class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult]):
+class ClassificationConfusionMatrix(
+    ThresholdClassificationMetric[ClassificationConfusionMatrixResult]
+):
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
@@ -40,7 +39,9 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
         super().__init__(probas_threshold=probas_threshold, k=k)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
-        current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
+        current_target_data, current_pred = self.get_target_prediction_data(
+            data.current_data, data.column_mapping
+        )
         target_names = data.column_mapping.target_names
         if target_names is not None and current_pred.prediction_probas is None:
             target_names = data.column_mapping.target_names
@@ -52,7 +53,9 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
 
         reference_results = None
         if data.reference_data is not None:
-            ref_target_data, ref_pred = self.get_target_prediction_data(data.reference_data, data.column_mapping)
+            ref_target_data, ref_pred = self.get_target_prediction_data(
+                data.reference_data, data.column_mapping
+            )
 
             reference_results = calculate_matrix(
                 ref_target_data,
@@ -82,4 +85,7 @@ class ClassificationConfusionMatrixRenderer(MetricRenderer):
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         fig.for_each_xaxis(lambda axis: axis.update(title_text="Predicted Value"))
         fig.update_layout(yaxis_title="Actual Value")
-        return [header_text(label="Confusion Matrix"), plotly_figure(figure=fig, title="")]
+        return [
+            header_text(label="Confusion Matrix"),
+            plotly_figure(figure=fig, title=""),
+        ]

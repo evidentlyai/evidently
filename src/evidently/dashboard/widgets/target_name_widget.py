@@ -37,19 +37,25 @@ class TargetNameWidget(Widget):
         results_columns = None
 
         if self.kind == "regression":
-            regression_results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
+            regression_results = RegressionPerformanceAnalyzer.get_results(
+                analyzers_results
+            )
 
             if regression_results:
                 results_columns = regression_results.columns
 
         elif self.kind == "classification":
-            classification_results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
+            classification_results = ClassificationPerformanceAnalyzer.get_results(
+                analyzers_results
+            )
 
             if classification_results:
                 results_columns = classification_results.columns
 
         elif self.kind == "prob_classification":
-            prob_classification_results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+            prob_classification_results = (
+                ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+            )
 
             if prob_classification_results:
                 results_columns = prob_classification_results.columns
@@ -60,8 +66,13 @@ class TargetNameWidget(Widget):
         if not results_columns:
             raise ValueError(f"Widget [{self.title}]: analyzer results not found")
 
-        if results_columns.utility_columns.target is None or results_columns.utility_columns.prediction is None:
-            raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+        if (
+            results_columns.utility_columns.target is None
+            or results_columns.utility_columns.prediction is None
+        ):
+            raise ValueError(
+                f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+            )
 
         return BaseWidgetInfo(
             title="",
@@ -69,7 +80,13 @@ class TargetNameWidget(Widget):
             size=2,
             params={
                 "counters": [
-                    {"value": "", "label": self.title + " Target: '" + results_columns.utility_columns.target + "'"}
+                    {
+                        "value": "",
+                        "label": self.title
+                        + " Target: '"
+                        + results_columns.utility_columns.target
+                        + "'",
+                    }
                 ]
             },
         )

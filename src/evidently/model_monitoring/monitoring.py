@@ -60,7 +60,9 @@ class ModelMonitor(PipelineStage):
 
 
 class ModelMonitoring(Pipeline):
-    def __init__(self, monitors: Sequence[ModelMonitor], options: Optional[list] = None):
+    def __init__(
+        self, monitors: Sequence[ModelMonitor], options: Optional[list] = None
+    ):
         if options is None:
             options = []
 

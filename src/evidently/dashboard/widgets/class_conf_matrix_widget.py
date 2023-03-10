@@ -30,9 +30,14 @@ class ClassConfMatrixWidget(Widget):
     ) -> Optional[BaseWidgetInfo]:
         results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
 
-        if results.columns.utility_columns.target is None or results.columns.utility_columns.prediction is None:
+        if (
+            results.columns.utility_columns.target is None
+            or results.columns.utility_columns.prediction is None
+        ):
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] required 'target' or 'prediction' column to be set")
+                raise ValueError(
+                    f"Widget [{self.title}] required 'target' or 'prediction' column to be set"
+                )
             return None
 
         if self.dataset == "current":
@@ -59,7 +64,12 @@ class ClassConfMatrixWidget(Widget):
         z_text = [[str(y) for y in x] for x in z]
 
         fig = ff.create_annotated_heatmap(
-            z, x=labels, y=labels, annotation_text=z_text, colorscale="bluered", showscale=True
+            z,
+            x=labels,
+            y=labels,
+            annotation_text=z_text,
+            colorscale="bluered",
+            showscale=True,
         )
 
         fig.update_layout(xaxis_title="Predicted value", yaxis_title="Actual value")
@@ -70,6 +80,9 @@ class ClassConfMatrixWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={"data": conf_matrix_json["data"], "layout": conf_matrix_json["layout"]},
+            params={
+                "data": conf_matrix_json["data"],
+                "layout": conf_matrix_json["layout"],
+            },
             additionalGraphs=[],
         )

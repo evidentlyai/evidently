@@ -1,5 +1,6 @@
 import dataclasses
 import uuid
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -8,6 +9,9 @@ import pandas as pd
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
+
+if TYPE_CHECKING:
+    from evidently.base_metric import Metric
 
 
 class BaseRenderer:
@@ -23,13 +27,22 @@ class BaseRenderer:
             self.color_options = color_options
 
 
+class MetricRenderer(BaseRenderer):
+    def render_pandas(self, obj: "Metric") -> pd.DataFrame:
+        return obj.get_result().get_pandas()
+
+    def render_json(self, obj: "Metric") -> dict:
+        return obj.get_result().get_dict()
+
+    def render_html(self, obj) -> List[BaseWidgetInfo]:
+        raise NotImplementedError()
+
+
 @dataclasses.dataclass
 class DetailsInfo:
     title: str
     info: BaseWidgetInfo
     id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
-
-
 
 
 @dataclasses.dataclass

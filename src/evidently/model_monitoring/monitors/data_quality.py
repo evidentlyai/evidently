@@ -11,7 +11,9 @@ from evidently.model_monitoring.monitoring import ModelMonitoringMetric
 
 class DataQualityMonitorMetrics:
     _tag = "data_quality"
-    quality_stat = ModelMonitoringMetric(f"{_tag}:quality_stat", ["dataset", "feature", "feature_type", "metric"])
+    quality_stat = ModelMonitoringMetric(
+        f"{_tag}:quality_stat", ["dataset", "feature", "feature_type", "metric"]
+    )
 
 
 class DataQualityMonitor(ModelMonitor):
@@ -48,9 +50,13 @@ class DataQualityMonitor(ModelMonitor):
         results = DataQualityAnalyzer.get_results(analyzer_results)
 
         if results.reference_features_stats is not None:
-            for metric in self._yield_metrics(results.reference_features_stats, "reference"):
+            for metric in self._yield_metrics(
+                results.reference_features_stats, "reference"
+            ):
                 yield metric
 
         if results.current_features_stats is not None:
-            for metric in self._yield_metrics(results.current_features_stats, "current"):
+            for metric in self._yield_metrics(
+                results.current_features_stats, "current"
+            ):
                 yield metric

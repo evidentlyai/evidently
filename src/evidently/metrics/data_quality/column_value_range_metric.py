@@ -7,12 +7,12 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricRenderer
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
-from evidently.metrics.metric_results import DistributionField
+from evidently.metric_results import DistributionField
 from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import HistogramData
@@ -39,9 +39,6 @@ class ValuesInRangeStat(MetricResultField):
 
 
 class ColumnValueRangeMetricResult(MetricResult):
-    class Config:
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
     column_name: str
     left: Numeric
     right: Numeric
@@ -56,13 +53,20 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
     left: Optional[Numeric]
     right: Optional[Numeric]
 
-    def __init__(self, column_name: str, left: Optional[Numeric] = None, right: Optional[Numeric] = None) -> None:
+    def __init__(
+        self,
+        column_name: str,
+        left: Optional[Numeric] = None,
+        right: Optional[Numeric] = None,
+    ) -> None:
         self.left = left
         self.right = right
         self.column_name = column_name
 
     @staticmethod
-    def _calculate_in_range_stats(column: pd.Series, left: Numeric, right: Numeric, distribution: Distribution) -> ValuesInRangeStat:
+    def _calculate_in_range_stats(
+        column: pd.Series, left: Numeric, right: Numeric, distribution: Distribution
+    ) -> ValuesInRangeStat:
         column = column.dropna()
         rows_count = get_rows_count(column)
 
@@ -73,7 +77,9 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             share_not_in_range = 0.0
 
         else:
-            number_in_range = column.between(left=float(left), right=float(right), inclusive="both").sum()
+            number_in_range = column.between(
+                left=float(left), right=float(right), inclusive="both"
+            ).sum()
             number_not_in_range = rows_count - number_in_range
             share_in_range = number_in_range / rows_count
             share_not_in_range = number_not_in_range / rows_count
@@ -84,7 +90,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             share_in_range=share_in_range,
             share_not_in_range=share_not_in_range,
             number_of_values=rows_count,
-            distribution=DistributionField.from_dataclass(distribution)
+            distribution=DistributionField.from_dataclass(distribution),
         )
 
     def calculate(self, data: InputData) -> ColumnValueRangeMetricResult:
@@ -92,14 +98,20 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             raise ValueError(f"Column {self.column_name} is not in current data.")
 
         if not pd.api.types.is_numeric_dtype(data.current_data[self.column_name].dtype):
-            raise ValueError(f"Column {self.column_name} in current data should be numeric.")
+            raise ValueError(
+                f"Column {self.column_name} in current data should be numeric."
+            )
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column {self.column_name} is not in reference data.")
 
-            if not pd.api.types.is_numeric_dtype(data.reference_data[self.column_name].dtype):
-                raise ValueError(f"Column {self.column_name} in reference data should be numeric.")
+            if not pd.api.types.is_numeric_dtype(
+                data.reference_data[self.column_name].dtype
+            ):
+                raise ValueError(
+                    f"Column {self.column_name} in reference data should be numeric."
+                )
 
         if self.left is None:
             if data.reference_data is None:
@@ -126,13 +138,19 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         cur_distribution, ref_distribution = get_distribution_for_column(
             column_type="num",
             current=current_column,
-            reference=data.reference_data[self.column_name] if data.reference_data else None,
+            reference=data.reference_data[self.column_name]
+            if data.reference_data is not None
+            else None,
         )
 
-        current = self._calculate_in_range_stats(data.current_data[self.column_name], left, right, cur_distribution)
+        current = self._calculate_in_range_stats(
+            data.current_data[self.column_name], left, right, cur_distribution
+        )
         reference = None
         if data.reference_data is not None:
-            reference = self._calculate_in_range_stats(data.reference_data[self.column_name], left, right, ref_distribution)
+            reference = self._calculate_in_range_stats(
+                data.reference_data[self.column_name], left, right, ref_distribution
+            )
 
         return ColumnValueRangeMetricResult(
             column_name=self.column_name,
@@ -160,9 +178,13 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             matched_stat_headers.append("Reference")
 
             matched_stat[0].append(metric_result.reference.number_in_range)
-            matched_stat[1].append(np.round(metric_result.reference.share_in_range * 100, 3))
+            matched_stat[1].append(
+                np.round(metric_result.reference.share_in_range * 100, 3)
+            )
             matched_stat[2].append(metric_result.reference.number_not_in_range)
-            matched_stat[3].append(np.round(metric_result.reference.share_not_in_range * 100, 3))
+            matched_stat[3].append(
+                np.round(metric_result.reference.share_not_in_range * 100, 3)
+            )
             matched_stat[4].append(metric_result.reference.number_of_values)
 
         return table_data(
@@ -175,7 +197,7 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
         self,
         metric_result: ColumnValueRangeMetricResult,
     ) -> BaseWidgetInfo:
-        if metric_result.reference.distribution is not None:
+        if metric_result.reference is not None:
             reference_histogram: Optional[HistogramData] = HistogramData(
                 name="reference",
                 x=list(metric_result.reference.distribution.x),
@@ -226,14 +248,21 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
         column_name = metric_result.column_name
 
         counters = [
-            CounterData.string(label="Value range", value=f"[{metric_result.left}, {metric_result.right}]"),
-            CounterData.string(label="In range (current)", value=self._get_in_range_info(metric_result.current)),
+            CounterData.string(
+                label="Value range",
+                value=f"[{metric_result.left}, {metric_result.right}]",
+            ),
+            CounterData.string(
+                label="In range (current)",
+                value=self._get_in_range_info(metric_result.current),
+            ),
         ]
 
         if metric_result.reference is not None:
             counters.append(
                 CounterData.string(
-                    label="In range (reference)", value=self._get_in_range_info(metric_result.reference)
+                    label="In range (reference)",
+                    value=self._get_in_range_info(metric_result.reference),
                 ),
             )
 

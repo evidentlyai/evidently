@@ -8,6 +8,8 @@ from pytest import approx
 
 from evidently import ColumnMapping
 from evidently.calculations.data_quality import ColumnCorrelations
+from evidently.metric_results import DistributionField
+from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsField
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.report import Report
@@ -38,10 +40,10 @@ from evidently.utils.visualizations import Distribution
             ColumnCorrelationsMetricResult(
                 column_name="feature1",
                 current={
-                    "cramer_v": ColumnCorrelations(
+                    "cramer_v": ColumnCorrelationsField(
                         column_name="feature1",
                         kind="cramer_v",
-                        values=Distribution(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
+                        values=DistributionField(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
                     )
                 },
                 reference=None,

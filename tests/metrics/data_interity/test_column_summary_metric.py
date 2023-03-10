@@ -15,11 +15,11 @@ from evidently.report import Report
     "current_data, reference_data, column_mapping, metric, expected_result",
     (
         (
-                pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
-                None,
-                ColumnMapping(),
-                ColumnSummaryMetric(column_name="target"),
-                ColumnSummaryResult(
+            pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
+            None,
+            ColumnMapping(),
+            ColumnSummaryMetric(column_name="target"),
+            ColumnSummaryResult(
                 column_name="target",
                 column_type="cat",
                 reference_characteristics=None,

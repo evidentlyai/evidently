@@ -50,7 +50,9 @@ class MulticlassClassificationTestPreset(TestPreset):
         target = columns.utility_columns.target
 
         if target is None:
-            raise ValueError("Target column should be set in mapping and be present in data")
+            raise ValueError(
+                "Target column should be set in mapping and be present in data"
+            )
 
         labels = set(data.current_data[target].unique())
 
@@ -63,7 +65,11 @@ class MulticlassClassificationTestPreset(TestPreset):
             *[TestPrecisionByClass(str(label)) for label in labels],
             *[TestRecallByClass(str(label)) for label in labels],
             TestNumberOfRows(),
-            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
+            TestColumnDrift(
+                column_name=target,
+                stattest=self.stattest,
+                stattest_threshold=self.stattest_threshold,
+            ),
         ]
 
         prediction_columns = data.data_definition.get_prediction_columns()
