@@ -102,15 +102,12 @@ class DataDriftTableRenderer(MetricRenderer):
         result = data.dict(exclude={"dataset_columns", "drift_by_columns"})
 
         result["drift_by_columns"] = {
-            k: d.dict(exclude={"current", "reference", "scatter"})
-            for k, d in data.drift_by_columns.items()
+            k: d.dict(exclude={"current", "reference", "scatter"}) for k, d in data.drift_by_columns.items()
         }
 
         return result
 
-    def _generate_column_params(
-        self, column_name: str, data: ColumnDataDriftMetrics
-    ) -> Optional[RichTableDataRow]:
+    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if data.column_type == "text":
             if (
@@ -124,33 +121,25 @@ class DataDriftTableRenderer(MetricRenderer):
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.words],
                 )
-                details.with_part(
-                    "current: characteristic words", info=current_table_words
-                )
+                details.with_part("current: characteristic words", info=current_table_words)
                 reference_table_words = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.words],
                 )
-                details.with_part(
-                    "reference: characteristic words", info=reference_table_words
-                )
+                details.with_part("reference: characteristic words", info=reference_table_words)
                 current_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.examples],
                 )
-                details.with_part(
-                    "current: characteristic examples", info=current_table_examples
-                )
+                details.with_part("current: characteristic examples", info=current_table_examples)
                 reference_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.examples],
                 )
-                details.with_part(
-                    "reference: characteristic examples", info=reference_table_examples
-                )
+                details.with_part("reference: characteristic examples", info=reference_table_examples)
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
 
@@ -250,9 +239,7 @@ class DataDriftTableRenderer(MetricRenderer):
         columns = columns + all_columns
 
         for column_name in columns:
-            column_params = self._generate_column_params(
-                column_name, results.drift_by_columns[column_name]
-            )
+            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
 
             if column_params is not None:
                 params_data.append(column_params)

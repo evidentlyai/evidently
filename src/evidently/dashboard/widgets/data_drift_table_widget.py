@@ -21,10 +21,7 @@ from evidently.options import QualityMetricsOptions
 
 
 def _generate_feature_params(name: str, data: ColumnDataDriftMetrics) -> dict:
-    if (
-        data.current.small_distribution is None
-        or data.reference.small_distribution is None
-    ):
+    if data.current.small_distribution is None or data.reference.small_distribution is None:
         return {}
 
     current_small_hist = data.current.small_distribution
@@ -111,9 +108,7 @@ def _generate_additional_graph_num_feature(
 
     # plot drift
     reference_mean = np.mean(reference_data[name][np.isfinite(reference_data[name])])
-    reference_std = np.std(
-        reference_data[name][np.isfinite(reference_data[name])], ddof=1
-    )
+    reference_std = np.std(reference_data[name][np.isfinite(reference_data[name])], ddof=1)
     x_title = "Timestamp" if date_column else "Index"
 
     fig = go.Figure()
@@ -144,9 +139,7 @@ def _generate_additional_graph_num_feature(
             ],
             mode="markers",
             name="Current",
-            marker=dict(
-                size=0.01, color=color_options.non_visible_color, opacity=0.005
-            ),
+            marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
             showlegend=False,
         )
     )
@@ -219,12 +212,8 @@ def _generate_additional_graph_cat_feature(
     fig = go.Figure()
     feature_ref_data = reference_data[name].dropna()
     feature_cur_data = current_data[name].dropna()
-    reference_data_to_plot = list(
-        reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))
-    )
-    current_data_to_plot = list(
-        reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))
-    )
+    reference_data_to_plot = list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items())))))
+    current_data_to_plot = list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items())))))
     fig.add_trace(
         go.Bar(
             x=reference_data_to_plot[1],
@@ -289,12 +278,9 @@ class DataDriftTableWidget(Widget):
         df_for_sort = pd.DataFrame()
         df_for_sort["features"] = all_features
         df_for_sort["scores"] = [
-            data_drift_results.metrics.drift_by_columns[feature].drift_score
-            for feature in all_features
+            data_drift_results.metrics.drift_by_columns[feature].drift_score for feature in all_features
         ]
-        all_features = df_for_sort.sort_values(
-            "scores", ascending=False
-        ).features.tolist()
+        all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
 
         # move target and prediction to the top of the table
@@ -324,10 +310,7 @@ class DataDriftTableWidget(Widget):
         additional_graphs_data = []
         for feature_name in columns:
             # plot distributions
-            if (
-                data_drift_results.metrics.drift_by_columns[feature_name].column_type
-                == "num"
-            ):
+            if data_drift_results.metrics.drift_by_columns[feature_name].column_type == "num":
                 additional_graphs_data += _generate_additional_graph_num_feature(
                     feature_name,
                     reference_data,
@@ -337,10 +320,7 @@ class DataDriftTableWidget(Widget):
                     quality_metrics_options,
                     color_options,
                 )
-            elif (
-                data_drift_results.metrics.drift_by_columns[feature_name].column_type
-                == "cat"
-            ):
+            elif data_drift_results.metrics.drift_by_columns[feature_name].column_type == "cat":
                 additional_graphs_data += _generate_additional_graph_cat_feature(
                     feature_name, reference_data, current_data, color_options
                 )
@@ -353,11 +333,7 @@ class DataDriftTableWidget(Widget):
             f"Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}"
             f" out of {n_features}). "
         )
-        title_suffix = (
-            "Dataset Drift is detected."
-            if dataset_drift
-            else "Dataset Drift is NOT detected."
-        )
+        title_suffix = "Dataset Drift is detected." if dataset_drift else "Dataset Drift is NOT detected."
 
         return BaseWidgetInfo(
             title=title_prefix + title_suffix,

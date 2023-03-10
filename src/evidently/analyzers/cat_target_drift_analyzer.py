@@ -90,9 +90,7 @@ class CatTargetDriftAnalyzer(Analyzer):
         if not isinstance(target_column, str) and isinstance(target_column, Sequence):
             raise ValueError("target should not be a sequence")
 
-        classification_threshold = self.options_provider.get(
-            QualityMetricsOptions
-        ).classification_threshold
+        classification_threshold = self.options_provider.get(QualityMetricsOptions).classification_threshold
         prediction_column = ensure_prediction_column_is_string(
             prediction_column=columns.utility_columns.prediction,
             current_data=current_data,

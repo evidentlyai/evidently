@@ -27,14 +27,9 @@ class RegQualityMetricsBarWidget(Widget):
     ) -> Optional[BaseWidgetInfo]:
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
 
-        if (
-            results.columns.utility_columns.target is None
-            or results.columns.utility_columns.prediction is None
-        ):
+        if results.columns.utility_columns.target is None or results.columns.utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
 
         if self.dataset == "reference":
@@ -59,8 +54,7 @@ class RegQualityMetricsBarWidget(Widget):
             params={
                 "counters": [
                     {
-                        "value": f"{round(results_metrics.mean_error, 2)}"
-                        f" ({round(results_metrics.error_std, 2)})",
+                        "value": f"{round(results_metrics.mean_error, 2)}" f" ({round(results_metrics.error_std, 2)})",
                         "label": "ME",
                     },
                     {

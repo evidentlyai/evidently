@@ -165,9 +165,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            method = get_corr_method(
-                self.method, self.metric.get_result().target_correlation, False
-            )
+            method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
             value = reference.stats[method].target_prediction_correlation
 
             if value is not None:
@@ -176,12 +174,8 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        method = get_corr_method(
-            self.method, self.metric.get_result().target_correlation, False
-        )
-        return (
-            self.metric.get_result().current.stats[method].target_prediction_correlation
-        )
+        method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+        return self.metric.get_result().current.stats[method].target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -202,9 +196,7 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
         reference_correlation = self.metric.get_result().reference
 
         if reference_correlation is not None:
-            value = reference_correlation.stats[
-                get_corr_method(self.method)
-            ].abs_max_features_correlation
+            value = reference_correlation.stats[get_corr_method(self.method)].abs_max_features_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, relative=0.1))
@@ -212,11 +204,7 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return (
-            self.metric.get_result()
-            .current.stats[get_corr_method(self.method)]
-            .abs_max_features_correlation
-        )
+        return self.metric.get_result().current.stats[get_corr_method(self.method)].abs_max_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
@@ -237,17 +225,13 @@ class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
         current_correlations = metric_result.current.correlation[method]
 
         if metric_result.reference is not None:
-            reference_correlations: Optional[
-                pd.DataFrame
-            ] = metric_result.reference.correlation[method]
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[method]
 
         else:
             reference_correlations = None
 
         fig = plot_correlations(current_correlations, reference_correlations)
-        info.with_details(
-            "Highly Correlated Features", plotly_figure(title="", figure=fig)
-        )
+        info.with_details("Highly Correlated Features", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -261,12 +245,8 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         reference_correlation = self.metric.get_result().reference
 
         if reference_correlation is not None:
-            method = get_corr_method(
-                self.method, self.metric.get_result().target_correlation, False
-            )
-            value = reference_correlation.stats[
-                method
-            ].abs_max_target_features_correlation
+            method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+            value = reference_correlation.stats[method].abs_max_target_features_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, relative=0.1))
@@ -274,14 +254,8 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        method = get_corr_method(
-            self.method, self.metric.get_result().target_correlation, False
-        )
-        return (
-            self.metric.get_result()
-            .current.stats[method]
-            .abs_max_target_features_correlation
-        )
+        method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+        return self.metric.get_result().current.stats[method].abs_max_target_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -303,9 +277,7 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
         else:
             abs_max_target_features_correlation = obj.value
 
-        base["parameters"][
-            "abs_max_target_features_correlation"
-        ] = abs_max_target_features_correlation
+        base["parameters"]["abs_max_target_features_correlation"] = abs_max_target_features_correlation
         return base
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
@@ -315,17 +287,13 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
         current_correlations = metric_result.current.correlation[method]
 
         if metric_result.reference is not None:
-            reference_correlations: Optional[
-                pd.DataFrame
-            ] = metric_result.reference.correlation[method]
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[method]
 
         else:
             reference_correlations = None
 
         fig = plot_correlations(current_correlations, reference_correlations)
-        info.with_details(
-            "Target Features Correlations", plotly_figure(title="", figure=fig)
-        )
+        info.with_details("Target Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -339,12 +307,8 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         reference_correlation = self.metric.get_result().reference
 
         if reference_correlation is not None:
-            method = get_corr_method(
-                self.method, self.metric.get_result().target_correlation, False
-            )
-            value = reference_correlation.stats[
-                method
-            ].abs_max_prediction_features_correlation
+            method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+            value = reference_correlation.stats[method].abs_max_prediction_features_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, relative=0.1))
@@ -352,14 +316,8 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        method = get_corr_method(
-            self.method, self.metric.get_result().target_correlation, False
-        )
-        return (
-            self.metric.get_result()
-            .current.stats[method]
-            .abs_max_prediction_features_correlation
-        )
+        method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+        return self.metric.get_result().current.stats[method].abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -381,9 +339,7 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
         else:
             abs_max_prediction_features_correlation = obj.value
 
-        base["parameters"][
-            "abs_max_prediction_features_correlation"
-        ] = abs_max_prediction_features_correlation
+        base["parameters"]["abs_max_prediction_features_correlation"] = abs_max_prediction_features_correlation
         return base
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
@@ -393,17 +349,13 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
         current_correlations = metric_result.current.correlation[method]
 
         if metric_result.reference is not None:
-            reference_correlations: Optional[
-                pd.DataFrame
-            ] = metric_result.reference.correlation[method]
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[method]
 
         else:
             reference_correlations = None
 
         fig = plot_correlations(current_correlations, reference_correlations)
-        info.with_details(
-            "Target-Features Correlations", plotly_figure(title="", figure=fig)
-        )
+        info.with_details("Target-Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -454,9 +406,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         if self.method is None:
             raise ValueError("method should be set")
         current_correlations = metric_result.current.correlation[self.method]
-        reference_correlations: Optional[
-            pd.DataFrame
-        ] = metric_result.reference.correlation[self.method]
+        reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[self.method]
         diff = reference_correlations - current_correlations
         return (diff.abs() > self.corr_diff).sum().sum() / 2
 
@@ -475,17 +425,13 @@ class TestCorrelationChangesRenderer(TestRenderer):
         current_correlations = metric_result.current.correlation[obj.method]
 
         if metric_result.reference is not None:
-            reference_correlations: Optional[
-                pd.DataFrame
-            ] = metric_result.reference.correlation[obj.method]
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
 
         else:
             reference_correlations = None
 
         fig = plot_correlations(current_correlations, reference_correlations)
-        info.with_details(
-            "Target-Features Correlations", plotly_figure(title="", figure=fig)
-        )
+        info.with_details("Target-Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -556,9 +502,7 @@ class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
             min_value = ref_features_stats.min
             return TestValueCondition(gte=min_value)
-        raise ValueError(
-            "Neither required test parameters nor reference data has been provided."
-        )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool]]:
         features_stats = self.metric.get_result().current_characteristics
@@ -583,9 +527,7 @@ class TestColumnValueMinRenderer(TestRenderer):
         ref_distr = None
         if "reference" in bins_for_hist.keys():
             ref_distr = bins_for_hist["reference"]
-        fig = plot_distr(
-            hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -593,12 +535,8 @@ class TestColumnValueMinRenderer(TestRenderer):
         min_value = current_characteristics.min
 
         if min_value is not None:
-            fig = plot_metric_value(
-                fig, float(min_value), f"current {column_name} min value"
-            )
-        info.with_details(
-            f"Min Value {column_name}", plotly_figure(title="", figure=fig)
-        )
+            fig = plot_metric_value(fig, float(min_value), f"current {column_name} min value")
+        info.with_details(f"Min Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -614,9 +552,7 @@ class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
             max_value = ref_features_stats.max
             return TestValueCondition(lte=max_value)
-        raise ValueError(
-            "Neither required test parameters nor reference data has been provided."
-        )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool]]:
         features_stats = self.metric.get_result().current_characteristics
@@ -643,9 +579,7 @@ class TestColumnValueMaxRenderer(TestRenderer):
         ref_distr = None
         if "reference" in bins_for_hist.keys():
             ref_distr = bins_for_hist["reference"]
-        fig = plot_distr(
-            hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -653,12 +587,8 @@ class TestColumnValueMaxRenderer(TestRenderer):
         max_value = current_characteristics.max
 
         if max_value is not None:
-            fig = plot_metric_value(
-                fig, float(max_value), f"current {column_name} max value"
-            )
-        info.with_details(
-            f"Max Value {column_name}", plotly_figure(title="", figure=fig)
-        )
+            fig = plot_metric_value(fig, float(max_value), f"current {column_name} max value")
+        info.with_details(f"Max Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -673,9 +603,7 @@ class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
             if not isinstance(ref_features_stats, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
             return TestValueCondition(eq=approx(ref_features_stats.mean, 0.1))
-        raise ValueError(
-            "Neither required test parameters nor reference data has been provided."
-        )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
@@ -699,9 +627,7 @@ class TestColumnValueMeanRenderer(TestRenderer):
         ref_distr = None
         if "reference" in bins_for_hist.keys():
             ref_distr = bins_for_hist["reference"]
-        fig = plot_distr(
-            hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -709,12 +635,8 @@ class TestColumnValueMeanRenderer(TestRenderer):
         mean_value = current_characteristics.mean
 
         if mean_value is not None:
-            fig = plot_metric_value(
-                fig, mean_value, f"current {column_name} mean value"
-            )
-        info.with_details(
-            f"Mean Value {column_name}", plotly_figure(title="", figure=fig)
-        )
+            fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
+        info.with_details(f"Mean Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -729,9 +651,7 @@ class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
             if not isinstance(ref_features_stats, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
             return TestValueCondition(eq=approx(ref_features_stats.p50, 0.1))
-        raise ValueError(
-            "Neither required test parameters nor reference data has been provided."
-        )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
@@ -755,9 +675,7 @@ class TestColumnValueMedianRenderer(TestRenderer):
         ref_distr = None
         if "reference" in bins_for_hist.keys():
             ref_distr = bins_for_hist["reference"]
-        fig = plot_distr(
-            hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -765,12 +683,8 @@ class TestColumnValueMedianRenderer(TestRenderer):
         percentile_50 = current_characteristics.p50
 
         if percentile_50 is not None:
-            fig = plot_metric_value(
-                fig, percentile_50, f"current {column_name} median value"
-            )
-        info.with_details(
-            f"Median Value {column_name}", plotly_figure(title="", figure=fig)
-        )
+            fig = plot_metric_value(fig, percentile_50, f"current {column_name} median value")
+        info.with_details(f"Median Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -785,9 +699,7 @@ class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
             if not isinstance(ref_features_stats, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
             return TestValueCondition(eq=approx(ref_features_stats.std, 0.1))
-        raise ValueError(
-            "Neither required test parameters nor reference data has been provided."
-        )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
@@ -814,12 +726,8 @@ class TestColumnValueStdRenderer(TestRenderer):
         ref_distr = None
         if "reference" in bins_for_hist.keys():
             ref_distr = bins_for_hist["reference"]
-        fig = plot_distr(
-            hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options
-        )
-        info.with_details(
-            f"Std Value {column_name}", plotly_figure(title="", figure=fig)
-        )
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+        info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -833,9 +741,7 @@ class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
             if isinstance(reference_features_stats, TextCharacteristics):
-                raise ValueError(
-                    f"{self.column_name} should be numerical, categorical or datetime"
-                )
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             unique_count = reference_features_stats.unique
             return TestValueCondition(eq=approx(unique_count, relative=0.1))
 
@@ -844,9 +750,7 @@ class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
         if isinstance(features_stats, TextCharacteristics):
-            raise ValueError(
-                f"{self.column_name} should be numerical, categorical or datetime"
-            )
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         return features_stats.unique
 
     def get_description(self, value: Numeric) -> str:
@@ -867,9 +771,7 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
             ref_df = None
             if "reference" in counts_data.keys():
                 ref_df = counts_data["reference"]
-            info.details = plot_value_counts_tables_ref_curr(
-                column_name, curr_df, ref_df, "num_of_unique_vals"
-            )
+            info.details = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "num_of_unique_vals")
 
         return info
 
@@ -884,26 +786,18 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
             if isinstance(reference_features_stats, TextCharacteristics):
-                raise ValueError(
-                    f"{self.column_name} should be numerical, categorical or datetime"
-                )
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             unique_percentage = reference_features_stats.unique_percentage
 
             if unique_percentage is not None:
-                return TestValueCondition(
-                    eq=approx(unique_percentage / 100.0, relative=0.1)
-                )
+                return TestValueCondition(eq=approx(unique_percentage / 100.0, relative=0.1))
 
-        raise ValueError(
-            "Neither required test parameters nor reference data has been provided."
-        )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
         if isinstance(features_stats, TextCharacteristics):
-            raise ValueError(
-                f"{self.column_name} should be numerical, categorical or datetime"
-            )
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         unique_percentage = features_stats.unique_percentage
 
         if unique_percentage is None:
@@ -929,9 +823,7 @@ class TestUniqueValuesShareRenderer(TestRenderer):
             ref_df = None
             if "reference" in counts_data.keys():
                 ref_df = counts_data["reference"]
-            info.details = plot_value_counts_tables_ref_curr(
-                column_name, curr_df, ref_df, "unique_vals_sare"
-            )
+            info.details = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "unique_vals_sare")
 
         return info
 
@@ -946,24 +838,18 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
             if isinstance(reference_features_stats, TextCharacteristics):
-                raise ValueError(
-                    f"{self.column_name} should be numerical, categorical or datetime"
-                )
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             most_common_percentage = reference_features_stats.most_common_percentage
 
             if most_common_percentage is not None:
-                return TestValueCondition(
-                    eq=approx(most_common_percentage / 100.0, relative=0.1)
-                )
+                return TestValueCondition(eq=approx(most_common_percentage / 100.0, relative=0.1))
 
         return TestValueCondition(lt=0.8)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
         if isinstance(features_stats, TextCharacteristics):
-            raise ValueError(
-                f"{self.column_name} should be numerical, categorical or datetime"
-            )
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         most_common_percentage = features_stats.most_common_percentage
 
         if most_common_percentage is None:
@@ -1005,9 +891,7 @@ class TestMostCommonValueShareRenderer(TestRenderer):
             ref_df = None
             if "reference" in counts_data.keys():
                 ref_df = counts_data["reference"]
-            additional_plots = plot_value_counts_tables_ref_curr(
-                column_name, curr_df, ref_df, "most_common_value_sare"
-            )
+            additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "most_common_value_sare")
             info.details = additional_plots
         return info
 
@@ -1087,23 +971,15 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         base["parameters"]["column_name"] = obj.column_name
         base["parameters"]["n_sigmas"] = obj.n_sigmas
-        if not isinstance(
-            metric_result.current_characteristics, NumericCharacteristics
-        ):
+        if not isinstance(metric_result.current_characteristics, NumericCharacteristics):
             raise ValueError(f"{obj.column_name} should be numerical or bool")
         base["parameters"]["current_mean"] = metric_result.current_characteristics.mean
 
         if metric_result.reference_characteristics is not None:
-            if not isinstance(
-                metric_result.reference_characteristics, NumericCharacteristics
-            ):
+            if not isinstance(metric_result.reference_characteristics, NumericCharacteristics):
                 raise ValueError(f"{obj.column_name} should be numerical or bool")
-            base["parameters"][
-                "reference_mean"
-            ] = metric_result.reference_characteristics.mean
-            base["parameters"][
-                "reference_std"
-            ] = metric_result.reference_characteristics.std
+            base["parameters"]["reference_mean"] = metric_result.reference_characteristics.mean
+            base["parameters"]["reference_std"] = metric_result.reference_characteristics.std
         return base
 
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:
@@ -1111,15 +987,10 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
 
-        if (
-            metric_result.reference_characteristics is None
-            or metric_result.plot_data.bins_for_hist is None
-        ):
+        if metric_result.reference_characteristics is None or metric_result.plot_data.bins_for_hist is None:
             return info
 
-        if not isinstance(
-            metric_result.reference_characteristics, NumericCharacteristics
-        ):
+        if not isinstance(metric_result.reference_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         ref_mean = metric_result.reference_characteristics.mean
         ref_std = metric_result.reference_characteristics.std
@@ -1136,20 +1007,14 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         if "reference" in metric_result.plot_data.bins_for_hist.keys():
             ref_distr = metric_result.plot_data.bins_for_hist["reference"]
 
-        fig = plot_distr(
-            hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, ref_condition, color_options=self.color_options)
-        if not isinstance(
-            metric_result.current_characteristics, NumericCharacteristics
-        ):
+        if not isinstance(metric_result.current_characteristics, NumericCharacteristics):
             raise ValueError(f"{obj.column_name} should be numerical or bool")
         mean_value = metric_result.current_characteristics.mean
 
         if mean_value is not None:
-            fig = plot_metric_value(
-                fig, mean_value, f"current {column_name} mean value"
-            )
+            fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
 
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
@@ -1168,11 +1033,7 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
             columns = columns_info.num_feature_names
 
         else:
-            columns = [
-                column
-                for column in self.columns
-                if column in columns_info.num_feature_names
-            ]
+            columns = [column for column in self.columns if column in columns_info.num_feature_names]
 
         return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns]
 
@@ -1194,9 +1055,7 @@ class TestValueRange(Test):
         self.column_name = column_name
         self.left = left
         self.right = right
-        self.metric = ColumnValueRangeMetric(
-            column_name=column_name, left=left, right=right
-        )
+        self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
     def check(self):
         number_not_in_range = self.metric.get_result().current.number_not_in_range
@@ -1205,9 +1064,7 @@ class TestValueRange(Test):
             description = f"The column **{self.column_name}** has values out of range."
             test_result = TestResult.FAIL
         else:
-            description = (
-                f"All values in the column **{self.column_name}** are within range"
-            )
+            description = f"All values in the column **{self.column_name}** are within range"
             test_result = TestResult.SUCCESS
 
         return TestResult(
@@ -1233,9 +1090,7 @@ class TestValueRangeRenderer(TestRenderer):
             color_options=self.color_options,
         )
         fig = plot_check(fig, condition_, color_options=self.color_options)
-        info.with_details(
-            f"Value Range {column_name}", plotly_figure(title="", figure=fig)
-        )
+        info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -1263,9 +1118,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         self.column_name = column_name
         self.left = left
         self.right = right
-        self.metric = ColumnValueRangeMetric(
-            column_name=column_name, left=left, right=right
-        )
+        self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
         super().__init__(
             eq=eq,
@@ -1363,9 +1216,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.condition, color_options=self.color_options)
-        info.with_details(
-            f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig)
-        )
+        info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -1382,11 +1233,7 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
             columns = columns_info.num_feature_names
 
         else:
-            columns = [
-                column
-                for column in self.columns
-                if column in columns_info.num_feature_names
-            ]
+            columns = [column for column in self.columns if column in columns_info.num_feature_names]
 
         return [TestShareOfOutRangeValues(column_name=name) for name in columns]
 
@@ -1412,9 +1259,7 @@ class TestValueList(Test):
 
         else:
             test_result = TestResult.SUCCESS
-            description = (
-                f"All values in the column **{self.column_name}** are in the list."
-            )
+            description = f"All values in the column **{self.column_name}** are in the list."
 
         return TestResult(
             name=self.name,
@@ -1430,9 +1275,7 @@ class TestValueListRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["column_name"] = obj.column_name
         base["parameters"]["values"] = obj.values
-        base["parameters"][
-            "number_not_in_list"
-        ] = obj.metric.get_result().current.number_not_in_list
+        base["parameters"]["number_not_in_list"] = obj.metric.get_result().current.number_not_in_list
         return base
 
     def render_html(self, obj: TestValueList) -> TestHtmlInfo:
@@ -1440,21 +1283,15 @@ class TestValueListRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(
-            metric_result.current.values_in_list.items(), columns=["x", "count"]
-        )
+        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(
-                metric_result.reference.values_in_list.items(), columns=["x", "count"]
-            )
+            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
 
         else:
             ref_df = None
 
-        additional_plots = plot_value_counts_tables(
-            column_name, values, curr_df, ref_df, "value_list"
-        )
+        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "value_list")
         info.details = additional_plots
         return info
 
@@ -1521,21 +1358,15 @@ class TestNumberOfOutListValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(
-            metric_result.current.values_in_list.items(), columns=["x", "count"]
-        )
+        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(
-                metric_result.reference.values_in_list.items(), columns=["x", "count"]
-            )
+            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
 
         else:
             ref_df = None
 
-        additional_plots = plot_value_counts_tables(
-            column_name, values, curr_df, ref_df, "number_value_list"
-        )
+        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "number_value_list")
         info.details = additional_plots
         return info
 
@@ -1575,11 +1406,7 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
             columns = columns_info.cat_feature_names
 
         else:
-            columns = [
-                column
-                for column in self.columns
-                if column in columns_info.cat_feature_names
-            ]
+            columns = [column for column in self.columns if column in columns_info.cat_feature_names]
 
         return [TestShareOfOutListValues(column_name=name) for name in columns]
 
@@ -1630,9 +1457,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         if reference_value is not None:
             return TestValueCondition(eq=approx(reference_value, 0.1))
 
-        raise ValueError(
-            "Neither required test parameters nor reference data has been provided."
-        )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.value
@@ -1681,20 +1506,14 @@ class TestShareOfOutListValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(
-            metric_result.current.values_in_list.items(), columns=["x", "count"]
-        )
+        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(
-                metric_result.reference.values_in_list.items(), columns=["x", "count"]
-            )
+            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
 
         else:
             ref_df = None
 
-        additional_plots = plot_value_counts_tables(
-            column_name, values, curr_df, ref_df, "share_value_list"
-        )
+        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "share_value_list")
         info.details = additional_plots
         return info

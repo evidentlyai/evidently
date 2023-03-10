@@ -77,9 +77,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             share_not_in_range = 0.0
 
         else:
-            number_in_range = column.between(
-                left=float(left), right=float(right), inclusive="both"
-            ).sum()
+            number_in_range = column.between(left=float(left), right=float(right), inclusive="both").sum()
             number_not_in_range = rows_count - number_in_range
             share_in_range = number_in_range / rows_count
             share_not_in_range = number_not_in_range / rows_count
@@ -98,20 +96,14 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             raise ValueError(f"Column {self.column_name} is not in current data.")
 
         if not pd.api.types.is_numeric_dtype(data.current_data[self.column_name].dtype):
-            raise ValueError(
-                f"Column {self.column_name} in current data should be numeric."
-            )
+            raise ValueError(f"Column {self.column_name} in current data should be numeric.")
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column {self.column_name} is not in reference data.")
 
-            if not pd.api.types.is_numeric_dtype(
-                data.reference_data[self.column_name].dtype
-            ):
-                raise ValueError(
-                    f"Column {self.column_name} in reference data should be numeric."
-                )
+            if not pd.api.types.is_numeric_dtype(data.reference_data[self.column_name].dtype):
+                raise ValueError(f"Column {self.column_name} in reference data should be numeric.")
 
         if self.left is None:
             if data.reference_data is None:
@@ -138,14 +130,10 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         cur_distribution, ref_distribution = get_distribution_for_column(
             column_type="num",
             current=current_column,
-            reference=data.reference_data[self.column_name]
-            if data.reference_data is not None
-            else None,
+            reference=data.reference_data[self.column_name] if data.reference_data is not None else None,
         )
 
-        current = self._calculate_in_range_stats(
-            data.current_data[self.column_name], left, right, cur_distribution
-        )
+        current = self._calculate_in_range_stats(data.current_data[self.column_name], left, right, cur_distribution)
         reference = None
         if data.reference_data is not None:
             reference = self._calculate_in_range_stats(
@@ -178,13 +166,9 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             matched_stat_headers.append("Reference")
 
             matched_stat[0].append(metric_result.reference.number_in_range)
-            matched_stat[1].append(
-                np.round(metric_result.reference.share_in_range * 100, 3)
-            )
+            matched_stat[1].append(np.round(metric_result.reference.share_in_range * 100, 3))
             matched_stat[2].append(metric_result.reference.number_not_in_range)
-            matched_stat[3].append(
-                np.round(metric_result.reference.share_not_in_range * 100, 3)
-            )
+            matched_stat[3].append(np.round(metric_result.reference.share_not_in_range * 100, 3))
             matched_stat[4].append(metric_result.reference.number_of_values)
 
         return table_data(

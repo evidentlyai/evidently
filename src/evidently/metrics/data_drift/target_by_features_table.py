@@ -45,9 +45,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
     text_features_gen: Optional[
         Dict[
             str,
-            Dict[
-                str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]
-            ],
+            Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
         ]
     ]
 
@@ -57,9 +55,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [
-                col.column_name for col in data_definition.get_columns("text_features")
-            ]
+            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
@@ -68,9 +64,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                     Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
                 ] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
-                col_dict[
-                    f"{col}: Non Letter Character %"
-                ] = NonLetterCharacterPercentage(col)
+                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
 
                 text_features_gen_result += [
@@ -101,12 +95,8 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
         curr_predictions = None
         ref_predictions = None
         if prediction_name is not None:
-            curr_predictions = get_prediction_data(
-                data.current_data, dataset_columns, data.column_mapping.pos_label
-            )
-            ref_predictions = get_prediction_data(
-                data.reference_data, dataset_columns, data.column_mapping.pos_label
-            )
+            curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
+            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
 
         if self.columns is None:
             columns = (
@@ -129,9 +119,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
             task = data.column_mapping.task
         else:
             if target_name is not None:
-                if curr_df[target_name].nunique() < 5 or is_string_dtype(
-                    curr_df[target_name]
-                ):
+                if curr_df[target_name].nunique() < 5 or is_string_dtype(curr_df[target_name]):
                     task = "classification"
                 else:
                     task = "regression"
@@ -146,10 +134,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                 columns += list(self.text_features_gen[col].keys())
                 columns.remove(col)
                 curr_text_df = pd.concat(
-                    [
-                        data.get_current_column(x.feature_name())
-                        for x in list(self.text_features_gen[col].values())
-                    ],
+                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
                     axis=1,
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
@@ -219,13 +204,9 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             if target_name is not None:
                 parts.append({"title": "Target", "id": feature_name + "_target_values"})
                 if task == "regression":
-                    target_fig = self._get_regression_fig(
-                        feature_name, target_name, current_data, reference_data
-                    )
+                    target_fig = self._get_regression_fig(feature_name, target_name, current_data, reference_data)
                 else:
-                    target_fig = self._get_classification_fig(
-                        feature_name, target_name, current_data, reference_data
-                    )
+                    target_fig = self._get_classification_fig(feature_name, target_name, current_data, reference_data)
 
                 target_fig_json = json.loads(target_fig.to_json())
 
@@ -240,9 +221,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 )
 
             if curr_predictions is not None:
-                parts.append(
-                    {"title": "Prediction", "id": feature_name + "_prediction_values"}
-                )
+                parts.append({"title": "Prediction", "id": feature_name + "_prediction_values"})
                 if task == "regression":
                     preds_fig = self._get_regression_fig(
                         feature_name, "prediction_labels", current_data, reference_data
@@ -293,9 +272,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         curr_data: pd.DataFrame,
         ref_data: pd.DataFrame,
     ):
-        fig = make_subplots(
-            rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True
-        )
+        fig = make_subplots(rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True)
         fig.add_trace(
             go.Scattergl(
                 x=curr_data[feature_name],

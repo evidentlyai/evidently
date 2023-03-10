@@ -16,9 +16,7 @@ class NumTargetDriftProfileSection(ProfileSection):
     def analyzers(self):
         return self.analyzers_types
 
-    def calculate(
-        self, reference_data, current_data, column_mapping, analyzers_results
-    ):
+    def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = NumTargetDriftAnalyzer.get_results(analyzers_results)
         result_json = result.columns.as_dict()
         result_json["metrics"] = {}
@@ -33,13 +31,9 @@ class NumTargetDriftProfileSection(ProfileSection):
             }
 
         if result.prediction_metrics:
-            result_json["metrics"][
-                "prediction_name"
-            ] = result.prediction_metrics.column_name
+            result_json["metrics"]["prediction_name"] = result.prediction_metrics.column_name
             result_json["metrics"]["prediction_type"] = "num"
-            result_json["metrics"][
-                "prediction_drift"
-            ] = result.prediction_metrics.drift_score
+            result_json["metrics"]["prediction_drift"] = result.prediction_metrics.drift_score
             result_json["metrics"]["prediction_correlations"] = {
                 "current": result.prediction_metrics.current.correlations,
                 "reference": result.prediction_metrics.reference.correlations,

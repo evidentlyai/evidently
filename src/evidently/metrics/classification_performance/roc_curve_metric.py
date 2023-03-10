@@ -31,27 +31,15 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
-        curr_predictions = get_prediction_data(
-            data.current_data, dataset_columns, data.column_mapping.pos_label
-        )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         if curr_predictions.prediction_probas is None:
-            raise ValueError(
-                "Roc Curve can be calculated only on binary probabilistic predictions"
-            )
-        curr_roc_curve = self.calculate_metrics(
-            data.current_data[target_name], curr_predictions
-        )
+            raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
+        curr_roc_curve = self.calculate_metrics(data.current_data[target_name], curr_predictions)
         ref_roc_curve = None
         if data.reference_data is not None:
-            ref_predictions = get_prediction_data(
-                data.reference_data, dataset_columns, data.column_mapping.pos_label
-            )
-            ref_roc_curve = self.calculate_metrics(
-                data.reference_data[target_name], ref_predictions
-            )
+            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            ref_roc_curve = self.calculate_metrics(data.reference_data[target_name], ref_predictions)
         return ClassificationRocCurveResults(
             current_roc_curve=curr_roc_curve,
             reference_roc_curve=ref_roc_curve,
@@ -60,18 +48,14 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
     def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData):
         labels = prediction.labels
         if prediction.prediction_probas is None:
-            raise ValueError(
-                "Roc Curve can be calculated only on binary probabilistic predictions"
-            )
+            raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
         binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
         roc_curve = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
 
-            fpr, tpr, thrs = metrics.roc_curve(
-                binaraized_target, prediction.prediction_probas.iloc[:, 0]
-            )
+            fpr, tpr, thrs = metrics.roc_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
             roc_curve[prediction.prediction_probas.columns[0]] = {
                 "fpr": fpr.tolist(),
                 "tpr": tpr.tolist(),
@@ -82,9 +66,7 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             binaraized_target.columns = labels
 
             for label in labels:
-                fpr, tpr, thrs = metrics.roc_curve(
-                    binaraized_target[label], prediction.prediction_probas[label]
-                )
+                fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], prediction.prediction_probas[label])
                 roc_curve[label] = {
                     "fpr": fpr.tolist(),
                     "tpr": tpr.tolist(),
@@ -101,9 +83,7 @@ class ClassificationRocCurveRenderer(MetricRenderer):
         if current_roc_curve is None:
             return []
 
-        tab_data = get_roc_auc_tab_data(
-            current_roc_curve, reference_roc_curve, color_options=self.color_options
-        )
+        tab_data = get_roc_auc_tab_data(current_roc_curve, reference_roc_curve, color_options=self.color_options)
         if len(tab_data) == 1:
             return [header_text(label="ROC Curve"), tab_data[0][1]]
         tabs = [TabData(name, widget) for name, widget in tab_data]

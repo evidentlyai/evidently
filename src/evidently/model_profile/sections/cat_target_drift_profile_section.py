@@ -22,9 +22,7 @@ class CatTargetDriftProfileSection(ProfileSection):
     def analyzers(self) -> Iterable[Type[Analyzer]]:
         return self.analyzers_types
 
-    def calculate(
-        self, reference_data, current_data, column_mapping, analyzers_results
-    ) -> None:
+    def calculate(self, reference_data, current_data, column_mapping, analyzers_results) -> None:
         result = CatTargetDriftAnalyzer.get_results(analyzers_results)
         result_json: Dict[str, Any] = result.columns.as_dict()
         result_json["metrics"] = {}
@@ -35,13 +33,9 @@ class CatTargetDriftProfileSection(ProfileSection):
             result_json["metrics"]["target_drift"] = result.target_metrics.drift_score
 
         if result.prediction_metrics:
-            result_json["metrics"][
-                "prediction_name"
-            ] = result.prediction_metrics.column_name
+            result_json["metrics"]["prediction_name"] = result.prediction_metrics.column_name
             result_json["metrics"]["prediction_type"] = "cat"
-            result_json["metrics"][
-                "prediction_drift"
-            ] = result.prediction_metrics.drift_score
+            result_json["metrics"]["prediction_drift"] = result.prediction_metrics.drift_score
 
         self._result = {
             "name": self.part_id(),

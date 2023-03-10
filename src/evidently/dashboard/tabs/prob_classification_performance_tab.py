@@ -28,15 +28,11 @@ class ProbClassificationPerformanceTab(Tab):
             Verbose.ALWAYS,
         ),
         (
-            ProbClassQualityMetricBarWidget(
-                "Reference: Model Quality With Macro-average Metrics"
-            ),
+            ProbClassQualityMetricBarWidget("Reference: Model Quality With Macro-average Metrics"),
             Verbose.ALWAYS,
         ),
         (
-            ProbClassQualityMetricBarWidget(
-                "Current: Model Quality With Macro-average Metrics", "current"
-            ),
+            ProbClassQualityMetricBarWidget("Current: Model Quality With Macro-average Metrics", "current"),
             Verbose.ALWAYS,
         ),
         (ProbClassSupportWidget("Reference: Class Representation"), Verbose.ALWAYS),
@@ -54,9 +50,7 @@ class ProbClassificationPerformanceTab(Tab):
             Verbose.ALWAYS,
         ),
         (
-            ProbClassMetricsMatrixWidget(
-                "Current: Quality Metrics by Class", "current"
-            ),
+            ProbClassMetricsMatrixWidget("Current: Quality Metrics by Class", "current"),
             Verbose.ALWAYS,
         ),
         (
@@ -64,9 +58,7 @@ class ProbClassificationPerformanceTab(Tab):
             Verbose.FULL,
         ),
         (
-            ProbClassPredictionCloudWidget(
-                "Current: Class Separation Quality", "current"
-            ),
+            ProbClassPredictionCloudWidget("Current: Class Separation Quality", "current"),
             Verbose.FULL,
         ),
         (ProbClassPredDistrWidget("Reference: Probability Distribution"), Verbose.FULL),
@@ -87,9 +79,7 @@ class ProbClassificationPerformanceTab(Tab):
             Verbose.FULL,
         ),
         (
-            ProbClassConfusionBasedFeatureDistrTable(
-                "Classification Quality By Feature"
-            ),
+            ProbClassConfusionBasedFeatureDistrTable("Classification Quality By Feature"),
             Verbose.FULL,
         ),
     ]

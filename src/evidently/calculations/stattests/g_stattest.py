@@ -48,9 +48,7 @@ def _g_stat_test(
         p_value: calculated p_value value
         test_result: whether the drift is detected
     """
-    keys = get_unique_not_nan_values_list_from_series(
-        current_data=current_data, reference_data=reference_data
-    )
+    keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
     current_feature_dict = {
         **dict.fromkeys(keys, 0),

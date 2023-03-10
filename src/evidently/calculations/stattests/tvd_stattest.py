@@ -41,9 +41,7 @@ def _total_variation_distance(reference_data, current_data):
     Returns:
         total_variation_distance: computed distance between reference_data and current_data
     """
-    keys = get_unique_not_nan_values_list_from_series(
-        current_data=current_data, reference_data=reference_data
-    )
+    keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
     current_feature_dict = {
         **dict.fromkeys(keys, 0),

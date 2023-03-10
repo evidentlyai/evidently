@@ -50,9 +50,7 @@ class TextDescriptorsDriftMetricResults(MetricResult):
 class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
     options: DataDriftOptions
-    generated_text_features: Dict[
-        str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]
-    ]
+    generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
 
     def __init__(
         self,
@@ -61,9 +59,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
-        self.options = DataDriftOptions(
-            all_features_stattest=stattest, all_features_threshold=stattest_threshold
-        )
+        self.options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
         self.generated_text_features = {}
 
     def required_features(self, data_definition: DataDefinition):
@@ -71,9 +67,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         if column_type == ColumnType_data.Text:
             self.generated_text_features = {}
             self.generated_text_features["Text Length"] = TextLength(self.column_name)
-            self.generated_text_features[
-                "Non Letter Character %"
-            ] = NonLetterCharacterPercentage(self.column_name)
+            self.generated_text_features["Non Letter Character %"] = NonLetterCharacterPercentage(self.column_name)
             self.generated_text_features["OOV %"] = OOVWordsPercentage(self.column_name)
             return list(self.generated_text_features.values())
         return []
@@ -85,26 +79,18 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
         curr_text_df = pd.concat(
-            [
-                data.get_current_column(x.feature_name())
-                for x in list(self.generated_text_features.values())
-            ],
+            [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
 
         ref_text_df = pd.concat(
-            [
-                data.get_reference_column(x.feature_name())
-                for x in list(self.generated_text_features.values())
-            ],
+            [data.get_reference_column(x.feature_name()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         ref_text_df.columns = list(self.generated_text_features.keys())
         # text_dataset_columns = DatasetColumns(num_feature_names=curr_text_df.columns)
-        text_dataset_columns = process_columns(
-            ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns)
-        )
+        text_dataset_columns = process_columns(ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns))
 
         drift_by_columns = {}
         for col in curr_text_df.columns:
@@ -129,9 +115,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
 
 @default_renderer(wrap_type=TextDescriptorsDriftMetric)
 class DataDriftTableRenderer(MetricRenderer):
-    def _generate_column_params(
-        self, column_name: str, data: ColumnDataDriftMetrics
-    ) -> Optional[RichTableDataRow]:
+    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if (
             data.current.small_distribution is None
@@ -198,9 +182,7 @@ class DataDriftTableRenderer(MetricRenderer):
         )
 
         for column_name in columns:
-            column_params = self._generate_column_params(
-                column_name, results.drift_by_columns[column_name]
-            )
+            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
 
             if column_params is not None:
                 params_data.append(column_params)

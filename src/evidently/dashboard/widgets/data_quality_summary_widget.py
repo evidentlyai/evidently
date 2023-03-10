@@ -104,23 +104,16 @@ class DataQualitySummaryWidget(Widget):
         result["number of observations"] = df.shape[0]
         missing_cells = df[all_features].isnull().sum().sum()
         missing_cells_percentage = np.round(
-            missing_cells
-            / (result["number of variables"] * result["number of observations"]),
+            missing_cells / (result["number of variables"] * result["number of observations"]),
             2,
         )
         result["missing cells"] = f"{missing_cells} ({missing_cells_percentage}%)"
-        result["categorical features"] = len(
-            data_quality_results.columns.cat_feature_names
-        )
+        result["categorical features"] = len(data_quality_results.columns.cat_feature_names)
         result["numeric features"] = len(data_quality_results.columns.num_feature_names)
-        result["datetime features"] = len(
-            data_quality_results.columns.datetime_feature_names
-        )
+        result["datetime features"] = len(data_quality_results.columns.datetime_feature_names)
         if date_name:
             result["datetime features"] = result["datetime features"] + 1
-        constant_values = pd.Series(
-            [df_stats[x].most_common_value_percentage for x in all_features]
-        )
+        constant_values = pd.Series([df_stats[x].most_common_value_percentage for x in all_features])
         empty_values = pd.Series([df_stats[x].missing_percentage for x in all_features])
         result["constant features"] = (constant_values == 100).sum()
         result["empty features"] = (empty_values == 100).sum()

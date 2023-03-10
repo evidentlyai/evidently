@@ -35,9 +35,7 @@ class ClassSupportWidget(Widget):
 
         if target_name is None or prediction_name is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns."
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
             return None
 
         if self.dataset == "current":
@@ -53,9 +51,7 @@ class ClassSupportWidget(Widget):
                 )
 
         else:
-            raise ValueError(
-                f"Widget [{self.title}] requires 'current' or 'reference' dataset value"
-            )
+            raise ValueError(f"Widget [{self.title}] requires 'current' or 'reference' dataset value")
 
         if result_metrics is None:
             return None
@@ -67,9 +63,7 @@ class ClassSupportWidget(Widget):
 
         fig.add_trace(
             go.Bar(
-                x=results.columns.target_names
-                if results.columns.target_names
-                else metrics_frame.columns.tolist()[:-3],
+                x=results.columns.target_names if results.columns.target_names else metrics_frame.columns.tolist()[:-3],
                 y=metrics_frame.iloc[-1:, :-3].values[0],
                 marker_color=color_options.primary_color,
                 name="Support",

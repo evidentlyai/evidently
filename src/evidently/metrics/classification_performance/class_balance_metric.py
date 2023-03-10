@@ -21,9 +21,7 @@ class ClassificationClassBalanceResult(MetricResult):
         dict_exclude_fields = {"plot_data"}
         pd_exclude_fields = {"plot_data"}
 
-    plot_data: Dict[
-        str, Union[int, pd.Series, pd.DataFrame]
-    ]  # todo PlotDataField? what type of plot?
+    plot_data: Dict[str, Union[int, pd.Series, pd.DataFrame]]  # todo PlotDataField? what type of plot?
 
 
 class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
@@ -32,9 +30,7 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
         curr_target = data.current_data[target_name]
         ref_target = None
         if data.reference_data is not None:

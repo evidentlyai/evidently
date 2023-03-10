@@ -35,30 +35,21 @@ class RegErrorDistrWidget(Widget):
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         results_utility_columns = results.columns.utility_columns
 
-        if (
-            results_utility_columns.target is None
-            or results_utility_columns.prediction is None
-        ):
+        if results_utility_columns.target is None or results_utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
 
             return None
 
         if self.dataset == "current":
-            dataset_to_plot = (
-                current_data.copy(deep=False) if current_data is not None else None
-            )
+            dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
 
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires reference dataset but it is None"
-                )
+                raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
 
             return None
 
@@ -73,10 +64,7 @@ class RegErrorDistrWidget(Widget):
         # plot distributions
         error_distr = go.Figure()
 
-        error = (
-            dataset_to_plot[results_utility_columns.prediction]
-            - dataset_to_plot[results_utility_columns.target]
-        )
+        error = dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target]
 
         error_distr.add_trace(
             go.Histogram(

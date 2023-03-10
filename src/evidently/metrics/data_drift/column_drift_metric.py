@@ -45,19 +45,13 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
             raise ValueError("Reference dataset should be present")
 
         if self.column_name not in data.current_data:
-            raise ValueError(
-                f"Cannot find column '{self.column_name}' in current dataset"
-            )
+            raise ValueError(f"Cannot find column '{self.column_name}' in current dataset")
 
         if self.column_name not in data.reference_data:
-            raise ValueError(
-                f"Cannot find column '{self.column_name}' in reference dataset"
-            )
+            raise ValueError(f"Cannot find column '{self.column_name}' in reference dataset")
 
         dataset_columns = process_columns(data.reference_data, data.column_mapping)
-        options = DataDriftOptions(
-            all_features_stattest=self.stattest, threshold=self.stattest_threshold
-        )
+        options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
         drift_result = get_one_column_drift(
             current_data=data.current_data,
             reference_data=data.reference_data,
@@ -105,23 +99,16 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 x_name=result.scatter.x_name,
                 color_options=self.color_options,
             )
-            tabs.append(
-                TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig))
-            )
+            tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
-        if (
-            result.current.distribution is not None
-            and result.reference.distribution is not None
-        ):
+        if result.current.distribution is not None and result.reference.distribution is not None:
             distr_fig = get_distribution_plot_figure(
                 current_distribution=result.current.distribution,
                 reference_distribution=result.reference.distribution,
                 color_options=self.color_options,
             )
             # figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
-            tabs.append(
-                TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig))
-            )
+            tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
 
         if (
             result.current.examples is not None
@@ -151,9 +138,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             )
 
             tabs = [
-                TabData(
-                    title="current: characteristic words", widget=current_table_words
-                ),
+                TabData(title="current: characteristic words", widget=current_table_words),
                 TabData(
                     title="reference: characteristic words",
                     widget=reference_table_words,

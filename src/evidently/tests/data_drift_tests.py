@@ -37,9 +37,7 @@ GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 @dataclasses.dataclass
 class TestDataDriftResult(TestResult):
-    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(
-        default_factory=dict
-    )
+    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(default_factory=dict)
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
@@ -119,9 +117,7 @@ class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
         if self.condition.has_condition():
             return self.condition
         else:
-            return TestValueCondition(
-                lt=max(0, self.metric.get_result().number_of_columns // 3)
-            )
+            return TestValueCondition(lt=max(0, self.metric.get_result().number_of_columns // 3))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_of_drifted_columns
@@ -262,11 +258,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(
-                TestColumnDrift(
-                    column_name=name, stattest=stattest, stattest_threshold=threshold
-                )
-            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
         for name in columns_info.num_feature_names:
             if self.columns and name not in self.columns:
                 continue
@@ -284,11 +276,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(
-                TestColumnDrift(
-                    column_name=name, stattest=stattest, stattest_threshold=threshold
-                )
-            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
         for name in columns_info.text_feature_names:
             if self.columns and name not in self.columns:
                 continue
@@ -306,11 +294,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(
-                TestColumnDrift(
-                    column_name=name, stattest=stattest, stattest_threshold=threshold
-                )
-            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
         return results
 
 
@@ -407,10 +391,7 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
-            data=[
-                [feature] + list(data)
-                for feature, data in obj.get_result().features.items()
-            ],
+            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
             columns=[
                 "Feature name",
                 "Stattest",
@@ -446,10 +427,7 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
-            data=[
-                [feature] + list(data)
-                for feature, data in obj.get_result().features.items()
-            ],
+            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
             columns=[
                 "Feature name",
                 "Stattest",

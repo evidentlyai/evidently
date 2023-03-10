@@ -32,9 +32,7 @@ class RegressionPerformanceProfileSection(ProfileSection):
             "underperformance": metrics.underperformance,
         }
 
-    def calculate(
-        self, reference_data, current_data, column_mapping, analyzers_results
-    ):
+    def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         result_json = result.columns.as_dict()
         result_json["metrics"] = {}
@@ -43,16 +41,12 @@ class RegressionPerformanceProfileSection(ProfileSection):
             result_json["metrics"]["error_bias"] = result.error_bias
 
         if result.reference_metrics is not None:
-            result_json["metrics"][
-                "reference"
-            ] = self._get_regression_performance_metrics_as_dict(
+            result_json["metrics"]["reference"] = self._get_regression_performance_metrics_as_dict(
                 result.reference_metrics
             )
 
         if result.current_metrics is not None:
-            result_json["metrics"][
-                "current"
-            ] = self._get_regression_performance_metrics_as_dict(result.current_metrics)
+            result_json["metrics"]["current"] = self._get_regression_performance_metrics_as_dict(result.current_metrics)
 
         self._result = {
             "name": self.part_id(),

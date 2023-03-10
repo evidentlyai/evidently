@@ -135,30 +135,20 @@ class Dashboard(Pipeline):
                     )
                 )
             if render_mode == "nbextension":
-                return HTML(
-                    self.__render(
-                        dashboard_id, dashboard_info, additional_graphs, inline_template
-                    )
-                )
+                return HTML(self.__render(dashboard_id, dashboard_info, additional_graphs, inline_template))
             raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")
         except ImportError as err:
-            raise Exception(
-                "Cannot import HTML from IPython.display, no way to show html"
-            ) from err
+            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
     def html(self):
         dashboard_id, dashboard_info, additional_graphs = self.__dashboard_data()
-        return self.__render(
-            dashboard_id, dashboard_info, additional_graphs, file_html_template
-        )
+        return self.__render(dashboard_id, dashboard_info, additional_graphs, file_html_template)
 
     def save(self, filename: str, mode: SaveMode = SaveMode.SINGLE_FILE):
         if isinstance(mode, str):
             _mode = SaveModeMap.get(mode)
             if _mode is None:
-                raise ValueError(
-                    f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]"
-                )
+                raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
             mode = _mode
         if mode == SaveMode.SINGLE_FILE:
             with open(filename, "w", encoding="utf-8") as out_file:
@@ -166,9 +156,7 @@ class Dashboard(Pipeline):
         if mode in [SaveMode.FOLDER, SaveMode.SYMLINK_FOLDER]:
             font_file, lib_file = save_lib_files(filename, mode)
             dashboard_id, dashboard_info, additional_graphs = self.__dashboard_data()
-            data_file = save_data_file(
-                filename, mode, dashboard_id, dashboard_info, additional_graphs
-            )
+            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, additional_graphs)
             with open(filename, "w", encoding="utf-8") as out_file:
                 out_file.write(
                     self.__no_lib_render(

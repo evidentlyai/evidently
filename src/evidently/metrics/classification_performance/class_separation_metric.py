@@ -28,20 +28,14 @@ class ClassificationClassSeparationPlotResults(MetricResult):
     reference_plot: Optional[pd.DataFrame] = None
 
 
-class ClassificationClassSeparationPlot(
-    Metric[ClassificationClassSeparationPlotResults]
-):
+class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
     def calculate(self, data: InputData) -> ClassificationClassSeparationPlotResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
-        curr_predictions = get_prediction_data(
-            data.current_data, dataset_columns, data.column_mapping.pos_label
-        )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         if curr_predictions.prediction_probas is None:
             raise ValueError(
                 "ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions"
@@ -50,9 +44,7 @@ class ClassificationClassSeparationPlot(
         current_plot[target_name] = data.current_data[target_name]
         reference_plot = None
         if data.reference_data is not None:
-            ref_predictions = get_prediction_data(
-                data.reference_data, dataset_columns, data.column_mapping.pos_label
-            )
+            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
             if ref_predictions.prediction_probas is None:
                 raise ValueError(
                     "ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions"
@@ -68,9 +60,7 @@ class ClassificationClassSeparationPlot(
 
 @default_renderer(wrap_type=ClassificationClassSeparationPlot)
 class ClassificationClassSeparationPlotRenderer(MetricRenderer):
-    def render_html(
-        self, obj: ClassificationClassSeparationPlot
-    ) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ClassificationClassSeparationPlot) -> List[BaseWidgetInfo]:
         current_plot = obj.get_result().current_plot
         reference_plot = obj.get_result().reference_plot
         target_name = obj.get_result().target_name

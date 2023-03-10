@@ -30,34 +30,20 @@ class ConflictTargetMetric(Metric[ConflictTargetMetricResults]):
         columns = dataset_columns.get_all_features_list()
         if len(columns) == 0:
             raise ValueError("Target conflict is not defined. No features provided")
-        duplicates = data.current_data[
-            data.current_data.duplicated(subset=columns, keep=False)
-        ]
+        duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
         number_not_stable_target = duplicates.drop(
-            data.current_data[
-                data.current_data.duplicated(subset=columns + [target_name], keep=False)
-            ].index
+            data.current_data[data.current_data.duplicated(subset=columns + [target_name], keep=False)].index
         ).shape[0]
-        share_not_stable_target = round(
-            number_not_stable_target / data.current_data.shape[0], 3
-        )
+        share_not_stable_target = round(number_not_stable_target / data.current_data.shape[0], 3)
         # reference
         number_not_stable_target_ref = None
         share_not_stable_target_ref = None
         if data.reference_data is not None:
-            duplicates_ref = data.reference_data[
-                data.reference_data.duplicated(subset=columns, keep=False)
-            ]
+            duplicates_ref = data.reference_data[data.reference_data.duplicated(subset=columns, keep=False)]
             number_not_stable_target_ref = duplicates_ref.drop(
-                data.reference_data[
-                    data.reference_data.duplicated(
-                        subset=columns + [target_name], keep=False
-                    )
-                ].index
+                data.reference_data[data.reference_data.duplicated(subset=columns + [target_name], keep=False)].index
             ).shape[0]
-            share_not_stable_target_ref = round(
-                number_not_stable_target_ref / data.reference_data.shape[0], 3
-            )
+            share_not_stable_target_ref = round(number_not_stable_target_ref / data.reference_data.shape[0], 3)
         return ConflictTargetMetricResults(
             number_not_stable_target=number_not_stable_target,
             share_not_stable_target=share_not_stable_target,

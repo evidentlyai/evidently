@@ -31,23 +31,13 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
-        curr_predictions = get_prediction_data(
-            data.current_data, dataset_columns, data.column_mapping.pos_label
-        )
-        curr_pr_curve = self.calculate_metrics(
-            data.current_data[target_name], curr_predictions
-        )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
+        curr_pr_curve = self.calculate_metrics(data.current_data[target_name], curr_predictions)
         ref_pr_curve = None
         if data.reference_data is not None:
-            ref_predictions = get_prediction_data(
-                data.reference_data, dataset_columns, data.column_mapping.pos_label
-            )
-            ref_pr_curve = self.calculate_metrics(
-                data.reference_data[target_name], ref_predictions
-            )
+            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            ref_pr_curve = self.calculate_metrics(data.reference_data[target_name], ref_predictions)
         return ClassificationPRCurveResults(
             current_pr_curve=curr_pr_curve,
             reference_pr_curve=ref_pr_curve,
@@ -56,17 +46,13 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
     def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData):
         labels = prediction.labels
         if prediction.prediction_probas is None:
-            raise ValueError(
-                "PR Curve can be calculated only on binary probabilistic predictions"
-            )
+            raise ValueError("PR Curve can be calculated only on binary probabilistic predictions")
         binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
         pr_curve = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
-            pr, rcl, thrs = metrics.precision_recall_curve(
-                binaraized_target, prediction.prediction_probas.iloc[:, 0]
-            )
+            pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
             pr_curve[prediction.prediction_probas.columns[0]] = {
                 "pr": pr.tolist(),
                 "rcl": rcl.tolist(),
@@ -98,9 +84,7 @@ class ClassificationPRCurveRenderer(MetricRenderer):
         if current_pr_curve is None:
             return []
 
-        tab_data = get_pr_rec_plot_data(
-            current_pr_curve, reference_pr_curve, color_options=self.color_options
-        )
+        tab_data = get_pr_rec_plot_data(current_pr_curve, reference_pr_curve, color_options=self.color_options)
         if len(tab_data) == 1:
             return [header_text(label="Precision-Recall Curve"), tab_data[0][1]]
         tabs = [TabData(name, widget) for name, widget in tab_data]

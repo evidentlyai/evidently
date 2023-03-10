@@ -71,26 +71,19 @@ class DataQualityAnalyzer(Analyzer):
         else:
             task = None
 
-        reference_features_stats = calculate_data_quality_stats(
-            reference_data, columns, task
-        )
+        reference_features_stats = calculate_data_quality_stats(reference_data, columns, task)
 
         current_features_stats: Optional[DataQualityStats]
 
         if current_data is not None:
-            current_features_stats = calculate_data_quality_stats(
-                current_data, columns, task
-            )
+            current_features_stats = calculate_data_quality_stats(current_data, columns, task)
 
             all_cat_features = {}
 
             if current_features_stats.cat_features_stats is not None:
                 all_cat_features.update(current_features_stats.cat_features_stats)
 
-            if (
-                task == "classification"
-                and current_features_stats.target_stats is not None
-            ):
+            if task == "classification" and current_features_stats.target_stats is not None:
                 all_cat_features.update(current_features_stats.target_stats)
 
             if current_features_stats.cat_features_stats is not None:
@@ -99,9 +92,7 @@ class DataQualityAnalyzer(Analyzer):
                     current_values_set = set(current_data[feature_name].unique())
 
                     if feature_name in reference_data:
-                        reference_values_set = set(
-                            reference_data[feature_name].unique()
-                        )
+                        reference_values_set = set(reference_data[feature_name].unique())
 
                     else:
                         reference_values_set = set()
@@ -114,34 +105,22 @@ class DataQualityAnalyzer(Analyzer):
                     # take into account that NaN values in Python sets do not support substitution correctly
                     # {nan} - {nan} can be equals {nan}
                     # use pd.isnull because it supports strings values correctly, np.isnan raises and exception
-                    if any(pd.isnull(list(unique_in_current))) and any(
-                        pd.isnull(list(unique_in_reference))
-                    ):
+                    if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
                         new_in_current_values_count -= 1
                         unused_in_current_values_count -= 1
 
-                    cat_feature_stats.new_in_current_values_count = (
-                        new_in_current_values_count
-                    )
-                    cat_feature_stats.unused_in_current_values_count = (
-                        unused_in_current_values_count
-                    )
+                    cat_feature_stats.new_in_current_values_count = new_in_current_values_count
+                    cat_feature_stats.unused_in_current_values_count = unused_in_current_values_count
 
         else:
             current_features_stats = None
 
-        data_definition = create_data_definition(
-            current_data, reference_data, column_mapping
-        )
+        data_definition = create_data_definition(current_data, reference_data, column_mapping)
         # calculate correlations
-        reference_correlations: Dict = calculate_correlations(
-            reference_data, data_definition
-        )
+        reference_correlations: Dict = calculate_correlations(reference_data, data_definition)
 
         if current_features_stats is not None:
-            current_correlations: Dict = calculate_correlations(
-                current_data, data_definition
-            )
+            current_correlations: Dict = calculate_correlations(current_data, data_definition)
 
         else:
             current_correlations = {}

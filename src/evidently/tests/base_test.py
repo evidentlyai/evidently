@@ -75,9 +75,7 @@ class TestResult:
     # Constants for test result status
     SUCCESS = "SUCCESS"  # the test was passed
     FAIL = "FAIL"  # success pass for the test
-    WARNING = (
-        "WARNING"  # the test was passed, but we have some issues during the execution
-    )
+    WARNING = "WARNING"  # the test was passed, but we have some issues during the execution
     ERROR = "ERROR"  # cannot calculate the test result, no data
     SKIPPED = "SKIPPED"  # the test was skipped
 
@@ -134,9 +132,7 @@ class Test:
             raise ValueError("No context is set")
         result = self.context.test_results.get(self, None)
         if result is None:
-            raise ValueError(
-                f"No result found for metric {self} of type {type(self).__name__}"
-            )
+            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result
 
 

@@ -20,9 +20,7 @@ class DataDriftProfileSection(ProfileSection):
     def analyzers(self):
         return self.analyzers_types
 
-    def calculate(
-        self, reference_data, current_data, column_mapping, analyzers_results
-    ) -> None:
+    def calculate(self, reference_data, current_data, column_mapping, analyzers_results) -> None:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
         result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
 
@@ -42,8 +40,7 @@ class DataDriftProfileSection(ProfileSection):
                 if feature_metrics.current.small_distribution is not None
                 else None,
                 "ref_small_hist": feature_metrics.reference.small_distribution.dict()
-                if feature_metrics.reference is not None
-                and feature_metrics.reference.small_distribution is not None
+                if feature_metrics.reference is not None and feature_metrics.reference.small_distribution is not None
                 else None,
                 "feature_type": feature_metrics.column_type,
                 "stattest_name": feature_metrics.stattest_name,

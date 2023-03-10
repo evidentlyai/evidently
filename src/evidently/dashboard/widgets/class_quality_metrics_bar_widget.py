@@ -32,9 +32,7 @@ class ClassQualityMetricsBarWidget(Widget):
 
         if target_name is None or prediction_name is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns."
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
             return None
 
         if self.dataset == "current":
@@ -50,9 +48,7 @@ class ClassQualityMetricsBarWidget(Widget):
                 )
 
         else:
-            raise ValueError(
-                f"Widget [{self.title}] requires 'current' or 'reference' dataset value"
-            )
+            raise ValueError(f"Widget [{self.title}] requires 'current' or 'reference' dataset value")
 
         if result_metrics is None:
             return None

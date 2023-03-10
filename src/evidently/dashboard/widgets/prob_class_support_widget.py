@@ -35,9 +35,7 @@ class ProbClassSupportWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
 
         if self.dataset == "reference":
@@ -53,9 +51,7 @@ class ProbClassSupportWidget(Widget):
             metrics = results.current_metrics
 
         else:
-            raise ValueError(
-                f"Widget [{self.title}] required 'current' or 'reference' dataset value"
-            )
+            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
 
         if metrics is None:
             return None

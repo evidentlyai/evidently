@@ -39,30 +39,22 @@ class RegErrorNormalityWidget(Widget):
 
         if target_column is None or prediction_column is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
 
         if self.dataset == "current":
-            dataset_to_plot = (
-                current_data.copy(deep=False) if current_data is not None else None
-            )
+            dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
 
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires reference dataset but it is None"
-                )
+                raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
             return None
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
-        dataset_to_plot.dropna(
-            axis=0, how="any", inplace=True, subset=[target_column, prediction_column]
-        )
+        dataset_to_plot.dropna(axis=0, how="any", inplace=True, subset=[target_column, prediction_column])
 
         # plot error normality
         error_norm = go.Figure()
@@ -93,9 +85,7 @@ class RegErrorNormalityWidget(Widget):
         error_norm.update_layout(
             xaxis_title="Theoretical Quantiles",
             yaxis_title="Dataset Quantiles",
-            legend=dict(
-                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
-            ),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         )
 
         error_norm_json = json.loads(error_norm.to_json())

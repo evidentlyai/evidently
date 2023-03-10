@@ -38,20 +38,14 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if self.column_name not in data.current_data:
-            raise ValueError(
-                f"Column '{self.column_name}' was not found in current data."
-            )
+            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(
-                    f"Column '{self.column_name}' was not found in reference data."
-                )
+                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
         columns = process_columns(data.current_data, data.column_mapping)
-        column_type = recognize_column_type(
-            dataset=data.current_data, column_name=self.column_name, columns=columns
-        )
+        column_type = recognize_column_type(dataset=data.current_data, column_name=self.column_name, columns=columns)
         current_column = data.current_data[self.column_name]
         reference_column = None
         if data.reference_data is not None:
@@ -80,9 +74,7 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
         )
 
         result = [
-            header_text(
-                label=f"Distribution for column '{metric_result.column_name}'."
-            ),
+            header_text(label=f"Distribution for column '{metric_result.column_name}'."),
             plotly_figure(title="", figure=distr_fig, size=WidgetSize.FULL),
         ]
         return result

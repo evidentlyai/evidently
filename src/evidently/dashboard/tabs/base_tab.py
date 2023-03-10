@@ -70,9 +70,7 @@ class Tab(PipelineStage):
         for widget in self._widgets:
             widget.options_provider = self.options_provider
             self._widget_results.append(
-                widget.calculate(
-                    reference_data, current_data, column_mapping, analyzers_results
-                )
+                widget.calculate(reference_data, current_data, column_mapping, analyzers_results)
             )
 
     def info(self) -> List[Optional[BaseWidgetInfo]]:

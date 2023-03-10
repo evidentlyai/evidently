@@ -14,12 +14,8 @@ class RegressionPerformanceMonitorMetrics:
     _tag = "regression_performance"
     quality = ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
     normality = ModelMonitoringMetric(f"{_tag}:error_normality", ["dataset", "metric"])
-    underperformance = ModelMonitoringMetric(
-        f"{_tag}:underperformance", ["dataset", "metric", "type"]
-    )
-    feature_error_bias = ModelMonitoringMetric(
-        f"{_tag}:feature_error_bias", ["feature", "feature_type", "metric"]
-    )
+    underperformance = ModelMonitoringMetric(f"{_tag}:underperformance", ["dataset", "metric", "type"])
+    feature_error_bias = ModelMonitoringMetric(f"{_tag}:feature_error_bias", ["feature", "feature_type", "metric"])
 
 
 class RegressionPerformanceMonitor(ModelMonitor):
@@ -36,28 +32,20 @@ class RegressionPerformanceMonitor(ModelMonitor):
             for metric in self._yield_quality(results.reference_metrics, "reference"):
                 yield metric
 
-            for metric in self._yield_error_normality(
-                results.reference_metrics.error_normality, "reference"
-            ):
+            for metric in self._yield_error_normality(results.reference_metrics.error_normality, "reference"):
                 yield metric
 
-            for metric in self._yield_underperformance(
-                results.reference_metrics.underperformance, "reference"
-            ):
+            for metric in self._yield_underperformance(results.reference_metrics.underperformance, "reference"):
                 yield metric
 
         if results.current_metrics is not None:
             for metric in self._yield_quality(results.current_metrics, "current"):
                 yield metric
 
-            for metric in self._yield_error_normality(
-                results.current_metrics.error_normality, "current"
-            ):
+            for metric in self._yield_error_normality(results.current_metrics.error_normality, "current"):
                 yield metric
 
-            for metric in self._yield_underperformance(
-                results.current_metrics.underperformance, "current"
-            ):
+            for metric in self._yield_underperformance(results.current_metrics.underperformance, "current"):
                 yield metric
 
         fields = [
@@ -88,9 +76,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
                     )
 
     @staticmethod
-    def _yield_quality(
-        metrics: RegressionPerformanceMetrics, dataset: str
-    ) -> Generator[MetricsType, None, None]:
+    def _yield_quality(metrics: RegressionPerformanceMetrics, dataset: str) -> Generator[MetricsType, None, None]:
         yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.mean_error, dict(dataset=dataset, metric="mean_error")
         )
@@ -113,9 +99,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
         )
 
     @staticmethod
-    def _yield_error_normality(
-        normality_data, dataset
-    ) -> Generator[MetricsType, None, None]:
+    def _yield_error_normality(normality_data, dataset) -> Generator[MetricsType, None, None]:
         metric_labels = ["slope", "intercept", "r"]
         for label in metric_labels:
             yield RegressionPerformanceMonitorMetrics.normality.create(
@@ -123,9 +107,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
             )
 
     @staticmethod
-    def _yield_underperformance(
-        underperformance_data, dataset
-    ) -> Generator[MetricsType, None, None]:
+    def _yield_underperformance(underperformance_data, dataset) -> Generator[MetricsType, None, None]:
         type_labels = ["majority", "underestimation", "overestimation"]
         metric_labels = ["mean_error", "std_error"]
         for type_label in type_labels:

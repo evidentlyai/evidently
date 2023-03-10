@@ -54,11 +54,7 @@ def classification_performance_metrics(
     # calculate confusion matrix
     confusion_matrix = metrics.confusion_matrix(target, prediction)
     # get labels from data mapping or get all values kinds from target and prediction columns
-    labels = (
-        list(target_names.keys())
-        if target_names
-        else sorted(set(target) | set(prediction))
-    )
+    labels = list(target_names.keys()) if target_names else sorted(set(target) | set(prediction))
     confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
     return ClassificationPerformanceMetrics(
         accuracy=accuracy_score,
@@ -66,9 +62,7 @@ def classification_performance_metrics(
         recall=avg_recall,
         f1=avg_f1,
         metrics_matrix=metrics_matrix,
-        confusion_matrix=ConfusionMatrix(
-            labels=labels, values=confusion_matrix.tolist()
-        ),
+        confusion_matrix=ConfusionMatrix(labels=labels, values=confusion_matrix.tolist()),
         confusion_by_classes=confusion_by_classes,
     )
 
@@ -88,9 +82,7 @@ def _calculate_performance_metrics(
         target_and_preds += prediction_column
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
     data.dropna(axis=0, how="any", inplace=True, subset=target_and_preds)
-    return classification_performance_metrics(
-        data[target_column], data[prediction_column], target_names
-    )
+    return classification_performance_metrics(data[target_column], data[prediction_column], target_names)
 
 
 class ClassificationPerformanceAnalyzer(Analyzer):

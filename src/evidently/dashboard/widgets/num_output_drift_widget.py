@@ -51,17 +51,13 @@ class NumOutputDriftWidget(Widget):
                 return None
 
             if not isinstance(results.columns.utility_columns.prediction, str):
-                raise ValueError(
-                    f"Widget [{self.title}] requires one str value for 'prediction' column"
-                )
+                raise ValueError(f"Widget [{self.title}] requires one str value for 'prediction' column")
 
             column_name = results.columns.utility_columns.prediction
             metrics = results.prediction_metrics
 
         else:
-            raise ValueError(
-                f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value"
-            )
+            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
 
         if metrics is None:
             return None
@@ -97,9 +93,7 @@ class NumOutputDriftWidget(Widget):
         output_distr.update_layout(
             xaxis_title="Value",
             yaxis_title="Share",
-            legend=dict(
-                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
-            ),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         )
 
         # output_drift_json = json.loads(output_distr.to_json())

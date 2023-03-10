@@ -47,9 +47,7 @@ class NumTargetPredFeatureTable(Widget):
             params_data.append(
                 {
                     "details": {
-                        "parts": [
-                            {"title": "Feature values", "id": feature_name + "_values"}
-                        ],
+                        "parts": [{"title": "Feature values", "id": feature_name + "_values"}],
                         "insights": [],
                     },
                     "f1": feature_name,

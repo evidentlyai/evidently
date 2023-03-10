@@ -59,9 +59,7 @@ def calculate_confusion_by_classes(
     true_positive = np.diag(confusion_matrix)
     false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
     false_negative = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
-    true_negative = confusion_matrix.sum() - (
-        false_positive + false_negative + true_positive
-    )
+    true_negative = confusion_matrix.sum() - (false_positive + false_negative + true_positive)
     confusion_by_classes = {}
 
     for idx, class_name in enumerate(class_names):
@@ -75,9 +73,7 @@ def calculate_confusion_by_classes(
     return confusion_by_classes
 
 
-def k_probability_threshold(
-    prediction_probas: pd.DataFrame, k: Union[int, float]
-) -> float:
+def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float]) -> float:
     probas = prediction_probas.iloc[:, 0].sort_values(ascending=False)
     if isinstance(k, float):
         if k < 0.0 or k > 1.0:
@@ -136,9 +132,7 @@ def get_prediction_data(
         # get negative label for binary classification
         neg_label = labels[labels != pos_label][0]
 
-        predictions = threshold_probability_labels(
-            data[prediction], pos_label, neg_label, threshold
-        )
+        predictions = threshold_probability_labels(data[prediction], pos_label, neg_label, threshold)
         return PredictionData(
             predictions=predictions,
             prediction_probas=data[[pos_label, neg_label]],
@@ -175,9 +169,7 @@ def get_prediction_data(
                 neg_label: pos_preds.apply(lambda x: 1.0 - x),
             }
         )
-        predictions = threshold_probability_labels(
-            prediction_probas, pos_label, neg_label, threshold
-        )
+        predictions = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
         return PredictionData(
             predictions=predictions,
             prediction_probas=prediction_probas,
@@ -185,11 +177,7 @@ def get_prediction_data(
         )
 
     # binary target and preds are numbers and prediction is a label
-    if (
-        not isinstance(prediction, list)
-        and prediction in [0, 1, "0", "1"]
-        and pos_label == 0
-    ):
+    if not isinstance(prediction, list) and prediction in [0, 1, "0", "1"] and pos_label == 0:
         if prediction in [0, "0"]:
             pos_preds = data[prediction]
         else:
@@ -234,9 +222,7 @@ def get_prediction_data(
     )
 
 
-def _check_pos_labels(
-    pos_label: Optional[Union[str, int]], labels: List[str]
-) -> Union[str, int]:
+def _check_pos_labels(pos_label: Optional[Union[str, int]], labels: List[str]) -> Union[str, int]:
     if pos_label is None:
         raise ValueError("Undefined pos_label.")
 
@@ -253,9 +239,7 @@ def threshold_probability_labels(
     threshold: float,
 ) -> pd.Series:
     """Get prediction values by probabilities with the threshold apply"""
-    return prediction_probas[pos_label].apply(
-        lambda x: pos_label if x >= threshold else neg_label
-    )
+    return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)
 
 
 STEP_SIZE = 0.05
@@ -355,46 +339,27 @@ def calculate_metrics(
             confusion_matrix.labels,
         )
         conf_by_pos_label = confusion_by_classes[pos_label]
-        precision = metrics.precision_score(
-            target, prediction.predictions, pos_label=pos_label
-        )
-        recall = metrics.recall_score(
-            target, prediction.predictions, pos_label=pos_label
-        )
+        precision = metrics.precision_score(target, prediction.predictions, pos_label=pos_label)
+        recall = metrics.recall_score(target, prediction.predictions, pos_label=pos_label)
         f1 = metrics.f1_score(target, prediction.predictions, pos_label=pos_label)
-        tpr = conf_by_pos_label["tp"] / (
-            conf_by_pos_label["tp"] + conf_by_pos_label["fn"]
-        )
-        tnr = conf_by_pos_label["tn"] / (
-            conf_by_pos_label["tn"] + conf_by_pos_label["fp"]
-        )
-        fpr = conf_by_pos_label["fp"] / (
-            conf_by_pos_label["fp"] + conf_by_pos_label["tn"]
-        )
-        fnr = conf_by_pos_label["fn"] / (
-            conf_by_pos_label["fn"] + conf_by_pos_label["tp"]
-        )
+        tpr = conf_by_pos_label["tp"] / (conf_by_pos_label["tp"] + conf_by_pos_label["fn"])
+        tnr = conf_by_pos_label["tn"] / (conf_by_pos_label["tn"] + conf_by_pos_label["fp"])
+        fpr = conf_by_pos_label["fp"] / (conf_by_pos_label["fp"] + conf_by_pos_label["tn"])
+        fnr = conf_by_pos_label["fn"] / (conf_by_pos_label["fn"] + conf_by_pos_label["tp"])
     else:
-        precision = metrics.precision_score(
-            target, prediction.predictions, average="macro"
-        )
+        precision = metrics.precision_score(target, prediction.predictions, average="macro")
         recall = metrics.recall_score(target, prediction.predictions, average="macro")
         f1 = metrics.f1_score(target, prediction.predictions, average="macro")
     if prediction.prediction_probas is not None:
         binaraized_target = (
-            target.astype(str).values.reshape(-1, 1)
-            == list(prediction.prediction_probas.columns.astype(str))
+            target.astype(str).values.reshape(-1, 1) == list(prediction.prediction_probas.columns.astype(str))
         ).astype(int)
         prediction_probas_array = prediction.prediction_probas.to_numpy()
-        roc_auc = metrics.roc_auc_score(
-            binaraized_target, prediction_probas_array, average="macro"
-        )
+        roc_auc = metrics.roc_auc_score(binaraized_target, prediction_probas_array, average="macro")
         log_loss = metrics.log_loss(binaraized_target, prediction_probas_array)
         plot_data = collect_plot_data(prediction.prediction_probas)
     if len(prediction.labels) == 2 and prediction.prediction_probas is not None:
-        fprs, tprs, thrs = metrics.roc_curve(
-            target == pos_label, prediction.prediction_probas[pos_label]
-        )
+        fprs, tprs, thrs = metrics.roc_curve(target == pos_label, prediction.prediction_probas[pos_label])
         roc_curve = {"fpr": fprs.tolist(), "tpr": tprs.tolist(), "thrs": thrs.tolist()}
         rate_plots_data = {
             "thrs": roc_curve["thrs"],

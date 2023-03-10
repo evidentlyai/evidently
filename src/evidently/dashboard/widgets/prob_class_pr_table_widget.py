@@ -31,9 +31,7 @@ class ProbClassPRTableWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
 
             return None
 
@@ -50,9 +48,7 @@ class ProbClassPRTableWidget(Widget):
             metrics = results.current_metrics
 
         else:
-            raise ValueError(
-                f"Widget [{self.title}] required 'current' or 'reference' dataset value"
-            )
+            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
 
         if metrics is None:
             return None
@@ -62,9 +58,7 @@ class ProbClassPRTableWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] got no pr_table value")
 
             if not isinstance(metrics.pr_table, list):
-                raise ValueError(
-                    f"Widget [{self.title}] got incorrect type for pr_table value"
-                )
+                raise ValueError(f"Widget [{self.title}] got incorrect type for pr_table value")
 
             pr_table_data: list = metrics.pr_table
             params_data = []
@@ -123,9 +117,7 @@ class ProbClassPRTableWidget(Widget):
                     raise ValueError(f"Widget [{self.title}] got no pr_table value")
 
                 if not isinstance(metrics.pr_table, dict):
-                    raise ValueError(
-                        f"Widget [{self.title}] got incorrect type of pr_table value"
-                    )
+                    raise ValueError(f"Widget [{self.title}] got incorrect type of pr_table value")
 
                 pr_table_data_list = metrics.pr_table[label]
 

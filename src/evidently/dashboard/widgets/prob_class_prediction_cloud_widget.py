@@ -36,24 +36,18 @@ class ProbClassPredictionCloudWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
-                )
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
 
         if self.dataset == "current":
-            dataset_to_plot = (
-                current_data.copy(deep=False) if current_data is not None else None
-            )
+            dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
 
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] requires reference dataset but it is None"
-                )
+                raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
             return None
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -66,14 +60,8 @@ class ProbClassPredictionCloudWidget(Widget):
 
             fig.add_trace(
                 go.Scatter(
-                    x=np.random.random(
-                        dataset_to_plot[
-                            dataset_to_plot[utility_columns.target] == label
-                        ].shape[0]
-                    ),
-                    y=dataset_to_plot[dataset_to_plot[utility_columns.target] == label][
-                        label
-                    ],
+                    x=np.random.random(dataset_to_plot[dataset_to_plot[utility_columns.target] == label].shape[0]),
+                    y=dataset_to_plot[dataset_to_plot[utility_columns.target] == label][label],
                     mode="markers",
                     name=str(label),
                     marker=dict(size=6, color=color_options.primary_color),
@@ -82,14 +70,8 @@ class ProbClassPredictionCloudWidget(Widget):
 
             fig.add_trace(
                 go.Scatter(
-                    x=np.random.random(
-                        dataset_to_plot[
-                            dataset_to_plot[utility_columns.target] != label
-                        ].shape[0]
-                    ),
-                    y=dataset_to_plot[dataset_to_plot[utility_columns.target] != label][
-                        label
-                    ],
+                    x=np.random.random(dataset_to_plot[dataset_to_plot[utility_columns.target] != label].shape[0]),
+                    y=dataset_to_plot[dataset_to_plot[utility_columns.target] != label][label],
                     mode="markers",
                     name="other",
                     marker=dict(size=6, color=color_options.secondary_color),

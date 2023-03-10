@@ -55,9 +55,7 @@ def proportions_diff_z_test(z_stat, alternative="two-sided"):
     if alternative == "greater":
         return 1 - norm.cdf(z_stat)
 
-    raise ValueError(
-        "alternative not recognized\n" "should be 'two-sided', 'less' or 'greater'"
-    )
+    raise ValueError("alternative not recognized\n" "should be 'two-sided', 'less' or 'greater'")
 
 
 def _z_stat_test(
@@ -84,9 +82,7 @@ def _z_stat_test(
         p_value = 1
     else:
         keys = sorted(
-            get_unique_not_nan_values_list_from_series(
-                current_data=current_data, reference_data=reference_data
-            )
+            get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
         )
         p_value = proportions_diff_z_test(
             proportions_diff_z_stat_ind(

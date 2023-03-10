@@ -46,9 +46,7 @@ class BinaryClassificationTopKTestPreset(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
         if target is None:
-            raise ValueError(
-                "Target column should be set in mapping and be present in data"
-            )
+            raise ValueError("Target column should be set in mapping and be present in data")
         return [
             TestAccuracyScore(k=self.k),
             TestPrecisionScore(k=self.k),

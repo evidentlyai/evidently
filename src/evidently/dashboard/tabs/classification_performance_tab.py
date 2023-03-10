@@ -15,21 +15,15 @@ from evidently.dashboard.widgets.target_name_widget import TargetNameWidget
 class ClassificationPerformanceTab(Tab):
     widgets = [
         (
-            TargetNameWidget(
-                "Classification Model Performance Report.", kind="classification"
-            ),
+            TargetNameWidget("Classification Model Performance Report.", kind="classification"),
             Verbose.ALWAYS,
         ),
         (
-            ClassQualityMetricsBarWidget(
-                "Reference: Model Quality With Macro-average Metrics"
-            ),
+            ClassQualityMetricsBarWidget("Reference: Model Quality With Macro-average Metrics"),
             Verbose.ALWAYS,
         ),
         (
-            ClassQualityMetricsBarWidget(
-                "Current: Model Quality With Macro-average Metrics", "current"
-            ),
+            ClassQualityMetricsBarWidget("Current: Model Quality With Macro-average Metrics", "current"),
             Verbose.ALWAYS,
         ),
         (ClassSupportWidget("Reference: Class Representation"), Verbose.ALWAYS),

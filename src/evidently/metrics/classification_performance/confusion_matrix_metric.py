@@ -25,9 +25,7 @@ class ClassificationConfusionMatrixResult(MetricResult):
     target_names: Optional[Dict[Union[str, int], str]] = None
 
 
-class ClassificationConfusionMatrix(
-    ThresholdClassificationMetric[ClassificationConfusionMatrixResult]
-):
+class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult]):
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
@@ -39,9 +37,7 @@ class ClassificationConfusionMatrix(
         super().__init__(probas_threshold=probas_threshold, k=k)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
-        current_target_data, current_pred = self.get_target_prediction_data(
-            data.current_data, data.column_mapping
-        )
+        current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
         target_names = data.column_mapping.target_names
         if target_names is not None and current_pred.prediction_probas is None:
             target_names = data.column_mapping.target_names
@@ -53,9 +49,7 @@ class ClassificationConfusionMatrix(
 
         reference_results = None
         if data.reference_data is not None:
-            ref_target_data, ref_pred = self.get_target_prediction_data(
-                data.reference_data, data.column_mapping
-            )
+            ref_target_data, ref_pred = self.get_target_prediction_data(data.reference_data, data.column_mapping)
 
             reference_results = calculate_matrix(
                 ref_target_data,

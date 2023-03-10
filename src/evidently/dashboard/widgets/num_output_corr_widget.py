@@ -46,9 +46,7 @@ class NumOutputCorrWidget(Widget):
             metrics = results.prediction_metrics
 
         else:
-            raise ValueError(
-                f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value"
-            )
+            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
 
         if metrics is None:
             return None

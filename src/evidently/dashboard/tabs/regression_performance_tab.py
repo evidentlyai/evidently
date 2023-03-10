@@ -27,9 +27,7 @@ class RegressionPerformanceTab(Tab):
             Verbose.ALWAYS,
         ),
         (
-            RegQualityMetricsBarWidget(
-                "Current: Model Quality (+/- std)", dataset="current"
-            ),
+            RegQualityMetricsBarWidget("Current: Model Quality (+/- std)", dataset="current"),
             Verbose.ALWAYS,
         ),
         (RegPredActualWidget("Reference: Predicted vs Actual"), Verbose.ALWAYS),
@@ -42,16 +40,12 @@ class RegressionPerformanceTab(Tab):
             Verbose.ALWAYS,
         ),
         (
-            RegPredActualTimeWidget(
-                "Current: Predicted vs Actual in Time", dataset="current"
-            ),
+            RegPredActualTimeWidget("Current: Predicted vs Actual in Time", dataset="current"),
             Verbose.ALWAYS,
         ),
         (RegErrorTimeWidget("Reference: Error (Predicted - Actual)"), Verbose.ALWAYS),
         (
-            RegErrorTimeWidget(
-                "Current: Error (Predicted - Actual)", dataset="current"
-            ),
+            RegErrorTimeWidget("Current: Error (Predicted - Actual)", dataset="current"),
             Verbose.ALWAYS,
         ),
         (
@@ -59,9 +53,7 @@ class RegressionPerformanceTab(Tab):
             Verbose.FULL,
         ),
         (
-            RegAbsPercErrorTimeWidget(
-                "Current: Absolute Percentage Error", dataset="current"
-            ),
+            RegAbsPercErrorTimeWidget("Current: Absolute Percentage Error", dataset="current"),
             Verbose.FULL,
         ),
         (RegErrorDistrWidget("Reference: Error Distribution"), Verbose.ALWAYS),
@@ -79,9 +71,7 @@ class RegressionPerformanceTab(Tab):
             Verbose.FULL,
         ),
         (
-            RegUnderperformMetricsWidget(
-                "Current: Mean Error per Group (+/- std)", dataset="current"
-            ),
+            RegUnderperformMetricsWidget("Current: Mean Error per Group (+/- std)", dataset="current"),
             Verbose.FULL,
         ),
         (
@@ -89,15 +79,11 @@ class RegressionPerformanceTab(Tab):
             Verbose.FULL,
         ),
         (
-            RegColoredPredActualWidget(
-                "Current: Predicted vs Actual per Group", dataset="current"
-            ),
+            RegColoredPredActualWidget("Current: Predicted vs Actual per Group", dataset="current"),
             Verbose.FULL,
         ),
         (
-            UnderperformSegmTableWidget(
-                "Error Bias: Mean/Most Common Feature Value per Group"
-            ),
+            UnderperformSegmTableWidget("Error Bias: Mean/Most Common Feature Value per Group"),
             Verbose.FULL,
         ),
     ]

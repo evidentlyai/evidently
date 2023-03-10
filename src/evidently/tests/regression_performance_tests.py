@@ -61,16 +61,10 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        ref_mae = (
-            metric_result.reference.mean_abs_error
-            if metric_result.reference is not None
-            else None
-        )
+        ref_mae = metric_result.reference.mean_abs_error if metric_result.reference is not None else None
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(
-            lt=self.dummy_metric.get_result().mean_abs_error_default
-        )
+        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_error_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.mean_abs_error
@@ -87,9 +81,7 @@ class TestValueMAERenderer(TestRenderer):
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["mean_abs_error"] = metric_result.current.mean_abs_error
         base["parameters"]["mean_abs_error_ref"] = (
-            metric_result.reference.mean_abs_error
-            if metric_result.reference is not None
-            else None
+            metric_result.reference.mean_abs_error if metric_result.reference is not None else None
         )
         return base
 
@@ -106,9 +98,7 @@ class TestValueMAERenderer(TestRenderer):
             hist_for_plot=result.hist_for_plot,
             name="MAE",
             curr_metric=result.current.mean_abs_error,
-            ref_metric=result.reference.mean_abs_error
-            if result.reference is not None
-            else None,
+            ref_metric=result.reference.mean_abs_error if result.reference is not None else None,
             is_ref_data=is_ref_data,
             color_options=self.color_options,
         )
@@ -123,16 +113,10 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        ref_mae = (
-            metric_result.reference.mean_abs_perc_error
-            if metric_result.reference is not None
-            else None
-        )
+        ref_mae = metric_result.reference.mean_abs_perc_error if metric_result.reference is not None else None
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(
-            lt=self.dummy_metric.get_result().mean_abs_perc_error_default
-        )
+        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_perc_error_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.mean_abs_perc_error
@@ -147,17 +131,11 @@ class TestValueMAPERenderer(TestRenderer):
         base = super().render_json(obj)
         metric_result = obj.metric.get_result()
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"][
-            "mean_abs_perc_error"
-        ] = metric_result.current.mean_abs_perc_error
+        base["parameters"]["mean_abs_perc_error"] = metric_result.current.mean_abs_perc_error
         base["parameters"]["mean_abs_perc_error_ref"] = (
-            metric_result.reference.mean_abs_perc_error
-            if metric_result.reference is not None
-            else None
+            metric_result.reference.mean_abs_perc_error if metric_result.reference is not None else None
         )
-        base["parameters"][
-            "mean_abs_perc_error_default"
-        ] = metric_result.mean_abs_perc_error_default
+        base["parameters"]["mean_abs_perc_error_default"] = metric_result.mean_abs_perc_error_default
         return base
 
     def render_html(self, obj: TestValueMAPE) -> TestHtmlInfo:
@@ -173,9 +151,7 @@ class TestValueMAPERenderer(TestRenderer):
             hist_for_plot=result.hist_for_plot,
             name="MAPE",
             curr_metric=result.current.mean_abs_perc_error,
-            ref_metric=result.reference.mean_abs_perc_error
-            if result.reference is not None
-            else None,
+            ref_metric=result.reference.mean_abs_perc_error if result.reference is not None else None,
             is_ref_data=is_ref_data,
             color_options=self.color_options,
         )
@@ -190,11 +166,7 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        rmse_ref = (
-            metric_result.reference.rmse
-            if metric_result.reference is not None
-            else None
-        )
+        rmse_ref = metric_result.reference.rmse if metric_result.reference is not None else None
         if rmse_ref is not None:
             return TestValueCondition(eq=approx(rmse_ref, relative=0.1))
         return TestValueCondition(lt=self.dummy_metric.get_result().rmse_default)
@@ -213,14 +185,8 @@ class TestValueRMSERenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["rmse"] = metric_result.current.rmse
-        base["parameters"]["rmse_ref"] = (
-            metric_result.reference.rmse
-            if metric_result.reference is not None
-            else None
-        )
-        base["parameters"]["rmse_default"] = (
-            metric_result.rmse_default if metric_result.reference is not None else None
-        )
+        base["parameters"]["rmse_ref"] = metric_result.reference.rmse if metric_result.reference is not None else None
+        base["parameters"]["rmse_default"] = metric_result.rmse_default if metric_result.reference is not None else None
         return base
 
     def render_html(self, obj: TestValueRMSE) -> TestHtmlInfo:
@@ -248,9 +214,7 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
-        return TestValueCondition(
-            eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma)
-        )
+        return TestValueCondition(eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.mean_error
@@ -275,13 +239,9 @@ class TestValueMeanErrorRenderer(TestRenderer):
         hist_ref = None
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
-        fig = plot_distr(
-            hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        fig = plot_metric_value(
-            fig, obj.metric.get_result().current.mean_error, "current mean error"
-        )
+        fig = plot_metric_value(fig, obj.metric.get_result().current.mean_error, "current mean error")
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -293,16 +253,10 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        abs_error_max_ref = (
-            metric_result.reference.abs_error_max
-            if metric_result.reference is not None
-            else None
-        )
+        abs_error_max_ref = metric_result.reference.abs_error_max if metric_result.reference is not None else None
         if abs_error_max_ref is not None:
             return TestValueCondition(lte=approx(abs_error_max_ref, relative=0.1))
-        return TestValueCondition(
-            lte=self.dummy_metric.get_result().abs_error_max_default
-        )
+        return TestValueCondition(lte=self.dummy_metric.get_result().abs_error_max_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.abs_error_max
@@ -319,14 +273,10 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["abs_error_max"] = metric_result.current.abs_error_max
         base["parameters"]["abs_error_max_ref"] = (
-            metric_result.reference.abs_error_max
-            if metric_result.reference is not None
-            else None
+            metric_result.reference.abs_error_max if metric_result.reference is not None else None
         )
         base["parameters"]["abs_error_max_ref"] = (
-            metric_result.abs_error_max_default
-            if metric_result.reference is not None
-            else None
+            metric_result.abs_error_max_default if metric_result.reference is not None else None
         )
         return base
 
@@ -339,9 +289,7 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
 
-        fig = plot_distr(
-            hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -353,9 +301,7 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         result = self.metric.get_result()
-        r2_score_ref = (
-            result.reference.r2_score if result.reference is not None else None
-        )
+        r2_score_ref = result.reference.r2_score if result.reference is not None else None
         if r2_score_ref is not None:
             return TestValueCondition(eq=approx(r2_score_ref, relative=0.1))
         return TestValueCondition(gt=0)
@@ -364,9 +310,7 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().current.r2_score
 
     def get_description(self, value: Numeric) -> str:
-        return (
-            f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
-        )
+        return f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueR2Score)
@@ -378,9 +322,7 @@ class TestValueR2ScoreRenderer(TestRenderer):
         base["parameters"]["r2_score"] = metric_result.current.r2_score
         # todo will be removed with tests json render logic
         base["parameters"]["r2_score_ref"] = (
-            metric_result.reference.r2_score
-            if metric_result.reference is not None
-            else None
+            metric_result.reference.r2_score if metric_result.reference is not None else None
         )
         return base
 
@@ -395,9 +337,7 @@ class TestValueR2ScoreRenderer(TestRenderer):
             hist_for_plot=result.hist_for_plot,
             name="R2_score",
             curr_metric=result.current.r2_score,
-            ref_metric=result.reference.r2_score
-            if result.reference is not None
-            else None,
+            ref_metric=result.reference.r2_score if result.reference is not None else None,
             is_ref_data=is_ref_data,
             color_options=self.color_options,
         )

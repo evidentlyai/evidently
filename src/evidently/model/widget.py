@@ -86,9 +86,7 @@ class BaseWidgetInfo:
     alertStats: Optional[AlertStats] = None
     params: Any = None
     insights: Iterable[Insight] = ()
-    additionalGraphs: Iterable[
-        Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]
-    ] = ()
+    additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = ()
     alerts: Iterable[Alert] = ()
     tabs: Iterable["TabInfo"] = ()
     widgets: Iterable["BaseWidgetInfo"] = ()

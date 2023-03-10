@@ -50,9 +50,7 @@ def _psi(
         psi_value: calculated PSI
         test_result: whether the drift is detected
     """
-    reference_percents, current_percents = get_binned_data(
-        reference_data, current_data, feature_type, n_bins
-    )
+    reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
 
     def sub_psi(ref_perc, curr_perc):
         """Calculate the actual PSI value from comparing the values.

@@ -23,13 +23,8 @@ class ClassTargetNameWidget(Widget):
     ) -> Optional[BaseWidgetInfo]:
         columns = process_columns(reference_data, column_mapping)
 
-        if (
-            columns.utility_columns.target is None
-            or columns.utility_columns.prediction is None
-        ):
-            raise ValueError(
-                f"Widget [{self.title}] requires 'target' and 'prediction' columns"
-            )
+        if columns.utility_columns.target is None or columns.utility_columns.prediction is None:
+            raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
 
         return BaseWidgetInfo(
             title=self.title,

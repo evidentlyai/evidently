@@ -41,26 +41,20 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
         rows_per_page = self._get_rows_per_page(results.columns.get_features_len())
 
         if target_name is None or results.columns.utility_columns.prediction is None:
-            raise ValueError(
-                f"Widget {self.title} requires 'target' and 'prediction' columns."
-            )
+            raise ValueError(f"Widget {self.title} requires 'target' and 'prediction' columns.")
 
         if current_data is not None:
             additional_graphs_data = []
             params_data = []
 
-            for feature_name in results.columns.get_all_features_list(
-                cat_before_num=False
-            ):
+            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
                 # add data for table in params
                 labels = sorted(set(reference_data[target_name]))
 
                 params_data.append(
                     {
                         "details": {
-                            "parts": [
-                                {"title": "All", "id": "All" + "_" + str(feature_name)}
-                            ]
+                            "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
                             + [
                                 {
                                     "title": str(label),
@@ -82,9 +76,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     side, q = quantile
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
-                    reference_data_to_plot = cqt.transform_df(
-                        reference_data, feature_name
-                    )
+                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
                     current_data_to_plot = cqt.transform_df(current_data, feature_name)
                 else:
                     reference_data_to_plot = reference_data
@@ -162,13 +154,8 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
             params_data.append(
                 {
                     "details": {
-                        "parts": [
-                            {"title": "All", "id": "All" + "_" + str(feature_name)}
-                        ]
-                        + [
-                            {"title": str(label), "id": feature_name + "_" + str(label)}
-                            for label in labels
-                        ],
+                        "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
+                        + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
                         "insights": [],
                     },
                     "f1": feature_name,
@@ -208,9 +195,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                 def _confusion_func(row, label=label):
                     return _confusion(row, target_name, prediction_name, label)
 
-                reference_data["Confusion"] = reference_data.apply(
-                    _confusion_func, axis=1
-                )
+                reference_data["Confusion"] = reference_data.apply(_confusion_func, axis=1)
 
                 fig = px.histogram(
                     reference_data_to_plot,

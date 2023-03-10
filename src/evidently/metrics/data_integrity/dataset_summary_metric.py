@@ -77,9 +77,7 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
         self.almost_duplicated_threshold = almost_duplicated_threshold
         self.almost_constant_threshold = almost_constant_threshold
 
-    def _calculate_dataset_common_stats(
-        self, dataset: pd.DataFrame, column_mapping: ColumnMapping
-    ) -> DatasetSummary:
+    def _calculate_dataset_common_stats(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetSummary:
         columns = process_columns(dataset, column_mapping)
         return DatasetSummary(
             target=columns.utility_columns.target,
@@ -110,24 +108,17 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
         )
 
     def calculate(self, data: InputData) -> DatasetSummaryMetricResult:
-        if (
-            self.almost_duplicated_threshold < 0.5
-            or self.almost_duplicated_threshold > 1
-        ):
+        if self.almost_duplicated_threshold < 0.5 or self.almost_duplicated_threshold > 1:
             raise ValueError("Almost duplicated threshold should be in range [0.5, 1]")
 
         if self.almost_constant_threshold < 0.5 or self.almost_duplicated_threshold > 1:
             raise ValueError("Almost constant threshold should be in range [0.5, 1]")
 
-        current = self._calculate_dataset_common_stats(
-            data.current_data, data.column_mapping
-        )
+        current = self._calculate_dataset_common_stats(data.current_data, data.column_mapping)
         reference = None
 
         if data.reference_data is not None:
-            reference = self._calculate_dataset_common_stats(
-                data.reference_data, data.column_mapping
-            )
+            reference = self._calculate_dataset_common_stats(data.reference_data, data.column_mapping)
 
         return DatasetSummaryMetricResult(
             current=current,

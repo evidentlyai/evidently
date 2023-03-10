@@ -13,9 +13,7 @@ from plotly.subplots import make_subplots
 from evidently.options.color_scheme import ColorOptions
 
 
-def plot_distr(
-    *, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions
-) -> go.Figure:
+def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions) -> go.Figure:
     fig = go.Figure()
 
     fig.add_trace(
@@ -127,9 +125,7 @@ def plot_distr_with_log_button(
     layout = dict(updatemenus=updatemenus)
 
     fig = go.Figure(data=traces, layout=layout)
-    fig.update_layout(
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-    )
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
     fig = json.loads(fig.to_json())
     return fig
 
@@ -158,9 +154,7 @@ def plot_distr_subplots(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(
-        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
-    )
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     trace = go.Bar(
         x=hist_curr["x"],
         y=hist_curr["count"],
@@ -209,9 +203,7 @@ def plot_num_feature_in_time(
             go.Scatter(
                 x=ref_data.sort_values(datetime_name)[datetime_name],
                 y=ref_data.sort_values(datetime_name)[feature_name],
-                line=dict(
-                    color=color_options.get_reference_data_color(), shape="spline"
-                ),
+                line=dict(color=color_options.get_reference_data_color(), shape="spline"),
                 name="reference",
             )
         )
@@ -244,15 +236,11 @@ def plot_time_feature_distr(
             go.Scatter(
                 x=ref_data.sort_values(feature_name)[feature_name],
                 y=ref_data.sort_values(feature_name)["number_of_items"],
-                line=dict(
-                    color=color_options.get_reference_data_color(), shape="spline"
-                ),
+                line=dict(color=color_options.get_reference_data_color(), shape="spline"),
                 name="reference",
             )
         )
-    fig.update_layout(
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-    )
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
     fig = json.loads(fig.to_json())
     return fig
 
@@ -279,9 +267,7 @@ def plot_cat_feature_in_time(
     for i, val in enumerate(values):
         fig.add_trace(
             go.Bar(
-                x=curr_data.loc[
-                    curr_data[feature_name].astype(str) == val, datetime_name
-                ],
+                x=curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name],
                 y=curr_data.loc[curr_data[feature_name].astype(str) == val, "num"],
                 name=str(val),
                 marker_color=color_options.color_sequence[i],
@@ -292,9 +278,7 @@ def plot_cat_feature_in_time(
             title = "reference/current"
             fig.add_trace(
                 go.Bar(
-                    x=ref_data.loc[
-                        ref_data[feature_name].astype(str) == val, datetime_name
-                    ],
+                    x=ref_data.loc[ref_data[feature_name].astype(str) == val, datetime_name],
                     y=ref_data.loc[ref_data[feature_name].astype(str) == val, "num"],
                     name=str(val),
                     marker_color=color_options.color_sequence[i],
@@ -383,9 +367,7 @@ def plot_cat_cat_rel(
     if ref is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
-    fig = make_subplots(
-        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
-    )
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     for i, val in enumerate(curr[target_name].astype(str).unique()):
         trace = go.Bar(
             x=curr.loc[curr[target_name] == val, feature_name],
@@ -452,25 +434,17 @@ def make_hist_for_cat_plot(
     curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False
 ) -> Dict[str, pd.Series]:
     result = {}
-    hist_df = (
-        curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
-    )
+    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
     hist_df.columns = ["x", "count"]
     result["current"] = hist_df
     if ref is not None:
-        hist_df = (
-            ref.astype(str)
-            .value_counts(normalize=normalize, dropna=dropna)
-            .reset_index()
-        )
+        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
         hist_df.columns = ["x", "count"]
         result["reference"] = hist_df
     return result
 
 
-def get_distribution_for_category_column(
-    column: pd.Series, normalize: bool = False
-) -> Distribution:
+def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
     value_counts = column.value_counts(normalize=normalize, dropna=False)
     return Distribution(
         x=value_counts.index.values,
@@ -505,12 +479,8 @@ def get_distribution_for_column(
 
     elif column_type == "num":
         if reference is not None:
-            bins = np.histogram_bin_edges(
-                pd.concat([current.dropna(), reference.dropna()]), bins="doane"
-            )
-            reference_distribution = get_distribution_for_numerical_column(
-                reference, bins
-            )
+            bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
+            reference_distribution = get_distribution_for_numerical_column(reference, bins)
 
         else:
             bins = np.histogram_bin_edges(current.dropna(), bins="doane")
@@ -518,9 +488,7 @@ def get_distribution_for_column(
         current_distribution = get_distribution_for_numerical_column(current, bins)
 
     else:
-        raise ValueError(
-            f"Cannot get distribution for a column with type {column_type}"
-        )
+        raise ValueError(f"Cannot get distribution for a column with type {column_type}")
 
     return current_distribution, reference_distribution
 
@@ -601,9 +569,7 @@ def plot_pred_actual_time(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(
-        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
-    )
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     for name, color in zip(
         ["Predicted", "Actual"],
         [
@@ -677,9 +643,7 @@ def plot_line_in_time(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(
-        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
-    )
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     trace = go.Scatter(
         x=curr[x_name],
         y=curr[y_name],
@@ -739,9 +703,7 @@ def plot_error_bias_colored_scatter(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(
-        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
-    )
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
 
     for name, color in zip(
         ["Underestimation", "Overestimation", "Majority"],
@@ -822,9 +784,7 @@ def plot_scatter_for_data_drift(
             y=[y0, y1],
             mode="markers",
             name="Current",
-            marker=dict(
-                size=0.01, color=color_options.non_visible_color, opacity=0.005
-            ),
+            marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
             showlegend=False,
         )
     )
@@ -873,9 +833,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     else:
         cols = 1
         subplot_titles = [""]
-    fig = make_subplots(
-        rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
-    )
+    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
     trace = go.Heatmap(
         z=curr_mtrx.values,
         x=[str(item) for item in curr_mtrx.labels],

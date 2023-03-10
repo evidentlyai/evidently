@@ -30,14 +30,9 @@ class ClassConfMatrixWidget(Widget):
     ) -> Optional[BaseWidgetInfo]:
         results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
 
-        if (
-            results.columns.utility_columns.target is None
-            or results.columns.utility_columns.prediction is None
-        ):
+        if results.columns.utility_columns.target is None or results.columns.utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(
-                    f"Widget [{self.title}] required 'target' or 'prediction' column to be set"
-                )
+                raise ValueError(f"Widget [{self.title}] required 'target' or 'prediction' column to be set")
             return None
 
         if self.dataset == "current":

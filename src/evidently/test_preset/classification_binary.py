@@ -43,14 +43,9 @@ class BinaryClassificationTestPreset(TestPreset):
         target = columns.utility_columns.target
 
         if target is None:
-            raise ValueError(
-                "Target column should be set in mapping and be present in data"
-            )
+            raise ValueError("Target column should be set in mapping and be present in data")
         prediction_columns = data.data_definition.get_prediction_columns()
-        is_probas_present = (
-            prediction_columns is not None
-            and prediction_columns.prediction_probas is not None
-        )
+        is_probas_present = prediction_columns is not None and prediction_columns.prediction_probas is not None
         if not is_probas_present:
             return [
                 TestColumnDrift(

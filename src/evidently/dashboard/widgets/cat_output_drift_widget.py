@@ -86,9 +86,7 @@ class CatOutputDriftWidget(Widget):
         )
 
         fig.update_layout(
-            legend=dict(
-                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
-            ),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             xaxis_title=output_name.title(),
             yaxis_title="Share",
         )

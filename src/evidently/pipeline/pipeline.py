@@ -23,9 +23,7 @@ class Pipeline:
         self.stages = stages
         self.analyzers_results = {}
         self.options_provider = OptionsProvider()
-        self._analyzers = list(
-            itertools.chain.from_iterable([stage.analyzers() for stage in stages])
-        )
+        self._analyzers = list(itertools.chain.from_iterable([stage.analyzers() for stage in stages]))
         for option in options:
             self.options_provider.add(option)
 
@@ -49,9 +47,7 @@ class Pipeline:
         for analyzer in self.get_analyzers():
             instance = analyzer()
             instance.options_provider = self.options_provider
-            self.analyzers_results[analyzer] = instance.calculate(
-                rdata, cdata, column_mapping
-            )
+            self.analyzers_results[analyzer] = instance.calculate(rdata, cdata, column_mapping)
         for stage in self.stages:
             stage.options_provider = self.options_provider
             stage.calculate(

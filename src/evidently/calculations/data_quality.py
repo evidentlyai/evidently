@@ -103,10 +103,7 @@ class FeatureQualityStats:
         return self.feature_type == "cat"
 
     def as_dict(self):
-        return {
-            field.name: getattr(self, field.name)
-            for field in dataclasses.fields(FeatureQualityStats)
-        }
+        return {field.name: getattr(self, field.name) for field in dataclasses.fields(FeatureQualityStats)}
 
     def __eq__(self, other):
         for field in dataclasses.fields(FeatureQualityStats):
@@ -175,22 +172,16 @@ def get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQualityS
     result.count = int(feature.count())
     all_values_count = feature.shape[0]
     value_counts = feature.value_counts(dropna=False)
-    result.missing_percentage = np.round(
-        100 * result.missing_count / all_values_count, 2
-    )
+    result.missing_percentage = np.round(100 * result.missing_count / all_values_count, 2)
     unique_count: int = feature.nunique()
     result.unique_count = unique_count
     result.unique_percentage = get_percentage_from_all_values(unique_count)
     result.most_common_value = value_counts.index[0]
-    result.most_common_value_percentage = get_percentage_from_all_values(
-        value_counts.iloc[0]
-    )
+    result.most_common_value_percentage = get_percentage_from_all_values(value_counts.iloc[0])
 
     if result.count > 0 and pd.isnull(result.most_common_value):
         result.most_common_not_null_value = value_counts.index[1]
-        result.most_common_not_null_value_percentage = get_percentage_from_all_values(
-            value_counts.iloc[1]
-        )
+        result.most_common_not_null_value_percentage = get_percentage_from_all_values(value_counts.iloc[1])
 
     if feature_type == "num":
         # round most common feature value for numeric features to 1e-5
@@ -199,9 +190,7 @@ def get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQualityS
         if isinstance(result.most_common_value, float):
             result.most_common_value = np.round(result.most_common_value, 5)
         result.infinite_count = int(np.sum(np.isinf(feature)))
-        result.infinite_percentage = get_percentage_from_all_values(
-            result.infinite_count
-        )
+        result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
         result.max = np.round(feature.max(), 2)
         result.min = np.round(feature.min(), 2)
         common_stats = dict(feature.describe())
@@ -244,8 +233,7 @@ def calculate_data_quality_stats(
         date_list = columns.datetime_feature_names
 
     result.datetime_features_stats = {
-        feature_name: get_features_stats(dataset[feature_name], feature_type="datetime")
-        for feature_name in date_list
+        feature_name: get_features_stats(dataset[feature_name], feature_type="datetime") for feature_name in date_list
     }
 
     target_name = columns.utility_columns.target
@@ -254,14 +242,10 @@ def calculate_data_quality_stats(
         result.target_stats = {}
 
         if task == "classification":
-            result.target_stats[target_name] = get_features_stats(
-                dataset[target_name], feature_type="cat"
-            )
+            result.target_stats[target_name] = get_features_stats(dataset[target_name], feature_type="cat")
 
         else:
-            result.target_stats[target_name] = get_features_stats(
-                dataset[target_name], feature_type="num"
-            )
+            result.target_stats[target_name] = get_features_stats(dataset[target_name], feature_type="num")
 
     prediction_name = columns.utility_columns.prediction
 
@@ -269,14 +253,10 @@ def calculate_data_quality_stats(
         result.prediction_stats = {}
 
         if task == "classification":
-            result.prediction_stats[prediction_name] = get_features_stats(
-                dataset[prediction_name], feature_type="cat"
-            )
+            result.prediction_stats[prediction_name] = get_features_stats(dataset[prediction_name], feature_type="cat")
 
         else:
-            result.prediction_stats[prediction_name] = get_features_stats(
-                dataset[prediction_name], feature_type="num"
-            )
+            result.prediction_stats[prediction_name] = get_features_stats(dataset[prediction_name], feature_type="num")
 
     return result
 
@@ -304,9 +284,7 @@ class DataQualityGetPlotData:
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
-                curr, ref = self._transform_cat_data(
-                    curr.copy(), ref, feature_name, merge_small_cat
-                )
+                curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
         curr_data = curr[feature_name].dropna()
         ref_data = None
         if ref is not None:
@@ -342,9 +320,7 @@ class DataQualityGetPlotData:
                 max_ref_date = ref_data[feature_name].max()
                 min_curr_date = curr_data[feature_name].min()
                 if max_ref_date == min_curr_date:
-                    curr_data, ref_data = self._split_periods(
-                        curr_data, ref_data, feature_name
-                    )
+                    curr_data, ref_data = self._split_periods(curr_data, ref_data, feature_name)
                 bins_for_hist["reference"] = ref_data
         if feature_type == "text":
             bins_for_hist = None
@@ -364,9 +340,7 @@ class DataQualityGetPlotData:
         if feature_type == "cat" and merge_small_cat is not None:
             if ref is not None:
                 ref = ref.copy()
-            curr, ref = self._transform_cat_data(
-                curr.copy(), ref, feature_name, merge_small_cat
-            )
+            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
 
         freq = self._choose_agg_period(datetime_name, ref, curr)
         df_for_time_plot_curr = (
@@ -436,17 +410,13 @@ class DataQualityGetPlotData:
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
-                curr, ref = self._transform_cat_data(
-                    curr.copy(), ref, feature_name, merge_small_cat
-                )
+                curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, feature_name, target_name)
         if feature_type == "num" and target_type == "cat":
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
-                curr, ref = self._transform_cat_data(
-                    curr.copy(), ref, target_name, merge_small_cat
-                )
+                curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, target_name, feature_name)
         if feature_type == "num" and target_type == "num":
             result = {}
@@ -463,21 +433,15 @@ class DataQualityGetPlotData:
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
-                curr, ref = self._transform_cat_data(
-                    curr.copy(), ref, feature_name, merge_small_cat
-                )
+                curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
-                curr, ref = self._transform_cat_data(
-                    curr.copy(), ref, target_name, merge_small_cat, True
-                )
+                curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat, True)
             result = {}
             result["current"] = self._get_count_values(curr, target_name, feature_name)
             if ref is not None:
-                result["reference"] = self._get_count_values(
-                    ref, target_name, feature_name
-                )
+                result["reference"] = self._get_count_values(ref, target_name, feature_name)
 
         return result
 
@@ -486,37 +450,23 @@ class DataQualityGetPlotData:
         min_curr_date = curr_data[feature_name].min()
 
         if (
-            curr_data.loc[
-                curr_data[feature_name] == min_curr_date, "number_of_items"
-            ].iloc[0]
-            > ref_data.loc[
-                ref_data[feature_name] == max_ref_date, "number_of_items"
-            ].iloc[0]
+            curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"].iloc[0]
+            > ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"].iloc[0]
         ):
-            curr_data.loc[
-                curr_data[feature_name] == min_curr_date, "number_of_items"
-            ] = (
-                curr_data.loc[
-                    curr_data[feature_name] == min_curr_date, "number_of_items"
-                ]
-                + ref_data.loc[
-                    ref_data[feature_name] == max_ref_date, "number_of_items"
-                ]
+            curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"] = (
+                curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
+                + ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
             )
             ref_data = ref_data[ref_data[feature_name] != max_ref_date]
         else:
             ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"] = (
                 ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
-                + curr_data.loc[
-                    curr_data[feature_name] == min_curr_date, "number_of_items"
-                ]
+                + curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
             )
             curr_data = curr_data[curr_data[feature_name] != min_curr_date]
         return curr_data, ref_data
 
-    def _get_count_values(
-        self, df: pd.DataFrame, target_column: str, feature_name: Optional[str]
-    ):
+    def _get_count_values(self, df: pd.DataFrame, target_column: str, feature_name: Optional[str]):
         df = df.groupby([target_column, feature_name]).size()
         df.name = "count_objects"
         df = df.reset_index()
@@ -536,22 +486,13 @@ class DataQualityGetPlotData:
             names.append("reference")
         res = {}
         for df, name in zip(dfs, names):
-            df_for_plot = (
-                df.groupby(cat_feature_name)[num_feature_name]
-                .quantile([0, 0.25, 0.5, 0.75, 1])
-                .reset_index()
-            )
+            df_for_plot = df.groupby(cat_feature_name)[num_feature_name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
             df_for_plot.columns = [cat_feature_name, "q", num_feature_name]
             res_df = {}
             values = df_for_plot[cat_feature_name].unique()
 
             def _quantiles(qdf, value):
-                return (
-                    qdf[df_for_plot.q == value]
-                    .set_index(cat_feature_name)
-                    .loc[values, num_feature_name]
-                    .tolist()
-                )
+                return qdf[df_for_plot.q == value].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
 
             res_df["mins"] = _quantiles(df_for_plot, 0)
             res_df["lowers"] = _quantiles(df_for_plot, 0.25)
@@ -592,19 +533,11 @@ class DataQualityGetPlotData:
             else:
                 categories = curr_cats
 
-            cats = (
-                categories.sort_values(ascending=False)
-                .index.drop_duplicates(keep="first")[:merge_small_cat]
-                .values
-            )
+            cats = categories.sort_values(ascending=False).index.drop_duplicates(keep="first")[:merge_small_cat].values
 
-            curr[feature_name] = curr[feature_name].apply(
-                lambda x: x if str(x) in cats else "other"
-            )
+            curr[feature_name] = curr[feature_name].apply(lambda x: x if str(x) in cats else "other")
             if ref is not None:
-                ref[feature_name] = ref[feature_name].apply(
-                    lambda x: x if str(x) in cats else "other"
-                )
+                ref[feature_name] = ref[feature_name].apply(lambda x: x if str(x) in cats else "other")
             self.curr = curr
             self.ref = ref
         return curr, ref
@@ -642,16 +575,12 @@ class DataQualityGetPlotData:
         self.period_prefix = prefix_dict[time_points.idxmin()]
         return str(time_points.idxmin())
 
-    def _transform_df_to_time_mean_view(
-        self, df: pd.DataFrame, date_column: str, feature_name: str
-    ):
+    def _transform_df_to_time_mean_view(self, df: pd.DataFrame, date_column: str, feature_name: str):
         df = df.groupby("period")[feature_name].mean().reset_index()
         df[date_column] = df["period"].dt.to_timestamp()
         return df
 
-    def _transform_df_to_time_count_view(
-        self, df: pd.DataFrame, date_column: str, feature_name: str
-    ):
+    def _transform_df_to_time_count_view(self, df: pd.DataFrame, date_column: str, feature_name: str):
         df = df.groupby(["period", feature_name]).size()
         df.name = "num"
         df = df.reset_index()
@@ -659,9 +588,7 @@ class DataQualityGetPlotData:
         return df[df["num"] > 0]
 
 
-def _select_features_for_corr(
-    dataset: pd.DataFrame, data_definition: DataDefinition
-) -> tuple:
+def _select_features_for_corr(dataset: pd.DataFrame, data_definition: DataDefinition) -> tuple:
     """Define which features should be used for calculating correlation matrices:
         - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
             unique values;
@@ -712,9 +639,7 @@ def _cramer_v(x: pd.Series, y: pd.Series) -> float:
     return value
 
 
-def get_pairwise_correlation(
-    df, func: Callable[[pd.Series, pd.Series], float]
-) -> pd.DataFrame:
+def get_pairwise_correlation(df, func: Callable[[pd.Series, pd.Series], float]) -> pd.DataFrame:
     """Compute pairwise correlation of columns
     Args:
         df: initial data frame.
@@ -774,9 +699,7 @@ def calculate_correlations(
     correlations = {}
 
     for kind in ["pearson", "spearman", "kendall", "cramer_v"]:
-        correlations[kind] = _calculate_correlations(
-            dataset, num_for_corr, cat_for_corr, kind
-        )
+        correlations[kind] = _calculate_correlations(dataset, num_for_corr, cat_for_corr, kind)
 
     return correlations
 
@@ -788,18 +711,14 @@ class ColumnCorrelations:
     values: Distribution
 
 
-def calculate_cramer_v_correlation(
-    column_name: str, dataset: pd.DataFrame, columns: List[str]
-) -> ColumnCorrelations:
+def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
     result_x = []
     result_y = []
 
     if not dataset[column_name].empty:
         for correlation_columns_name in columns:
             result_x.append(correlation_columns_name)
-            result_y.append(
-                _cramer_v(dataset[column_name], dataset[correlation_columns_name])
-            )
+            result_y.append(_cramer_v(dataset[column_name], dataset[correlation_columns_name]))
 
     return ColumnCorrelations(
         column_name=column_name,
@@ -845,9 +764,7 @@ def calculate_numerical_column_correlations(
 
         for other_column_name in columns:
             correlations_columns.append(other_column_name)
-            correlations_values.append(
-                column.corr(dataset[other_column_name], method=kind)
-            )
+            correlations_values.append(column.corr(dataset[other_column_name], method=kind))
 
         result[kind] = ColumnCorrelations(
             column_name=column_name,
@@ -858,9 +775,7 @@ def calculate_numerical_column_correlations(
     return result
 
 
-def calculate_column_distribution(
-    column: pd.Series, column_type: str
-) -> ColumnDistribution:
+def calculate_column_distribution(column: pd.Series, column_type: str) -> ColumnDistribution:
     if column.empty:
         distribution: ColumnDistribution = {}
 

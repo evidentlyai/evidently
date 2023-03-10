@@ -73,9 +73,7 @@ class InputData:
     data_definition: DataDefinition
 
     @staticmethod
-    def _get_by_column_name(
-        dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName
-    ) -> pd.Series:
+    def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
         if column.dataset == DatasetType.MAIN:
             return dataset[column.name]
         if column.dataset == DatasetType.ADDITIONAL:
@@ -87,27 +85,18 @@ class InputData:
             _column = ColumnName(column, DatasetType.MAIN, None)
         else:
             _column = column
-        return self._get_by_column_name(
-            self.current_data, self.current_additional_features, _column
-        )
+        return self._get_by_column_name(self.current_data, self.current_additional_features, _column)
 
-    def get_reference_column(
-        self, column: Union[str, ColumnName]
-    ) -> Optional[pd.Series]:
+    def get_reference_column(self, column: Union[str, ColumnName]) -> Optional[pd.Series]:
         if self.reference_data is None:
             return None
         if isinstance(column, str):
             _column = ColumnName(column, DatasetType.MAIN, None)
         else:
             _column = column
-        if (
-            self.reference_additional_features is None
-            and _column.dataset == DatasetType.ADDITIONAL
-        ):
+        if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
             return None
-        return self._get_by_column_name(
-            self.reference_data, self.reference_additional_features, _column
-        )
+        return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
 
 
 class Metric(Generic[TResult]):
@@ -130,9 +119,7 @@ class Metric(Generic[TResult]):
         if isinstance(result, ErrorResult):
             raise result.exception
         if result is None:
-            raise ValueError(
-                f"No result found for metric {self} of type {type(self).__name__}"
-            )
+            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result
 
     def get_parameters(self) -> Optional[tuple]:
@@ -152,9 +139,7 @@ class Metric(Generic[TResult]):
             return None
         return params
 
-    def required_features(
-        self, data_definition: DataDefinition
-    ) -> List[GeneratedFeature]:
+    def required_features(self, data_definition: DataDefinition) -> List[GeneratedFeature]:
         required_features = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:
@@ -194,9 +179,7 @@ class MetricResultField(BaseModel):
         exclude = copy(exclude) or self.__config__.dict_exclude_fields or set()
 
         for name, field in self.__fields__.items():
-            if isinstance(field.type_, type) and issubclass(
-                field.type_, MetricResultField
-            ):
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
                 if not field.type_.__config__.dict_include:
                     if isinstance(exclude, set):
                         exclude.add(name)
@@ -214,9 +197,7 @@ class MetricResultField(BaseModel):
             exclude_none=exclude_none,
         )
 
-    def collect_pandas_columns(
-        self, prefix="", include: Set[str] = None, exclude: Set[str] = None
-    ) -> Dict[str, Any]:
+    def collect_pandas_columns(self, prefix="", include: Set[str] = None, exclude: Set[str] = None) -> Dict[str, Any]:
         include = include or self.__config__.pd_include_fields or set(self.__fields__)
         exclude = exclude or self.__config__.pd_exclude_fields or set()
 
@@ -224,24 +205,17 @@ class MetricResultField(BaseModel):
         for name, field in self.__fields__.items():
             if name not in include or name in exclude:
                 continue
-            if isinstance(field.type_, type) and issubclass(
-                field.type_, MetricResultField
-            ):
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
                 if field.type_.__config__.pd_include:
                     field_value = getattr(self, name)
-                    field_prefix = (
-                        f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
-                    )
+                    field_prefix = f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
                     if field_value is None:
                         continue
                     elif isinstance(field_value, MetricResultField):
                         data.update(field_value.collect_pandas_columns(field_prefix))
                     elif isinstance(field_value, dict):  # Dict[str, MetricResultField]
                         # todo: deal with more complex stuff later
-                        assert all(
-                            isinstance(v, MetricResultField)
-                            for v in field_value.values()
-                        )
+                        assert all(isinstance(v, MetricResultField) for v in field_value.values())
                         dict_value: MetricResultField
                         for dict_key, dict_value in field_value.items():
                             for (
@@ -265,14 +239,10 @@ class MetricResult(MetricResultField):
             return {}
         exclude = set(self.__config__.dict_exclude_fields)
         for name, field in self.__fields__.items():
-            if isinstance(field.type_, type) and issubclass(
-                field.type_, MetricResultField
-            ):
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
                 if not field.type_.__config__.dict_include:
                     exclude.add(name)
-        return self.dict(
-            include=self.__config__.dict_include_fields or None, exclude=exclude
-        )
+        return self.dict(include=self.__config__.dict_include_fields or None, exclude=exclude)
 
 
 class ColumnMetricResult(MetricResult):
@@ -283,9 +253,7 @@ class ColumnMetricResult(MetricResult):
     column_type: ColumnType
 
     def get_pandas(self) -> pd.DataFrame:
-        return pd.DataFrame.from_dict(
-            {self.column_name: self.collect_pandas_columns()}, orient="index"
-        )
+        return pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
 
 
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)

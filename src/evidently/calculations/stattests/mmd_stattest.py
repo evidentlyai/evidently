@@ -35,9 +35,7 @@ def sigma_median(dist: np.ndarray) -> float:
     return sigma
 
 
-def rbf(
-    x: np.ndarray, y: np.ndarray, pass_sigma: Optional[float]
-) -> Tuple[np.ndarray, float]:
+def rbf(x: np.ndarray, y: np.ndarray, pass_sigma: Optional[float]) -> Tuple[np.ndarray, float]:
     """compute the RBF kernel
     Args:
         x:reference data
@@ -72,9 +70,7 @@ def kernel_matrix(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     return kernel_matrix
 
 
-def mmd_2samp(
-    kernel_matrix: np.ndarray, no_y_values: int, permute: bool = False
-) -> float:
+def mmd_2samp(kernel_matrix: np.ndarray, no_y_values: int, permute: bool = False) -> float:
     """Perform the mmd test without permutation
     Args:
         kernel_matrix: the concatenated similarity matrix(i.e. xx,xy and yy)
@@ -110,9 +106,7 @@ def mmd_pval(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
     kernel_mat = kernel_mat - np.diag(np.diagonal(kernel_mat))
 
     mmd = mmd_2samp(kernel_mat, y.shape[0], permute=False)
-    mmd_permuted = np.array(
-        [mmd_2samp(kernel_mat, y.shape[0], permute=True) for _ in range(100)]
-    )
+    mmd_permuted = np.array([mmd_2samp(kernel_mat, y.shape[0], permute=True) for _ in range(100)])
 
     p_val = (mmd <= mmd_permuted).mean()
 

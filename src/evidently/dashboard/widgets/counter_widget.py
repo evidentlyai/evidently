@@ -25,9 +25,5 @@ class CounterWidget(Widget):
             type="counter",
             title=self.title,
             size=1,
-            params={
-                "counters": [
-                    {"value": "7 out of 12 features", "label": "Data Drift Detected"}
-                ]
-            },
+            params={"counters": [{"value": "7 out of 12 features", "label": "Data Drift Detected"}]},
         )

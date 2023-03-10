@@ -55,24 +55,18 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
         current_column = data.current_data[self.column_name]
 
         if not pd.api.types.is_numeric_dtype(current_column.dtype):
-            raise ValueError(
-                f"Column '{self.column_name}' in current data is not numeric."
-            )
+            raise ValueError(f"Column '{self.column_name}' in current data is not numeric.")
 
         current_quantile = data.current_data[self.column_name].quantile(self.quantile)
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(
-                    f"Column '{self.column_name}' is not in reference data."
-                )
+                raise ValueError(f"Column '{self.column_name}' is not in reference data.")
 
             reference_column = data.reference_data[self.column_name]
 
             if not pd.api.types.is_numeric_dtype(reference_column.dtype):
-                raise ValueError(
-                    f"Column '{self.column_name}' in reference data is not numeric."
-                )
+                raise ValueError(f"Column '{self.column_name}' in reference data is not numeric.")
 
             reference_quantile = reference_column.quantile(self.quantile)
 
@@ -106,9 +100,7 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_counters(metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.float(
-                label="Quantile", value=metric_result.quantile, precision=3
-            ),
+            CounterData.float(label="Quantile", value=metric_result.quantile, precision=3),
             CounterData.float(
                 label="Quantile value (current)",
                 value=metric_result.current.value,
@@ -126,9 +118,7 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
             )
         return counter(counters=counters)
 
-    def _get_histogram(
-        self, metric_result: ColumnQuantileMetricResult
-    ) -> BaseWidgetInfo:
+    def _get_histogram(self, metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         if metric_result.reference is not None:
             reference_histogram_data: Optional[HistogramData] = HistogramData(
                 name="reference",
