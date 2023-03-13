@@ -122,3 +122,14 @@ class DatasetColumns:
         return (
             len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
         )
+
+
+ScatterData = Union[pd.Series, List[float], pd.Index]
+ColumnScatter = Dict[str, ScatterData]
+
+
+def column_scatter_from_df(df: pd.DataFrame, with_index: bool) -> ColumnScatter:
+    data = {column: df[column] for column in df.columns}
+    if with_index:
+        data["index"] = df.index
+    return data

@@ -113,55 +113,6 @@ def plot_metric_value(fig, metric_val: float, metric_name: str):
     return fig
 
 
-def regression_perf_plot(
-    *,
-    val_for_plot: Dict[str, pd.Series],
-    hist_for_plot: Dict[str, pd.Series],
-    name: str,
-    curr_metric: float,
-    ref_metric: float = None,
-    is_ref_data: bool = False,
-    color_options: ColorOptions,
-):
-    current_color = color_options.get_current_data_color()
-    reference_color = color_options.get_reference_data_color()
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
-    sorted_index = val_for_plot["current"].sort_index()
-    x = [str(idx) for idx in sorted_index.index]
-    y = list(sorted_index)
-    trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=current_color)
-    fig.add_trace(trace, 1, 1)
-
-    df = hist_for_plot["current"].sort_values("x")
-    x = [str(x) for x in df.x]
-    y = list(df["count"])
-    trace = go.Bar(name="current", x=x, y=y, marker_color=current_color)
-    fig.add_trace(trace, 2, 1)
-
-    if is_ref_data:
-        sorted_index = val_for_plot["reference"].sort_index()
-        x = [str(idx) for idx in sorted_index.index]
-        y = list(sorted_index)
-        trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=reference_color)
-        fig.add_trace(trace, 1, 1)
-
-        df = hist_for_plot["reference"].sort_values("x")
-        x = [str(x) for x in df.x]
-        y = list(df["count"])
-        trace = go.Bar(name="reference", x=x, y=y, marker_color=reference_color)
-        fig.add_trace(trace, 2, 1)
-
-    fig.update_yaxes(title_text=name, row=1, col=1)
-    fig.update_yaxes(title_text="count", row=2, col=1)
-    title = f"current {name}: {np.round(curr_metric, 3)}"
-
-    if is_ref_data:
-        title += f", reference {name}: {np.round(ref_metric, 3)}"
-
-    fig.update_layout(title=title)
-    return fig
-
-
 def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
     additional_plots = []
     if values is not None:

@@ -10,6 +10,7 @@ import pandas as pd
 from pydantic import BaseModel
 
 from evidently.base_metric import MetricResultField
+from evidently.objects import ColumnScatter
 
 
 class FromDataclassMixin(BaseModel):
@@ -123,3 +124,13 @@ class DatasetColumnsField(MetricResultField, FromDataclassMixin):
         return (
             len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
         )
+
+
+class ScatterField(MetricResultField):
+    class Config:
+        dict_include = False
+        pd_include = False
+
+    scatter: ColumnScatter
+    x_name: str
+    plot_shape: Dict[str, float]

@@ -1,23 +1,18 @@
-import dataclasses
-from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 import numpy as np
-import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.objects import ColumnScatter
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_line_in_time
-
-Scatter = Dict[str, Union[pd.Series, pd.RangeIndex]]
 
 
 class RegressionAbsPercentageErrorPlotResults(MetricResult):
@@ -25,8 +20,8 @@ class RegressionAbsPercentageErrorPlotResults(MetricResult):
         dict_include = False
         pd_include = False
 
-    current_scatter: Scatter
-    reference_scatter: Optional[Scatter]
+    current_scatter: ColumnScatter
+    reference_scatter: Optional[ColumnScatter]
     x_name: str
 
 

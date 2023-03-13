@@ -5,6 +5,7 @@ from typing import Union
 
 from evidently.metrics import RegressionDummyMetric
 from evidently.metrics import RegressionQualityMetric
+from evidently.metrics.regression_performance.visualization import regression_perf_plot
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -17,7 +18,6 @@ from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
-from evidently.tests.utils import regression_perf_plot
 from evidently.utils.types import Numeric
 
 REGRESSION_GROUP = GroupData("regression", "Regression", "")
@@ -94,7 +94,7 @@ class TestValueMAERenderer(TestRenderer):
             is_ref_data = True
 
         fig = regression_perf_plot(
-            val_for_plot=result.vals_for_plots["mean_abs_error"],
+            val_for_plot=result.vals_for_plots.mean_abs_error,
             hist_for_plot=result.hist_for_plot,
             name="MAE",
             curr_metric=result.current.mean_abs_error,
@@ -144,8 +144,8 @@ class TestValueMAPERenderer(TestRenderer):
         result = obj.metric.get_result()
         if "reference" in result.hist_for_plot.keys():
             is_ref_data = True
-        val_for_plot = result.vals_for_plots["mean_abs_perc_error"]
-        val_for_plot = {x: y * 100 for x, y in val_for_plot.items()}
+        val_for_plot = result.vals_for_plots.mean_abs_perc_error
+        val_for_plot = val_for_plot * 100
         fig = regression_perf_plot(
             val_for_plot=val_for_plot,
             hist_for_plot=result.hist_for_plot,
@@ -196,7 +196,7 @@ class TestValueRMSERenderer(TestRenderer):
         if "reference" in result.hist_for_plot.keys():
             is_ref_data = True
         fig = regression_perf_plot(
-            val_for_plot=result.vals_for_plots["rmse"],
+            val_for_plot=result.vals_for_plots.rmse,
             hist_for_plot=result.hist_for_plot,
             name="RMSE",
             curr_metric=result.current.rmse,
@@ -333,7 +333,7 @@ class TestValueR2ScoreRenderer(TestRenderer):
         if "reference" in result.hist_for_plot.keys():
             is_ref_data = True
         fig = regression_perf_plot(
-            val_for_plot=result.vals_for_plots["r2_score"],
+            val_for_plot=result.vals_for_plots.r2_score,
             hist_for_plot=result.hist_for_plot,
             name="R2_score",
             curr_metric=result.current.r2_score,

@@ -5,7 +5,6 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy.stats import probplot
@@ -14,12 +13,11 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.objects import ScatterData
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-
-Error = pd.Series
 
 
 class RegressionErrorNormalityResults(MetricResult):
@@ -27,8 +25,8 @@ class RegressionErrorNormalityResults(MetricResult):
         dict_exclude_fields = {"current_error", "reference_error"}
         pd_exclude_fields = {"current_error", "reference_error"}
 
-    current_error: Error
-    reference_error: Optional[Error]
+    current_error: ScatterData
+    reference_error: Optional[ScatterData]
 
 
 class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):

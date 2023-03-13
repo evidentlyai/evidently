@@ -1,30 +1,21 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
 import numpy as np
-import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from plotly import graph_objs as go
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
+from evidently.objects import ColumnScatter
+from evidently.objects import column_scatter_from_df
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
-
-
-class Scatter(MetricResultField):
-    class Config:
-        dict_include = False
-        pd_include = False
-
-    scatter: pd.DataFrame
 
 
 class ColumnValuePlotResults(MetricResult):
@@ -34,8 +25,8 @@ class ColumnValuePlotResults(MetricResult):
 
     column_name: str
     datetime_column_name: Optional[str]
-    current: Scatter
-    reference: Scatter
+    current: ColumnScatter
+    reference: ColumnScatter
 
 
 class ColumnValuePlot(Metric[ColumnValuePlotResults]):
@@ -76,8 +67,8 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         return ColumnValuePlotResults(
             column_name=self.column_name,
             datetime_column_name=datetime_column_name,
-            current=Scatter(scatter=curr_df),
-            reference=Scatter(scatter=ref_df),
+            current=column_scatter_from_df(curr_df, True),
+            reference=column_scatter_from_df(ref_df, True),
         )
 
     def _make_df_for_plot(self, df, column_name: str, datetime_column_name: Optional[str]):
@@ -98,8 +89,8 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 class ColumnValuePlotRenderer(MetricRenderer):
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_scatter = result.current.scatter
-        reference_scatter = result.reference.scatter
+        current_scatter = result.current
+        reference_scatter = result.reference
         column_name = result.column_name
 
         mean_ref = reference_scatter[column_name].mean()
@@ -113,8 +104,8 @@ class ColumnValuePlotRenderer(MetricRenderer):
             x_name = "Timestamp"
 
         else:
-            curr_x = current_scatter.index
-            ref_x = reference_scatter.index
+            curr_x = current_scatter["index"]
+            ref_x = reference_scatter["index"]
             x_name = "Index"
 
         color_options = self.color_options

@@ -16,8 +16,10 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metric_results import DatasetColumnsField
+from evidently.metrics.regression_performance.objects import RegressionMetricScatter
+from evidently.metrics.regression_performance.objects import RegressionMetricsScatter
 from evidently.metrics.regression_performance.regression_performance_metrics import RegressionMetrics
-from evidently.metrics.utils import apply_func_to_binned_data
+from evidently.metrics.regression_performance.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -62,19 +64,8 @@ class RegressionQualityMetricResults(MetricResult):
     error_normality: dict
     # underperformance: dict
     hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
-    vals_for_plots: Dict[str, Dict[str, pd.Series]]
+    vals_for_plots: RegressionMetricsScatter
     error_bias: Optional[dict] = None
-
-    # mean_error_ref: Optional[float] = None
-    # mean_abs_error_ref: Optional[float] = None
-    # mean_abs_perc_error_ref: Optional[float] = None
-    # rmse_ref: Optional[float] = None
-    # r2_score_ref: Optional[float] = None
-    # abs_error_max_ref: Optional[float] = None
-    # underperformance_ref: Optional[dict] = None
-    # error_std_ref: Optional[float] = None
-    # abs_error_std_ref: Optional[float] = None
-    # abs_perc_error_std_ref: Optional[float] = None
 
 
 class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
@@ -190,7 +181,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             ref_target_bins = df_target_binned.loc[df_target_binned.data == "ref", "target_binned"]
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
-        vals_for_plots = {}
+        vals_for_plots: Dict[str, RegressionMetricScatter] = {}
 
         if data.reference_data is not None:
             is_ref_data = True
@@ -268,7 +259,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             abs_error_max_default=abs_error_max_default,
             error_normality=current_metrics.error_normality,
             hist_for_plot=hist_for_plot,
-            vals_for_plots=vals_for_plots,
+            vals_for_plots=RegressionMetricsScatter(**vals_for_plots),
             error_bias=error_bias,
         )
 

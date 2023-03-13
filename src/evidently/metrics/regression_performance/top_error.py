@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -10,6 +9,9 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
+from evidently.metrics.regression_performance.objects import PredActualScatter
+from evidently.metrics.regression_performance.objects import RegressionScatter
+from evidently.metrics.regression_performance.visualization import plot_error_bias_colored_scatter
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -17,14 +19,11 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import plot_error_bias_colored_scatter
-
-Scatter = Dict[str, pd.Series]
 
 
 class TopData(MetricResultField):
     mean_err_per_group: Dict[str, Dict[str, float]]
-    scatter: Dict[str, Scatter]
+    scatter: RegressionScatter
 
 
 class RegressionTopErrorMetricResults(MetricResult):
@@ -98,21 +97,24 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
-    def _get_data_for_scatter(self, df: pd.DataFrame, target_name: str, prediction_name: str):
-        scatter = {}
-        scatter["Underestimation"] = {
-            "Predicted value": df.loc[df["Error bias"] == "Underestimation", prediction_name],
-            "Actual value": df.loc[df["Error bias"] == "Underestimation", target_name],
-        }
-        scatter["Majority"] = {
-            "Predicted value": df.loc[df["Error bias"] == "Majority", prediction_name],
-            "Actual value": df.loc[df["Error bias"] == "Majority", target_name],
-        }
-        scatter["Overestimation"] = {
-            "Predicted value": df.loc[df["Error bias"] == "Overestimation", prediction_name],
-            "Actual value": df.loc[df["Error bias"] == "Overestimation", target_name],
-        }
-        return scatter
+    @staticmethod
+    def _get_data_for_scatter(df: pd.DataFrame, target_name: str, prediction_name: str) -> RegressionScatter:
+        underestimation = PredActualScatter(
+            predicted=df.loc[df["Error bias"] == "Underestimation", prediction_name],
+            actual=df.loc[df["Error bias"] == "Underestimation", target_name],
+        )
+
+        majority = PredActualScatter(
+            predicted=df.loc[df["Error bias"] == "Majority", prediction_name],
+            actual=df.loc[df["Error bias"] == "Majority", target_name],
+        )
+
+        overestimation = PredActualScatter(
+            predicted=df.loc[df["Error bias"] == "Overestimation", prediction_name],
+            actual=df.loc[df["Error bias"] == "Overestimation", target_name],
+        )
+
+        return RegressionScatter(underestimation=underestimation, majority=majority, overestimation=overestimation)
 
     def _calculate_underperformance(
         self, error: pd.Series, quantile_5: float, quantile_95: float, conf_interval_n_sigmas: int = 1

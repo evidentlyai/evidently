@@ -9,6 +9,8 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.model.widget import BaseWidgetInfo
+from evidently.objects import ColumnScatter
+from evidently.objects import column_scatter_from_df
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
@@ -24,8 +26,8 @@ class ClassificationClassSeparationPlotResults(MetricResult):
         pd_exclude_fields = {"current_plot", "reference_plot"}
 
     target_name: str
-    current_plot: Optional[pd.DataFrame] = None  # todo plot type?
-    reference_plot: Optional[pd.DataFrame] = None
+    current: Optional[ColumnScatter] = None
+    reference: Optional[ColumnScatter] = None
 
 
 class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
@@ -52,8 +54,8 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
             reference_plot = ref_predictions.prediction_probas.copy()
             reference_plot[target_name] = data.reference_data[target_name]
         return ClassificationClassSeparationPlotResults(
-            current_plot=current_plot,
-            reference_plot=reference_plot,
+            current=column_scatter_from_df(current_plot, True),
+            reference=column_scatter_from_df(reference_plot, True),
             target_name=target_name,
         )
 
@@ -61,16 +63,23 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
 @default_renderer(wrap_type=ClassificationClassSeparationPlot)
 class ClassificationClassSeparationPlotRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationClassSeparationPlot) -> List[BaseWidgetInfo]:
-        current_plot = obj.get_result().current_plot
-        reference_plot = obj.get_result().reference_plot
+        current_plot = obj.get_result().current
+        reference_plot = obj.get_result().reference
         target_name = obj.get_result().target_name
         if current_plot is None:
             return []
-        current_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
+        # todo changing data here, consider doing this in calculation
+        for data in current_plot.values():
+            data.replace([np.inf, -np.inf], np.nan, inplace=True)
         if reference_plot is not None:
-            reference_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
+            for data in current_plot.values():
+                data.replace([np.inf, -np.inf], np.nan, inplace=True)
+
         tab_data = get_class_separation_plot_data(
-            current_plot, reference_plot, target_name, color_options=self.color_options
+            pd.DataFrame.from_dict(current_plot),
+            pd.DataFrame.from_dict(reference_plot) if reference_plot is not None else None,
+            target_name,
+            color_options=self.color_options,
         )
         tabs = [TabData(name, widget) for name, widget in tab_data]
         return [

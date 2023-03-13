@@ -9,13 +9,13 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pydantic import ValidationError
 
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
 from evidently.metric_results import DistributionField
+from evidently.metric_results import ScatterField
 from evidently.objects import DatasetColumns
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
@@ -23,7 +23,6 @@ from evidently.utils.data_operations import recognize_column_type_
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
 
-Scatter = Dict[str, Union[list, pd.Index, pd.Series]]
 Examples = List[str]
 Words = List[str]
 
@@ -38,16 +37,6 @@ class DriftStatsField(MetricResultField):
     words: Optional[Words]
     small_distribution: Optional[DistributionField]
     correlations: Optional[Dict[str, float]]
-
-
-class ScatterField(MetricResultField):
-    class Config:
-        dict_include = False
-        pd_include = False
-
-    scatter: Scatter
-    x_name: str
-    plot_shape: Dict[str, float]
 
 
 class ColumnDataDriftMetrics(ColumnMetricResult):

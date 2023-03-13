@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -17,7 +16,9 @@ from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metric_results import DatasetColumnsField
-from evidently.metrics.utils import apply_func_to_binned_data
+from evidently.metrics.regression_performance.objects import RegressionMetricScatter
+from evidently.metrics.regression_performance.objects import RegressionMetricsScatter
+from evidently.metrics.regression_performance.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -62,7 +63,7 @@ class RegressionPerformanceMetricsResults(MetricResult):
     abs_perc_error_std: float
     error_normality: dict
     hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
-    vals_for_plots: Dict[str, Dict[str, pd.Series]]
+    vals_for_plots: RegressionMetricsScatter
     error_bias: Optional[dict] = None
 
 
@@ -177,7 +178,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             ref_target_bins = df_target_binned.loc[df_target_binned.data == "ref", "target_binned"]
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
-        vals_for_plots = {}
+        vals_for_plots: Dict[str, RegressionMetricScatter] = {}
 
         if data.reference_data is not None:
             is_ref_data = True
@@ -258,7 +259,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             abs_perc_error_std=current_metrics.abs_perc_error_std,
             error_normality=current_metrics.error_normality,
             hist_for_plot=hist_for_plot,
-            vals_for_plots=vals_for_plots,
+            vals_for_plots=RegressionMetricsScatter(**vals_for_plots),
             error_bias=error_bias,
         )
 
