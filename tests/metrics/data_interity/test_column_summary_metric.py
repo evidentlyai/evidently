@@ -56,6 +56,7 @@ def test_column_summary_metric_success(
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     result = metric.get_result()
     assert result is not None
+    report.json()
 
 
 @pytest.mark.parametrize(

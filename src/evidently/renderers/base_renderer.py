@@ -32,7 +32,8 @@ class MetricRenderer(BaseRenderer):
         return obj.get_result().get_pandas()
 
     def render_json(self, obj: "Metric") -> dict:
-        return obj.get_result().get_dict()
+        result = obj.get_result()
+        return result.get_dict()
 
     def render_html(self, obj) -> List[BaseWidgetInfo]:
         raise NotImplementedError()
