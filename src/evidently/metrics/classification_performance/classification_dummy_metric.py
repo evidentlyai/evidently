@@ -12,13 +12,13 @@ from sklearn.metrics import recall_score
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import DatasetClassificationQuality
-from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_matrix
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.calculations.classification_performance import k_probability_threshold
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.objects import PredictionData
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text

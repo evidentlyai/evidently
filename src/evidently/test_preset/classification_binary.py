@@ -2,6 +2,7 @@ from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.objects import DatasetColumns
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
 from evidently.tests import TestColumnDrift
@@ -9,7 +10,6 @@ from evidently.tests import TestF1Score
 from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallScore
 from evidently.tests import TestRocAuc
-from evidently.utils.data_operations import DatasetColumns
 
 
 class BinaryClassificationTestPreset(TestPreset):

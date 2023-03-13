@@ -6,9 +6,9 @@ from pytest import approx
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzerResults
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
+from evidently.objects import DatasetColumns
+from evidently.objects import DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import DatasetUtilityColumns
 
 
 @pytest.fixture

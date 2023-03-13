@@ -16,9 +16,9 @@ from evidently.base_metric import MetricResultField
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
 from evidently.metric_results import DistributionField
+from evidently.objects import DatasetColumns
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import recognize_column_type_
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column

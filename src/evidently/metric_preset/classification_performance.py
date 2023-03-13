@@ -14,7 +14,7 @@ from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityByFeatureTable
 from evidently.metrics import ClassificationQualityMetric
 from evidently.metrics import ClassificationRocCurve
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
 
 
 class ClassificationPreset(MetricPreset):

@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import probplot
 
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
 
 
 class ErrorWithQuantiles:

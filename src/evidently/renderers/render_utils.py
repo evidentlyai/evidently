@@ -6,7 +6,6 @@ import numpy as np
 import plotly.graph_objs as go
 
 from evidently.options import ColorOptions
-from evidently.utils.visualizations import Distribution
 
 
 def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions):

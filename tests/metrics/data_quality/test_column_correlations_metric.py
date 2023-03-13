@@ -7,13 +7,11 @@ import pytest
 from pytest import approx
 
 from evidently import ColumnMapping
-from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.metric_results import DistributionField
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsField
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.report import Report
-from evidently.utils.visualizations import Distribution
 
 
 @pytest.mark.parametrize(

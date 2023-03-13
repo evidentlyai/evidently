@@ -19,7 +19,6 @@ from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
 from evidently.renderers.render_utils import DistributionProtocol
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import Distribution
 
 
 class WidgetSize(Enum):

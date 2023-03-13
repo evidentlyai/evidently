@@ -1,5 +1,3 @@
-import dataclasses
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -18,13 +16,9 @@ from sklearn import metrics
 
 from evidently import ColumnMapping
 from evidently.base_metric import MetricResultField
-from evidently.utils.data_operations import DatasetColumns
-
-
-@dataclass
-class ConfusionMatrix:
-    labels: Sequence[Union[int, str]]
-    values: list
+from evidently.objects import ConfusionMatrix
+from evidently.objects import DatasetColumns
+from evidently.objects import PredictionData
 
 
 def calculate_confusion_by_classes(
@@ -81,13 +75,6 @@ def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float
     if isinstance(k, int):
         return probas.iloc[min(k, prediction_probas.shape[0] - 1)]
     raise ValueError(f"K has unexpected type {type(k)}")
-
-
-@dataclasses.dataclass
-class PredictionData:
-    predictions: pd.Series
-    prediction_probas: Optional[pd.DataFrame]
-    labels: List[Union[str, int]]
 
 
 def get_prediction_data(

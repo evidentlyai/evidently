@@ -5,6 +5,7 @@ from typing import Optional
 from evidently import TaskType
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.objects import DatasetColumns
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
@@ -14,7 +15,6 @@ from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
 from evidently.tests import TestShareOfDriftedColumns
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
-from evidently.utils.data_operations import DatasetColumns
 
 
 class NoTargetPerformanceTestPreset(TestPreset):

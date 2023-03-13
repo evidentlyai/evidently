@@ -13,8 +13,8 @@ from evidently.metrics import ColumnCorrelationsMetric
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import ColumnValuePlot
 from evidently.metrics import TargetByFeaturesTable
+from evidently.objects import DatasetColumns
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
-from evidently.utils.data_operations import DatasetColumns
 
 
 class TargetDriftPreset(MetricPreset):

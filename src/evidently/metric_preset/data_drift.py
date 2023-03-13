@@ -7,7 +7,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
 
 
 class DataDriftPreset(MetricPreset):

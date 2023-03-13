@@ -5,7 +5,7 @@ from evidently.analyzers.prob_classification_performance_analyzer import ProbCla
 from evidently.model_monitoring.monitoring import MetricsType
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
 
 
 class ProbClassificationPerformanceMonitorMetricsMonitor:

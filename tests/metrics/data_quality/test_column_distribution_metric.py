@@ -9,7 +9,6 @@ from evidently.metric_results import DistributionField
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetric
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetricResult
 from evidently.report import Report
-from evidently.utils.visualizations import Distribution
 
 
 @pytest.mark.parametrize(

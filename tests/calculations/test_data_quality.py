@@ -6,7 +6,7 @@ from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_column_distribution
 from evidently.calculations.data_quality import calculate_cramer_v_correlation
 from evidently.calculations.data_quality import get_rows_count
-from evidently.utils.visualizations import Distribution
+from evidently.objects import Distribution
 
 
 @pytest.mark.parametrize(

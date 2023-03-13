@@ -7,7 +7,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
 
 TObject = TypeVar("TObject")
 

@@ -7,7 +7,7 @@ from pytest import approx
 
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceMetrics
-from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.objects import ConfusionMatrix
 from evidently.pipeline import column_mapping
 
 

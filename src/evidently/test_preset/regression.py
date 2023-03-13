@@ -1,10 +1,10 @@
 from evidently.base_metric import InputData
+from evidently.objects import DatasetColumns
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestValueMAE
 from evidently.tests import TestValueMAPE
 from evidently.tests import TestValueMeanError
 from evidently.tests import TestValueRMSE
-from evidently.utils.data_operations import DatasetColumns
 
 
 class RegressionTestPreset(TestPreset):

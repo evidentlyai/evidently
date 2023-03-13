@@ -1,4 +1,3 @@
-import dataclasses
 import json
 from typing import Dict
 from typing import Optional
@@ -10,6 +9,7 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.objects import Distribution
 from evidently.options.color_scheme import ColorOptions
 
 
@@ -44,12 +44,6 @@ def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: Colo
         fig.update_xaxes(categoryorder="array", categoryarray=cats)
 
     return fig
-
-
-@dataclasses.dataclass
-class Distribution:
-    x: Union[np.ndarray, list]
-    y: Union[np.ndarray, list]
 
 
 def plot_distr_with_log_button(

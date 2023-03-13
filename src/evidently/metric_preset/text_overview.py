@@ -5,7 +5,7 @@ from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import TextDescriptorsCorrelationMetric
 from evidently.metrics import TextDescriptorsDistribution
 from evidently.metrics import TextDescriptorsDriftMetric
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
 
 
 class TextOverviewPreset(MetricPreset):

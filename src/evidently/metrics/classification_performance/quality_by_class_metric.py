@@ -17,12 +17,12 @@ from evidently.base_metric import MetricResultField
 from evidently.metric_results import DatasetColumnsField
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.objects import DatasetColumns
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
 

@@ -1,4 +1,5 @@
 import dataclasses
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -7,57 +8,46 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel
-
-from evidently.base_metric import MetricResultField
 
 
-class FromDataclassMixin(BaseModel):
-    @classmethod
-    def from_dataclass(cls, value):
-        if value is None:
-            return None
-        return cls(**dataclasses.asdict(value))
+@dataclass
+class Distribution:
+    x: Union[np.ndarray, list]
+    y: Union[np.ndarray, list]
 
 
-class DistributionField(MetricResultField, FromDataclassMixin):
-    class Config:
-        dict_include = False
-        pd_include = False
-
-    x: Union[np.ndarray, list, pd.Categorical, pd.Series]
-    y: Union[np.ndarray, list, pd.Categorical, pd.Series]
+@dataclass
+class ConfusionMatrix:
+    labels: Sequence[Union[int, str]]
+    values: list
 
 
-class ConfusionMatrixField(MetricResultField, FromDataclassMixin):
-    labels: Union[Sequence[int], Sequence[str]]  # Sequence[Union[int, str]]
-    values: list  # todo better typing
-
-
-class PredictionDataField(MetricResultField, FromDataclassMixin):
+@dataclass
+class PredictionData:
     predictions: pd.Series
     prediction_probas: Optional[pd.DataFrame]
     labels: List[Union[str, int]]
 
 
-class StatsByFeature(MetricResultField):
-    class Config:
-        dict_include = False
-        pd_include = False
-
-    plot_data: pd.DataFrame  # todo what type of plot?
-    predictions: Optional[PredictionDataField]
-
-
-class DatasetUtilityColumnsField(MetricResultField):
+@dataclass
+class DatasetUtilityColumns:
     date: Optional[str]
     id_column: Optional[str]
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
 
+    def as_dict(self) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
+        return {
+            "date": self.date,
+            "id": self.id_column,
+            "target": self.target,
+            "prediction": self.prediction,
+        }
 
-class DatasetColumnsField(MetricResultField, FromDataclassMixin):
-    utility_columns: DatasetUtilityColumnsField
+
+@dataclass
+class DatasetColumns:
+    utility_columns: DatasetUtilityColumns
     target_type: Optional[str]
     num_feature_names: List[str]
     cat_feature_names: List[str]
@@ -65,6 +55,16 @@ class DatasetColumnsField(MetricResultField, FromDataclassMixin):
     datetime_feature_names: List[str]
     target_names: Optional[Dict[Union[str, int], str]]
     task: Optional[str]
+
+    def as_dict(self) -> Dict[str, Union[str, Optional[List[str]], Dict]]:
+        return {
+            "utility_columns": self.utility_columns.as_dict(),
+            "cat_feature_names": self.cat_feature_names,
+            "num_feature_names": self.num_feature_names,
+            "datetime_feature_names": self.datetime_feature_names,
+            "target_names": self.target_names,
+            "text_feature_names": self.text_feature_names,
+        }
 
     def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
         """List all features names.

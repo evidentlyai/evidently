@@ -10,7 +10,6 @@ from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
 from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
 from evidently.report import Report
-from evidently.utils.visualizations import Distribution
 
 
 @pytest.mark.parametrize(

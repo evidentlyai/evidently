@@ -12,10 +12,10 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
 
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
+from evidently.objects import Distribution
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
-from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 

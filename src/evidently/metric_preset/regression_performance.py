@@ -12,7 +12,7 @@ from evidently.metrics import RegressionPredictedVsActualPlot
 from evidently.metrics import RegressionPredictedVsActualScatter
 from evidently.metrics import RegressionQualityMetric
 from evidently.metrics import RegressionTopErrorMetric
-from evidently.utils.data_operations import DatasetColumns
+from evidently.objects import DatasetColumns
 
 
 class RegressionPreset(MetricPreset):
