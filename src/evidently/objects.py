@@ -1,4 +1,3 @@
-import dataclasses
 from dataclasses import dataclass
 from typing import Dict
 from typing import List
