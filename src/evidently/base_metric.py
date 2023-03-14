@@ -16,6 +16,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseConfig
 from pydantic import BaseModel
 
 from evidently.core import ColumnType
@@ -145,7 +146,7 @@ class Metric(Generic[TResult]):
 
 
 class MetricResultField(BaseModel):
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
         dict_include: bool = True
         pd_include: bool = True

@@ -12,6 +12,8 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import PRCurve
+from evidently.metric_results import ROCCurve
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
@@ -726,7 +728,7 @@ def get_heatmaps_widget(
 
 
 def get_roc_auc_tab_data(
-    curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: ColorOptions
+    curr_roc_curve: ROCCurve, ref_roc_curve: Optional[ROCCurve], color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -737,8 +739,8 @@ def get_roc_auc_tab_data(
     for label in curr_roc_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
-            x=curr_roc_curve[label]["fpr"],
-            y=curr_roc_curve[label]["tpr"],
+            x=curr_roc_curve[label].fpr,
+            y=curr_roc_curve[label].tpr,
             mode="lines",
             name="ROC",
             legendgroup="ROC",
@@ -751,8 +753,8 @@ def get_roc_auc_tab_data(
         fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
         if ref_roc_curve is not None:
             trace = go.Scatter(
-                x=ref_roc_curve[label]["fpr"],
-                y=ref_roc_curve[label]["tpr"],
+                x=ref_roc_curve[label].fpr,
+                y=ref_roc_curve[label].tpr,
                 mode="lines",
                 name="ROC",
                 legendgroup="ROC",
@@ -771,7 +773,7 @@ def get_roc_auc_tab_data(
 
 
 def get_pr_rec_plot_data(
-    current_pr_curve: dict, reference_pr_curve: Optional[dict], color_options: ColorOptions
+    current_pr_curve: PRCurve, reference_pr_curve: Optional[PRCurve], color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -782,8 +784,8 @@ def get_pr_rec_plot_data(
     for label in current_pr_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
-            x=current_pr_curve[label]["rcl"],
-            y=current_pr_curve[label]["pr"],
+            x=current_pr_curve[label].rcl,
+            y=current_pr_curve[label].pr,
             mode="lines",
             name="PR",
             legendgroup="PR",
@@ -796,8 +798,8 @@ def get_pr_rec_plot_data(
         fig.update_xaxes(title_text="Recall", row=1, col=1)
         if reference_pr_curve is not None:
             trace = go.Scatter(
-                x=reference_pr_curve[label]["rcl"],
-                y=reference_pr_curve[label]["pr"],
+                x=reference_pr_curve[label].rcl,
+                y=reference_pr_curve[label].pr,
                 mode="lines",
                 name="PR",
                 legendgroup="PR",

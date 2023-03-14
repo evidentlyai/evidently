@@ -10,28 +10,18 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.objects import ColumnScatter
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_line_in_time
 
-Scatter = Dict[str, Union[pd.Series, pd.RangeIndex]]
 
-
-class RegressionErrorPlotResults(MetricResult):
-    class Config:
-        dict_exclude_fields = {"current_scatter", "reference_scatter"}
-        pd_exclude_fields = {}
-
-    current_scatter: Scatter
-    reference_scatter: Optional[Scatter]
-    x_name: str
-
-
-class RegressionErrorPlot(Metric[RegressionErrorPlotResults]):
-    def calculate(self, data: InputData) -> RegressionErrorPlotResults:
+class RegressionErrorPlot(Metric[ColumnScatterResult]):
+    def calculate(self, data: InputData) -> ColumnScatterResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -59,9 +49,9 @@ class RegressionErrorPlot(Metric[RegressionErrorPlotResults]):
             reference_scatter["Predicted - Actual"] = ref_df[prediction_name] - ref_df[target_name]
             reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
 
-        return RegressionErrorPlotResults(
-            current_scatter=current_scatter,
-            reference_scatter=reference_scatter,
+        return ColumnScatterResult(
+            current=current_scatter,
+            reference=reference_scatter,
             x_name=x_name,
         )
 
@@ -83,11 +73,11 @@ class RegressionErrorPlot(Metric[RegressionErrorPlotResults]):
 class RegressionErrorPlotRenderer(MetricRenderer):
     def render_html(self, obj: RegressionErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_scatter = result.current_scatter
+        current_scatter = result.current
         reference_scatter = None
 
-        if result.reference_scatter is not None:
-            reference_scatter = result.reference_scatter
+        if result.reference is not None:
+            reference_scatter = result.reference
 
         fig = plot_line_in_time(
             curr=current_scatter,

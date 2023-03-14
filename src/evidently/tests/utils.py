@@ -9,6 +9,8 @@ import plotly.graph_objs as go
 from pandas.api.types import is_numeric_dtype
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import Boxes
+from evidently.metric_results import RatesPlotData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import DetailsInfo
@@ -305,6 +307,7 @@ def plot_correlations(current_correlations, reference_correlations):
     return fig
 
 
+# todo typing: ConfusionMatrix
 def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     if ref_mtrx is not None:
         cols = 2
@@ -386,27 +389,27 @@ def plot_roc_auc(
     return additional_plots
 
 
-def plot_boxes(*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_options: ColorOptions):
+def plot_boxes(*, curr_for_plots: Boxes, ref_for_plots: Optional[Boxes], color_options: ColorOptions):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
     fig = go.Figure()
     trace = go.Box(
-        lowerfence=curr_for_plots["mins"],
-        q1=curr_for_plots["lowers"],
-        q3=curr_for_plots["uppers"],
-        median=curr_for_plots["means"],
-        upperfence=curr_for_plots["maxs"],
+        lowerfence=curr_for_plots.mins,
+        q1=curr_for_plots.lowers,
+        q3=curr_for_plots.uppers,
+        median=curr_for_plots.means,
+        upperfence=curr_for_plots.maxs,
         name="current",
         marker_color=current_color,
     )
     fig.add_trace(trace)
     if ref_for_plots is not None:
         trace = go.Box(
-            lowerfence=curr_for_plots["mins"],
-            q1=ref_for_plots["lowers"],
-            q3=ref_for_plots["uppers"],
-            median=ref_for_plots["means"],
-            upperfence=ref_for_plots["maxs"],
+            lowerfence=curr_for_plots.mins,
+            q1=ref_for_plots.lowers,
+            q3=ref_for_plots.uppers,
+            median=ref_for_plots.means,
+            upperfence=ref_for_plots.maxs,
             name="reference",
             marker_color=reference_color,
         )
@@ -420,7 +423,12 @@ def plot_boxes(*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_opt
     return fig
 
 
-def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None, color_options: ColorOptions):
+def plot_rates(
+    *,
+    curr_rate_plots_data: RatesPlotData,
+    ref_rate_plots_data: Optional[RatesPlotData] = None,
+    color_options: ColorOptions,
+):
     if ref_rate_plots_data is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
@@ -430,11 +438,11 @@ def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict
 
     curr_df = pd.DataFrame(
         {
-            "thrs": curr_rate_plots_data["thrs"],
-            "fpr": curr_rate_plots_data["fpr"],
-            "tpr": curr_rate_plots_data["tpr"],
-            "fnr": curr_rate_plots_data["fnr"],
-            "tnr": curr_rate_plots_data["tnr"],
+            "thrs": curr_rate_plots_data.thrs,
+            "fpr": curr_rate_plots_data.fpr,
+            "tpr": curr_rate_plots_data.tpr,
+            "fnr": curr_rate_plots_data.fnr,
+            "tnr": curr_rate_plots_data.tnr,
         }
     )
     curr_df = curr_df[curr_df.thrs <= 1]
@@ -456,11 +464,11 @@ def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict
     if ref_rate_plots_data is not None:
         ref_df = pd.DataFrame(
             {
-                "thrs": ref_rate_plots_data["thrs"],
-                "fpr": ref_rate_plots_data["fpr"],
-                "tpr": ref_rate_plots_data["tpr"],
-                "fnr": ref_rate_plots_data["fnr"],
-                "tnr": ref_rate_plots_data["tnr"],
+                "thrs": ref_rate_plots_data.thrs,
+                "fpr": ref_rate_plots_data.fpr,
+                "tpr": ref_rate_plots_data.tpr,
+                "fnr": ref_rate_plots_data.fnr,
+                "tnr": ref_rate_plots_data.tnr,
             }
         )
         ref_df = ref_df[ref_df.thrs <= 1]

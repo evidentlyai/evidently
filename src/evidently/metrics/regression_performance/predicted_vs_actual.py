@@ -41,9 +41,7 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
         if data.reference_data is not None:
             ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
             reference_scatter = PredActualScatter(predicted=ref_df[prediction_name], actual=ref_df[target_name])
-        return RegressionPredictedVsActualScatterResults(
-            current=current_scatter, reference=reference_scatter
-        )
+        return RegressionPredictedVsActualScatterResults(current=current_scatter, reference=reference_scatter)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)

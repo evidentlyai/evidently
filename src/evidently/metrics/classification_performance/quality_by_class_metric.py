@@ -16,6 +16,8 @@ from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.metric_results import DatasetColumnsField
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
+from evidently.metrics.classification_performance.objects import ClassesMetrics
+from evidently.metrics.classification_performance.objects import ClassificationReport
 from evidently.model.widget import BaseWidgetInfo
 from evidently.objects import DatasetColumns
 from evidently.renderers.base_renderer import MetricRenderer
@@ -27,7 +29,7 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationQuality(MetricResultField):
-    metrics: Dict[Union[str, int], Union[float, int, Dict[str, Union[float, int]]]]  # ??? not sure about value type
+    metrics: ClassesMetrics
     roc_aucs: Optional[Dict[Union[str, int], Union[float, int]]]
 
 
@@ -47,11 +49,10 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
             data.current_data,
             column_mapping=data.column_mapping,
         )
-        metrics_matrix = sklearn.metrics.classification_report(
+        metrics_matrix = ClassificationReport.create(
             target,
             prediction.predictions,
-            output_dict=True,
-        )
+        ).classes
 
         current_roc_aucs = None
         if prediction.prediction_probas is not None:
@@ -59,7 +60,6 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
             current_roc_aucs = sklearn.metrics.roc_auc_score(
                 binaraized_target, prediction.prediction_probas, average=None
             ).tolist()
-        ref_metrics = None
         reference_roc_aucs = None
 
         reference = None
@@ -68,11 +68,10 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 data.reference_data,
                 column_mapping=data.column_mapping,
             )
-            ref_metrics = sklearn.metrics.classification_report(
+            ref_metrics = ClassificationReport.create(
                 ref_target,
                 ref_prediction.predictions,
-                output_dict=True,
-            )
+            ).classes
             if ref_prediction.prediction_probas is not None:
                 binaraized_target = (
                     ref_target.values.reshape(-1, 1) == list(ref_prediction.prediction_probas.columns)

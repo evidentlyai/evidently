@@ -1,9 +1,9 @@
 import copy
-import dataclasses
 import json
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 
 import numpy as np
@@ -28,7 +28,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
-PlotData = pd.DataFrame
+PlotData: Type[pd.DataFrame] = pd.DataFrame
 
 
 class RegressionErrorBiasTableResults(MetricResult):

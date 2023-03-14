@@ -6,6 +6,7 @@ import numpy as np
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
 from evidently.objects import ColumnScatter
 from evidently.renderers.base_renderer import MetricRenderer
@@ -15,18 +16,8 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_line_in_time
 
 
-class RegressionAbsPercentageErrorPlotResults(MetricResult):
-    class Config:
-        dict_include = False
-        pd_include = False
-
-    current_scatter: ColumnScatter
-    reference_scatter: Optional[ColumnScatter]
-    x_name: str
-
-
-class RegressionAbsPercentageErrorPlot(Metric[RegressionAbsPercentageErrorPlotResults]):
-    def calculate(self, data: InputData) -> RegressionAbsPercentageErrorPlotResults:
+class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
+    def calculate(self, data: InputData) -> ColumnScatterResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -59,9 +50,9 @@ class RegressionAbsPercentageErrorPlot(Metric[RegressionAbsPercentageErrorPlotRe
             reference_scatter["Absolute Percentage Error"] = ref_df["abs_perc_err"]
             reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
 
-        return RegressionAbsPercentageErrorPlotResults(
-            current_scatter=current_scatter,
-            reference_scatter=reference_scatter,
+        return ColumnScatterResult(
+            current=current_scatter,
+            reference=reference_scatter,
             x_name=x_name,
         )
 
@@ -83,11 +74,11 @@ class RegressionAbsPercentageErrorPlot(Metric[RegressionAbsPercentageErrorPlotRe
 class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
     def render_html(self, obj: RegressionAbsPercentageErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_scatter = result.current_scatter
+        current_scatter = result.current
         reference_scatter = None
 
-        if result.reference_scatter is not None:
-            reference_scatter = result.reference_scatter
+        if result.reference is not None:
+            reference_scatter = result.reference
 
         fig = plot_line_in_time(
             curr=current_scatter,

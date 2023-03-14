@@ -380,6 +380,7 @@ def test_f1_by_class_test_render_json() -> None:
     )
     suite = TestSuite(tests=[TestF1ByClass(label="0")])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -423,6 +424,7 @@ def test_recall_by_class_test_render_json() -> None:
     )
     suite = TestSuite(tests=[TestRecallByClass(label="1")])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())

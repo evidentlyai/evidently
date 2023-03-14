@@ -31,10 +31,6 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
-    class Config:
-        dict_exclude_fields = {}
-        pd_exclude_fields = {}
-
     current: StatsByFeature
     reference: Optional[StatsByFeature]
 

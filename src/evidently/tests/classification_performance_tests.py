@@ -5,10 +5,13 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently.calculations.classification_performance import DatasetClassificationQuality
+from evidently.metric_results import ROCCurve
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationConfusionMatrix
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
+from evidently.metrics.classification_performance.objects import ClassMetric
+from evidently.metrics.classification_performance.objects import DatasetClassificationQuality
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -299,8 +302,8 @@ class TestRocAucRenderer(TestRenderer):
 
     def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_roc_curve = obj.roc_curve.get_result().current_roc_curve
-        ref_roc_curve = obj.roc_curve.get_result().reference_roc_curve
+        curr_roc_curve: Optional[ROCCurve] = obj.roc_curve.get_result().current_roc_curve
+        ref_roc_curve: Optional[ROCCurve] = obj.roc_curve.get_result().reference_roc_curve
 
         if curr_roc_curve is None:
             return info
@@ -352,7 +355,7 @@ class TestLogLossRenderer(TestRenderer):
 
     def render_html(self, obj: TestLogLoss) -> TestHtmlInfo:
         info = super().render_html(obj)
-        result = obj.metric.get_result()
+        result: ClassificationQualityMetricResult = obj.metric.get_result()
 
         curr_metrics = result.current.plot_data
         ref_metrics = None if result.reference is None else result.reference.plot_data
@@ -632,15 +635,15 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         return TestValueCondition(gt=self.get_value(dummy_result))
 
     @abc.abstractmethod
-    def get_value(self, result: dict):
+    def get_value(self, result: ClassMetric):
         raise NotImplementedError()
 
 
 class TestPrecisionByClass(ByClassClassificationTest):
     name: str = "Precision Score by Class"
 
-    def get_value(self, result: dict):
-        return result["precision"]
+    def get_value(self, result: ClassMetric):
+        return result.precision
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -670,8 +673,8 @@ class TestPrecisionByClassRenderer(TestRenderer):
 class TestRecallByClass(ByClassClassificationTest):
     name: str = "Recall Score by Class"
 
-    def get_value(self, result: dict):
-        return result["recall"]
+    def get_value(self, result: ClassMetric):
+        return result.recall
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -701,8 +704,8 @@ class TestRecallByClassRenderer(TestRenderer):
 class TestF1ByClass(ByClassClassificationTest):
     name: str = "F1 Score by Class"
 
-    def get_value(self, result: dict):
-        return result["f1-score"]
+    def get_value(self, result: ClassMetric):
+        return result.f1
 
     def get_description(self, value: Numeric) -> str:
         return (

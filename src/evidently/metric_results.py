@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel
 
+from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.objects import ColumnScatter
 
@@ -134,3 +135,49 @@ class ScatterField(MetricResultField):
     scatter: ColumnScatter
     x_name: str
     plot_shape: Dict[str, float]
+
+
+class ColumnScatterResult(MetricResult):
+    class Config:
+        dict_include = False
+
+    current: ColumnScatter
+    reference: Optional[ColumnScatter]
+    x_name: str
+
+
+PlotData = List[float]
+
+
+class Boxes(MetricResultField):
+    mins: PlotData
+    lowers: PlotData
+    means: PlotData
+    uppers: PlotData
+    maxs: PlotData
+
+
+class RatesPlotData(MetricResultField):
+    thrs: PlotData
+    tpr: PlotData
+    fpr: PlotData
+    fnr: PlotData
+    tnr: PlotData
+
+
+class PRCurveData(MetricResultField):
+    pr: PlotData
+    rcl: PlotData
+    thrs: PlotData
+
+
+PRCurve = Dict[str, PRCurveData]
+
+
+class ROCCurveData(MetricResultField):
+    fpr: PlotData
+    tpr: PlotData
+    thrs: PlotData
+
+
+ROCCurve = Dict[str, ROCCurveData]

@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -15,10 +16,14 @@ from pandas.core.dtypes.common import is_string_dtype
 from sklearn import metrics
 
 from evidently import ColumnMapping
-from evidently.base_metric import MetricResultField
+from evidently.metric_results import Boxes
+from evidently.metric_results import RatesPlotData
 from evidently.objects import ConfusionMatrix
 from evidently.objects import DatasetColumns
 from evidently.objects import PredictionData
+
+if TYPE_CHECKING:
+    from evidently.metrics.classification_performance.objects import DatasetClassificationQuality
 
 
 def calculate_confusion_by_classes(
@@ -250,7 +255,7 @@ def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Unio
     return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
 
 
-def collect_plot_data(prediction_probas: pd.DataFrame):
+def collect_plot_data(prediction_probas: pd.DataFrame) -> Boxes:
     res = {}
     mins = []
     lowers = []
@@ -268,22 +273,7 @@ def collect_plot_data(prediction_probas: pd.DataFrame):
     res["means"] = means
     res["uppers"] = uppers
     res["maxs"] = maxs
-    return res
-
-
-class DatasetClassificationQuality(MetricResultField):
-    accuracy: float
-    precision: float
-    recall: float
-    f1: float
-    roc_auc: Optional[float] = None
-    log_loss: Optional[float] = None
-    tpr: Optional[float] = None
-    tnr: Optional[float] = None
-    fpr: Optional[float] = None
-    fnr: Optional[float] = None
-    rate_plots_data: Optional[Dict] = None
-    plot_data: Optional[Dict] = None
+    return Boxes(mins=mins, lowers=lowers, means=means, uppers=uppers, maxs=maxs)
 
 
 class ConfusionMatrixProtocol(Protocol):
@@ -296,7 +286,7 @@ def calculate_metrics(
     confusion_matrix: ConfusionMatrixProtocol,
     target: pd.Series,
     prediction: PredictionData,
-) -> DatasetClassificationQuality:
+) -> "DatasetClassificationQuality":
     if column_mapping.pos_label is not None:
         pos_label = column_mapping.pos_label
     else:
@@ -307,7 +297,7 @@ def calculate_metrics(
     fnr = None
     roc_auc = None
     log_loss = None
-    rate_plots_data = None
+    rate_plots_data: Optional[RatesPlotData] = None
     plot_data = None
     if len(prediction.labels) == 2:
         confusion_by_classes = calculate_confusion_by_classes(
@@ -336,12 +326,6 @@ def calculate_metrics(
         plot_data = collect_plot_data(prediction.prediction_probas)
     if len(prediction.labels) == 2 and prediction.prediction_probas is not None:
         fprs, tprs, thrs = metrics.roc_curve(target == pos_label, prediction.prediction_probas[pos_label])
-        roc_curve = {"fpr": fprs.tolist(), "tpr": tprs.tolist(), "thrs": thrs.tolist()}
-        rate_plots_data = {
-            "thrs": roc_curve["thrs"],
-            "tpr": roc_curve["tpr"],
-            "fpr": roc_curve["fpr"],
-        }
         df = pd.DataFrame(
             {
                 "true": (target == pos_label).astype(int).values,
@@ -350,7 +334,7 @@ def calculate_metrics(
         )
         tnrs = []
         fnrs = []
-        for tr in rate_plots_data["thrs"]:
+        for tr in thrs:
             if tr < 1:
                 tn = df[(df.true == 0) & (df.preds < tr)].shape[0]
                 fn = df[(df.true == 1) & (df.preds < tr)].shape[0]
@@ -361,8 +345,10 @@ def calculate_metrics(
             else:
                 fnrs.append(1)
                 tnrs.append(1)
-        rate_plots_data["fnr"] = fnrs
-        rate_plots_data["tnr"] = tnrs
+        rate_plots_data = RatesPlotData(thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs, tnr=tnrs)
+
+    # todo: circular imports
+    from evidently.metrics.classification_performance.objects import DatasetClassificationQuality
 
     return DatasetClassificationQuality(
         accuracy=metrics.accuracy_score(target, prediction.predictions),

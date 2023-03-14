@@ -51,8 +51,8 @@ def plot_error_bias_colored_scatter(
             [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
         ):
             trace = go.Scatter(
-                x=value["Actual value"],
-                y=value["Predicted value"],
+                x=value.actual,
+                y=value.predicted,
                 mode="markers",
                 name=name,
                 legendgroup=name,

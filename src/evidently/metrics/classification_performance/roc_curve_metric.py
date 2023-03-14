@@ -9,6 +9,8 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.metric_results import ROCCurve
+from evidently.metric_results import ROCCurveData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.objects import PredictionData
 from evidently.renderers.base_renderer import MetricRenderer
@@ -21,8 +23,8 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationRocCurveResults(MetricResult):
-    current_roc_curve: Optional[dict] = None  # todo CurveField
-    reference_roc_curve: Optional[dict] = None
+    current_roc_curve: Optional[ROCCurve] = None
+    reference_roc_curve: Optional[ROCCurve] = None
 
 
 class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
@@ -45,7 +47,7 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             reference_roc_curve=ref_roc_curve,
         )
 
-    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData):
+    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData) -> ROCCurve:
         labels = prediction.labels
         if prediction.prediction_probas is None:
             raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
@@ -56,30 +58,24 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             binaraized_target.columns = ["target"]
 
             fpr, tpr, thrs = metrics.roc_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
-            roc_curve[prediction.prediction_probas.columns[0]] = {
-                "fpr": fpr.tolist(),
-                "tpr": tpr.tolist(),
-                "thrs": thrs.tolist(),
-            }
+            roc_curve[prediction.prediction_probas.columns[0]] = ROCCurveData(
+                fpr=fpr.tolist(), tpr=tpr.tolist(), thrs=thrs.tolist()
+            )
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
 
             for label in labels:
                 fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], prediction.prediction_probas[label])
-                roc_curve[label] = {
-                    "fpr": fpr.tolist(),
-                    "tpr": tpr.tolist(),
-                    "thrs": thrs.tolist(),
-                }
+                roc_curve[label] = ROCCurveData(fpr=fpr.tolist(), tpr=tpr.tolist(), thrs=thrs.tolist())
         return roc_curve
 
 
 @default_renderer(wrap_type=ClassificationRocCurve)
 class ClassificationRocCurveRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationRocCurve) -> List[BaseWidgetInfo]:
-        current_roc_curve = obj.get_result().current_roc_curve
-        reference_roc_curve = obj.get_result().reference_roc_curve
+        current_roc_curve: ROCCurve = obj.get_result().current_roc_curve
+        reference_roc_curve: ROCCurve = obj.get_result().reference_roc_curve
         if current_roc_curve is None:
             return []
 

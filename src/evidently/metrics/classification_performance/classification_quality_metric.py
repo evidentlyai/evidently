@@ -4,10 +4,10 @@ from typing import Union
 
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
-from evidently.calculations.classification_performance import DatasetClassificationQuality
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
+from evidently.metrics.classification_performance.objects import DatasetClassificationQuality
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
