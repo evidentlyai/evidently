@@ -21,6 +21,7 @@ from evidently.core import ColumnType
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
+from evidently.metric_results import Histogram
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -115,7 +116,7 @@ class DataQualityPlot(MetricResultField):
     class Config:
         dict_include = False
 
-    bins_for_hist: Optional[Dict[str, pd.DataFrame]]
+    bins_for_hist: Optional[Histogram]
     data_in_time: Optional[DataInTime]
     data_by_target: Optional[DataByTarget]
     counts_of_values: Optional[Dict[str, pd.DataFrame]]
@@ -321,7 +322,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
             current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
             current_counts.columns = ["x", "count"]
             counts_of_values["current"] = current_counts.head(10)
-            if reference_data is not None:
+            if data.reference_data is not None:
                 reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
                 reference_counts.columns = ["x", "count"]
                 counts_of_values["reference"] = reference_counts.head(10)
@@ -431,13 +432,13 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         column_type = metric_result.column_type
         column_name = metric_result.column_name
         # main plot
-        bins_for_hist = metric_result.plot_data.bins_for_hist
+        bins_for_hist: Histogram = metric_result.plot_data.bins_for_hist
         if bins_for_hist is not None:
-            hist_curr = bins_for_hist["current"]
+            hist_curr = bins_for_hist.current
             hist_ref = None
             metrics_values_headers = [""]
-            if "reference" in bins_for_hist.keys():
-                hist_ref = bins_for_hist["reference"]
+            if bins_for_hist.reference is not None:
+                hist_ref = bins_for_hist.reference
                 metrics_values_headers = ["current", "reference"]
 
             if column_type == "cat":
@@ -449,18 +450,16 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
                 fig = json.loads(fig.to_json())
             if column_type == "num":
-                ref_log = None
-                if "reference_log" in bins_for_hist.keys():
-                    ref_log = bins_for_hist["reference_log"]
+                ref_log = bins_for_hist.reference_log
                 fig = plot_distr_with_log_button(
                     hist_curr,
-                    bins_for_hist["current_log"],
+                    bins_for_hist.current_log,
                     hist_ref,
                     ref_log,
                     color_options=self.color_options,
                 )
             if column_type == "datetime":
-                fig = plot_time_feature_distr(hist_curr, hist_ref, column_name, color_options=self.color_options)
+                fig = plot_time_feature_distr(hist_curr, hist_ref, color_options=self.color_options)
             graph = {"data": fig["data"], "layout": fig["layout"]}
         else:
             graph = {}

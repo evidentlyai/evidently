@@ -15,6 +15,7 @@ from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics import ConflictPredictionMetric
 from evidently.metrics import ConflictTargetMetric
 from evidently.metrics import DatasetCorrelationsMetric
+from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
 from evidently.objects import DatasetColumns
@@ -520,16 +521,15 @@ class TestColumnValueMinRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMin) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         min_value = current_characteristics.min
@@ -572,16 +572,15 @@ class TestColumnValueMaxRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMax) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         max_value = current_characteristics.max
@@ -620,16 +619,15 @@ class TestColumnValueMeanRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         mean_value = current_characteristics.mean
@@ -668,16 +666,15 @@ class TestColumnValueMedianRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         percentile_50 = current_characteristics.p50
@@ -719,13 +716,12 @@ class TestColumnValueStdRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -984,7 +980,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:
         column_name = obj.column_name
-        metric_result = obj.metric.get_result()
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
         info = super().render_html(obj)
 
         if metric_result.reference_characteristics is None or metric_result.plot_data.bins_for_hist is None:
@@ -1001,11 +997,8 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         gt = ref_mean - obj.n_sigmas * ref_std
         lt = ref_mean + obj.n_sigmas * ref_std
         ref_condition = TestValueCondition(gt=gt, lt=lt)
-        curr_distr = metric_result.plot_data.bins_for_hist["current"]
-        ref_distr = None
-
-        if "reference" in metric_result.plot_data.bins_for_hist.keys():
-            ref_distr = metric_result.plot_data.bins_for_hist["reference"]
+        curr_distr = metric_result.plot_data.bins_for_hist.current
+        ref_distr = metric_result.plot_data.bins_for_hist.reference
 
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, ref_condition, color_options=self.color_options)

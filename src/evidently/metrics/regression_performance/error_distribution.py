@@ -8,6 +8,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -22,8 +23,8 @@ class RegressionErrorDistributionResults(MetricResult):
         dict_exclude_fields = {"current_bins", "reference_bins"}
         pd_exclude_fields = {"current_bins", "reference_bins"}
 
-    current_bins: pd.DataFrame
-    reference_bins: Optional[pd.DataFrame]
+    current_bins: HistogramData
+    reference_bins: Optional[HistogramData]
 
 
 class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
@@ -45,10 +46,8 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
             ref_error = ref_df[prediction_name] - ref_df[target_name]
 
         result = make_hist_for_num_plot(curr_error, ref_error)
-        current_bins = result["current"]
-        reference_bins = None
-        if "reference" in result.keys():
-            reference_bins = result["reference"]
+        current_bins = result.current
+        reference_bins = result.reference
 
         return RegressionErrorDistributionResults(current_bins=current_bins, reference_bins=reference_bins)
 

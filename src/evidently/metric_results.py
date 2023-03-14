@@ -181,3 +181,25 @@ class ROCCurveData(MetricResultField):
 
 
 ROCCurve = Dict[str, ROCCurveData]
+
+
+class HistogramData(MetricResultField):
+    x: pd.Series
+    count: pd.Series
+
+    @classmethod
+    def from_df(cls, value: Optional[pd.DataFrame]):
+        if value is None:
+            return None
+        return cls(x=value["x"], count=value["count"])
+
+    def to_df(self):
+        return pd.DataFrame.from_dict(self.dict())
+
+
+class Histogram(MetricResultField):
+    current: HistogramData
+    reference: Optional[HistogramData]
+
+    current_log: Optional[HistogramData] = None
+    reference_log: Optional[HistogramData] = None

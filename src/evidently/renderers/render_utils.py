@@ -5,17 +5,20 @@ from typing import Union
 import numpy as np
 import plotly.graph_objs as go
 
+from evidently.metric_results import HistogramData
 from evidently.options import ColorOptions
 
 
-def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions):
+def plot_distr(
+    *, hist_curr: HistogramData, hist_ref: Optional[HistogramData] = None, orientation="v", color_options: ColorOptions
+):
     fig = go.Figure()
 
     fig.add_trace(
         go.Bar(
             name="current",
-            x=hist_curr["x"],
-            y=hist_curr["count"],
+            x=hist_curr.x,
+            y=hist_curr.count,
             marker_color=color_options.get_current_data_color(),
             orientation=orientation,
         )
@@ -24,8 +27,8 @@ def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: Colo
         fig.add_trace(
             go.Bar(
                 name="reference",
-                x=hist_ref["x"],
-                y=hist_ref["count"],
+                x=hist_ref.x,
+                y=hist_ref.count,
                 marker_color=color_options.get_reference_data_color(),
                 orientation=orientation,
             )

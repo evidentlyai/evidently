@@ -16,6 +16,7 @@ from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metric_results import DatasetColumnsField
+from evidently.metric_results import Histogram
 from evidently.metrics.regression_performance.objects import RegressionMetricScatter
 from evidently.metrics.regression_performance.objects import RegressionMetricsScatter
 from evidently.metrics.regression_performance.utils import apply_func_to_binned_data
@@ -54,7 +55,7 @@ class RegressionPerformanceMetricsResults(MetricResult):
     rmse_default: float
 
     me_default_sigma: float
-    me_hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
+    me_hist_for_plot: Histogram
     mean_abs_error_default: float
     mean_abs_perc_error_default: float
     abs_error_max_default: float
@@ -62,7 +63,7 @@ class RegressionPerformanceMetricsResults(MetricResult):
     abs_error_std: float
     abs_perc_error_std: float
     error_normality: dict
-    hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
+    hist_for_plot: Histogram
     vals_for_plots: RegressionMetricsScatter
     error_bias: Optional[dict] = None
 

@@ -16,6 +16,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metric_results import DatasetColumnsField
+from evidently.metric_results import Histogram
 from evidently.metrics.regression_performance.objects import RegressionMetricScatter
 from evidently.metrics.regression_performance.objects import RegressionMetricsScatter
 from evidently.metrics.regression_performance.regression_performance_metrics import RegressionMetrics
@@ -46,24 +47,14 @@ class RegressionQualityMetricResults(MetricResult):
     columns: DatasetColumnsField
     current: MoreRegressionMetrics
     reference: Optional[MoreRegressionMetrics]
-    # r2_score: float
-    # rmse: float
     rmse_default: float
-    # mean_error: float
     me_default_sigma: float
-    me_hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
-    # mean_abs_error: float
+    me_hist_for_plot: Histogram
     mean_abs_error_default: float
-    # mean_abs_perc_error: float
     mean_abs_perc_error_default: float
-    # abs_error_max: float
     abs_error_max_default: float
-    # error_std: float
-    # abs_error_std: float
-    # abs_perc_error_std: float
     error_normality: dict
-    # underperformance: dict
-    hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
+    hist_for_plot: Histogram
     vals_for_plots: RegressionMetricsScatter
     error_bias: Optional[dict] = None
 

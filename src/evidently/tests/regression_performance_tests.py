@@ -87,19 +87,13 @@ class TestValueMAERenderer(TestRenderer):
 
     def render_html(self, obj: TestValueMAE) -> TestHtmlInfo:
         info = super().render_html(obj)
-        is_ref_data = False
-
         result = obj.metric.get_result()
-        if "reference" in result.hist_for_plot.keys():
-            is_ref_data = True
-
         fig = regression_perf_plot(
             val_for_plot=result.vals_for_plots.mean_abs_error,
             hist_for_plot=result.hist_for_plot,
             name="MAE",
             curr_metric=result.current.mean_abs_error,
             ref_metric=result.reference.mean_abs_error if result.reference is not None else None,
-            is_ref_data=is_ref_data,
             color_options=self.color_options,
         )
         info.with_details("MAE", plotly_figure(title="", figure=fig))
@@ -140,10 +134,7 @@ class TestValueMAPERenderer(TestRenderer):
 
     def render_html(self, obj: TestValueMAPE) -> TestHtmlInfo:
         info = super().render_html(obj)
-        is_ref_data = False
         result = obj.metric.get_result()
-        if "reference" in result.hist_for_plot.keys():
-            is_ref_data = True
         val_for_plot = result.vals_for_plots.mean_abs_perc_error
         val_for_plot = val_for_plot * 100
         fig = regression_perf_plot(
@@ -152,7 +143,6 @@ class TestValueMAPERenderer(TestRenderer):
             name="MAPE",
             curr_metric=result.current.mean_abs_perc_error,
             ref_metric=result.reference.mean_abs_perc_error if result.reference is not None else None,
-            is_ref_data=is_ref_data,
             color_options=self.color_options,
         )
         info.with_details("MAPE", plotly_figure(title="", figure=fig))
@@ -191,17 +181,13 @@ class TestValueRMSERenderer(TestRenderer):
 
     def render_html(self, obj: TestValueRMSE) -> TestHtmlInfo:
         info = super().render_html(obj)
-        is_ref_data = False
         result = obj.metric.get_result()
-        if "reference" in result.hist_for_plot.keys():
-            is_ref_data = True
         fig = regression_perf_plot(
             val_for_plot=result.vals_for_plots.rmse,
             hist_for_plot=result.hist_for_plot,
             name="RMSE",
             curr_metric=result.current.rmse,
             ref_metric=result.reference.rmse if result.reference is not None else None,
-            is_ref_data=is_ref_data,
             color_options=self.color_options,
         )
         info.with_details("RMSE", plotly_figure(title="", figure=fig))
@@ -234,14 +220,14 @@ class TestValueMeanErrorRenderer(TestRenderer):
 
     def render_html(self, obj: TestValueMeanError) -> TestHtmlInfo:
         info = super().render_html(obj)
-        me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
-        hist_curr = me_hist_for_plot["current"]
-        hist_ref = None
-        if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
-            hist_ref = me_hist_for_plot["reference"]
+        metric_result = obj.metric.get_result()
+        me_hist_for_plot = metric_result.me_hist_for_plot
+        hist_curr = me_hist_for_plot.current
+        hist_ref = me_hist_for_plot.reference
+
         fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        fig = plot_metric_value(fig, obj.metric.get_result().current.mean_error, "current mean error")
+        fig = plot_metric_value(fig, metric_result.current.mean_error, "current mean error")
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -283,11 +269,8 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
     def render_html(self, obj: TestValueAbsMaxError) -> TestHtmlInfo:
         info = super().render_html(obj)
         me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
-        hist_curr = me_hist_for_plot["current"]
-        hist_ref = None
-
-        if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
-            hist_ref = me_hist_for_plot["reference"]
+        hist_curr = me_hist_for_plot.current
+        hist_ref = me_hist_for_plot.reference
 
         fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         info.with_details("", plotly_figure(title="", figure=fig))
@@ -328,17 +311,14 @@ class TestValueR2ScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestValueR2Score) -> TestHtmlInfo:
         info = super().render_html(obj)
-        is_ref_data = False
         result = obj.metric.get_result()
-        if "reference" in result.hist_for_plot.keys():
-            is_ref_data = True
+
         fig = regression_perf_plot(
             val_for_plot=result.vals_for_plots.r2_score,
             hist_for_plot=result.hist_for_plot,
             name="R2_score",
             curr_metric=result.current.r2_score,
             ref_metric=result.reference.r2_score if result.reference is not None else None,
-            is_ref_data=is_ref_data,
             color_options=self.color_options,
         )
         info.with_details("R2 Score", plotly_figure(title="", figure=fig))

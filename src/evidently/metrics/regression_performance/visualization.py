@@ -8,6 +8,7 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import Histogram
 from evidently.metrics.regression_performance.objects import RegressionMetricScatter
 from evidently.metrics.regression_performance.objects import RegressionScatter
 from evidently.options.color_scheme import ColorOptions
@@ -75,11 +76,10 @@ def plot_error_bias_colored_scatter(
 def regression_perf_plot(
     *,
     val_for_plot: RegressionMetricScatter,
-    hist_for_plot: Dict[str, pd.Series],
+    hist_for_plot: Histogram,
     name: str,
     curr_metric: float,
     ref_metric: float = None,
-    is_ref_data: bool = False,
     color_options: ColorOptions,
 ):
     current_color = color_options.get_current_data_color()
@@ -91,20 +91,20 @@ def regression_perf_plot(
     trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=current_color)
     fig.add_trace(trace, 1, 1)
 
-    df = hist_for_plot["current"].sort_values("x")
+    df = hist_for_plot.current.to_df().sort_values("x")
     x = [str(x) for x in df.x]
     y = list(df["count"])
     trace = go.Bar(name="current", x=x, y=y, marker_color=current_color)
     fig.add_trace(trace, 2, 1)
 
-    if is_ref_data:
+    if hist_for_plot.reference is not None:
         sorted_index = val_for_plot.reference.sort_index()
         x = [str(idx) for idx in sorted_index.index]
         y = list(sorted_index)
         trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=reference_color)
         fig.add_trace(trace, 1, 1)
 
-        df = hist_for_plot["reference"].sort_values("x")
+        df = hist_for_plot.reference.to_df().sort_values("x")
         x = [str(x) for x in df.x]
         y = list(df["count"])
         trace = go.Bar(name="reference", x=x, y=y, marker_color=reference_color)
@@ -114,7 +114,7 @@ def regression_perf_plot(
     fig.update_yaxes(title_text="count", row=2, col=1)
     title = f"current {name}: {np.round(curr_metric, 3)}"
 
-    if is_ref_data:
+    if hist_for_plot.reference is not None:
         title += f", reference {name}: {np.round(ref_metric, 3)}"
 
     fig.update_layout(title=title)

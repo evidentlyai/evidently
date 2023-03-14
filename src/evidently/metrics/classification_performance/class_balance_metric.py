@@ -7,6 +7,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.metric_results import Histogram
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -21,7 +22,7 @@ class ClassificationClassBalanceResult(MetricResult):
         dict_exclude_fields = {"plot_data"}
         pd_exclude_fields = {"plot_data"}
 
-    plot_data: Dict[str, Union[int, pd.Series, pd.DataFrame]]  # todo PlotDataField? what type of plot?
+    plot_data: Histogram
 
 
 class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
@@ -50,10 +51,8 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
 class ClassificationClassBalanceRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationClassBalance) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        current_plot_data = metric_result.plot_data["current"]
-        reference_plot_data = None
-        if "reference" in metric_result.plot_data.keys():
-            reference_plot_data = metric_result.plot_data["reference"]
+        current_plot_data = metric_result.plot_data.current
+        reference_plot_data = metric_result.plot_data.reference
 
         fig = plot_distr_subplots(
             hist_curr=current_plot_data,
