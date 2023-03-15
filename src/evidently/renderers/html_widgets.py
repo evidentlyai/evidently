@@ -12,6 +12,7 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import HistogramData
 from evidently.metric_results import PRCurve
 from evidently.metric_results import ROCCurve
 from evidently.model.widget import BaseWidgetInfo
@@ -447,13 +448,6 @@ def rich_table_data(
     )
 
 
-@dataclasses.dataclass
-class HistogramData:
-    name: str
-    x: list
-    y: List[Union[int, float]]
-
-
 def get_histogram_figure(
     *,
     primary_hist: HistogramData,
@@ -465,7 +459,7 @@ def get_histogram_figure(
     curr_bar = go.Bar(
         name=primary_hist.name,
         x=primary_hist.x,
-        y=primary_hist.y,
+        y=primary_hist.count,
         marker_color=color_options.get_current_data_color(),
         orientation=orientation,
     )
@@ -475,7 +469,7 @@ def get_histogram_figure(
         ref_bar = go.Bar(
             name=secondary_hist.name,
             x=secondary_hist.x,
-            y=secondary_hist.y,
+            y=secondary_hist.count,
             marker_color=color_options.get_reference_data_color(),
             orientation=orientation,
         )
@@ -602,8 +596,8 @@ def histogram(
         xaxis_title: title for x-axis
         yaxis_title: title for y-axis
     Example:
-        >>> ref_hist = HistogramData("Histogram 1", x=["a", "b", "c"], y=[1, 2, 3])
-        >>> curr_hist = HistogramData("Histogram 2", x=["a", "b", "c"], y=[3, 2 ,1])
+        >>> ref_hist = HistogramData(name="Histogram 1", x=pd.Series(["a", "b", "c"]), count=pd.Series([1, 2, 3]))
+        >>> curr_hist = HistogramData(name="Histogram 2", x=pd.Series(["a", "b", "c"]), count=pd.Series([3, 2 ,1]))
         >>> widget_info = histogram(
         >>>     title="Histogram example",
         >>>     primary_hist=ref_hist,
@@ -641,15 +635,15 @@ def get_histogram_for_distribution(
 ):
     current_histogram = HistogramData(
         name="current",
-        x=list(current_distribution.x),
-        y=list(current_distribution.y),
+        x=pd.Series(current_distribution.x),
+        count=pd.Series(current_distribution.y),
     )
 
     if reference_distribution is not None:
         reference_histogram: Optional[HistogramData] = HistogramData(
             name="reference",
-            x=list(reference_distribution.x),
-            y=list(reference_distribution.y),
+            x=pd.Series(reference_distribution.x),
+            count=pd.Series(reference_distribution.y),
         )
 
     else:

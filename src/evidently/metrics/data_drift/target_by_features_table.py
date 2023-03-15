@@ -18,11 +18,10 @@ from evidently.calculations.classification_performance import get_prediction_dat
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metric_results import PredictionDataField
+from evidently.metric_results import PredictionData
 from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import PredictionData
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
@@ -166,11 +165,11 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
         return TargetByFeaturesTableResults(
             current=StatsByFeature(
                 plot_data=curr_df,
-                predictions=PredictionDataField.from_dataclass(curr_predictions),
+                predictions=curr_predictions,
             ),
             reference=StatsByFeature(
                 plot_data=ref_df,
-                predictions=PredictionDataField.from_dataclass(ref_predictions),
+                predictions=ref_predictions,
             ),
             columns=columns,
             target_name=target_name,

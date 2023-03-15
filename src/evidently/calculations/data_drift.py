@@ -14,9 +14,9 @@ from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
-from evidently.metric_results import DistributionField
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import Distribution
 from evidently.metric_results import ScatterField
-from evidently.objects import DatasetColumns
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import recognize_column_type_
@@ -32,10 +32,10 @@ class DriftStatsField(MetricResultField):
         dict_include = False
         pd_include = False
 
-    distribution: Optional[DistributionField]
+    distribution: Optional[Distribution]
     examples: Optional[Examples]
     words: Optional[Words]
-    small_distribution: Optional[DistributionField]
+    small_distribution: Optional[Distribution]
     correlations: Optional[Dict[str, float]]
 
 
@@ -266,15 +266,15 @@ def get_one_column_drift(
         drift_detected=drift_result.drifted,
         stattest_threshold=drift_result.actual_threshold,
         current=DriftStatsField(
-            distribution=DistributionField.from_dataclass(current_distribution),
-            small_distribution=DistributionField(**dict(zip(["x", "y"], current_small_distribution))),
+            distribution=current_distribution,
+            small_distribution=Distribution(**dict(zip(["x", "y"], current_small_distribution))),
             correlations=current_correlations,
             examples=typical_examples_cur,
             words=typical_words_cur,
         ),
         reference=DriftStatsField(
-            distribution=DistributionField.from_dataclass(reference_distribution),
-            small_distribution=DistributionField(**dict(zip(["x", "y"], reference_small_distribution))),
+            distribution=reference_distribution,
+            small_distribution=Distribution(**dict(zip(["x", "y"], reference_small_distribution))),
             examples=typical_examples_ref,
             words=typical_words_ref,
             correlations=reference_correlations,

@@ -3,7 +3,7 @@ from typing import Optional
 from typing import overload
 
 from evidently.base_metric import MetricResultField
-from evidently.objects import ScatterData
+from evidently.metric_results import ScatterData
 
 
 class PredActualScatter(MetricResultField):

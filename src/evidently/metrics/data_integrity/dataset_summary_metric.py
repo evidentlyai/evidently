@@ -79,7 +79,7 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
             target=columns.utility_columns.target,
             prediction=columns.utility_columns.prediction,
             date_column=columns.utility_columns.date,
-            id_column=columns.utility_columns.id_column,
+            id_column=columns.utility_columns.id,
             number_of_columns=len(dataset.columns),
             number_of_rows=get_rows_count(dataset),
             number_of_missing_values=get_number_of_all_pandas_missed_values(dataset),

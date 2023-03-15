@@ -6,8 +6,8 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.core import ColumnType
-from evidently.objects import DatasetColumns
-from evidently.objects import DatasetUtilityColumns
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 
 
 def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -100,7 +100,9 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
 
     return DatasetColumns(
-        DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
+        utility_columns=DatasetUtilityColumns(
+            date=date_column, id=id_column, target=target_column, prediction=prediction_column
+        ),
         target_type=target_type,
         num_feature_names=num_feature_names or [],
         cat_feature_names=cat_feature_names or [],
@@ -205,7 +207,7 @@ def recognize_column_type_(dataset: pd.DataFrame, column_name: str, columns: Dat
     if column_name in columns.text_feature_names:
         return ColumnType.Text
 
-    if column_name == columns.utility_columns.id_column:
+    if column_name == columns.utility_columns.id:
         return ColumnType.Id
 
     if column_name == columns.utility_columns.date:

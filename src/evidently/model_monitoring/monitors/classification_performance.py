@@ -1,6 +1,6 @@
 from typing import Generator
 
-import evidently.objects
+import evidently.metric_results
 import evidently.utils.data_operations
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceMetrics
@@ -44,7 +44,7 @@ class ClassificationPerformanceMonitor(ModelMonitor):
     def _yield_metrics(
         metrics: ClassificationPerformanceMetrics,
         dataset: str,
-        columns: evidently.objects.DatasetColumns,
+        columns: evidently.metric_results.DatasetColumns,
     ) -> Generator[MetricsType, None, None]:
         yield ClassificationPerformanceMonitorMetricsMonitor.quality.create(
             metrics.accuracy, dict(dataset=dataset, metric="accuracy")

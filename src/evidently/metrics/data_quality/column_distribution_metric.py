@@ -1,11 +1,10 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.metric_results import DistributionField
+from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -20,8 +19,8 @@ from evidently.utils.visualizations import get_distribution_for_column
 
 class ColumnDistributionMetricResult(MetricResult):
     column_name: str
-    current: DistributionField
-    reference: Optional[DistributionField] = None
+    current: Distribution
+    reference: Optional[Distribution] = None
 
 
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
@@ -54,8 +53,8 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
         return ColumnDistributionMetricResult(
             column_name=self.column_name,
-            current=DistributionField.from_dataclass(current),
-            reference=DistributionField.from_dataclass(reference),
+            current=current,
+            reference=reference,
         )
 
 

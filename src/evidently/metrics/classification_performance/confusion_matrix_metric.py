@@ -7,7 +7,7 @@ from typing import Union
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
-from evidently.metric_results import ConfusionMatrixField
+from evidently.metric_results import ConfusionMatrix
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -20,8 +20,8 @@ DEFAULT_THRESHOLD = 0.5
 
 
 class ClassificationConfusionMatrixResult(MetricResult):
-    current_matrix: ConfusionMatrixField
-    reference_matrix: Optional[ConfusionMatrixField]
+    current_matrix: ConfusionMatrix
+    reference_matrix: Optional[ConfusionMatrix]
     target_names: Optional[Dict[Union[str, int], str]] = None
 
 
@@ -54,8 +54,8 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
             )
 
         return ClassificationConfusionMatrixResult(
-            current_matrix=ConfusionMatrixField.from_dataclass(current_results),
-            reference_matrix=ConfusionMatrixField.from_dataclass(reference_results),
+            current_matrix=current_results,
+            reference_matrix=reference_results,
             target_names=target_names,
         )
 

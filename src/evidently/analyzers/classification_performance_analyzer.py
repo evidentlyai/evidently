@@ -15,7 +15,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
-from evidently.objects import ConfusionMatrix
+from evidently.metric_results import ConfusionMatrix
 from evidently.utils.data_operations import process_columns
 
 

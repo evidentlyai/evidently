@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import DatasetMissingValuesMetric
@@ -17,7 +18,6 @@ from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValues
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetricResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import DatasetColumns
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer

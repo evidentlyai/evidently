@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -11,9 +10,8 @@ from evidently.core import ColumnType
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metric_results import DistributionField
+from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import Distribution
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
@@ -28,8 +26,8 @@ from evidently.utils.visualizations import get_distribution_for_column
 
 class TextDescriptorsDistributionResult(MetricResult):
     column_name: str
-    current: Dict[str, DistributionField]
-    reference: Optional[Dict[str, DistributionField]] = None
+    current: Dict[str, Distribution]
+    reference: Optional[Dict[str, Distribution]] = None
 
 
 class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
@@ -87,8 +85,8 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
 
         return TextDescriptorsDistributionResult(
             column_name=self.column_name,
-            current={k: DistributionField.from_dataclass(v) for k, v in current_results.items()},
-            reference={k: DistributionField.from_dataclass(v) for k, v in reference_results.items()},
+            current=current_results,
+            reference=reference_results,
         )
 
 

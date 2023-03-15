@@ -10,9 +10,8 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
-from evidently.metric_results import DistributionField
+from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import Distribution
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -35,7 +34,7 @@ class ValuesInRangeStat(MetricResultField):
     share_not_in_range: float
     # number of rows without null-like values
     number_of_values: int
-    distribution: DistributionField
+    distribution: Distribution
 
 
 class ColumnValueRangeMetricResult(MetricResult):
@@ -83,7 +82,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             share_in_range=share_in_range,
             share_not_in_range=share_not_in_range,
             number_of_values=rows_count,
-            distribution=DistributionField.from_dataclass(distribution),
+            distribution=distribution,
         )
 
     def calculate(self, data: InputData) -> ColumnValueRangeMetricResult:
@@ -174,20 +173,18 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
 
     def _get_tabs(self, metric_result: ColumnValueRangeMetricResult) -> BaseWidgetInfo:
         if metric_result.reference is not None:
-            reference_histogram: Optional[HistogramData] = HistogramData(
+            reference_histogram: Optional[HistogramData] = HistogramData.from_distribution(
+                metric_result.reference.distribution,
                 name="reference",
-                x=list(metric_result.reference.distribution.x),
-                y=list(metric_result.reference.distribution.y),
             )
 
         else:
             reference_histogram = None
 
         figure = get_histogram_figure_with_range(
-            primary_hist=HistogramData(
+            primary_hist=HistogramData.from_distribution(
+                metric_result.current.distribution,
                 name="current",
-                x=list(metric_result.current.distribution.x),
-                y=list(metric_result.current.distribution.y),
             ),
             secondary_hist=reference_histogram,
             color_options=self.color_options,

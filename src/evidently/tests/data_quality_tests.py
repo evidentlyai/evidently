@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from evidently.calculations.data_quality import get_corr_method
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
@@ -18,7 +19,6 @@ from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
-from evidently.objects import DatasetColumns
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer

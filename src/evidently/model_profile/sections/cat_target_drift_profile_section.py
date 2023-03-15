@@ -24,7 +24,7 @@ class CatTargetDriftProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results) -> None:
         result = CatTargetDriftAnalyzer.get_results(analyzers_results)
-        result_json: Dict[str, Any] = result.columns.as_dict()
+        result_json: Dict[str, Any] = result.columns.dict(by_alias=True)
         result_json["metrics"] = {}
 
         if result.target_metrics:

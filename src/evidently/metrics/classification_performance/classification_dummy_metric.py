@@ -14,14 +14,14 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.calculations.classification_performance import k_probability_threshold
+from evidently.metric_results import DatasetClassificationQuality
+from evidently.metric_results import PredictionData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.objects import ClassesMetrics
 from evidently.metrics.classification_performance.objects import ClassificationReport
 from evidently.metrics.classification_performance.objects import ClassMetric
-from evidently.metrics.classification_performance.objects import DatasetClassificationQuality
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import PredictionData
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text

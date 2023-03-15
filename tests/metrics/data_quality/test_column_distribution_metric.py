@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.metric_results import DistributionField
+from evidently.metric_results import Distribution
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetric
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetricResult
 from evidently.report import Report
@@ -20,7 +20,7 @@ from evidently.report import Report
             ColumnDistributionMetric(column_name="category_feature"),
             ColumnDistributionMetricResult(
                 column_name="category_feature",
-                current=DistributionField(x=pd.Series(["n", "d", "p"]), y=pd.Series([3, 2, 1])),
+                current=Distribution(x=pd.Series(["n", "d", "p"]), y=pd.Series([3, 2, 1])),
                 reference=None,
             ),
         ),

@@ -3,12 +3,12 @@ from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.base_metric import generate_column_metrics
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
-from evidently.objects import DatasetColumns
 
 
 class DataQualityPreset(MetricPreset):

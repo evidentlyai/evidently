@@ -49,7 +49,7 @@ class DataQualityProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = DataQualityAnalyzer.get_results(analyzers_results)
-        result_json = result.columns.as_dict()
+        result_json = result.columns.dict()
         result_json["metrics"] = {}
         result_json["correlations"] = {}
 

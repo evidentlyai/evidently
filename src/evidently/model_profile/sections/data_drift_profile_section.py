@@ -22,7 +22,7 @@ class DataDriftProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results) -> None:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
-        result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
+        result_json: Dict[str, Any] = data_drift_results.columns.dict(by_alias=True)
 
         metrics_dict: Dict[str, Union[int, bool, float, Dict]] = {
             "n_features": data_drift_results.metrics.number_of_columns,

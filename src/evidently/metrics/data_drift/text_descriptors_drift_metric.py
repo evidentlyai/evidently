@@ -1,5 +1,3 @@
-import dataclasses
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -18,7 +16,7 @@ from evidently.core import ColumnType as ColumnType_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metric_results import DatasetColumnsField
+from evidently.metric_results import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -43,7 +41,7 @@ class TextDescriptorsDriftMetricResults(MetricResult):
     share_of_drifted_columns: float
     dataset_drift: bool
     drift_by_columns: Dict[str, ColumnDataDriftMetrics]
-    dataset_columns: DatasetColumnsField
+    dataset_columns: DatasetColumns
 
 
 class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
@@ -108,7 +106,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
             share_of_drifted_columns=dataset_drift.dataset_drift_score,
             dataset_drift=dataset_drift.dataset_drift,
             drift_by_columns=drift_by_columns,
-            dataset_columns=DatasetColumnsField.from_dataclass(text_dataset_columns),
+            dataset_columns=text_dataset_columns,
         )
 
 

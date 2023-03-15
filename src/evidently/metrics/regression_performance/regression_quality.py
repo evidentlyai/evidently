@@ -15,7 +15,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import calculate_regression_performance
-from evidently.metric_results import DatasetColumnsField
+from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Histogram
 from evidently.metrics.regression_performance.objects import RegressionMetricScatter
 from evidently.metrics.regression_performance.objects import RegressionMetricsScatter
@@ -44,7 +44,7 @@ class RegressionQualityMetricResults(MetricResult):
         dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
         pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
 
-    columns: DatasetColumnsField
+    columns: DatasetColumns
     current: MoreRegressionMetrics
     reference: Optional[MoreRegressionMetrics]
     rmse_default: float
@@ -228,7 +228,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             )
 
         return RegressionQualityMetricResults(
-            columns=DatasetColumnsField.from_dataclass(dataset_columns),
+            columns=dataset_columns,
             current=MoreRegressionMetrics(
                 r2_score=r2_score_value,
                 rmse=rmse_score_value,

@@ -13,7 +13,7 @@ from evidently.core import ColumnType as ColumnType_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsField
+from evidently.metric_results import ColumnCorrelations
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -27,8 +27,8 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class TextDescriptorsCorrelationMetricResult(MetricResult):
     column_name: str
-    current: Dict[str, Dict[str, ColumnCorrelationsField]]
-    reference: Optional[Dict[str, Dict[str, ColumnCorrelationsField]]] = None
+    current: Dict[str, Dict[str, ColumnCorrelations]]
+    reference: Optional[Dict[str, Dict[str, ColumnCorrelations]]] = None
 
 
 class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricResult]):
@@ -104,14 +104,8 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         # todo potential performance issues
         return TextDescriptorsCorrelationMetricResult(
             column_name=self.column_name,
-            current={
-                k1: {k2: ColumnCorrelationsField.from_dataclass(v2) for k2, v2 in v1.items()}
-                for k1, v1 in curr_result.items()
-            },
-            reference={
-                k1: {k2: ColumnCorrelationsField.from_dataclass(v2) for k2, v2 in v1.items()}
-                for k1, v1 in ref_result.items()
-            },
+            current=curr_result,
+            reference=ref_result,
         )
 
 

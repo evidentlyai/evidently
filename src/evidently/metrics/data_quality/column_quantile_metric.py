@@ -8,7 +8,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResultField
 from evidently.core import ColumnType
-from evidently.metric_results import DistributionField
+from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -24,7 +24,7 @@ from evidently.utils.visualizations import get_distribution_for_column
 class QuantileStats(MetricResultField):
     value: float
     # calculated value of the quantile
-    distribution: DistributionField
+    distribution: Distribution
     # distribution for the column
 
 
@@ -81,14 +81,14 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
         if reference_quantile is not None:
             reference = QuantileStats(
                 value=reference_quantile,
-                distribution=DistributionField.from_dataclass(distributions[1]),
+                distribution=distributions[1],
             )
         return ColumnQuantileMetricResult(
             column_name=self.column_name,
             column_type=ColumnType.Numerical,
             current=QuantileStats(
                 value=current_quantile,
-                distribution=DistributionField.from_dataclass(distributions[0]),
+                distribution=distributions[0],
             ),
             quantile=self.quantile,
             reference=reference,
@@ -120,10 +120,9 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
 
     def _get_histogram(self, metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         if metric_result.reference is not None:
-            reference_histogram_data: Optional[HistogramData] = HistogramData(
+            reference_histogram_data: Optional[HistogramData] = HistogramData.from_distribution(
+                metric_result.reference.distribution,
                 name="reference",
-                x=list(metric_result.reference.distribution.x),
-                y=list(metric_result.reference.distribution.y),
             )
 
         else:
@@ -136,10 +135,9 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
             reference_quantile = None
 
         figure = get_histogram_figure_with_quantile(
-            current=HistogramData(
+            current=HistogramData.from_distribution(
+                metric_result.current.distribution,
                 name="current",
-                x=list(metric_result.current.distribution.x),
-                y=list(metric_result.current.distribution.y),
             ),
             reference=reference_histogram_data,
             current_quantile=metric_result.current.value,

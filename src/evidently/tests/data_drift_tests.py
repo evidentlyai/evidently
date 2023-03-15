@@ -10,10 +10,10 @@ import numpy as np
 import pandas as pd
 
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import DatasetColumns
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer

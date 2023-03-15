@@ -232,8 +232,8 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
             title="",
             primary_hist=HistogramData(
                 name="",
-                x=list(stats.number_of_missing_values_by_column.keys()),
-                y=list(stats.number_of_missing_values_by_column.values()),
+                x=pd.Series(stats.number_of_missing_values_by_column.keys()),
+                count=pd.Series(stats.number_of_missing_values_by_column.values()),
             ),
             color_options=self.color_options,
         )

@@ -5,9 +5,9 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
-from evidently.objects import DatasetColumns
 
 
 class DataDriftPreset(MetricPreset):

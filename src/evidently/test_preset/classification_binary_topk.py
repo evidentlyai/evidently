@@ -3,7 +3,7 @@ from typing import Union
 
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.objects import DatasetColumns
+from evidently.metric_results import DatasetColumns
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
 from evidently.tests import TestColumnDrift

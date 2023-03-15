@@ -7,22 +7,13 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import Field
 
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
-from evidently.objects import ColumnScatter
 
 
-class FromDataclassMixin(BaseModel):
-    @classmethod
-    def from_dataclass(cls, value):
-        if value is None:
-            return None
-        return cls(**dataclasses.asdict(value))
-
-
-class DistributionField(MetricResultField, FromDataclassMixin):
+class Distribution(MetricResultField):
     class Config:
         dict_include = False
         pd_include = False
@@ -31,15 +22,15 @@ class DistributionField(MetricResultField, FromDataclassMixin):
     y: Union[np.ndarray, list, pd.Categorical, pd.Series]
 
 
-class ConfusionMatrixField(MetricResultField, FromDataclassMixin):
+class ConfusionMatrix(MetricResultField):
     labels: Union[Sequence[int], Sequence[str]]  # Sequence[Union[int, str]]
     values: list  # todo better typing
 
 
-class PredictionDataField(MetricResultField, FromDataclassMixin):
+class PredictionData(MetricResultField):
     predictions: pd.Series
     prediction_probas: Optional[pd.DataFrame]
-    labels: List[Union[str, int]]
+    labels: List[Union[int, str]]
 
 
 class StatsByFeature(MetricResultField):
@@ -48,24 +39,27 @@ class StatsByFeature(MetricResultField):
         pd_include = False
 
     plot_data: pd.DataFrame  # todo what type of plot?
-    predictions: Optional[PredictionDataField]
+    predictions: Optional[PredictionData]
 
 
-class DatasetUtilityColumnsField(MetricResultField):
+class DatasetUtilityColumns(MetricResultField):
     date: Optional[str]
-    id_column: Optional[str]
+    id: Optional[str]
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
 
 
-class DatasetColumnsField(MetricResultField, FromDataclassMixin):
-    utility_columns: DatasetUtilityColumnsField
+class DatasetColumns(MetricResultField):
+    class Config:
+        dict_exclude_fields = {"task", "target_type"}
+
+    utility_columns: DatasetUtilityColumns
     target_type: Optional[str]
     num_feature_names: List[str]
     cat_feature_names: List[str]
     text_feature_names: List[str]
     datetime_feature_names: List[str]
-    target_names: Optional[Dict[Union[str, int], str]]
+    target_names: Union[List[int], List[str], Dict[int, str], Dict[str, str], None]
     task: Optional[str]
 
     def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
@@ -99,7 +93,7 @@ class DatasetColumnsField(MetricResultField, FromDataclassMixin):
             [
                 name
                 for name in (
-                    self.utility_columns.id_column if not skip_id_column else None,
+                    self.utility_columns.id if not skip_id_column else None,
                     self.utility_columns.date,
                     self.utility_columns.target,
                     self.utility_columns.prediction,
@@ -125,6 +119,17 @@ class DatasetColumnsField(MetricResultField, FromDataclassMixin):
         return (
             len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
         )
+
+
+ScatterData = Union[pd.Series, List[float], pd.Index]
+ColumnScatter = Dict[str, ScatterData]
+
+
+def column_scatter_from_df(df: pd.DataFrame, with_index: bool) -> ColumnScatter:
+    data = {column: df[column] for column in df.columns}
+    if with_index:
+        data["index"] = df.index
+    return data
 
 
 class ScatterField(MetricResultField):
@@ -186,6 +191,7 @@ ROCCurve = Dict[str, ROCCurveData]
 class HistogramData(MetricResultField):
     x: pd.Series
     count: pd.Series
+    name: Optional[str] = None
 
     @classmethod
     def from_df(cls, value: Optional[pd.DataFrame]):
@@ -193,8 +199,14 @@ class HistogramData(MetricResultField):
             return None
         return cls(x=value["x"], count=value["count"])
 
+    @classmethod
+    def from_distribution(cls, dist: Optional[Distribution], name: str = None):
+        if dist is None:
+            return None
+        return cls(x=pd.Series(dist.x), count=pd.Series(dist.y), name=name)
+
     def to_df(self):
-        return pd.DataFrame.from_dict(self.dict())
+        return pd.DataFrame.from_dict(self.dict(include={"x", "count"}))
 
 
 class Histogram(MetricResultField):
@@ -203,3 +215,30 @@ class Histogram(MetricResultField):
 
     current_log: Optional[HistogramData] = None
     reference_log: Optional[HistogramData] = None
+
+
+# todo need better config overriding logic in metricresult
+class IWillRemoveThisLaterISwear(Distribution):
+    class Config:
+        dict_include = True
+
+
+class ColumnCorrelations(MetricResultField):
+    column_name: str
+    kind: str
+    values: IWillRemoveThisLaterISwear
+
+
+class DatasetClassificationQuality(MetricResultField):
+    accuracy: float
+    precision: float
+    recall: float
+    f1: float
+    roc_auc: Optional[float] = None
+    log_loss: Optional[float] = None
+    tpr: Optional[float] = None
+    tnr: Optional[float] = None
+    fpr: Optional[float] = None
+    fnr: Optional[float] = None
+    rate_plots_data: Optional[RatesPlotData] = None
+    plot_data: Optional[Boxes] = None

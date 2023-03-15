@@ -6,8 +6,8 @@ from pytest import approx
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzerResults
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
-from evidently.objects import DatasetColumns
-from evidently.objects import DatasetUtilityColumns
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
 
 
@@ -27,9 +27,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
             RegressionPerformanceAnalyzerResults(
                 columns=DatasetColumns(
                     target_type="cat",
-                    utility_columns=DatasetUtilityColumns(
-                        date=None, id_column=None, target="target", prediction="prediction"
-                    ),
+                    utility_columns=DatasetUtilityColumns(date=None, id=None, target="target", prediction="prediction"),
                     num_feature_names=[],
                     cat_feature_names=[],
                     datetime_feature_names=[],
@@ -76,9 +74,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
             RegressionPerformanceAnalyzerResults(
                 columns=DatasetColumns(
                     target_type="cat",
-                    utility_columns=DatasetUtilityColumns(
-                        date=None, id_column=None, target="target", prediction="prediction"
-                    ),
+                    utility_columns=DatasetUtilityColumns(date=None, id=None, target="target", prediction="prediction"),
                     num_feature_names=[],
                     cat_feature_names=[],
                     datetime_feature_names=[],
@@ -176,7 +172,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 columns=DatasetColumns(
                     target_type="cat",
                     utility_columns=DatasetUtilityColumns(
-                        date=None, id_column=None, target="test_target", prediction="test_prediction"
+                        date=None, id=None, target="test_target", prediction="test_prediction"
                     ),
                     num_feature_names=["numeric_feature_1", "numeric_feature_2"],
                     cat_feature_names=["category_feature_1", "category_feature_2"],

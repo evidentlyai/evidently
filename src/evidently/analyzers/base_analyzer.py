@@ -6,7 +6,7 @@ from typing import Optional
 
 import pandas as pd
 
-from evidently.objects import DatasetColumns
+from evidently.metric_results import DatasetColumns
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
 

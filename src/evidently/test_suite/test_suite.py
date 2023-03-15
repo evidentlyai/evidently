@@ -9,9 +9,9 @@ from typing import Union
 import pandas as pd
 
 from evidently.base_metric import InputData
+from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import DatasetColumns
 from evidently.options import ColorOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer

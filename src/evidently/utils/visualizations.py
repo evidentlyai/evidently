@@ -9,10 +9,10 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import Distribution
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
-from evidently.objects import Distribution
-from evidently.objects import ScatterData
+from evidently.metric_results import ScatterData
 from evidently.options.color_scheme import ColorOptions
 
 

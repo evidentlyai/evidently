@@ -17,13 +17,14 @@ from sklearn import metrics
 
 from evidently import ColumnMapping
 from evidently.metric_results import Boxes
+from evidently.metric_results import ConfusionMatrix
+from evidently.metric_results import DatasetClassificationQuality
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import PredictionData
 from evidently.metric_results import RatesPlotData
-from evidently.objects import ConfusionMatrix
-from evidently.objects import DatasetColumns
-from evidently.objects import PredictionData
 
 if TYPE_CHECKING:
-    from evidently.metrics.classification_performance.objects import DatasetClassificationQuality
+    pass
 
 
 def calculate_confusion_by_classes(
@@ -252,7 +253,7 @@ def calculate_pr_table(binded):
 def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Union[str, int]]) -> ConfusionMatrix:
     sorted_labels = sorted(labels)
     matrix = metrics.confusion_matrix(target, prediction, labels=sorted_labels)
-    return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
+    return ConfusionMatrix(labels=sorted_labels, values=[row.tolist() for row in matrix])
 
 
 def collect_plot_data(prediction_probas: pd.DataFrame) -> Boxes:
@@ -346,9 +347,6 @@ def calculate_metrics(
                 fnrs.append(1)
                 tnrs.append(1)
         rate_plots_data = RatesPlotData(thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs, tnr=tnrs)
-
-    # todo: circular imports
-    from evidently.metrics.classification_performance.objects import DatasetClassificationQuality
 
     return DatasetClassificationQuality(
         accuracy=metrics.accuracy_score(target, prediction.predictions),

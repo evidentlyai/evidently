@@ -20,7 +20,7 @@ class ColumnMapping:
     numerical_features: Optional[List[str]] = None
     categorical_features: Optional[List[str]] = None
     datetime_features: Optional[List[str]] = None
-    target_names: Optional[Dict[Union[str, int], str]] = None
+    target_names: Union[List[int], List[str], Dict[int, str], Dict[str, str], None] = None
     task: Optional[str] = None
     pos_label: Optional[Union[str, int]] = 1
     text_features: Optional[List[str]] = None

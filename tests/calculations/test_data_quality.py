@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_column_distribution
 from evidently.calculations.data_quality import calculate_cramer_v_correlation
 from evidently.calculations.data_quality import get_rows_count
-from evidently.objects import Distribution
+from evidently.metric_results import ColumnCorrelations
+from evidently.metric_results import Distribution
 
 
 @pytest.mark.parametrize(

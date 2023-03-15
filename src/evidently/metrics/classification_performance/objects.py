@@ -6,8 +6,6 @@ from pydantic import parse_obj_as
 from sklearn.metrics import classification_report
 
 from evidently.base_metric import MetricResultField
-from evidently.metric_results import Boxes
-from evidently.metric_results import RatesPlotData
 
 
 class ClassMetric(MetricResultField):
@@ -52,18 +50,3 @@ class ClassificationReport(MetricResultField):
         class_metrics = {k: parse_obj_as(ClassMetric, report[k]) for k in classes}
         other = {k: v for k, v in report.items() if k not in classes}
         return parse_obj_as(cls, {"classes": class_metrics, **other})
-
-
-class DatasetClassificationQuality(MetricResultField):
-    accuracy: float
-    precision: float
-    recall: float
-    f1: float
-    roc_auc: Optional[float] = None
-    log_loss: Optional[float] = None
-    tpr: Optional[float] = None
-    tnr: Optional[float] = None
-    fpr: Optional[float] = None
-    fnr: Optional[float] = None
-    rate_plots_data: Optional[RatesPlotData] = None
-    plot_data: Optional[Boxes] = None

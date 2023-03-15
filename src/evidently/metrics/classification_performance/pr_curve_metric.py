@@ -11,8 +11,8 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_results import PRCurve
 from evidently.metric_results import PRCurveData
+from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import PredictionData
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData

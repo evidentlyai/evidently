@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.metric_results import DistributionField
+from evidently.metric_results import Distribution
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
 from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
@@ -29,7 +29,7 @@ from evidently.report import Report
                     share_in_range=0,
                     share_not_in_range=0,
                     number_of_values=0,
-                    distribution=DistributionField(x=[], y=[]),
+                    distribution=Distribution(x=[], y=[]),
                 ),
                 reference=None,
             ),
@@ -48,7 +48,7 @@ from evidently.report import Report
                     share_in_range=0.75,
                     share_not_in_range=0.25,
                     number_of_values=4,
-                    distribution=DistributionField(x=[], y=[]),
+                    distribution=Distribution(x=[], y=[]),
                 ),
                 reference=ValuesInRangeStat(
                     number_in_range=4,
@@ -56,7 +56,7 @@ from evidently.report import Report
                     share_in_range=1,
                     share_not_in_range=0,
                     number_of_values=4,
-                    distribution=DistributionField(x=[], y=[]),
+                    distribution=Distribution(x=[], y=[]),
                 ),
             ),
         ),

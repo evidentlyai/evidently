@@ -12,10 +12,11 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
 
+from evidently.metric_results import ColumnCorrelations
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import Distribution
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
-from evidently.objects import DatasetColumns
-from evidently.objects import Distribution
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
@@ -693,13 +694,6 @@ def calculate_correlations(
         correlations[kind] = _calculate_correlations(dataset, num_for_corr, cat_for_corr, kind)
 
     return correlations
-
-
-@dataclasses.dataclass
-class ColumnCorrelations:
-    column_name: str
-    kind: str
-    values: Distribution
 
 
 def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:

@@ -14,12 +14,11 @@ from plotly.subplots import make_subplots
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
-from evidently.metric_results import DatasetColumnsField
+from evidently.metric_results import DatasetColumns
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.objects import ClassesMetrics
 from evidently.metrics.classification_performance.objects import ClassificationReport
 from evidently.model.widget import BaseWidgetInfo
-from evidently.objects import DatasetColumns
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
@@ -34,7 +33,7 @@ class ClassificationQuality(MetricResultField):
 
 
 class ClassificationQualityByClassResult(MetricResult):
-    columns: DatasetColumnsField
+    columns: DatasetColumns
     current: ClassificationQuality
     reference: Optional[ClassificationQuality]
 
@@ -81,7 +80,7 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 ).tolist()
             reference = ClassificationQuality(metrics=ref_metrics, roc_aucs=reference_roc_aucs)
         return ClassificationQualityByClassResult(
-            columns=DatasetColumnsField.from_dataclass(columns),
+            columns=columns,
             current=ClassificationQuality(metrics=metrics_matrix, roc_aucs=current_roc_aucs),
             reference=reference,
         )

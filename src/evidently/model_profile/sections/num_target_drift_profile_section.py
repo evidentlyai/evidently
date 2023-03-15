@@ -18,7 +18,7 @@ class NumTargetDriftProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = NumTargetDriftAnalyzer.get_results(analyzers_results)
-        result_json = result.columns.as_dict()
+        result_json = result.columns.dict()
         result_json["metrics"] = {}
 
         if result.target_metrics:

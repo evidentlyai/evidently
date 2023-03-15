@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -9,12 +8,9 @@ from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
-from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_category_column_correlations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
-from evidently.metric_results import DistributionField
-from evidently.metric_results import FromDataclassMixin
+from evidently.metric_results import ColumnCorrelations
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -26,22 +22,10 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 
 
-# todo need better config overriding logic in metricresult
-class IWillRemoveThisLaterISwear(DistributionField):
-    class Config:
-        dict_include = True
-
-
-class ColumnCorrelationsField(MetricResultField, FromDataclassMixin):
-    column_name: str
-    kind: str
-    values: IWillRemoveThisLaterISwear
-
-
 class ColumnCorrelationsMetricResult(MetricResult):
     column_name: str
-    current: Dict[str, ColumnCorrelationsField]
-    reference: Optional[Dict[str, ColumnCorrelationsField]] = None
+    current: Dict[str, ColumnCorrelations]
+    reference: Optional[Dict[str, ColumnCorrelations]] = None
 
 
 class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
@@ -91,10 +75,8 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
 
         return ColumnCorrelationsMetricResult(
             column_name=self.column_name,
-            current={k: ColumnCorrelationsField.from_dataclass(v) for k, v in current_correlations.items()},
-            reference={k: ColumnCorrelationsField.from_dataclass(v) for k, v in reference_correlations.items()}
-            if reference_correlations is not None
-            else None,
+            current=current_correlations,
+            reference=reference_correlations if reference_correlations is not None else None,
         )
 
 
