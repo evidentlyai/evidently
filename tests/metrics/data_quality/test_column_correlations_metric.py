@@ -9,7 +9,7 @@ from pytest import approx
 from evidently import ColumnMapping
 from evidently.metric_results import ColumnCorrelations
 from evidently.metric_results import Distribution
-from evidently.metric_results import IWillRemoveThisLaterISwear
+from evidently.metric_results import DistributionIncluded
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.report import Report
@@ -42,7 +42,7 @@ from evidently.report import Report
                     "cramer_v": ColumnCorrelations(
                         column_name="feature1",
                         kind="cramer_v",
-                        values=IWillRemoveThisLaterISwear(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
+                        values=DistributionIncluded(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
                     )
                 },
                 reference=None,

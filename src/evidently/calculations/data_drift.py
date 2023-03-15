@@ -14,7 +14,7 @@ from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
-from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetColumns, DistributionIncluded
 from evidently.metric_results import Distribution
 from evidently.metric_results import ScatterField
 from evidently.options import DataDriftOptions
@@ -35,7 +35,7 @@ class DriftStatsField(MetricResultField):
     distribution: Optional[Distribution]
     examples: Optional[Examples]
     words: Optional[Words]
-    small_distribution: Optional[Distribution]
+    small_distribution: Optional[DistributionIncluded]
     correlations: Optional[Dict[str, float]]
 
 
@@ -265,14 +265,14 @@ def get_one_column_drift(
         stattest_threshold=drift_result.actual_threshold,
         current=DriftStatsField(
             distribution=current_distribution,
-            small_distribution=Distribution(**dict(zip(["x", "y"], current_small_distribution))),
+            small_distribution=DistributionIncluded(**dict(zip(["x", "y"], current_small_distribution))),
             correlations=current_correlations,
             examples=typical_examples_cur,
             words=typical_words_cur,
         ),
         reference=DriftStatsField(
             distribution=reference_distribution,
-            small_distribution=Distribution(**dict(zip(["x", "y"], reference_small_distribution))),
+            small_distribution=DistributionIncluded(**dict(zip(["x", "y"], reference_small_distribution))),
             examples=typical_examples_ref,
             words=typical_words_ref,
             correlations=reference_correlations,

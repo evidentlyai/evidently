@@ -26,6 +26,9 @@ class ConfusionMatrix(MetricResultField):
 
 
 class PredictionData(MetricResultField):
+    class Config:
+        dict_include = False
+
     predictions: pd.Series
     prediction_probas: Optional[pd.DataFrame]
     labels: List[Union[int, str]]
@@ -153,6 +156,9 @@ PlotData = List[float]
 
 
 class Boxes(MetricResultField):
+    class Config:
+        dict_include = False
+
     mins: PlotData
     lowers: PlotData
     means: PlotData
@@ -161,6 +167,9 @@ class Boxes(MetricResultField):
 
 
 class RatesPlotData(MetricResultField):
+    class Config:
+        dict_include = False
+
     thrs: PlotData
     tpr: PlotData
     fpr: PlotData
@@ -169,6 +178,9 @@ class RatesPlotData(MetricResultField):
 
 
 class PRCurveData(MetricResultField):
+    class Config:
+        dict_include = False
+
     pr: PlotData
     rcl: PlotData
     thrs: PlotData
@@ -178,6 +190,9 @@ PRCurve = Dict[str, PRCurveData]
 
 
 class ROCCurveData(MetricResultField):
+    class Config:
+        dict_include = False
+
     fpr: PlotData
     tpr: PlotData
     thrs: PlotData
@@ -187,6 +202,9 @@ ROCCurve = Dict[str, ROCCurveData]
 
 
 class HistogramData(MetricResultField):
+    class Config:
+        dict_include = False
+
     x: pd.Series
     count: pd.Series
     name: Optional[str] = None
@@ -208,6 +226,9 @@ class HistogramData(MetricResultField):
 
 
 class Histogram(MetricResultField):
+    class Config:
+        dict_include = False
+
     current: HistogramData
     reference: Optional[HistogramData]
 
@@ -216,7 +237,7 @@ class Histogram(MetricResultField):
 
 
 # todo need better config overriding logic in metricresult
-class IWillRemoveThisLaterISwear(Distribution):
+class DistributionIncluded(Distribution):
     class Config:
         dict_include = True
 
@@ -224,7 +245,7 @@ class IWillRemoveThisLaterISwear(Distribution):
 class ColumnCorrelations(MetricResultField):
     column_name: str
     kind: str
-    values: IWillRemoveThisLaterISwear
+    values: DistributionIncluded
 
 
 class DatasetClassificationQuality(MetricResultField):
