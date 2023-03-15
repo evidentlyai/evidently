@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Protocol
 from typing import Sequence
 from typing import Union
 
@@ -277,14 +276,9 @@ def collect_plot_data(prediction_probas: pd.DataFrame) -> Boxes:
     return Boxes(mins=mins, lowers=lowers, means=means, uppers=uppers, maxs=maxs)
 
 
-class ConfusionMatrixProtocol(Protocol):
-    labels: Sequence[Union[int, str]]
-    values: list
-
-
 def calculate_metrics(
     column_mapping: ColumnMapping,
-    confusion_matrix: ConfusionMatrixProtocol,
+    confusion_matrix: ConfusionMatrix,
     target: pd.Series,
     prediction: PredictionData,
 ) -> "DatasetClassificationQuality":

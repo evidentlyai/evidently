@@ -12,6 +12,7 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.metric_results import PRCurve
 from evidently.metric_results import ROCCurve
@@ -20,7 +21,6 @@ from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
-from evidently.renderers.render_utils import DistributionProtocol
 from evidently.utils.types import Numeric
 
 
@@ -626,8 +626,8 @@ def histogram(
 
 def get_histogram_for_distribution(
     *,
-    current_distribution: DistributionProtocol,
-    reference_distribution: Optional[DistributionProtocol] = None,
+    current_distribution: Distribution,
+    reference_distribution: Optional[Distribution] = None,
     title: str = "",
     xaxis_title: Optional[str] = None,
     yaxis_title: Optional[str] = None,

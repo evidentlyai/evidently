@@ -1,10 +1,8 @@
 from typing import Optional
-from typing import Protocol
-from typing import Union
 
-import numpy as np
 import plotly.graph_objs as go
 
+from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.options import ColorOptions
 
@@ -37,15 +35,10 @@ def plot_distr(
     return fig
 
 
-class DistributionProtocol(Protocol):
-    x: Union[np.ndarray, list]
-    y: Union[np.ndarray, list]
-
-
 def get_distribution_plot_figure(
     *,
-    current_distribution: DistributionProtocol,
-    reference_distribution: Optional[DistributionProtocol],
+    current_distribution: Distribution,
+    reference_distribution: Optional[Distribution],
     color_options: ColorOptions,
     orientation: str = "v",
 ) -> go.Figure:

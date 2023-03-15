@@ -12,6 +12,7 @@ from evidently.options import ColorOptions
 
 if TYPE_CHECKING:
     from evidently.base_metric import Metric
+    from evidently.base_metric import TResult
 
 
 class BaseRenderer:
@@ -28,10 +29,10 @@ class BaseRenderer:
 
 
 class MetricRenderer(BaseRenderer):
-    def render_pandas(self, obj: "Metric") -> pd.DataFrame:
+    def render_pandas(self, obj: "Metric[TResult]") -> pd.DataFrame:
         return obj.get_result().get_pandas()
 
-    def render_json(self, obj: "Metric") -> dict:
+    def render_json(self, obj: "Metric[TResult]") -> dict:
         result = obj.get_result()
         return result.get_dict()
 
