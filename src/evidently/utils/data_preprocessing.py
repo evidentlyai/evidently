@@ -13,6 +13,7 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently import TaskType
 from evidently.core import ColumnType
+from evidently.pipeline.column_mapping import TargetNames
 
 
 @dataclasses.dataclass
@@ -72,7 +73,7 @@ class DataDefinition:
     _datetime_column: Optional[ColumnDefinition]
 
     _task: Optional[str]
-    _classification_labels: Optional[Dict[Union[str, int], str]]
+    _classification_labels: Optional[TargetNames]
 
     def __init__(
         self,
@@ -82,7 +83,7 @@ class DataDefinition:
         id_column: Optional[ColumnDefinition],
         datetime_column: Optional[ColumnDefinition],
         task: Optional[str],
-        classification_labels: Optional[Dict[Union[str, int], str]],
+        classification_labels: Optional[TargetNames],
     ):
         self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
@@ -127,7 +128,7 @@ class DataDefinition:
     def task(self) -> Optional[str]:
         return self._task
 
-    def classification_labels(self) -> Optional[Dict[Union[str, int], str]]:
+    def classification_labels(self) -> Optional[TargetNames]:
         return self._classification_labels
 
 

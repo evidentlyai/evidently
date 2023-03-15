@@ -12,14 +12,12 @@ from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.core import ColumnType as ColumnType_data
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.text_length_feature import TextLength
-from evidently.metric_results import DatasetColumns
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import TextLength
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
+from evidently.metric_results import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping

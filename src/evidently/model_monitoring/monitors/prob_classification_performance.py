@@ -63,10 +63,8 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
         )
 
         # try to move classes names to readable names via ColumnMapping settings
-        if columns.target_names is not None:
-            classes_names = list(columns.target_names.keys())
-
-        else:
+        classes_names = columns.target_names_list
+        if classes_names is None:
             # get classes list from the matrix data
             # remove the last 3 key - it is avg metrix values 'accuracy', 'macro avg', 'weighted avg'
             classes_names = [

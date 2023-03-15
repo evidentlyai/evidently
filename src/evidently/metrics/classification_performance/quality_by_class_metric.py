@@ -99,7 +99,9 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         metrics_frame = pd.DataFrame(current_metrics)
         names = metrics_frame.columns.tolist()[:-3]
         if columns.target_names is not None:
-            names = [columns.target_names[int(x)] for x in names]
+            # todo: refactor columns data
+            assert isinstance(columns.target_names, dict)
+            names = [columns.target_names[int(x)] for x in names]  # type: ignore
         z = metrics_frame.iloc[:-1, :-3].values
         x = names
         y = ["precision", "recall", "f1-score"]

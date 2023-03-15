@@ -130,6 +130,8 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         current = self._calculate_in_range_stats(data.current_data[self.column_name], left, right, cur_distribution)
         reference = None
         if data.reference_data is not None:
+            # always should be present
+            assert ref_distribution is not None
             reference = self._calculate_in_range_stats(
                 data.reference_data[self.column_name], left, right, ref_distribution
             )

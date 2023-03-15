@@ -81,8 +81,8 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
 @default_renderer(wrap_type=ClassificationPRCurve)
 class ClassificationPRCurveRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationPRCurve) -> List[BaseWidgetInfo]:
-        current_pr_curve: PRCurve = obj.get_result().current_pr_curve
-        reference_pr_curve: PRCurve = obj.get_result().reference_pr_curve
+        current_pr_curve: Optional[PRCurve] = obj.get_result().current_pr_curve
+        reference_pr_curve: Optional[PRCurve] = obj.get_result().reference_pr_curve
         if current_pr_curve is None:
             return []
 

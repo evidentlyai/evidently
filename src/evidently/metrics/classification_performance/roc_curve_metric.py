@@ -74,8 +74,8 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
 @default_renderer(wrap_type=ClassificationRocCurve)
 class ClassificationRocCurveRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationRocCurve) -> List[BaseWidgetInfo]:
-        current_roc_curve: ROCCurve = obj.get_result().current_roc_curve
-        reference_roc_curve: ROCCurve = obj.get_result().reference_roc_curve
+        current_roc_curve: Optional[ROCCurve] = obj.get_result().current_roc_curve
+        reference_roc_curve: Optional[ROCCurve] = obj.get_result().reference_roc_curve
         if current_roc_curve is None:
             return []
 

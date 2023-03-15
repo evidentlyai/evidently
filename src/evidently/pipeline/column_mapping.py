@@ -11,6 +11,9 @@ class TaskType:
     CLASSIFICATION_TASK: str = "classification"
 
 
+TargetNames = Union[List[int], List[str], Dict[int, str], Dict[str, str]]
+
+
 @dataclass
 class ColumnMapping:
     target: Optional[str] = "target"
@@ -20,7 +23,7 @@ class ColumnMapping:
     numerical_features: Optional[List[str]] = None
     categorical_features: Optional[List[str]] = None
     datetime_features: Optional[List[str]] = None
-    target_names: Union[List[int], List[str], Dict[int, str], Dict[str, str], None] = None
+    target_names: Optional[TargetNames] = None
     task: Optional[str] = None
     pos_label: Optional[Union[str, int]] = 1
     text_features: Optional[List[str]] = None

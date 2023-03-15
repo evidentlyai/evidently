@@ -28,8 +28,6 @@ from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
-PlotData: Type[pd.DataFrame] = pd.DataFrame
-
 
 class RegressionErrorBiasTableResults(MetricResult):
     class Config:
@@ -37,8 +35,8 @@ class RegressionErrorBiasTableResults(MetricResult):
         pd_exclude_fields = {"current_plot_data", "reference_plot_data"}
 
     top_error: float
-    current_plot_data: PlotData
-    reference_plot_data: Optional[PlotData]
+    current_plot_data: pd.DataFrame
+    reference_plot_data: Optional[pd.DataFrame]
     target_name: str
     prediction_name: str
     num_feature_names: List[str]

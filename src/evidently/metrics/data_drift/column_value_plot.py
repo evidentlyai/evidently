@@ -2,6 +2,7 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from plotly import graph_objs as go
 
@@ -93,8 +94,11 @@ class ColumnValuePlotRenderer(MetricRenderer):
         reference_scatter = result.reference
         column_name = result.column_name
 
-        mean_ref = reference_scatter[column_name].mean()
-        std_ref = reference_scatter[column_name].std()
+        # todo: better typing
+        column = reference_scatter[column_name]
+        assert isinstance(column, pd.Series)
+        mean_ref = column.mean()
+        std_ref = column.std()
         y0 = mean_ref - std_ref
         y1 = mean_ref + std_ref
 
@@ -124,7 +128,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
         fig.add_trace(
             go.Scattergl(
                 x=ref_x,
-                y=reference_scatter[column_name],
+                y=column,
                 mode="markers",
                 name="Reference",
                 marker=dict(size=6, color=color_options.get_reference_data_color()),

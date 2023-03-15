@@ -70,9 +70,13 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
             return []
         # todo changing data here, consider doing this in calculation
         for data in current_plot.values():
+            # todo: handle lists too
+            assert isinstance(data, pd.Series)
             data.replace([np.inf, -np.inf], np.nan, inplace=True)
         if reference_plot is not None:
             for data in current_plot.values():
+                # todo: handle lists too
+                assert isinstance(data, pd.Series)
                 data.replace([np.inf, -np.inf], np.nan, inplace=True)
 
         tab_data = get_class_separation_plot_data(

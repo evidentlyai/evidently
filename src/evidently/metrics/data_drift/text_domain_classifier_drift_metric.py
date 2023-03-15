@@ -193,6 +193,8 @@ class TextDomainClassifierDriftMetricRenderer(MetricRenderer):
                 data = metric_result.reference.examples
         else:
             raise Exception("Unknown content type {}. Supported types are ['words', 'examples']".format(content_type))
+        if data is None:
+            raise Exception(f"Stat '{content_type}' is not present")
         res = table_data(
             title="{} Dataset: characteristic {}".format(dataset_name.capitalize(), content_type.capitalize()),
             column_names=["", ""],

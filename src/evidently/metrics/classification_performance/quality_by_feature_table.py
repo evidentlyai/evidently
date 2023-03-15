@@ -171,6 +171,8 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         reference_data = result.reference.plot_data if result.reference is not None else None
         target_name = result.target_name
         curr_predictions = result.current.predictions
+        # todo: better typing?
+        assert curr_predictions is not None
         ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
         labels = curr_predictions.labels

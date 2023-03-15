@@ -190,10 +190,14 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
     def render_html(self, obj: TargetByFeaturesTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_data = result.current.plot_data
-        reference_data = result.reference.plot_data
+        # todo: better typing
+        assert current_data is not None
+        reference_data = result.reference.plot_data if result.reference is not None else None
         target_name = result.target_name
         curr_predictions = result.current.predictions
-        ref_predictions = result.reference.predictions
+        # todo: better typing
+        assert curr_predictions is not None
+        ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
         task = result.task
 

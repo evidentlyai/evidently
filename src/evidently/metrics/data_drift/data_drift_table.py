@@ -97,16 +97,6 @@ class DataDriftTable(Metric[DataDriftTableResults]):
 
 @default_renderer(wrap_type=DataDriftTable)
 class DataDriftTableRenderer(MetricRenderer):
-    def render_json(self, obj: DataDriftTable) -> dict:
-        data = obj.get_result()
-        result = data.dict(exclude={"dataset_columns", "drift_by_columns"})
-
-        result["drift_by_columns"] = {
-            k: d.dict(exclude={"current", "reference", "scatter"}) for k, d in data.drift_by_columns.items()
-        }
-
-        return result
-
     def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if data.column_type == "text":

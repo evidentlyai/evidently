@@ -9,6 +9,7 @@ import pandas as pd
 
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
+from evidently.pipeline.column_mapping import TargetNames
 
 
 class Distribution(MetricResultField):
@@ -60,8 +61,14 @@ class DatasetColumns(MetricResultField):
     cat_feature_names: List[str]
     text_feature_names: List[str]
     datetime_feature_names: List[str]
-    target_names: Union[List[int], List[str], Dict[int, str], Dict[str, str], None]
+    target_names: Optional[TargetNames]
     task: Optional[str]
+
+    @property
+    def target_names_list(self) -> Optional[List]:
+        if isinstance(self.target_names, dict):
+            return list(self.target_names.keys())
+        return self.target_names
 
     def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
         """List all features names.
