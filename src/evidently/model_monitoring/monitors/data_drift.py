@@ -33,7 +33,7 @@ class DataDriftMonitor(ModelMonitor):
                 feature_metric.drift_score,
                 dict(
                     feature=feature_name,
-                    feature_type=feature_metric.column_type.value,
+                    feature_type=feature_metric.column_type,
                     stat_test=feature_metric.stattest_name,
                 ),
             )

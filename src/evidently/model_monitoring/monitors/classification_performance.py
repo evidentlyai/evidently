@@ -85,14 +85,14 @@ class ClassificationPerformanceMonitor(ModelMonitor):
 
         # process confusion metrics
         for idx, class_x_name in enumerate(metrics.confusion_matrix.labels):
-            class_x_name = str(class_x_name)
+            class_x_name_str = str(class_x_name)
             yield ClassificationPerformanceMonitorMetricsMonitor.class_representation.create(
                 sum(metrics.confusion_matrix.values[idx]),
-                dict(dataset=dataset, class_name=class_x_name, type="target"),
+                dict(dataset=dataset, class_name=class_x_name_str, type="target"),
             )
             yield ClassificationPerformanceMonitorMetricsMonitor.class_representation.create(
                 sum([i[idx] for i in metrics.confusion_matrix.values]),
-                dict(dataset=dataset, class_name=class_x_name, type="prediction"),
+                dict(dataset=dataset, class_name=class_x_name_str, type="prediction"),
             )
 
             tp_value = metrics.confusion_by_classes[class_x_name]["tp"]
@@ -100,23 +100,23 @@ class ClassificationPerformanceMonitor(ModelMonitor):
             tn_value = metrics.confusion_by_classes[class_x_name]["tn"]
             fn_value = metrics.confusion_by_classes[class_x_name]["fn"]
             yield ClassificationPerformanceMonitorMetricsMonitor.class_confusion.create(
-                tp_value, dict(dataset=dataset, class_name=class_x_name, metric="TP")
+                tp_value, dict(dataset=dataset, class_name=class_x_name_str, metric="TP")
             )
             yield ClassificationPerformanceMonitorMetricsMonitor.class_confusion.create(
-                fp_value, dict(dataset=dataset, class_name=class_x_name, metric="FP")
+                fp_value, dict(dataset=dataset, class_name=class_x_name_str, metric="FP")
             )
             yield ClassificationPerformanceMonitorMetricsMonitor.class_confusion.create(
-                tn_value, dict(dataset=dataset, class_name=class_x_name, metric="TN")
+                tn_value, dict(dataset=dataset, class_name=class_x_name_str, metric="TN")
             )
             yield ClassificationPerformanceMonitorMetricsMonitor.class_confusion.create(
-                fn_value, dict(dataset=dataset, class_name=class_x_name, metric="FN")
+                fn_value, dict(dataset=dataset, class_name=class_x_name_str, metric="FN")
             )
 
             for idy, class_y_name in enumerate(metrics.confusion_matrix.labels):
                 class_y_name = str(class_y_name)
                 yield ClassificationPerformanceMonitorMetricsMonitor.confusion.create(
                     metrics.confusion_matrix.values[idx][idy],
-                    dict(dataset=dataset, class_x_name=class_x_name, class_y_name=class_y_name),
+                    dict(dataset=dataset, class_x_name=class_x_name_str, class_y_name=class_y_name),
                 )
 
     def metrics(self, analyzer_results) -> Generator[MetricsType, None, None]:
