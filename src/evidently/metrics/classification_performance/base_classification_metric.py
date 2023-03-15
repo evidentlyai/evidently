@@ -50,7 +50,6 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
         dataset_columns = process_columns(data, column_mapping)
         data = _cleanup_data(data, dataset_columns)
         prediction = get_prediction_data(data, dataset_columns, column_mapping.pos_label)
-
         if self.probas_threshold is None and self.k is None:
             return data[dataset_columns.utility_columns.target], prediction
 

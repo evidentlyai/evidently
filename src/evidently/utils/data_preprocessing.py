@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 from enum import Enum
 from typing import Dict
 from typing import List
@@ -228,7 +229,9 @@ def create_data_definition(
     ]
     utility_column_names = [column.column_name for column in all_columns if column is not None]
     data_columns = set(data.current.columns) | (set(data.reference.columns) if data.reference is not None else set())
-    col_defs = [_process_column(column_name, data, if_partially_present="skip") for column_name in data_columns]
+    col_defs = [
+        _process_column(column_name, data, if_partially_present="skip", mapping=mapping) for column_name in data_columns
+    ]
 
     if mapping.numerical_features is None:
         num = [column for column in col_defs if _filter_by_type(column, ColumnType.Numerical, utility_column_names)]
@@ -331,6 +334,15 @@ NUMBER_UNIQUE_AS_CATEGORICAL = 5
 
 
 def _get_column_type(column_name: str, data: _InputData, mapping: Optional[ColumnMapping] = None) -> ColumnType:
+    if mapping is not None:
+        if mapping.categorical_features and column_name in mapping.categorical_features:
+            return ColumnType.Categorical
+        if mapping.numerical_features and column_name in mapping.numerical_features:
+            return ColumnType.Numerical
+        if mapping.datetime_features and column_name in mapping.datetime_features:
+            return ColumnType.Datetime
+        if mapping.text_features and column_name in mapping.text_features:
+            return ColumnType.Text
     ref_type = None
     ref_unique = None
     if data.reference is not None and column_name in data.reference.columns:
@@ -341,13 +353,21 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
     if column_name in data.current.columns:
         cur_type = data.current[column_name].dtype
         cur_unique = data.current[column_name].nunique()
-    if (
-        ref_type is not None
-        and cur_type is not None
-        and (ref_type != cur_type and not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type))
-    ):
-        raise ValueError(f"Column {column_name} have different types in reference {ref_type} and current {cur_type}")
-
+    if ref_type is not None and cur_type is not None:
+        if ref_type != cur_type:
+            available_set = ["i", "u", "f", "c", "m", "M"]
+            if ref_type.kind not in available_set or cur_type.kind not in available_set:
+                logging.warning(
+                    f"Column {column_name} have different types in reference {ref_type} and current {cur_type}."
+                    f" Returning type from reference"
+                )
+                cur_type = ref_type
+            if not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type):
+                logging.warning(
+                    f"Column {column_name} have different types in reference {ref_type} and current {cur_type}."
+                    f" Returning type from reference"
+                )
+                cur_type = ref_type
     nunique = ref_unique or cur_unique
     # special case: target
     if mapping is not None and (column_name == mapping.target or (mapping.target is None and column_name == "target")):

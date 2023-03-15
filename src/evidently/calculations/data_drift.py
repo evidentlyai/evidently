@@ -89,10 +89,8 @@ def get_one_column_drift(
     if isinstance(column_type, str):
         column_type = ColumnType(column_type)
     if column_type is None:
-        column_type = recognize_column_type_(
-            dataset=reference_data.append(current_data),
-            column_name=column_name,
-            columns=dataset_columns,
+        column_type = recognize_column_type(
+            dataset=pd.concat([reference_data, current_data]), column_name=column_name, columns=dataset_columns
         )
 
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):

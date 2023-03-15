@@ -35,8 +35,6 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
         current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
         target_names = data.column_mapping.target_names
-        if target_names is not None and current_pred.prediction_probas is None:
-            target_names = data.column_mapping.target_names
         current_results = calculate_matrix(
             current_target_data,
             current_pred.predictions,
