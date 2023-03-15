@@ -167,6 +167,12 @@ def test_column_presence(reference, current, column_name, expected):
             "c",
             ColumnType.Datetime,
         ),
+        (
+            pd.DataFrame(dict(a=[1.0], b=pd.Series(["a"], dtype="string"), c=[datetime(2000, 1, 1)])),
+            pd.DataFrame(dict(a=[1.0], b=pd.Series(["a"], dtype="string"), c=[datetime(2000, 1, 1)])),
+            "b",
+            ColumnType.Categorical,
+        ),
     ],
 )
 def test_get_column_type(reference, current, column_name, expected):
