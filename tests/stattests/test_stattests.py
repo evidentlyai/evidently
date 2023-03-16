@@ -107,7 +107,6 @@ def test_anderson_darling() -> None:
     assert anderson_darling_test.func(reference, current, "num", 0.001) == (approx(0.0635, abs=1e-3), False)
 
 
-@pytest.mark.xfail  # todo approx equal
 def test_g_test() -> None:
     reference = pd.Series(["a", "b", "c"]).repeat([5, 5, 8])
     current = pd.Series(["a", "b", "c"]).repeat([4, 7, 8])
@@ -258,7 +257,6 @@ def test_for_multiple_categories_fisher_exact(reference: pd.Series, current: pd.
         fisher_exact_test.func(reference, current, "cat", 0.1)
 
 
-@pytest.mark.xfail  # todo approx equal
 def test_mann_whitney() -> None:
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])

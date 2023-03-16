@@ -208,6 +208,7 @@ def test_data_quality_test_conflict_prediction() -> None:
     )
     suite = TestSuite(tests=[TestConflictPrediction()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite._inner_suite.raise_for_error()
     assert not suite
 
     test_dataset = pd.DataFrame(

@@ -110,13 +110,13 @@ class TestConflictPrediction(Test):
     def check(self):
         metric_result = self.metric.get_result()
 
-        if metric_result.number_not_stable_prediction is None:
+        if metric_result.current.number_not_stable_prediction is None:
             test_result = TestResult.ERROR
             description = "No prediction in the dataset"
 
-        elif metric_result.number_not_stable_prediction > 0:
+        elif metric_result.current.number_not_stable_prediction > 0:
             test_result = TestResult.FAIL
-            description = f"Not stable prediction rows count is {metric_result.number_not_stable_prediction}"
+            description = f"Not stable prediction rows count is {metric_result.current.number_not_stable_prediction}"
 
         else:
             test_result = TestResult.SUCCESS

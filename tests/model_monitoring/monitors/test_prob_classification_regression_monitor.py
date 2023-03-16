@@ -11,7 +11,6 @@ def test_monitor_id():
     assert ProbClassificationPerformanceMonitor().monitor_id() == "prob_classification_performance"
 
 
-@pytest.mark.xfail  # todo approx equal
 def test_probability_classification_with_multi_classes() -> None:
     reference_data = pd.DataFrame(
         {

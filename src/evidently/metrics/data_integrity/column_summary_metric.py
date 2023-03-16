@@ -451,8 +451,8 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
                 fig = json.loads(fig.to_json())
             if column_type == "num":
-                # always should be present for num columns
-                assert bins_for_hist.current_log is not None
+                if bins_for_hist.current_log is None:
+                    raise ValueError("current_log should be present for num columns")
                 ref_log = bins_for_hist.reference_log
                 fig = plot_distr_with_log_button(
                     hist_curr,
