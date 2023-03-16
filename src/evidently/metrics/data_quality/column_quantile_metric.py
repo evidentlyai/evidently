@@ -85,7 +85,7 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
             )
         return ColumnQuantileMetricResult(
             column_name=self.column_name,
-            column_type=ColumnType.Numerical,
+            column_type=ColumnType.Numerical.value,
             current=QuantileStats(
                 value=current_quantile,
                 distribution=distributions[0],

@@ -243,21 +243,12 @@ class MetricResult(MetricResultField):
 
 
 class ColumnMetricResult(MetricResult):
-    class Config:
-        use_enum_values = True
-
     column_name: str
-    column_type: ColumnType
+    # todo: use enum
+    column_type: str
 
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
-
-    @validator("column_type")
-    @classmethod
-    def val_type(cls, value):
-        if isinstance(value, str):
-            value = ColumnType(value)
-        return value
 
 
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)

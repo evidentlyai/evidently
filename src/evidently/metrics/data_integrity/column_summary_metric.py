@@ -336,7 +336,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
 
         return ColumnSummaryResult(
             column_name=self.column_name,
-            column_type=ColumnType(column_type),
+            column_type=column_type,
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,
             plot_data=plot_data,
