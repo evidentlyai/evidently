@@ -106,7 +106,8 @@ class DataByTarget(MetricResultField):
                 Dict[str, Union[list, pd.DataFrame, np.ndarray, pd.Categorical]],
                 pd.DataFrame,
             ],
-        ]
+        ],
+        None,
     ]
     target_name: str
     target_type: str

@@ -59,8 +59,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         curr_scatter = self._get_data_for_scatter(curr_df, target_name, prediction_name)
         curr_mean_err_per_group = self._calculate_underperformance(curr_error, quantile_5, quantile_95)
 
-        ref_scatter = None
-        ref_mean_err_per_group = None
+        reference = None
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
             ref_error = ref_df[prediction_name] - ref_df[target_name]
@@ -79,9 +78,10 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
             )
             ref_scatter = self._get_data_for_scatter(ref_df, target_name, prediction_name)
             ref_mean_err_per_group = self._calculate_underperformance(ref_error, quantile_5, quantile_95)
+            reference = TopData(mean_err_per_group=ref_mean_err_per_group, scatter=ref_scatter)
         return RegressionTopErrorMetricResults(
             current=TopData(mean_err_per_group=curr_mean_err_per_group, scatter=curr_scatter),
-            reference=TopData(mean_err_per_group=ref_mean_err_per_group, scatter=ref_scatter),
+            reference=reference,
         )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):

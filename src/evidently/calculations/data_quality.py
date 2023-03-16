@@ -406,19 +406,18 @@ class DataQualityGetPlotData:
         target_type: str,
         merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
-        result = None
         if feature_type == "cat" and target_type == "num":
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
                 curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
-            result = self._prepare_box_data(curr, ref, feature_name, target_name)
+            return self._prepare_box_data(curr, ref, feature_name, target_name)
         if feature_type == "num" and target_type == "cat":
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
                 curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat)
-            result = self._prepare_box_data(curr, ref, target_name, feature_name)
+            return self._prepare_box_data(curr, ref, target_name, feature_name)
         if feature_type == "num" and target_type == "num":
             result = {}
             result["current"] = {
@@ -430,6 +429,7 @@ class DataQualityGetPlotData:
                     feature_name: ref[feature_name].tolist(),
                     target_name: ref[target_name].tolist(),
                 }
+            return result
         if feature_type == "cat" and target_type == "cat":
             if ref is not None:
                 ref = ref.copy()
@@ -443,8 +443,8 @@ class DataQualityGetPlotData:
             result["current"] = self._get_count_values(curr, target_name, feature_name)
             if ref is not None:
                 result["reference"] = self._get_count_values(ref, target_name, feature_name)
-
-        return result
+            return result
+        return None
 
     def _split_periods(self, curr_data, ref_data, feature_name):
         max_ref_date = ref_data[feature_name].max()
