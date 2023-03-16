@@ -18,6 +18,7 @@ from typing import Union
 import pandas as pd
 from pydantic import BaseConfig
 from pydantic import BaseModel
+from pydantic import validator
 
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
@@ -250,6 +251,13 @@ class ColumnMetricResult(MetricResult):
 
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
+
+    @validator("column_type")
+    @classmethod
+    def val_type(cls, value):
+        if isinstance(value, str):
+            value = ColumnType(value)
+        return value
 
 
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)

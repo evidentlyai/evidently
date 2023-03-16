@@ -43,6 +43,7 @@ class DriftStatsField(MetricResultField):
 class ColumnDataDriftMetrics(ColumnMetricResult):
     class Config:
         dict_exclude_fields = {"current", "reference", "scatter"}
+        # use_enum_values = True
 
     stattest_name: str
     stattest_threshold: Optional[float]
@@ -64,8 +65,7 @@ class DatasetDrift:
     dataset_drift: bool
 
 
-@dataclass
-class DatasetDriftMetrics:
+class DatasetDriftMetrics(MetricResultField):
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float

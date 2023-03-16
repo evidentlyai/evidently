@@ -86,6 +86,8 @@ class ClassificationPerformanceMonitor(ModelMonitor):
         # process confusion metrics
         for idx, class_x_name in enumerate(metrics.confusion_matrix.labels):
             class_x_name_str = str(class_x_name)
+            # todo better typing?
+            assert isinstance(class_x_name, (int, str))
             yield ClassificationPerformanceMonitorMetricsMonitor.class_representation.create(
                 sum(metrics.confusion_matrix.values[idx]),
                 dict(dataset=dataset, class_name=class_x_name_str, type="target"),
