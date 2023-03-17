@@ -26,8 +26,8 @@ def test_different_target_column_name(analyzer: CatTargetDriftAnalyzer):
     assert result.target_metrics.drift_score == 1
     assert result.reference_data_count == 20
     assert result.current_data_count == 20
-    assert result.target_metrics.reference_correlations is None
-    assert result.target_metrics.current_correlations is None
+    assert result.target_metrics.reference.correlations is None
+    assert result.target_metrics.current.correlations is None
     assert result.prediction_metrics is None
 
 
@@ -37,8 +37,8 @@ def test_different_prediction_column_name(analyzer: CatTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping(prediction="another_prediction"))
     assert result.prediction_metrics.column_name == "another_prediction"
     assert result.prediction_metrics.drift_score == 1
-    assert result.prediction_metrics.reference_correlations is None
-    assert result.prediction_metrics.current_correlations is None
+    assert result.prediction_metrics.reference.correlations is None
+    assert result.prediction_metrics.current.correlations is None
 
 
 def test_computing_of_target_and_prediction(analyzer: CatTargetDriftAnalyzer):
@@ -48,13 +48,13 @@ def test_computing_of_target_and_prediction(analyzer: CatTargetDriftAnalyzer):
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.000007, abs=1e-06)
-    assert result.target_metrics.reference_correlations is None
-    assert result.target_metrics.current_correlations is None
+    assert result.target_metrics.reference.correlations is None
+    assert result.target_metrics.current.correlations is None
 
     assert result.prediction_metrics.column_name == "prediction"
     assert result.prediction_metrics.drift_score == 0.0
-    assert result.prediction_metrics.reference_correlations is None
-    assert result.prediction_metrics.current_correlations is None
+    assert result.prediction_metrics.reference.correlations is None
+    assert result.prediction_metrics.current.correlations is None
 
 
 def test_prediction_is_list(analyzer: CatTargetDriftAnalyzer):
@@ -70,8 +70,8 @@ def test_prediction_is_list(analyzer: CatTargetDriftAnalyzer):
 
     assert result.prediction_metrics.column_name == "predicted_labels"
     assert result.prediction_metrics.drift_score == 1.0
-    assert result.prediction_metrics.reference_correlations is None
-    assert result.prediction_metrics.current_correlations is None
+    assert result.prediction_metrics.reference.correlations is None
+    assert result.prediction_metrics.current.correlations is None
 
 
 def test_prediction_is_large_list(analyzer: CatTargetDriftAnalyzer):
@@ -88,5 +88,5 @@ def test_prediction_is_large_list(analyzer: CatTargetDriftAnalyzer):
 
     assert result.prediction_metrics.column_name == "predicted_labels"
     assert result.prediction_metrics.drift_score == 1.0
-    assert result.prediction_metrics.reference_correlations is None
-    assert result.prediction_metrics.current_correlations is None
+    assert result.prediction_metrics.reference.correlations is None
+    assert result.prediction_metrics.current.correlations is None

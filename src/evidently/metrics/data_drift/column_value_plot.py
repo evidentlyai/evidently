@@ -1,4 +1,3 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
@@ -9,6 +8,9 @@ from plotly import graph_objs as go
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.metric_results import ColumnScatter
+from evidently.metric_results import column_scatter_from_df
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -17,12 +19,15 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ColumnValuePlotResults:
+class ColumnValuePlotResults(MetricResult):
+    class Config:
+        dict_include = False
+        pd_include = False
+
     column_name: str
     datetime_column_name: Optional[str]
-    current_scatter: pd.DataFrame
-    reference_scatter: pd.DataFrame
+    current: ColumnScatter
+    reference: ColumnScatter
 
 
 class ColumnValuePlot(Metric[ColumnValuePlotResults]):
@@ -63,14 +68,19 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         return ColumnValuePlotResults(
             column_name=self.column_name,
             datetime_column_name=datetime_column_name,
-            current_scatter=curr_df,
-            reference_scatter=ref_df,
+            current=column_scatter_from_df(curr_df, True),
+            reference=column_scatter_from_df(ref_df, True),
         )
 
     def _make_df_for_plot(self, df, column_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[column_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[column_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
         result.dropna(axis=0, how="any", inplace=True, subset=[column_name])
         return result.sort_index()
@@ -78,18 +88,17 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 
 @default_renderer(wrap_type=ColumnValuePlot)
 class ColumnValuePlotRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnValuePlot) -> dict:
-        obj.get_result()
-        return {}
-
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_scatter = result.current_scatter
-        reference_scatter = result.reference_scatter
+        current_scatter = result.current
+        reference_scatter = result.reference
         column_name = result.column_name
 
-        mean_ref = reference_scatter[column_name].mean()
-        std_ref = reference_scatter[column_name].std()
+        # todo: better typing
+        column = reference_scatter[column_name]
+        assert isinstance(column, pd.Series)
+        mean_ref = column.mean()
+        std_ref = column.std()
         y0 = mean_ref - std_ref
         y1 = mean_ref + std_ref
 
@@ -99,8 +108,8 @@ class ColumnValuePlotRenderer(MetricRenderer):
             x_name = "Timestamp"
 
         else:
-            curr_x = current_scatter.index
-            ref_x = reference_scatter.index
+            curr_x = current_scatter["index"]
+            ref_x = reference_scatter["index"]
             x_name = "Index"
 
         color_options = self.color_options
@@ -119,7 +128,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
         fig.add_trace(
             go.Scattergl(
                 x=ref_x,
-                y=reference_scatter[column_name],
+                y=column,
                 mode="markers",
                 name="Reference",
                 marker=dict(size=6, color=color_options.get_reference_data_color()),

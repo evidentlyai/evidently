@@ -12,13 +12,16 @@ import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import Distribution
+from evidently.metric_results import HistogramData
+from evidently.metric_results import PRCurve
+from evidently.metric_results import ROCCurve
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import Distribution
 
 
 class WidgetSize(Enum):
@@ -199,12 +202,7 @@ class CounterData:
         return CounterData(label, f"{value}")
 
 
-def counter(
-    *,
-    counters: List[CounterData],
-    title: str = "",
-    size: WidgetSize = WidgetSize.FULL,
-) -> BaseWidgetInfo:
+def counter(*, counters: List[CounterData], title: str = "", size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
     """
     generate widget with given counters
 
@@ -450,13 +448,6 @@ def rich_table_data(
     )
 
 
-@dataclasses.dataclass
-class HistogramData:
-    name: str
-    x: list
-    y: List[Union[int, float]]
-
-
 def get_histogram_figure(
     *,
     primary_hist: HistogramData,
@@ -468,7 +459,7 @@ def get_histogram_figure(
     curr_bar = go.Bar(
         name=primary_hist.name,
         x=primary_hist.x,
-        y=primary_hist.y,
+        y=primary_hist.count,
         marker_color=color_options.get_current_data_color(),
         orientation=orientation,
     )
@@ -478,7 +469,7 @@ def get_histogram_figure(
         ref_bar = go.Bar(
             name=secondary_hist.name,
             x=secondary_hist.x,
-            y=secondary_hist.y,
+            y=secondary_hist.count,
             marker_color=color_options.get_reference_data_color(),
             orientation=orientation,
         )
@@ -523,7 +514,13 @@ def get_histogram_figure_with_range(
             name="range right value",
         )
     )
-    figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
+    figure.add_vrect(
+        x0=left,
+        x1=right,
+        fillcolor=color_options.fill_color,
+        opacity=0.25,
+        line_width=0,
+    )
     return figure
 
 
@@ -563,7 +560,11 @@ def get_histogram_figure_with_quantile(
                 x=[reference_quantile, reference_quantile],
                 y=[min_y, max_y],
                 mode="lines",
-                line={"color": color_options.vertical_lines, "width": 2, "dash": "solid"},
+                line={
+                    "color": color_options.vertical_lines,
+                    "width": 2,
+                    "dash": "solid",
+                },
                 name="current quantile",
             )
         )
@@ -595,8 +596,8 @@ def histogram(
         xaxis_title: title for x-axis
         yaxis_title: title for y-axis
     Example:
-        >>> ref_hist = HistogramData("Histogram 1", x=["a", "b", "c"], y=[1, 2, 3])
-        >>> curr_hist = HistogramData("Histogram 2", x=["a", "b", "c"], y=[3, 2 ,1])
+        >>> ref_hist = HistogramData(name="Histogram 1", x=pd.Series(["a", "b", "c"]), count=pd.Series([1, 2, 3]))
+        >>> curr_hist = HistogramData(name="Histogram 2", x=pd.Series(["a", "b", "c"]), count=pd.Series([3, 2 ,1]))
         >>> widget_info = histogram(
         >>>     title="Histogram example",
         >>>     primary_hist=ref_hist,
@@ -634,15 +635,15 @@ def get_histogram_for_distribution(
 ):
     current_histogram = HistogramData(
         name="current",
-        x=current_distribution.x,
-        y=current_distribution.y,
+        x=pd.Series(current_distribution.x),
+        count=pd.Series(current_distribution.y),
     )
 
     if reference_distribution is not None:
         reference_histogram: Optional[HistogramData] = HistogramData(
             name="reference",
-            x=reference_distribution.x,
-            y=reference_distribution.y,
+            x=pd.Series(reference_distribution.x),
+            count=pd.Series(reference_distribution.y),
         )
 
     else:
@@ -721,7 +722,7 @@ def get_heatmaps_widget(
 
 
 def get_roc_auc_tab_data(
-    curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: ColorOptions
+    curr_roc_curve: ROCCurve, ref_roc_curve: Optional[ROCCurve], color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -732,8 +733,8 @@ def get_roc_auc_tab_data(
     for label in curr_roc_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
-            x=curr_roc_curve[label]["fpr"],
-            y=curr_roc_curve[label]["tpr"],
+            x=curr_roc_curve[label].fpr,
+            y=curr_roc_curve[label].tpr,
             mode="lines",
             name="ROC",
             legendgroup="ROC",
@@ -746,8 +747,8 @@ def get_roc_auc_tab_data(
         fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
         if ref_roc_curve is not None:
             trace = go.Scatter(
-                x=ref_roc_curve[label]["fpr"],
-                y=ref_roc_curve[label]["tpr"],
+                x=ref_roc_curve[label].fpr,
+                y=ref_roc_curve[label].tpr,
                 mode="lines",
                 name="ROC",
                 legendgroup="ROC",
@@ -766,7 +767,7 @@ def get_roc_auc_tab_data(
 
 
 def get_pr_rec_plot_data(
-    current_pr_curve: dict, reference_pr_curve: Optional[dict], color_options: ColorOptions
+    current_pr_curve: PRCurve, reference_pr_curve: Optional[PRCurve], color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -777,8 +778,8 @@ def get_pr_rec_plot_data(
     for label in current_pr_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
-            x=current_pr_curve[label]["rcl"],
-            y=current_pr_curve[label]["pr"],
+            x=current_pr_curve[label].rcl,
+            y=current_pr_curve[label].pr,
             mode="lines",
             name="PR",
             legendgroup="PR",
@@ -791,8 +792,8 @@ def get_pr_rec_plot_data(
         fig.update_xaxes(title_text="Recall", row=1, col=1)
         if reference_pr_curve is not None:
             trace = go.Scatter(
-                x=reference_pr_curve[label]["rcl"],
-                y=reference_pr_curve[label]["pr"],
+                x=reference_pr_curve[label].rcl,
+                y=reference_pr_curve[label].pr,
                 mode="lines",
                 name="PR",
                 legendgroup="PR",

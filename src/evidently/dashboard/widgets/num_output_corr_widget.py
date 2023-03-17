@@ -52,12 +52,12 @@ class NumOutputCorrWidget(Widget):
             return None
 
         # calculate corr
-        ref_output_corr = metrics.reference_correlations
+        ref_output_corr = metrics.reference.correlations
 
         if ref_output_corr is None:
             return None
 
-        current_output_corr = metrics.current_correlations
+        current_output_corr = metrics.current.correlations
 
         if current_output_corr is None:
             return None

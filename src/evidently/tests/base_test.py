@@ -62,7 +62,12 @@ class GroupingTypes:
     TestType = GroupTypeData("test_type", "By test type", [])
 
 
-DEFAULT_GROUP = [GroupingTypes.ByFeature, GroupingTypes.TestGroup, GroupingTypes.TestType, GroupingTypes.ByClass]
+DEFAULT_GROUP = [
+    GroupingTypes.ByFeature,
+    GroupingTypes.TestGroup,
+    GroupingTypes.TestType,
+    GroupingTypes.ByClass,
+]
 
 
 @dataclass
@@ -82,6 +87,7 @@ class TestResult:
     status: str
     # grouping parameters
     groups: Dict[str, str] = dataclasses.field(default_factory=dict)
+    exception: Optional[BaseException] = None
 
     def set_status(self, status: str, description: Optional[str] = None) -> None:
         self.status = status
@@ -155,7 +161,16 @@ class TestValueCondition:
         """
         return any(
             value is not None
-            for value in (self.eq, self.gt, self.gte, self.is_in, self.lt, self.lte, self.not_in, self.not_eq)
+            for value in (
+                self.eq,
+                self.gt,
+                self.gte,
+                self.is_in,
+                self.lt,
+                self.lte,
+                self.not_in,
+                self.not_eq,
+            )
         )
 
     def check_value(self, value: Numeric) -> bool:
@@ -237,7 +252,14 @@ class BaseConditionsTest(Test, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         self.condition = TestValueCondition(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
         )
 
 
@@ -270,7 +292,11 @@ class BaseCheckValueTest(BaseConditionsTest):
         return {}
 
     def check(self):
-        result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
+        result = TestResult(
+            name=self.name,
+            description="The test was not launched",
+            status=TestResult.SKIPPED,
+        )
         value = self.calculate_value_for_test()
         self.value = value
         result.description = self.get_description(value)
@@ -301,9 +327,7 @@ class BaseCheckValueTest(BaseConditionsTest):
 
 
 def generate_column_tests(
-    test_class: Type[Test],
-    columns: Optional[Union[str, list]] = None,
-    parameters: Optional[Dict] = None,
+    test_class: Type[Test], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None
 ) -> BaseGenerator:
     """Function for generating tests for columns"""
     return make_generator_by_columns(

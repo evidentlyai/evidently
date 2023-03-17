@@ -4,6 +4,7 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ClassificationClassBalance
 from evidently.metrics import ClassificationClassSeparationPlot
 from evidently.metrics import ClassificationConfusionMatrix
@@ -14,7 +15,6 @@ from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityByFeatureTable
 from evidently.metrics import ClassificationQualityMetric
 from evidently.metrics import ClassificationRocCurve
-from evidently.utils.data_operations import DatasetColumns
 
 
 class ClassificationPreset(MetricPreset):
@@ -33,10 +33,7 @@ class ClassificationPreset(MetricPreset):
     k: Optional[int]
 
     def __init__(
-        self,
-        columns: Optional[List[str]] = None,
-        probas_threshold: Optional[float] = None,
-        k: Optional[int] = None,
+        self, columns: Optional[List[str]] = None, probas_threshold: Optional[float] = None, k: Optional[int] = None
     ):
         super().__init__()
         self.columns = columns

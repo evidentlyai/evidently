@@ -1,4 +1,3 @@
-import dataclasses
 import json
 from typing import Dict
 from typing import List
@@ -15,11 +14,13 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.calculations.classification_performance import PredictionData
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
+from evidently.metric_results import PredictionData
+from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -28,13 +29,13 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-@dataclasses.dataclass
-class TargetByFeaturesTableResults:
-    current_plot_data: pd.DataFrame
-    reference_plot_data: pd.DataFrame
+class TargetByFeaturesTableResults(MetricResult):
+    class Config:
+        dict_include = False
+
+    current: StatsByFeature
+    reference: Optional[StatsByFeature]
     target_name: Optional[str]
-    curr_predictions: Optional[PredictionData]
-    ref_predictions: Optional[PredictionData]
     columns: List[str]
     task: str
 
@@ -42,7 +43,10 @@ class TargetByFeaturesTableResults:
 class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
     columns: Optional[List[str]]
     text_features_gen: Optional[
-        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+        Dict[
+            str,
+            Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
+        ]
     ]
 
     def __init__(self, columns: Optional[List[str]] = None):
@@ -55,7 +59,10 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
+                col_dict: Dict[
+                    str,
+                    Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
+                ] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
                 col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
@@ -138,7 +145,13 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                     axis=1,
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
-                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+                curr_df = pd.concat(
+                    [
+                        curr_df.reset_index(drop=True),
+                        curr_text_df.reset_index(drop=True),
+                    ],
+                    axis=1,
+                )
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
@@ -149,13 +162,23 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                         axis=1,
                     )
                     ref_text_df.columns = list(self.text_features_gen[col].keys())
-                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
+                    ref_df = pd.concat(
+                        [
+                            ref_df.reset_index(drop=True),
+                            ref_text_df.reset_index(drop=True),
+                        ],
+                        axis=1,
+                    )
 
         return TargetByFeaturesTableResults(
-            current_plot_data=curr_df,
-            reference_plot_data=ref_df,
-            curr_predictions=curr_predictions,
-            ref_predictions=ref_predictions,
+            current=StatsByFeature(
+                plot_data=curr_df,
+                predictions=curr_predictions,
+            ),
+            reference=StatsByFeature(
+                plot_data=ref_df,
+                predictions=ref_predictions,
+            ),
             columns=columns,
             target_name=target_name,
             task=task,
@@ -164,16 +187,15 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
 
 @default_renderer(wrap_type=TargetByFeaturesTable)
 class TargetByFeaturesTableRenderer(MetricRenderer):
-    def render_json(self, obj: TargetByFeaturesTable) -> dict:
-        return {}
-
     def render_html(self, obj: TargetByFeaturesTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_data = result.current_plot_data
-        reference_data = result.reference_plot_data
+        current_data = result.current.plot_data
+        # todo: better typing
+        assert current_data is not None
+        reference_data = result.reference.plot_data if result.reference is not None else None
         target_name = result.target_name
-        curr_predictions = result.curr_predictions
-        ref_predictions = result.ref_predictions
+        curr_predictions = result.current.predictions
+        ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
         task = result.task
 
@@ -200,7 +222,10 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_target_values",
-                        {"data": target_fig_json["data"], "layout": target_fig_json["layout"]},
+                        {
+                            "data": target_fig_json["data"],
+                            "layout": target_fig_json["layout"],
+                        },
                     )
                 )
 
@@ -219,7 +244,10 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_prediction_values",
-                        {"data": preds_fig_json["data"], "layout": preds_fig_json["layout"]},
+                        {
+                            "data": preds_fig_json["data"],
+                            "layout": preds_fig_json["layout"],
+                        },
                     )
                 )
 

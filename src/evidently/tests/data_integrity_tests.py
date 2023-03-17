@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import DatasetMissingValuesMetric
@@ -31,7 +32,6 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import dataframes_to_table
 from evidently.tests.utils import plot_dicts_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 
@@ -54,7 +54,16 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = DatasetSummaryMetric()
 
 
@@ -154,7 +163,16 @@ class BaseIntegrityMissingValuesValuesTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
 
@@ -280,7 +298,10 @@ class TestNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
             reference_missing_values = metric_result.reference.different_missing_values
 
         return self.get_table_with_number_of_missing_values_by_one_missing_value(
-            info, current_missing_values, reference_missing_values, "number_of_different_missing_values"
+            info,
+            current_missing_values,
+            reference_missing_values,
+            "number_of_different_missing_values",
         )
 
 
@@ -300,7 +321,10 @@ class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
             ref_number_of_rows = reference_missing_values.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(
-                lte=approx(reference_missing_values.number_of_missing_values * mult, relative=0.1)
+                lte=approx(
+                    reference_missing_values.number_of_missing_values * mult,
+                    relative=0.1,
+                )
             )
 
         return TestValueCondition(eq=0)
@@ -536,7 +560,16 @@ class BaseIntegrityColumnMissingValuesTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.column_name = column_name
         self.metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
@@ -596,7 +629,10 @@ class TestColumnNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRend
             reference_missing_values = metric_result.reference.different_missing_values_by_column[obj.column_name]
 
         return self.get_table_with_number_of_missing_values_by_one_missing_value(
-            info, current_missing_values, reference_missing_values, "number_of_different_missing_values"
+            info,
+            current_missing_values,
+            reference_missing_values,
+            "number_of_different_missing_values",
         )
 
 
@@ -895,7 +931,16 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.column_name = column_name
         self.data_integrity_metric = ColumnSummaryMetric(column_name=column_name)
 
@@ -1050,7 +1095,10 @@ class TestColumnsType(Test):
 
             expected_type = infer_dtype_from_object(expected_type_object)
             real_column_type = infer_dtype_from_object(real_column_type_object)
-            columns_types[column_name] = (real_column_type.__name__, expected_type.__name__)
+            columns_types[column_name] = (
+                real_column_type.__name__,
+                expected_type.__name__,
+            )
 
             if expected_type == real_column_type or issubclass(real_column_type, expected_type):
                 # types are matched or expected type is a parent
@@ -1123,7 +1171,16 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.column_name = column_name
         self.metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
 

@@ -109,5 +109,5 @@ def test_dataset_column_default_to_dict(
     test_dataset: pandas.DataFrame, column_mapping: ColumnMapping, expected_dict: dict
 ) -> None:
     columns = process_columns(test_dataset, column_mapping)
-    columns_dict = columns.as_dict()
+    columns_dict = columns.dict(by_alias=True)
     assert columns_dict == expected_dict

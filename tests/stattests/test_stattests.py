@@ -252,8 +252,7 @@ def test_for_null_fisher_exact(reference: pd.Series, current: pd.Series) -> None
 )
 def test_for_multiple_categories_fisher_exact(reference: pd.Series, current: pd.Series) -> None:
     with pytest.raises(
-        ValueError,
-        match="Expects binary data for both reference and current, but found unique categories > 2",
+        ValueError, match="Expects binary data for both reference and current, but found unique categories > 2"
     ):
         fisher_exact_test.func(reference, current, "cat", 0.1)
 

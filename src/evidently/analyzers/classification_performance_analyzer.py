@@ -14,8 +14,9 @@ from sklearn import metrics
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.metric_results import ConfusionMatrix
+from evidently.pipeline.column_mapping import TargetNames
 from evidently.utils.data_operations import process_columns
 
 
@@ -39,7 +40,7 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
 
 
 def classification_performance_metrics(
-    target: pd.Series, prediction: pd.Series, target_names: Optional[Dict[Union[str, int], str]]
+    target: pd.Series, prediction: pd.Series, target_names: Optional[TargetNames]
 ) -> ClassificationPerformanceMetrics:
     # calculate metrics matrix
     metrics_matrix = metrics.classification_report(target, prediction, output_dict=True)
@@ -52,7 +53,7 @@ def classification_performance_metrics(
     # calculate confusion matrix
     confusion_matrix = metrics.confusion_matrix(target, prediction)
     # get labels from data mapping or get all values kinds from target and prediction columns
-    labels = list(target_names.keys()) if target_names else sorted(set(target) | set(prediction))
+    labels = list(target_names.keys()) if isinstance(target_names, dict) else sorted(set(target) | set(prediction))
     confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
     return ClassificationPerformanceMetrics(
         accuracy=accuracy_score,
@@ -70,7 +71,7 @@ def _calculate_performance_metrics(
     data: pd.DataFrame,
     target_column: Union[str, Sequence[str]],
     prediction_column: Union[str, Sequence[str]],
-    target_names: Optional[Dict[Union[str, int], str]],
+    target_names: Optional[TargetNames],
 ) -> ClassificationPerformanceMetrics:
     # remove all rows with infinite and NaN values from the dataset
     target_and_preds = [target_column]

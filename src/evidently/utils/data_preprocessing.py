@@ -12,19 +12,14 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently import TaskType
+from evidently.core import ColumnType
+from evidently.pipeline.column_mapping import TargetNames
 
 
 @dataclasses.dataclass
 class _InputData:
     reference: Optional[pd.DataFrame]
     current: pd.DataFrame
-
-
-class ColumnType(Enum):
-    Categorical = "cat"
-    Numerical = "num"
-    Datetime = "datetime"
-    Text = "text"
 
 
 @dataclasses.dataclass
@@ -78,7 +73,7 @@ class DataDefinition:
     _datetime_column: Optional[ColumnDefinition]
 
     _task: Optional[str]
-    _classification_labels: Optional[Dict[Union[str, int], str]]
+    _classification_labels: Optional[TargetNames]
 
     def __init__(
         self,
@@ -88,7 +83,7 @@ class DataDefinition:
         id_column: Optional[ColumnDefinition],
         datetime_column: Optional[ColumnDefinition],
         task: Optional[str],
-        classification_labels: Optional[Dict[Union[str, int], str]],
+        classification_labels: Optional[TargetNames],
     ):
         self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
@@ -133,7 +128,7 @@ class DataDefinition:
     def task(self) -> Optional[str]:
         return self._task
 
-    def classification_labels(self) -> Optional[Dict[Union[str, int], str]]:
+    def classification_labels(self) -> Optional[TargetNames]:
         return self._classification_labels
 
 
@@ -209,9 +204,7 @@ def _filter_by_type(column: Optional[ColumnDefinition], column_type: ColumnType,
 
 
 def create_data_definition(
-    reference_data: Optional[pd.DataFrame],
-    current_data: pd.DataFrame,
-    mapping: ColumnMapping,
+    reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame, mapping: ColumnMapping
 ) -> DataDefinition:
     data = _InputData(reference_data, current_data)
     id_column = _process_column(mapping.id, data)
@@ -247,7 +240,12 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data, predefined_type=ColumnType.Numerical, mapping=mapping)
+                _process_column(
+                    column_name,
+                    data,
+                    predefined_type=ColumnType.Numerical,
+                    mapping=mapping,
+                )
                 for column_name in mapping.numerical_features
                 if column_name not in utility_column_names
             ]
@@ -259,7 +257,12 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data, predefined_type=ColumnType.Categorical, mapping=mapping)
+                _process_column(
+                    column_name,
+                    data,
+                    predefined_type=ColumnType.Categorical,
+                    mapping=mapping,
+                )
                 for column_name in mapping.categorical_features
                 if column_name not in utility_column_names
             ]
@@ -271,7 +274,12 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data, predefined_type=ColumnType.Datetime, mapping=mapping)
+                _process_column(
+                    column_name,
+                    data,
+                    predefined_type=ColumnType.Datetime,
+                    mapping=mapping,
+                )
                 for column_name in mapping.datetime_features
                 if column_name not in utility_column_names
             ]

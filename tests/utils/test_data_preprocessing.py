@@ -3,11 +3,11 @@ from datetime import datetime
 import pandas as pd
 import pytest
 
+from evidently.core import ColumnType
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import NUMBER_UNIQUE_AS_CATEGORICAL
 from evidently.utils.data_preprocessing import ColumnDefinition
 from evidently.utils.data_preprocessing import ColumnPresenceState
-from evidently.utils.data_preprocessing import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
 from evidently.utils.data_preprocessing import _get_column_presence

@@ -52,6 +52,7 @@ def test_data_drift_test_number_of_drifted_features_json_render() -> None:
     )
     suite = TestSuite(tests=[TestNumberOfDriftedColumns()])
     suite.run(current_data=current_dataset, reference_data=reference_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())

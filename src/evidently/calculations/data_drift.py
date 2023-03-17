@@ -10,41 +10,50 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently.base_metric import ColumnMetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.stattests import get_stattest
+from evidently.core import ColumnType
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import Distribution
+from evidently.metric_results import DistributionIncluded
+from evidently.metric_results import ScatterField
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.visualizations import Distribution
+from evidently.utils.data_operations import recognize_column_type_
+from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
 
+Examples = List[str]
+Words = List[str]
 
-@dataclass
-class ColumnDataDriftMetrics:
-    """One column drift metrics."""
 
-    column_name: str
-    column_type: str
+class DriftStatsField(MetricResultField):
+    class Config:
+        dict_include = False
+        pd_include = False
+
+    distribution: Optional[Distribution]
+    characteristic_examples: Optional[Examples]
+    characteristic_words: Optional[Words]
+    small_distribution: Optional[DistributionIncluded]
+    correlations: Optional[Dict[str, float]]
+
+
+class ColumnDataDriftMetrics(ColumnMetricResult):
+    class Config:
+        dict_exclude_fields = {"current", "reference", "scatter"}
+        # use_enum_values = True
+
     stattest_name: str
-    drift_score: float
+    stattest_threshold: Optional[float]
+    drift_score: Numeric
     drift_detected: bool
-    threshold: float
-    # distributions for the column
-    current_distribution: Optional[Distribution]
-    reference_distribution: Optional[Distribution]
-    current_small_distribution: Optional[list] = None
-    reference_small_distribution: Optional[list] = None
-    # data for scatter plot for numeric features only
-    current_scatter: Optional[Dict[str, list]] = None
-    x_name: Optional[str] = None
-    plot_shape: Optional[Dict[str, float]] = None
-    # correlations for numeric features only
-    current_correlations: Optional[Dict[str, float]] = None
-    reference_correlations: Optional[Dict[str, float]] = None
-    typical_examples_cur: Optional[List[str]] = None
-    typical_examples_ref: Optional[List[str]] = None
-    typical_words_cur: Optional[List[str]] = None
-    typical_words_ref: Optional[List[str]] = None
+
+    current: DriftStatsField
+    reference: DriftStatsField
+
+    scatter: Optional[ScatterField]
 
 
 @dataclass
@@ -56,8 +65,7 @@ class DatasetDrift:
     dataset_drift: bool
 
 
-@dataclass
-class DatasetDriftMetrics:
+class DatasetDriftMetrics(MetricResultField):
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float
@@ -74,7 +82,7 @@ def get_one_column_drift(
     column_name: str,
     options: DataDriftOptions,
     dataset_columns: DatasetColumns,
-    column_type: Optional[str] = None,
+    column_type: Union[str, ColumnType] = None,
 ) -> ColumnDataDriftMetrics:
     if column_name not in current_data:
         raise ValueError(f"Cannot find column '{column_name}' in current dataset")
@@ -82,26 +90,28 @@ def get_one_column_drift(
     if column_name not in reference_data:
         raise ValueError(f"Cannot find column '{column_name}' in reference dataset")
 
+    if isinstance(column_type, str):
+        column_type = ColumnType(column_type)
     if column_type is None:
-        column_type = recognize_column_type(
+        column_type = recognize_column_type_(
             dataset=pd.concat([reference_data, current_data]), column_name=column_name, columns=dataset_columns
         )
 
-    if column_type not in ("cat", "num", "text"):
+    if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
 
     stattest = None
 
-    if column_name == dataset_columns.utility_columns.target and column_type == "num":
+    if column_name == dataset_columns.utility_columns.target and column_type == ColumnType.Numerical:
         stattest = options.num_target_stattest_func
 
-    elif column_name == dataset_columns.utility_columns.target and column_type == "cat":
+    elif column_name == dataset_columns.utility_columns.target and column_type == ColumnType.Categorical:
         stattest = options.cat_target_stattest_func
 
     if not stattest:
-        stattest = options.get_feature_stattest_func(column_name, column_type)
+        stattest = options.get_feature_stattest_func(column_name, column_type.value)
 
-    threshold = options.get_threshold(column_name, column_type)
+    threshold = options.get_threshold(column_name, column_type.value)
     current_column = current_data[column_name]
     reference_column = reference_data[column_name]
 
@@ -125,25 +135,24 @@ def get_one_column_drift(
     reference_small_distribution = None
     current_correlations = None
     reference_correlations = None
-    current_scatter = None
-    x_name = None
-    plot_shape = None
+
     typical_examples_cur = None
     typical_examples_ref = None
     typical_words_cur = None
     typical_words_ref = None
 
-    if column_type == "num":
+    if column_type == ColumnType.Numerical:
         if not pd.api.types.is_numeric_dtype(reference_column):
             raise ValueError(f"Column '{column_name}' in reference dataset should contain numerical values only.")
 
         if not pd.api.types.is_numeric_dtype(current_column):
             raise ValueError(f"Column '{column_name}' in current dataset should contain numerical values only.")
 
-    drift_test_function = get_stattest(reference_column, current_column, column_type, stattest)
-    drift_result = drift_test_function(reference_column, current_column, column_type, threshold)
+    drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
+    drift_result = drift_test_function(reference_column, current_column, column_type.value, threshold)
 
-    if column_type == "num":
+    scatter: Optional[ScatterField] = None
+    if column_type == ColumnType.Numerical:
         numeric_columns = dataset_columns.num_feature_names
 
         if column_name not in numeric_columns:
@@ -169,8 +178,7 @@ def get_one_column_drift(
                 density=True,
             )
         ]
-        current_scatter = {}
-        current_scatter[column_name] = current_data[column_name]
+        current_scatter = {column_name: current_data[column_name]}
         datetime_column_name = dataset_columns.utility_columns.date
         if datetime_column_name is not None:
             current_scatter["Timestamp"] = current_data[datetime_column_name]
@@ -184,8 +192,9 @@ def get_one_column_drift(
         reference_std = reference_data[column_name].std()
         plot_shape["y0"] = reference_mean - reference_std
         plot_shape["y1"] = reference_mean + reference_std
+        scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
-    elif column_type == "cat":
+    elif column_type == ColumnType.Categorical:
         reference_counts = reference_data[column_name].value_counts(sort=False)
         current_counts = current_data[column_name].value_counts(sort=False)
         keys = set(reference_counts.keys()).union(set(current_counts.keys()))
@@ -197,14 +206,28 @@ def get_one_column_drift(
                 current_counts.loc[key] = 0
 
         reference_small_distribution = list(
-            reversed(list(map(list, zip(*sorted(reference_counts.items(), key=lambda x: str(x[0]))))))
+            reversed(
+                list(
+                    map(
+                        list,
+                        zip(*sorted(reference_counts.items(), key=lambda x: str(x[0]))),
+                    )
+                )
+            )
         )
         current_small_distribution = list(
-            reversed(list(map(list, zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))))))
+            reversed(
+                list(
+                    map(
+                        list,
+                        zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))),
+                    )
+                )
+            )
         )
-    if column_type != "text":
+    if column_type != ColumnType.Text:
         if (
-            column_type == "cat"
+            column_type == ColumnType.Categorical
             and dataset_columns.target_names is not None
             and (
                 column_name == dataset_columns.utility_columns.target
@@ -222,39 +245,50 @@ def get_one_column_drift(
                 current_column = current_column.map(dataset_columns.target_names)
                 reference_column = reference_column.map(dataset_columns.target_names)
         current_distribution, reference_distribution = get_distribution_for_column(
-            column_type=column_type,
+            column_type=column_type.value,
             current=current_column,
             reference=reference_column,
         )
         if reference_distribution is None:
             raise ValueError(f"Cannot calculate reference distribution for column '{column_name}'.")
 
-    elif column_type == "text" and drift_result.drifted:
-        typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref = get_text_data_for_plots(
-            reference_column, current_column
-        )
+    elif column_type == ColumnType.Text and drift_result.drifted:
+        (
+            typical_examples_cur,
+            typical_examples_ref,
+            typical_words_cur,
+            typical_words_ref,
+        ) = get_text_data_for_plots(reference_column, current_column)
 
-    return ColumnDataDriftMetrics(
+    metrics = ColumnDataDriftMetrics(
         column_name=column_name,
-        column_type=column_type,
+        column_type=column_type.value,
         stattest_name=drift_test_function.display_name,
         drift_score=drift_result.drift_score,
         drift_detected=drift_result.drifted,
-        threshold=drift_result.actual_threshold,
-        current_distribution=current_distribution,
-        reference_distribution=reference_distribution,
-        current_small_distribution=current_small_distribution,
-        reference_small_distribution=reference_small_distribution,
-        current_correlations=current_correlations,
-        reference_correlations=reference_correlations,
-        current_scatter=current_scatter,
-        x_name=x_name,
-        plot_shape=plot_shape,
-        typical_examples_cur=typical_examples_cur,
-        typical_examples_ref=typical_examples_ref,
-        typical_words_cur=typical_words_cur,
-        typical_words_ref=typical_words_ref,
+        stattest_threshold=drift_result.actual_threshold,
+        current=DriftStatsField(
+            distribution=current_distribution,
+            small_distribution=DistributionIncluded(**dict(zip(["x", "y"], current_small_distribution)))
+            if current_small_distribution
+            else None,
+            correlations=current_correlations,
+            characteristic_examples=typical_examples_cur,
+            characteristic_words=typical_words_cur,
+        ),
+        reference=DriftStatsField(
+            distribution=reference_distribution,
+            small_distribution=DistributionIncluded(**dict(zip(["x", "y"], reference_small_distribution)))
+            if reference_small_distribution
+            else None,
+            characteristic_examples=typical_examples_ref,
+            characteristic_words=typical_words_ref,
+            correlations=reference_correlations,
+        ),
+        scatter=scatter,
     )
+
+    return metrics
 
 
 def _get_pred_labels_from_prob(dataframe: pd.DataFrame, prediction_column: list) -> List[str]:

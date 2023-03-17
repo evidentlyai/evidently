@@ -1,12 +1,9 @@
-import dataclasses
-from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
-from evidently.base_metric import ColumnName
+from evidently.base_metric import ColumnMetric
 from evidently.base_metric import InputData
-from evidently.base_metric import Metric
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
@@ -21,34 +18,12 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
-from evidently.utils.types import Numeric
-from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
-@dataclasses.dataclass
-class ColumnDriftMetricResults:
-    column_name: str
-    column_type: str
-    stattest_name: str
-    stattest_threshold: float
-    drift_score: Numeric
-    drift_detected: bool
-    current_distribution: Optional[Distribution]
-    reference_distribution: Optional[Distribution]
-    current_scatter: Optional[Dict[str, list]]
-    x_name: Optional[str]
-    plot_shape: Optional[Dict[str, float]]
-    typical_examples_cur: Optional[List[str]]
-    typical_examples_ref: Optional[List[str]]
-    typical_words_cur: Optional[List[str]]
-    typical_words_ref: Optional[List[str]]
-
-
-class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
+class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
     """Calculate drift metric for a column"""
 
-    column_name: str
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
@@ -65,7 +40,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
     def get_parameters(self) -> tuple:
         return self.column_name, self.stattest_threshold, self.stattest
 
-    def calculate(self, data: InputData) -> ColumnDriftMetricResults:
+    def calculate(self, data: InputData) -> ColumnDataDriftMetrics:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
 
@@ -85,41 +60,21 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             options=options,
         )
 
-        return ColumnDriftMetricResults(
+        return ColumnDataDriftMetrics(
             column_name=drift_result.column_name,
             column_type=drift_result.column_type,
             stattest_name=drift_result.stattest_name,
-            stattest_threshold=drift_result.threshold,
+            stattest_threshold=drift_result.stattest_threshold,
             drift_score=drift_result.drift_score,
             drift_detected=drift_result.drift_detected,
-            current_distribution=drift_result.current_distribution,
-            reference_distribution=drift_result.reference_distribution,
-            current_scatter=drift_result.current_scatter,
-            x_name=drift_result.x_name,
-            plot_shape=drift_result.plot_shape,
-            typical_examples_cur=drift_result.typical_examples_cur,
-            typical_examples_ref=drift_result.typical_examples_ref,
-            typical_words_cur=drift_result.typical_words_cur,
-            typical_words_ref=drift_result.typical_words_ref,
+            current=drift_result.current,
+            scatter=drift_result.scatter,
+            reference=drift_result.reference,
         )
 
 
 @default_renderer(wrap_type=ColumnDriftMetric)
 class ColumnDriftMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnDriftMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        # remove distribution data with pandas dataframes
-        result.pop("current_distribution", None)
-        result.pop("reference_distribution", None)
-        result.pop("current_scatter", None)
-        result.pop("x_name", None)
-        result.pop("plot_shape", None)
-        result.pop("typical_examples_cur", None)
-        result.pop("typical_examples_ref", None)
-        result.pop("typical_words_cur", None)
-        result.pop("typical_words_ref", None)
-        return result
-
     def render_html(self, obj: ColumnDriftMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
 
@@ -134,59 +89,68 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         tabs = []
 
         # fig_json = fig.to_plotly_json()
-        if result.current_scatter is not None and result.plot_shape is not None and result.x_name is not None:
+        if result.scatter is not None:
             scatter_fig = plot_scatter_for_data_drift(
-                curr_y=result.current_scatter[result.column_name],
-                curr_x=result.current_scatter[result.x_name],
-                y0=result.plot_shape["y0"],
-                y1=result.plot_shape["y1"],
+                curr_y=result.scatter.scatter[result.column_name],
+                curr_x=result.scatter.scatter[result.scatter.x_name],
+                y0=result.scatter.plot_shape["y0"],
+                y1=result.scatter.plot_shape["y1"],
                 y_name=result.column_name,
-                x_name=result.x_name,
+                x_name=result.scatter.x_name,
                 color_options=self.color_options,
             )
             tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
-        if result.current_distribution is not None and result.reference_distribution is not None:
+        if result.current.distribution is not None and result.reference.distribution is not None:
             distr_fig = get_distribution_plot_figure(
-                current_distribution=result.current_distribution,
-                reference_distribution=result.reference_distribution,
+                current_distribution=result.current.distribution,
+                reference_distribution=result.reference.distribution,
                 color_options=self.color_options,
             )
             # figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
             tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
 
         if (
-            result.typical_examples_cur is not None
-            and result.typical_examples_ref is not None
-            and result.typical_words_cur is not None
-            and result.typical_words_ref is not None
+            result.current.characteristic_examples is not None
+            and result.reference.characteristic_examples is not None
+            and result.current.characteristic_words is not None
+            and result.reference.characteristic_words is not None
         ):
             current_table_words = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.typical_words_cur],
+                data=[[el, ""] for el in result.current.characteristic_words],
             )
             reference_table_words = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.typical_words_ref],
+                data=[[el, ""] for el in result.reference.characteristic_words],
             )
             current_table_examples = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.typical_examples_cur],
+                data=[[el, ""] for el in result.current.characteristic_examples],
             )
             reference_table_examples = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.typical_examples_ref],
+                data=[[el, ""] for el in result.reference.characteristic_examples],
             )
 
             tabs = [
                 TabData(title="current: characteristic words", widget=current_table_words),
-                TabData(title="reference: characteristic words", widget=reference_table_words),
-                TabData(title="current: characteristic examples", widget=current_table_examples),
-                TabData(title="reference: characteristic examples", widget=reference_table_examples),
+                TabData(
+                    title="reference: characteristic words",
+                    widget=reference_table_words,
+                ),
+                TabData(
+                    title="current: characteristic examples",
+                    widget=current_table_examples,
+                ),
+                TabData(
+                    title="reference: characteristic examples",
+                    widget=reference_table_examples,
+                ),
             ]
         render_result = [
             counter(

@@ -6,7 +6,7 @@ import pytest
 from evidently import ColumnMapping
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics.data_integrity.column_summary_metric import CategoricalCharacteristics
-from evidently.metrics.data_integrity.column_summary_metric import ColumnSummary
+from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
 from evidently.metrics.data_integrity.column_summary_metric import DataQualityPlot
 from evidently.report import Report
 
@@ -19,7 +19,7 @@ from evidently.report import Report
             None,
             ColumnMapping(),
             ColumnSummaryMetric(column_name="target"),
-            ColumnSummary(
+            ColumnSummaryResult(
                 column_name="target",
                 column_type="cat",
                 reference_characteristics=None,
@@ -50,12 +50,13 @@ def test_column_summary_metric_success(
     reference_data: pd.DataFrame,
     column_mapping: ColumnMapping,
     metric: ColumnSummaryMetric,
-    expected_result: ColumnSummary,
+    expected_result: ColumnSummaryResult,
 ) -> None:
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     result = metric.get_result()
     assert result is not None
+    report.json()
 
 
 @pytest.mark.parametrize(

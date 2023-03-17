@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import probplot
 
-from evidently.utils.data_operations import DatasetColumns
+from evidently.metric_results import DatasetColumns
 
 
 class ErrorWithQuantiles:
@@ -89,9 +89,18 @@ def _calculate_underperformance(err_quantiles: ErrorWithQuantiles, conf_interval
     sd_over = np.std(error[error >= quantile_other], ddof=1)
 
     return {
-        "majority": {"mean_error": float(mae_exp), "std_error": conf_interval_n_sigmas * float(sd_exp)},
-        "underestimation": {"mean_error": float(mae_under), "std_error": conf_interval_n_sigmas * float(sd_under)},
-        "overestimation": {"mean_error": float(mae_over), "std_error": conf_interval_n_sigmas * float(sd_over)},
+        "majority": {
+            "mean_error": float(mae_exp),
+            "std_error": conf_interval_n_sigmas * float(sd_exp),
+        },
+        "underestimation": {
+            "mean_error": float(mae_under),
+            "std_error": conf_interval_n_sigmas * float(sd_under),
+        },
+        "overestimation": {
+            "mean_error": float(mae_over),
+            "std_error": conf_interval_n_sigmas * float(sd_over),
+        },
     }
 
 

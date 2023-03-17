@@ -10,6 +10,7 @@ from plotly import figure_factory as ff
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -19,9 +20,12 @@ from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationProbDistributionResults:
-    current_distribution: Optional[Dict[str, list]]
+class ClassificationProbDistributionResults(MetricResult):
+    class Config:
+        dict_include = False
+        pd_include = False
+
+    current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
     reference_distribution: Optional[Dict[str, list]]
 
 
@@ -70,9 +74,6 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
 
 @default_renderer(wrap_type=ClassificationProbDistribution)
 class ClassificationProbDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationProbDistribution) -> dict:
-        return {}
-
     def _plot(self, distribution: Dict[str, list]):
         # plot distributions
         graphs = []
@@ -81,7 +82,10 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
             pred_distr = ff.create_distplot(
                 distribution[label],
                 [str(label), "other"],
-                colors=[self.color_options.primary_color, self.color_options.secondary_color],
+                colors=[
+                    self.color_options.primary_color,
+                    self.color_options.secondary_color,
+                ],
                 bin_size=0.05,
                 show_curve=False,
                 show_rug=True,

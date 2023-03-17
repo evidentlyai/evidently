@@ -1,5 +1,7 @@
 import dataclasses
 import uuid
+from collections import defaultdict
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -10,6 +12,7 @@ from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options import ColorOptions
@@ -17,7 +20,6 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
@@ -91,7 +93,14 @@ class Report(Display):
             else:
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
         curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
-        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
+        data = InputData(
+            reference_data,
+            current_data,
+            ref_add,
+            curr_add,
+            column_mapping,
+            data_definition,
+        )
         self._inner_suite.run_calculate(data)
 
     def as_dict(self) -> dict:
@@ -104,6 +113,25 @@ class Report(Display):
         return {
             "metrics": metrics,
         }
+
+    def as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
+        metrics = defaultdict(list)
+
+        for metric in self._first_level_metrics:
+            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
+            metric_id = metric.get_id()
+            if group is not None and metric_id != group:
+                continue
+            metrics[metric_id].append(renderer.render_pandas(metric))
+
+        result = {cls: pd.concat(val) for cls, val in metrics.items()}
+        if group is None and len(result) == 1:
+            return next(iter(result.values()))
+        if group is None:
+            return result
+        if group not in result:
+            raise ValueError(f"Metric group {group} not found in this report")
+        return result[group]
 
     def _build_dashboard_info(self):
         metrics_results = []
