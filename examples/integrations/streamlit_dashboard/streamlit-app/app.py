@@ -1,19 +1,20 @@
 import os
 from pathlib import Path
 import streamlit as st
-from typing import Dict, List, Text
+from typing import Dict
+from typing import List
+from typing import Text
 
-from src.ui import (
-    set_page_container_style,
-    display_sidebar_header,
-    select_project,
-    select_period,
-    select_report,
-    display_header,
-    display_report,
-)
-from src.utils import EntityNotFoundError, list_periods, get_reports_mapping
-
+from src.ui import display_header
+from src.ui import display_report
+from src.ui import display_sidebar_header
+from src.ui import select_period
+from src.ui import select_project
+from src.ui import select_report
+from src.ui import set_page_container_style
+from src.utils import EntityNotFoundError
+from src.utils import get_reports_mapping
+from src.utils import list_periods
 
 PROJECTS_DIR: Path = Path("../projects")
 REPORTS_DIR_NAME: Text = "reports"

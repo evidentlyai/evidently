@@ -3,9 +3,13 @@ from pathlib import Path
 from PIL import Image
 import streamlit as st
 import streamlit.components.v1 as components
-from typing import Iterable, List, Text
+from typing import Iterable
+from typing import List
+from typing import Text
 
-from src.utils import EntityNotFoundError, period_dir_to_dates_range, get_report_name
+from src.utils import EntityNotFoundError
+from src.utils import get_report_name
+from src.utils import period_dir_to_dates_range
 
 
 def set_page_container_style() -> None:
@@ -72,7 +76,7 @@ def select_project(projects: List[Text]) -> Path:
         label="💼 Select project", options=projects
     )
 
-    return selected_project
+    return Path(selected_project)
 
 
 def select_period(periods: List[Text]) -> Text:
@@ -135,32 +139,35 @@ def display_header(project_name: Text, period: Text, report_name: Text) -> None:
 
 
 @st.cache_data
-def display_report(report: Path) -> Text:
+def display_report(report_path: Path) -> List[Text]:
     """Display report.
 
     Args:
         report (Path): Report path.
 
     Returns:
-
         List[Text]: Report parts content - list report part contents.
     """
 
     # If a report is file then read and display the report
-    if report.is_file():
-        with open(report) as report_f:
+    if report_path.is_file():
+        with open(report_path) as report_f:
             report: Text = report_f.read()
             components.html(report, width=1000, height=1200, scrolling=True)
         return [report]
 
     # If a report is complex report (= directory) then
-    if report.is_dir():
+    elif report_path.is_dir():
         # list report parts
-        report_parts: List[Text] = sorted(
-            list(map(lambda report_part: report / report_part, os.listdir(report)))
-        )
+        report_parts: List[Path] = sorted(
+            list(map(
+                lambda report_part: report_path / report_part, 
+                os.listdir(report_path))
+                )
+            )
         tab_names: List[Text] = map(get_report_name, report_parts)
         tab_names_formatted = [f"📈 {name}" for name in tab_names]
+        
         # create tabs
         tabs: Iterable[object] = st.tabs(tab_names_formatted)
         report_contents: List[Text] = []
@@ -176,3 +183,6 @@ def display_report(report: Path) -> Text:
                     )
 
         return report_contents
+    
+    else: 
+        return EntityNotFoundError("🔍 No reports found")

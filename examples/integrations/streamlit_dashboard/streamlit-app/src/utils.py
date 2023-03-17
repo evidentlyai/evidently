@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
-from typing import Dict, List, Text
+from typing import Dict
+from typing import List
+from typing import Text
 
 
 class EntityNotFoundError(Exception):
@@ -71,12 +73,12 @@ def get_reports_mapping(period_dir: Text) -> Dict[Text, Path]:
 
     Examples:
     >>> paths = [
-        'Path(reports/2011-02-12_2011-02-18/data_quality)',
-        'Path(reports/2011-02-12_2011-02-18/model_performance)',
-        'Path(reports/2011-02-12_2011-02-18/data_drift.html)',
-        'Path(reports/2011-02-12_2011-02-18/data_quality.html)',
-        'Path(reports/2011-02-12_2011-02-18/model_performance.html)',
-        'Path(reports/2011-02-12_2011-02-18/target_drift.html)'
+        'reports/2011-02-12_2011-02-18/data_quality',
+        'reports/2011-02-12_2011-02-18/model_performance',
+        'reports/2011-02-12_2011-02-18/data_drift.html',
+        'reports/2011-02-12_2011-02-18/data_quality.html',
+        'reports/2011-02-12_2011-02-18/model_performance.html',
+        'reports/2011-02-12_2011-02-18/target_drift.html'
     ]
     >>> report_paths_to_names(paths)
     {
