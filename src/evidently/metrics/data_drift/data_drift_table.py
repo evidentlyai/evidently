@@ -101,33 +101,33 @@ class DataDriftTableRenderer(MetricRenderer):
         details = RowDetails()
         if data.column_type == "text":
             if (
-                data.current.examples is not None
-                and data.reference.examples is not None
-                and data.current.words is not None
-                and data.reference.words is not None
+                data.current.characteristic_examples is not None
+                and data.reference.characteristic_examples is not None
+                and data.current.characteristic_words is not None
+                and data.reference.characteristic_words is not None
             ):
                 current_table_words = table_data(
                     title="",
                     column_names=["", ""],
-                    data=[[el, ""] for el in data.current.words],
+                    data=[[el, ""] for el in data.current.characteristic_words],
                 )
                 details.with_part("current: characteristic words", info=current_table_words)
                 reference_table_words = table_data(
                     title="",
                     column_names=["", ""],
-                    data=[[el, ""] for el in data.reference.words],
+                    data=[[el, ""] for el in data.reference.characteristic_words],
                 )
                 details.with_part("reference: characteristic words", info=reference_table_words)
                 current_table_examples = table_data(
                     title="",
                     column_names=["", ""],
-                    data=[[el, ""] for el in data.current.examples],
+                    data=[[el, ""] for el in data.current.characteristic_examples],
                 )
                 details.with_part("current: characteristic examples", info=current_table_examples)
                 reference_table_examples = table_data(
                     title="",
                     column_names=["", ""],
-                    data=[[el, ""] for el in data.reference.examples],
+                    data=[[el, ""] for el in data.reference.characteristic_examples],
                 )
                 details.with_part("reference: characteristic examples", info=reference_table_examples)
 

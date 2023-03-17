@@ -34,8 +34,8 @@ class DriftStatsField(MetricResultField):
         pd_include = False
 
     distribution: Optional[Distribution]
-    examples: Optional[Examples]
-    words: Optional[Words]
+    characteristic_examples: Optional[Examples]
+    characteristic_words: Optional[Words]
     small_distribution: Optional[DistributionIncluded]
     correlations: Optional[Dict[str, float]]
 
@@ -273,16 +273,16 @@ def get_one_column_drift(
             if current_small_distribution
             else None,
             correlations=current_correlations,
-            examples=typical_examples_cur,
-            words=typical_words_cur,
+            characteristic_examples=typical_examples_cur,
+            characteristic_words=typical_words_cur,
         ),
         reference=DriftStatsField(
             distribution=reference_distribution,
             small_distribution=DistributionIncluded(**dict(zip(["x", "y"], reference_small_distribution)))
             if reference_small_distribution
             else None,
-            examples=typical_examples_ref,
-            words=typical_words_ref,
+            characteristic_examples=typical_examples_ref,
+            characteristic_words=typical_words_ref,
             correlations=reference_correlations,
         ),
         scatter=scatter,

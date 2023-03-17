@@ -25,8 +25,8 @@ from evidently.renderers.html_widgets import widget_tabs
 
 
 class TextDomainField(MetricResultField):
-    examples: Optional[List[str]]
-    words: Optional[List[str]]
+    characteristic_examples: Optional[List[str]]
+    characteristic_words: Optional[List[str]]
 
 
 class TextDomainClassifierDriftResult(MetricResult):
@@ -153,25 +153,31 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
             roc_auc_random_percentile=random_classifier_95_percentile,
         )
 
-        typical_examples_cur = None
-        typical_examples_ref = None
-        typical_words_cur = None
-        typical_words_ref = None
+        characteristic_examples_cur = None
+        characteristic_examples_ref = None
+        characteristic_words_cur = None
+        characteristic_words_ref = None
 
         if is_content_drift:
             # get examples more characteristic of current or reference dataset
-            typical_examples_cur, typical_examples_ref = self.get_typical_examples(X_test, y_test, y_pred_proba)
+            characteristic_examples_cur, characteristic_examples_ref = self.get_typical_examples(
+                X_test, y_test, y_pred_proba
+            )
 
             # get words more characteristic of current or reference dataset
-            typical_words_cur, typical_words_ref = self.get_typical_words(classifier_pipeline)
+            characteristic_words_cur, characteristic_words_ref = self.get_typical_words(classifier_pipeline)
 
         return TextDomainClassifierDriftResult(
             text_column_name=self.text_column_name,
             domain_classifier_roc_auc=domain_classifier_roc_auc,
             random_classifier_95_percentile=random_classifier_95_percentile,
             content_drift=is_content_drift,
-            current=TextDomainField(examples=typical_examples_cur, words=typical_words_cur),
-            reference=TextDomainField(examples=typical_examples_ref, words=typical_words_ref),
+            current=TextDomainField(
+                characteristic_examples=characteristic_examples_cur, characteristic_words=characteristic_words_cur
+            ),
+            reference=TextDomainField(
+                characteristic_examples=characteristic_examples_ref, characteristic_words=characteristic_words_ref
+            ),
         )
 
 
@@ -183,14 +189,14 @@ class TextDomainClassifierDriftMetricRenderer(MetricRenderer):
     ) -> BaseWidgetInfo:
         if content_type == "words":
             if dataset_name == "current":
-                data = metric_result.current.words
+                data = metric_result.current.characteristic_words
             else:
-                data = metric_result.reference.words
+                data = metric_result.reference.characteristic_words
         elif content_type == "examples":
             if dataset_name == "current":
-                data = metric_result.current.examples
+                data = metric_result.current.characteristic_examples
             else:
-                data = metric_result.reference.examples
+                data = metric_result.reference.characteristic_examples
         else:
             raise Exception("Unknown content type {}. Supported types are ['words', 'examples']".format(content_type))
         if data is None:

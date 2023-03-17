@@ -111,30 +111,30 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
 
         if (
-            result.current.examples is not None
-            and result.reference.examples is not None
-            and result.current.words is not None
-            and result.reference.words is not None
+            result.current.characteristic_examples is not None
+            and result.reference.characteristic_examples is not None
+            and result.current.characteristic_words is not None
+            and result.reference.characteristic_words is not None
         ):
             current_table_words = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.current.words],
+                data=[[el, ""] for el in result.current.characteristic_words],
             )
             reference_table_words = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.reference.words],
+                data=[[el, ""] for el in result.reference.characteristic_words],
             )
             current_table_examples = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.current.examples],
+                data=[[el, ""] for el in result.current.characteristic_examples],
             )
             reference_table_examples = table_data(
                 title="",
                 column_names=["", ""],
-                data=[[el, ""] for el in result.reference.examples],
+                data=[[el, ""] for el in result.reference.characteristic_examples],
             )
 
             tabs = [

@@ -473,7 +473,7 @@ class TestColumnDriftRenderer(TestRenderer):
         result = obj.metric.get_result()
         column_name = obj.column_name
         if result.column_type == "text":
-            if result.current.words is not None and result.reference.words is not None:
+            if result.current.characteristic_words is not None and result.reference.characteristic_words is not None:
                 info.details = [
                     DetailsInfo(
                         id=f"{column_name} dritf curr",
@@ -483,7 +483,7 @@ class TestColumnDriftRenderer(TestRenderer):
                             type="table",
                             params={
                                 "header": ["", ""],
-                                "data": [[el, ""] for el in result.current.words],
+                                "data": [[el, ""] for el in result.current.characteristic_words],
                             },
                             size=2,
                         ),
@@ -496,7 +496,7 @@ class TestColumnDriftRenderer(TestRenderer):
                             type="table",
                             params={
                                 "header": ["", ""],
-                                "data": [[el, ""] for el in result.reference.words],
+                                "data": [[el, ""] for el in result.reference.characteristic_words],
                             },
                             size=2,
                         ),
