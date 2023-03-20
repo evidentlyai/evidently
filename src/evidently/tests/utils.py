@@ -319,7 +319,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     trace = go.Heatmap(
         z=curr_mtrx.values,
         x=list(map(str, curr_mtrx.labels)),
-        y=curr_mtrx.labels,
+        y=list(map(str, curr_mtrx.labels)),
         text=np.array(curr_mtrx.values).astype(str),
         texttemplate="%{text}",
         coloraxis="coloraxis",
@@ -330,7 +330,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
         trace = go.Heatmap(
             z=ref_mtrx.values,
             x=list(map(str, ref_mtrx.labels)),
-            y=ref_mtrx.labels,
+            y=list(map(str, ref_mtrx.labels)),
             text=np.array(ref_mtrx.values).astype(str),
             texttemplate="%{text}",
             coloraxis="coloraxis",
