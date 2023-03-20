@@ -318,7 +318,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
     trace = go.Heatmap(
         z=curr_mtrx.values,
-        x=curr_mtrx.labels,
+        x=map(str, curr_mtrx.labels),
         y=curr_mtrx.labels,
         text=np.array(curr_mtrx.values).astype(str),
         texttemplate="%{text}",
@@ -329,7 +329,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     if ref_mtrx is not None:
         trace = go.Heatmap(
             z=ref_mtrx.values,
-            x=ref_mtrx.labels,
+            x=map(str, ref_mtrx.labels),
             y=ref_mtrx.labels,
             text=np.array(ref_mtrx.values).astype(str),
             texttemplate="%{text}",
