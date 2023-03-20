@@ -133,6 +133,13 @@ ScatterData = Union[pd.Series, List[float], pd.Index]
 ColumnScatter = Dict[str, ScatterData]
 
 
+def df_from_column_scatter(value: ColumnScatter) -> pd.DataFrame:
+    df = pd.DataFrame.from_dict(value)
+    if "index" in df.columns:
+        df.set_index("index", inplace=True)
+    return df
+
+
 def column_scatter_from_df(df: pd.DataFrame, with_index: bool) -> ColumnScatter:
     data = {column: df[column] for column in df.columns}
     if with_index:

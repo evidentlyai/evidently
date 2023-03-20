@@ -10,6 +10,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import column_scatter_from_df
+from evidently.metric_results import df_from_column_scatter
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -69,11 +70,11 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
         if current_plot is None:
             return []
         # todo changing data here, consider doing this in calculation
-        current_df = pd.DataFrame.from_dict(current_plot)
+        current_df = df_from_column_scatter(current_plot)
         current_df.replace([np.inf, -np.inf], np.nan, inplace=True)
         reference_df = None
         if reference_plot is not None:
-            reference_df = pd.DataFrame.from_dict(reference_plot)
+            reference_df = df_from_column_scatter(reference_plot)
             reference_df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
         tab_data = get_class_separation_plot_data(
