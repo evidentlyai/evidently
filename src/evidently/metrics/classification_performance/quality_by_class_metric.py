@@ -106,7 +106,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             # todo: refactor columns data typing
             names = [columns.target_names[int(x)] for x in names]  # type: ignore
         z = metrics_frame.iloc[:-1].values
-        x = names
+        x = list(map(str, names))
         y = ["precision", "recall", "f1-score"]
         if current_roc_aucs is not None and len(current_roc_aucs) > 2:
             z = np.append(z, [current_roc_aucs], axis=0)
@@ -135,7 +135,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         if reference_metrics is not None:
             ref_metrics_frame = pd.DataFrame(reference_metrics)
             z = ref_metrics_frame.iloc[:-1].values
-            x = names
+            x = list(map(str, names))
             y = ["precision", "recall", "f1-score"]
 
             if current_roc_aucs is not None and len(current_roc_aucs) > 2:
