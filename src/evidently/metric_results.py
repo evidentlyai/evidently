@@ -130,7 +130,7 @@ class DatasetColumns(MetricResultField):
 
 
 ScatterData = Union[pd.Series, List[float], pd.Index]
-ColumnScatter = Dict[str, ScatterData]
+ColumnScatter = Dict[Union[int, str], ScatterData]
 
 
 def df_from_column_scatter(value: ColumnScatter) -> pd.DataFrame:

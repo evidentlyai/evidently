@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 from typing import Optional
 
 from pydantic import Field
@@ -15,7 +15,7 @@ class ClassMetric(MetricResultField):
     support: Optional[float] = None
 
 
-ClassesMetrics = Dict[str, ClassMetric]
+ClassesMetrics = Dict[Union[int, str], ClassMetric]
 
 
 class ClassificationReport(MetricResultField):
