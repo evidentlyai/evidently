@@ -1,10 +1,16 @@
+# Environments
+.venv
+
+# Projects
+projects/*/data/*
+projects/*/reports/*
+!projects/*/reports/2011-02-12_2011-02-18/
+projects/*/models/*
+
 # Caches
 __pycache__
 .ipynb_checkpoints
 .DS_Store
-
-# Environments
-.venv
 
 # IDEs
 .vscode
