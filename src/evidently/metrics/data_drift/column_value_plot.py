@@ -21,6 +21,7 @@ from evidently.utils.data_operations import process_columns
 
 class ColumnValuePlotResults(MetricResult):
     class Config:
+        smart_union = True
         dict_include = False
         pd_include = False
 

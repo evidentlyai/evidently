@@ -149,6 +149,7 @@ def column_scatter_from_df(df: pd.DataFrame, with_index: bool) -> ColumnScatter:
 
 class ScatterField(MetricResultField):
     class Config:
+        smart_union = True
         dict_include = False
         pd_include = False
 
@@ -159,6 +160,7 @@ class ScatterField(MetricResultField):
 
 class ColumnScatterResult(MetricResult):
     class Config:
+        smart_union = True
         dict_include = False
 
     current: ColumnScatter

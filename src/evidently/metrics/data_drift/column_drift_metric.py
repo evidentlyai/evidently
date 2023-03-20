@@ -76,7 +76,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
 @default_renderer(wrap_type=ColumnDriftMetric)
 class ColumnDriftMetricRenderer(MetricRenderer):
     def render_html(self, obj: ColumnDriftMetric) -> List[BaseWidgetInfo]:
-        result = obj.get_result()
+        result: ColumnDataDriftMetrics = obj.get_result()
 
         if result.drift_detected:
             drift = "detected"

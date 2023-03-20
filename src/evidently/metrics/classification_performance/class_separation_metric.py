@@ -23,6 +23,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationClassSeparationPlotResults(MetricResult):
     class Config:
+        smart_union = True
         dict_exclude_fields = {"current_plot", "reference_plot"}
         pd_exclude_fields = {"current_plot", "reference_plot"}
 

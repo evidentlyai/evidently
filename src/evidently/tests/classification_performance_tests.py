@@ -580,7 +580,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
-        label: str,
+        label: Union[int, str],
         probas_threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
