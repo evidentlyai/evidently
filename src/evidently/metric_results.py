@@ -193,7 +193,7 @@ class PRCurveData(MetricResultField):
     thrs: PlotData
 
 
-PRCurve = Dict[str, PRCurveData]
+PRCurve = Dict[Union[int, str], PRCurveData]
 
 
 class ROCCurveData(MetricResultField):
@@ -205,7 +205,7 @@ class ROCCurveData(MetricResultField):
     thrs: PlotData
 
 
-ROCCurve = Dict[str, ROCCurveData]
+ROCCurve = Dict[Union[int, str], ROCCurveData]
 
 
 class HistogramData(MetricResultField):

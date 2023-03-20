@@ -69,19 +69,16 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
         if current_plot is None:
             return []
         # todo changing data here, consider doing this in calculation
-        for data in current_plot.values():
-            # todo: handle lists too
-            assert isinstance(data, pd.Series)
-            data.replace([np.inf, -np.inf], np.nan, inplace=True)
+        current_df = pd.DataFrame.from_dict(current_plot)
+        current_df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        reference_df = None
         if reference_plot is not None:
-            for data in current_plot.values():
-                # todo: handle lists too
-                assert isinstance(data, pd.Series)
-                data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_df = pd.DataFrame.from_dict(reference_plot)
+            reference_df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
         tab_data = get_class_separation_plot_data(
-            pd.DataFrame.from_dict(current_plot),
-            pd.DataFrame.from_dict(reference_plot) if reference_plot is not None else None,
+            current_df,
+            reference_df,
             target_name,
             color_options=self.color_options,
         )

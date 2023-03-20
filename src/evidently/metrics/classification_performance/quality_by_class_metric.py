@@ -29,7 +29,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationQuality(MetricResultField):
     metrics: ClassesMetrics
-    roc_aucs: Optional[Dict[Union[str, int], Union[float, int]]]
+    roc_aucs: Optional[List[float]]
 
 
 class ClassificationQualityByClassResult(MetricResult):
