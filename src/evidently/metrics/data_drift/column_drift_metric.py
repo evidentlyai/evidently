@@ -7,6 +7,7 @@ import numpy as np
 
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnName
+from evidently.base_metric import ColumnNotFound
 from evidently.base_metric import InputData
 from evidently.base_metric import DataDefinition
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
@@ -29,7 +30,6 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
@@ -69,14 +69,14 @@ def get_one_column_drift(
 
     if reference_column.empty:
         raise ValueError(
-            f"An empty column '{column}' was provided for drift calculation in the reference dataset."
+            f"An empty column '{column.name}' was provided for drift calculation in the reference dataset."
         )
 
     # clean and check the column in current dataset
     current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if current_column.empty:
-        raise ValueError(f"An empty column '{column}' was provided for drift calculation in the current dataset.")
+        raise ValueError(f"An empty column '{column.name}' was provided for drift calculation in the current dataset.")
 
     current_distribution = None
     reference_distribution = None
@@ -266,12 +266,18 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
 
-        current_feature_data = data.get_current_column(self.column)
-        reference_feature_data = data.get_reference_column(self.column)
+        try:
+            current_feature_data = data.get_current_column(self.column)
+        except ColumnNotFound as ex:
+            raise ValueError(f"Cannot find column '{ex.column_name}' in current dataset")
+        try:
+            reference_feature_data = data.get_reference_column(self.column)
+        except ColumnNotFound as ex:
+            raise ValueError(f"Cannot find column '{ex.column_name}' in reference dataset")
 
         column_type = ColumnType.Numerical
         if self.column.is_main_dataset():
-            data.data_definition.get_column(self.column.name).column_type
+            column_type = data.data_definition.get_column(self.column.name).column_type
         datetime_column = data.data_definition.get_datetime_column()
         options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
         drift_result = get_one_column_drift(

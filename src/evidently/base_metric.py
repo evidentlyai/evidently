@@ -58,12 +58,18 @@ class ColumnName:
     def main_dataset(name: str):
         return ColumnName(name, DatasetType.MAIN, None)
 
+
 def additional_feature(feature: GeneratedFeature, feature_name: str) -> ColumnName:
     return ColumnName(
         name=feature.__class__.__name__ + "." + feature_name,
         dataset=DatasetType.ADDITIONAL,
         feature_class=feature,
     )
+
+
+class ColumnNotFound(BaseException):
+    def __init__(self, column_name: str):
+        self.column_name = column_name
 
 
 @dataclass
@@ -78,6 +84,8 @@ class InputData:
     @staticmethod
     def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
         if column.dataset == DatasetType.MAIN:
+            if column.name not in dataset.columns:
+                raise ColumnNotFound(column.name)
             return dataset[column.name]
         if column.dataset == DatasetType.ADDITIONAL:
             return additional[column.name]
