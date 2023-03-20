@@ -31,6 +31,10 @@ class ClassificationQuality(MetricResultField):
     metrics: ClassesMetrics
     roc_aucs: Optional[List[float]]
 
+    @property
+    def metrics_dict(self):
+        return self.dict(include={"metrics"})["metrics"]
+
 
 class ClassificationQualityByClassResult(MetricResult):
     columns: DatasetColumns
@@ -91,9 +95,9 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationQualityByClass) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         columns = metric_result.columns
-        current_metrics = metric_result.current.metrics
+        current_metrics = metric_result.current.metrics_dict
         current_roc_aucs = metric_result.current.roc_aucs
-        reference_metrics = metric_result.reference.metrics if metric_result.reference is not None else None
+        reference_metrics = metric_result.reference.metrics_dict if metric_result.reference is not None else None
         reference_roc_aucs = metric_result.reference.roc_aucs if metric_result.reference is not None else None
 
         metrics_frame = pd.DataFrame(current_metrics)
@@ -101,7 +105,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         if columns.target_names is not None and isinstance(columns.target_names, dict):
             # todo: refactor columns data typing
             names = [columns.target_names[int(x)] for x in names]  # type: ignore
-        z = metrics_frame.iloc[:-1, :-3].values
+        z = metrics_frame.iloc[:-1].values
         x = names
         y = ["precision", "recall", "f1-score"]
         if current_roc_aucs is not None and len(current_roc_aucs) > 2:
@@ -130,7 +134,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
 
         if reference_metrics is not None:
             ref_metrics_frame = pd.DataFrame(reference_metrics)
-            z = ref_metrics_frame.iloc[:-1, :-3].values
+            z = ref_metrics_frame.iloc[:-1].values
             x = names
             y = ["precision", "recall", "f1-score"]
 
