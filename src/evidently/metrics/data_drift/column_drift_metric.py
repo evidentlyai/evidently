@@ -236,9 +236,9 @@ def get_one_column_drift(
     return metrics
 
 
-
 class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
     """Calculate drift metric for a column"""
+
     column: ColumnName
 
     stattest: Optional[PossibleStatTestType]
