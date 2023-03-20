@@ -11,6 +11,10 @@ from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.pipeline.column_mapping import TargetNames
 
+Label = Union[int, str]
+ScatterData = Union[pd.Series, List[float], pd.Index]
+ColumnScatter = Dict[Label, ScatterData]
+
 
 class Distribution(MetricResultField):
     class Config:
@@ -22,7 +26,10 @@ class Distribution(MetricResultField):
 
 
 class ConfusionMatrix(MetricResultField):
-    labels: Union[Sequence[int], Sequence[str]]  # Sequence[Union[int, str]]
+    class Config:
+        smart_union = True
+
+    labels: Sequence[Label]
     values: list  # todo better typing
 
 
@@ -32,7 +39,7 @@ class PredictionData(MetricResultField):
 
     predictions: pd.Series
     prediction_probas: Optional[pd.DataFrame]
-    labels: List[Union[int, str]]
+    labels: List[Label]
 
 
 class StatsByFeature(MetricResultField):
@@ -129,10 +136,6 @@ class DatasetColumns(MetricResultField):
         )
 
 
-ScatterData = Union[pd.Series, List[float], pd.Index]
-ColumnScatter = Dict[Union[int, str], ScatterData]
-
-
 def df_from_column_scatter(value: ColumnScatter) -> pd.DataFrame:
     df = pd.DataFrame.from_dict(value)
     if "index" in df.columns:
@@ -202,7 +205,7 @@ class PRCurveData(MetricResultField):
     thrs: PlotData
 
 
-PRCurve = Dict[Union[int, str], PRCurveData]
+PRCurve = Dict[Label, PRCurveData]
 
 
 class ROCCurveData(MetricResultField):
@@ -214,7 +217,7 @@ class ROCCurveData(MetricResultField):
     thrs: PlotData
 
 
-ROCCurve = Dict[Union[int, str], ROCCurveData]
+ROCCurve = Dict[Label, ROCCurveData]
 
 
 class HistogramData(MetricResultField):

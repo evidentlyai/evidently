@@ -7,6 +7,7 @@ from pydantic import parse_obj_as
 from sklearn.metrics import classification_report
 
 from evidently.base_metric import MetricResultField
+from evidently.metric_results import Label
 
 
 class ClassMetric(MetricResultField):
@@ -16,7 +17,7 @@ class ClassMetric(MetricResultField):
     support: Optional[float] = None
 
 
-ClassesMetrics = Dict[Union[int, str], ClassMetric]
+ClassesMetrics = Dict[Label, ClassMetric]
 
 
 class ClassificationReport(MetricResultField):

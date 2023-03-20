@@ -6,6 +6,7 @@ from typing import Optional
 from typing import Union
 
 from evidently.metric_results import DatasetClassificationQuality
+from evidently.metric_results import Label
 from evidently.metric_results import ROCCurve
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationConfusionMatrix
@@ -580,7 +581,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
-        label: Union[int, str],
+        label: Label,
         probas_threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
