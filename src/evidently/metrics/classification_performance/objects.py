@@ -1,5 +1,6 @@
-from typing import Dict, Union
+from typing import Dict
 from typing import Optional
+from typing import Union
 
 from pydantic import Field
 from pydantic import parse_obj_as
