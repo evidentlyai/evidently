@@ -51,6 +51,12 @@ class ColumnName:
     dataset: DatasetType
     feature_class: Optional[GeneratedFeature]
 
+    def is_main_dataset(self):
+        return self.dataset == DatasetType.MAIN
+
+    @staticmethod
+    def main_dataset(name: str):
+        return ColumnName(name, DatasetType.MAIN, None)
 
 def additional_feature(feature: GeneratedFeature, feature_name: str) -> ColumnName:
     return ColumnName(
