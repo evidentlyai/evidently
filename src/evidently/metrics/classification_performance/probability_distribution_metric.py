@@ -11,6 +11,7 @@ from plotly import figure_factory as ff
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.calculations.classification_performance import get_prediction_data
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -18,7 +19,6 @@ from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.utils.data_operations import process_columns
-from evidently.calculations.classification_performance import get_prediction_data
 
 
 class ClassificationProbDistributionResults(MetricResult):
@@ -64,13 +64,17 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
             for col in prediction_data.prediction_probas.columns:
                 current_data_copy[col] = prediction_data.prediction_probas[col]
 
-            current_distribution = self.get_distribution(current_data_copy, target, prediction_data.prediction_probas.columns)
+            current_distribution = self.get_distribution(
+                current_data_copy, target, prediction_data.prediction_probas.columns
+            )
 
             if data.reference_data is not None:
                 reference_data_copy = data.reference_data.copy()
                 for col in prediction_data.prediction_probas.columns:
                     reference_data_copy[col] = prediction_data.prediction_probas[col]
-                reference_distribution = self.get_distribution(reference_data_copy, target, prediction_data.prediction_probas.columns)
+                reference_distribution = self.get_distribution(
+                    reference_data_copy, target, prediction_data.prediction_probas.columns
+                )
 
             else:
                 reference_distribution = None
