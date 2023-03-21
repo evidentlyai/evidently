@@ -49,6 +49,7 @@ def get_one_column_drift(
 
     target = data_definition.get_target_column()
     stattest = None
+    threshold = None
     if column.is_main_dataset():
         if target and column.name == target.column_name and column_type == ColumnType.Numerical:
             stattest = options.num_target_stattest_func
