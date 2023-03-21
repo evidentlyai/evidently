@@ -33,7 +33,6 @@ from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
-
 def get_one_column_drift(
     *,
     current_feature_data: pd.Series,
