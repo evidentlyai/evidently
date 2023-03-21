@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.model.widget import BaseWidgetInfo
@@ -27,7 +28,6 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 
@@ -66,7 +66,16 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = DataDriftTable(
             columns=columns,
             stattest=stattest,
@@ -93,7 +102,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
                 feature: (
                     data.stattest_name,
                     np.round(data.drift_score, 3),
-                    data.threshold,
+                    data.stattest_threshold,
                     "Detected" if data.drift_detected else "Not Detected",
                 )
                 for feature, data in metrics.drift_by_columns.items()
@@ -156,7 +165,9 @@ class TestColumnDrift(Test):
     ):
         self.column_name = column_name
         self.metric = ColumnDriftMetric(
-            column_name=column_name, stattest=stattest, stattest_threshold=stattest_threshold
+            column_name=column_name,
+            stattest=stattest,
+            stattest_threshold=stattest_threshold,
         )
 
     def check(self):
@@ -367,7 +378,12 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
-            feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
+            feature: {
+                "stattest": data[0],
+                "score": np.round(data[1], 3),
+                "threshold": data[2],
+                "data_drift": data[3],
+            }
             for feature, data in obj.get_result().features.items()
         }
         return base
@@ -376,10 +392,19 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-            columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
+            columns=[
+                "Feature name",
+                "Stattest",
+                "Drift score",
+                "Threshold",
+                "Data Drift",
+            ],
         )
         df = df.sort_values("Data Drift")
-        info.with_details(title="Drift Table", info=table_data(column_names=df.columns.to_list(), data=df.values))
+        info.with_details(
+            title="Drift Table",
+            info=table_data(column_names=df.columns.to_list(), data=df.values),
+        )
         return info
 
 
@@ -389,7 +414,12 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
-            feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
+            feature: {
+                "stattest": data[0],
+                "score": np.round(data[1], 3),
+                "threshold": data[2],
+                "data_drift": data[3],
+            }
             for feature, data in obj.get_result().features.items()
         }
         return base
@@ -398,7 +428,13 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-            columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
+            columns=[
+                "Feature name",
+                "Stattest",
+                "Drift score",
+                "Threshold",
+                "Data Drift",
+            ],
         )
         df = df.sort_values("Data Drift")
         info.details = [
@@ -437,7 +473,7 @@ class TestColumnDriftRenderer(TestRenderer):
         result = obj.metric.get_result()
         column_name = obj.column_name
         if result.column_type == "text":
-            if result.typical_words_cur is not None and result.typical_words_ref is not None:
+            if result.current.characteristic_words is not None and result.reference.characteristic_words is not None:
                 info.details = [
                     DetailsInfo(
                         id=f"{column_name} dritf curr",
@@ -445,7 +481,10 @@ class TestColumnDriftRenderer(TestRenderer):
                         info=BaseWidgetInfo(
                             title="",
                             type="table",
-                            params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_cur]},
+                            params={
+                                "header": ["", ""],
+                                "data": [[el, ""] for el in result.current.characteristic_words],
+                            },
                             size=2,
                         ),
                     ),
@@ -455,7 +494,10 @@ class TestColumnDriftRenderer(TestRenderer):
                         info=BaseWidgetInfo(
                             title="",
                             type="table",
-                            params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_ref]},
+                            params={
+                                "header": ["", ""],
+                                "data": [[el, ""] for el in result.reference.characteristic_words],
+                            },
                             size=2,
                         ),
                     ),
@@ -463,11 +505,11 @@ class TestColumnDriftRenderer(TestRenderer):
             else:
                 return info
         else:
-            if result.current_distribution is None:
+            if result.current.distribution is None:
                 raise ValueError("Expected data is missing")
             fig = get_distribution_plot_figure(
-                current_distribution=result.current_distribution,
-                reference_distribution=result.reference_distribution,
+                current_distribution=result.current.distribution,
+                reference_distribution=result.reference.distribution,
                 color_options=self.color_options,
             )
             info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))

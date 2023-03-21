@@ -9,12 +9,12 @@ from evidently.base_metric import Metric
 from evidently.calculations.data_drift import ensure_prediction_column_is_string
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnCorrelationsMetric
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import ColumnValuePlot
 from evidently.metrics import TargetByFeaturesTable
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
-from evidently.utils.data_operations import DatasetColumns
 
 
 class TargetDriftPreset(MetricPreset):

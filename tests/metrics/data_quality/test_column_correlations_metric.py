@@ -7,11 +7,12 @@ import pytest
 from pytest import approx
 
 from evidently import ColumnMapping
-from evidently.calculations.data_quality import ColumnCorrelations
+from evidently.metric_results import ColumnCorrelations
+from evidently.metric_results import Distribution
+from evidently.metric_results import DistributionIncluded
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.report import Report
-from evidently.utils.visualizations import Distribution
 
 
 @pytest.mark.parametrize(
@@ -41,7 +42,7 @@ from evidently.utils.visualizations import Distribution
                     "cramer_v": ColumnCorrelations(
                         column_name="feature1",
                         kind="cramer_v",
-                        values=Distribution(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
+                        values=DistributionIncluded(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
                     )
                 },
                 reference=None,

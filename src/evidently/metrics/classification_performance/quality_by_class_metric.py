@@ -1,4 +1,5 @@
 import dataclasses
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -11,32 +12,34 @@ from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
+from evidently.metric_results import DatasetColumns
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
+from evidently.metrics.classification_performance.objects import ClassesMetrics
+from evidently.metrics.classification_performance.objects import ClassificationReport
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationQualityByClassResult:
+class ClassificationQuality(MetricResultField):
+    metrics: ClassesMetrics
+    roc_aucs: Optional[Dict[Union[str, int], Union[float, int]]]
+
+
+class ClassificationQualityByClassResult(MetricResult):
     columns: DatasetColumns
-    current_metrics: dict
-    current_roc_aucs: Optional[list]
-    reference_metrics: Optional[dict]
-    reference_roc_aucs: Optional[dict]
+    current: ClassificationQuality
+    reference: Optional[ClassificationQuality]
 
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
-    ):
+    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
         super().__init__(probas_threshold, k)
 
     def calculate(self, data: InputData) -> ClassificationQualityByClassResult:
@@ -45,11 +48,10 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
             data.current_data,
             column_mapping=data.column_mapping,
         )
-        metrics_matrix = sklearn.metrics.classification_report(
+        metrics_matrix = ClassificationReport.create(
             target,
             prediction.predictions,
-            output_dict=True,
-        )
+        ).classes
 
         current_roc_aucs = None
         if prediction.prediction_probas is not None:
@@ -57,19 +59,18 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
             current_roc_aucs = sklearn.metrics.roc_auc_score(
                 binaraized_target, prediction.prediction_probas, average=None
             ).tolist()
-        ref_metrics = None
         reference_roc_aucs = None
 
+        reference = None
         if data.reference_data is not None:
             ref_target, ref_prediction = self.get_target_prediction_data(
                 data.reference_data,
                 column_mapping=data.column_mapping,
             )
-            ref_metrics = sklearn.metrics.classification_report(
+            ref_metrics = ClassificationReport.create(
                 ref_target,
                 ref_prediction.predictions,
-                output_dict=True,
-            )
+            ).classes
             if ref_prediction.prediction_probas is not None:
                 binaraized_target = (
                     ref_target.values.reshape(-1, 1) == list(ref_prediction.prediction_probas.columns)
@@ -77,32 +78,29 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 reference_roc_aucs = sklearn.metrics.roc_auc_score(
                     binaraized_target, ref_prediction.prediction_probas, average=None
                 ).tolist()
+            reference = ClassificationQuality(metrics=ref_metrics, roc_aucs=reference_roc_aucs)
         return ClassificationQualityByClassResult(
             columns=columns,
-            current_metrics=metrics_matrix,
-            current_roc_aucs=current_roc_aucs,
-            reference_metrics=ref_metrics,
-            reference_roc_aucs=reference_roc_aucs,
+            current=ClassificationQuality(metrics=metrics_matrix, roc_aucs=current_roc_aucs),
+            reference=reference,
         )
 
 
 @default_renderer(wrap_type=ClassificationQualityByClass)
 class ClassificationQualityByClassRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationQualityByClass) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
     def render_html(self, obj: ClassificationQualityByClass) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         columns = metric_result.columns
-        current_metrics = metric_result.current_metrics
-        current_roc_aucs = metric_result.current_roc_aucs
-        reference_metrics = metric_result.reference_metrics
-        reference_roc_aucs = metric_result.reference_roc_aucs
+        current_metrics = metric_result.current.metrics
+        current_roc_aucs = metric_result.current.roc_aucs
+        reference_metrics = metric_result.reference.metrics if metric_result.reference is not None else None
+        reference_roc_aucs = metric_result.reference.roc_aucs if metric_result.reference is not None else None
 
         metrics_frame = pd.DataFrame(current_metrics)
         names = metrics_frame.columns.tolist()[:-3]
-        if columns.target_names is not None:
-            names = [columns.target_names[int(x)] for x in names]
+        if columns.target_names is not None and isinstance(columns.target_names, dict):
+            # todo: refactor columns data typing
+            names = [columns.target_names[int(x)] for x in names]  # type: ignore
         z = metrics_frame.iloc[:-1, :-3].values
         x = names
         y = ["precision", "recall", "f1-score"]
@@ -152,15 +150,13 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             fig.add_trace(trace, 1, 2)
         fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
 
-        return [header_text(label="Quality Metrics by Class"), plotly_figure(figure=fig, title="")]
+        return [
+            header_text(label="Quality Metrics by Class"),
+            plotly_figure(figure=fig, title=""),
+        ]
 
 
-def _plot_metrics(
-    columns: DatasetColumns,
-    metrics_matrix: dict,
-    title: str,
-    size: WidgetSize,
-):
+def _plot_metrics(columns: DatasetColumns, metrics_matrix: dict, title: str, size: WidgetSize):
     metrics_frame = pd.DataFrame(metrics_matrix)
 
     z = metrics_frame.iloc[:-1, :-3].values

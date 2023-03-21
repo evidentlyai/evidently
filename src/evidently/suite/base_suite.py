@@ -109,14 +109,18 @@ class Display:
     def _repr_html_(self):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs,
         )
         return self._render(determine_template("auto"), template_params)
 
     def show(self, mode="auto"):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs,
         )
         # pylint: disable=import-outside-toplevel
         try:
@@ -230,10 +234,7 @@ class Suite:
         self.context.state = States.Verified
 
     def create_additional_features(
-        self,
-        current_data: pd.DataFrame,
-        reference_data: Optional[pd.DataFrame],
-        data_definition: DataDefinition,
+        self, current_data: pd.DataFrame, reference_data: Optional[pd.DataFrame], data_definition: DataDefinition
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         curr_additional_data = None
         ref_additional_data = None
@@ -308,7 +309,10 @@ class Suite:
                 test_results[test] = test.check()
             except BaseException as ex:
                 test_results[test] = TestResult(
-                    name=test.name, status=TestResult.ERROR, description=f"Test failed with exceptions: {ex}"
+                    name=test.name,
+                    status=TestResult.ERROR,
+                    description=f"Test failed with exceptions: {ex}",
+                    exception=ex,
                 )
             test_results[test].groups.update(
                 {
@@ -319,3 +323,8 @@ class Suite:
 
         self.context.test_results = test_results
         self.context.state = States.Tested
+
+    def raise_for_error(self):
+        for result in self.context.test_results.values():
+            if result.exception is not None:
+                raise result.exception

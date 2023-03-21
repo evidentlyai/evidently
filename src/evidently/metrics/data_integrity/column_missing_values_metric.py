@@ -9,6 +9,8 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -20,8 +22,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclasses.dataclass
-class ColumnMissingValues:
+class ColumnMissingValues(MetricResultField):
     """Statistics about missing values in a column"""
 
     # count of rows in the column
@@ -36,8 +37,7 @@ class ColumnMissingValues:
     share_of_missing_values: float
 
 
-@dataclasses.dataclass
-class ColumnMissingValuesMetricResult:
+class ColumnMissingValuesMetricResult(MetricResult):
     column_name: str
     current: ColumnMissingValues
     reference: Optional[ColumnMissingValues] = None
@@ -145,9 +145,6 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
 
 @default_renderer(wrap_type=ColumnMissingValuesMetric)
 class ColumnMissingValuesMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnMissingValuesMetric) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
     @staticmethod
     def _get_table_stat(stats: ColumnMissingValues) -> BaseWidgetInfo:
         data = []
@@ -181,11 +178,17 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
 
     def _get_details_missing_values_info(self, metric_result: ColumnMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.string("Missing values (Current data)", self._get_info_string(metric_result.current)),
+            CounterData.string(
+                "Missing values (Current data)",
+                self._get_info_string(metric_result.current),
+            ),
         ]
         if metric_result.reference is not None:
             counters.append(
-                CounterData.string("Missing values (Reference data)", self._get_info_string(metric_result.reference)),
+                CounterData.string(
+                    "Missing values (Reference data)",
+                    self._get_info_string(metric_result.reference),
+                ),
             )
 
         return counter(

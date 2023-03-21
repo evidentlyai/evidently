@@ -5,11 +5,11 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
+from evidently.metric_results import Distribution
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
 from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
 from evidently.report import Report
-from evidently.utils.visualizations import Distribution
 
 
 @pytest.mark.parametrize(
@@ -29,9 +29,9 @@ from evidently.utils.visualizations import Distribution
                     share_in_range=0,
                     share_not_in_range=0,
                     number_of_values=0,
+                    distribution=Distribution(x=[], y=[]),
                 ),
                 reference=None,
-                current_distribution=Distribution(x=[], y=[]),
             ),
         ),
         (
@@ -48,6 +48,7 @@ from evidently.utils.visualizations import Distribution
                     share_in_range=0.75,
                     share_not_in_range=0.25,
                     number_of_values=4,
+                    distribution=Distribution(x=[], y=[]),
                 ),
                 reference=ValuesInRangeStat(
                     number_in_range=4,
@@ -55,8 +56,8 @@ from evidently.utils.visualizations import Distribution
                     share_in_range=1,
                     share_not_in_range=0,
                     number_of_values=4,
+                    distribution=Distribution(x=[], y=[]),
                 ),
-                current_distribution=Distribution(x=[], y=[]),
             ),
         ),
     ),
@@ -121,9 +122,7 @@ def test_data_quality_values_in_range_metric_success(
     ),
 )
 def test_data_quality_values_in_range_metric_errors(
-    current_data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    metric: ColumnValueRangeMetric,
+    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueRangeMetric
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])

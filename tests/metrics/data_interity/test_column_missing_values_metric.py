@@ -130,9 +130,7 @@ def test_column_missing_values_metric_success(
     ),
 )
 def test_column_missing_values_metric_value_error(
-    current_data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    metric: ColumnMissingValuesMetric,
+    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnMissingValuesMetric
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])

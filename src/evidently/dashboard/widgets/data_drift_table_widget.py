@@ -21,11 +21,11 @@ from evidently.options import QualityMetricsOptions
 
 
 def _generate_feature_params(name: str, data: ColumnDataDriftMetrics) -> dict:
-    if data.current_small_distribution is None or data.reference_small_distribution is None:
+    if data.current.small_distribution is None or data.reference.small_distribution is None:
         return {}
 
-    current_small_hist = data.current_small_distribution
-    ref_small_hist = data.reference_small_distribution
+    current_small_hist = data.current.small_distribution
+    ref_small_hist = data.reference.small_distribution
     feature_type = data.column_type
     drift_score = data.drift_score
     distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
@@ -40,8 +40,8 @@ def _generate_feature_params(name: str, data: ColumnDataDriftMetrics) -> dict:
         "f1": name,
         "f6": feature_type,
         "stattest_name": data.stattest_name,
-        "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
-        "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
+        "f3": {"x": list(ref_small_hist.x), "y": list(ref_small_hist.y)},
+        "f4": {"x": list(current_small_hist.x), "y": list(current_small_hist.y)},
         "f2": distr_sim_test,
         "f5": round(drift_score, 6),
     }

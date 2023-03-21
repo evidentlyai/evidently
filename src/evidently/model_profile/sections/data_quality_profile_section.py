@@ -49,7 +49,7 @@ class DataQualityProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = DataQualityAnalyzer.get_results(analyzers_results)
-        result_json = result.columns.as_dict()
+        result_json = result.columns.dict()
         result_json["metrics"] = {}
         result_json["correlations"] = {}
 
@@ -65,7 +65,11 @@ class DataQualityProfileSection(ProfileSection):
         if result.current_correlations:
             result_json["correlations"]["current"] = self._get_corr_matrices_as_dict(result.current_correlations)
 
-        self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_json}
+        self._result = {
+            "name": self.part_id(),
+            "datetime": str(datetime.now()),
+            "data": result_json,
+        }
 
     def get_results(self):
         return self._result

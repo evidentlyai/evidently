@@ -22,7 +22,7 @@ class DataDriftProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results) -> None:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
-        result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
+        result_json: Dict[str, Any] = data_drift_results.columns.dict(by_alias=True)
 
         metrics_dict: Dict[str, Union[int, bool, float, Dict]] = {
             "n_features": data_drift_results.metrics.number_of_columns,
@@ -31,10 +31,17 @@ class DataDriftProfileSection(ProfileSection):
             "dataset_drift": data_drift_results.metrics.dataset_drift,
         }
         # add metrics to a flat dict with data drift results
-        for feature_name, feature_metrics in data_drift_results.metrics.drift_by_columns.items():
+        for (
+            feature_name,
+            feature_metrics,
+        ) in data_drift_results.metrics.drift_by_columns.items():
             metrics_dict[feature_name] = {
-                "current_small_hist": feature_metrics.current_small_distribution,
-                "ref_small_hist": feature_metrics.reference_small_distribution,
+                "current_small_hist": feature_metrics.current.small_distribution.dict()
+                if feature_metrics.current.small_distribution is not None
+                else None,
+                "ref_small_hist": feature_metrics.reference.small_distribution.dict()
+                if feature_metrics.reference is not None and feature_metrics.reference.small_distribution is not None
+                else None,
                 "feature_type": feature_metrics.column_type,
                 "stattest_name": feature_metrics.stattest_name,
                 "drift_score": feature_metrics.drift_score,
@@ -44,7 +51,11 @@ class DataDriftProfileSection(ProfileSection):
         result_json["options"] = data_drift_results.options.as_dict()
         result_json["metrics"] = metrics_dict
 
-        self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_json}
+        self._result = {
+            "name": self.part_id(),
+            "datetime": str(datetime.now()),
+            "data": result_json,
+        }
 
     def get_results(self) -> Optional[Dict[str, Union[str, Dict]]]:
         return self._result

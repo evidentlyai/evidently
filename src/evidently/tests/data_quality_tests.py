@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from evidently.calculations.data_quality import get_corr_method
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
@@ -15,6 +16,7 @@ from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics import ConflictPredictionMetric
 from evidently.metrics import ConflictTargetMetric
 from evidently.metrics import DatasetCorrelationsMetric
+from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -35,7 +37,6 @@ from evidently.tests.utils import plot_correlations
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import plot_value_counts_tables
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 
@@ -59,7 +60,16 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = ColumnSummaryMetric(column_name)
 
 
@@ -100,13 +110,13 @@ class TestConflictPrediction(Test):
     def check(self):
         metric_result = self.metric.get_result()
 
-        if metric_result.number_not_stable_prediction is None:
+        if metric_result.current.number_not_stable_prediction is None:
             test_result = TestResult.ERROR
             description = "No prediction in the dataset"
 
-        elif metric_result.number_not_stable_prediction > 0:
+        elif metric_result.current.number_not_stable_prediction > 0:
             test_result = TestResult.FAIL
-            description = f"Not stable prediction rows count is {metric_result.number_not_stable_prediction}"
+            description = f"Not stable prediction rows count is {metric_result.current.number_not_stable_prediction}"
 
         else:
             test_result = TestResult.SUCCESS
@@ -133,7 +143,16 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         self.method = method
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = DatasetCorrelationsMetric()
 
 
@@ -451,7 +470,11 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         }
 
     def check(self):
-        result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
+        result = TestResult(
+            name=self.name,
+            description="The test was not launched",
+            status=TestResult.SKIPPED,
+        )
         # features_stats = self.metric.get_result().features_stats.get_all_features()
 
         # if self.column_name not in features_stats:
@@ -498,16 +521,15 @@ class TestColumnValueMinRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMin) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         min_value = current_characteristics.min
@@ -550,16 +572,15 @@ class TestColumnValueMaxRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMax) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         max_value = current_characteristics.max
@@ -598,16 +619,15 @@ class TestColumnValueMeanRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         mean_value = current_characteristics.mean
@@ -646,16 +666,15 @@ class TestColumnValueMedianRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = obj.metric.get_result().current_characteristics
+        current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
         percentile_50 = current_characteristics.p50
@@ -697,13 +716,12 @@ class TestColumnValueStdRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        bins_for_hist = metric_result.plot_data.bins_for_hist
         if bins_for_hist is None:
             raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist["current"]
-        ref_distr = None
-        if "reference" in bins_for_hist.keys():
-            ref_distr = bins_for_hist["reference"]
+        curr_distr = bins_for_hist.current
+        ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -962,7 +980,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:
         column_name = obj.column_name
-        metric_result = obj.metric.get_result()
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
         info = super().render_html(obj)
 
         if metric_result.reference_characteristics is None or metric_result.plot_data.bins_for_hist is None:
@@ -979,11 +997,8 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         gt = ref_mean - obj.n_sigmas * ref_std
         lt = ref_mean + obj.n_sigmas * ref_std
         ref_condition = TestValueCondition(gt=gt, lt=lt)
-        curr_distr = metric_result.plot_data.bins_for_hist["current"]
-        ref_distr = None
-
-        if "reference" in metric_result.plot_data.bins_for_hist.keys():
-            ref_distr = metric_result.plot_data.bins_for_hist["reference"]
+        curr_distr = metric_result.plot_data.bins_for_hist.current
+        ref_distr = metric_result.plot_data.bins_for_hist.reference
 
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, ref_condition, color_options=self.color_options)
@@ -1024,12 +1039,7 @@ class TestValueRange(Test):
     left: Optional[float]
     right: Optional[float]
 
-    def __init__(
-        self,
-        column_name: str,
-        left: Optional[float] = None,
-        right: Optional[float] = None,
-    ):
+    def __init__(self, column_name: str, left: Optional[float] = None, right: Optional[float] = None):
         self.column_name = column_name
         self.left = left
         self.right = right
@@ -1061,8 +1071,10 @@ class TestValueRangeRenderer(TestRenderer):
         condition_ = TestValueCondition(gt=metric_result.left, lt=metric_result.right)
         info = super().render_html(obj)
         fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current_distribution,
-            reference_distribution=metric_result.reference_distribution,
+            current_distribution=metric_result.current.distribution,
+            reference_distribution=metric_result.reference.distribution
+            if metric_result.reference is not None
+            else None,
             color_options=self.color_options,
         )
         fig = plot_check(fig, condition_, color_options=self.color_options)
@@ -1096,7 +1108,16 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         self.right = right
         self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name}
@@ -1127,12 +1148,17 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
         fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current_distribution,
-            reference_distribution=metric_result.reference_distribution,
+            current_distribution=metric_result.current.distribution,
+            reference_distribution=metric_result.reference.distribution
+            if metric_result.reference is not None
+            else None,
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.condition, color_options=self.color_options)
-        info.with_details(f"Number Out of Range for {column_name}", plotly_figure(title="", figure=fig))
+        info.with_details(
+            f"Number Out of Range for {column_name}",
+            plotly_figure(title="", figure=fig),
+        )
         return info
 
 
@@ -1171,8 +1197,10 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
         fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current_distribution,
-            reference_distribution=metric_result.reference_distribution,
+            current_distribution=metric_result.current.distribution,
+            reference_distribution=metric_result.reference.distribution
+            if metric_result.reference is not None
+            else None,
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.condition, color_options=self.color_options)
@@ -1277,7 +1305,16 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
     ):
         self.column_name = column_name
         self.values = values
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = ColumnValueListMetric(column_name=column_name, values=values)
 
     def groups(self) -> Dict[str, str]:
@@ -1384,7 +1421,16 @@ class TestColumnQuantile(BaseCheckValueTest):
     ):
         self.column_name = column_name
         self.quantile = quantile
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
         self.metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
 
     def groups(self) -> Dict[str, str]:
@@ -1402,7 +1448,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current
+        return self.metric.get_result().current.value
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -1418,13 +1464,17 @@ class TestColumnQuantileRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current_distribution,
-            reference_distribution=metric_result.reference_distribution,
+            current_distribution=metric_result.current.distribution,
+            reference_distribution=metric_result.reference.distribution
+            if metric_result.reference is not None
+            else None,
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         fig = plot_metric_value(
-            fig, obj.metric.get_result().current, f"current {column_name} {metric_result.quantile} quantile"
+            fig,
+            obj.metric.get_result().current.value,
+            f"current {column_name} {metric_result.quantile} quantile",
         )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info

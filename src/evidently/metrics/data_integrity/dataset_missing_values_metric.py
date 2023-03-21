@@ -10,6 +10,8 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -24,8 +26,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclass
-class DatasetMissingValues:
+class DatasetMissingValues(MetricResultField):
     """Statistics about missed values in a dataset"""
 
     # set of different missing values in the dataset
@@ -60,8 +61,7 @@ class DatasetMissingValues:
     share_of_columns_with_missing_values: float
 
 
-@dataclass
-class DatasetMissingValuesMetricResult:
+class DatasetMissingValuesMetricResult(MetricResult):
     current: DatasetMissingValues
     reference: Optional[DatasetMissingValues] = None
 
@@ -219,9 +219,6 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
 @default_renderer(wrap_type=DatasetMissingValuesMetric)
 class DatasetMissingValuesMetricRenderer(MetricRenderer):
-    def render_json(self, obj: DatasetMissingValuesMetric) -> dict:
-        return dataclasses.asdict(obj.get_result().current)
-
     def _get_table_stat(self, dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_missing_values_by_column.items()]
         matched_stat = sorted(matched_stat, key=lambda x: x[1], reverse=True)
@@ -235,8 +232,8 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
             title="",
             primary_hist=HistogramData(
                 name="",
-                x=list(stats.number_of_missing_values_by_column.keys()),
-                y=list(stats.number_of_missing_values_by_column.values()),
+                x=pd.Series(stats.number_of_missing_values_by_column.keys()),
+                count=pd.Series(stats.number_of_missing_values_by_column.values()),
             ),
             color_options=self.color_options,
         )
@@ -258,11 +255,17 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
 
     def _get_overall_missing_values_info(self, metric_result: DatasetMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.string("Missing values (Current data)", self._get_info_string(metric_result.current)),
+            CounterData.string(
+                "Missing values (Current data)",
+                self._get_info_string(metric_result.current),
+            ),
         ]
         if metric_result.reference is not None:
             counters.append(
-                CounterData.string("Missing values (Reference data)", self._get_info_string(metric_result.reference)),
+                CounterData.string(
+                    "Missing values (Reference data)",
+                    self._get_info_string(metric_result.reference),
+                ),
             )
 
         return counter(

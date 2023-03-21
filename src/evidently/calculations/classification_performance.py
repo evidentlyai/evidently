@@ -1,5 +1,4 @@
-import dataclasses
-from dataclasses import dataclass
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -16,18 +15,19 @@ from pandas.core.dtypes.common import is_string_dtype
 from sklearn import metrics
 
 from evidently import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
+from evidently.metric_results import Boxes
+from evidently.metric_results import ConfusionMatrix
+from evidently.metric_results import DatasetClassificationQuality
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import PredictionData
+from evidently.metric_results import RatesPlotData
 
-
-@dataclass
-class ConfusionMatrix:
-    labels: Sequence[Union[str, int]]
-    values: list
+if TYPE_CHECKING:
+    pass
 
 
 def calculate_confusion_by_classes(
-    confusion_matrix: np.ndarray,
-    class_names: Sequence[Union[str, int]],
+    confusion_matrix: np.ndarray, class_names: Sequence[Union[str, int]]
 ) -> Dict[Union[str, int], Dict[str, int]]:
     """Calculate metrics:
     - TP (true positive)
@@ -82,18 +82,8 @@ def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float
     raise ValueError(f"K has unexpected type {type(k)}")
 
 
-@dataclasses.dataclass
-class PredictionData:
-    predictions: pd.Series
-    prediction_probas: Optional[pd.DataFrame]
-    labels: List[Union[str, int]]
-
-
 def get_prediction_data(
-    data: pd.DataFrame,
-    data_columns: DatasetColumns,
-    pos_label: Optional[Union[str, int]],
-    threshold: float = 0.5,
+    data: pd.DataFrame, data_columns: DatasetColumns, pos_label: Optional[Union[str, int]], threshold: float = 0.5
 ) -> PredictionData:
     """Get predicted values and optional prediction probabilities from source data.
     Also take into account a threshold value - if a probability is less than the value, do not take it into account.
@@ -273,17 +263,13 @@ def calculate_pr_table(binded):
     return result
 
 
-def calculate_matrix(
-    target: pd.Series,
-    prediction: pd.Series,
-    labels: List[Union[str, int]],
-) -> ConfusionMatrix:
+def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Union[str, int]]) -> ConfusionMatrix:
     sorted_labels = sorted(labels)
     matrix = metrics.confusion_matrix(target, prediction, labels=sorted_labels)
-    return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
+    return ConfusionMatrix(labels=sorted_labels, values=[row.tolist() for row in matrix])
 
 
-def collect_plot_data(prediction_probas: pd.DataFrame):
+def collect_plot_data(prediction_probas: pd.DataFrame) -> Boxes:
     res = {}
     mins = []
     lowers = []
@@ -301,23 +287,7 @@ def collect_plot_data(prediction_probas: pd.DataFrame):
     res["means"] = means
     res["uppers"] = uppers
     res["maxs"] = maxs
-    return res
-
-
-@dataclasses.dataclass
-class DatasetClassificationQuality:
-    accuracy: float
-    precision: float
-    recall: float
-    f1: float
-    roc_auc: Optional[float] = None
-    log_loss: Optional[float] = None
-    tpr: Optional[float] = None
-    tnr: Optional[float] = None
-    fpr: Optional[float] = None
-    fnr: Optional[float] = None
-    rate_plots_data: Optional[Dict] = None
-    plot_data: Optional[Dict] = None
+    return Boxes(mins=mins, lowers=lowers, means=means, uppers=uppers, maxs=maxs)
 
 
 def calculate_metrics(
@@ -325,7 +295,7 @@ def calculate_metrics(
     confusion_matrix: ConfusionMatrix,
     target: pd.Series,
     prediction: PredictionData,
-) -> DatasetClassificationQuality:
+) -> "DatasetClassificationQuality":
     if column_mapping.pos_label is not None:
         pos_label = column_mapping.pos_label
     else:
@@ -336,7 +306,7 @@ def calculate_metrics(
     fnr = None
     roc_auc = None
     log_loss = None
-    rate_plots_data = None
+    rate_plots_data: Optional[RatesPlotData] = None
     plot_data = None
     if len(prediction.labels) == 2:
         confusion_by_classes = calculate_confusion_by_classes(
@@ -365,18 +335,15 @@ def calculate_metrics(
         plot_data = collect_plot_data(prediction.prediction_probas)
     if len(prediction.labels) == 2 and prediction.prediction_probas is not None:
         fprs, tprs, thrs = metrics.roc_curve(target == pos_label, prediction.prediction_probas[pos_label])
-        roc_curve = {"fpr": fprs.tolist(), "tpr": tprs.tolist(), "thrs": thrs.tolist()}
-        rate_plots_data = {
-            "thrs": roc_curve["thrs"],
-            "tpr": roc_curve["tpr"],
-            "fpr": roc_curve["fpr"],
-        }
         df = pd.DataFrame(
-            {"true": (target == pos_label).astype(int).values, "preds": prediction.prediction_probas[pos_label].values}
+            {
+                "true": (target == pos_label).astype(int).values,
+                "preds": prediction.prediction_probas[pos_label].values,
+            }
         )
         tnrs = []
         fnrs = []
-        for tr in rate_plots_data["thrs"]:
+        for tr in thrs:
             if tr < 1:
                 tn = df[(df.true == 0) & (df.preds < tr)].shape[0]
                 fn = df[(df.true == 1) & (df.preds < tr)].shape[0]
@@ -387,8 +354,7 @@ def calculate_metrics(
             else:
                 fnrs.append(1)
                 tnrs.append(1)
-        rate_plots_data["fnr"] = fnrs
-        rate_plots_data["tnr"] = tnrs
+        rate_plots_data = RatesPlotData(thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs, tnr=tnrs)
 
     return DatasetClassificationQuality(
         accuracy=metrics.accuracy_score(target, prediction.predictions),

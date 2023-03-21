@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import DatasetUtilityColumns
 from evidently.utils.data_operations import process_columns
 
 
@@ -44,7 +44,7 @@ from evidently.utils.data_operations import process_columns
             DatasetColumns(
                 target_type="cat",
                 utility_columns=DatasetUtilityColumns(
-                    date="datetime_column", id_column="some_id", target="my_target", prediction="my_prediction"
+                    date="datetime_column", id="some_id", target="my_target", prediction="my_prediction"
                 ),
                 num_feature_names=["num_feature_1", "num_feature_2"],
                 cat_feature_names=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
@@ -74,7 +74,7 @@ from evidently.utils.data_operations import process_columns
             DatasetColumns(
                 target_type="num",
                 utility_columns=DatasetUtilityColumns(
-                    date="datetime", id_column="index", target="el_target", prediction="el_prediction"
+                    date="datetime", id="index", target="el_target", prediction="el_prediction"
                 ),
                 num_feature_names=[],
                 cat_feature_names=["cat_feature_1"],
@@ -194,5 +194,5 @@ def test_dataset_column_default_to_dict(
     test_dataset: pd.DataFrame, column_mapping: ColumnMapping, expected_dict: dict
 ) -> None:
     columns = process_columns(test_dataset, column_mapping)
-    columns_dict = columns.as_dict()
+    columns_dict = columns.dict(by_alias=True)
     assert columns_dict == expected_dict

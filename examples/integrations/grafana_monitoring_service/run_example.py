@@ -29,7 +29,7 @@ def check_docker_installation():
 def check_dataset(
     force: bool,
     datasets_path: str,
-    dataset_name: str,
+    dataset_name: str
 ) -> None:
     logging.info("Check dataset %s", dataset_name)
     dataset_path = os.path.join(datasets_path, dataset_name)

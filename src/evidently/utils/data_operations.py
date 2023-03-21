@@ -1,15 +1,13 @@
 """Methods for clean null or NaN values in a dataset"""
-from dataclasses import dataclass
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Sequence
-from typing import Union
 
 import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.core import ColumnType
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 
 
 def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -17,104 +15,6 @@ def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
     #   the dataframe, like here: replace inf and nan values.
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
     return dataframe
-
-
-@dataclass
-class DatasetUtilityColumns:
-    date: Optional[str]
-    id_column: Optional[str]
-    target: Optional[str]
-    prediction: Optional[Union[str, Sequence[str]]]
-
-    def as_dict(
-        self,
-    ) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
-        return {
-            "date": self.date,
-            "id": self.id_column,
-            "target": self.target,
-            "prediction": self.prediction,
-        }
-
-
-@dataclass
-class DatasetColumns:
-    utility_columns: DatasetUtilityColumns
-    target_type: Optional[str]
-    num_feature_names: List[str]
-    cat_feature_names: List[str]
-    text_feature_names: List[str]
-    datetime_feature_names: List[str]
-    target_names: Optional[Dict[Union[str, int], str]]
-    task: Optional[str]
-
-    def as_dict(self) -> Dict[str, Union[str, Optional[List[str]], Dict]]:
-        return {
-            "utility_columns": self.utility_columns.as_dict(),
-            "cat_feature_names": self.cat_feature_names,
-            "num_feature_names": self.num_feature_names,
-            "datetime_feature_names": self.datetime_feature_names,
-            "target_names": self.target_names,
-            "text_feature_names": self.text_feature_names,
-        }
-
-    def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
-        """List all features names.
-
-        By default, returns cat features than num features and du not return other.
-
-        If you want to change the order - set  `cat_before_num` to False.
-
-        If you want to add date time columns - set `include_datetime_feature` to True.
-        """
-        if cat_before_num:
-            result = self.cat_feature_names + self.num_feature_names + self.text_feature_names
-
-        else:
-            result = self.num_feature_names + self.cat_feature_names + self.text_feature_names
-
-        if include_datetime_feature and self.datetime_feature_names:
-            result += self.datetime_feature_names
-
-        return result
-
-    def get_all_columns_list(self, skip_id_column: bool = False, skip_text_columns: bool = False) -> List[str]:
-        """List all columns."""
-        result: List[str] = self.cat_feature_names + self.num_feature_names
-
-        if not skip_text_columns:
-            result.extend(self.text_feature_names)
-
-        result.extend(
-            [
-                name
-                for name in (
-                    self.utility_columns.id_column if not skip_id_column else None,
-                    self.utility_columns.date,
-                    self.utility_columns.target,
-                    self.utility_columns.prediction,
-                )
-                if name is not None and isinstance(name, str)
-            ]
-        )
-        return result
-
-    def get_features_len(self, include_time_columns: bool = False) -> int:
-        """How mane feature do we have. It is useful for pagination in widgets.
-
-        By default, we sum category nad numeric features.
-
-        If you want to include date time columns - set `include_datetime_feature` to True.
-        """
-        if include_time_columns and self.datetime_feature_names:
-            len_time_columns = len(self.datetime_feature_names)
-
-        else:
-            len_time_columns = 0
-
-        return (
-            len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
-        )
 
 
 def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
@@ -200,7 +100,9 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
 
     return DatasetColumns(
-        DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
+        utility_columns=DatasetUtilityColumns(
+            date=date_column, id=id_column, target=target_column, prediction=prediction_column
+        ),
         target_type=target_type,
         num_feature_names=num_feature_names or [],
         cat_feature_names=cat_feature_names or [],
@@ -265,11 +167,7 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     return task
 
 
-def recognize_column_type(
-    dataset: pd.DataFrame,
-    column_name: str,
-    columns: DatasetColumns,
-) -> str:
+def recognize_column_type_(dataset: pd.DataFrame, column_name: str, columns: DatasetColumns) -> ColumnType:
     """Try to get the column type."""
     column = dataset[column_name]
     reg_condition = columns.task == "regression" or (
@@ -277,10 +175,10 @@ def recognize_column_type(
     )
     if column_name == columns.utility_columns.target:
         if reg_condition:
-            return "num"
+            return ColumnType.Numerical
 
         else:
-            return "cat"
+            return ColumnType.Categorical
 
     if isinstance(columns.utility_columns.prediction, str) and column_name == columns.utility_columns.prediction:
         if reg_condition or (
@@ -289,30 +187,34 @@ def recognize_column_type(
             and column.max() <= 1
             and column.min() >= 0
         ):
-            return "num"
+            return ColumnType.Numerical
 
         else:
-            return "cat"
+            return ColumnType.Categorical
 
     if column_name in columns.num_feature_names:
-        return "num"
+        return ColumnType.Numerical
 
     if isinstance(columns.utility_columns.prediction, list) and column_name in columns.utility_columns.prediction:
-        return "num"
+        return ColumnType.Numerical
 
     if column_name in columns.cat_feature_names:
-        return "cat"
+        return ColumnType.Categorical
 
     if column_name in columns.datetime_feature_names:
-        return "datetime"
+        return ColumnType.Datetime
 
     if column_name in columns.text_feature_names:
-        return "text"
+        return ColumnType.Text
 
-    if column_name == columns.utility_columns.id_column:
-        return "id"
+    if column_name == columns.utility_columns.id:
+        return ColumnType.Id
 
     if column_name == columns.utility_columns.date:
-        return "date"
+        return ColumnType.Date
 
-    return "unknown"
+    return ColumnType.Unknown
+
+
+def recognize_column_type(dataset: pd.DataFrame, column_name: str, columns: DatasetColumns) -> str:
+    return recognize_column_type_(dataset, column_name, columns).value
