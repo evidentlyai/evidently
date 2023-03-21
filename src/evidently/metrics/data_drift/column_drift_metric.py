@@ -2,22 +2,22 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
-from evidently.base_metric import InputData
 from evidently.base_metric import DataDefinition
+from evidently.base_metric import InputData
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import ColumnType
-from evidently.calculations.data_drift import ScatterField
-from evidently.calculations.data_drift import get_stattest
-from evidently.calculations.data_drift import DriftStatsField
-from evidently.calculations.data_drift import get_text_data_for_plots
-from evidently.calculations.data_drift import get_distribution_for_column
 from evidently.calculations.data_drift import DistributionIncluded
+from evidently.calculations.data_drift import DriftStatsField
+from evidently.calculations.data_drift import ScatterField
+from evidently.calculations.data_drift import get_distribution_for_column
+from evidently.calculations.data_drift import get_stattest
+from evidently.calculations.data_drift import get_text_data_for_plots
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
