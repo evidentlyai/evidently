@@ -18,6 +18,7 @@ from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.utils.data_operations import process_columns
+from evidently.calculations.classification_performance import get_prediction_data
 
 
 class ClassificationProbDistributionResults(MetricResult):
@@ -34,7 +35,6 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
     def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:
         result = {}
         dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
-
         for label in prediction_labels:
             result[label] = [
                 dataset[dataset[target_name] == label][label],
@@ -51,17 +51,26 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
         if target is None:
             raise ValueError("Target column should be present")
 
-        if not isinstance(prediction, Iterable) or isinstance(prediction, str):
+        if prediction is None:
+            raise ValueError("Prediction column should be present")
+
+        prediction_data = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
+        if prediction_data.prediction_probas is None:
             current_distribution = None
             reference_distribution = None
 
         else:
             current_data_copy = data.current_data.copy()
-            current_distribution = self.get_distribution(current_data_copy, target, prediction)
+            for col in prediction_data.prediction_probas.columns:
+                current_data_copy[col] = prediction_data.prediction_probas[col]
+
+            current_distribution = self.get_distribution(current_data_copy, target, prediction_data.prediction_probas.columns)
 
             if data.reference_data is not None:
                 reference_data_copy = data.reference_data.copy()
-                reference_distribution = self.get_distribution(reference_data_copy, target, prediction)
+                for col in prediction_data.prediction_probas.columns:
+                    reference_data_copy[col] = prediction_data.prediction_probas[col]
+                reference_distribution = self.get_distribution(reference_data_copy, target, prediction_data.prediction_probas.columns)
 
             else:
                 reference_distribution = None
