@@ -19,8 +19,8 @@ class TextLength(GeneratedFeature):
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(text_len))]))
 
     def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name)
+        return additional_feature(self, self.column_name, f"Text Length for {self.column_name}")
 
 
 def text_length(column_name: str) -> ColumnName:
-    return additional_feature(TextLength(column_name), f"{column_name}")
+    return additional_feature(TextLength(column_name), f"{column_name}", f"Text Length for {column_name}")

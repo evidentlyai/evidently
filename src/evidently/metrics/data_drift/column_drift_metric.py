@@ -206,7 +206,7 @@ def get_one_column_drift(
         ) = get_text_data_for_plots(reference_column, current_column)
 
     metrics = ColumnDataDriftMetrics(
-        column_name=column.name,
+        column_name=column.display_name,
         column_type=column_type.value,
         stattest_name=drift_test_function.display_name,
         drift_score=drift_result.drift_score,

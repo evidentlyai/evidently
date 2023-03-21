@@ -49,7 +49,10 @@ class TriggerWordsPresent(GeneratedFeature):
         return self.column_name, tuple(self.words_list), self.lemmatisize
 
     def feature_name(self):
-        return additional_feature(self, self._feature_column_name())
+        return additional_feature(self, self._feature_column_name(), self._feature_display_name())
 
     def _feature_column_name(self):
         return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatisize)
+
+    def _feature_display_name(self):
+        return f"TriggerWordsPresent [words: {self.words_list}, lemmatisize: {self.lemmatisize}] for {self.column_name}"
