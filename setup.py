@@ -53,6 +53,7 @@ setup_args = dict(
         "scipy>=1.5.4",
         "requests>=2.19.0",
         "PyYAML>=5.1",
+        "pydantic<2",
     ],
     extras_require={
         "dev": [
