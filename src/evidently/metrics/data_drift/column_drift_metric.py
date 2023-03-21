@@ -119,7 +119,7 @@ def get_one_column_drift(
                 density=True,
             )
         ]
-        current_scatter = {column.name: current_column}
+        current_scatter = {column.display_name: current_column}
         if datetime_data is not None:
             current_scatter["Timestamp"] = datetime_data
             x_name = "Timestamp"
