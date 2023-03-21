@@ -111,6 +111,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                     ),
                 )
             )
+
         # process text columns
         if (
             self.text_features_gen is not None
@@ -148,14 +149,19 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                         ],
                         axis=1,
                     )
+        table_columns = columns + [target_name]
+        if isinstance(prediction_name, str):
+            table_columns += [prediction_name]
+        if isinstance(prediction_name, list):
+            table_columns += prediction_name
 
         return ClassificationQualityByFeatureTableResults(
             current=StatsByFeature(
-                plot_data=curr_df,
+                plot_data=curr_df[table_columns],
                 predictions=curr_predictions,
             ),
             reference=StatsByFeature(
-                plot_data=ref_df,
+                plot_data=None if ref_df is None else ref_df[table_columns],
                 predictions=ref_predictions,
             ),
             columns=columns,
@@ -257,7 +263,6 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                 else:
                     cols = 1
                     subplot_titles = [""]
-
                 for label in labels:
                     fig = make_subplots(
                         rows=1,

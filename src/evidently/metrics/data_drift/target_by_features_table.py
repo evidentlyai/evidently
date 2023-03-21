@@ -169,14 +169,21 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                         ],
                         axis=1,
                     )
+        table_columns = columns.copy()
+        if target_name is not None:
+            table_columns += [target_name]
+        if prediction_name is not None and isinstance(prediction_name, str):
+            table_columns += [prediction_name]
+        if prediction_name is not None and isinstance(prediction_name, list):
+            table_columns += prediction_name
 
         return TargetByFeaturesTableResults(
             current=StatsByFeature(
-                plot_data=curr_df,
+                plot_data=curr_df[table_columns],
                 predictions=curr_predictions,
             ),
             reference=StatsByFeature(
-                plot_data=ref_df,
+                plot_data=ref_df[table_columns],
                 predictions=ref_predictions,
             ),
             columns=columns,
@@ -198,7 +205,6 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
         task = result.task
-
         if curr_predictions is not None and ref_predictions is not None:
             current_data["prediction_labels"] = curr_predictions.predictions.values
             reference_data["prediction_labels"] = ref_predictions.predictions.values
