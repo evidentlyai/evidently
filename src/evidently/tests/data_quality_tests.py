@@ -1440,10 +1440,10 @@ class TestColumnQuantile(BaseCheckValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_value = self.metric.get_result().reference
+        reference = self.metric.get_result().reference
 
-        if reference_value is not None:
-            return TestValueCondition(eq=approx(reference_value, 0.1))
+        if reference is not None:
+            return TestValueCondition(eq=approx(reference.value, 0.1))
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 

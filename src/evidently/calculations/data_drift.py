@@ -269,7 +269,7 @@ def get_one_column_drift(
         stattest_threshold=drift_result.actual_threshold,
         current=DriftStatsField(
             distribution=current_distribution,
-            small_distribution=DistributionIncluded(**dict(zip(["x", "y"], current_small_distribution)))
+            small_distribution=DistributionIncluded(x=current_small_distribution[1], y=current_small_distribution[0])
             if current_small_distribution
             else None,
             correlations=current_correlations,
@@ -278,7 +278,9 @@ def get_one_column_drift(
         ),
         reference=DriftStatsField(
             distribution=reference_distribution,
-            small_distribution=DistributionIncluded(**dict(zip(["x", "y"], reference_small_distribution)))
+            small_distribution=DistributionIncluded(
+                x=reference_small_distribution[1], y=reference_small_distribution[0]
+            )
             if reference_small_distribution
             else None,
             characteristic_examples=typical_examples_ref,

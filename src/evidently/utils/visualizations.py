@@ -12,6 +12,7 @@ from plotly.subplots import make_subplots
 from evidently.metric_results import Distribution
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
+from evidently.metric_results import Label
 from evidently.metric_results import ScatterData
 from evidently.options.color_scheme import ColorOptions
 
@@ -524,8 +525,8 @@ def plot_scatter(
 
 def plot_pred_actual_time(
     *,
-    curr: Dict[str, pd.Series],
-    ref: Optional[Dict[str, pd.Series]],
+    curr: Dict[Label, pd.Series],
+    ref: Optional[Dict[Label, pd.Series]],
     x_name: str = "x",
     xaxis_name: str = "",
     yaxis_name: str = "",
@@ -586,8 +587,8 @@ def plot_pred_actual_time(
 
 def plot_line_in_time(
     *,
-    curr: Dict[str, pd.Series],
-    ref: Optional[Dict[str, pd.Series]],
+    curr: Dict[Label, pd.Series],
+    ref: Optional[Dict[Label, pd.Series]],
     x_name: str,
     y_name: str,
     xaxis_name: str = "",
