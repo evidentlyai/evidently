@@ -18,9 +18,7 @@ from typing import Union
 import pandas as pd
 from pydantic import BaseConfig
 from pydantic import BaseModel
-from pydantic import validator
 
-from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
@@ -48,16 +46,30 @@ class DatasetType(Enum):
 @dataclass(eq=True, unsafe_hash=True)
 class ColumnName:
     name: str
+    display_name: str
     dataset: DatasetType
     feature_class: Optional[GeneratedFeature]
 
+    def is_main_dataset(self):
+        return self.dataset == DatasetType.MAIN
 
-def additional_feature(feature: GeneratedFeature, feature_name: str) -> ColumnName:
+    @staticmethod
+    def main_dataset(name: str):
+        return ColumnName(name, name, DatasetType.MAIN, None)
+
+
+def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
     return ColumnName(
         name=feature.__class__.__name__ + "." + feature_name,
+        display_name=display_name,
         dataset=DatasetType.ADDITIONAL,
         feature_class=feature,
     )
+
+
+class ColumnNotFound(BaseException):
+    def __init__(self, column_name: str):
+        self.column_name = column_name
 
 
 @dataclass
@@ -72,6 +84,8 @@ class InputData:
     @staticmethod
     def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
         if column.dataset == DatasetType.MAIN:
+            if column.name not in dataset.columns:
+                raise ColumnNotFound(column.name)
             return dataset[column.name]
         if column.dataset == DatasetType.ADDITIONAL:
             return additional[column.name]
@@ -79,7 +93,7 @@ class InputData:
 
     def get_current_column(self, column: Union[str, ColumnName]) -> pd.Series:
         if isinstance(column, str):
-            _column = ColumnName(column, DatasetType.MAIN, None)
+            _column = ColumnName(column, column, DatasetType.MAIN, None)
         else:
             _column = column
         return self._get_by_column_name(self.current_data, self.current_additional_features, _column)
@@ -88,7 +102,7 @@ class InputData:
         if self.reference_data is None:
             return None
         if isinstance(column, str):
-            _column = ColumnName(column, DatasetType.MAIN, None)
+            _column = ColumnName(column, column, DatasetType.MAIN, None)
         else:
             _column = column
         if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
