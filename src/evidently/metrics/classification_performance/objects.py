@@ -38,7 +38,7 @@ class ClassificationReport(MetricResultField):
         digits=2,
         zero_division="warn",
     ) -> "ClassificationReport":
-        classes = set(str(c) for c in y_true.unique())
+        classes = set(c for c in y_true.unique())
         report = classification_report(
             y_true,
             y_pred,
@@ -49,6 +49,6 @@ class ClassificationReport(MetricResultField):
             output_dict=True,
             zero_division=zero_division,
         )
-        class_metrics = {k: parse_obj_as(ClassMetric, report[k]) for k in classes}
-        other = {k: v for k, v in report.items() if k not in classes}
+        class_metrics = {k: parse_obj_as(ClassMetric, report[str(k)]) for k in classes}
+        other = {k: v for k, v in report.items() if k not in [str(cl) for cl in classes]}
         return parse_obj_as(cls, {"classes": class_metrics, **other})
