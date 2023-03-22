@@ -60,8 +60,8 @@ class MulticlassClassificationTestPreset(TestPreset):
         tests = [
             TestAccuracyScore(),
             TestF1Score(),
-            *[TestPrecisionByClass(str(label)) for label in labels],
-            *[TestRecallByClass(str(label)) for label in labels],
+            *[TestPrecisionByClass(label) for label in labels],
+            *[TestRecallByClass(label) for label in labels],
             TestNumberOfRows(),
             TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
         ]
