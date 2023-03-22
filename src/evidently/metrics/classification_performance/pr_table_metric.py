@@ -6,9 +6,10 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.calculations.classification_performance import PredictionData
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_pr_table
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -19,9 +20,8 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationPRTableResults:
-    current_pr_table: Optional[dict] = None
+class ClassificationPRTableResults(MetricResult):
+    current_pr_table: Optional[dict] = None  # todo PRTable field
     reference_pr_table: Optional[dict] = None
 
 
@@ -53,23 +53,30 @@ class ClassificationPRTable(Metric[ClassificationPRTableResults]):
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
 
-            binded = list(zip(binaraized_target["target"].tolist(), prediction.prediction_probas.iloc[:, 0].tolist()))
+            binded = list(
+                zip(
+                    binaraized_target["target"].tolist(),
+                    prediction.prediction_probas.iloc[:, 0].tolist(),
+                )
+            )
             pr_table[prediction.prediction_probas.columns[0]] = calculate_pr_table(binded)
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
 
             for label in labels:
-                binded = list(zip(binaraized_target[label].tolist(), prediction.prediction_probas[label]))
+                binded = list(
+                    zip(
+                        binaraized_target[label].tolist(),
+                        prediction.prediction_probas[label],
+                    )
+                )
                 pr_table[label] = calculate_pr_table(binded)
         return pr_table
 
 
 @default_renderer(wrap_type=ClassificationPRTable)
 class ClassificationPRTableRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationPRTable) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationPRTable) -> List[BaseWidgetInfo]:
         reference_pr_table = obj.get_result().reference_pr_table
         current_pr_table = obj.get_result().current_pr_table
@@ -91,7 +98,12 @@ class ClassificationPRTableRenderer(MetricRenderer):
             else:
                 tab_data = []
                 for label in current_pr_table.keys():
-                    table = table_data(column_names=columns, data=current_pr_table[label], title="", size=size)
+                    table = table_data(
+                        column_names=columns,
+                        data=current_pr_table[label],
+                        title="",
+                        size=size,
+                    )
                     tab_data.append(TabData(label, table))
                 result.append(widget_tabs(title="Current: Precision-Recall Table", tabs=tab_data))
         if reference_pr_table is not None:
@@ -107,7 +119,12 @@ class ClassificationPRTableRenderer(MetricRenderer):
             else:
                 tab_data = []
                 for label in reference_pr_table.keys():
-                    table = table_data(column_names=columns, data=reference_pr_table[label], title="", size=size)
+                    table = table_data(
+                        column_names=columns,
+                        data=reference_pr_table[label],
+                        title="",
+                        size=size,
+                    )
                     tab_data.append(TabData(label, table))
                 result.append(widget_tabs(title="Reference: Precision-Recall Table", tabs=tab_data))
         return result

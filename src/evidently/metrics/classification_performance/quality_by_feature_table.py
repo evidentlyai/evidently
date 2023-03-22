@@ -13,11 +13,14 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.calculations.classification_performance import PredictionData
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
+from evidently.metric_results import PredictionData
+from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -27,20 +30,21 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-@dataclasses.dataclass
-class ClassificationQualityByFeatureTableResults:
-    current_plot_data: pd.DataFrame
-    reference_plot_data: Optional[pd.DataFrame]
+class ClassificationQualityByFeatureTableResults(MetricResult):
+    current: StatsByFeature
+    reference: Optional[StatsByFeature]
+
     target_name: str
-    curr_predictions: PredictionData
-    ref_predictions: Optional[PredictionData]
     columns: List[str]
 
 
 class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults]):
     columns: Optional[List[str]]
     text_features_gen: Optional[
-        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+        Dict[
+            str,
+            Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
+        ]
     ]
 
     def __init__(self, columns: Optional[List[str]] = None):
@@ -53,7 +57,10 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
+                col_dict: Dict[
+                    str,
+                    Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
+                ] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
                 col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
@@ -117,7 +124,13 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                     axis=1,
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
-                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+                curr_df = pd.concat(
+                    [
+                        curr_df.reset_index(drop=True),
+                        curr_text_df.reset_index(drop=True),
+                    ],
+                    axis=1,
+                )
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
@@ -128,13 +141,23 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                         axis=1,
                     )
                     ref_text_df.columns = list(self.text_features_gen[col].keys())
-                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
+                    ref_df = pd.concat(
+                        [
+                            ref_df.reset_index(drop=True),
+                            ref_text_df.reset_index(drop=True),
+                        ],
+                        axis=1,
+                    )
 
         return ClassificationQualityByFeatureTableResults(
-            current_plot_data=curr_df,
-            reference_plot_data=ref_df,
-            curr_predictions=curr_predictions,
-            ref_predictions=ref_predictions,
+            current=StatsByFeature(
+                plot_data=curr_df,
+                predictions=curr_predictions,
+            ),
+            reference=StatsByFeature(
+                plot_data=ref_df,
+                predictions=ref_predictions,
+            ),
             columns=columns,
             target_name=target_name,
         )
@@ -142,16 +165,15 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationQualityByFeatureTable) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        current_data = result.current_plot_data
-        reference_data = result.reference_plot_data
+        current_data = result.current.plot_data
+        reference_data = result.reference.plot_data if result.reference is not None else None
         target_name = result.target_name
-        curr_predictions = result.curr_predictions
-        ref_predictions = result.ref_predictions
+        curr_predictions = result.current.predictions
+        # todo: better typing?
+        assert curr_predictions is not None
+        ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
         labels = curr_predictions.labels
 
@@ -212,13 +234,22 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
             # Probas plots
             if curr_predictions.prediction_probas is not None:
                 ref_columns = columns + ["prediction_labels", target_name]
-                current_data = pd.concat([current_data[ref_columns], curr_predictions.prediction_probas], axis=1)
+                current_data = pd.concat(
+                    [current_data[ref_columns], curr_predictions.prediction_probas],
+                    axis=1,
+                )
                 if (
                     reference_data is not None
                     and ref_predictions is not None
                     and ref_predictions.prediction_probas is not None
                 ):
-                    reference_data = pd.concat([reference_data[ref_columns], ref_predictions.prediction_probas], axis=1)
+                    reference_data = pd.concat(
+                        [
+                            reference_data[ref_columns],
+                            ref_predictions.prediction_probas,
+                        ],
+                        axis=1,
+                    )
 
                 if reference_data is not None:
                     cols = 2
@@ -228,7 +259,12 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     subplot_titles = [""]
 
                 for label in labels:
-                    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+                    fig = make_subplots(
+                        rows=1,
+                        cols=cols,
+                        subplot_titles=subplot_titles,
+                        shared_yaxes=True,
+                    )
 
                     # current Prediction
                     fig.add_trace(
@@ -291,7 +327,10 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                                 name="other",
                                 legendgroup="other",
                                 showlegend=False,
-                                marker=dict(size=6, color=color_options.get_reference_data_color()),
+                                marker=dict(
+                                    size=6,
+                                    color=color_options.get_reference_data_color(),
+                                ),
                             ),
                             row=1,
                             col=2,

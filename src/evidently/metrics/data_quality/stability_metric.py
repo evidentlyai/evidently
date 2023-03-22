@@ -1,9 +1,9 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -12,8 +12,7 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 
 
-@dataclasses.dataclass
-class DataQualityStabilityMetricResult:
+class DataQualityStabilityMetricResult(MetricResult):
     number_not_stable_target: Optional[int] = None
     number_not_stable_prediction: Optional[int] = None
 
@@ -49,9 +48,6 @@ class DataQualityStabilityMetric(Metric[DataQualityStabilityMetricResult]):
 
 @default_renderer(wrap_type=DataQualityStabilityMetric)
 class DataQualityStabilityMetricRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityStabilityMetric) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
     def render_html(self, obj: DataQualityStabilityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
@@ -59,7 +55,10 @@ class DataQualityStabilityMetricRenderer(MetricRenderer):
             counter(
                 counters=[
                     CounterData("Not stable target", str(metric_result.number_not_stable_target)),
-                    CounterData("Not stable prediction", str(metric_result.number_not_stable_prediction)),
+                    CounterData(
+                        "Not stable prediction",
+                        str(metric_result.number_not_stable_prediction),
+                    ),
                 ]
             ),
         ]

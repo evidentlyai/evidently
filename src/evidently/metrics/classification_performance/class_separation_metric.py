@@ -1,4 +1,3 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
@@ -7,7 +6,11 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.metric_results import ColumnScatter
+from evidently.metric_results import column_scatter_from_df
+from evidently.metric_results import df_from_column_scatter
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -18,11 +21,15 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationClassSeparationPlotResults:
+class ClassificationClassSeparationPlotResults(MetricResult):
+    class Config:
+        smart_union = True
+        dict_exclude_fields = {"current_plot", "reference_plot"}
+        pd_exclude_fields = {"current_plot", "reference_plot"}
+
     target_name: str
-    current_plot: Optional[pd.DataFrame] = None
-    reference_plot: Optional[pd.DataFrame] = None
+    current: Optional[ColumnScatter] = None
+    reference: Optional[ColumnScatter] = None
 
 
 class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
@@ -49,28 +56,36 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
             reference_plot = ref_predictions.prediction_probas.copy()
             reference_plot[target_name] = data.reference_data[target_name]
         return ClassificationClassSeparationPlotResults(
-            current_plot=current_plot,
-            reference_plot=reference_plot,
+            current=column_scatter_from_df(current_plot, True),
+            reference=column_scatter_from_df(reference_plot, True),
             target_name=target_name,
         )
 
 
 @default_renderer(wrap_type=ClassificationClassSeparationPlot)
 class ClassificationClassSeparationPlotRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationClassSeparationPlot) -> dict:
-        return {}
-
     def render_html(self, obj: ClassificationClassSeparationPlot) -> List[BaseWidgetInfo]:
-        current_plot = obj.get_result().current_plot
-        reference_plot = obj.get_result().reference_plot
+        current_plot = obj.get_result().current
+        reference_plot = obj.get_result().reference
         target_name = obj.get_result().target_name
         if current_plot is None:
             return []
-        current_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
+        # todo changing data here, consider doing this in calculation
+        current_df = df_from_column_scatter(current_plot)
+        current_df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        reference_df = None
         if reference_plot is not None:
-            reference_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_df = df_from_column_scatter(reference_plot)
+            reference_df.replace([np.inf, -np.inf], np.nan, inplace=True)
+
         tab_data = get_class_separation_plot_data(
-            current_plot, reference_plot, target_name, color_options=self.color_options
+            current_df,
+            reference_df,
+            target_name,
+            color_options=self.color_options,
         )
         tabs = [TabData(name, widget) for name, widget in tab_data]
-        return [header_text(label="Class Separation Quality"), widget_tabs(title="", tabs=tabs)]
+        return [
+            header_text(label="Class Separation Quality"),
+            widget_tabs(title="", tabs=tabs),
+        ]

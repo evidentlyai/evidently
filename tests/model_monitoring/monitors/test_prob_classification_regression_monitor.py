@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from evidently.model_monitoring import ModelMonitoring
 from evidently.model_monitoring.monitors.prob_classification_performance import ProbClassificationPerformanceMonitor

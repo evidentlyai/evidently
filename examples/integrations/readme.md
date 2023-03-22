@@ -11,6 +11,7 @@ Title | link to tutorial
 Real-time ML monitoring with Grafana | [Evidently + Grafana](grafana_monitoring_service/)
 Batch ML monitoring with Airflow | [Evidently + Airflow](airflow_drift_detection/)
 Log Evidently metrics in MLflow UI | [Evidently + MLflow](mlflow_logging/)
+Monitoring dashboard with Evidently and Streamlit | [Evidently + Streamlit](streamlit_dashboard/)
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
 

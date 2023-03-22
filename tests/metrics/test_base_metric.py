@@ -10,11 +10,11 @@ from evidently.base_metric import DatasetType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import additional_feature
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.base_metric import generate_column_metrics
 from evidently.report import Report
-from evidently.utils.data_preprocessing import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -87,7 +87,7 @@ class SimpleGeneratedFeature(GeneratedFeature):
         return pd.DataFrame(dict([(self.column_name, data[self.column_name] * 2)]))
 
     def feature_name(self) -> ColumnName:
-        return ColumnName(self.column_name, DatasetType.ADDITIONAL, self)
+        return additional_feature(self, self.column_name, f"SGF: {self.column_name}")
 
 
 class LengthFeature(GeneratedFeature):
@@ -99,14 +99,14 @@ class LengthFeature(GeneratedFeature):
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(len))]))
 
     def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name)
+        return additional_feature(self, self.column_name, f"Length of {self.column_name}")
 
 
 @pytest.mark.parametrize(
     "metric,result",
     [
-        (SimpleMetric(ColumnName("col1", DatasetType.MAIN, None)), 6),
-        (SimpleMetric(additional_feature(SimpleGeneratedFeature("col1"), "col1")), 12),
+        (SimpleMetric(ColumnName("col1", "col1", DatasetType.MAIN, None)), 6),
+        (SimpleMetric(SimpleGeneratedFeature("col1").feature_name()), 12),
         (SimpleMetricWithFeatures("col1"), 6),
         (SimpleMetricWithFeatures("col2"), 9),
         (MetricWithAllTextFeatures(), {"col3": 9, "col4": 12}),

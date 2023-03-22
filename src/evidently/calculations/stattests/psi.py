@@ -48,16 +48,8 @@ def _psi(
     """
     reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
 
-    def sub_psi(ref_perc, curr_perc):
-        """Calculate the actual PSI value from comparing the values.
-        Update the actual value to a very small number if equal to zero
-        """
-        value = (ref_perc - curr_perc) * np.log(ref_perc / curr_perc)
-        return value
-
-    psi_value = 0
-    for i, _ in enumerate(reference_percents):
-        psi_value += sub_psi(reference_percents[i], current_percents[i])
+    psi_values = (reference_percents - current_percents) * np.log(reference_percents / current_percents)
+    psi_value = np.sum(psi_values)
 
     return psi_value, psi_value >= threshold
 

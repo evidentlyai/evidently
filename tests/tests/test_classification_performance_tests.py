@@ -44,6 +44,7 @@ def test_accuracy_score_test_render_json() -> None:
     )
     suite = TestSuite(tests=[TestAccuracyScore()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -82,6 +83,7 @@ def test_precision_score_test_render_json() -> None:
     )
     suite = TestSuite(tests=[TestPrecisionScore()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -120,6 +122,7 @@ def test_f1_score_test_render_json() -> None:
     )
     suite = TestSuite(tests=[TestF1Score()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -158,6 +161,7 @@ def test_recall_score_test_render_json() -> None:
     )
     suite = TestSuite(tests=[TestRecallScore()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -317,6 +321,7 @@ def test_precision_by_class_test() -> None:
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestPrecisionByClass(label="a", gt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()
@@ -329,8 +334,9 @@ def test_precision_by_class_test_render_json() -> None:
             "prediction": [1, 0, 1, 0],
         }
     )
-    suite = TestSuite(tests=[TestPrecisionByClass(label="1")])
+    suite = TestSuite(tests=[TestPrecisionByClass(label=1)])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -341,7 +347,7 @@ def test_precision_by_class_test_render_json() -> None:
         "group": "classification",
         "name": "Precision Score by Class",
         "parameters": {
-            "label": "1",
+            "label": 1,
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
             "precision": 0.5,
         },
@@ -359,6 +365,7 @@ def test_f1_by_class_test() -> None:
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestF1ByClass(label="a", gt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()
@@ -371,8 +378,9 @@ def test_f1_by_class_test_render_json() -> None:
             "prediction": [1, 0, 1, 0],
         }
     )
-    suite = TestSuite(tests=[TestF1ByClass(label="0")])
+    suite = TestSuite(tests=[TestF1ByClass(label=0)])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -385,7 +393,7 @@ def test_f1_by_class_test_render_json() -> None:
         "parameters": {
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.0}},
             "f1": 0.0,
-            "label": "0",
+            "label": 0,
         },
         "status": "SUCCESS",
     }
@@ -401,6 +409,7 @@ def test_recall_by_class_test() -> None:
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestRecallByClass(label="b", gt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()
@@ -413,8 +422,9 @@ def test_recall_by_class_test_render_json() -> None:
             "prediction": [1, 0, 1, 0],
         }
     )
-    suite = TestSuite(tests=[TestRecallByClass(label="1")])
+    suite = TestSuite(tests=[TestRecallByClass(label=1)])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -426,7 +436,7 @@ def test_recall_by_class_test_render_json() -> None:
         "name": "Recall Score by Class",
         "parameters": {
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
-            "label": "1",
+            "label": 1,
             "recall": 0.5,
         },
         "status": "SUCCESS",

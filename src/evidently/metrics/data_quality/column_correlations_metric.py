@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -8,9 +7,10 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.calculations.data_quality import ColumnCorrelations
+from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import calculate_category_column_correlations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
+from evidently.metric_results import ColumnCorrelations
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -22,8 +22,7 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 
 
-@dataclasses.dataclass
-class ColumnCorrelationsMetricResult:
+class ColumnCorrelationsMetricResult(MetricResult):
     column_name: str
     current: Dict[str, ColumnCorrelations]
     reference: Optional[Dict[str, ColumnCorrelations]] = None
@@ -77,16 +76,12 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
         return ColumnCorrelationsMetricResult(
             column_name=self.column_name,
             current=current_correlations,
-            reference=reference_correlations,
+            reference=reference_correlations if reference_correlations is not None else None,
         )
 
 
 @default_renderer(wrap_type=ColumnCorrelationsMetric)
 class ColumnCorrelationsMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnCorrelationsMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     def _get_plots_correlations(self, metric_result: ColumnCorrelationsMetricResult) -> Optional[BaseWidgetInfo]:
         tabs = []
 
@@ -122,7 +117,10 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         correlation_plots = self._get_plots_correlations(metric_result)
 
         if correlation_plots:
-            return [header_text(label=f"Correlations for column '{metric_result.column_name}'."), correlation_plots]
+            return [
+                header_text(label=f"Correlations for column '{metric_result.column_name}'."),
+                correlation_plots,
+            ]
 
         else:
             # no correlations, draw nothing

@@ -19,11 +19,7 @@ from evidently.dashboard.widgets.utils import CutQuantileTransformer
         ("between", 1, pd.DataFrame({"data": [1, 2, 3, 4]})),
     ),
 )
-def test_cut_quantile_transformer(
-    side: str,
-    quantile: float,
-    test_data: pd.DataFrame,
-):
+def test_cut_quantile_transformer(side: str, quantile: float, test_data: pd.DataFrame):
     transformer = CutQuantileTransformer(side=side, q=quantile)
     transformer.fit(test_data["data"])
     transformer.transform(test_data["data"])

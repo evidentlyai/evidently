@@ -31,7 +31,7 @@ test_stattest = StatTest(
             ColumnDriftMetric(column_name="col"),
             {
                 "column_name": "col",
-                "column_type": "num",
+                "column_type": "cat",
                 "drift_detected": False,
                 "drift_score": 1.0,
                 "stattest_name": "chi-square p_value",
@@ -45,7 +45,7 @@ test_stattest = StatTest(
             ColumnDriftMetric(column_name="col"),
             {
                 "column_name": "col",
-                "column_type": "num",
+                "column_type": "cat",
                 "drift_detected": True,
                 "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
@@ -59,7 +59,7 @@ test_stattest = StatTest(
             ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
             {
                 "column_name": "col",
-                "column_type": "num",
+                "column_type": "cat",
                 "drift_detected": True,
                 "drift_score": approx(2.93, abs=0.01),
                 "stattest_name": "PSI",
@@ -73,7 +73,7 @@ test_stattest = StatTest(
             ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
             {
                 "column_name": "col",
-                "column_type": "num",
+                "column_type": "cat",
                 "drift_detected": True,
                 "drift_score": approx(2.93, abs=0.01),
                 "stattest_name": "test stattest",

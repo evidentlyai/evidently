@@ -9,10 +9,10 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.base_metric import Metric
 from evidently.base_metric import TResult
-from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.classification_performance import k_probability_threshold
-from evidently.utils.data_operations import DatasetColumns
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import PredictionData
 from evidently.utils.data_operations import process_columns
 
 
@@ -45,9 +45,7 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
         self.k = k
 
     def get_target_prediction_data(
-        self,
-        data: pd.DataFrame,
-        column_mapping: ColumnMapping,
+        self, data: pd.DataFrame, column_mapping: ColumnMapping
     ) -> Tuple[pd.Series, PredictionData]:
         dataset_columns = process_columns(data, column_mapping)
         data = _cleanup_data(data, dataset_columns)

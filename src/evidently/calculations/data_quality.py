@@ -12,10 +12,13 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
 
-from evidently.utils.data_operations import DatasetColumns
+from evidently.metric_results import ColumnCorrelations
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import Distribution
+from evidently.metric_results import Histogram
+from evidently.metric_results import HistogramData
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
-from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
@@ -261,11 +264,6 @@ def calculate_data_quality_stats(
     return result
 
 
-@dataclasses.dataclass
-class DataQualityPlot:
-    bins_for_hist: Dict[str, pd.DataFrame]
-
-
 class DataQualityGetPlotData:
     def __init__(self) -> None:
         self.period_prefix: Optional[str] = None
@@ -279,7 +277,7 @@ class DataQualityGetPlotData:
         feature_name: str,
         feature_type: str,
         merge_small_cat: Optional[int] = MAX_CATEGORIES,
-    ):
+    ) -> Optional[Histogram]:
         if feature_type == "cat" and merge_small_cat is not None:
             if ref is not None:
                 ref = ref.copy()
@@ -289,9 +287,9 @@ class DataQualityGetPlotData:
         ref_data = None
         if ref is not None:
             ref_data = ref[feature_name].dropna()
-        bins_for_hist = None
+
         if feature_type == "num":
-            bins_for_hist = make_hist_for_num_plot(curr_data, ref_data)
+            bins_for_hist: Histogram = make_hist_for_num_plot(curr_data, ref_data)
             log_ref_data = None
             if ref_data is not None:
                 log_ref_data = np.log10(ref_data[ref_data > 0])
@@ -299,19 +297,19 @@ class DataQualityGetPlotData:
                 np.log10(curr_data[curr_data > 0]),
                 log_ref_data,
             )
-            bins_for_hist["current_log"] = bins_for_hist_log["current"]
-            if "reference" in bins_for_hist_log.keys():
-                bins_for_hist["reference_log"] = bins_for_hist_log["reference"]
+            bins_for_hist.current_log = bins_for_hist_log.current
+            bins_for_hist.reference_log = bins_for_hist_log.reference
+
+            return bins_for_hist
         if feature_type == "cat":
-            bins_for_hist = make_hist_for_cat_plot(curr_data, ref_data, dropna=True)
+            return make_hist_for_cat_plot(curr_data, ref_data, dropna=True)
         if feature_type == "datetime":
-            bins_for_hist = {}
             freq = self._choose_agg_period(feature_name, ref, curr)
             curr_data = curr[feature_name].dt.to_period(freq=freq)
             curr_data = curr_data.value_counts().reset_index()
             curr_data.columns = [feature_name, "number_of_items"]
             curr_data[feature_name] = curr_data[feature_name].dt.to_timestamp()
-            bins_for_hist["current"] = curr_data
+            reference = None
             if ref is not None:
                 ref_data = ref[feature_name].dt.to_period(freq=freq)
                 ref_data = ref_data.value_counts().reset_index()
@@ -321,11 +319,14 @@ class DataQualityGetPlotData:
                 min_curr_date = curr_data[feature_name].min()
                 if max_ref_date == min_curr_date:
                     curr_data, ref_data = self._split_periods(curr_data, ref_data, feature_name)
-                bins_for_hist["reference"] = ref_data
+                reference = ref_data
+                reference.columns = ["x", "count"]
+            curr_data.columns = ["x", "count"]
+            return Histogram(current=HistogramData.from_df(curr_data), reference=HistogramData.from_df(reference))
         if feature_type == "text":
-            bins_for_hist = None
+            return None
 
-        return bins_for_hist
+        raise ValueError(f"Unknown feature type {feature_type}")
 
     def calculate_data_in_time(
         self,
@@ -405,19 +406,18 @@ class DataQualityGetPlotData:
         target_type: str,
         merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
-        result = None
         if feature_type == "cat" and target_type == "num":
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
                 curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
-            result = self._prepare_box_data(curr, ref, feature_name, target_name)
+            return self._prepare_box_data(curr, ref, feature_name, target_name)
         if feature_type == "num" and target_type == "cat":
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
                 curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat)
-            result = self._prepare_box_data(curr, ref, target_name, feature_name)
+            return self._prepare_box_data(curr, ref, target_name, feature_name)
         if feature_type == "num" and target_type == "num":
             result = {}
             result["current"] = {
@@ -429,6 +429,7 @@ class DataQualityGetPlotData:
                     feature_name: ref[feature_name].tolist(),
                     target_name: ref[target_name].tolist(),
                 }
+            return result
         if feature_type == "cat" and target_type == "cat":
             if ref is not None:
                 ref = ref.copy()
@@ -442,8 +443,8 @@ class DataQualityGetPlotData:
             result["current"] = self._get_count_values(curr, target_name, feature_name)
             if ref is not None:
                 result["reference"] = self._get_count_values(ref, target_name, feature_name)
-
-        return result
+            return result
+        return None
 
     def _split_periods(self, curr_data, ref_data, feature_name):
         max_ref_date = ref_data[feature_name].max()
@@ -473,11 +474,7 @@ class DataQualityGetPlotData:
         return df[df["count_objects"] > 0]
 
     def _prepare_box_data(
-        self,
-        curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame],
-        cat_feature_name: str,
-        num_feature_name: str,
+        self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], cat_feature_name: str, num_feature_name: str
     ) -> Dict[str, Dict[str, list]]:
         dfs = [curr]
         names = ["current"]
@@ -543,10 +540,7 @@ class DataQualityGetPlotData:
         return curr, ref
 
     def _choose_agg_period(
-        self,
-        date_column: str,
-        reference_data: Optional[pd.DataFrame],
-        current_data: pd.DataFrame,
+        self, date_column: str, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame
     ) -> str:
         optimal_points = 150
         prefix_dict = {
@@ -689,9 +683,7 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
 
 
 def calculate_correlations(
-    dataset: pd.DataFrame,
-    data_definition: DataDefinition,
-    add_text_columns: Optional[list] = None,
+    dataset: pd.DataFrame, data_definition: DataDefinition, add_text_columns: Optional[list] = None
 ) -> Dict:
     num_for_corr, cat_for_corr = _select_features_for_corr(dataset, data_definition)
     if add_text_columns is not None:
@@ -702,13 +694,6 @@ def calculate_correlations(
         correlations[kind] = _calculate_correlations(dataset, num_for_corr, cat_for_corr, kind)
 
     return correlations
-
-
-@dataclasses.dataclass
-class ColumnCorrelations:
-    column_name: str
-    kind: str
-    values: Distribution
 
 
 def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
@@ -794,11 +779,7 @@ def calculate_column_distribution(column: pd.Series, column_type: str) -> Column
     return distribution
 
 
-def get_corr_method(
-    method: Optional[str],
-    target_correlation: Optional[str] = None,
-    pearson_default: bool = True,
-):
+def get_corr_method(method: Optional[str], target_correlation: Optional[str] = None, pearson_default: bool = True):
     if method is not None:
         return method
     if method is None and pearson_default is False:

@@ -4,12 +4,12 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import TextDescriptorsCorrelationMetric
 from evidently.metrics import TextDescriptorsDistribution
 from evidently.metrics import TextDescriptorsDriftMetric
-from evidently.utils.data_operations import DatasetColumns
 
 
 class TextOverviewPreset(MetricPreset):

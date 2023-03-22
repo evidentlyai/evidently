@@ -85,13 +85,12 @@ from evidently.tests.utils import approx
     ),
 )
 def test_data_quality_test_min(
-    test_dataset: pd.DataFrame,
-    reference_dataset: pd.DataFrame,
-    test_object: TestColumnValueMin,
-    expected_success: bool,
+    test_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, test_object: TestColumnValueMin, expected_success: bool
 ) -> None:
     suite = TestSuite(tests=[test_object])
     suite.run(current_data=test_dataset, reference_data=reference_dataset)
+    if expected_success:
+        suite._inner_suite.raise_for_error()
     assert bool(suite) is expected_success
 
 
@@ -109,10 +108,7 @@ def test_data_quality_test_min(
     ),
 )
 def test_data_quality_test_min_exception(
-    test_dataset: pd.DataFrame,
-    reference_dataset: pd.DataFrame,
-    test_object: TestColumnValueMin,
-    expected_success: bool,
+    test_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, test_object: TestColumnValueMin, expected_success: bool
 ) -> None:
     suite = TestSuite(tests=[test_object])
     suite.run(current_data=test_dataset, reference_data=reference_dataset)
@@ -212,6 +208,7 @@ def test_data_quality_test_conflict_prediction() -> None:
     )
     suite = TestSuite(tests=[TestConflictPrediction()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite._inner_suite.raise_for_error()
     assert not suite
 
     test_dataset = pd.DataFrame(
@@ -721,6 +718,7 @@ def test_data_quality_test_value_quantile() -> None:
 
     suite = TestSuite(tests=[TestColumnQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()

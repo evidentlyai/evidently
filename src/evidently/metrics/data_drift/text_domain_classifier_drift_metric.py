@@ -1,4 +1,3 @@
-import dataclasses
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -13,6 +12,8 @@ from sklearn.pipeline import Pipeline
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -23,16 +24,18 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-@dataclasses.dataclass
-class TextDomainClassifierDriftResult:
+class TextDomainField(MetricResultField):
+    characteristic_examples: Optional[List[str]]
+    characteristic_words: Optional[List[str]]
+
+
+class TextDomainClassifierDriftResult(MetricResult):
     text_column_name: str
     domain_classifier_roc_auc: float
     random_classifier_95_percentile: float
     content_drift: bool
-    characteristic_examples_current: Optional[List[str]]
-    characteristic_examples_reference: Optional[List[str]]
-    characteristic_words_current: Optional[List[str]]
-    characteristic_words_reference: Optional[List[str]]
+    current: TextDomainField
+    reference: TextDomainField
 
 
 class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
@@ -45,8 +48,14 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
     def roc_auc_domain_classifier(X_train, X_test, y_train, y_test) -> Tuple:
         pipeline = Pipeline(
             [
-                ("vectorization", TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words="english")),
-                ("classification", SGDClassifier(alpha=0.0001, max_iter=50, penalty="l1", loss="modified_huber")),
+                (
+                    "vectorization",
+                    TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words="english"),
+                ),
+                (
+                    "classification",
+                    SGDClassifier(alpha=0.0001, max_iter=50, penalty="l1", loss="modified_huber"),
+                ),
             ]
         )
 
@@ -128,7 +137,7 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
             shuffle=True,
         )
         # calculate domain classifier roc-auc score
-        domain_classifier_roc_auc, y_pred_proba, classifier_pipeline = self.roc_auc_domain_classifier(
+        (domain_classifier_roc_auc, y_pred_proba, classifier_pipeline,) = self.roc_auc_domain_classifier(
             X_train,
             X_test,
             y_train,
@@ -144,50 +153,54 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
             roc_auc_random_percentile=random_classifier_95_percentile,
         )
 
-        typical_examples_cur = None
-        typical_examples_ref = None
-        typical_words_cur = None
-        typical_words_ref = None
+        characteristic_examples_cur = None
+        characteristic_examples_ref = None
+        characteristic_words_cur = None
+        characteristic_words_ref = None
 
         if is_content_drift:
             # get examples more characteristic of current or reference dataset
-            typical_examples_cur, typical_examples_ref = self.get_typical_examples(X_test, y_test, y_pred_proba)
+            characteristic_examples_cur, characteristic_examples_ref = self.get_typical_examples(
+                X_test, y_test, y_pred_proba
+            )
 
             # get words more characteristic of current or reference dataset
-            typical_words_cur, typical_words_ref = self.get_typical_words(classifier_pipeline)
+            characteristic_words_cur, characteristic_words_ref = self.get_typical_words(classifier_pipeline)
 
         return TextDomainClassifierDriftResult(
             text_column_name=self.text_column_name,
             domain_classifier_roc_auc=domain_classifier_roc_auc,
             random_classifier_95_percentile=random_classifier_95_percentile,
             content_drift=is_content_drift,
-            characteristic_examples_current=typical_examples_cur,
-            characteristic_examples_reference=typical_examples_ref,
-            characteristic_words_current=typical_words_cur,
-            characteristic_words_reference=typical_words_ref,
+            current=TextDomainField(
+                characteristic_examples=characteristic_examples_cur, characteristic_words=characteristic_words_cur
+            ),
+            reference=TextDomainField(
+                characteristic_examples=characteristic_examples_ref, characteristic_words=characteristic_words_ref
+            ),
         )
 
 
 @default_renderer(wrap_type=TextDomainClassifierDriftMetric)
 class TextDomainClassifierDriftMetricRenderer(MetricRenderer):
-    def render_json(self, obj: TextDomainClassifierDriftMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        return result
-
     @staticmethod
-    def _get_table_stat(dataset_name: str, metric_result, content_type="words") -> BaseWidgetInfo:
+    def _get_table_stat(
+        dataset_name: str, metric_result: TextDomainClassifierDriftResult, content_type="words"
+    ) -> BaseWidgetInfo:
         if content_type == "words":
             if dataset_name == "current":
-                data = metric_result.characteristic_words_current
+                data = metric_result.current.characteristic_words
             else:
-                data = metric_result.characteristic_words_reference
+                data = metric_result.reference.characteristic_words
         elif content_type == "examples":
             if dataset_name == "current":
-                data = metric_result.characteristic_examples_current
+                data = metric_result.current.characteristic_examples
             else:
-                data = metric_result.characteristic_examples_reference
+                data = metric_result.reference.characteristic_examples
         else:
             raise Exception("Unknown content type {}. Supported types are ['words', 'examples']".format(content_type))
+        if data is None:
+            raise Exception(f"Stat '{content_type}' is not present")
         res = table_data(
             title="{} Dataset: characteristic {}".format(dataset_name.capitalize(), content_type.capitalize()),
             column_names=["", ""],
@@ -215,7 +228,11 @@ class TextDomainClassifierDriftMetricRenderer(MetricRenderer):
         ]
 
         counters = [
-            CounterData.float("Domain classifier ROC-AUC score", metric_result.domain_classifier_roc_auc, 3),
+            CounterData.float(
+                "Domain classifier ROC-AUC score",
+                metric_result.domain_classifier_roc_auc,
+                3,
+            ),
             CounterData.float(
                 "95th percentile for random predictions",
                 metric_result.random_classifier_95_percentile,

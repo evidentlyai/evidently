@@ -23,7 +23,7 @@ def test_single_dataset_with_two_classes() -> None:
     result = analyzer.calculate(reference_data, None, df_column_mapping)
 
     assert result.columns.utility_columns.date is None
-    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.id is None
     assert result.columns.utility_columns.target == "target"
     assert result.columns.utility_columns.prediction == ["label_a", "label_b"]
     assert result.columns.cat_feature_names == []
@@ -105,7 +105,7 @@ def test_single_dataset_with_three_classes() -> None:
     analyzer.options_provider = OptionsProvider()
     result = analyzer.calculate(df, None, df_column_mapping)
     assert result.columns.utility_columns.date is None
-    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.id is None
     assert result.columns.utility_columns.target == "target"
     assert result.columns.utility_columns.prediction == ["label_a", "label_c", "label_b"]
     assert result.columns.cat_feature_names == []
@@ -203,7 +203,7 @@ def test_two_datasets_with_two_classes_when_dataset_is_same() -> None:
     analyzer.options_provider = OptionsProvider()
     result = analyzer.calculate(test_data, test_data, df_column_mapping)
     assert result.columns.utility_columns.date is None
-    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.id is None
     assert result.columns.utility_columns.target == "target"
     assert result.columns.utility_columns.prediction == ["label_a", "label_b"]
     assert result.columns.cat_feature_names == []
@@ -285,7 +285,7 @@ def test_two_dataset_with_two_classes_when_dataset_is_different() -> None:
     result = analyzer.calculate(df1, df2, df_column_mapping)
 
     assert result.columns.utility_columns.date is None
-    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.id is None
     assert result.columns.utility_columns.target == "target"
     assert result.columns.utility_columns.prediction == ["label_a", "label_b"]
     assert result.columns.cat_feature_names == []

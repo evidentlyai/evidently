@@ -7,6 +7,8 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -16,10 +18,13 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 from evidently.utils.visualizations import plot_distr_subplots
 
 
-@dataclasses.dataclass
-class RegressionErrorDistributionResults:
-    current_bins: pd.DataFrame
-    reference_bins: Optional[pd.DataFrame]
+class RegressionErrorDistributionResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"current_bins", "reference_bins"}
+        pd_exclude_fields = {"current_bins", "reference_bins"}
+
+    current_bins: HistogramData
+    reference_bins: Optional[HistogramData]
 
 
 class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
@@ -41,17 +46,20 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
             ref_error = ref_df[prediction_name] - ref_df[target_name]
 
         result = make_hist_for_num_plot(curr_error, ref_error)
-        current_bins = result["current"]
-        reference_bins = None
-        if "reference" in result.keys():
-            reference_bins = result["reference"]
+        current_bins = result.current
+        reference_bins = result.reference
 
         return RegressionErrorDistributionResults(current_bins=current_bins, reference_bins=reference_bins)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[target_name, prediction_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
@@ -59,9 +67,6 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
 
 @default_renderer(wrap_type=RegressionErrorDistribution)
 class RegressionErrorDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionErrorDistribution) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionErrorDistribution) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_bins = result.current_bins

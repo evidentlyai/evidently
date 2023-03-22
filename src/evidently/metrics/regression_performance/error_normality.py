@@ -5,13 +5,14 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy.stats import probplot
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.metric_results import ScatterData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -19,10 +20,13 @@ from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class RegressionErrorNormalityResults:
-    current_error: pd.Series
-    reference_error: Optional[pd.Series]
+class RegressionErrorNormalityResults(MetricResult):
+    class Config:
+        dict_exclude_fields = {"current_error", "reference_error"}
+        pd_exclude_fields = {"current_error", "reference_error"}
+
+    current_error: ScatterData
+    reference_error: Optional[ScatterData]
 
 
 class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
@@ -47,7 +51,12 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[target_name, prediction_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
@@ -55,9 +64,6 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
 
 @default_renderer(wrap_type=RegressionErrorNormality)
 class RegressionErrorNormalityRenderer(MetricRenderer):
-    def render_json(self, obj: RegressionErrorNormality) -> dict:
-        return {}
-
     def render_html(self, obj: RegressionErrorNormality) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_error = result.current_error

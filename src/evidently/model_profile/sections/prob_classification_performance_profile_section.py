@@ -43,7 +43,7 @@ class ProbClassificationPerformanceProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
-        result_json = result.columns.as_dict()
+        result_json = result.columns.dict(by_alias=True)
         result_json["options"] = result.quality_metrics_options.as_dict()
         result_json["metrics"] = {}
 
@@ -55,7 +55,11 @@ class ProbClassificationPerformanceProfileSection(ProfileSection):
         if result.current_metrics is not None:
             result_json["metrics"]["current"] = self._get_regression_performance_metrics_as_dict(result.current_metrics)
 
-        self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_json}
+        self._result = {
+            "name": self.part_id(),
+            "datetime": str(datetime.now()),
+            "data": result_json,
+        }
 
     def get_results(self):
         return self._result

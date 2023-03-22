@@ -9,6 +9,8 @@ import plotly.graph_objs as go
 from pandas.api.types import is_numeric_dtype
 from plotly.subplots import make_subplots
 
+from evidently.metric_results import Boxes
+from evidently.metric_results import RatesPlotData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import DetailsInfo
@@ -65,14 +67,32 @@ def plot_check(fig, condition, color_options: ColorOptions):
         if condition.eq._relative > 1e-6:
             left_border = condition.eq.value - condition.eq.value * condition.eq._relative
             right_border = condition.eq.value + condition.eq.value * condition.eq._relative
-            fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
+            fig.add_vrect(
+                x0=left_border,
+                x1=right_border,
+                fillcolor="green",
+                opacity=0.25,
+                line_width=0,
+            )
 
         elif condition.eq._absolute > 1e-12:
             left_border = condition.eq.value - condition.eq._absolute
             right_border = condition.eq.value + condition.eq._absolute
-            fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
+            fig.add_vrect(
+                x0=left_border,
+                x1=right_border,
+                fillcolor="green",
+                opacity=0.25,
+                line_width=0,
+            )
 
-        fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
+        fig.add_vrect(
+            x0=left_border,
+            x1=right_border,
+            fillcolor="green",
+            opacity=0.25,
+            line_width=0,
+        )
 
     fig.update_layout(showlegend=True)
     return fig
@@ -95,55 +115,6 @@ def plot_metric_value(fig, metric_val: float, metric_name: str):
     return fig
 
 
-def regression_perf_plot(
-    *,
-    val_for_plot: Dict[str, pd.Series],
-    hist_for_plot: Dict[str, pd.Series],
-    name: str,
-    curr_metric: float,
-    ref_metric: float = None,
-    is_ref_data: bool = False,
-    color_options: ColorOptions,
-):
-    current_color = color_options.get_current_data_color()
-    reference_color = color_options.get_reference_data_color()
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
-    sorted_index = val_for_plot["current"].sort_index()
-    x = [str(idx) for idx in sorted_index.index]
-    y = list(sorted_index)
-    trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=current_color)
-    fig.add_trace(trace, 1, 1)
-
-    df = hist_for_plot["current"].sort_values("x")
-    x = [str(x) for x in df.x]
-    y = list(df["count"])
-    trace = go.Bar(name="current", x=x, y=y, marker_color=current_color)
-    fig.add_trace(trace, 2, 1)
-
-    if is_ref_data:
-        sorted_index = val_for_plot["reference"].sort_index()
-        x = [str(idx) for idx in sorted_index.index]
-        y = list(sorted_index)
-        trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=reference_color)
-        fig.add_trace(trace, 1, 1)
-
-        df = hist_for_plot["reference"].sort_values("x")
-        x = [str(x) for x in df.x]
-        y = list(df["count"])
-        trace = go.Bar(name="reference", x=x, y=y, marker_color=reference_color)
-        fig.add_trace(trace, 2, 1)
-
-    fig.update_yaxes(title_text=name, row=1, col=1)
-    fig.update_yaxes(title_text="count", row=2, col=1)
-    title = f"current {name}: {np.round(curr_metric, 3)}"
-
-    if is_ref_data:
-        title += f", reference {name}: {np.round(ref_metric, 3)}"
-
-    fig.update_layout(title=title)
-    return fig
-
-
 def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
     additional_plots = []
     if values is not None:
@@ -153,7 +124,10 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
             additional_plots.append(
                 DetailsInfo(
                     title="Values inside the list (top 10)",
-                    info=table_data(column_names=["value", "count"], data=curr_vals_inside_lst[:10].values),
+                    info=table_data(
+                        column_names=["value", "count"],
+                        data=curr_vals_inside_lst[:10].values,
+                    ),
                 )
             )
         curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values("count", ascending=False)
@@ -161,7 +135,10 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
             additional_plots.append(
                 DetailsInfo(
                     title="Values outside the list (top 10)",
-                    info=table_data(column_names=["value", "count"], data=curr_vals_outside_lst[:10].values),
+                    info=table_data(
+                        column_names=["value", "count"],
+                        data=curr_vals_outside_lst[:10].values,
+                    ),
                 )
             )
     elif ref_df is not None:
@@ -259,7 +236,10 @@ def dataframes_to_table(
             info=BaseWidgetInfo(
                 title="",
                 type="table",
-                params={"header": list(columns), "data": [[idx] + list(df.loc[idx].values) for idx in df.index]},
+                params={
+                    "header": list(columns),
+                    "data": [[idx] + list(df.loc[idx].values) for idx in df.index],
+                },
                 size=2,
             ),
         )
@@ -267,12 +247,7 @@ def dataframes_to_table(
 
 
 def plot_dicts_to_table(
-    dict_curr: dict,
-    dict_ref: Optional[dict],
-    columns: list,
-    id_prfx: str,
-    sort_by: str = "curr",
-    asc: bool = False,
+    dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
 ):
     return dataframes_to_table(
         pd.DataFrame.from_dict(dict_curr, orient="index", columns=["value"]),
@@ -332,6 +307,7 @@ def plot_correlations(current_correlations, reference_correlations):
     return fig
 
 
+# todo typing: ConfusionMatrix
 def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     if ref_mtrx is not None:
         cols = 2
@@ -342,8 +318,8 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
     trace = go.Heatmap(
         z=curr_mtrx.values,
-        x=curr_mtrx.labels,
-        y=curr_mtrx.labels,
+        x=list(map(str, curr_mtrx.labels)),
+        y=list(map(str, curr_mtrx.labels)),
         text=np.array(curr_mtrx.values).astype(str),
         texttemplate="%{text}",
         coloraxis="coloraxis",
@@ -353,8 +329,8 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     if ref_mtrx is not None:
         trace = go.Heatmap(
             z=ref_mtrx.values,
-            x=ref_mtrx.labels,
-            y=ref_mtrx.labels,
+            x=list(map(str, ref_mtrx.labels)),
+            y=list(map(str, ref_mtrx.labels)),
             text=np.array(ref_mtrx.values).astype(str),
             texttemplate="%{text}",
             coloraxis="coloraxis",
@@ -403,33 +379,37 @@ def plot_roc_auc(
                 ),
             )
             fig.add_trace(trace, 1, 2)
-        fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
+        fig.update_layout(
+            yaxis_title="True Positive Rate",
+            xaxis_title="False Positive Rate",
+            showlegend=True,
+        )
         additional_plots.append((f"ROC Curve for label {label}", plotly_figure(title="", figure=fig)))
 
     return additional_plots
 
 
-def plot_boxes(*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_options: ColorOptions):
+def plot_boxes(*, curr_for_plots: Boxes, ref_for_plots: Optional[Boxes], color_options: ColorOptions):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
     fig = go.Figure()
     trace = go.Box(
-        lowerfence=curr_for_plots["mins"],
-        q1=curr_for_plots["lowers"],
-        q3=curr_for_plots["uppers"],
-        median=curr_for_plots["means"],
-        upperfence=curr_for_plots["maxs"],
+        lowerfence=curr_for_plots.mins,
+        q1=curr_for_plots.lowers,
+        q3=curr_for_plots.uppers,
+        median=curr_for_plots.means,
+        upperfence=curr_for_plots.maxs,
         name="current",
         marker_color=current_color,
     )
     fig.add_trace(trace)
     if ref_for_plots is not None:
         trace = go.Box(
-            lowerfence=curr_for_plots["mins"],
-            q1=ref_for_plots["lowers"],
-            q3=ref_for_plots["uppers"],
-            median=ref_for_plots["means"],
-            upperfence=ref_for_plots["maxs"],
+            lowerfence=curr_for_plots.mins,
+            q1=ref_for_plots.lowers,
+            q3=ref_for_plots.uppers,
+            median=ref_for_plots.means,
+            upperfence=ref_for_plots.maxs,
             name="reference",
             marker_color=reference_color,
         )
@@ -443,7 +423,12 @@ def plot_boxes(*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_opt
     return fig
 
 
-def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None, color_options: ColorOptions):
+def plot_rates(
+    *,
+    curr_rate_plots_data: RatesPlotData,
+    ref_rate_plots_data: Optional[RatesPlotData] = None,
+    color_options: ColorOptions,
+):
     if ref_rate_plots_data is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
@@ -453,11 +438,11 @@ def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict
 
     curr_df = pd.DataFrame(
         {
-            "thrs": curr_rate_plots_data["thrs"],
-            "fpr": curr_rate_plots_data["fpr"],
-            "tpr": curr_rate_plots_data["tpr"],
-            "fnr": curr_rate_plots_data["fnr"],
-            "tnr": curr_rate_plots_data["tnr"],
+            "thrs": curr_rate_plots_data.thrs,
+            "fpr": curr_rate_plots_data.fpr,
+            "tpr": curr_rate_plots_data.tpr,
+            "fnr": curr_rate_plots_data.fnr,
+            "tnr": curr_rate_plots_data.tnr,
         }
     )
     curr_df = curr_df[curr_df.thrs <= 1]
@@ -479,11 +464,11 @@ def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict
     if ref_rate_plots_data is not None:
         ref_df = pd.DataFrame(
             {
-                "thrs": ref_rate_plots_data["thrs"],
-                "fpr": ref_rate_plots_data["fpr"],
-                "tpr": ref_rate_plots_data["tpr"],
-                "fnr": ref_rate_plots_data["fnr"],
-                "tnr": ref_rate_plots_data["tnr"],
+                "thrs": ref_rate_plots_data.thrs,
+                "fpr": ref_rate_plots_data.fpr,
+                "tpr": ref_rate_plots_data.tpr,
+                "fnr": ref_rate_plots_data.fnr,
+                "tnr": ref_rate_plots_data.tnr,
             }
         )
         ref_df = ref_df[ref_df.thrs <= 1]

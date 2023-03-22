@@ -1,9 +1,10 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -13,12 +14,10 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
 
 
-@dataclasses.dataclass
-class ColumnDistributionMetricResult:
+class ColumnDistributionMetricResult(MetricResult):
     column_name: str
     current: Distribution
     reference: Optional[Distribution] = None
@@ -29,10 +28,7 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     column_name: str
 
-    def __init__(
-        self,
-        column_name: str,
-    ) -> None:
+    def __init__(self, column_name: str) -> None:
         self.column_name = column_name
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
@@ -64,12 +60,6 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
 @default_renderer(wrap_type=ColumnDistributionMetric)
 class ColumnDistributionMetricRenderer(MetricRenderer):
-    def render_json(self, obj: ColumnDistributionMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        result.pop("current", None)
-        result.pop("reference", None)
-        return result
-
     def render_html(self, obj: ColumnDistributionMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         distr_fig = get_distribution_plot_figure(
