@@ -111,12 +111,6 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         curr_df = data.current_data
         ref_df = data.reference_data
 
-        if self.columns is None:
-            columns = list(curr_df.columns)
-
-        else:
-            columns = self.columns
-
         if target_name is None:
             raise ValueError("Target column should be present.")
 
@@ -125,6 +119,16 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
+
+        if self.columns is None:
+            columns = (
+                dataset_columns.num_feature_names
+                + dataset_columns.cat_feature_names
+                + dataset_columns.text_feature_names
+            )
+
+        else:
+            columns = self.columns
 
         num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
         cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
@@ -136,6 +140,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             for col in np.intersect1d(list(self.text_features_gen.keys()), columns):
                 num_feature_names += list(self.text_features_gen[col].keys())
                 columns += list(self.text_features_gen[col].keys())
+                columns.remove(col)
                 curr_text_df = pd.concat(
                     [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
                     axis=1,
@@ -206,11 +211,12 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             error_bias_res = {}
 
         columns = list(np.intersect1d(curr_df.columns, columns))
+        table_columns = columns + [target_name, prediction_name]
 
         return RegressionErrorBiasTableResults(
             top_error=self.top_error,
-            current_plot_data=curr_df,
-            reference_plot_data=ref_df,
+            current_plot_data=curr_df[table_columns],
+            reference_plot_data=None if ref_df is None else ref_df[table_columns],
             target_name=target_name,
             prediction_name=prediction_name,
             num_feature_names=[str(v) for v in num_feature_names],

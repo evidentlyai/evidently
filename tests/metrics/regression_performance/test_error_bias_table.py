@@ -70,7 +70,7 @@ def test_regression_error_bias_table_value_errors(
             RegressionErrorBiasTable(),
             {
                 "cat_feature_names": [],
-                "columns": ["prediction", "target"],
+                "columns": [],
                 "error_bias": {},
                 "num_feature_names": [],
                 "prediction_name": "prediction",
@@ -90,7 +90,7 @@ def test_regression_error_bias_table_value_errors(
             RegressionErrorBiasTable(),
             {
                 "cat_feature_names": ["feature"],
-                "columns": ["feature", "prediction", "target"],
+                "columns": ["feature"],
                 "error_bias": {
                     "feature": {
                         "current_majority": None,
