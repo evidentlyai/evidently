@@ -30,7 +30,7 @@ Words = List[str]
 
 class DriftStatsField(MetricResultField):
     class Config:
-        dict_include = False
+        dict_include_fields = {"small_distribution"}
         pd_include = False
 
     distribution: Optional[Distribution]
@@ -42,8 +42,7 @@ class DriftStatsField(MetricResultField):
 
 class ColumnDataDriftMetrics(ColumnMetricResult):
     class Config:
-        dict_exclude_fields = {"current", "reference", "scatter"}
-        # use_enum_values = True
+        dict_exclude_fields = {"scatter"}
 
     stattest_name: str
     stattest_threshold: Optional[float]

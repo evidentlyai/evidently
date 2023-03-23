@@ -24,8 +24,8 @@ from evidently.utils.data_operations import process_columns
 class ClassificationClassSeparationPlotResults(MetricResult):
     class Config:
         smart_union = True
-        dict_exclude_fields = {"current_plot", "reference_plot"}
-        pd_exclude_fields = {"current_plot", "reference_plot"}
+        dict_exclude_fields = {"current", "reference"}
+        pd_exclude_fields = {"current", "reference"}
 
     target_name: str
     current: Optional[ColumnScatter] = None

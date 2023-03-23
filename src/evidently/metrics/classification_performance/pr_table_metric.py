@@ -1,6 +1,8 @@
 import dataclasses
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 
@@ -9,6 +11,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_pr_table
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.metric_results import Label
 from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -19,10 +22,15 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
+PRTable = Dict[Label, List[List[Union[float, int]]]]
+
 
 class ClassificationPRTableResults(MetricResult):
-    current_pr_table: Optional[dict] = None  # todo PRTable field
-    reference_pr_table: Optional[dict] = None
+    class Config:
+        smart_union = True
+
+    current: Optional[PRTable] = None
+    reference: Optional[PRTable] = None
 
 
 class ClassificationPRTable(Metric[ClassificationPRTableResults]):
@@ -39,8 +47,8 @@ class ClassificationPRTable(Metric[ClassificationPRTableResults]):
             ref_prediction = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
             ref_pr_table = self.calculate_metrics(data.reference_data[target_name], ref_prediction)
         return ClassificationPRTableResults(
-            current_pr_table=curr_pr_table,
-            reference_pr_table=ref_pr_table,
+            current=curr_pr_table,
+            reference=ref_pr_table,
         )
 
     def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData):
@@ -78,8 +86,8 @@ class ClassificationPRTable(Metric[ClassificationPRTableResults]):
 @default_renderer(wrap_type=ClassificationPRTable)
 class ClassificationPRTableRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationPRTable) -> List[BaseWidgetInfo]:
-        reference_pr_table = obj.get_result().reference_pr_table
-        current_pr_table = obj.get_result().current_pr_table
+        reference_pr_table = obj.get_result().reference
+        current_pr_table = obj.get_result().current
         columns = ["Top(%)", "Count", "Prob", "TP", "FP", "Precision", "Recall"]
         result = []
         size = WidgetSize.FULL
@@ -104,7 +112,7 @@ class ClassificationPRTableRenderer(MetricRenderer):
                         title="",
                         size=size,
                     )
-                    tab_data.append(TabData(label, table))
+                    tab_data.append(TabData(str(label), table))
                 result.append(widget_tabs(title="Current: Precision-Recall Table", tabs=tab_data))
         if reference_pr_table is not None:
             if len(reference_pr_table.keys()) == 1:
@@ -125,6 +133,6 @@ class ClassificationPRTableRenderer(MetricRenderer):
                         title="",
                         size=size,
                     )
-                    tab_data.append(TabData(label, table))
+                    tab_data.append(TabData(str(label), table))
                 result.append(widget_tabs(title="Reference: Precision-Recall Table", tabs=tab_data))
         return result

@@ -36,6 +36,8 @@ test_stattest = StatTest(
                 "drift_score": 1.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.05,
+                "current": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
+                "reference": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
             },
         ),
         (
@@ -50,6 +52,8 @@ test_stattest = StatTest(
                 "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.05,
+                "current": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [0, 0, 1, 1, 1]}},
+                "reference": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [1, 1, 1, 0, 0]}},
             },
         ),
         (
@@ -64,6 +68,8 @@ test_stattest = StatTest(
                 "drift_score": approx(2.93, abs=0.01),
                 "stattest_name": "PSI",
                 "stattest_threshold": 0.1,
+                "current": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
+                "reference": {"small_distribution": {"x": [1, 2, 3], "y": [0, 2, 1]}},
             },
         ),
         (
@@ -78,6 +84,8 @@ test_stattest = StatTest(
                 "drift_score": approx(2.93, abs=0.01),
                 "stattest_name": "test stattest",
                 "stattest_threshold": 0.1,
+                "current": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
+                "reference": {"small_distribution": {"x": [1, 2, 3], "y": [0, 2, 1]}},
             },
         ),
     ),
