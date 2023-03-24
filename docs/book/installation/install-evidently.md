@@ -1,20 +1,20 @@
 # MAC OS and Linux
 
-Evidently is available as a PyPI package. To install it using the **pip package manager**, run:
+`Evidently` is available as a PyPI package. To install it using the **pip package manager**, run:
 
 ```bash
 $ pip install evidently
 ```
 
-To install Evidently using **conda installer**, run:
+To install `evidently` using **conda installer**, run:
 
 ```sh
 conda install -c conda-forge evidently
 ```
 
-To display dashboards **in a Jupyter notebook**, Evidently uses jupyter nbextension. To enable it, run the **two following commands** in the terminal from the Evidently directory after installing Evidently. 
+To display dashboards **in a Jupyter notebook**, `evidently` uses `jupyter nbextension`. To enable it, run the **two following commands** in the terminal from the Evidently directory after installing `evidently`. 
 
-To install jupyter nbextension, run:
+To install `jupyter nbextension`, run:
 
 ```
 $ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
