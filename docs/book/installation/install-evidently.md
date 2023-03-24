@@ -4,10 +4,17 @@
 
 Evidently is available as a PyPI package.
 
-To install it using the pip package manager, run:
+To install it using the **pip package manager**, run:
 
 ```bash
 $ pip install evidently
+```
+
+```
+To install Evidently using **conda installer**, run:
+
+```sh
+conda install -c conda-forge evidently
 ```
 
 To display dashboards **in a Jupyter notebook**, Evidently uses jupyter nbextension. If you want to explore reports inside a Jupyter notebook, then after installing `evidently` you should run the **two following commands** in the terminal from the Evidently directory. 
@@ -61,10 +68,17 @@ To install `evidently`, run the following command in the notebook cell:
 
 Evidently is available as a PyPI package.
 
-To install it using the pip package manager, run:
+To install it using the **pip package manager**, run:
 
 ```bash
 $ pip install evidently
+```
+
+```
+To install Evidently using **conda installer**, run:
+
+```sh
+conda install -c conda-forge evidently
 ```
 
 **Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you need to use a different visualization method. Note that you will need to **explicitly specify the inline method** in your code when calling the Report or Test Suite. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
