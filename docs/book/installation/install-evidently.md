@@ -10,7 +10,6 @@ To install it using the **pip package manager**, run:
 $ pip install evidently
 ```
 
-```
 To install Evidently using **conda installer**, run:
 
 ```sh
@@ -74,7 +73,6 @@ To install it using the **pip package manager**, run:
 $ pip install evidently
 ```
 
-```
 To install Evidently using **conda installer**, run:
 
 ```sh
