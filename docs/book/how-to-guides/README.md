@@ -15,4 +15,3 @@ Customization | How to specify a color scheme in Reports and Test Suites? (Needs
 Customization | How to add a custom Metric or Test? | <ul><li>[Colab](https://colab.research.google.com/drive/1kZ6RlbKfDiEoRkULnfPh_MbUPscB_iP_?usp=sharing)</li></ul> 
 Customization | How to use text descriptors in text-specific metrics? | <ul><li>[Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_text_descriptors_in_text_specific_metrics.ipynb)</li></ul>  
 Outputs | How to get Report or Test Suite output in csv? | <ul><li>[Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_get_report_results_in_csv.ipynb )</li></ul> 
-
