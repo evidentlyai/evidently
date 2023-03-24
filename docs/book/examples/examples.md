@@ -6,7 +6,7 @@ description: Sample notebooks and tutorials
 
 ## Sample notebooks
 
-These simple examples on toy datasets show what Evidently can do out of the box. Head to Colab examples to see the pre-rendered reports.
+These simple examples show what Evidently can do out of the box. Head to Colab examples to see the pre-rendered reports.
 
 Title| Jupyter notebook | Colab notebook | Contents
 -- | -- | -- | ----
@@ -22,7 +22,7 @@ To better understand the use cases (such as model evaluation and monitoring), re
 Title | Code example | Blog post 
 --- | --- | --- 
 Understand ML model decay in production (regression example) | [Jupyter notebook](../../../examples/data_stories/bicycle_demand_monitoring.ipynb) | [How to break a model in 20 days. A tutorial on production model analytics.](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production) 
-Compare two ML models before deployment (classification example) | [Jupyter notebook] (../../../examples/data_stories/ibm_hr_attrition_model_validation.ipynb) | [What Is Your Model Hiding? A Tutorial on Evaluating ML Models.](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) 
+Compare two ML models before deployment (classification example) | [Jupyter notebook](../../../examples/data_stories/ibm_hr_attrition_model_validation.ipynb) | [What Is Your Model Hiding? A Tutorial on Evaluating ML Models.](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) 
 Evaluate and visualize historical data drift | [Jupyter notebook](../../../examples/integrations/mlflow_logging/historical_drift_visualization.ipynb) | [How to detect, evaluate and visualize historical drifts in the data.](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) 
 Monitor NLP models in production | [Colab](https://colab.research.google.com/drive/15ON-Ub_1QUYkDbdLpyt-XyEx34MD28E1) | [Monitoring NLP models in production: a tutorial on detecting drift in text data](https://www.evidentlyai.com/blog/tutorial-detecting-drift-in-text-data) 
 
