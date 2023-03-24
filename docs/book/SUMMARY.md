@@ -16,7 +16,7 @@
   * [Text Overview](presets/text-overview.md)
 * [Examples](examples/examples.md)
 * [Integrations](integrations/README.md)
-  * [Evidently integrations]((integrations/evidently-integrations.md) 
+  * [Evidently integrations](integrations/evidently-integrations.md) 
   * [Notebook environments](integrations/notebook-environments.md)
   * [Evidently and Airflow](integrations/evidently-and-airflow.md)
   * [Evidently and MLflow](integrations/evidently-and-mlflow.md)
