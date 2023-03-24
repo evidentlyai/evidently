@@ -4,7 +4,7 @@ description: Overview of the available Evidently integrations.
 
 Evidently is a Python library, and can be easily integrated with other tools to fit into the existing workflows.
 
-Below are a few specific examples of how to integrate Evidently in the prediction pipelines. You can adapt them for other workflow management, visualization, tracking and other tools.
+Below are a few specific examples of how to integrate Evidently with other tools in the ML lifecycle. You can adapt them for other workflow management, visualization, tracking and other tools.
 
 | Tool | Description | Guide or example |
 |---|---|---|
