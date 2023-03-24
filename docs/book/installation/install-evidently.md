@@ -1,6 +1,4 @@
-# Installing from PyPI
-
-## MAC OS and Linux
+# MAC OS and Linux
 
 Evidently is available as a PyPI package.
 
@@ -40,6 +38,8 @@ That's it! A single run after the installation is enough.
 **Note**: if you **use other notebook environments, e.g. Jupyter Lab**, Evidently might work differently. See more details below. 
 {% endhint %}
 
+# Hosted notebooks
+
 ## Google Colab
 
 You can run `evidently` in Google Colab. 
@@ -63,7 +63,7 @@ To install `evidently`, run the following command in the notebook cell:
 
 **Note**: There is no need to enable nbextension for this case. `Evidently` uses an alternative way to display visuals in the hosted notebooks. Note that you will need to **explicitly specify the inline method** in your code when calling the Report or Test Suite. Consult [this section](../integrations/notebook-environments.md) for help. If you face issues, you can get the output as a separate HTML file and view it in a browser.
 
-## Windows
+# Windows
 
 Evidently is available as a PyPI package.
 
