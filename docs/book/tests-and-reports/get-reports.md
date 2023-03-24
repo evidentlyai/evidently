@@ -23,7 +23,7 @@ Refer to the [input data](../input-data/data-requirements.md) and [column mappin
 
 Evidently has ready-made **Metric Presets** that group relevant Metrics in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
 
-To use the Preset, create a `Report` object and specify the chosen `preset` in a list of `metrics`. You should also point to the current and reference dataset (if available). The Report will run with the default parameters if nothing else is specified.
+To use the Preset, create a `Report` object and specify the chosen `preset` in a list of `metrics`. You should also point to the current and reference dataset (if available). If nothing else is specified, the Report will run with the default parameters for all columns in the dataset.
 
 **Example 1**. To generate the Report that includes two Presets for Data and Target Drift:
 
