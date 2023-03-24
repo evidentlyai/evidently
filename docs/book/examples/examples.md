@@ -29,8 +29,8 @@ Monitor NLP models in production | [Colab](https://colab.research.google.com/dri
 
 ## Integrations
 
-To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the **integrations**.&#x20;
+To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the **integrations**.
 
-{% content-ref url="../integrations/" %}
-[integrations](../integrations/)
+{% content-ref url="../integrations/evidently-integrations.md" %}
+[integrations/evidently-integrations.md](../integrations/evidently-integrations.md)
 {% endcontent-ref %}
