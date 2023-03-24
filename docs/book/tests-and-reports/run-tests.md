@@ -32,7 +32,7 @@ Evidently has **Test Presets** that group relevant Tests together. You can use t
 
 To apply the Preset, create a `TestSuite` object and specify the `presets` to include in the list of `tests`. You must also point to the current and reference dataset (if available).
 
-The tests will run with the default parameters if nothing else is specified. Evidently will automatically generate test conditions based on the provided reference dataset or heuristics.
+If nothing else is specified, the tests will run with the default parameters for all columns in the dataset. Evidently will automatically generate test conditions based on the provided reference dataset or heuristics.
 
 **Example 1**. To apply the `DataStabilityTestPreset`:
 
