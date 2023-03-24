@@ -62,7 +62,7 @@ To install `evidently`, run the following command in the notebook cell:
 There is no need to enable nbextension for this case. `Evidently` uses an alternative way to display visuals. 
 
 {% hint style="info" %}
-**Visualizations in cloud notebooks other than Colab**. When displaying Evidently Reports and Test Suites, you will need to **explicitly specify the inline method**. Consult [this section](../integrations/notebook-environments.md) for help. If you face issues, you can get the output as a separate HTML file and view it in a browser.
+**Visualizations in cloud notebooks other than Colab**. When displaying Evidently Reports and Test Suites, you will need to **explicitly specify the inline show method**. Consult [this section](../integrations/notebook-environments.md) for help. If you face issues, you can get the output as a separate HTML file and view it in a browser.
 {% endhint %}
 
 # Windows
@@ -84,5 +84,5 @@ conda install -c conda-forge evidently
 **Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you need to use a different visualization method.
 
 {% hint style="info" %}
-**Visualizations on Windows**. When displaying Evidently Reports and Test Suites in Jupyter notebook, you will need to **explicitly specify the inline method**. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
+**Visualizations on Windows**. When displaying Evidently Reports and Test Suites in Jupyter notebook, you will need to **explicitly specify the inline show method**. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
 {% endhint %}
