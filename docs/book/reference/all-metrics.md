@@ -28,7 +28,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 # Metric Presets
 
-**Defaults**: each individual metric in the preset uses the default parameters for this metric. You can see them in the tables below. 
+**Defaults**: each Metric in a Preset uses the default parameters for this Metric. You can see them in the tables below. 
 
 | Preset name and Description | Parameters |
 |---|---|
