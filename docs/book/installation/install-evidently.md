@@ -67,7 +67,7 @@ There is no need to enable nbextension for this case. `Evidently` uses an altern
 
 # Windows
 
-Evidently is available as a PyPI package.
+`Evidently` is available as a PyPI package.
 
 To install it using the **pip package manager**, run:
 
@@ -75,13 +75,13 @@ To install it using the **pip package manager**, run:
 $ pip install evidently
 ```
 
-To install Evidently using **conda installer**, run:
+To install `evidently` using **conda installer**, run:
 
 ```sh
 conda install -c conda-forge evidently
 ```
 
-**Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you need to use a different visualization method.
+**Note**: Nbextension does not work on Windows. `Evidently` uses an alternative way to display visuals.
 
 {% hint style="info" %}
 **Visualizations on Windows**. When displaying Evidently Reports and Test Suites in Jupyter notebook, you will need to **explicitly specify the inline show method**. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
