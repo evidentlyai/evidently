@@ -139,6 +139,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             y = ["precision", "recall", "f1-score"]
 
             if current_roc_aucs is not None and len(current_roc_aucs) > 2:
+                assert reference_roc_aucs is not None
                 z = np.append(z, [reference_roc_aucs], axis=0)
                 y.append("roc-auc")
 
