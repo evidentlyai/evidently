@@ -1,15 +1,17 @@
-import dataclasses
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
 
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
+from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -48,11 +50,16 @@ class ColumnValueRangeMetricResult(MetricResult):
 class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
     """Calculates count and shares of values in the predefined values range"""
 
-    column_name: str
+    column_name: Union[str, ColumnName]
     left: Optional[Numeric]
     right: Optional[Numeric]
 
-    def __init__(self, column_name: str, left: Optional[Numeric] = None, right: Optional[Numeric] = None) -> None:
+    def __init__(
+        self,
+        column_name: Union[str, ColumnName],
+        left: Optional[Numeric] = None,
+        right: Optional[Numeric] = None,
+    ) -> None:
         self.left = left
         self.right = right
         self.column_name = column_name
@@ -86,18 +93,9 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         )
 
     def calculate(self, data: InputData) -> ColumnValueRangeMetricResult:
-        if self.column_name not in data.current_data:
-            raise ValueError(f"Column {self.column_name} is not in current data.")
-
-        if not pd.api.types.is_numeric_dtype(data.current_data[self.column_name].dtype):
-            raise ValueError(f"Column {self.column_name} in current data should be numeric.")
-
-        if data.reference_data is not None:
-            if self.column_name not in data.reference_data:
-                raise ValueError(f"Column {self.column_name} is not in reference data.")
-
-            if not pd.api.types.is_numeric_dtype(data.reference_data[self.column_name].dtype):
-                raise ValueError(f"Column {self.column_name} in reference data should be numeric.")
+        column_type, current_data, reference_data = data.get_data(self.column_name)
+        if column_type != ColumnType.Numerical:
+            raise ValueError(f"Column {self.column_name} in reference data should be numeric.")
 
         if self.left is None:
             if data.reference_data is None:
@@ -120,20 +118,19 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             right = self.right
 
         # calculate distribution for visualisation
-        current_column = data.current_data[self.column_name]
         cur_distribution, ref_distribution = get_distribution_for_column(
             column_type="num",
-            current=current_column,
-            reference=data.reference_data[self.column_name] if data.reference_data is not None else None,
+            current=current_data,
+            reference=reference_data if reference_data is not None else None,
         )
 
-        current = self._calculate_in_range_stats(data.current_data[self.column_name], left, right, cur_distribution)
+        current = self._calculate_in_range_stats(current_data, left, right, cur_distribution)
         reference = None
-        if data.reference_data is not None:
+        if reference_data is not None:
             # always should be present
             assert ref_distribution is not None
             reference = self._calculate_in_range_stats(
-                data.reference_data[self.column_name], left, right, ref_distribution
+                reference_data, left, right, ref_distribution
             )
 
         return ColumnValueRangeMetricResult(
