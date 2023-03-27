@@ -3,21 +3,21 @@ description: How to set custom data drift detection conditions and thresholds.
 ---
 
 **Pre-requisites**:
-* You know how to generate reports or test suites with default parameters.
-* You know how to pass custom parameters for reports or test suites.
+* You know how to generate Reports or Test Suites with default parameters.
+* You know how to pass custom parameters for Reports or Test Suites.
 
 # Default 
 
-All presets, tests, and metrics that include data or prediction drift evaluation use the default [Data Drift algorithm](../reference/data-drift-algorithm.md). It automatically selects an appropriate statistical test based on the feature type and volume. 
+All Presets, Tests, and Metrics that include data or target (prediction) drift evaluation use the default [Data Drift algorithm](../reference/data-drift-algorithm.md). It automatically selects an appropriate drift detection method based on the feature type and volume. 
 
-You can override the defaults by passing a custom parameter to the chosen test, metric, or preset. You can define the drift method, the threshold, or both. 
+You can override the defaults by passing a custom parameter to the chosen Test, Metric, or Preset. You can define the drift method, the threshold, or both. 
 
 # Examples
 
 To set a custom drift method and threshold on the **column level**:
 
 ```python
-ColumnDriftMetric(column_name=”feature1”, stattest=wasserstein, stattest_threshold=0.2) 
+ColumnDriftMetric(column_name='feature1', stattest='wasserstein', stattest_threshold=0.2) 
 ```
 
 If you have a preset, test or metric that checks for drift in **multiple columns** at the same time, you can set a custom drift method for all columns, all numerical/categorical columns, or for each column individually.
@@ -25,7 +25,7 @@ If you have a preset, test or metric that checks for drift in **multiple columns
 Here is how you set the drift detection method for all categorical columns:
 
 ```python
-DataDriftPreset(cat_stattest=ks, cat_statest_threshold=0.05)
+DataDriftPreset(cat_stattest='ks', cat_statest_threshold=0.05)
 ```
 
 To set a custom condition for the **dataset drift** (share of drifting features) in the relevant metrics or presets:
