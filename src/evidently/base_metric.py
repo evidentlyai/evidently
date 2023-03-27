@@ -1,8 +1,6 @@
 import abc
 import logging
 from copy import copy
-from typing import Tuple
-
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -13,6 +11,7 @@ from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
@@ -95,32 +94,18 @@ class InputData:
         raise ValueError("unknown column data")
 
     def get_current_column(self, column: Union[str, ColumnName]) -> pd.Series:
-        if isinstance(column, str):
-            _column = ColumnName(column, column, DatasetType.MAIN, None)
-        else:
-            _column = column
+        _column = self._str_to_column_name(column)
         return self._get_by_column_name(self.current_data, self.current_additional_features, _column)
 
     def get_reference_column(self, column: Union[str, ColumnName]) -> Optional[pd.Series]:
         if self.reference_data is None:
             return None
-        if isinstance(column, str):
-            _column = ColumnName(column, column, DatasetType.MAIN, None)
-        else:
-            _column = column
+        _column = self._str_to_column_name(column)
         if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
             return None
         return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
 
     def get_data(self, column: Union[str, ColumnName]) -> Tuple[ColumnType, pd.Series, Optional[pd.Series]]:
-        if isinstance(column, ColumnName) and column.feature_class is not None:
-            column_type = ColumnType.Numerical
-        else:
-            if isinstance(column, ColumnName):
-                column_name = column.name
-            else:
-                column_name = column
-            column_type = self.data_definition.get_column(column_name).column_type
         ref_data = None
         if self.reference_data is not None:
             ref_data = self.get_reference_column(column)
@@ -136,6 +121,21 @@ class InputData:
                 column_name = column
             column_type = self.data_definition.get_column(column_name).column_type
         return column_type
+
+    def has_column(self, column_name: Union[str, ColumnName]):
+        column = self._str_to_column_name(column_name)
+        if column.dataset == DatasetType.MAIN:
+            return column.name in [definition.column_name for definition in self.data_definition.get_columns()]
+        if self.current_additional_features is not None:
+            return column.name in self.current_additional_features.columns
+        return False
+
+    def _str_to_column_name(self, column: Union[str, ColumnName]) -> ColumnName:
+        if isinstance(column, str):
+            _column = ColumnName(column, column, DatasetType.MAIN, None)
+        else:
+            _column = column
+        return _column
 
 
 class Metric(Generic[TResult]):

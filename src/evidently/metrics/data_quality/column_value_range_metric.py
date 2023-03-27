@@ -93,26 +93,26 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         )
 
     def calculate(self, data: InputData) -> ColumnValueRangeMetricResult:
+        if not data.has_column(self.column_name):
+            raise ValueError(f"Column {self.column_name} isn't present in data")
         column_type, current_data, reference_data = data.get_data(self.column_name)
         if column_type != ColumnType.Numerical:
             raise ValueError(f"Column {self.column_name} in reference data should be numeric.")
 
         if self.left is None:
-            if data.reference_data is None:
+            if reference_data is None:
                 raise ValueError("Reference should be present")
-
             else:
-                left: Numeric = float(data.reference_data[self.column_name].min())
+                left: Numeric = float(reference_data.min())
 
         else:
             left = self.left
 
         if self.right is None:
-            if data.reference_data is None:
+            if reference_data is None:
                 raise ValueError("Reference should be present")
-
             else:
-                right: Numeric = float(data.reference_data[self.column_name].max())
+                right: Numeric = float(reference_data.max())
 
         else:
             right = self.right
@@ -129,12 +129,10 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         if reference_data is not None:
             # always should be present
             assert ref_distribution is not None
-            reference = self._calculate_in_range_stats(
-                reference_data, left, right, ref_distribution
-            )
+            reference = self._calculate_in_range_stats(reference_data, left, right, ref_distribution)
 
         return ColumnValueRangeMetricResult(
-            column_name=self.column_name,
+            column_name=self.column_name if isinstance(self.column_name, str) else self.column_name.display_name,
             left=left,
             right=right,
             current=current,

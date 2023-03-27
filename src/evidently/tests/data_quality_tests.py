@@ -7,6 +7,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently.base_metric import ColumnName
 from evidently.calculations.data_quality import get_corr_method
 from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnQuantileMetric
@@ -1035,15 +1036,23 @@ class TestValueRange(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Value Range"
     metric: ColumnValueRangeMetric
-    column: str
+    column_name: ColumnName
     left: Optional[float]
     right: Optional[float]
 
-    def __init__(self, column_name: str, left: Optional[float] = None, right: Optional[float] = None):
-        self.column_name = column_name
+    def __init__(
+        self,
+        column_name: Union[str, ColumnName],
+        left: Optional[float] = None,
+        right: Optional[float] = None,
+    ):
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.left = left
         self.right = right
-        self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
+        self.metric = ColumnValueRangeMetric(column_name=self.column_name, left=left, right=right)
 
     def check(self):
         number_not_in_range = self.metric.get_result().current.number_not_in_range
@@ -1059,7 +1068,7 @@ class TestValueRange(Test):
             name=self.name,
             description=description,
             status=test_result,
-            groups={GroupingTypes.ByFeature.id: self.column_name},
+            groups={GroupingTypes.ByFeature.id: self.column_name.display_name},
         )
 
 
@@ -1078,7 +1087,10 @@ class TestValueRangeRenderer(TestRenderer):
             color_options=self.color_options,
         )
         fig = plot_check(fig, condition_, color_options=self.color_options)
-        info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
+        info.with_details(
+            f"Value Range {column_name.display_name}",
+            plotly_figure(title="", figure=fig),
+        )
         return info
 
 
