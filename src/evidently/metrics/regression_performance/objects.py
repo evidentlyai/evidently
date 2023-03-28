@@ -2,11 +2,11 @@ from typing import Dict
 from typing import Optional
 from typing import overload
 
-from evidently.base_metric import MetricResultField
+from evidently.base_metric import MetricResult
 from evidently.metric_results import ScatterData
 
 
-class PredActualScatter(MetricResultField):
+class PredActualScatter(MetricResult):
     predicted: ScatterData
     actual: ScatterData
 
@@ -27,13 +27,13 @@ def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, 
     return scatter.dict()
 
 
-class RegressionScatter(MetricResultField):
+class RegressionScatter(MetricResult):
     underestimation: PredActualScatter
     majority: PredActualScatter
     overestimation: PredActualScatter
 
 
-class RegressionMetricScatter(MetricResultField):
+class RegressionMetricScatter(MetricResult):
     current: ScatterData
     reference: Optional[ScatterData] = None
 
@@ -49,7 +49,7 @@ class RegressionMetricScatter(MetricResultField):
         )
 
 
-class RegressionMetricsScatter(MetricResultField):
+class RegressionMetricsScatter(MetricResult):
     r2_score: RegressionMetricScatter
     rmse: RegressionMetricScatter
     mean_abs_error: RegressionMetricScatter

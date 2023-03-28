@@ -13,7 +13,6 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.metric_results import DatasetColumns
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.objects import ClassesMetrics
@@ -27,7 +26,7 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 
 
-class ClassificationQuality(MetricResultField):
+class ClassificationQuality(MetricResult):
     metrics: ClassesMetrics
     roc_aucs: Optional[List[float]]
 

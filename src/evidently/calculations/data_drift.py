@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from evidently.base_metric import ColumnMetricResult
-from evidently.base_metric import MetricResultField
+from evidently.base_metric import MetricResult
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
 from evidently.metric_results import DatasetColumns
@@ -28,7 +28,7 @@ Examples = List[str]
 Words = List[str]
 
 
-class DriftStatsField(MetricResultField):
+class DriftStatsField(MetricResult):
     class Config:
         dict_include_fields = {"small_distribution"}
         pd_include = False
@@ -64,7 +64,7 @@ class DatasetDrift:
     dataset_drift: bool
 
 
-class DatasetDriftMetrics(MetricResultField):
+class DatasetDriftMetrics(MetricResult):
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float

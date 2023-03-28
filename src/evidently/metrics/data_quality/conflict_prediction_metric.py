@@ -4,7 +4,6 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -14,7 +13,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
 
-class ConflictPredictionData(MetricResultField):
+class ConflictPredictionData(MetricResult):
     number_not_stable_prediction: int
     share_not_stable_prediction: float
 

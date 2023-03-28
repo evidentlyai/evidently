@@ -13,7 +13,6 @@ from sklearn.metrics import r2_score
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Histogram
@@ -32,7 +31,7 @@ from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
 
-class RegressionMetrics(MetricResultField):
+class RegressionMetrics(MetricResult):
     r2_score: float
     rmse: float
     mean_error: float

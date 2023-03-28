@@ -6,11 +6,11 @@ from pydantic import Field
 from pydantic import parse_obj_as
 from sklearn.metrics import classification_report
 
-from evidently.base_metric import MetricResultField
+from evidently.base_metric import MetricResult
 from evidently.metric_results import Label
 
 
-class ClassMetric(MetricResultField):
+class ClassMetric(MetricResult):
     precision: float
     recall: float
     f1: float = Field(alias="f1-score")
@@ -20,7 +20,7 @@ class ClassMetric(MetricResultField):
 ClassesMetrics = Dict[Label, ClassMetric]
 
 
-class ClassificationReport(MetricResultField):
+class ClassificationReport(MetricResult):
     classes: ClassesMetrics
     accuracy: float
     macro_avg: ClassMetric = Field(alias="macro avg")

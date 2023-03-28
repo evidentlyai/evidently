@@ -1,13 +1,17 @@
 import glob
 import os
 from importlib import import_module
+from typing import Dict
+from typing import List
 from typing import Set
 from typing import Type
 
 import pytest
+from pydantic import BaseModel
+from pydantic import Field
 
 import evidently
-from evidently.base_metric import MetricResultField
+from evidently.base_metric import MetricResult
 
 
 @pytest.fixture
@@ -22,12 +26,12 @@ def all_metric_results():
             continue
         module = import_module(mod_name)
         for key, value in module.__dict__.items():
-            if isinstance(value, type) and value is not MetricResultField and issubclass(value, MetricResultField):
+            if isinstance(value, type) and value is not MetricResult and issubclass(value, MetricResult):
                 metric_result_field_classes.add(value)
     return metric_result_field_classes
 
 
-def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResultField]]):
+def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]):
     errors = []
     for cls in all_metric_results:
         field_names = set(cls.__fields__)
@@ -46,3 +50,137 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResultFi
                     errors.append((cls, config_field, field_name))
 
     assert len(errors) == 0, f"Wrong config for field classes: {errors}"
+
+
+class FieldExclude(MetricResult):
+    class Config:
+        dict_exclude_fields = {"f2"}
+
+    f1: str
+    f2: List[int]
+
+
+class FieldInclude(MetricResult):
+    class Config:
+        dict_include_fields = {"f1"}
+
+    f1: str
+    f2: List[int]
+
+
+class DictExclude(MetricResult):
+    class Config:
+        dict_include = False
+
+    f1: List[int]
+    f2: List[int]
+
+
+class NestedExclude(MetricResult):
+    f: str
+    nested: DictExclude
+
+
+class Model(MetricResult):
+    no: NestedExclude = Field(..., include={"nested": {"f1"}})
+    fe: FieldExclude
+    feo: FieldExclude = Field(include={"f1", "f2"})
+    fi: FieldInclude
+    de: DictExclude
+    deo: DictExclude = Field(..., include=True)
+    n: NestedExclude
+
+
+@pytest.fixture
+def model():
+    data = []
+
+    fe = FieldExclude(f1="a", f2=data)
+    fi = FieldInclude(f1="a", f2=data)
+    de = DictExclude(f1=data, f2=data)
+    n = NestedExclude(f="a", nested=de)
+    m = Model(fe=fe, fi=fi, feo=fe, de=de, deo=de, n=n, no=n)
+    return m
+
+
+@pytest.mark.parametrize(
+    "include,exclude,expected",
+    [
+        (
+            None,
+            None,
+            {
+                "fe": {"f1": "a"},
+                "feo": {"f1": "a", "f2": []},
+                "fi": {"f1": "a"},
+                "deo": {"f1": [], "f2": []},
+                "n": {"f": "a"},
+                "no": {"nested": {"f1": []}},
+            },
+        ),
+        ({"n": {"f"}}, None, {"n": {"f": "a"}}),
+        (None, {"n", "no", "deo", "feo"}, {"fe": {"f1": "a"}, "fi": {"f1": "a"}}),
+    ],
+)
+def test_include_exclude(model: Model, include, exclude, expected):
+    assert model.get_dict(include=include, exclude=exclude) == expected
+
+
+class DictModel(MetricResult):
+    de: Dict[str, DictExclude]
+    deo: Dict[str, DictExclude] = Field(..., include=True)
+    # fe: Dict[str, FieldExclude]
+    # feo: Dict[str, FieldExclude] = Field(include={"f1", "f2"})
+
+
+@pytest.fixture()
+def dict_model():
+    data = []
+
+    # fe = FieldExclude(f1="a", f2=data)
+    # fi = FieldInclude(f1="a", f2=data)
+    de = {"a": DictExclude(f1=data, f2=data)}
+    # n = NestedExclude(f="a", nested=de)
+    return DictModel(de=de, deo=de)
+
+
+@pytest.mark.parametrize(
+    "include,exclude,expected",
+    [
+        (
+            None,
+            None,
+            {
+                "deo": {"a": {"f1": [], "f2": []}},
+            },
+        ),
+    ],
+)
+def test_include_exclude_dict(dict_model: DictModel, include, exclude, expected):
+    assert dict_model.get_dict(include=include, exclude=exclude) == expected
+
+
+def test_polymorphic():
+    class Parent(MetricResult):
+        pass
+
+    class A(Parent):
+        class Config:
+            dict_include_fields = {"f1"}
+
+        f1: str
+        f2: str
+
+    class B(Parent):
+        class Config:
+            dict_exclude_fields = {"b"}
+
+        a: str
+        b: str
+
+    class PModel(MetricResult):
+        vals: Dict[str, Parent]
+
+    assert PModel(vals={"a": A(f1="a", f2="b"), "b": B(a="a", b="b")}).get_dict() == {
+        "vals": {"a": {"f1": "a"}, "b": {"a": "a"}}
+    }

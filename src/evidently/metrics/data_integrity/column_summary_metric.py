@@ -13,7 +13,7 @@ from pandas.api.types import is_string_dtype
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import InputData
-from evidently.base_metric import MetricResultField
+from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
@@ -39,7 +39,7 @@ from evidently.utils.visualizations import plot_num_num_rel
 from evidently.utils.visualizations import plot_time_feature_distr
 
 
-class ColumnCharacteristics(MetricResultField):
+class ColumnCharacteristics(MetricResult):
     number_of_rows: int
     count: int
     missing: Optional[int]
@@ -92,13 +92,13 @@ class TextCharacteristics(ColumnCharacteristics):
     non_letter_char_max: Optional[float]
 
 
-class DataInTime(MetricResultField):
+class DataInTime(MetricResult):
     data_for_plots: Dict[str, Optional[pd.DataFrame]]
     freq: str
     datetime_name: str
 
 
-class DataByTarget(MetricResultField):
+class DataByTarget(MetricResult):
     data_for_plots: Union[
         Dict[
             str,
@@ -113,7 +113,7 @@ class DataByTarget(MetricResultField):
     target_type: str
 
 
-class DataQualityPlot(MetricResultField):
+class DataQualityPlot(MetricResult):
     class Config:
         dict_include = False
 

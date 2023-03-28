@@ -13,7 +13,6 @@ from sklearn.pipeline import Pipeline
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -24,7 +23,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-class TextDomainField(MetricResultField):
+class TextDomainField(MetricResult):
     characteristic_examples: Optional[List[str]]
     characteristic_words: Optional[List[str]]
 
