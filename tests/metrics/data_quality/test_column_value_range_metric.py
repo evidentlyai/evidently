@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
+from evidently.descriptors import TextLength
 from evidently.metric_results import Distribution
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
@@ -179,6 +180,32 @@ def test_data_quality_values_in_range_metric_errors(
                     "share_not_in_range": 0.0,
                 },
                 "right": 20.0,
+            },
+        ),
+        (
+            pd.DataFrame({"col2": ["a", "aa", "aaa"]}),
+            pd.DataFrame({"col2": ["a", "aa", "aaa"]}),
+            ColumnValueRangeMetric(
+                column_name=TextLength().for_column("col2"),
+            ),
+            {
+                "column_name": "Text Length for col2",
+                "current": {
+                    "number_in_range": 3,
+                    "number_not_in_range": 0,
+                    "number_of_values": 3,
+                    "share_in_range": 1.0,
+                    "share_not_in_range": 0.0,
+                },
+                "left": 1.0,
+                "reference": {
+                    "number_in_range": 3,
+                    "number_not_in_range": 0,
+                    "number_of_values": 3,
+                    "share_in_range": 1.0,
+                    "share_not_in_range": 0.0,
+                },
+                "right": 3.0,
             },
         ),
     ),
