@@ -1097,13 +1097,13 @@ class TestValueRangeRenderer(TestRenderer):
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
     metric: ColumnValueRangeMetric
-    column: str
+    column_name: ColumnName
     left: Optional[float]
     right: Optional[float]
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         left: Optional[float] = None,
         right: Optional[float] = None,
         eq: Optional[Numeric] = None,
@@ -1115,7 +1115,10 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        self.column_name = column_name
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.left = left
         self.right = right
         self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
@@ -1132,7 +1135,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         )
 
     def groups(self) -> Dict[str, str]:
-        return {GroupingTypes.ByFeature.id: self.column_name}
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
 
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
@@ -1188,7 +1191,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     def get_description(self, value: Numeric) -> str:
         current_result = self.metric.get_result().current
         return (
-            f"The share of values out of range in the column **{self.column_name}** is {value:.3g} "
+            f"The share of values out of range in the column **{self.column_name.display_name}** is {value:.3g} "
             f"({current_result.number_not_in_range} out of {current_result.number_of_values}). "
             f" The test threshold is {self.get_condition()}."
         )
@@ -1216,7 +1219,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.condition, color_options=self.color_options)
-        info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
+        info.with_details(f"Share Out of Range for {column_name.display_name}", plotly_figure(title="", figure=fig))
         return info
 
 
