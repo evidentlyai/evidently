@@ -205,7 +205,7 @@ class MetricResult(BaseModel):
     ):
         return self.dict(include=include or self._build_include(), exclude=exclude)
 
-    def _build_include(self, include=None) -> MappingIntStrAny:
+    def _build_include(self, include=None) -> "MappingIntStrAny":
         if not self.__config__.dict_include and not include:
             return {}
         include = include or {}
