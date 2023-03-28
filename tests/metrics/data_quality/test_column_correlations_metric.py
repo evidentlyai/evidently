@@ -78,19 +78,19 @@ def test_column_correlations_metric_success(
             ),
             None,
             ColumnCorrelationsMetric(column_name="feature"),
-            "Cannot calculate correlations for 'datetime' column type.",
+            "Cannot calculate correlations for 'ColumnType.Datetime' column type.",
         ),
         (
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
             None,
             ColumnCorrelationsMetric(column_name="feature"),
-            "Column 'feature' was not found in current data.",
+            "Column 'feature' was not found in data.",
         ),
         (
             pd.DataFrame({"feature": [0, 2, 2, 432]}),
             pd.DataFrame({"num_feature": [0, 2, 2, 432]}),
             ColumnCorrelationsMetric(column_name="feature"),
-            "Column 'feature' was not found in reference data.",
+            "Column 'feature' was not found in data.",
         ),
     ),
 )
@@ -132,11 +132,11 @@ def test_column_correlations_metric_value_error(
             },
         ),
         (
-            pd.DataFrame({"col1": [1, 2, 3], "col2": [10, 20, 3.5]}),
+            pd.DataFrame({"col1": [1, 2, 3, 4, 5, 6], "col2": [10, 20, 3.5, 11, 21, 5]}),
             pd.DataFrame(
                 {
-                    "col1": [10, 20, 3.5],
-                    "col2": [1, 1, 3],
+                    "col1": [10, 20, 3.5, 11, 21, 5],
+                    "col2": [1, 1, 3, 4, 5, 6],
                 }
             ),
             ColumnCorrelationsMetric(column_name="col1"),
@@ -146,30 +146,30 @@ def test_column_correlations_metric_value_error(
                     "kendall": {
                         "column_name": "col1",
                         "kind": "kendall",
-                        "values": {"x": ["col2"], "y": [approx(-0.33, abs=0.01)]},
+                        "values": {"x": ["col2"], "y": [approx(0.066, abs=0.01)]},
                     },
                     "pearson": {
                         "column_name": "col1",
                         "kind": "pearson",
-                        "values": {"x": ["col2"], "y": [approx(-0.39, abs=0.01)]},
+                        "values": {"x": ["col2"], "y": [approx(-0.105, abs=0.01)]},
                     },
-                    "spearman": {"column_name": "col1", "kind": "spearman", "values": {"x": ["col2"], "y": [-0.5]}},
+                    "spearman": {"column_name": "col1", "kind": "spearman", "values": {"x": ["col2"], "y": [-0.03]}},
                 },
                 "reference": {
                     "kendall": {
                         "column_name": "col1",
                         "kind": "kendall",
-                        "values": {"x": ["col2"], "y": [approx(-0.81, abs=0.01)]},
+                        "values": {"x": ["col2"], "y": [approx(0, abs=0.01)]},
                     },
                     "pearson": {
                         "column_name": "col1",
                         "kind": "pearson",
-                        "values": {"x": ["col2"], "y": [approx(-0.79, abs=0.01)]},
+                        "values": {"x": ["col2"], "y": [approx(-0.20, abs=0.01)]},
                     },
                     "spearman": {
                         "column_name": "col1",
                         "kind": "spearman",
-                        "values": {"x": ["col2"], "y": [approx(-0.86, abs=0.01)]},
+                        "values": {"x": ["col2"], "y": [approx(-0.03, abs=0.01)]},
                     },
                 },
             },

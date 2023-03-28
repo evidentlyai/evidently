@@ -7,7 +7,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.calculations.data_quality import calculate_numerical_column_correlations
+from evidently.calculations.data_quality import calculate_numerical_correlation
 from evidently.core import ColumnType as ColumnType_data
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
@@ -104,10 +104,19 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         if ref_df is not None:
             ref_result = {}
 
-        for col in list(self.generated_text_features.keys()):
-            curr_result[col] = calculate_numerical_column_correlations(col, curr_df, correlation_columns)
+        num_features = data.data_definition.get_columns("numerical_features")
+        for name, feature in self.generated_text_features.items():
+            curr_result[name] = calculate_numerical_correlation(
+                name,
+                data.get_current_column(feature.feature_name()),
+                data.current_data[[feature.column_name for feature in num_features]],
+            )
             if ref_df is not None and ref_result is not None:
-                ref_result[col] = calculate_numerical_column_correlations(col, ref_df, correlation_columns)
+                ref_result[name] = calculate_numerical_correlation(
+                    name,
+                    data.get_reference_column(feature.feature_name()),
+                    data.current_data[[feature.column_name for feature in num_features]],
+                )
 
         # todo potential performance issues
         return TextDescriptorsCorrelationMetricResult(
