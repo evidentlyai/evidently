@@ -280,6 +280,11 @@ class MetricResult(BaseModel):
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame([self.collect_pandas_columns()])
 
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, MetricResult):
+            return self.get_dict() == other.get_dict()
+        return super().__eq__(other)
+
 
 class ColumnMetricResult(MetricResult):
     column_name: str
