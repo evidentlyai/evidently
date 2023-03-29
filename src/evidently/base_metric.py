@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from pydantic.typing import MappingIntStrAny
 
 TResult = TypeVar("TResult", bound="MetricResult")
+IncludeOptions = Union["AbstractSetIntStr", "MappingIntStrAny"]
 
 
 class ErrorResult:
@@ -200,8 +201,8 @@ class MetricResult(BaseModel):
 
     def get_dict(
         self,
-        include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-        exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
+        include: Optional[IncludeOptions] = None,
+        exclude: Optional[IncludeOptions] = None,
     ):
         return self.dict(include=include or self._build_include(), exclude=exclude)
 

@@ -9,6 +9,7 @@ from typing import Union
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.base_metric import IncludeOptions
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.metric_preset.metric_preset import MetricPreset
@@ -105,12 +106,21 @@ class Report(Display):
         )
         self._inner_suite.run_calculate(data)
 
-    def as_dict(self) -> dict:
+    def as_dict(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> dict:
         metrics = []
-
+        include = include or {}
+        exclude = exclude or {}
         for metric in self._first_level_metrics:
             renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
-            metrics.append({"metric": metric.get_id(), "result": renderer.render_json(metric)})
+            metric_id = metric.get_id()
+            metrics.append(
+                {
+                    "metric": metric_id,
+                    "result": renderer.render_json(
+                        metric, include=include.get(metric_id), exclude=exclude.get(metric_id)
+                    ),
+                }
+            )
 
         return {
             "metrics": metrics,
