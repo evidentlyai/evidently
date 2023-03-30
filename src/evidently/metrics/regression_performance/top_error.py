@@ -5,6 +5,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
+from evidently.base_metric import IncludeTags
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -28,6 +29,7 @@ class TopData(MetricResult):
 class RegressionTopErrorMetricResults(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     current: TopData
     reference: Optional[TopData]

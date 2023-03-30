@@ -106,7 +106,12 @@ class Report(Display):
         )
         self._inner_suite.run_calculate(data)
 
-    def as_dict(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> dict:
+    def as_dict(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ) -> dict:
         metrics = []
         include = include or {}
         exclude = exclude or {}
@@ -117,7 +122,10 @@ class Report(Display):
                 {
                     "metric": metric_id,
                     "result": renderer.render_json(
-                        metric, include=include.get(metric_id), exclude=exclude.get(metric_id)
+                        metric,
+                        include_render=include_render,
+                        include=include.get(metric_id),
+                        exclude=exclude.get(metric_id),
                     ),
                 }
             )

@@ -34,10 +34,14 @@ class MetricRenderer(BaseRenderer):
         return obj.get_result().get_pandas()
 
     def render_json(
-        self, obj: "Metric[TResult]", include: "IncludeOptions" = None, exclude: "IncludeOptions" = None
+        self,
+        obj: "Metric[TResult]",
+        include_render: bool = False,
+        include: "IncludeOptions" = None,
+        exclude: "IncludeOptions" = None,
     ) -> dict:
         result = obj.get_result()
-        return result.get_dict(include=include, exclude=exclude)
+        return result.get_dict(include_render=include_render, include=include, exclude=exclude)
 
     def render_html(self, obj) -> List[BaseWidgetInfo]:
         raise NotImplementedError()

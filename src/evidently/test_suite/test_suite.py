@@ -98,7 +98,12 @@ class TestSuite(Display):
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
-    def as_dict(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> dict:
+    def as_dict(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ) -> dict:
         test_results = []
         counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
 
