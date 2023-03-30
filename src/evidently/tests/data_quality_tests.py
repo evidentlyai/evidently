@@ -213,11 +213,8 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
 
 @default_renderer(wrap_type=TestHighlyCorrelatedColumns)
 class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestHighlyCorrelatedColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["abs_max_num_features_correlation"] = np.round(obj.value, 3)
-        return base
+    def json_parameters(self, obj: TestHighlyCorrelatedColumns) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "abs_max_num_features_correlation": np.round(obj.value, 3)}
 
     def render_html(self, obj: TestHighlyCorrelatedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -268,9 +265,8 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
 
 @default_renderer(wrap_type=TestTargetFeaturesCorrelations)
 class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
-    def render_json(self, obj: TestTargetFeaturesCorrelations) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
+    def json_parameters(self, obj: TestTargetFeaturesCorrelations) -> dict:
+        p = {"condition": obj.get_condition().as_dict()}
 
         if obj.value is not None:
             abs_max_target_features_correlation = np.round(obj.value, 3)
@@ -278,8 +274,8 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
         else:
             abs_max_target_features_correlation = obj.value
 
-        base["parameters"]["abs_max_target_features_correlation"] = abs_max_target_features_correlation
-        return base
+        p["abs_max_target_features_correlation"] = abs_max_target_features_correlation
+        return p
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -330,9 +326,8 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
 
 @default_renderer(wrap_type=TestPredictionFeaturesCorrelations)
 class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
-    def render_json(self, obj: TestPredictionFeaturesCorrelations) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
+    def json_parameters(self, obj: TestPredictionFeaturesCorrelations) -> dict:
+        p = {"condition": obj.get_condition().as_dict()}
 
         if obj.value is not None:
             abs_max_prediction_features_correlation = np.round(obj.value, 3)
@@ -340,8 +335,8 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
         else:
             abs_max_prediction_features_correlation = obj.value
 
-        base["parameters"]["abs_max_prediction_features_correlation"] = abs_max_prediction_features_correlation
-        return base
+        p["abs_max_prediction_features_correlation"] = abs_max_prediction_features_correlation
+        return p
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -867,12 +862,12 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
 @default_renderer(wrap_type=TestMostCommonValueShare)
 class TestMostCommonValueShareRenderer(TestRenderer):
-    def render_json(self, obj: TestMostCommonValueShare) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["column_name"] = obj.column_name
-        base["parameters"]["share_most_common_value"] = obj.value
-        return base
+    def json_parameters(self, obj: TestMostCommonValueShare) -> dict:
+        return {
+            "condition": obj.get_condition().as_dict(),
+            "column_name": obj.column_name,
+            "share_most_common_value": obj.value,
+        }
 
     def render_html(self, obj: TestMostCommonValueShare) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -962,21 +957,20 @@ class TestMeanInNSigmas(Test):
 
 @default_renderer(wrap_type=TestMeanInNSigmas)
 class TestMeanInNSigmasRenderer(TestRenderer):
-    def render_json(self, obj: TestMeanInNSigmas) -> dict:
-        base = super().render_json(obj)
+    def json_parameters(self, obj: TestMeanInNSigmas) -> dict:
+
         metric_result = obj.metric.get_result()
-        base["parameters"]["column_name"] = obj.column_name
-        base["parameters"]["n_sigmas"] = obj.n_sigmas
+        p = {"column_name": obj.column_name, "n_sigmas": obj.n_sigmas}
         if not isinstance(metric_result.current_characteristics, NumericCharacteristics):
             raise ValueError(f"{obj.column_name} should be numerical or bool")
-        base["parameters"]["current_mean"] = metric_result.current_characteristics.mean
+        p["current_mean"] = metric_result.current_characteristics.mean
 
         if metric_result.reference_characteristics is not None:
             if not isinstance(metric_result.reference_characteristics, NumericCharacteristics):
                 raise ValueError(f"{obj.column_name} should be numerical or bool")
-            base["parameters"]["reference_mean"] = metric_result.reference_characteristics.mean
-            base["parameters"]["reference_std"] = metric_result.reference_characteristics.std
-        return base
+            p["reference_mean"] = metric_result.reference_characteristics.mean
+            p["reference_std"] = metric_result.reference_characteristics.std
+        return p
 
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -1184,13 +1178,13 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
 @default_renderer(wrap_type=TestShareOfOutRangeValues)
 class TestShareOfOutRangeValuesRenderer(TestRenderer):
-    def render_json(self, obj: TestShareOfOutRangeValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["left"] = obj.left
-        base["parameters"]["right"] = obj.right
-        base["parameters"]["share_not_in_range"] = obj.value
-        return base
+    def json_parameters(self, obj: TestShareOfOutRangeValues) -> dict:
+        return {
+            "condition": obj.get_condition().as_dict(),
+            "left": obj.left,
+            "right": obj.right,
+            "share_not_in_range": obj.value,
+        }
 
     def render_html(self, obj: TestShareOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -1259,12 +1253,12 @@ class TestValueList(Test):
 
 @default_renderer(wrap_type=TestValueList)
 class TestValueListRenderer(TestRenderer):
-    def render_json(self, obj: TestValueList) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["column_name"] = obj.column_name
-        base["parameters"]["values"] = obj.values
-        base["parameters"]["number_not_in_list"] = obj.metric.get_result().current.number_not_in_list
-        return base
+    def json_parameters(self, obj: TestValueList) -> dict:
+        return {
+            "column_name": obj.column_name,
+            "values": obj.values,
+            "number_not_in_list": obj.metric.get_result().current.number_not_in_list,
+        }
 
     def render_html(self, obj: TestValueList) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -1482,12 +1476,8 @@ class TestColumnQuantileRenderer(TestRenderer):
 
 @default_renderer(wrap_type=TestShareOfOutListValues)
 class TestShareOfOutListValuesRenderer(TestRenderer):
-    def render_json(self, obj: TestShareOfOutListValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["values"] = obj.values
-        base["parameters"]["share_not_in_list"] = obj.value
-        return base
+    def json_parameters(self, obj: TestShareOfOutListValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "values": obj.values, "share_not_in_list": obj.value}
 
     def render_html(self, obj: TestShareOfOutListValues) -> TestHtmlInfo:
         info = super().render_html(obj)

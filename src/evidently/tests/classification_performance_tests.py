@@ -159,11 +159,8 @@ class TestAccuracyScore(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestAccuracyScore)
 class TestAccuracyScoreRenderer(TestRenderer):
-    def render_json(self, obj: TestAccuracyScore) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["accuracy"] = obj.value
-        return base
+    def json_parameters(self, obj: TestAccuracyScore):
+        return {"condition": obj.get_condition().as_dict(), "accuracy": obj.value}
 
     def render_html(self, obj: TestAccuracyScore) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -186,11 +183,8 @@ class TestPrecisionScore(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestPrecisionScore)
 class TestPrecisionScoreRenderer(TestRenderer):
-    def render_json(self, obj: TestPrecisionScore) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["precision"] = obj.value
-        return base
+    def json_parameters(self, obj: TestPrecisionScore) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "precision": obj.value}
 
     def render_html(self, obj: TestPrecisionScore) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -213,11 +207,8 @@ class TestF1Score(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestF1Score)
 class TestF1ScoreRenderer(TestRenderer):
-    def render_json(self, obj: TestF1Score) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["f1"] = obj.value
-        return base
+    def json_parameters(self, obj: TestF1Score) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "f1": obj.value}
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -240,11 +231,8 @@ class TestRecallScore(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestRecallScore)
 class TestRecallScoreRenderer(TestRenderer):
-    def render_json(self, obj: TestRecallScore) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["recall"] = obj.value
-        return base
+    def json_parameters(self, obj: TestRecallScore) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "recall": obj.value}
 
     def render_html(self, obj: TestRecallScore) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -295,11 +283,8 @@ class TestRocAuc(SimpleClassificationTest):
 
 @default_renderer(wrap_type=TestRocAuc)
 class TestRocAucRenderer(TestRenderer):
-    def render_json(self, obj: TestRocAuc) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["roc_auc"] = obj.value
-        return base
+    def json_parameters(self, obj: TestRocAuc) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "roc_auc": obj.value}
 
     def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -348,11 +333,8 @@ class TestLogLoss(SimpleClassificationTest):
 
 @default_renderer(wrap_type=TestLogLoss)
 class TestLogLossRenderer(TestRenderer):
-    def render_json(self, obj: TestLogLoss) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["log_loss"] = obj.value
-        return base
+    def json_parameters(self, obj: TestLogLoss) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "log_loss": obj.value}
 
     def render_html(self, obj: TestLogLoss) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -387,11 +369,8 @@ class TestTPR(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestTPR)
 class TestTPRRenderer(TestRenderer):
-    def render_json(self, obj: TestTPR) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["tpr"] = obj.value
-        return base
+    def json_parameters(self, obj: TestTPR) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "tpr": obj.value}
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -429,11 +408,8 @@ class TestTNR(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestTNR)
 class TestTNRRenderer(TestRenderer):
-    def render_json(self, obj: TestTNR) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["tnr"] = obj.value
-        return base
+    def json_parameters(self, obj: TestTNR) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "tnr": obj.value}
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -487,11 +463,8 @@ class TestFPR(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestFPR)
 class TestFPRRenderer(TestRenderer):
-    def render_json(self, obj: TestFPR) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["fpr"] = obj.value
-        return base
+    def json_parameters(self, obj: TestFPR) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "fpr": obj.value}
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -545,11 +518,8 @@ class TestFNR(SimpleClassificationTestTopK):
 
 @default_renderer(wrap_type=TestFNR)
 class TestFNRRenderer(TestRenderer):
-    def render_json(self, obj: TestFNR) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["fnr"] = obj.value
-        return base
+    def json_parameters(self, obj: TestFNR) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "fnr": obj.value}
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -655,12 +625,8 @@ class TestPrecisionByClass(ByClassClassificationTest):
 
 @default_renderer(wrap_type=TestPrecisionByClass)
 class TestPrecisionByClassRenderer(TestRenderer):
-    def render_json(self, obj: TestPrecisionByClass) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["precision"] = obj.value
-        base["parameters"]["label"] = obj.label
-        return base
+    def json_parameters(self, obj: TestPrecisionByClass) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "precision": obj.value, "label": obj.label}
 
     def render_html(self, obj: TestPrecisionByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -686,12 +652,8 @@ class TestRecallByClass(ByClassClassificationTest):
 
 @default_renderer(wrap_type=TestRecallByClass)
 class TestRecallByClassRenderer(TestRenderer):
-    def render_json(self, obj: TestRecallByClass) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["recall"] = obj.value
-        base["parameters"]["label"] = obj.label
-        return base
+    def json_parameters(self, obj: TestRecallByClass) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "recall": obj.value, "label": obj.label}
 
     def render_html(self, obj: TestRecallByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -716,12 +678,8 @@ class TestF1ByClass(ByClassClassificationTest):
 
 @default_renderer(wrap_type=TestF1ByClass)
 class TestF1ByClassRenderer(TestRenderer):
-    def render_json(self, obj: TestF1ByClass) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["f1"] = obj.value
-        base["parameters"]["label"] = obj.label
-        return base
+    def json_parameters(self, obj: TestF1ByClass):
+        return {"condition": obj.get_condition().as_dict(), "f1": obj.value, "label": obj.label}
 
     def render_html(self, obj: TestF1ByClass) -> TestHtmlInfo:
         info = super().render_html(obj)

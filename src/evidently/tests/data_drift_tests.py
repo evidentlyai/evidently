@@ -374,19 +374,19 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
 
 @default_renderer(wrap_type=TestNumberOfDriftedColumns)
 class TestNumberOfDriftedColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfDriftedColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["features"] = {
-            feature: {
-                "stattest": data[0],
-                "score": np.round(data[1], 3),
-                "threshold": data[2],
-                "data_drift": data[3],
-            }
-            for feature, data in obj.get_result().features.items()
+    def json_parameters(self, obj: TestNumberOfDriftedColumns) -> dict:
+        return {
+            "condition": obj.get_condition().as_dict(),
+            "features": {
+                feature: {
+                    "stattest": data[0],
+                    "score": np.round(data[1], 3),
+                    "threshold": data[2],
+                    "data_drift": data[3],
+                }
+                for feature, data in obj.get_result().features.items()
+            },
         }
-        return base
 
     def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -410,19 +410,19 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
 
 @default_renderer(wrap_type=TestShareOfDriftedColumns)
 class TestShareOfDriftedColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestShareOfDriftedColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["features"] = {
-            feature: {
-                "stattest": data[0],
-                "score": np.round(data[1], 3),
-                "threshold": data[2],
-                "data_drift": data[3],
-            }
-            for feature, data in obj.get_result().features.items()
+    def json_parameters(self, obj: TestShareOfDriftedColumns) -> dict:
+        return {
+            "condition": obj.get_condition().as_dict(),
+            "features": {
+                feature: {
+                    "stattest": data[0],
+                    "score": np.round(data[1], 3),
+                    "threshold": data[2],
+                    "data_drift": data[3],
+                }
+                for feature, data in obj.get_result().features.items()
+            },
         }
-        return base
 
     def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -454,19 +454,19 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
 
 @default_renderer(wrap_type=TestColumnDrift)
 class TestColumnDriftRenderer(TestRenderer):
-    def render_json(self, obj: TestColumnDrift) -> dict:
+    def json_parameters(self, obj: TestColumnDrift):
         feature_name = obj.column_name
         drift_data = obj.metric.get_result()
-        base = super().render_json(obj)
-        base["parameters"]["features"] = {
-            feature_name: {
-                "stattest_name": drift_data.stattest_name,
-                "score": np.round(drift_data.drift_score, 3),
-                "stattest_threshold": drift_data.stattest_threshold,
-                "data_drift": drift_data.drift_detected,
+        return {
+            "features": {
+                feature_name: {
+                    "stattest_name": drift_data.stattest_name,
+                    "score": np.round(drift_data.drift_score, 3),
+                    "stattest_threshold": drift_data.stattest_threshold,
+                    "data_drift": drift_data.drift_detected,
+                }
             }
         }
-        return base
 
     def render_html(self, obj: TestColumnDrift) -> TestHtmlInfo:
         info = super().render_html(obj)

@@ -84,6 +84,9 @@ class TestRenderer(BaseRenderer):
             groups=result.groups,
         )
 
+    def json_parameters(self, obj) -> dict:
+        return {}
+
     def render_json(self, obj) -> dict:
         result = obj.get_result()
         return {
@@ -91,7 +94,7 @@ class TestRenderer(BaseRenderer):
             "description": self.json_description(obj),
             "status": result.status,
             "group": obj.group,
-            "parameters": {},
+            "parameters": self.json_parameters(obj),
         }
 
 

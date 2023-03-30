@@ -92,11 +92,8 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfColumns)
 class TestNumberOfColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_columns"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfColumns) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_columns": obj.value}
 
     def render_html(self, obj: TestNumberOfColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -139,11 +136,8 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfRows)
 class TestNumberOfRowsRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfRows) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_rows"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfRows) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_rows": obj.value}
 
 
 class BaseIntegrityMissingValuesValuesTest(BaseCheckValueTest, ABC):
@@ -279,11 +273,8 @@ class TestNumberOfDifferentMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestNumberOfDifferentMissingValues)
 class TestNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestNumberOfDifferentMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_different_missing_values"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfDifferentMissingValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_different_missing_values": obj.value}
 
     def render_html(self, obj: TestNumberOfDifferentMissingValues) -> TestHtmlInfo:
         """Get a table with a missing value and number of the value in the dataset"""
@@ -338,11 +329,8 @@ class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestNumberOfMissingValues)
 class TestNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestNumberOfMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_missing_values"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfMissingValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_missing_values": obj.value}
 
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -377,11 +365,8 @@ class TestShareOfMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestShareOfMissingValues)
 class TestShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestShareOfMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_missing_values"] = obj.value
-        return base
+    def json_parameters(self, obj: TestShareOfMissingValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "share_of_missing_values": obj.value}
 
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -416,11 +401,8 @@ class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest)
 
 @default_renderer(wrap_type=TestNumberOfColumnsWithMissingValues)
 class TestNumberOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestNumberOfColumnsWithMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_columns_with_missing_values"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfColumnsWithMissingValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_columns_with_missing_values": obj.value}
 
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -458,11 +440,8 @@ class TestShareOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestShareOfColumnsWithMissingValues)
 class TestShareOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestShareOfColumnsWithMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_columns_with_missing_values"] = obj.value
-        return base
+    def json_parameters(self, obj: TestShareOfColumnsWithMissingValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "share_of_columns_with_missing_values": obj.value}
 
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -500,11 +479,8 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestNumberOfRowsWithMissingValues)
 class TestNumberOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestNumberOfRowsWithMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_rows_with_missing_values"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfRowsWithMissingValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_rows_with_missing_values": obj.value}
 
 
 class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
@@ -534,11 +510,8 @@ class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestShareOfRowsWithMissingValues)
 class TestShareOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestShareOfRowsWithMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_rows_with_missing_values"] = obj.value
-        return base
+    def json_parameters(self, obj: TestShareOfRowsWithMissingValues) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "share_of_rows_with_missing_values": obj.value}
 
 
 class BaseIntegrityColumnMissingValuesTest(BaseCheckValueTest, ABC):
@@ -609,12 +582,12 @@ class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesT
 
 @default_renderer(wrap_type=TestColumnNumberOfDifferentMissingValues)
 class TestColumnNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestColumnNumberOfDifferentMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_different_missing_values"] = obj.value
-        base["parameters"]["column_name"] = obj.column_name
-        return base
+    def json_parameters(self, obj: TestColumnNumberOfDifferentMissingValues):
+        return {
+            "condition": obj.get_condition().as_dict(),
+            "number_of_different_missing_values": obj.value,
+            "column_name": obj.column_name,
+        }
 
     def render_html(self, obj: TestColumnNumberOfDifferentMissingValues) -> TestHtmlInfo:
         """Get a table with a missing value and number of the value in the dataset"""
@@ -668,12 +641,12 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
 @default_renderer(wrap_type=TestColumnNumberOfMissingValues)
 class TestColumnNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestColumnNumberOfMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_missing_values"] = obj.value
-        base["parameters"]["column_name"] = obj.column_name
-        return base
+    def json_parameters(self, obj: TestColumnNumberOfMissingValues):
+        return {
+            "condition": obj.get_condition().as_dict(),
+            "number_of_missing_values": obj.value,
+            "column_name": obj.column_name,
+        }
 
 
 class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
@@ -721,12 +694,12 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
 
 @default_renderer(wrap_type=TestColumnShareOfMissingValues)
 class TestColumnShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_json(self, obj: TestColumnShareOfMissingValues) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_missing_values"] = obj.value
-        base["parameters"]["column_name"] = obj.column_name
-        return base
+    def json_parameters(self, obj: TestColumnShareOfMissingValues):
+        return {
+            "condition": obj.get_condition().as_dict(),
+            "share_of_missing_values": obj.value,
+            "column_name": obj.column_name,
+        }
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
@@ -755,11 +728,8 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfConstantColumns)
 class TestNumberOfConstantColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfConstantColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_constant_columns"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfConstantColumns) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_constant_columns": obj.value}
 
     def render_html(self, obj: TestNumberOfConstantColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -874,11 +844,8 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfDuplicatedRows)
 class TestNumberOfDuplicatedRowsRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfDuplicatedRows) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_duplicated_rows"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfDuplicatedRows) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_duplicated_rows": obj.value}
 
 
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
@@ -907,11 +874,8 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfDuplicatedColumns)
 class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfDuplicatedColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_duplicated_columns"] = obj.value
-        return base
+    def json_parameters(self, obj: TestNumberOfDuplicatedColumns) -> dict:
+        return {"condition": obj.get_condition().as_dict(), "number_of_duplicated_columns": obj.value}
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
@@ -1118,17 +1082,17 @@ class TestColumnsType(Test):
 
 @default_renderer(wrap_type=TestColumnsType)
 class TestColumnsTypeRenderer(TestRenderer):
-    def render_json(self, obj: TestColumnsType) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["columns"] = [
-            dict(
-                column_name=column_name,
-                actual_type=types[0],
-                expected_type=types[1],
-            )
-            for column_name, types in obj.get_result().columns_types.items()
-        ]
-        return base
+    def json_parameters(self, obj: TestColumnsType):
+        return {
+            "columns": [
+                dict(
+                    column_name=column_name,
+                    actual_type=types[0],
+                    expected_type=types[1],
+                )
+                for column_name, types in obj.get_result().columns_types.items()
+            ]
+        }
 
     def render_html(self, obj: TestColumnsType) -> TestHtmlInfo:
         info = super().render_html(obj)
