@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
@@ -16,7 +15,7 @@ ScatterData = Union[pd.Series, List[float], pd.Index]
 ColumnScatter = Dict[Label, ScatterData]
 
 
-class Distribution(MetricResultField):
+class Distribution(MetricResult):
     class Config:
         dict_include = False
         pd_include = False
@@ -25,7 +24,7 @@ class Distribution(MetricResultField):
     y: Union[np.ndarray, list, pd.Categorical, pd.Series]
 
 
-class ConfusionMatrix(MetricResultField):
+class ConfusionMatrix(MetricResult):
     class Config:
         smart_union = True
 
@@ -33,7 +32,7 @@ class ConfusionMatrix(MetricResultField):
     values: list  # todo better typing
 
 
-class PredictionData(MetricResultField):
+class PredictionData(MetricResult):
     class Config:
         dict_include = False
 
@@ -42,7 +41,7 @@ class PredictionData(MetricResultField):
     labels: List[Label]
 
 
-class StatsByFeature(MetricResultField):
+class StatsByFeature(MetricResult):
     class Config:
         dict_include = False
         pd_include = False
@@ -51,14 +50,14 @@ class StatsByFeature(MetricResultField):
     predictions: Optional[PredictionData]
 
 
-class DatasetUtilityColumns(MetricResultField):
+class DatasetUtilityColumns(MetricResult):
     date: Optional[str]
     id: Optional[str]
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
 
 
-class DatasetColumns(MetricResultField):
+class DatasetColumns(MetricResult):
     class Config:
         dict_exclude_fields = {"task", "target_type"}
 
@@ -150,7 +149,7 @@ def column_scatter_from_df(df: pd.DataFrame, with_index: bool) -> ColumnScatter:
     return data
 
 
-class ScatterField(MetricResultField):
+class ScatterField(MetricResult):
     class Config:
         smart_union = True
         dict_include = False
@@ -174,7 +173,7 @@ class ColumnScatterResult(MetricResult):
 PlotData = List[float]
 
 
-class Boxes(MetricResultField):
+class Boxes(MetricResult):
     class Config:
         dict_include = False
 
@@ -185,7 +184,7 @@ class Boxes(MetricResultField):
     maxs: PlotData
 
 
-class RatesPlotData(MetricResultField):
+class RatesPlotData(MetricResult):
     class Config:
         dict_include = False
 
@@ -196,7 +195,7 @@ class RatesPlotData(MetricResultField):
     tnr: PlotData
 
 
-class PRCurveData(MetricResultField):
+class PRCurveData(MetricResult):
     class Config:
         dict_include = False
 
@@ -208,7 +207,7 @@ class PRCurveData(MetricResultField):
 PRCurve = Dict[Label, PRCurveData]
 
 
-class ROCCurveData(MetricResultField):
+class ROCCurveData(MetricResult):
     class Config:
         dict_include = False
 
@@ -220,7 +219,7 @@ class ROCCurveData(MetricResultField):
 ROCCurve = Dict[Label, ROCCurveData]
 
 
-class HistogramData(MetricResultField):
+class HistogramData(MetricResult):
     class Config:
         dict_include = False
 
@@ -244,7 +243,7 @@ class HistogramData(MetricResultField):
         return pd.DataFrame.from_dict(self.dict(include={"x", "count"}))
 
 
-class Histogram(MetricResultField):
+class Histogram(MetricResult):
     class Config:
         dict_include = False
 
@@ -261,13 +260,13 @@ class DistributionIncluded(Distribution):
         dict_include = True
 
 
-class ColumnCorrelations(MetricResultField):
+class ColumnCorrelations(MetricResult):
     column_name: str
     kind: str
     values: DistributionIncluded
 
 
-class DatasetClassificationQuality(MetricResultField):
+class DatasetClassificationQuality(MetricResult):
     accuracy: float
     precision: float
     recall: float

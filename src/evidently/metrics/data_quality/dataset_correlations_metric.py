@@ -11,7 +11,6 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.data_quality import calculate_correlations
 from evidently.core import ColumnType
@@ -32,7 +31,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
 
 
-class CorrelationStats(MetricResultField):
+class CorrelationStats(MetricResult):
     target_prediction_correlation: Optional[float] = None
     abs_max_target_features_correlation: Optional[float] = None
     abs_max_prediction_features_correlation: Optional[float] = None
@@ -40,7 +39,7 @@ class CorrelationStats(MetricResultField):
     abs_max_features_correlation: Optional[float] = None
 
 
-class DatasetCorrelation(MetricResultField):
+class DatasetCorrelation(MetricResult):
     class Config:
         dict_exclude_fields = {"correlation", "correlations_calculate"}
         pd_exclude_fields = {"correlation", "correlations_calculate"}

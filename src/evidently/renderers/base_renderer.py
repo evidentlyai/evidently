@@ -11,6 +11,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 
 if TYPE_CHECKING:
+    from evidently.base_metric import IncludeOptions
     from evidently.base_metric import Metric
     from evidently.base_metric import TResult
 
@@ -32,9 +33,11 @@ class MetricRenderer(BaseRenderer):
     def render_pandas(self, obj: "Metric[TResult]") -> pd.DataFrame:
         return obj.get_result().get_pandas()
 
-    def render_json(self, obj: "Metric[TResult]") -> dict:
+    def render_json(
+        self, obj: "Metric[TResult]", include: "IncludeOptions" = None, exclude: "IncludeOptions" = None
+    ) -> dict:
         result = obj.get_result()
-        return result.get_dict()
+        return result.get_dict(include=include, exclude=exclude)
 
     def render_html(self, obj) -> List[BaseWidgetInfo]:
         raise NotImplementedError()

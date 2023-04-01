@@ -1,6 +1,5 @@
 import abc
 import logging
-from copy import copy
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -18,6 +17,8 @@ from typing import Union
 import pandas as pd
 from pydantic import BaseConfig
 from pydantic import BaseModel
+from pydantic.fields import SHAPE_DICT
+from pydantic.fields import ModelField
 
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -25,10 +26,10 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr
-    from pydantic.typing import DictStrAny
     from pydantic.typing import MappingIntStrAny
 
 TResult = TypeVar("TResult", bound="MetricResult")
+IncludeOptions = Union["AbstractSetIntStr", "MappingIntStrAny"]
 
 
 class ErrorResult:
@@ -160,7 +161,30 @@ class Metric(Generic[TResult]):
         return required_features
 
 
-class MetricResultField(BaseModel):
+def _is_mapping_field(field: ModelField):
+    return field.shape in (SHAPE_DICT,)
+
+
+# workaround for https://github.com/pydantic/pydantic/issues/5301
+class AllDict(dict):
+    def __init__(self, value):
+        super().__init__()
+        self._value = value
+
+    def __contains__(self, item):
+        return True
+
+    def get(self, __key):
+        return self._value
+
+    def __repr__(self):
+        return f"{{'__all__':{self._value}}}"
+
+    def __bool__(self):
+        return True
+
+
+class MetricResult(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
         dict_include: bool = True
@@ -175,38 +199,52 @@ class MetricResultField(BaseModel):
     if TYPE_CHECKING:
         __config__: ClassVar[Type[Config]] = Config
 
-    def dict(
+    def get_dict(
         self,
-        *,
-        include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-        exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ) -> "DictStrAny":
-        include = include or self.__config__.dict_include_fields or set(self.__fields__)
-        exclude = copy(exclude) or self.__config__.dict_exclude_fields or set()
+        include: Optional[IncludeOptions] = None,
+        exclude: Optional[IncludeOptions] = None,
+    ):
+        return self.dict(include=include or self._build_include(), exclude=exclude)
 
-        for name, field in self.__fields__.items():
-            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
-                if not field.type_.__config__.dict_include:
-                    if isinstance(exclude, set):
-                        exclude.add(name)
-                    elif isinstance(exclude, dict):
-                        exclude[name] = True
-                    else:
-                        raise ValueError("Unknown exclude value type")
-        return super().dict(
-            include=include,
-            exclude=exclude,
-            by_alias=by_alias,
-            skip_defaults=skip_defaults,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
+    def _build_include(self, include=None) -> "MappingIntStrAny":
+        if not self.__config__.dict_include and not include:
+            return {}
+        include = include or {}
+        dict_include_fields = (
+            set(() if isinstance(include, bool) else include)
+            or self.__config__.dict_include_fields
+            or set(self.__fields__.keys())
         )
+        dict_exclude_fields = self.__config__.dict_exclude_fields or set()
+        result: Dict[str, Any] = {}
+        for name, field in self.__fields__.items():
+            if name in dict_exclude_fields and name not in include:
+                continue
+            if name not in dict_include_fields:
+                continue
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResult):
+                if field.type_.__config__.dict_include or field.field_info.include or name in include:
+                    field_value = getattr(self, name)
+                    if field_value is None:
+                        build_include = {}
+                    elif _is_mapping_field(field):
+                        build_include = {
+                            k: v._build_include(include=field.field_info.include or include.get(name, {}))
+                            for k, v in field_value.items()
+                        }
+                    # todo: lists
+
+                    else:
+                        build_include = field_value._build_include(
+                            include=field.field_info.include or include.get(name, {})
+                        )
+                    result[name] = build_include
+                continue
+            result[name] = True
+        return result  # type: ignore
+
+    def __init_subclass__(cls, **kwargs):
+        cls.__include_fields__ = None
 
     def collect_pandas_columns(self, prefix="", include: Set[str] = None, exclude: Set[str] = None) -> Dict[str, Any]:
         include = include or self.__config__.pd_include_fields or set(self.__fields__)
@@ -216,18 +254,18 @@ class MetricResultField(BaseModel):
         for name, field in self.__fields__.items():
             if name not in include or name in exclude:
                 continue
-            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResult):
                 if field.type_.__config__.pd_include:
                     field_value = getattr(self, name)
                     field_prefix = f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
                     if field_value is None:
                         continue
-                    elif isinstance(field_value, MetricResultField):
+                    elif isinstance(field_value, MetricResult):
                         data.update(field_value.collect_pandas_columns(field_prefix))
                     elif isinstance(field_value, dict):  # Dict[str, MetricResultField]
                         # todo: deal with more complex stuff later
-                        assert all(isinstance(v, MetricResultField) for v in field_value.values())
-                        dict_value: MetricResultField
+                        assert all(isinstance(v, MetricResult) for v in field_value.values())
+                        dict_value: MetricResult
                         for dict_key, dict_value in field_value.items():
                             for (
                                 key,
@@ -243,17 +281,10 @@ class MetricResultField(BaseModel):
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame([self.collect_pandas_columns()])
 
-
-class MetricResult(MetricResultField):
-    def get_dict(self):
-        if not self.__config__.dict_include:
-            return {}
-        exclude = set(self.__config__.dict_exclude_fields)
-        for name, field in self.__fields__.items():
-            if isinstance(field.type_, type) and issubclass(field.type_, MetricResultField):
-                if not field.type_.__config__.dict_include:
-                    exclude.add(name)
-        return self.dict(include=self.__config__.dict_include_fields or None, exclude=exclude)
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, MetricResult):
+            return self.get_dict() == other.get_dict()
+        return super().__eq__(other)
 
 
 class ColumnMetricResult(MetricResult):

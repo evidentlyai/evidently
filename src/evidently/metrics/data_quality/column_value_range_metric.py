@@ -8,7 +8,6 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
@@ -27,7 +26,7 @@ from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
 
 
-class ValuesInRangeStat(MetricResultField):
+class ValuesInRangeStat(MetricResult):
     number_in_range: int
     number_not_in_range: int
     share_in_range: float

@@ -33,7 +33,7 @@ class ClassificationPerformanceProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
-        result_for_json = result.columns.dict(by_alias=True)
+        result_for_json = result.columns.get_dict()
         result_for_json["metrics"] = {}
 
         if result.reference_metrics:

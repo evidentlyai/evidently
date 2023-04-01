@@ -2,12 +2,14 @@ import copy
 import dataclasses
 import uuid
 from collections import Counter
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
 import pandas as pd
 
+from evidently.base_metric import IncludeOptions
 from evidently.base_metric import InputData
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
@@ -96,13 +98,14 @@ class TestSuite(Display):
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
-    def as_dict(self) -> dict:
+    def as_dict(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> dict:
         test_results = []
         counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
 
         for test in self._inner_suite.context.test_results:
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             try:
+                # todo: add include/exclude to tests
                 test_data = renderer.render_json(test)
                 test_results.append(test_data)
             except BaseException as e:

@@ -6,7 +6,7 @@ import pandas as pd
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricResultField
+from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
@@ -21,7 +21,7 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
 
 
-class QuantileStats(MetricResultField):
+class QuantileStats(MetricResult):
     value: float
     # calculated value of the quantile
     distribution: Distribution

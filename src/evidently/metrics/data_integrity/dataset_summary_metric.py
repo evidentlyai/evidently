@@ -10,7 +10,6 @@ from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import MetricResultField
 from evidently.calculations.data_integration import get_number_of_all_pandas_missed_values
 from evidently.calculations.data_integration import get_number_of_almost_constant_columns
 from evidently.calculations.data_integration import get_number_of_almost_duplicated_columns
@@ -26,7 +25,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 
 
-class DatasetSummary(MetricResultField):
+class DatasetSummary(MetricResult):
     """Columns information in a dataset"""
 
     class Config:
