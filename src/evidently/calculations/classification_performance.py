@@ -262,11 +262,27 @@ def calculate_pr_table(binded):
         result.append([top, int(count), prob, int(tp), int(fp), precision, recall])
     return result
 
-def calculate_lift_table(binded):
+
+def calculate_lift_table(binded: List[tuple]) -> List[List]:
+    """
+    Calculate all needed table data for lift metric analysis and visualization
+
+    Parameters
+    ----------
+    binded: List[tuple]
+        Zipped together binarized facts(0 or 1) and probabilistic prediction
+
+    Return values
+    -------------
+    result: List[List]
+        Data for lift metric analysis and visualization
+    """
     result = []
     binded.sort(key=lambda item: item[1], reverse=True)
     data_size = len(binded)
     target_class_size = sum([x[0] for x in binded])
+    # we don't use declared STEP_SIZE due to specifics
+    # of lift metric calculation and visualization
     offset = max(round(data_size * 0.01), 1)
 
     for step in np.arange(offset, data_size + offset, offset):
@@ -277,7 +293,7 @@ def calculate_lift_table(binded):
         fp = count - tp
         precision = round(100.0 * tp / count, 1)
         recall = round(100.0 * tp / target_class_size, 1)
-        f1_score = round(2/(1/precision+1/recall), 1)
+        f1_score = round(2 / (1 / precision + 1 / recall), 1)
         lift = round(recall / top, 2)
         if count <= target_class_size:
             max_lift = round(100.0 * count / target_class_size / top, 2)
