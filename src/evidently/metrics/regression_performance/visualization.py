@@ -119,7 +119,7 @@ def regression_perf_plot(
     title = f"current {name}: {np.round(curr_metric, 3)}"
 
     if hist_for_plot.reference is not None:
-        title += f", reference {name}: {np.round(ref_metric, 3)}"
+        title += f", reference {name}: {np.round(ref_metric, 3)}"  # type: ignore[arg-type]
 
     fig.update_layout(title=title)
     return fig
