@@ -236,28 +236,30 @@ class MetricResult(BaseModel):
         for name, field in self.__fields__.items():
             if isinstance(field.type_, type) and issubclass(field.type_, MetricResult):
                 if (
-                    field.type_.__config__.dict_include
-                    or field.field_info.include
-                    or name in include
-                    or any(tag in include_tags for tag in field.type_.__config__.tags)
+                    (not field.type_.__config__.dict_include or name in dict_exclude_fields)
+                    and not field.field_info.include
+                    and name not in include
+                    and all(tag not in include_tags for tag in field.type_.__config__.tags)
                 ):
-                    field_value = getattr(self, name)
-                    if field_value is None:
-                        build_include = {}
-                    elif _is_mapping_field(field):
-                        build_include = {
-                            k: v._build_include(
-                                include_tags=include_tags, include=field.field_info.include or include.get(name, {})
-                            )
-                            for k, v in field_value.items()
-                        }
-                    # todo: lists
+                    continue
 
-                    else:
-                        build_include = field_value._build_include(
+                field_value = getattr(self, name)
+                if field_value is None:
+                    build_include = {}
+                elif _is_mapping_field(field):
+                    build_include = {
+                        k: v._build_include(
                             include_tags=include_tags, include=field.field_info.include or include.get(name, {})
                         )
-                    result[name] = build_include
+                        for k, v in field_value.items()
+                    }
+                # todo: lists
+
+                else:
+                    build_include = field_value._build_include(
+                        include_tags=include_tags, include=field.field_info.include or include.get(name, {})
+                    )
+                result[name] = build_include
                 continue
             if name in dict_exclude_fields and name not in include:
                 continue
