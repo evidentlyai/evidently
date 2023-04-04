@@ -62,7 +62,7 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
             correlations = calculate_numerical_correlation(
                 column_name.display_name,
                 column_data,
-                dataset[[feature.column_name for feature in num_features if feature.column_name != column_name.name]]
+                dataset[[feature.column_name for feature in num_features if feature.column_name != column_name.name]],
             )
         else:
             raise ValueError(f"Cannot calculate correlations for '{column_type}' column type.")

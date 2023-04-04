@@ -1,5 +1,6 @@
 import abc
 import logging
+from typing import Tuple
 
 from dataclasses import dataclass
 from enum import Enum
