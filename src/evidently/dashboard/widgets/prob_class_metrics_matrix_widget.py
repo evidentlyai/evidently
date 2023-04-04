@@ -67,7 +67,7 @@ class ProbClassMetricsMatrixWidget(Widget):
 
         if len(utility_columns.prediction) > 2:
             roc_aucs = metrics.roc_aucs
-            z = np.append(z, [roc_aucs], axis=0)
+            z = np.append(z, [roc_aucs], axis=0)  # type: ignore[arg-type]
             y.append("roc-auc")
 
         # change each element of z to type string for annotations

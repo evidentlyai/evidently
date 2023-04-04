@@ -29,7 +29,7 @@ def sigma_median(dist: np.ndarray) -> float:
     Returns:
         sigma: the median sigma
     """
-    sigma = (0.5 * np.percentile(dist.flatten(), 50, interpolation="nearest")) ** 0.5
+    sigma = (0.5 * np.percentile(dist.flatten(), 50, interpolation="nearest")) ** 0.5  # type: ignore[call-overload]
     if sigma == 0:
         return (0.5 * 1) ** 0.5
     return sigma
