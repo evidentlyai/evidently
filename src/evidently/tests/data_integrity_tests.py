@@ -1,14 +1,18 @@
 from abc import ABC
+from typing import ClassVar
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Optional
-from typing import Tuple
+from typing import TypeVar
 from typing import Union
 
 import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import ColumnSummaryMetric
@@ -16,13 +20,13 @@ from evidently.metrics import DatasetMissingValuesMetric
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValues
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetricResult
+from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummary
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import CheckValueParameters
 from evidently.tests.base_test import ColumnCheckValueParameters
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
@@ -31,6 +35,7 @@ from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
+from evidently.tests.base_test import ValueSource
 from evidently.tests.utils import approx
 from evidently.tests.utils import dataframes_to_table
 from evidently.tests.utils import plot_dicts_to_table
@@ -42,8 +47,25 @@ from evidently.utils.types import NumericApprox
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
 
+T = TypeVar("T", bound=MetricResult)
 
-class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
+
+class ConditionFromReferenceMixin(BaseCheckValueTest, Generic[T], ABC):
+    metric: Metric
+
+    def get_condition_from_reference(self, reference: Optional[T]) -> TestValueCondition:
+        raise NotImplementedError
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_stats = self.metric.get_result().reference
+
+        return self.get_condition_from_reference(reference_stats)
+
+
+class BaseIntegrityValueTest(ConditionFromReferenceMixin[DatasetSummary], ABC):
     group = DATA_INTEGRITY_GROUP.id
     metric: DatasetSummaryMetric
 
@@ -76,15 +98,9 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
     name = "Number of Columns"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.metric.get_result().reference
-
-        if reference_stats is not None:
-            return TestValueCondition(eq=reference_stats.number_of_columns)
-
+    def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
+        if reference is not None:
+            return TestValueCondition(eq=reference.number_of_columns)
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Numeric:
@@ -117,14 +133,9 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 
     name = "Number of Rows"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.metric.get_result().reference
-
-        if reference_stats is not None:
-            return TestValueCondition(eq=approx(reference_stats.number_of_rows, relative=0.1))
+    def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
+        if reference is not None:
+            return TestValueCondition(eq=approx(reference.number_of_rows, relative=0.1))
 
         return TestValueCondition(gt=30)
 
@@ -135,12 +146,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return f"The number of rows is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestNumberOfRows)
-class TestNumberOfRowsRenderer(TestRenderer):
-    pass
-
-
-class BaseIntegrityMissingValuesValuesTest(BaseCheckValueTest, ABC):
+class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMissingValues], ABC):
     group = DATA_INTEGRITY_GROUP.id
     metric: DatasetMissingValuesMetric
 
@@ -250,14 +256,9 @@ class TestNumberOfDifferentMissingValues(BaseIntegrityMissingValuesValuesTest):
 
     name = "Different Types of Missing Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_missing_values = self.metric.get_result().reference
-
-        if reference_missing_values is not None:
-            return TestValueCondition(eq=reference_missing_values.number_of_different_missing_values)
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
+        if reference is not None:
+            return TestValueCondition(eq=reference.number_of_different_missing_values)
 
         return TestValueCondition(eq=0)
 
@@ -298,19 +299,14 @@ class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
 
     name = "The Number of Missing Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_missing_values = self.metric.get_result().reference
-
-        if reference_missing_values is not None:
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
+        if reference is not None:
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
-            ref_number_of_rows = reference_missing_values.number_of_rows
+            ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(
                 lte=approx(
-                    reference_missing_values.number_of_missing_values * mult,
+                    reference.number_of_missing_values * mult,
                     relative=0.1,
                 )
             )
@@ -339,12 +335,7 @@ class TestShareOfMissingValues(BaseIntegrityMissingValuesValuesTest):
 
     name = "Share of Missing Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
             return TestValueCondition(lte=approx(reference.share_of_missing_values, relative=0.1))
 
@@ -370,12 +361,7 @@ class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest)
 
     name = "The Number of Columns With Missing Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
             return TestValueCondition(lte=reference.number_of_columns_with_missing_values)
 
@@ -405,12 +391,7 @@ class TestShareOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
     name = "The Share of Columns With Missing Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
             return TestValueCondition(lte=reference.share_of_columns_with_missing_values)
 
@@ -441,12 +422,7 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
     name = "The Number Of Rows With Missing Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference.number_of_rows
@@ -462,22 +438,12 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
         return f"The number of rows with missing values is {value}. " f"The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestNumberOfRowsWithMissingValues)
-class TestNumberOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    pass
-
-
 class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a share of rows with a missing value."""
 
     name = "The Share of Rows With Missing Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
             return TestValueCondition(lte=approx(reference.share_of_rows_with_missing_values, relative=0.1))
 
@@ -492,12 +458,7 @@ class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
         )
 
 
-@default_renderer(wrap_type=TestShareOfRowsWithMissingValues)
-class TestShareOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    pass
-
-
-class BaseIntegrityColumnMissingValuesTest(BaseCheckValueTest, ABC):
+class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMissingValues], ABC):
     group = DATA_INTEGRITY_GROUP.id
     metric: DatasetMissingValuesMetric
     column_name: str
@@ -535,19 +496,14 @@ class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesT
 
     name = "Different Types of Missing Values in a Column"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_missing_values = self.metric.get_result().reference
-
-        if reference_missing_values is not None:
-            if self.column_name not in reference_missing_values.number_of_different_missing_values_by_column:
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
+        if reference is not None:
+            if self.column_name not in reference.number_of_different_missing_values_by_column:
                 raise ValueError(
                     f"Cannot define test default conditions: no column '{self.column_name}' in reference dataset."
                 )
 
-            ref_value = reference_missing_values.number_of_different_missing_values_by_column[self.column_name]
+            ref_value = reference.number_of_different_missing_values_by_column[self.column_name]
             return TestValueCondition(lte=ref_value)
 
         return TestValueCondition(eq=0)
@@ -590,17 +546,12 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
     name = "The Number of Missing Values in a Column"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_missing_values = self.metric.get_result().reference
-
-        if reference_missing_values is not None:
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
+        if reference is not None:
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
-            ref_number_of_rows = reference_missing_values.number_of_rows
+            ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
-            ref_value = reference_missing_values.number_of_missing_values_by_column[self.column_name]
+            ref_value = reference.number_of_missing_values_by_column[self.column_name]
             return TestValueCondition(lte=approx(ref_value * mult, relative=0.1))
 
         return TestValueCondition(eq=0)
@@ -615,22 +566,12 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
         )
 
 
-@default_renderer(wrap_type=TestColumnNumberOfMissingValues)
-class TestColumnNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    pass
-
-
 class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
     """Check a share of missing values in one column."""
 
     name = "The Share of Missing Values in a Column"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
+    def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
             ref_value = reference.share_of_missing_values_by_column[self.column_name]
             return TestValueCondition(lte=approx(ref_value, relative=0.1))
@@ -668,24 +609,14 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
         return [TestColumnShareOfMissingValues(column_name=name) for name in columns]
 
 
-@default_renderer(wrap_type=TestColumnShareOfMissingValues)
-class TestColumnShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    pass
-
-
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     """Number of columns contained only one unique value"""
 
     name = "Number of Constant Columns"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.metric.get_result().reference
-
-        if reference_stats is not None:
-            value = reference_stats.number_of_constant_columns
+    def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
+        if reference is not None:
+            value = reference.number_of_constant_columns
             return TestValueCondition(lte=value)
 
         return TestValueCondition(eq=0)
@@ -720,16 +651,11 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
 
     name = "Number of Empty Rows"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.metric.get_result().reference
-
-        if reference_stats is not None:
-            ref_number_of_empty_rows = reference_stats.number_of_empty_rows
+    def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
+        if reference is not None:
+            ref_number_of_empty_rows = reference.number_of_empty_rows
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
-            ref_number_of_rows = reference_stats.number_of_rows
+            ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(eq=approx(ref_number_of_empty_rows * mult, 0.1))
 
@@ -747,14 +673,9 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
 
     name = "Number of Empty Columns"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.metric.get_result().reference
-
-        if reference_stats is not None:
-            return TestValueCondition(lte=reference_stats.number_of_empty_columns)
+    def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
+        if reference is not None:
+            return TestValueCondition(lte=reference.number_of_empty_columns)
 
         return TestValueCondition(eq=0)
 
@@ -788,16 +709,11 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
 
     name = "Number of Duplicate Rows"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.metric.get_result().reference
-
-        if reference_stats is not None:
-            ref_num_of_duplicates = reference_stats.number_of_duplicated_rows
+    def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
+        if reference is not None:
+            ref_num_of_duplicates = reference.number_of_duplicated_rows
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
-            ref_number_of_rows = reference_stats.number_of_rows
+            ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
 
@@ -810,24 +726,14 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
         return f"The number of duplicate rows is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestNumberOfDuplicatedRows)
-class TestNumberOfDuplicatedRowsRenderer(TestRenderer):
-    pass
-
-
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
     """How many columns have duplicates in the dataset"""
 
     name = "Number of Duplicate Columns"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.metric.get_result().reference
-
-        if reference_stats is not None:
-            value = reference_stats.number_of_duplicated_columns
+    def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
+        if reference is not None:
+            value = reference.number_of_duplicated_columns
             return TestValueCondition(lte=value)
 
         return TestValueCondition(eq=0)
@@ -837,11 +743,6 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of duplicate columns is {value}. The test threshold is {self.get_condition()}."
-
-
-@default_renderer(wrap_type=TestNumberOfDuplicatedColumns)
-class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
-    pass
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
@@ -1009,7 +910,7 @@ class TestColumnsType(Test):
             if self.metric.get_result().reference is None:
                 status = TestStatus.ERROR
                 description = "Cannot compare column types without conditions or a reference"
-                return TestResult(name=self.name, description=description, status=status)
+                return TestResult(name=self.name, description=description, status=status, group=self.group)
 
             # get types from reference
             columns_type = self.metric.get_result().reference.columns_type
@@ -1020,7 +921,7 @@ class TestColumnsType(Test):
             if not columns_type:
                 status = TestStatus.ERROR
                 description = "Columns type condition is empty"
-                return TestResult(name=self.name, description=description, status=status)
+                return TestResult(name=self.name, description=description, status=status, group=self.group)
 
         invalid_types_count = 0
         columns = []
