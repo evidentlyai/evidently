@@ -150,7 +150,7 @@ class Test:
 
     name: str
     group: str
-    context: "Context" = None
+    context: Optional["Context"] = None
 
     @abc.abstractmethod
     def check(self) -> TestResult:
@@ -165,7 +165,7 @@ class Test:
         result = self.context.test_results.get(self, None)
         if result is None:
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
-        return result
+        return result  # type: ignore[return-value]
 
 
 class ValueSource(Enum):

@@ -416,7 +416,8 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
 class TestNumberOfDriftedColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
-        parameters: ColumnsDriftParameters = obj.get_result().parameters
+        parameters = obj.get_result().parameters
+        assert isinstance(parameters, ColumnsDriftParameters)
         df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
         info.with_details(
@@ -430,7 +431,9 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
 class TestShareOfDriftedColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
-        df = obj.get_result().parameters.to_dataframe()
+        parameters = obj.get_result().parameters
+        assert isinstance(parameters, ColumnsDriftParameters)
+        df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
         info.details = [
             DetailsInfo(

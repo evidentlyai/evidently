@@ -1063,6 +1063,8 @@ class TestColumnsTypeRenderer(TestRenderer):
     def render_html(self, obj: TestColumnsType) -> TestHtmlInfo:
         info = super().render_html(obj)
 
+        parameters = obj.get_result().parameters
+        assert isinstance(parameters, ColumnTypesParameter)
         info.details = [
             DetailsInfo(
                 title="",
@@ -1071,9 +1073,7 @@ class TestColumnsTypeRenderer(TestRenderer):
                     type="table",
                     params={
                         "header": ["Column Name", "Actual Type", "Expected Type"],
-                        "data": [
-                            [c.column_name, c.actual_type, c.expected_type] for c in obj.get_result().parameters.columns
-                        ],
+                        "data": [[c.column_name, c.actual_type, c.expected_type] for c in parameters.columns],
                     },
                     size=2,
                 ),

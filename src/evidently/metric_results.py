@@ -7,8 +7,8 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently.base_metric import IncludeTags
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]

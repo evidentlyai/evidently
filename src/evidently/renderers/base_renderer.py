@@ -11,9 +11,9 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 
 if TYPE_CHECKING:
-    from evidently.base_metric import IncludeOptions
     from evidently.base_metric import Metric
     from evidently.base_metric import TResult
+    from evidently.core import IncludeOptions
     from evidently.tests.base_test import Test
 
 
@@ -75,7 +75,7 @@ class TestRenderer(BaseRenderer):
     def json_description(self, obj: "Test"):
         return obj.get_result().description
 
-    def render_html(self, obj: "Test") -> TestHtmlInfo:
+    def render_html(self, obj) -> TestHtmlInfo:
         result = obj.get_result()
         return TestHtmlInfo(
             name=result.name,
