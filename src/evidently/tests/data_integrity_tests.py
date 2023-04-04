@@ -1,4 +1,3 @@
-import dataclasses
 from abc import ABC
 from typing import Dict
 from typing import List
@@ -23,10 +22,13 @@ from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import CheckValueParameters
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
 from evidently.tests.utils import dataframes_to_table
@@ -34,6 +36,7 @@ from evidently.tests.utils import plot_dicts_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
+from evidently.utils.types import NumericApprox
 
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
@@ -45,7 +48,7 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
-        eq: Optional[Numeric] = None,
+        eq: Optional[NumericApprox] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
         is_in: Optional[List[Union[Numeric, str, bool]]] = None,
@@ -92,9 +95,6 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfColumns)
 class TestNumberOfColumnsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestNumberOfColumns) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_columns": obj.value}
-
     def render_html(self, obj: TestNumberOfColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         columns = ["column name", "current dtype"]
@@ -136,8 +136,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfRows)
 class TestNumberOfRowsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestNumberOfRows) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_rows": obj.value}
+    pass
 
 
 class BaseIntegrityMissingValuesValuesTest(BaseCheckValueTest, ABC):
@@ -273,9 +272,6 @@ class TestNumberOfDifferentMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestNumberOfDifferentMissingValues)
 class TestNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestNumberOfDifferentMissingValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_different_missing_values": obj.value}
-
     def render_html(self, obj: TestNumberOfDifferentMissingValues) -> TestHtmlInfo:
         """Get a table with a missing value and number of the value in the dataset"""
         info = super().render_html(obj)
@@ -329,9 +325,6 @@ class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestNumberOfMissingValues)
 class TestNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestNumberOfMissingValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_missing_values": obj.value}
-
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -365,9 +358,6 @@ class TestShareOfMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestShareOfMissingValues)
 class TestShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestShareOfMissingValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "share_of_missing_values": obj.value}
-
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -401,9 +391,6 @@ class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest)
 
 @default_renderer(wrap_type=TestNumberOfColumnsWithMissingValues)
 class TestNumberOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestNumberOfColumnsWithMissingValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_columns_with_missing_values": obj.value}
-
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -440,9 +427,6 @@ class TestShareOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestShareOfColumnsWithMissingValues)
 class TestShareOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestShareOfColumnsWithMissingValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "share_of_columns_with_missing_values": obj.value}
-
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -479,8 +463,7 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestNumberOfRowsWithMissingValues)
 class TestNumberOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestNumberOfRowsWithMissingValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_rows_with_missing_values": obj.value}
+    pass
 
 
 class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
@@ -510,8 +493,7 @@ class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 @default_renderer(wrap_type=TestShareOfRowsWithMissingValues)
 class TestShareOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestShareOfRowsWithMissingValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "share_of_rows_with_missing_values": obj.value}
+    pass
 
 
 class BaseIntegrityColumnMissingValuesTest(BaseCheckValueTest, ABC):
@@ -582,13 +564,6 @@ class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesT
 
 @default_renderer(wrap_type=TestColumnNumberOfDifferentMissingValues)
 class TestColumnNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestColumnNumberOfDifferentMissingValues):
-        return {
-            "condition": obj.get_condition().as_dict(),
-            "number_of_different_missing_values": obj.value,
-            "column_name": obj.column_name,
-        }
-
     def render_html(self, obj: TestColumnNumberOfDifferentMissingValues) -> TestHtmlInfo:
         """Get a table with a missing value and number of the value in the dataset"""
         info = super().render_html(obj)
@@ -641,12 +616,11 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
 @default_renderer(wrap_type=TestColumnNumberOfMissingValues)
 class TestColumnNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestColumnNumberOfMissingValues):
-        return {
-            "condition": obj.get_condition().as_dict(),
-            "number_of_missing_values": obj.value,
-            "column_name": obj.column_name,
-        }
+    pass
+
+
+class ColumnCheckValueParameters(CheckValueParameters):
+    column_name: str
 
 
 class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
@@ -675,6 +649,11 @@ class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
             f"The test threshold is {self.get_condition()}."
         )
 
+    def get_parameters(self):
+        return ColumnCheckValueParameters(
+            condition=self.get_condition(), value=self.value, column_name=self.column_name
+        )
+
 
 class TestAllColumnsShareOfMissingValues(BaseGenerator):
     columns: Optional[List[str]]
@@ -694,12 +673,7 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
 
 @default_renderer(wrap_type=TestColumnShareOfMissingValues)
 class TestColumnShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def json_parameters(self, obj: TestColumnShareOfMissingValues):
-        return {
-            "condition": obj.get_condition().as_dict(),
-            "share_of_missing_values": obj.value,
-            "column_name": obj.column_name,
-        }
+    pass
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
@@ -728,9 +702,6 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfConstantColumns)
 class TestNumberOfConstantColumnsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestNumberOfConstantColumns) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_constant_columns": obj.value}
-
     def render_html(self, obj: TestNumberOfConstantColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         columns = ["column name", "current nunique"]
@@ -844,8 +815,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfDuplicatedRows)
 class TestNumberOfDuplicatedRowsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestNumberOfDuplicatedRows) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_duplicated_rows": obj.value}
+    pass
 
 
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
@@ -874,8 +844,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
 @default_renderer(wrap_type=TestNumberOfDuplicatedColumns)
 class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestNumberOfDuplicatedColumns) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "number_of_duplicated_columns": obj.value}
+    pass
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
@@ -944,12 +913,14 @@ class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
         )
 
         if uniques_in_column <= 1:
-            status = TestResult.FAIL
+            status = TestStatus.FAIL
 
         else:
-            status = TestResult.SUCCESS
+            status = TestStatus.SUCCESS
 
-        return TestResult(name=self.name, description=description, status=status, groups=self.groups())
+        return TestResult(
+            name=self.name, description=description, status=status, groups=self.groups(), group=self.group
+        )
 
 
 @default_renderer(wrap_type=TestColumnAllConstantValues)
@@ -985,12 +956,14 @@ class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
         )
 
         if uniques_in_column != number_of_rows - nans_in_column:
-            status = TestResult.FAIL
+            status = TestStatus.FAIL
 
         else:
-            status = TestResult.SUCCESS
+            status = TestStatus.SUCCESS
 
-        return TestResult(name=self.name, description=description, status=status, groups=self.groups())
+        return TestResult(
+            name=self.name, description=description, status=status, groups=self.groups(), group=self.group
+        )
 
 
 @default_renderer(wrap_type=TestColumnAllUniqueValues)
@@ -1009,6 +982,16 @@ class TestColumnAllUniqueValuesRenderer(TestRenderer):
         return info
 
 
+class ColumnTypeParameter(TestParameters):
+    actual_type: str
+    column_name: str
+    expected_type: str
+
+
+class ColumnTypesParameter(TestParameters):
+    columns: List[ColumnTypeParameter]
+
+
 class TestColumnsType(Test):
     """This test compares columns type against the specified ones or a reference dataframe"""
 
@@ -1017,20 +1000,17 @@ class TestColumnsType(Test):
     columns_type: Optional[dict]
     metric: DatasetSummaryMetric
 
-    class Result(TestResult):
-        columns_types: Dict[str, Tuple[str, str]] = {}
-
     def __init__(self, columns_type: Optional[dict] = None):
         self.columns_type = columns_type
         self.metric = DatasetSummaryMetric()
 
     def check(self):
-        status = TestResult.SUCCESS
+        status = TestStatus.SUCCESS
         data_columns_type = self.metric.get_result().current.columns_type
 
         if self.columns_type is None:
             if self.metric.get_result().reference is None:
-                status = TestResult.ERROR
+                status = TestStatus.ERROR
                 description = "Cannot compare column types without conditions or a reference"
                 return TestResult(name=self.name, description=description, status=status)
 
@@ -1041,58 +1021,48 @@ class TestColumnsType(Test):
             columns_type = self.columns_type
 
             if not columns_type:
-                status = TestResult.ERROR
+                status = TestStatus.ERROR
                 description = "Columns type condition is empty"
                 return TestResult(name=self.name, description=description, status=status)
 
         invalid_types_count = 0
-        columns_types = {}
+        columns = []
 
         for column_name, expected_type_object in columns_type.items():
             real_column_type_object = data_columns_type.get(column_name)
 
             if real_column_type_object is None:
-                status = TestResult.ERROR
+                status = TestStatus.ERROR
                 description = f"No column '{column_name}' in the metrics data"
-                return TestResult(name=self.name, description=description, status=status)
+                return TestResult(name=self.name, description=description, status=status, group=self.group)
 
             expected_type = infer_dtype_from_object(expected_type_object)
             real_column_type = infer_dtype_from_object(real_column_type_object)
-            columns_types[column_name] = (
-                real_column_type.__name__,
-                expected_type.__name__,
+            columns.append(
+                ColumnTypeParameter(
+                    actual_type=real_column_type.__name__, expected_type=expected_type.__name__, column_name=column_name
+                )
             )
 
             if expected_type == real_column_type or issubclass(real_column_type, expected_type):
                 # types are matched or expected type is a parent
                 continue
 
-            status = TestResult.FAIL
+            status = TestStatus.FAIL
             invalid_types_count += 1
 
-        return self.Result(
+        return TestResult(
             name=self.name,
             description=f"The number of columns with a type "
             f"mismatch is {invalid_types_count} out of {len(columns_type)}.",
             status=status,
-            columns_types=columns_types,
+            parameters=ColumnTypesParameter(columns=columns),
+            group=self.group,
         )
 
 
 @default_renderer(wrap_type=TestColumnsType)
 class TestColumnsTypeRenderer(TestRenderer):
-    def json_parameters(self, obj: TestColumnsType):
-        return {
-            "columns": [
-                dict(
-                    column_name=column_name,
-                    actual_type=types[0],
-                    expected_type=types[1],
-                )
-                for column_name, types in obj.get_result().columns_types.items()
-            ]
-        }
-
     def render_html(self, obj: TestColumnsType) -> TestHtmlInfo:
         info = super().render_html(obj)
 
@@ -1105,7 +1075,7 @@ class TestColumnsTypeRenderer(TestRenderer):
                     params={
                         "header": ["Column Name", "Actual Type", "Expected Type"],
                         "data": [
-                            [column_name, *types] for column_name, types in obj.get_result().columns_types.items()
+                            [c.column_name, c.actual_type, c.expected_type] for c in obj.get_result().parameters.columns
                         ],
                     },
                     size=2,

@@ -220,3 +220,15 @@ def test_model_enum():
     obj2 = parse_obj_as(Container, d)
     assert obj2.value == MyEnum.A
     assert obj2 == obj
+
+
+def test_model_list():
+    class SimpleField(MetricResult):
+        field: str
+        field2: str
+
+    class Container(MetricResult):
+        field: List[SimpleField]
+
+    obj = Container(field=[SimpleField(field="a", field2="b")])
+    assert obj.get_dict() == {"field": [{"field": "a", "field2": "b"}]}

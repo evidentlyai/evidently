@@ -18,6 +18,9 @@ import pandas as pd
 from pydantic import BaseConfig
 from pydantic import BaseModel
 from pydantic.fields import SHAPE_DICT
+from pydantic.fields import SHAPE_LIST
+from pydantic.fields import SHAPE_SET
+from pydantic.fields import SHAPE_TUPLE
 from pydantic.fields import ModelField
 
 from evidently.features.generated_features import GeneratedFeature
@@ -167,6 +170,10 @@ def _is_mapping_field(field: ModelField):
     return field.shape in (SHAPE_DICT,)
 
 
+def _is_sequence_field(field: ModelField):
+    return field.shape in (SHAPE_LIST, SHAPE_SET, SHAPE_TUPLE)
+
+
 # workaround for https://github.com/pydantic/pydantic/issues/5301
 class AllDict(dict):
     def __init__(self, value):
@@ -253,8 +260,13 @@ class MetricResult(BaseModel):
                         )
                         for k, v in field_value.items()
                     }
-                # todo: lists
-
+                elif _is_sequence_field(field):
+                    build_include = {
+                        i: v._build_include(
+                            include_tags=include_tags, include=field.field_info.include or include.get(name, {})
+                        )
+                        for i, v in enumerate(field_value)
+                    }
                 else:
                     build_include = field_value._build_include(
                         include_tags=include_tags, include=field.field_info.include or include.get(name, {})
