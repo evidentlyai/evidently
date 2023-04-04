@@ -1,6 +1,7 @@
 import abc
 from abc import ABC
 from typing import Any
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -39,6 +40,8 @@ GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
 
 
 class SimpleClassificationTest(BaseCheckValueTest):
+    condition_arg: ClassVar[str] = "gt"
+
     group = CLASSIFICATION_GROUP.id
     name: str
     metric: ClassificationQualityMetric
@@ -78,12 +81,12 @@ class SimpleClassificationTest(BaseCheckValueTest):
         ref_metrics = self.metric.get_result().reference
 
         if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2), source=ValueSource.REFERENCE)
 
         if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
 
-        return TestValueCondition(gt=self.get_value(self.dummy_metric.get_result().dummy))
+        return TestValueCondition(**{self.condition_arg: self.get_value(self.dummy_metric.get_result().dummy)}, source=ValueSource.DUMMY)
 
     @abc.abstractmethod
     def get_value(self, result: DatasetClassificationQuality):
@@ -130,25 +133,6 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        result = self.metric.get_result()
-        ref_metrics = result.reference
-
-        if ref_metrics is not None:
-            return TestValueCondition(
-                eq=approx(self.get_value(ref_metrics), relative=0.2), source=ValueSource.REFERENCE
-            )
-
-        dummy_result = self.dummy_metric.get_result().dummy
-
-        if self.get_value(dummy_result) is None:
-            raise ValueError("Neither required test parameters nor reference data has been provided.")
-
-        return TestValueCondition(gt=self.get_value(dummy_result), source=ValueSource.DUMMY)
 
 
 class TestAccuracyScore(SimpleClassificationTestTopK):
@@ -293,23 +277,8 @@ class TestRocAucRenderer(TestRenderer):
 
 
 class TestLogLoss(SimpleClassificationTest):
+    condition_arg = "lt"
     name = "Logarithmic Loss"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        ref_metrics = self.metric.get_result().reference
-
-        if ref_metrics is not None:
-            return TestValueCondition(
-                eq=approx(self.get_value(ref_metrics), relative=0.2), source=ValueSource.REFERENCE
-            )
-
-        if self.get_value(self.dummy_metric.get_result().dummy) is None:
-            raise ValueError("Neither required test parameters nor reference data has been provided.")
-
-        return TestValueCondition(lt=self.get_value(self.dummy_metric.get_result().dummy), source=ValueSource.DUMMY)
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.log_loss
@@ -415,23 +384,8 @@ class TestTNRRenderer(TestRenderer):
 
 
 class TestFPR(SimpleClassificationTestTopK):
+    condition_arg: ClassVar = "lt"
     name = "False Positive Rate"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        result = self.metric.get_result()
-        ref_metrics = result.reference
-        dummy_metrics = self.dummy_metric.get_result().dummy
-
-        if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-
-        if self.get_value(dummy_metrics) is None:
-            raise ValueError("Neither required test parameters nor reference data has been provided.")
-
-        return TestValueCondition(lt=self.get_value(dummy_metrics))
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.fpr
@@ -467,23 +421,8 @@ class TestFPRRenderer(TestRenderer):
 
 
 class TestFNR(SimpleClassificationTestTopK):
+    condition_arg: ClassVar = "lt"
     name = "False Negative Rate"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        result = self.metric.get_result()
-        ref_metrics = result.reference
-        dummy_metrics = self.dummy_metric.get_result().dummy
-
-        if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-
-        if self.get_value(dummy_metrics) is None:
-            raise ValueError("Neither required test parameters nor reference data has been provided.")
-
-        return TestValueCondition(lt=self.get_value(dummy_metrics))
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.fnr
