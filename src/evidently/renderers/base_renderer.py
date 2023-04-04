@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from evidently.base_metric import IncludeOptions
     from evidently.base_metric import Metric
     from evidently.base_metric import TResult
+    from evidently.tests.base_test import Test
 
 
 class BaseRenderer:
@@ -68,34 +69,24 @@ class TestHtmlInfo:
 
 
 class TestRenderer(BaseRenderer):
-    def html_description(self, obj):
+    def html_description(self, obj: "Test"):
         return obj.get_result().description
 
-    def json_description(self, obj):
+    def json_description(self, obj: "Test"):
         return obj.get_result().description
 
-    def render_html(self, obj) -> TestHtmlInfo:
+    def render_html(self, obj: "Test") -> TestHtmlInfo:
         result = obj.get_result()
         return TestHtmlInfo(
             name=result.name,
             description=self.html_description(obj),
-            status=result.status,
+            status=str(result.status),
             details=[],
             groups=result.groups,
         )
 
-    def json_parameters(self, obj) -> dict:
-        return {}
-
-    def render_json(self, obj) -> dict:
-        result = obj.get_result()
-        return {
-            "name": result.name,
-            "description": self.json_description(obj),
-            "status": result.status,
-            "group": obj.group,
-            "parameters": self.json_parameters(obj),
-        }
+    def render_json(self, obj: "Test") -> dict:
+        return obj.get_result().get_dict()
 
 
 @dataclasses.dataclass

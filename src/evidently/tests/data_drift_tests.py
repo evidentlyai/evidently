@@ -35,9 +35,8 @@ DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 
-@dataclasses.dataclass
 class TestDataDriftResult(TestResult):
-    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(default_factory=dict)
+    features: Dict[str, Tuple[str, float, float]] = {}
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):

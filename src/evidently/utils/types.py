@@ -76,3 +76,6 @@ class ApproxValue:
             result["absolute"] = self._absolute
 
         return result
+
+
+NumericApprox = Union[int, float, ApproxValue]

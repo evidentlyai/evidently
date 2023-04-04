@@ -1017,9 +1017,8 @@ class TestColumnsType(Test):
     columns_type: Optional[dict]
     metric: DatasetSummaryMetric
 
-    @dataclasses.dataclass
     class Result(TestResult):
-        columns_types: Dict[str, Tuple[str, str]] = dataclasses.field(default_factory=dict)
+        columns_types: Dict[str, Tuple[str, str]] = {}
 
     def __init__(self, columns_type: Optional[dict] = None):
         self.columns_type = columns_type

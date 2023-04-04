@@ -11,6 +11,7 @@ import pandas as pd
 
 from evidently.base_metric import IncludeOptions
 from evidently.base_metric import InputData
+from evidently.base_metric import MetricResult
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -23,7 +24,7 @@ from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
-from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestStatus
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
@@ -115,7 +116,7 @@ class TestSuite(Display):
                 test_results.append(test_data)
             except BaseException as e:
                 test_data = TestRenderer.render_json(renderer, test)
-                test_data["status"] = TestResult.ERROR
+                test_data["status"] = TestStatus.ERROR
                 test_data["description"] = f"Test failed with exception: {e}"
                 test_results.append(test_data)
 
@@ -126,9 +127,9 @@ class TestSuite(Display):
             "summary": {
                 "all_passed": bool(self),
                 "total_tests": total_tests,
-                "success_tests": counter["SUCCESS"] + counter["WARNING"],
-                "failed_tests": counter["FAIL"],
-                "by_status": counter,
+                "success_tests": counter[TestStatus.SUCCESS] + counter[TestStatus.WARNING],
+                "failed_tests": counter[TestStatus.FAIL],
+                "by_status": {str(k): v for k, v in counter.items()},
             },
         }
 
@@ -151,8 +152,8 @@ class TestSuite(Display):
             params={
                 "counters": [{"value": f"{total_tests}", "label": "Tests"}]
                 + [
-                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()}"}
-                    for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
+                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.value.title()}"}
+                    for status in [TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.FAIL, TestStatus.ERROR]
                 ]
             },
         )

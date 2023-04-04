@@ -28,6 +28,8 @@ if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr
     from pydantic.typing import MappingIntStrAny
 
+    from evidently.suite.base_suite import Context
+
 TResult = TypeVar("TResult", bound="MetricResult")
 IncludeOptions = Union["AbstractSetIntStr", "MappingIntStrAny"]
 
@@ -112,7 +114,7 @@ class InputData:
 
 
 class Metric(Generic[TResult]):
-    context = None
+    context: "Context" = None
 
     def get_id(self) -> str:
         return self.__class__.__name__
