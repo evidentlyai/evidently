@@ -23,6 +23,7 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import CheckValueParameters
+from evidently.tests.base_test import ColumnCheckValueParameters
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
@@ -617,10 +618,6 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 @default_renderer(wrap_type=TestColumnNumberOfMissingValues)
 class TestColumnNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
     pass
-
-
-class ColumnCheckValueParameters(CheckValueParameters):
-    column_name: str
 
 
 class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):

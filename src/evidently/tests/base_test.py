@@ -313,6 +313,10 @@ class CheckValueParameters(ConditionTestParameters):
     value: Optional[Numeric]
 
 
+class ColumnCheckValueParameters(CheckValueParameters):
+    column_name: str
+
+
 class BaseCheckValueTest(BaseConditionsTest):
     """
     Base class for all tests with checking a value condition

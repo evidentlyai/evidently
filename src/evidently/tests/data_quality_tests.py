@@ -1,10 +1,10 @@
 from abc import ABC
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
-import numpy as np
 import pandas as pd
 
 from evidently.calculations.data_quality import get_corr_method
@@ -26,11 +26,16 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import CheckValueParameters
+from evidently.tests.base_test import ColumnCheckValueParameters
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
+from evidently.tests.base_test import TParameters
 from evidently.tests.utils import approx
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_correlations
@@ -85,18 +90,18 @@ class TestConflictTarget(Test):
         metric_result = self.metric.get_result()
 
         if metric_result.number_not_stable_target is None:
-            test_result = TestResult.ERROR
+            test_result = TestStatus.ERROR
             description = "No target in the dataset"
 
         elif metric_result.number_not_stable_target > 0:
-            test_result = TestResult.FAIL
+            test_result = TestStatus.FAIL
             description = f"Not stable target rows count is {metric_result.number_not_stable_target}"
 
         else:
-            test_result = TestResult.SUCCESS
+            test_result = TestStatus.SUCCESS
             description = "Target is stable"
 
-        return TestResult(name=self.name, description=description, status=test_result)
+        return TestResult(name=self.name, description=description, status=test_result, group=self.group)
 
 
 class TestConflictPrediction(Test):
@@ -111,18 +116,18 @@ class TestConflictPrediction(Test):
         metric_result = self.metric.get_result()
 
         if metric_result.current.number_not_stable_prediction is None:
-            test_result = TestResult.ERROR
+            test_result = TestStatus.ERROR
             description = "No prediction in the dataset"
 
         elif metric_result.current.number_not_stable_prediction > 0:
-            test_result = TestResult.FAIL
+            test_result = TestStatus.FAIL
             description = f"Not stable prediction rows count is {metric_result.current.number_not_stable_prediction}"
 
         else:
-            test_result = TestResult.SUCCESS
+            test_result = TestStatus.SUCCESS
             description = "Prediction is stable"
 
-        return TestResult(name=self.name, description=description, status=test_result)
+        return TestResult(name=self.name, description=description, status=test_result, group=self.group)
 
 
 class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
@@ -213,9 +218,6 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
 
 @default_renderer(wrap_type=TestHighlyCorrelatedColumns)
 class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestHighlyCorrelatedColumns) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "abs_max_num_features_correlation": np.round(obj.value, 3)}
-
     def render_html(self, obj: TestHighlyCorrelatedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -265,18 +267,6 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
 
 @default_renderer(wrap_type=TestTargetFeaturesCorrelations)
 class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestTargetFeaturesCorrelations) -> dict:
-        p = {"condition": obj.get_condition().as_dict()}
-
-        if obj.value is not None:
-            abs_max_target_features_correlation = np.round(obj.value, 3)
-
-        else:
-            abs_max_target_features_correlation = obj.value
-
-        p["abs_max_target_features_correlation"] = abs_max_target_features_correlation
-        return p
-
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -326,18 +316,6 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
 
 @default_renderer(wrap_type=TestPredictionFeaturesCorrelations)
 class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
-    def json_parameters(self, obj: TestPredictionFeaturesCorrelations) -> dict:
-        p = {"condition": obj.get_condition().as_dict()}
-
-        if obj.value is not None:
-            abs_max_prediction_features_correlation = np.round(obj.value, 3)
-
-        else:
-            abs_max_prediction_features_correlation = obj.value
-
-        p["abs_max_prediction_features_correlation"] = abs_max_prediction_features_correlation
-        return p
-
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -465,17 +443,6 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         }
 
     def check(self):
-        result = TestResult(
-            name=self.name,
-            description="The test was not launched",
-            status=TestResult.SKIPPED,
-        )
-        # features_stats = self.metric.get_result().features_stats.get_all_features()
-
-        # if self.column_name not in features_stats:
-        #     result.mark_as_fail(f"Feature '{self.column_name}' was not found")
-        #     return result
-
         result = super().check()
 
         if self.value is None:
@@ -859,16 +826,14 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
             f"The test threshold is {self.get_condition()}."
         )
 
+    def get_parameters(self) -> ColumnCheckValueParameters:
+        return ColumnCheckValueParameters(
+            column_name=self.column_name, condition=self.get_condition(), value=self.value
+        )
+
 
 @default_renderer(wrap_type=TestMostCommonValueShare)
 class TestMostCommonValueShareRenderer(TestRenderer):
-    def json_parameters(self, obj: TestMostCommonValueShare) -> dict:
-        return {
-            "condition": obj.get_condition().as_dict(),
-            "column_name": obj.column_name,
-            "share_most_common_value": obj.value,
-        }
-
     def render_html(self, obj: TestMostCommonValueShare) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
@@ -905,7 +870,16 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
         return [TestMostCommonValueShare(column_name=name) for name in columns]
 
 
+class MeanInNSigmasParameter(TestParameters):
+    column_name: str
+    current_mean: float
+    n_sigmas: int  ## ? float
+    reference_mean: float
+    reference_std: float
+
+
 class TestMeanInNSigmas(Test):
+
     group = DATA_QUALITY_GROUP.id
     name = "Mean Value Stability"
     metric: ColumnSummaryMetric
@@ -921,11 +895,18 @@ class TestMeanInNSigmas(Test):
         reference_feature_stats = self.metric.get_result().reference_characteristics
         features_stats = self.metric.get_result().current_characteristics
 
-        if reference_feature_stats is None:
-            test_result = TestResult.ERROR
-            description = "Reference should be present"
+        # todo: this was thrown in a render, do we just cut it?
+        # if not isinstance(features_stats, NumericCharacteristics):
+        #     raise ValueError(f"{self.column_name} should be numerical or bool")
 
+        if reference_feature_stats is None:
+            test_result = TestStatus.ERROR
+            description = "Reference should be present"
+            parameters = None
         else:
+            # todo: look up
+            # if not isinstance(reference_feature_stats, NumericCharacteristics):
+            #     raise ValueError(f"{self.column_name} should be numerical or bool")
             current_mean = features_stats.mean
             reference_mean = reference_feature_stats.mean
             reference_std = reference_feature_stats.std
@@ -938,40 +919,35 @@ class TestMeanInNSigmas(Test):
                     f"The mean value of the column **{self.column_name}** is {current_mean:.3g}."
                     f" The expected range is from {left_condition:.3g} to {right_condition:.3g}"
                 )
-                test_result = TestResult.SUCCESS
+                test_result = TestStatus.SUCCESS
 
             else:
                 description = (
                     f"The mean value of the column **{self.column_name}** is {current_mean:.3g}."
                     f" The expected range is from {left_condition:.3g} to {right_condition:.3g}"
                 )
-                test_result = TestResult.FAIL
+                test_result = TestStatus.FAIL
+
+            parameters = MeanInNSigmasParameter(
+                column_name=self.column_name,
+                n_sigmas=self.n_sigmas,
+                current_mean=current_mean,
+                reference_mean=reference_mean,
+                reference_std=reference_std,
+            )
 
         return TestResult(
             name=self.name,
             description=description,
             status=test_result,
             groups={GroupingTypes.ByFeature.id: self.column_name},
+            parameters=parameters,
+            group=self.group,
         )
 
 
 @default_renderer(wrap_type=TestMeanInNSigmas)
 class TestMeanInNSigmasRenderer(TestRenderer):
-    def json_parameters(self, obj: TestMeanInNSigmas) -> dict:
-
-        metric_result = obj.metric.get_result()
-        p = {"column_name": obj.column_name, "n_sigmas": obj.n_sigmas}
-        if not isinstance(metric_result.current_characteristics, NumericCharacteristics):
-            raise ValueError(f"{obj.column_name} should be numerical or bool")
-        p["current_mean"] = metric_result.current_characteristics.mean
-
-        if metric_result.reference_characteristics is not None:
-            if not isinstance(metric_result.reference_characteristics, NumericCharacteristics):
-                raise ValueError(f"{obj.column_name} should be numerical or bool")
-            p["reference_mean"] = metric_result.reference_characteristics.mean
-            p["reference_std"] = metric_result.reference_characteristics.std
-        return p
-
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:
         column_name = obj.column_name
         metric_result: ColumnSummaryResult = obj.metric.get_result()
@@ -1044,16 +1020,17 @@ class TestValueRange(Test):
 
         if number_not_in_range > 0:
             description = f"The column **{self.column_name}** has values out of range."
-            test_result = TestResult.FAIL
+            test_result = TestStatus.FAIL
         else:
             description = f"All values in the column **{self.column_name}** are within range"
-            test_result = TestResult.SUCCESS
+            test_result = TestStatus.SUCCESS
 
         return TestResult(
             name=self.name,
             description=description,
             status=test_result,
             groups={GroupingTypes.ByFeature.id: self.column_name},
+            group=self.group,
         )
 
 
@@ -1156,6 +1133,11 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
         return info
 
 
+class ShareOfOutRangeParameters(CheckValueParameters):
+    left: Optional[float]
+    right: Optional[float]
+
+
 class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     name = "Share of Out-of-Range Values"
 
@@ -1175,17 +1157,14 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
             f" The test threshold is {self.get_condition()}."
         )
 
+    def get_parameters(self) -> ShareOfOutRangeParameters:
+        return ShareOfOutRangeParameters(
+            condition=self.get_condition(), value=self.value, left=self.left, right=self.right
+        )
+
 
 @default_renderer(wrap_type=TestShareOfOutRangeValues)
 class TestShareOfOutRangeValuesRenderer(TestRenderer):
-    def json_parameters(self, obj: TestShareOfOutRangeValues) -> dict:
-        return {
-            "condition": obj.get_condition().as_dict(),
-            "left": obj.left,
-            "right": obj.right,
-            "share_not_in_range": obj.value,
-        }
-
     def render_html(self, obj: TestShareOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
@@ -1220,6 +1199,12 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
         return [TestShareOfOutRangeValues(column_name=name) for name in columns]
 
 
+class ColumnValueListParameters(TestParameters):
+    value: Numeric
+    column_name: str
+    values: Optional[List[Any]] = None
+
+
 class TestValueList(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Out-of-List Values"
@@ -1236,11 +1221,11 @@ class TestValueList(Test):
         metric_result = self.metric.get_result()
 
         if metric_result.current.number_not_in_list > 0:
-            test_result = TestResult.FAIL
+            test_result = TestStatus.FAIL
             description = f"The column **{self.column_name}** has values out of list."
 
         else:
-            test_result = TestResult.SUCCESS
+            test_result = TestStatus.SUCCESS
             description = f"All values in the column **{self.column_name}** are in the list."
 
         return TestResult(
@@ -1248,18 +1233,15 @@ class TestValueList(Test):
             description=description,
             status=test_result,
             groups={GroupingTypes.ByFeature.id: self.column_name},
+            group=self.group,
+            parameters=ColumnValueListParameters(
+                value=metric_result.current.number_not_in_list, values=self.values, column_name=self.column_name
+            ),
         )
 
 
 @default_renderer(wrap_type=TestValueList)
 class TestValueListRenderer(TestRenderer):
-    def json_parameters(self, obj: TestValueList) -> dict:
-        return {
-            "column_name": obj.column_name,
-            "values": obj.values,
-            "number_not_in_list": obj.metric.get_result().current.number_not_in_list,
-        }
-
     def render_html(self, obj: TestValueList) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
@@ -1353,6 +1335,11 @@ class TestNumberOfOutListValuesRenderer(TestRenderer):
         return info
 
 
+class ValueListParameters(CheckValueParameters):
+    # todo: typing
+    values: Optional[List[Any]] = None
+
+
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Share of Out-of-List Values"
 
@@ -1373,6 +1360,9 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
             f"({number_not_in_range} out of {rows_count}). "
             f"The test threshold is {self.get_condition()}."
         )
+
+    def get_parameters(self) -> CheckValueParameters:
+        return ValueListParameters(condition=self.get_condition(), value=self.value, values=self.values)
 
 
 class TestCatColumnsOutOfListValues(BaseGenerator):
@@ -1476,9 +1466,6 @@ class TestColumnQuantileRenderer(TestRenderer):
 
 @default_renderer(wrap_type=TestShareOfOutListValues)
 class TestShareOfOutListValuesRenderer(TestRenderer):
-    def json_parameters(self, obj: TestShareOfOutListValues) -> dict:
-        return {"condition": obj.get_condition().as_dict(), "values": obj.values, "share_not_in_list": obj.value}
-
     def render_html(self, obj: TestShareOfOutListValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
