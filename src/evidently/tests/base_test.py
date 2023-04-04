@@ -23,9 +23,7 @@ from evidently.utils.types import Numeric
 from evidently.utils.types import NumericApprox
 
 if TYPE_CHECKING:
-    from pydantic.typing import AbstractSetIntStr
     from pydantic.typing import DictStrAny
-    from pydantic.typing import MappingIntStrAny
 
     from evidently.suite.base_suite import Context
 
@@ -145,10 +143,7 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
         return self.status in [TestStatus.SUCCESS, TestStatus.WARNING]
 
 
-TParameters = TypeVar("TParameters", bound=TestParameters)
-
-
-class Test(Generic[TParameters]):
+class Test:
     """
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
     """
@@ -159,10 +154,6 @@ class Test(Generic[TParameters]):
 
     @abc.abstractmethod
     def check(self) -> TestResult:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_parameters(self) -> TParameters:
         raise NotImplementedError
 
     def set_context(self, context: "Context"):

@@ -51,11 +51,7 @@ def test_value_mae_test_render_json() -> None:
         "description": "The MAE is 0.5. The test threshold is eq=0.5 ± 0.05",
         "group": "regression",
         "name": "Mean Absolute Error (MAE)",
-        "parameters": {
-            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.5}},
-            "mean_abs_error": 0.5,
-            "mean_abs_error_ref": 0.5,
-        },
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.5}}, "value": 0.5},
         "status": "SUCCESS",
     }
 
@@ -99,12 +95,7 @@ def test_value_mape_test_render_json() -> None:
         "description": "The MAPE is 25.0. The test threshold is eq=25 ± 2.5.",
         "group": "regression",
         "name": "Mean Absolute Percentage Error (MAPE)",
-        "parameters": {
-            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 25.0}},
-            "mean_abs_perc_error": 25.0,
-            "mean_abs_perc_error_default": 3.377699720527872e17,
-            "mean_abs_perc_error_ref": 25.0,
-        },
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 25.0}}, "value": 25.0},
         "status": "SUCCESS",
     }
 
@@ -150,7 +141,7 @@ def test_value_mean_error_test_render_json() -> None:
         "name": "Mean Error (ME)",
         "parameters": {
             "condition": {"eq": {"absolute": 0.08164965809277261, "relative": 1e-06, "value": 0}},
-            "mean_error": 0.0,
+            "value": 0.0,
         },
         "status": "SUCCESS",
     }
@@ -193,8 +184,7 @@ def test_abs_max_error_test_render_json() -> None:
         "group": "regression",
         "name": "Max Absolute Error",
         "parameters": {
-            "abs_error_max": 0.0,
-            "abs_error_max_ref": 1.5,
+            "value": 0.0,
             "condition": {"lte": {"absolute": 1e-12, "relative": 0.1, "value": 0.0}},
         },
         "status": "SUCCESS",
@@ -238,11 +228,7 @@ def test_r2_score_test_render_json() -> None:
         "description": "The R2 score is 0.8. The test threshold is eq=0.8 ± 0.08.",
         "group": "regression",
         "name": "R2 Score",
-        "parameters": {
-            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.8}},
-            "r2_score": 0.8,
-            "r2_score_ref": 0.8,
-        },
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.8}}, "value": 0.8},
         "status": "SUCCESS",
     }
 
@@ -284,11 +270,6 @@ def test_rmse_score_test_render_json() -> None:
         "description": "The RMSE is 0.25. The test threshold is eq=0.25 ± 0.025.",
         "group": "regression",
         "name": "Root Mean Square Error (RMSE)",
-        "parameters": {
-            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},
-            "rmse": 0.25,
-            "rmse_default": 1.25,
-            "rmse_ref": 0.25,
-        },
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}}, "value": 0.25},
         "status": "SUCCESS",
     }

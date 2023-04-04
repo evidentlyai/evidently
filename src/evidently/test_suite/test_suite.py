@@ -129,7 +129,7 @@ class TestSuite(Display):
                 "total_tests": total_tests,
                 "success_tests": counter[TestStatus.SUCCESS] + counter[TestStatus.WARNING],
                 "failed_tests": counter[TestStatus.FAIL],
-                "by_status": {str(k): v for k, v in counter.items()},
+                "by_status": {k.value: v for k, v in counter.items()},
             },
         }
 

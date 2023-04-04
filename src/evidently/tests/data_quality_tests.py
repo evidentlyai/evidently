@@ -35,7 +35,6 @@ from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.base_test import TParameters
 from evidently.tests.utils import approx
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_correlations
@@ -873,7 +872,7 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
 class MeanInNSigmasParameter(TestParameters):
     column_name: str
     current_mean: float
-    n_sigmas: int  ## ? float
+    n_sigmas: int  # ? float
     reference_mean: float
     reference_std: float
 
