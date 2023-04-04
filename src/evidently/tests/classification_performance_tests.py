@@ -81,12 +81,16 @@ class SimpleClassificationTest(BaseCheckValueTest):
         ref_metrics = self.metric.get_result().reference
 
         if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2), source=ValueSource.REFERENCE)
+            return TestValueCondition(
+                eq=approx(self.get_value(ref_metrics), relative=0.2), source=ValueSource.REFERENCE
+            )
 
         if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
 
-        return TestValueCondition(**{self.condition_arg: self.get_value(self.dummy_metric.get_result().dummy)}, source=ValueSource.DUMMY)
+        return TestValueCondition(
+            **{self.condition_arg: self.get_value(self.dummy_metric.get_result().dummy)}, source=ValueSource.DUMMY
+        )
 
     @abc.abstractmethod
     def get_value(self, result: DatasetClassificationQuality):
