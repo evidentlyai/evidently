@@ -85,6 +85,18 @@ DEFAULT_GROUP = [
 ]
 
 
+class EnumValueMixin(BaseModel):
+    def dict(self, *args, **kwargs) -> "DictStrAny":
+        res = super().dict(*args, **kwargs)
+        return {k: v.value if isinstance(v, Enum) else v for k, v in res.items()}
+
+
+class ExcludeNoneMixin(BaseModel):
+    def dict(self, *args, **kwargs) -> "DictStrAny":
+        kwargs["exclude_none"] = True
+        return super().dict(*args, **kwargs)
+
+
 class TestStatus(Enum):
     # Constants for test result status
     SUCCESS = "SUCCESS"  # the test was passed
@@ -98,10 +110,7 @@ class TestParameters(MetricResult):
     pass
 
 
-class TestResult(MetricResult):  # todo: create common base class
-    class Config:
-        use_enum_values = True
-
+class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
     # short name/title from the test class
     name: str
     # what was checked, what threshold (current value 13 is not ok with condition less than 5)
@@ -176,7 +185,7 @@ class ValueSource(Enum):
     OTHER = "other"
 
 
-class TestValueCondition(BaseModel):
+class TestValueCondition(ExcludeNoneMixin):
     """
     Class for processing a value conditions - should it be less, greater than, equals and so on.
 
@@ -265,28 +274,6 @@ class TestValueCondition(BaseModel):
 
         return f"{' and '.join(conditions)}"
 
-    # changing default for exclude_none
-    def dict(
-            self,
-            *,
-            include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-            exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-            by_alias: bool = False,
-            skip_defaults: Optional[bool] = None,
-            exclude_unset: bool = False,
-            exclude_defaults: bool = False,
-            exclude_none: bool = True,
-    ) -> "DictStrAny":
-        return super().dict(
-            include=include,
-            exclude=exclude,
-            by_alias=by_alias,
-            skip_defaults=skip_defaults,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=True,
-        )
-
 
 class ConditionTestParameters(TestParameters):
     condition: TestValueCondition
@@ -300,15 +287,15 @@ class BaseConditionsTest(Test, ABC):
     condition: TestValueCondition
 
     def __init__(
-            self,
-            eq: Optional[NumericApprox] = None,
-            gt: Optional[Numeric] = None,
-            gte: Optional[Numeric] = None,
-            is_in: Optional[List[Union[Numeric, str, bool]]] = None,
-            lt: Optional[Numeric] = None,
-            lte: Optional[Numeric] = None,
-            not_eq: Optional[Numeric] = None,
-            not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        self,
+        eq: Optional[NumericApprox] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         self.condition = TestValueCondition(
             eq=eq,
@@ -396,7 +383,7 @@ class BaseCheckValueTest(BaseConditionsTest):
 
 
 def generate_column_tests(
-        test_class: Type[Test], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None
+    test_class: Type[Test], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None
 ) -> BaseGenerator:
     """Function for generating tests for columns"""
     return make_generator_by_columns(

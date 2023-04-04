@@ -1,5 +1,6 @@
 import glob
 import os
+from enum import Enum
 from importlib import import_module
 from typing import Dict
 from typing import List
@@ -9,9 +10,11 @@ from typing import Type
 import pytest
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import MetricResult
+from evidently.tests.base_test import EnumValueMixin
 
 
 @pytest.fixture
@@ -184,3 +187,20 @@ def test_polymorphic():
     assert PModel(vals={"a": A(f1="a", f2="b"), "b": B(a="a", b="b")}).get_dict() == {
         "vals": {"a": {"f1": "a"}, "b": {"a": "a"}}
     }
+
+
+def test_model_enum():
+    class MyEnum(Enum):
+        A = "a"
+        B = "b"
+
+    class Container(EnumValueMixin, BaseModel):
+        value: MyEnum
+
+    obj = Container(value=MyEnum.A)
+    assert obj.value == MyEnum.A
+    d = obj.dict()
+    assert d == {"value": "a"}
+    obj2 = parse_obj_as(Container, d)
+    assert obj2.value == MyEnum.A
+    assert obj2 == obj
