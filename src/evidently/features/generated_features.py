@@ -27,7 +27,7 @@ class GeneratedFeature:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def feature_name(self) -> 'ColumnName':
+    def feature_name(self) -> "ColumnName":
         """
         get feature name for given features and parameters.
 
