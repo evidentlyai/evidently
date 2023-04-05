@@ -1,7 +1,5 @@
 import abc
 import logging
-from typing import Tuple
-
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -12,6 +10,7 @@ from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
