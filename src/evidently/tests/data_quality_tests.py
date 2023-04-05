@@ -257,25 +257,6 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
             return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestTargetFeaturesCorrelations)
-class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
-    def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
-        info = super().render_html(obj)
-        metric_result = obj.metric.get_result()
-        method = get_corr_method(obj.method, metric_result.target_correlation, False)
-        current_correlations = metric_result.current.correlation[method]
-
-        if metric_result.reference is not None:
-            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[method]
-
-        else:
-            reference_correlations = None
-
-        fig = plot_correlations(current_correlations, reference_correlations)
-        info.with_details("Target Features Correlations", plotly_figure(title="", figure=fig))
-        return info
-
-
 class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Prediction and Features"
 
@@ -302,6 +283,7 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
 
 
 @default_renderer(wrap_type=TestPredictionFeaturesCorrelations)
+@default_renderer(wrap_type=TestTargetFeaturesCorrelations)
 class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -441,9 +423,15 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 
         return result
 
+    def get_stat(self, current: NumericCharacteristics):
+        raise NotImplementedError
+
 
 class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
     name = "Min Value"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.min
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -464,32 +452,11 @@ class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
         return f"The minimum value of the column **{self.column_name}** is {value} The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestColumnValueMin)
-class TestColumnValueMinRenderer(TestRenderer):
-    def render_html(self, obj: TestColumnValueMin) -> TestHtmlInfo:
-        column_name = obj.column_name
-        info = super().render_html(obj)
-        metric_result: ColumnSummaryResult = obj.metric.get_result()
-        bins_for_hist = metric_result.plot_data.bins_for_hist
-        if bins_for_hist is None:
-            raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist.current
-        ref_distr = bins_for_hist.reference
-        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
-        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = metric_result.current_characteristics
-        if not isinstance(current_characteristics, NumericCharacteristics):
-            raise ValueError(f"{column_name} should be numerical or bool")
-        min_value = current_characteristics.min
-
-        if min_value is not None:
-            fig = plot_metric_value(fig, float(min_value), f"current {column_name} min value")
-        info.with_details(f"Min Value {column_name}", plotly_figure(title="", figure=fig))
-        return info
-
-
 class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Max Value"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.max
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -512,32 +479,11 @@ class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
         return f"The maximum value of the column **{self.column_name}** is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestColumnValueMax)
-class TestColumnValueMaxRenderer(TestRenderer):
-    def render_html(self, obj: TestColumnValueMax) -> TestHtmlInfo:
-        column_name = obj.column_name
-        info = super().render_html(obj)
-        metric_result: ColumnSummaryResult = obj.metric.get_result()
-        bins_for_hist = metric_result.plot_data.bins_for_hist
-        if bins_for_hist is None:
-            raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist.current
-        ref_distr = bins_for_hist.reference
-        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
-        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = metric_result.current_characteristics
-        if not isinstance(current_characteristics, NumericCharacteristics):
-            raise ValueError(f"{column_name} should be numerical or bool")
-        max_value = current_characteristics.max
-
-        if max_value is not None:
-            fig = plot_metric_value(fig, float(max_value), f"current {column_name} max value")
-        info.with_details(f"Max Value {column_name}", plotly_figure(title="", figure=fig))
-        return info
-
-
 class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
     name = "Mean Value"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.mean
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -556,32 +502,11 @@ class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
         return f"The mean value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestColumnValueMean)
-class TestColumnValueMeanRenderer(TestRenderer):
-    def render_html(self, obj: TestColumnValueMean) -> TestHtmlInfo:
-        column_name = obj.column_name
-        info = super().render_html(obj)
-        metric_result: ColumnSummaryResult = obj.metric.get_result()
-        bins_for_hist = metric_result.plot_data.bins_for_hist
-        if bins_for_hist is None:
-            raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist.current
-        ref_distr = bins_for_hist.reference
-        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
-        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = metric_result.current_characteristics
-        if not isinstance(current_characteristics, NumericCharacteristics):
-            raise ValueError(f"{column_name} should be numerical or bool")
-        mean_value = current_characteristics.mean
-
-        if mean_value is not None:
-            fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
-        info.with_details(f"Mean Value {column_name}", plotly_figure(title="", figure=fig))
-        return info
-
-
 class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
     name = "Median Value"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.p50
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -600,9 +525,25 @@ class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
         return f"The median value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
+@default_renderer(wrap_type=TestColumnValueMin)
+@default_renderer(wrap_type=TestColumnValueMax)
+@default_renderer(wrap_type=TestColumnValueMean)
 @default_renderer(wrap_type=TestColumnValueMedian)
-class TestColumnValueMedianRenderer(TestRenderer):
-    def render_html(self, obj: TestColumnValueMedian) -> TestHtmlInfo:
+class TestColumnValueFeatureRenderer(TestRenderer):
+    def render_html(self, obj: BaseFeatureDataQualityMetricsTest) -> TestHtmlInfo:
+        column_name, fig, info, metric_result = self._feature_render_html(obj)
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
+        current_characteristics = metric_result.current_characteristics
+        if not isinstance(current_characteristics, NumericCharacteristics):
+            raise ValueError(f"{column_name} should be numerical or bool")
+
+        value = obj.get_stat(current_characteristics)
+        if value is not None:
+            fig = plot_metric_value(fig, float(value), f"current {column_name} {obj.name.lower()}")
+        info.with_details(f"{obj.name} {column_name}", plotly_figure(title="", figure=fig))
+        return info
+
+    def _feature_render_html(self, obj):
         column_name = obj.column_name
         info = super().render_html(obj)
         metric_result: ColumnSummaryResult = obj.metric.get_result()
@@ -612,20 +553,14 @@ class TestColumnValueMedianRenderer(TestRenderer):
         curr_distr = bins_for_hist.current
         ref_distr = bins_for_hist.reference
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
-        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        current_characteristics = metric_result.current_characteristics
-        if not isinstance(current_characteristics, NumericCharacteristics):
-            raise ValueError(f"{column_name} should be numerical or bool")
-        percentile_50 = current_characteristics.p50
-
-        if percentile_50 is not None:
-            fig = plot_metric_value(fig, percentile_50, f"current {column_name} median value")
-        info.with_details(f"Median Value {column_name}", plotly_figure(title="", figure=fig))
-        return info
+        return column_name, fig, info, metric_result
 
 
 class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
     name = "Standard Deviation (SD)"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.std
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -648,23 +583,18 @@ class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
 
 
 @default_renderer(wrap_type=TestColumnValueStd)
-class TestColumnValueStdRenderer(TestRenderer):
-    def render_html(self, obj: TestColumnValueStd) -> TestHtmlInfo:
-        column_name = obj.column_name
-        info = super().render_html(obj)
-        metric_result: ColumnSummaryResult = obj.metric.get_result()
-        bins_for_hist = metric_result.plot_data.bins_for_hist
-        if bins_for_hist is None:
-            raise ValueError(f"{column_name} should be numerical or bool")
-        curr_distr = bins_for_hist.current
-        ref_distr = bins_for_hist.reference
-        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+class TestColumnValueStdRenderer(TestColumnValueFeatureRenderer):
+    def render_html(self, obj: BaseFeatureDataQualityMetricsTest) -> TestHtmlInfo:
+        column_name, fig, info, _ = self._feature_render_html(obj)
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
 class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
     name = "Number of Unique Values"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.unique
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -706,6 +636,9 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
 
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
     name = "Share of Unique Values"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.unique_percentage
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -754,6 +687,9 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     name = "Share of the Most Common Value"
+
+    def get_stat(self, current: NumericCharacteristics):
+        return current.most_common_percentage
 
     def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
         if reference is not None:
@@ -1074,27 +1010,6 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         )
 
 
-@default_renderer(wrap_type=TestNumberOfOutRangeValues)
-class TestNumberOfOutRangeValuesRenderer(TestRenderer):
-    def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
-        column_name = obj.column_name
-        metric_result = obj.metric.get_result()
-        info = super().render_html(obj)
-        fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current.distribution,
-            reference_distribution=metric_result.reference.distribution
-            if metric_result.reference is not None
-            else None,
-            color_options=self.color_options,
-        )
-        fig = plot_check(fig, obj.condition, color_options=self.color_options)
-        info.with_details(
-            f"Number Out of Range for {column_name}",
-            plotly_figure(title="", figure=fig),
-        )
-        return info
-
-
 class ShareOfOutRangeParameters(CheckValueParameters):
     left: Optional[float]
     right: Optional[float]
@@ -1121,8 +1036,9 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
 
 @default_renderer(wrap_type=TestShareOfOutRangeValues)
-class TestShareOfOutRangeValuesRenderer(TestRenderer):
-    def render_html(self, obj: TestShareOfOutRangeValues) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestNumberOfOutRangeValues)
+class TestRangeValuesRenderer(TestRenderer):
+    def render_html(self, obj: BaseDataQualityValueRangeMetricsTest) -> TestHtmlInfo:
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
@@ -1134,7 +1050,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.condition, color_options=self.color_options)
-        info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
+        info.with_details(f"{obj.name} for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -1165,6 +1081,7 @@ class ColumnValueListParameters(TestParameters):
 class TestValueList(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Out-of-List Values"
+    alias = "value_list"
     metric: ColumnValueListMetric
     column_name: str
     values: Optional[list]
@@ -1197,27 +1114,8 @@ class TestValueList(Test):
         )
 
 
-@default_renderer(wrap_type=TestValueList)
-class TestValueListRenderer(TestRenderer):
-    def render_html(self, obj: TestValueList) -> TestHtmlInfo:
-        info = super().render_html(obj)
-        metric_result = obj.metric.get_result()
-        column_name = metric_result.column_name
-        values = metric_result.values
-        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
-
-        if metric_result.reference is not None:
-            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
-
-        else:
-            ref_df = None
-
-        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "value_list")
-        info.details = additional_plots
-        return info
-
-
 class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
+    alias: ClassVar[str]
     group = DATA_QUALITY_GROUP.id
     metric: ColumnValueListMetric
     column_name: str
@@ -1261,6 +1159,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
 
 class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Number Out-of-List Values"
+    alias = "number_value_list"
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.number_not_in_list
@@ -1272,26 +1171,6 @@ class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
         )
 
 
-@default_renderer(wrap_type=TestNumberOfOutListValues)
-class TestNumberOfOutListValuesRenderer(TestRenderer):
-    def render_html(self, obj: TestNumberOfOutListValues) -> TestHtmlInfo:
-        info = super().render_html(obj)
-        metric_result = obj.metric.get_result()
-        column_name = metric_result.column_name
-        values = metric_result.values
-        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
-
-        if metric_result.reference is not None:
-            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
-
-        else:
-            ref_df = None
-
-        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "number_value_list")
-        info.details = additional_plots
-        return info
-
-
 class ValueListParameters(CheckValueParameters):
     # todo: typing
     values: Optional[List[Any]] = None
@@ -1299,6 +1178,7 @@ class ValueListParameters(CheckValueParameters):
 
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Share of Out-of-List Values"
+    alias = "share_value_list"
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.share_not_in_list
@@ -1417,8 +1297,10 @@ class TestColumnQuantileRenderer(TestRenderer):
 
 
 @default_renderer(wrap_type=TestShareOfOutListValues)
-class TestShareOfOutListValuesRenderer(TestRenderer):
-    def render_html(self, obj: TestShareOfOutListValues) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestNumberOfOutListValues)
+@default_renderer(wrap_type=TestValueList)
+class TestListValuesRenderer(TestRenderer):
+    def render_html(self, obj: Union[BaseDataQualityValueListMetricsTest, TestValueList]) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
@@ -1431,6 +1313,6 @@ class TestShareOfOutListValuesRenderer(TestRenderer):
         else:
             ref_df = None
 
-        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "share_value_list")
+        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, obj.alias)
         info.details = additional_plots
         return info
