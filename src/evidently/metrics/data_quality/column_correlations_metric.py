@@ -84,7 +84,7 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
 
         reference_correlations = None
         if reference_data is not None:
-            reference_correlations: Optional[Dict[str, ColumnCorrelations]] = self._calculate_correlation(
+            reference_correlations = self._calculate_correlation(
                 self.column_name,
                 reference_data,
                 data.reference_data,
