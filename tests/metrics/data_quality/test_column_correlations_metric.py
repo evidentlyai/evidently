@@ -156,7 +156,8 @@ def test_column_correlations_metric_value_error(
                     "spearman": {
                         "column_name": "col1",
                         "kind": "spearman",
-                        "values": {"x": ["col2"], "y": [approx(-0.03, abs=0.01)]}},
+                        "values": {"x": ["col2"], "y": [approx(0.03, abs=0.01)]},
+                    },
                 },
                 "reference": {
                     "kendall": {
