@@ -22,7 +22,6 @@ from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_histogram_for_distribution
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -70,21 +69,11 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
-        columns = process_columns(data.current_data, data.column_mapping)
-        correlation_columns = columns.num_feature_names
-
         curr_text_df = pd.concat(
             [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
-        curr_df = pd.concat(
-            [
-                data.current_data.copy().reset_index(drop=True),
-                curr_text_df.reset_index(drop=True),
-            ],
-            axis=1,
-        )
         ref_df = None
         if data.reference_data is not None:
             ref_text_df = pd.concat(

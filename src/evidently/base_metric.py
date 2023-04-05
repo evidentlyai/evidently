@@ -113,14 +113,6 @@ class InputData:
         return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
 
     def get_data(self, column: Union[str, ColumnName]) -> Tuple[ColumnType, pd.Series, Optional[pd.Series]]:
-        if isinstance(column, ColumnName) and column.feature_class is not None:
-            column_type = ColumnType.Numerical
-        else:
-            if isinstance(column, ColumnName):
-                column_name = column.name
-            else:
-                column_name = column
-            column_type = self.data_definition.get_column(column_name).column_type
         ref_data = None
         if self.reference_data is not None:
             ref_data = self.get_reference_column(column)
