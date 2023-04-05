@@ -95,17 +95,19 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
 
         num_features = data.data_definition.get_columns("numerical_features")
         for name, feature in self.generated_text_features.items():
-            curr_result[name] = calculate_numerical_correlation(
+            correlations = calculate_numerical_correlation(
                 name,
                 data.get_current_column(feature.feature_name()),
                 data.current_data[[feature.column_name for feature in num_features]],
             )
+            curr_result[name] = {value.kind: value for value in correlations}
             if ref_df is not None and ref_result is not None:
-                ref_result[name] = calculate_numerical_correlation(
+                correlations = calculate_numerical_correlation(
                     name,
                     data.get_reference_column(feature.feature_name()),
                     data.current_data[[feature.column_name for feature in num_features]],
                 )
+                ref_result[name] = {value.kind: value for value in correlations}
 
         # todo potential performance issues
         return TextDescriptorsCorrelationMetricResult(
