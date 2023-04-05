@@ -15,6 +15,7 @@ from typing import Union
 from pydantic import BaseModel
 from pydantic import Field
 
+from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.generators import make_generator_by_columns
@@ -375,6 +376,24 @@ class BaseCheckValueTest(BaseConditionsTest):
 
         result.groups.update(self.groups())
         return result
+
+
+T = TypeVar("T", bound=MetricResult)
+
+
+class ConditionFromReferenceMixin(BaseCheckValueTest, Generic[T], ABC):
+    metric: Metric
+
+    def get_condition_from_reference(self, reference: Optional[T]) -> TestValueCondition:
+        raise NotImplementedError
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_stats = self.metric.get_result().reference
+
+        return self.get_condition_from_reference(reference_stats)
 
 
 def generate_column_tests(
