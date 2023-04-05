@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -16,9 +17,13 @@ from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics import ConflictPredictionMetric
 from evidently.metrics import ConflictTargetMetric
 from evidently.metrics import DatasetCorrelationsMetric
+from evidently.metrics.data_integrity.column_summary_metric import CategoricalCharacteristics
+from evidently.metrics.data_integrity.column_summary_metric import ColumnCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
+from evidently.metrics.data_integrity.column_summary_metric import DatetimeCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
+from evidently.metrics.data_quality.dataset_correlations_metric import DatasetCorrelation
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -28,6 +33,7 @@ from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import CheckValueParameters
 from evidently.tests.base_test import ColumnCheckValueParameters
+from evidently.tests.base_test import ConditionFromReferenceMixin
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
@@ -35,6 +41,7 @@ from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
+from evidently.tests.base_test import ValueSource
 from evidently.tests.utils import approx
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_correlations
@@ -48,7 +55,8 @@ DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
 GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
 
 
-class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
+class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacteristics], ABC):
+    reference_field: ClassVar = "reference_characteristics"
     group = DATA_QUALITY_GROUP.id
     metric: ColumnSummaryMetric
 
@@ -129,7 +137,7 @@ class TestConflictPrediction(Test):
         return TestResult(name=self.name, description=description, status=test_result, group=self.group)
 
 
-class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
+class BaseDataQualityCorrelationsMetricsValueTest(ConditionFromReferenceMixin[DatasetCorrelation], ABC):
     group = DATA_QUALITY_GROUP.id
     metric: DatasetCorrelationsMetric
     method: Optional[str]
@@ -163,18 +171,13 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Target and Prediction"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
+    def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
         if reference is not None:
             method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
             value = reference.stats[method].target_prediction_correlation
 
             if value is not None:
-                return TestValueCondition(eq=approx(value, absolute=0.25))
+                return TestValueCondition(eq=approx(value, absolute=0.25), source=ValueSource.REFERENCE)
 
         return TestValueCondition(gt=0)
 
@@ -194,17 +197,12 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
 class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Highly Correlated Columns"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_correlation = self.metric.get_result().reference
-
-        if reference_correlation is not None:
-            value = reference_correlation.stats[get_corr_method(self.method)].abs_max_features_correlation
+    def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
+        if reference is not None:
+            value = reference.stats[get_corr_method(self.method)].abs_max_features_correlation
 
             if value is not None:
-                return TestValueCondition(eq=approx(value, relative=0.1))
+                return TestValueCondition(eq=approx(value, relative=0.1), source=ValueSource.REFERENCE)
 
         return TestValueCondition(lt=0.9)
 
@@ -237,18 +235,13 @@ class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
 class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Target and Features"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_correlation = self.metric.get_result().reference
-
-        if reference_correlation is not None:
+    def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
+        if reference is not None:
             method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
-            value = reference_correlation.stats[method].abs_max_target_features_correlation
+            value = reference.stats[method].abs_max_target_features_correlation
 
             if value is not None:
-                return TestValueCondition(eq=approx(value, relative=0.1))
+                return TestValueCondition(eq=approx(value, relative=0.1), source=ValueSource.REFERENCE)
 
         return TestValueCondition(lt=0.9)
 
@@ -286,15 +279,10 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
 class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Prediction and Features"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_correlation = self.metric.get_result().reference
-
-        if reference_correlation is not None:
+    def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
+        if reference is not None:
             method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
-            value = reference_correlation.stats[method].abs_max_prediction_features_correlation
+            value = reference.stats[method].abs_max_prediction_features_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, relative=0.1))
@@ -363,6 +351,9 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
             not_in=not_in,
         )
         self.corr_diff = corr_diff
+
+    def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
+        pass
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -454,15 +445,11 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
     name = "Min Value"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        ref_features_stats = self.metric.get_result().reference_characteristics
-        if ref_features_stats is not None:
-            if not isinstance(ref_features_stats, NumericCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
-            min_value = ref_features_stats.min
+            min_value = reference.min
             return TestValueCondition(gte=min_value)
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
@@ -504,14 +491,11 @@ class TestColumnValueMinRenderer(TestRenderer):
 class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Max Value"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-        ref_features_stats = self.metric.get_result().reference_characteristics
-        if ref_features_stats is not None:
-            if not isinstance(ref_features_stats, NumericCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
-            max_value = ref_features_stats.max
+            max_value = reference.max
             return TestValueCondition(lte=max_value)
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
@@ -555,14 +539,11 @@ class TestColumnValueMaxRenderer(TestRenderer):
 class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
     name = "Mean Value"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-        ref_features_stats = self.metric.get_result().reference_characteristics
-        if ref_features_stats is not None:
-            if not isinstance(ref_features_stats, NumericCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
-            return TestValueCondition(eq=approx(ref_features_stats.mean, 0.1))
+            return TestValueCondition(eq=approx(reference.mean, 0.1))
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
@@ -602,14 +583,11 @@ class TestColumnValueMeanRenderer(TestRenderer):
 class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
     name = "Median Value"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-        ref_features_stats = self.metric.get_result().reference_characteristics
-        if ref_features_stats is not None:
-            if not isinstance(ref_features_stats, NumericCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
-            return TestValueCondition(eq=approx(ref_features_stats.p50, 0.1))
+            return TestValueCondition(eq=approx(reference.p50, 0.1))
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
@@ -649,14 +627,11 @@ class TestColumnValueMedianRenderer(TestRenderer):
 class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
     name = "Standard Deviation (SD)"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-        ref_features_stats = self.metric.get_result().reference_characteristics
-        if ref_features_stats is not None:
-            if not isinstance(ref_features_stats, NumericCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
-            return TestValueCondition(eq=approx(ref_features_stats.std, 0.1))
+            return TestValueCondition(eq=approx(reference.std, 0.1))
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
@@ -691,15 +666,11 @@ class TestColumnValueStdRenderer(TestRenderer):
 class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
     name = "Number of Unique Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_features_stats = self.metric.get_result().reference_characteristics
-        if reference_features_stats is not None:
-            if isinstance(reference_features_stats, TextCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, (NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics)):
                 raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
-            unique_count = reference_features_stats.unique
+            unique_count = reference.unique
             return TestValueCondition(eq=approx(unique_count, relative=0.1))
 
         return TestValueCondition(gt=1)
@@ -736,15 +707,11 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
     name = "Share of Unique Values"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_features_stats = self.metric.get_result().reference_characteristics
-        if reference_features_stats is not None:
-            if isinstance(reference_features_stats, TextCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, (NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics)):
                 raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
-            unique_percentage = reference_features_stats.unique_percentage
+            unique_percentage = reference.unique_percentage
 
             if unique_percentage is not None:
                 return TestValueCondition(eq=approx(unique_percentage / 100.0, relative=0.1))
@@ -788,15 +755,11 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     name = "Share of the Most Common Value"
 
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_features_stats = self.metric.get_result().reference_characteristics
-        if reference_features_stats is not None:
-            if isinstance(reference_features_stats, TextCharacteristics):
+    def get_condition_from_reference(self, reference: Optional[ColumnCharacteristics]) -> TestValueCondition:
+        if reference is not None:
+            if not isinstance(reference, (NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics)):
                 raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
-            most_common_percentage = reference_features_stats.most_common_percentage
+            most_common_percentage = reference.most_common_percentage
 
             if most_common_percentage is not None:
                 return TestValueCondition(eq=approx(most_common_percentage / 100.0, relative=0.1))
@@ -1092,14 +1055,14 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name}
 
-
-class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    name = "Number of Out-of-Range Values "
-
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
+
+
+class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
+    name = "Number of Out-of-Range Values "
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.number_not_in_range
@@ -1139,11 +1102,6 @@ class ShareOfOutRangeParameters(CheckValueParameters):
 
 class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     name = "Share of Out-of-Range Values"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.share_not_in_range
@@ -1295,14 +1253,14 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name}
 
-
-class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Number Out-of-List Values"
-
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
+
+
+class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
+    name = "Number Out-of-List Values"
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.number_not_in_list
@@ -1341,11 +1299,6 @@ class ValueListParameters(CheckValueParameters):
 
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Share of Out-of-List Values"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.share_not_in_list
@@ -1426,7 +1379,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            return TestValueCondition(eq=approx(reference.value, 0.1))
+            return TestValueCondition(eq=approx(reference.value, 0.1), source=ValueSource.REFERENCE)
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 

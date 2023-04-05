@@ -4,6 +4,7 @@ from abc import ABC
 from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -382,6 +383,7 @@ T = TypeVar("T", bound=MetricResult)
 
 
 class ConditionFromReferenceMixin(BaseCheckValueTest, Generic[T], ABC):
+    reference_field: ClassVar[str] = "reference"
     metric: Metric
 
     def get_condition_from_reference(self, reference: Optional[T]) -> TestValueCondition:
@@ -391,7 +393,7 @@ class ConditionFromReferenceMixin(BaseCheckValueTest, Generic[T], ABC):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.metric.get_result().reference
+        reference_stats = getattr(self.metric.get_result(), self.reference_field)
 
         return self.get_condition_from_reference(reference_stats)
 
