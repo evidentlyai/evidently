@@ -12,7 +12,6 @@ from pandas.api.types import is_string_dtype
 
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnMetricResult
-from evidently.base_metric import IncludeTags
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import DataQualityGetPlotData

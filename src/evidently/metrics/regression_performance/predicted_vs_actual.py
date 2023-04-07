@@ -3,7 +3,6 @@ from typing import Optional
 
 import numpy as np
 
-from evidently.base_metric import IncludeTags
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult

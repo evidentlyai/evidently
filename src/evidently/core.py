@@ -129,13 +129,8 @@ class BaseResult(BaseModel):
                         )
                         for k, v in field_value.items()
                     }
-                elif _is_sequence_field(field):
-                    build_include = {
-                        i: v._build_include(
-                            include_tags=include_tags, include=field.field_info.include or include.get(name, {})
-                        )
-                        for i, v in enumerate(field_value)
-                    }
+                # todo: lists
+
                 else:
                     build_include = field_value._build_include(
                         include_tags=include_tags, include=field.field_info.include or include.get(name, {})
