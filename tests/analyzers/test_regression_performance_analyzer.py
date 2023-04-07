@@ -1,3 +1,5 @@
+import dataclasses
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -44,15 +46,15 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     abs_perc_error_std=2251799813685247.8,  # approx(np.nan, nan_ok=True),  # noqa
                     error_normality={
                         "order_statistic_medians_x": [
-                            -0.9981488825015566,
-                            -0.29119141829755274,
-                            0.2911914182975529,
-                            0.9981488825015566,
+                            approx(-0.9981488825015566),
+                            approx(-0.29119141829755274),
+                            approx(0.2911914182975529),
+                            approx(0.9981488825015566),
                         ],
                         "order_statistic_medians_y": [-1.0, 0.0, 0.0, 1.0],
-                        "slope": 0.923276995960497,
-                        "intercept": -5.125216895110457e-17,
-                        "r": 0.9599832820197256,
+                        "slope": approx(0.923276995960497),
+                        "intercept": approx(-5.125216895110457e-17),
+                        "r": approx(0.9599832820197256),
                     },
                     abs_error_max=1,
                     underperformance={
@@ -91,10 +93,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     abs_perc_error_std=0.0,
                     error_normality={
                         "order_statistic_medians_x": [
-                            -0.9981488825015566,
-                            -0.29119141829755274,
-                            0.2911914182975529,
-                            0.9981488825015566,
+                            approx(-0.9981488825015566),
+                            approx(-0.29119141829755274),
+                            approx(0.2911914182975529),
+                            approx(0.9981488825015566),
                         ],
                         "order_statistic_medians_y": [0.0, 0.0, 0.0, 0.0],
                         "slope": 0.0,
@@ -191,15 +193,15 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     abs_perc_error_std=2251799813685248.0,
                     error_normality={
                         "order_statistic_medians_x": [
-                            -0.9981488825015566,
-                            -0.29119141829755274,
-                            0.2911914182975529,
-                            0.9981488825015566,
+                            approx(-0.9981488825015566),
+                            approx(-0.29119141829755274),
+                            approx(0.2911914182975529),
+                            approx(0.9981488825015566),
                         ],
                         "order_statistic_medians_y": [-1.0, -1.0, 0.0, 1.0],
-                        "slope": 1.0579514631910014,
+                        "slope": approx(1.0579514631910014),
                         "intercept": -0.25000000000000006,
-                        "r": 0.9380933329232763,
+                        "r": approx(0.9380933329232763),
                     },
                     underperformance={
                         "majority": {"mean_error": 0.0, "std_error": approx(np.NAN, nan_ok=True)},
@@ -246,11 +248,11 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     abs_error_std=0.0,
                     abs_perc_error_std=3184525836262885.5,
                     error_normality={
-                        "order_statistic_medians_x": [-0.5449521356173604, 0.5449521356173604],
+                        "order_statistic_medians_x": [approx(-0.5449521356173604), approx(0.5449521356173604)],
                         "order_statistic_medians_y": [-1.0, 1.0],
-                        "slope": 1.8350235454479484,
+                        "slope": approx(1.8350235454479484),
                         "intercept": 0.0,
-                        "r": 1.0,
+                        "r": approx(1.0),
                     },
                     underperformance={
                         "majority": {
@@ -353,4 +355,5 @@ def test_regression_performance_analyser(
         current_data=current_data,
         column_mapping=data_mapping,
     )
+    assert dataclasses.asdict(result) == dataclasses.asdict(expected_result)
     assert result == expected_result

@@ -238,7 +238,7 @@ class TestColumnDrift(Test):
             groups={
                 GroupingTypes.ByFeature.id: self.column_name.display_name,
             },
-            parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name),
+            parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name.display_name),
         )
 
 
