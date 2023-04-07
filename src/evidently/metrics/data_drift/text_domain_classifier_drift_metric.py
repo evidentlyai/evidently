@@ -64,7 +64,7 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
         return roc_auc, y_pred_proba, pipeline
 
     @staticmethod
-    def roc_auc_random_classifier_percentile(y_test: np.array, p_value=0.05, iter_num=1000, seed=42) -> float:  # type: ignore[valid-type]
+    def roc_auc_random_classifier_percentile(y_test: np.array, p_value=0.05, iter_num=1000, seed=42) -> float:
         def calc_roc_auc_random(y_test, seed=None):
             np.random.seed(seed)
             y_random_pred = np.random.rand(len(y_test))

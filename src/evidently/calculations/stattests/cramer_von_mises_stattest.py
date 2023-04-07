@@ -50,7 +50,7 @@ def _all_partitions(nx: int, ny: int) -> Generator[Tuple[int, int], None, None]:
         mask = np.ones(nx + ny, bool)
         mask[x] = False
         y = z[mask]
-        yield x, y  # type: ignore[misc]
+        yield x, y
 
 
 def _pval_cvm_2samp_exact(s: float, nx: int, ny: int):
@@ -93,7 +93,7 @@ def _cdf_cvm_inf(x: float) -> float:
     Returns:
         tot: float
     """
-    x = np.asarray(x)  # type: ignore[assignment]
+    x = np.asarray(x)
 
     def term(x, k):
         u = np.exp(gammaln(k + 0.5) - gammaln(k + 1)) / (np.pi**1.5 * np.sqrt(x))
@@ -111,7 +111,7 @@ def _cdf_cvm_inf(x: float) -> float:
         cond[cond] = np.abs(z) >= 1e-7
         k += 1
 
-    return tot  # type: ignore[return-value]
+    return tot
 
 
 def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
