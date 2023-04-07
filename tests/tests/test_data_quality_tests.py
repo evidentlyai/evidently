@@ -430,9 +430,9 @@ def test_data_quality_test_value_in_n_sigmas_json_render() -> None:
 def test_data_quality_test_value_in_range() -> None:
     test_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 20],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
+            "feature1": [0, 1, 2, 3, 4, 20],
+            "target": [0, 0, 0, 1, 0, 1],
+            "prediction": [0, 0, 1, 1, 0, 1],
         }
     )
     suite = TestSuite(tests=[TestValueRange(column_name="feature1", left=0, right=10)])
@@ -445,9 +445,9 @@ def test_data_quality_test_value_in_range() -> None:
 
     reference_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 3],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
+            "feature1": [0, 1, 1, 3, 2, 4, 5],
+            "target": [0, 0, 0, 1, 0, 1, 1],
+            "prediction": [0, 0, 1, 1, 0, 1, 1],
         }
     )
     suite = TestSuite(tests=[TestValueRange(column_name="feature1")])
@@ -464,8 +464,8 @@ def test_data_quality_test_value_in_range() -> None:
 def test_data_quality_test_number_of_values_not_in_range() -> None:
     test_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 15],
-            "target": [0, 0, 5, 1],
+            "feature1": [0, 1, 1, 2, 3, 4, 15],
+            "target": [0, 0, 2, 3, 4, 5, 1],
         }
     )
     suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", left=0, right=10, lt=1)])
@@ -478,9 +478,9 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
 
     reference_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 3],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
+            "feature1": [0, 1, 1, 3, 4, 5, 6, 7],
+            "target": [0, 0, 0, 1, 0, 0, 1, 1],
+            "prediction": [0, 0, 1, 1, 0, 0, 1, 1],
         }
     )
     suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", lt=1)])
@@ -505,11 +505,11 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
 def test_data_quality_test_share_of_values_not_in_range() -> None:
     test_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 15],
-            "target": [0, 0, 5, 1],
+            "feature1": [0, 1, 1, 2, 3, 4, 15],
+            "target": [0, 0, 2, 3, 4, 5, 1],
         }
     )
-    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, lt=0.2)])
+    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, lt=0.1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
@@ -519,12 +519,12 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
 
     reference_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 3],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
+            "feature1": [0, 1, 1, 3, 4, 5, 6, 7],
+            "target": [0, 0, 0, 1, 0, 0, 1, 1],
+            "prediction": [0, 0, 1, 1, 0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lt=0.2)])
+    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lt=0.1)])
     suite.run(
         current_data=test_dataset,
         reference_data=reference_dataset,
@@ -546,7 +546,7 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
 def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
     test_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 0, 24],
+            "feature1": [0, 1, 1, 0, 24, 2, 3, 4],
         }
     )
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, gt=0.2)])
@@ -558,12 +558,12 @@ def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
     test_info = result_from_json["tests"][0]
     assert test_info == {
         "description": (
-            "The share of values out of range in the column **feature1** is 0.2 (1 out of 5)."
+            "The share of values out of range in the column **feature1** is 0.125 (1 out of 8)."
             "  The test threshold is gt=0.2."
         ),
         "group": "data_quality",
         "name": "Share of Out-of-Range Values",
-        "parameters": {"condition": {"gt": 0.2}, "left": 0, "right": 10, "value": 0.2},
+        "parameters": {"condition": {"gt": 0.2}, "left": 0, "right": 10, "value": 0.125},
         "status": "FAIL",
     }
 
@@ -571,16 +571,16 @@ def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
 def test_data_quality_test_value_in_list() -> None:
     test_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 20],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
+            "feature1": [0, 1, 2, 3, 4, 20],
+            "target": [0, 0, 0, 1, 0, 1],
+            "prediction": [0, 0, 1, 1, 0, 1],
         }
     )
     reference_dataset = pd.DataFrame(
         {
-            "feature1": [0, 1, 1, 0],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 2],
+            "feature1": [0, 1, 1, 3, 2, 4, 5],
+            "target": [0, 0, 0, 1, 0, 1, 1],
+            "prediction": [0, 0, 1, 2, 0, 1, 1],
         }
     )
     suite = TestSuite(tests=[TestValueList(column_name="feature1")])

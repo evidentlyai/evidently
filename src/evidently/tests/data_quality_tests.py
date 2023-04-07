@@ -8,6 +8,7 @@ from typing import Union
 
 import pandas as pd
 
+from evidently.base_metric import ColumnName
 from evidently.calculations.data_quality import get_corr_method
 from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnQuantileMetric
@@ -903,15 +904,23 @@ class TestValueRange(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Value Range"
     metric: ColumnValueRangeMetric
-    column: str
+    column_name: ColumnName
     left: Optional[float]
     right: Optional[float]
 
-    def __init__(self, column_name: str, left: Optional[float] = None, right: Optional[float] = None):
-        self.column_name = column_name
+    def __init__(
+        self,
+        column_name: Union[str, ColumnName],
+        left: Optional[float] = None,
+        right: Optional[float] = None,
+    ):
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.left = left
         self.right = right
-        self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
+        self.metric = ColumnValueRangeMetric(column_name=self.column_name, left=left, right=right)
 
     def check(self):
         number_not_in_range = self.metric.get_result().current.number_not_in_range
@@ -927,7 +936,7 @@ class TestValueRange(Test):
             name=self.name,
             description=description,
             status=test_result,
-            groups={GroupingTypes.ByFeature.id: self.column_name},
+            groups={GroupingTypes.ByFeature.id: self.column_name.display_name},
             group=self.group,
         )
 
@@ -947,20 +956,23 @@ class TestValueRangeRenderer(TestRenderer):
             color_options=self.color_options,
         )
         fig = plot_check(fig, condition_, color_options=self.color_options)
-        info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
+        info.with_details(
+            f"Value Range {column_name.display_name}",
+            plotly_figure(title="", figure=fig),
+        )
         return info
 
 
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
     metric: ColumnValueRangeMetric
-    column: str
+    column_name: ColumnName
     left: Optional[float]
     right: Optional[float]
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         left: Optional[float] = None,
         right: Optional[float] = None,
         eq: Optional[Numeric] = None,
@@ -972,7 +984,10 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        self.column_name = column_name
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.left = left
         self.right = right
         self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
@@ -989,7 +1004,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         )
 
     def groups(self) -> Dict[str, str]:
-        return {GroupingTypes.ByFeature.id: self.column_name}
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -1024,7 +1039,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     def get_description(self, value: Numeric) -> str:
         current_result = self.metric.get_result().current
         return (
-            f"The share of values out of range in the column **{self.column_name}** is {value:.3g} "
+            f"The share of values out of range in the column **{self.column_name.display_name}** is {value:.3g} "
             f"({current_result.number_not_in_range} out of {current_result.number_of_values}). "
             f" The test threshold is {self.get_condition()}."
         )
@@ -1050,7 +1065,7 @@ class TestRangeValuesRenderer(TestRenderer):
             color_options=self.color_options,
         )
         fig = plot_check(fig, obj.condition, color_options=self.color_options)
-        info.with_details(f"{obj.name} for {column_name}", plotly_figure(title="", figure=fig))
+        info.with_details(f"{obj.name} for {column_name.display_name}", plotly_figure(title="", figure=fig))
         return info
 
 

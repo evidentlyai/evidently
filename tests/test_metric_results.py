@@ -24,7 +24,7 @@ def all_metric_results():
     metric_result_field_classes = set()
     for mod in glob.glob(path + "/**/*.py", recursive=True):
         mod_path = os.path.relpath(mod, path)[:-3]
-        mod_name = "evidently." + mod_path.replace("/", ".")
+        mod_name = "evidently." + mod_path.replace("/", ".").replace("\\", ".")
         if mod_name.endswith("__"):
             continue
         module = import_module(mod_name)
