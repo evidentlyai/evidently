@@ -49,6 +49,10 @@ def test_as_dict(report: Report):
     assert "series" in include_series["metrics"][0]["result"]
     assert (pd.Series([0]) == include_series["metrics"][0]["result"]["series"]).all()
 
+    include_render = report.as_dict(include_render=True)
+
+    assert "distribution" in include_render["metrics"][0]["result"]
+
 
 def test_json(report: Report):
     default = json.loads(report.json())["metrics"]

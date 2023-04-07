@@ -10,6 +10,7 @@ from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
@@ -20,6 +21,7 @@ from pydantic import BaseModel
 from pydantic.fields import SHAPE_DICT
 from pydantic.fields import ModelField
 
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
@@ -93,22 +95,80 @@ class InputData:
         raise ValueError("unknown column data")
 
     def get_current_column(self, column: Union[str, ColumnName]) -> pd.Series:
-        if isinstance(column, str):
-            _column = ColumnName(column, column, DatasetType.MAIN, None)
-        else:
-            _column = column
+        _column = self._str_to_column_name(column)
         return self._get_by_column_name(self.current_data, self.current_additional_features, _column)
 
     def get_reference_column(self, column: Union[str, ColumnName]) -> Optional[pd.Series]:
         if self.reference_data is None:
             return None
+        _column = self._str_to_column_name(column)
+        if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
+            return None
+        return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
+
+    def get_data(self, column: Union[str, ColumnName]) -> Tuple[ColumnType, pd.Series, Optional[pd.Series]]:
+        ref_data = None
+        if self.reference_data is not None:
+            ref_data = self.get_reference_column(column)
+        return self._determine_type(column), self.get_current_column(column), ref_data
+
+    def _determine_type(self, column: Union[str, ColumnName]) -> ColumnType:
+        if isinstance(column, ColumnName) and column.feature_class is not None:
+            column_type = ColumnType.Numerical
+        else:
+            if isinstance(column, ColumnName):
+                column_name = column.name
+            else:
+                column_name = column
+            column_type = self.data_definition.get_column(column_name).column_type
+        return column_type
+
+    def has_column(self, column_name: Union[str, ColumnName]):
+        column = self._str_to_column_name(column_name)
+        if column.dataset == DatasetType.MAIN:
+            return column.name in [definition.column_name for definition in self.data_definition.get_columns()]
+        if self.current_additional_features is not None:
+            return column.name in self.current_additional_features.columns
+        return False
+
+    def _str_to_column_name(self, column: Union[str, ColumnName]) -> ColumnName:
         if isinstance(column, str):
             _column = ColumnName(column, column, DatasetType.MAIN, None)
         else:
             _column = column
-        if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
-            return None
-        return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
+        return _column
+
+    def get_data(self, column: Union[str, ColumnName]) -> Tuple[ColumnType, pd.Series, Optional[pd.Series]]:
+        ref_data = None
+        if self.reference_data is not None:
+            ref_data = self.get_reference_column(column)
+        return self._determine_type(column), self.get_current_column(column), ref_data
+
+    def _determine_type(self, column: Union[str, ColumnName]) -> ColumnType:
+        if isinstance(column, ColumnName) and column.feature_class is not None:
+            column_type = ColumnType.Numerical
+        else:
+            if isinstance(column, ColumnName):
+                column_name = column.name
+            else:
+                column_name = column
+            column_type = self.data_definition.get_column(column_name).column_type
+        return column_type
+
+    def has_column(self, column_name: Union[str, ColumnName]):
+        column = self._str_to_column_name(column_name)
+        if column.dataset == DatasetType.MAIN:
+            return column.name in [definition.column_name for definition in self.data_definition.get_columns()]
+        if self.current_additional_features is not None:
+            return column.name in self.current_additional_features.columns
+        return False
+
+    def _str_to_column_name(self, column: Union[str, ColumnName]) -> ColumnName:
+        if isinstance(column, str):
+            _column = ColumnName(column, column, DatasetType.MAIN, None)
+        else:
+            _column = column
+        return _column
 
 
 class Metric(Generic[TResult]):
@@ -184,6 +244,10 @@ class AllDict(dict):
         return True
 
 
+class IncludeTags(Enum):
+    Render = "render"
+
+
 class MetricResult(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
@@ -196,17 +260,27 @@ class MetricResult(BaseModel):
         pd_include_fields: set = set()
         pd_exclude_fields: set = set()
 
+        tags: Set[IncludeTags] = set()
+
     if TYPE_CHECKING:
         __config__: ClassVar[Type[Config]] = Config
 
     def get_dict(
         self,
+        include_render: bool = False,
         include: Optional[IncludeOptions] = None,
         exclude: Optional[IncludeOptions] = None,
     ):
-        return self.dict(include=include or self._build_include(), exclude=exclude)
+        include_tags = set()
+        if include_render:
+            include_tags.add(IncludeTags.Render)
+        return self.dict(include=include or self._build_include(include_tags=include_tags), exclude=exclude)
 
-    def _build_include(self, include=None) -> "MappingIntStrAny":
+    def _build_include(
+        self,
+        include_tags: Set[IncludeTags],
+        include=None,
+    ) -> "MappingIntStrAny":
         if not self.__config__.dict_include and not include:
             return {}
         include = include or {}
@@ -218,27 +292,36 @@ class MetricResult(BaseModel):
         dict_exclude_fields = self.__config__.dict_exclude_fields or set()
         result: Dict[str, Any] = {}
         for name, field in self.__fields__.items():
+            if isinstance(field.type_, type) and issubclass(field.type_, MetricResult):
+                if (
+                    (not field.type_.__config__.dict_include or name in dict_exclude_fields)
+                    and not field.field_info.include
+                    and name not in include
+                    and all(tag not in include_tags for tag in field.type_.__config__.tags)
+                ):
+                    continue
+
+                field_value = getattr(self, name)
+                if field_value is None:
+                    build_include = {}
+                elif _is_mapping_field(field):
+                    build_include = {
+                        k: v._build_include(
+                            include_tags=include_tags, include=field.field_info.include or include.get(name, {})
+                        )
+                        for k, v in field_value.items()
+                    }
+                # todo: lists
+
+                else:
+                    build_include = field_value._build_include(
+                        include_tags=include_tags, include=field.field_info.include or include.get(name, {})
+                    )
+                result[name] = build_include
+                continue
             if name in dict_exclude_fields and name not in include:
                 continue
             if name not in dict_include_fields:
-                continue
-            if isinstance(field.type_, type) and issubclass(field.type_, MetricResult):
-                if field.type_.__config__.dict_include or field.field_info.include or name in include:
-                    field_value = getattr(self, name)
-                    if field_value is None:
-                        build_include = {}
-                    elif _is_mapping_field(field):
-                        build_include = {
-                            k: v._build_include(include=field.field_info.include or include.get(name, {}))
-                            for k, v in field_value.items()
-                        }
-                    # todo: lists
-
-                    else:
-                        build_include = field_value._build_include(
-                            include=field.field_info.include or include.get(name, {})
-                        )
-                    result[name] = build_include
                 continue
             result[name] = True
         return result  # type: ignore

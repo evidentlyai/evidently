@@ -21,7 +21,7 @@ def all_metric_results():
     metric_result_field_classes = set()
     for mod in glob.glob(path + "/**/*.py", recursive=True):
         mod_path = os.path.relpath(mod, path)[:-3]
-        mod_name = "evidently." + mod_path.replace("/", ".")
+        mod_name = "evidently." + mod_path.replace("/", ".").replace("\\", ".")
         if mod_name.endswith("__"):
             continue
         module = import_module(mod_name)
@@ -50,6 +50,22 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]
                     errors.append((cls, config_field, field_name))
 
     assert len(errors) == 0, f"Wrong config for field classes: {errors}"
+
+
+class SimpleField(MetricResult):
+    f1: str
+
+
+class ExcludeModel(MetricResult):
+    class Config:
+        dict_exclude_fields = {"simple"}
+
+    simple: SimpleField
+
+
+@pytest.mark.parametrize("obj, expected", [(ExcludeModel(simple=SimpleField(f1="a")), {})])
+def test_default_json(obj: MetricResult, expected):
+    assert obj.get_dict() == expected
 
 
 class FieldExclude(MetricResult):

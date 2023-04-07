@@ -36,7 +36,7 @@ from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
 
-def _all_partitions(nx: int, ny: int) -> Generator[Tuple[int, int], None, None]:
+def _all_partitions(nx: int, ny: int) -> Generator[Tuple[np.ndarray, np.ndarray], None, None]:
     """
     Args:
         nx: int
@@ -93,7 +93,7 @@ def _cdf_cvm_inf(x: float) -> float:
     Returns:
         tot: float
     """
-    x = np.asarray(x)
+    x_array = np.asarray(x)
 
     def term(x, k):
         u = np.exp(gammaln(k + 0.5) - gammaln(k + 1)) / (np.pi**1.5 * np.sqrt(x))
@@ -102,16 +102,16 @@ def _cdf_cvm_inf(x: float) -> float:
         b = kv(0.25, q)
         return u * np.sqrt(y) * np.exp(-q) * b
 
-    tot = np.zeros_like(x, dtype="float")
-    cond = np.ones_like(x, dtype="bool")
+    tot = np.zeros_like(x_array, dtype="float")
+    cond = np.ones_like(x_array, dtype="bool")
     k = 0
     while np.any(cond):
-        z = term(x[cond], k)  # type: ignore
+        z = term(x_array[cond], k)  # type: ignore
         tot[cond] = tot[cond] + z
         cond[cond] = np.abs(z) >= 1e-7
         k += 1
 
-    return tot
+    return tot[0]
 
 
 def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
@@ -171,7 +171,7 @@ def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonM
         if tn < 0.003:
             p = 1.0
         else:
-            p = max(0, 1.0 - _cdf_cvm_inf(tn))
+            p = max(0.0, 1.0 - _cdf_cvm_inf(tn))
 
     return CramerVonMisesResult(statistic=t, pvalue=p)
 
@@ -192,7 +192,7 @@ def _cramer_von_mises(
         p_value: p-value
         test_result: whether the drift is detected
     """
-    res = _cvm_2samp(reference_data, current_data)
+    res = _cvm_2samp(reference_data.values, current_data.values)
     return res.pvalue, res.pvalue <= threshold
 
 

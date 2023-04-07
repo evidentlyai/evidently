@@ -3,6 +3,7 @@ from typing import Optional
 
 import numpy as np
 
+from evidently.base_metric import IncludeTags
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -19,6 +20,7 @@ from evidently.utils.visualizations import plot_scatter
 class RegressionPredictedVsActualScatterResults(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     current: PredActualScatter
     reference: Optional[PredActualScatter]
