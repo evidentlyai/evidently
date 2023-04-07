@@ -68,6 +68,7 @@
 
 ## SUPPORT
 
+* [Migration](support/migration.md)
 * [Contact](support/contact.md)
 * [F.A.Q.](support/f.a.q..md)
 * [Telemetry](support/telemetry.md)
