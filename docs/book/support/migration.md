@@ -12,6 +12,12 @@ In Evidently 0.2.9, the old API was removed from the code base.
 
 To make sure your existing code that uses `Dashboards` or `json profiles` works, **fix the Evidently version to 0.2.8 or earlier**.
 
+For example, when installing Evidently, specify:
+
+```
+!pip install evidently==0.2.8
+```
+
 You can continue using the older versions and access old documentation, but they are no longer supported.
 
 # Migrate to the new version
