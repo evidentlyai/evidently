@@ -127,7 +127,6 @@ class DataQualityPlot(MetricResult):
 
 class ColumnSummaryResult(ColumnMetricResult):
     class Config:
-        pd_exclude_fields = {"plot_data"}
         pd_name_mapping = {
             "reference_characteristics": "ref",
             "current_characteristics": "cur",

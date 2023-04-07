@@ -10,7 +10,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently.base_metric import ColumnMetricResult
+from evidently.base_metric import ColumnMetricResult, IncludeTags
 from evidently.base_metric import MetricResult
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
@@ -30,7 +30,8 @@ Words = List[str]
 
 class DriftStatsField(MetricResult):
     class Config:
-        dict_include_fields = {"small_distribution"}
+        dict_exclude_fields = {"small_distribution"}
+        field_tags = {"characteristic_examples": {IncludeTags.Render}}
         pd_include = False
 
     distribution: Optional[Distribution]
@@ -41,9 +42,6 @@ class DriftStatsField(MetricResult):
 
 
 class ColumnDataDriftMetrics(ColumnMetricResult):
-    class Config:
-        dict_exclude_fields = {"scatter"}
-
     stattest_name: str
     stattest_threshold: Optional[float]
     drift_score: Numeric
