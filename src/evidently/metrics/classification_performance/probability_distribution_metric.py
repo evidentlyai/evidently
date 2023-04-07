@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 from plotly import figure_factory as ff
 
-from evidently.base_metric import IncludeTags, InputData
+from evidently.base_metric import IncludeTags
+from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
