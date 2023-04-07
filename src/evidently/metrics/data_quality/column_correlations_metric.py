@@ -1,15 +1,17 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 
-from evidently import ColumnMapping
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.calculations.data_quality import calculate_category_column_correlations
-from evidently.calculations.data_quality import calculate_numerical_column_correlations
+from evidently.calculations.data_quality import calculate_category_correlation
+from evidently.calculations.data_quality import calculate_numerical_correlation
+from evidently.core import ColumnType
 from evidently.metric_results import ColumnCorrelations
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -18,8 +20,7 @@ from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_histogram_for_distribution
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import recognize_column_type
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ColumnCorrelationsMetricResult(MetricResult):
@@ -32,49 +33,67 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
     """Calculates correlations between the selected column and all the other columns.
     In the current and reference (if presented) datasets"""
 
-    column_name: str
+    column_name: ColumnName
 
-    def __init__(self, column_name: str) -> None:
-        self.column_name = column_name
+    def __init__(self, column_name: Union[str, ColumnName]) -> None:
+        if isinstance(column_name, ColumnName):
+            self.column_name = column_name
+        else:
+            self.column_name = ColumnName.main_dataset(column_name)
 
     @staticmethod
     def _calculate_correlation(
-        column_name: str, dataset: pd.DataFrame, column_mapping: ColumnMapping
+        column_name: ColumnName,
+        column_data: pd.Series,
+        dataset: pd.DataFrame,
+        data_definition: DataDefinition,
+        column_type: ColumnType,
     ) -> Dict[str, ColumnCorrelations]:
-        columns = process_columns(dataset, column_mapping)
-        column_type = recognize_column_type(dataset=dataset, column_name=column_name, columns=columns)
+        if column_type == ColumnType.Categorical:
+            cat_features = data_definition.get_columns("categorical_features")
 
-        if column_type == "cat":
-            correlation_columns = [name for name in columns.cat_feature_names if name != column_name]
-            return calculate_category_column_correlations(column_name, dataset, correlation_columns)
-
-        elif column_type == "num":
-            correlation_columns = [name for name in columns.num_feature_names if name != column_name]
-            return calculate_numerical_column_correlations(column_name, dataset, correlation_columns)
-
+            correlations = calculate_category_correlation(
+                column_name.display_name,
+                column_data,
+                dataset[[feature.column_name for feature in cat_features if feature.column_name != column_name.name]],
+            )
+        elif column_type == ColumnType.Numerical:
+            num_features = data_definition.get_columns("numerical_features")
+            correlations = calculate_numerical_correlation(
+                column_name.display_name,
+                column_data,
+                dataset[[feature.column_name for feature in num_features if feature.column_name != column_name.name]],
+            )
         else:
             raise ValueError(f"Cannot calculate correlations for '{column_type}' column type.")
+        return {corr.kind: corr for corr in correlations}
 
     def calculate(self, data: InputData) -> ColumnCorrelationsMetricResult:
-        if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
+        if not data.has_column(self.column_name):
+            raise ValueError(f"Column '{self.column_name.name}' was not found in data.")
 
-        if data.reference_data is not None:
-            if self.column_name not in data.reference_data:
-                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
+        column_type, current_data, reference_data = data.get_data(self.column_name)
 
-        current_correlations = self._calculate_correlation(self.column_name, data.current_data, data.column_mapping)
+        current_correlations = self._calculate_correlation(
+            self.column_name,
+            current_data,
+            data.current_data,
+            data.data_definition,
+            column_type,
+        )
 
-        if data.reference_data is not None:
-            reference_correlations: Optional[Dict[str, ColumnCorrelations]] = self._calculate_correlation(
-                self.column_name, data.reference_data, data.column_mapping
+        reference_correlations = None
+        if reference_data is not None:
+            reference_correlations = self._calculate_correlation(
+                self.column_name,
+                reference_data,
+                data.reference_data,
+                data.data_definition,
+                column_type,
             )
 
-        else:
-            reference_correlations = None
-
         return ColumnCorrelationsMetricResult(
-            column_name=self.column_name,
+            column_name=self.column_name.display_name,
             current=current_correlations,
             reference=reference_correlations if reference_correlations is not None else None,
         )

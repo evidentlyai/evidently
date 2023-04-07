@@ -267,8 +267,8 @@ def calculate_data_quality_stats(
 class DataQualityGetPlotData:
     def __init__(self) -> None:
         self.period_prefix: Optional[str] = None
-        self.curr: Optional[pd.Series] = None
-        self.ref: Optional[pd.Series] = None
+        self.curr: Optional[pd.DataFrame] = None
+        self.ref: Optional[pd.DataFrame] = None
 
     def calculate_main_plot(
         self,
@@ -712,49 +712,55 @@ def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, colu
     )
 
 
-def calculate_category_column_correlations(
-    column_name: str, dataset: pd.DataFrame, columns: List[str]
-) -> Dict[str, ColumnCorrelations]:
+def calculate_category_correlation(
+    column_display_name: str,
+    column: pd.Series,
+    features: pd.DataFrame,
+) -> List[ColumnCorrelations]:
     """For category columns calculate cramer_v correlation"""
-    if dataset[column_name].empty:
-        return {}
+    if column.empty or features.empty:
+        return []
 
-    if not columns:
-        return {}
+    result_x = []
+    result_y = []
 
-    correlation = calculate_cramer_v_correlation(column_name, dataset, columns)
+    for feature_name in features.columns:
+        result_x.append(feature_name)
+        result_y.append(_cramer_v(column, features[feature_name]))
 
-    if pd.isnull(correlation.values.y).all():
-        return {}
+    return [
+        ColumnCorrelations(
+            column_name=column_display_name,
+            kind="cramer_v",
+            values=Distribution(x=result_x, y=result_y),
+        ),
+    ]
 
-    else:
-        return {correlation.kind: correlation}
 
+def calculate_numerical_correlation(
+    column_display_name: str,
+    column: pd.Series,
+    features: pd.DataFrame,
+) -> List[ColumnCorrelations]:
+    if column.empty or features.empty:
+        return []
 
-def calculate_numerical_column_correlations(
-    column_name: str, dataset: pd.DataFrame, columns: List[str]
-) -> Dict[str, ColumnCorrelations]:
-    if dataset[column_name].empty or not columns:
-        return {}
-
-    if not columns:
-        return {}
-
-    result: Dict[str, ColumnCorrelations] = {}
-    column = dataset[column_name]
+    result = []
 
     for kind in ["pearson", "spearman", "kendall"]:
         correlations_columns = []
         correlations_values = []
 
-        for other_column_name in columns:
+        for other_column_name in features.columns:
             correlations_columns.append(other_column_name)
-            correlations_values.append(column.corr(dataset[other_column_name], method=kind))
+            correlations_values.append(column.corr(features[other_column_name], method=kind))
 
-        result[kind] = ColumnCorrelations(
-            column_name=column_name,
-            kind=kind,
-            values=Distribution(x=correlations_columns, y=correlations_values),
+        result.append(
+            ColumnCorrelations(
+                column_name=column_display_name,
+                kind=kind,
+                values=Distribution(x=correlations_columns, y=correlations_values),
+            )
         )
 
     return result

@@ -1,10 +1,14 @@
 import abc
 import logging
+import typing
 from typing import Optional
 
 import pandas as pd
 
 from evidently.utils.data_preprocessing import DataDefinition
+
+if typing.TYPE_CHECKING:
+    from evidently.base_metric import ColumnName
 
 
 class GeneratedFeature:
@@ -23,7 +27,7 @@ class GeneratedFeature:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def feature_name(self):
+    def feature_name(self) -> "ColumnName":
         """
         get feature name for given features and parameters.
 
