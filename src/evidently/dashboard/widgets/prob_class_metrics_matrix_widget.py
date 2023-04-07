@@ -67,6 +67,7 @@ class ProbClassMetricsMatrixWidget(Widget):
 
         if len(utility_columns.prediction) > 2:
             roc_aucs = metrics.roc_aucs
+            assert roc_aucs is not None
             z = np.append(z, [roc_aucs], axis=0)
             y.append("roc-auc")
 

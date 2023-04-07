@@ -21,7 +21,11 @@ from evidently.utils.data_preprocessing import DataDefinition
 def test_metric_generator():
     test_data = pd.DataFrame({"col1": [3, 2, 3], "col2": [4, 5, 6], "col3": [4, 5, 6]})
     report = Report(metrics=[generate_column_metrics(ColumnValueRangeMetric, parameters={"left": 0, "right": 10})])
-    report.run(current_data=test_data, reference_data=None)
+    report.run(
+        current_data=test_data,
+        reference_data=None,
+        column_mapping=ColumnMapping(numerical_features=["col1", "col2", "col3"]),
+    )
     assert report.show()
 
     report = Report(
@@ -31,7 +35,11 @@ def test_metric_generator():
             )
         ]
     )
-    report.run(current_data=test_data, reference_data=None)
+    report.run(
+        current_data=test_data,
+        reference_data=None,
+        column_mapping=ColumnMapping(numerical_features=["col1", "col2", "col3"]),
+    )
     assert report.show()
 
 
