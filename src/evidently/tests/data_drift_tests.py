@@ -9,6 +9,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently.base_metric import ColumnName
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnDriftMetric
@@ -155,15 +156,18 @@ class TestColumnDrift(Test):
     name = "Drift per Column"
     group = DATA_DRIFT_GROUP.id
     metric: ColumnDriftMetric
-    column_name: str
+    column_name: ColumnName
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        self.column_name = column_name
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.metric = ColumnDriftMetric(
             column_name=column_name,
             stattest=stattest,
@@ -177,7 +181,7 @@ class TestColumnDrift(Test):
         stattest_name = drift_info.stattest_name
         threshold = drift_info.stattest_threshold
         description = (
-            f"The drift score for the feature **{self.column_name}** is {p_value:.3g}. "
+            f"The drift score for the feature **{self.column_name.display_name}** is {p_value:.3g}. "
             f"The drift detection method is {stattest_name}. "
             f"The drift detection threshold is {threshold}."
         )
@@ -193,7 +197,7 @@ class TestColumnDrift(Test):
             description=description,
             status=result_status,
             groups={
-                GroupingTypes.ByFeature.id: self.column_name,
+                GroupingTypes.ByFeature.id: self.column_name.display_name,
             },
         )
 
@@ -455,7 +459,7 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
 @default_renderer(wrap_type=TestColumnDrift)
 class TestColumnDriftRenderer(TestRenderer):
     def render_json(self, obj: TestColumnDrift) -> dict:
-        feature_name = obj.column_name
+        feature_name = obj.column_name.display_name
         drift_data = obj.metric.get_result()
         base = super().render_json(obj)
         base["parameters"]["features"] = {
