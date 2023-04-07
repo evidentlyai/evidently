@@ -7,7 +7,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.calculations.data_quality import calculate_numerical_column_correlations
+from evidently.calculations.data_quality import calculate_numerical_correlation
 from evidently.core import ColumnType as ColumnType_data
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
@@ -22,7 +22,6 @@ from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_histogram_for_distribution
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -70,21 +69,11 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
-        columns = process_columns(data.current_data, data.column_mapping)
-        correlation_columns = columns.num_feature_names
-
         curr_text_df = pd.concat(
             [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
-        curr_df = pd.concat(
-            [
-                data.current_data.copy().reset_index(drop=True),
-                curr_text_df.reset_index(drop=True),
-            ],
-            axis=1,
-        )
         ref_df = None
         if data.reference_data is not None:
             ref_text_df = pd.concat(
@@ -104,10 +93,21 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         if ref_df is not None:
             ref_result = {}
 
-        for col in list(self.generated_text_features.keys()):
-            curr_result[col] = calculate_numerical_column_correlations(col, curr_df, correlation_columns)
+        num_features = data.data_definition.get_columns("numerical_features")
+        for name, feature in self.generated_text_features.items():
+            correlations = calculate_numerical_correlation(
+                name,
+                data.get_current_column(feature.feature_name()),
+                data.current_data[[feature.column_name for feature in num_features]],
+            )
+            curr_result[name] = {value.kind: value for value in correlations}
             if ref_df is not None and ref_result is not None:
-                ref_result[col] = calculate_numerical_column_correlations(col, ref_df, correlation_columns)
+                correlations = calculate_numerical_correlation(
+                    name,
+                    data.get_reference_column(feature.feature_name()),
+                    data.current_data[[feature.column_name for feature in num_features]],
+                )
+                ref_result[name] = {value.kind: value for value in correlations}
 
         # todo potential performance issues
         return TextDescriptorsCorrelationMetricResult(

@@ -70,6 +70,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         )
 
     else:
+        num_feature_names = [col for col in num_feature_names if col in dataset.columns]
         empty_cols = dataset[num_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols == 1.0].index
         num_feature_names = sorted(
