@@ -164,29 +164,52 @@ class Display:
                 out_file.write(self._render(determine_template("inline"), template_params))
 
     @abc.abstractmethod
-    def as_dict(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> dict:
+    def as_dict(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ) -> dict:
         raise NotImplementedError()
 
     def _get_json_content(
-        self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
     ) -> dict:
         """Return all data for json representation"""
         result = {
             "version": evidently.__version__,
             "timestamp": str(datetime.now()),
         }
-        result.update(self.as_dict(include=include, exclude=exclude))
+        result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude))
         return result
 
-    def json(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> str:
+    def json(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ) -> str:
         return json.dumps(
-            self._get_json_content(include=include, exclude=exclude),
+            self._get_json_content(include_render=include_render, include=include, exclude=exclude),
             cls=NumpyEncoder,
         )
 
-    def save_json(self, filename, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None):
+    def save_json(
+        self,
+        filename,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ):
         with open(filename, "w", encoding="utf-8") as out_file:
-            json.dump(self._get_json_content(include=include, exclude=exclude), out_file, cls=NumpyEncoder)
+            json.dump(
+                self._get_json_content(include_render=include_render, include=include, exclude=exclude),
+                out_file,
+                cls=NumpyEncoder,
+            )
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)

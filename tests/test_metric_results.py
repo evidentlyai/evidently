@@ -52,6 +52,22 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]
     assert len(errors) == 0, f"Wrong config for field classes: {errors}"
 
 
+class SimpleField(MetricResult):
+    f1: str
+
+
+class ExcludeModel(MetricResult):
+    class Config:
+        dict_exclude_fields = {"simple"}
+
+    simple: SimpleField
+
+
+@pytest.mark.parametrize("obj, expected", [(ExcludeModel(simple=SimpleField(f1="a")), {})])
+def test_default_json(obj: MetricResult, expected):
+    assert obj.get_dict() == expected
+
+
 class FieldExclude(MetricResult):
     class Config:
         dict_exclude_fields = {"f2"}
