@@ -6,11 +6,13 @@ description: How to migrate to the new Evidently API.
 
 Starting from Evidently 0.1.59, the old API that uses `Dashboards` and `json profiles` was deprecated. This functionality is now available using the `Report` object. 
 
-In Evidently 0.2.9, this API was removed. 
+In Evidently 0.2.9, the old API was removed from the code base.
 
 # If your code breaks
 
-To make sure your code that uses `Dashboards` or `json profiles` works, fix the Evidently version to 0.2.8 or earlier.
+To make sure your existing code that uses `Dashboards` or `json profiles` works, **fix the Evidently version to 0.2.8 or earlier**.
+
+You can continue using the older versions and access old documentation, but they are no longer supported.
 
 # Migrate to the new version
 
@@ -37,7 +39,7 @@ data_drift_report.run(reference_data=ref, current_data=cur)
 data_drift_report
 ```
 
-To get what was previously as JSON profile (and has now been improved and re-worked!), simply write:
+To get what was previously as JSON profile (and has now been improved and re-worked!), simply get the Report output as JSON:
 
 ```
 data_drift_report.json()
