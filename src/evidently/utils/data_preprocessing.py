@@ -71,6 +71,7 @@ class DataDefinition:
     _prediction_columns: Optional[PredictionColumns]
     _id_column: Optional[ColumnDefinition]
     _datetime_column: Optional[ColumnDefinition]
+    _embeddings: Optional[Dict[str, List[str]]]
 
     _task: Optional[str]
     _classification_labels: Optional[TargetNames]
@@ -82,6 +83,7 @@ class DataDefinition:
         prediction_columns: Optional[PredictionColumns],
         id_column: Optional[ColumnDefinition],
         datetime_column: Optional[ColumnDefinition],
+        embeddings: Optional[Dict[str, List[str]]],
         task: Optional[str],
         classification_labels: Optional[TargetNames],
     ):
@@ -92,6 +94,7 @@ class DataDefinition:
         self._target = target
         self._prediction_columns = prediction_columns
         self._classification_labels = classification_labels
+        self._embeddings = embeddings
 
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self._columns[column_name]
@@ -130,6 +133,9 @@ class DataDefinition:
 
     def classification_labels(self) -> Optional[TargetNames]:
         return self._classification_labels
+
+    def embeddings(self) -> Optional[Dict]:
+        return self._embeddings
 
 
 def _process_column(
@@ -312,6 +318,7 @@ def create_data_definition(
         prediction_columns=prediction_columns,
         task=task,
         classification_labels=mapping.target_names,
+        embeddings=mapping.embeddings,
     )
 
 

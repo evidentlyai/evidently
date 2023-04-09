@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
+from scipy import stats
 
 from evidently.metric_results import Distribution
 from evidently.metric_results import Histogram
@@ -743,4 +744,55 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
         )
         fig.add_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
+    return fig
+
+
+def get_gaussian_kde(m1, m2):
+    def border(x):
+        return int(max(2, abs(x) * 0.2))
+
+    xmin = m1.min()
+    xmax = m1.max()
+    ymin = m2.min()
+    ymax = m2.max()
+    X, Y = np.mgrid[xmin - border(xmin) : xmax + border(xmax) : 30j, ymin - border(ymin) : ymax + border(ymax) : 30j]
+    positions = np.vstack([X.ravel(), Y.ravel()])
+    values = np.vstack([m1, m2])
+    kernel = stats.gaussian_kde(values)
+    Z = np.reshape(kernel(positions).T, X.shape)
+    return Z
+
+
+def plot_contour(z1: np.array, z2: Optional[np.array], xtitle: str = "", ytitle: str = ""):
+    color_options = ColorOptions()
+    if z2 is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Contour(
+        z=z1,
+        line_width=1,
+        name="current",
+        showscale=False,
+        showlegend=True,
+        colorscale=[[0, "white"], [1, color_options.get_current_data_color()]],
+    )
+    fig.add_trace(trace, 1, 1)
+    fig.update_xaxes(title_text=xtitle, row=1, col=1)
+
+    if z2 is not None:
+        trace = go.Contour(
+            z=z2,
+            line_width=1,
+            name="reference",
+            showscale=False,
+            showlegend=True,
+            colorscale=[[0, "white"], [1, color_options.get_reference_data_color()]],
+        )
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xtitle, row=1, col=2)
+    fig.update_layout(yaxis_title=ytitle)
     return fig
