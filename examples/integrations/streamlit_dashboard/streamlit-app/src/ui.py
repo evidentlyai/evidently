@@ -151,7 +151,7 @@ def display_report(report_path: Path) -> List[Text]:
 
     # If a report is file then read and display the report
     if report_path.is_file():
-        with open(report_path, encoding="utf8") as report_f:
+        with open(report_pathdsds, encoding="utf8") as report_f:
             report: Text = report_f.read()
             components.html(report, width=1000, height=1200, scrolling=True)
         return [report]
