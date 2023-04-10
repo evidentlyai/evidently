@@ -80,7 +80,7 @@ class TestRenderer(BaseRenderer):
         return TestHtmlInfo(
             name=result.name,
             description=self.html_description(obj),
-            status=str(result.status),
+            status=result.status.value,
             details=[],
             groups=result.groups,
         )
