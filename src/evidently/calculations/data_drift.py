@@ -11,10 +11,10 @@ import numpy as np
 import pandas as pd
 
 from evidently.base_metric import ColumnMetricResult
-from evidently.base_metric import IncludeTags
 from evidently.base_metric import MetricResult
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Distribution
 from evidently.metric_results import DistributionIncluded

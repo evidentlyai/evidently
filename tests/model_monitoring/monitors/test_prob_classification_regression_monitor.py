@@ -4,6 +4,7 @@ import pytest
 from evidently.model_monitoring import ModelMonitoring
 from evidently.model_monitoring.monitors.prob_classification_performance import ProbClassificationPerformanceMonitor
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.tests.utils import approx
 from tests.model_monitoring.helpers import collect_metrics_results
 
 
@@ -81,7 +82,7 @@ def test_probability_classification_with_multi_classes() -> None:
         {"labels": {"dataset": "current", "metric": "roc_auc"}, "value": 1.0},
         {
             "labels": {"dataset": "current", "metric": "log_loss"},
-            "value": 0.6053535200492214,
+            "value": approx(0.6053535200492214),
         },
     ]
     assert "prob_classification_performance:class_representation" in result
