@@ -105,13 +105,17 @@ class TestSuite(Display):
         exclude: Dict[str, IncludeOptions] = None,
     ) -> dict:
         test_results = []
+        include = include or {}
+        exclude = exclude or {}
         counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
 
         for test in self._inner_suite.context.test_results:
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            test_id = test.get_id()
             try:
-                # todo: add include/exclude to tests
-                test_data = renderer.render_json(test)
+                test_data = renderer.render_json(
+                    test, include_render=include_render, include=include.get(test_id), exclude=exclude.get(test_id)
+                )
                 test_results.append(test_data)
             except BaseException as e:
                 test_data = TestRenderer.render_json(renderer, test)

@@ -169,6 +169,9 @@ class Test:
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result  # type: ignore[return-value]
 
+    def get_id(self) -> str:
+        return self.__class__.__name__
+
 
 class ValueSource(Enum):
     USER = "user"

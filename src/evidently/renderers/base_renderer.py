@@ -85,8 +85,14 @@ class TestRenderer(BaseRenderer):
             groups=result.groups,
         )
 
-    def render_json(self, obj: "Test") -> dict:
-        return obj.get_result().get_dict()
+    def render_json(
+        self,
+        obj: "Test",
+        include_render: bool = False,
+        include: "IncludeOptions" = None,
+        exclude: "IncludeOptions" = None,
+    ) -> dict:
+        return obj.get_result().get_dict(include_render=include_render, include=include, exclude=exclude)
 
 
 @dataclasses.dataclass
