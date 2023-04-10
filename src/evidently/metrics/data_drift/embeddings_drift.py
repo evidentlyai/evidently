@@ -3,6 +3,7 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 import umap
 
 from evidently.base_metric import InputData
@@ -24,14 +25,14 @@ SAMPLE_CONSTANT = 2500
 
 class EmbeddingsDriftMetricResults(MetricResult):
     class Config:
-        dict_exclude_fields = {}
+        dict_exclude_fields = {"reference", "current",}
 
     embeddings_name: str
     drift_score: float
     drift_detected: bool
     method_name: str
-    plot_ref: np.ndarray
-    plot_curr: np.ndarray
+    reference: np.ndarray
+    current: np.ndarray
 
 
 class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
@@ -70,7 +71,7 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
         curr_sample = data.current_data[emb_list].sample(
             min(SAMPLE_CONSTANT, data.current_data.shape[0]), random_state=24
         )
-        data_2d = umap.UMAP().fit_transform(ref_sample.append(curr_sample))
+        data_2d = umap.UMAP().fit_transform(pd.concat([ref_sample, curr_sample]))
         plot_ref = get_gaussian_kde(data_2d[:SAMPLE_CONSTANT, 0], data_2d[:SAMPLE_CONSTANT, 1])
         plot_curr = get_gaussian_kde(data_2d[SAMPLE_CONSTANT:, 0], data_2d[SAMPLE_CONSTANT:, 1])
 
@@ -79,8 +80,8 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
             drift_score=drift_score,
             drift_detected=drift_detected,
             method_name=method_name,
-            plot_ref=plot_ref,
-            plot_curr=plot_curr,
+            reference=plot_ref,
+            current=plot_curr,
         )
 
 
@@ -94,7 +95,7 @@ class EmbeddingsDriftMetricRenderer(MetricRenderer):
         else:
             drift = "not detected"
         drift_score = round(result.drift_score, 3)
-        fig = plot_contour(result.plot_curr, result.plot_ref, "component 1", "component 2")
+        fig = plot_contour(result.current, result.reference, "component 1", "component 2")
         return [
             counter(
                 counters=[
