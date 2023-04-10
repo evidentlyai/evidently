@@ -3,26 +3,14 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
-from typing import Any
-from typing import ClassVar
-from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
-from typing import Set
 from typing import Tuple
-from typing import Type
 from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic import BaseConfig
-from pydantic import BaseModel
-from pydantic.fields import SHAPE_DICT
-from pydantic.fields import SHAPE_LIST
-from pydantic.fields import SHAPE_SET
-from pydantic.fields import SHAPE_TUPLE
-from pydantic.fields import ModelField
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType
@@ -31,9 +19,6 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
-    from pydantic.typing import AbstractSetIntStr
-    from pydantic.typing import MappingIntStrAny
-
     from evidently.suite.base_suite import Context
 
 
