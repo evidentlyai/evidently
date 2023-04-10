@@ -18,6 +18,7 @@ from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -116,6 +117,7 @@ class DataByTarget(MetricResult):
 class DataQualityPlot(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     bins_for_hist: Optional[Histogram]
     data_in_time: Optional[DataInTime]
@@ -125,7 +127,6 @@ class DataQualityPlot(MetricResult):
 
 class ColumnSummaryResult(ColumnMetricResult):
     class Config:
-        pd_exclude_fields = {"plot_data"}
         pd_name_mapping = {
             "reference_characteristics": "ref",
             "current_characteristics": "cur",

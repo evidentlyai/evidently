@@ -1,9 +1,12 @@
 from typing import List
 from typing import Optional
+from typing import Union
 
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -12,8 +15,6 @@ from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.visualizations import get_distribution_for_column
 
 
@@ -26,33 +27,34 @@ class ColumnDistributionMetricResult(MetricResult):
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
     """Calculates distribution for the column"""
 
-    column_name: str
+    column_name: ColumnName
 
-    def __init__(self, column_name: str) -> None:
-        self.column_name = column_name
+    def __init__(self, column_name: Union[str, ColumnName]) -> None:
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
-        if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
+        if not data.has_column(self.column_name):
+            raise ValueError(f"Column '{self.column_name.display_name}' was not found in data.")
 
-        if data.reference_data is not None:
-            if self.column_name not in data.reference_data:
-                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
-
-        columns = process_columns(data.current_data, data.column_mapping)
-        column_type = recognize_column_type(dataset=data.current_data, column_name=self.column_name, columns=columns)
-        current_column = data.current_data[self.column_name]
+        if not self.column_name.is_main_dataset():
+            column_type = ColumnType.Numerical
+        else:
+            column_type = data.data_definition.get_column(self.column_name.name).column_type
+        current_column = data.get_current_column(self.column_name)
         reference_column = None
         if data.reference_data is not None:
-            reference_column = data.reference_data[self.column_name]
+            reference_column = data.get_reference_column(self.column_name)
         current, reference = get_distribution_for_column(
-            column_type=column_type,
+            column_type=column_type.value,
             current=current_column,
             reference=reference_column,
         )
 
         return ColumnDistributionMetricResult(
-            column_name=self.column_name,
+            column_name=self.column_name.display_name,
             current=current,
             reference=reference,
         )

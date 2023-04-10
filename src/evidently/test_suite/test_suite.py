@@ -9,8 +9,8 @@ from typing import Union
 
 import pandas as pd
 
-from evidently.base_metric import IncludeOptions
 from evidently.base_metric import InputData
+from evidently.core import IncludeOptions
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -23,7 +23,7 @@ from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
-from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestStatus
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
@@ -98,19 +98,28 @@ class TestSuite(Display):
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
-    def as_dict(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> dict:
+    def as_dict(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ) -> dict:
         test_results = []
+        include = include or {}
+        exclude = exclude or {}
         counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
 
         for test in self._inner_suite.context.test_results:
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            test_id = test.get_id()
             try:
-                # todo: add include/exclude to tests
-                test_data = renderer.render_json(test)
+                test_data = renderer.render_json(
+                    test, include_render=include_render, include=include.get(test_id), exclude=exclude.get(test_id)
+                )
                 test_results.append(test_data)
             except BaseException as e:
                 test_data = TestRenderer.render_json(renderer, test)
-                test_data["status"] = TestResult.ERROR
+                test_data["status"] = TestStatus.ERROR
                 test_data["description"] = f"Test failed with exception: {e}"
                 test_results.append(test_data)
 
@@ -121,9 +130,9 @@ class TestSuite(Display):
             "summary": {
                 "all_passed": bool(self),
                 "total_tests": total_tests,
-                "success_tests": counter["SUCCESS"] + counter["WARNING"],
-                "failed_tests": counter["FAIL"],
-                "by_status": counter,
+                "success_tests": counter[TestStatus.SUCCESS] + counter[TestStatus.WARNING],
+                "failed_tests": counter[TestStatus.FAIL],
+                "by_status": {k.value: v for k, v in counter.items()},
             },
         }
 
@@ -146,8 +155,8 @@ class TestSuite(Display):
             params={
                 "counters": [{"value": f"{total_tests}", "label": "Tests"}]
                 + [
-                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()}"}
-                    for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
+                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.value.title()}"}
+                    for status in [TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.FAIL, TestStatus.ERROR]
                 ]
             },
         )

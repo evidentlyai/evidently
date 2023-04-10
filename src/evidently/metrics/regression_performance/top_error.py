@@ -8,6 +8,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.metrics.regression_performance.objects import PredActualScatter
 from evidently.metrics.regression_performance.objects import RegressionScatter
 from evidently.metrics.regression_performance.visualization import plot_error_bias_colored_scatter
@@ -28,6 +29,7 @@ class TopData(MetricResult):
 class RegressionTopErrorMetricResults(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     current: TopData
     reference: Optional[TopData]

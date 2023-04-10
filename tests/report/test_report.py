@@ -7,7 +7,6 @@ import pytest
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import TResult
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -48,6 +47,10 @@ def test_as_dict(report: Report):
     include_series = report.as_dict(include={"MockMetric": {"value", "series"}})
     assert "series" in include_series["metrics"][0]["result"]
     assert (pd.Series([0]) == include_series["metrics"][0]["result"]["series"]).all()
+
+    include_render = report.as_dict(include_render=True)
+
+    assert "distribution" in include_render["metrics"][0]["result"]
 
 
 def test_json(report: Report):

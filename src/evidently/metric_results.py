@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
@@ -19,6 +20,7 @@ class Distribution(MetricResult):
     class Config:
         dict_include = False
         pd_include = False
+        tags = {IncludeTags.Render}
 
     x: Union[np.ndarray, list, pd.Categorical, pd.Series]
     y: Union[np.ndarray, list, pd.Categorical, pd.Series]
@@ -45,6 +47,7 @@ class StatsByFeature(MetricResult):
     class Config:
         dict_include = False
         pd_include = False
+        tags = {IncludeTags.Render}
 
     plot_data: pd.DataFrame  # todo what type of plot?
     predictions: Optional[PredictionData]
@@ -155,6 +158,8 @@ class ScatterField(MetricResult):
         dict_include = False
         pd_include = False
 
+        tags = {IncludeTags.Render}
+
     scatter: ColumnScatter
     x_name: str
     plot_shape: Dict[str, float]
@@ -164,6 +169,8 @@ class ColumnScatterResult(MetricResult):
     class Config:
         smart_union = True
         dict_include = False
+
+        tags = {IncludeTags.Render}
 
     current: ColumnScatter
     reference: Optional[ColumnScatter]
@@ -176,6 +183,7 @@ PlotData = List[float]
 class Boxes(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     mins: PlotData
     lowers: PlotData
@@ -187,6 +195,7 @@ class Boxes(MetricResult):
 class RatesPlotData(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     thrs: PlotData
     tpr: PlotData
@@ -198,6 +207,7 @@ class RatesPlotData(MetricResult):
 class PRCurveData(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     pr: PlotData
     rcl: PlotData
@@ -210,6 +220,7 @@ PRCurve = Dict[Label, PRCurveData]
 class ROCCurveData(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     fpr: PlotData
     tpr: PlotData
@@ -222,6 +233,7 @@ ROCCurve = Dict[Label, ROCCurveData]
 class HistogramData(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     x: pd.Series
     count: pd.Series
@@ -246,6 +258,7 @@ class HistogramData(MetricResult):
 class Histogram(MetricResult):
     class Config:
         dict_include = False
+        tags = {IncludeTags.Render}
 
     current: HistogramData
     reference: Optional[HistogramData]

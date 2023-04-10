@@ -47,13 +47,13 @@ def test_column_distribution_metric_success(
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
             None,
             ColumnDistributionMetric(column_name="feature"),
-            "Column 'feature' was not found in current data.",
+            "Column 'feature' was not found in data.",
         ),
         (
             pd.DataFrame({"feature": [0, 2, 2, 432]}),
             pd.DataFrame({"num_feature": [0, 2, 2, 432]}),
             ColumnDistributionMetric(column_name="feature"),
-            "Column 'feature' was not found in reference data.",
+            "Column 'feature' was not found in data.",
         ),
     ),
 )

@@ -1,18 +1,19 @@
-import dataclasses
 from abc import ABC
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 import numpy as np
 import pandas as pd
 
+from evidently.base_metric import ColumnName
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
+from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -22,10 +23,14 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import ConditionTestParameters
+from evidently.tests.base_test import ExcludeNoneMixin
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.generators import BaseGenerator
@@ -35,9 +40,50 @@ DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 
-@dataclasses.dataclass
-class TestDataDriftResult(TestResult):
-    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(default_factory=dict)
+class ColumnDriftParameter(ExcludeNoneMixin, TestParameters):
+    stattest: str
+    score: float
+    threshold: float
+    detected: bool
+    column_name: Optional[str] = None
+
+    @classmethod
+    def from_metric(cls, data: ColumnDataDriftMetrics, column_name: str = None):
+        return ColumnDriftParameter(
+            stattest=data.stattest_name,
+            score=np.round(data.drift_score, 3),
+            threshold=data.stattest_threshold,
+            detected=data.drift_detected,
+            column_name=column_name,
+        )
+
+
+class ColumnsDriftParameters(ConditionTestParameters):
+    # todo: rename to columns?
+    features: Dict[str, ColumnDriftParameter]
+
+    @classmethod
+    def from_data_drift_table(cls, table: DataDriftTableResults, condition: TestValueCondition):
+        return ColumnsDriftParameters(
+            features={
+                feature: ColumnDriftParameter.from_metric(data) for feature, data in table.drift_by_columns.items()
+            },
+            condition=condition,
+        )
+
+    def to_dataframe(self) -> pd.DataFrame:
+        return pd.DataFrame(
+            [
+                {
+                    "Feature name": feature,
+                    "Stattest": data.stattest,
+                    "Drift score": data.score,
+                    "Threshold": data.threshold,
+                    "Data Drift": "Detected" if data.detected else "Not detected",
+                }
+                for feature, data in self.features.items()
+            ],
+        )
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
@@ -94,19 +140,12 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         result = super().check()
         metrics = self.metric.get_result()
 
-        return TestDataDriftResult(
+        return TestResult(
             name=result.name,
             description=result.description,
-            status=result.status,
-            features={
-                feature: (
-                    data.stattest_name,
-                    np.round(data.drift_score, 3),
-                    data.stattest_threshold,
-                    "Detected" if data.drift_detected else "Not Detected",
-                )
-                for feature, data in metrics.drift_by_columns.items()
-            },
+            status=TestStatus(result.status),
+            group=self.group,
+            parameters=ColumnsDriftParameters.from_data_drift_table(metrics, self.get_condition()),
         )
 
 
@@ -155,15 +194,18 @@ class TestColumnDrift(Test):
     name = "Drift per Column"
     group = DATA_DRIFT_GROUP.id
     metric: ColumnDriftMetric
-    column_name: str
+    column_name: ColumnName
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        self.column_name = column_name
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.metric = ColumnDriftMetric(
             column_name=column_name,
             stattest=stattest,
@@ -177,24 +219,26 @@ class TestColumnDrift(Test):
         stattest_name = drift_info.stattest_name
         threshold = drift_info.stattest_threshold
         description = (
-            f"The drift score for the feature **{self.column_name}** is {p_value:.3g}. "
+            f"The drift score for the feature **{self.column_name.display_name}** is {p_value:.3g}. "
             f"The drift detection method is {stattest_name}. "
             f"The drift detection threshold is {threshold}."
         )
 
         if not drift_info.drift_detected:
-            result_status = TestResult.SUCCESS
+            result_status = TestStatus.SUCCESS
 
         else:
-            result_status = TestResult.FAIL
+            result_status = TestStatus.FAIL
 
         return TestResult(
             name=self.name,
             description=description,
             status=result_status,
+            group=self.group,
             groups={
-                GroupingTypes.ByFeature.id: self.column_name,
+                GroupingTypes.ByFeature.id: self.column_name.display_name,
             },
+            parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name.display_name),
         )
 
 
@@ -374,32 +418,11 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
 
 @default_renderer(wrap_type=TestNumberOfDriftedColumns)
 class TestNumberOfDriftedColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfDriftedColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["features"] = {
-            feature: {
-                "stattest": data[0],
-                "score": np.round(data[1], 3),
-                "threshold": data[2],
-                "data_drift": data[3],
-            }
-            for feature, data in obj.get_result().features.items()
-        }
-        return base
-
     def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
-        df = pd.DataFrame(
-            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-            columns=[
-                "Feature name",
-                "Stattest",
-                "Drift score",
-                "Threshold",
-                "Data Drift",
-            ],
-        )
+        parameters = obj.get_result().parameters
+        assert isinstance(parameters, ColumnsDriftParameters)
+        df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
         info.with_details(
             title="Drift Table",
@@ -410,32 +433,11 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
 
 @default_renderer(wrap_type=TestShareOfDriftedColumns)
 class TestShareOfDriftedColumnsRenderer(TestRenderer):
-    def render_json(self, obj: TestShareOfDriftedColumns) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["features"] = {
-            feature: {
-                "stattest": data[0],
-                "score": np.round(data[1], 3),
-                "threshold": data[2],
-                "data_drift": data[3],
-            }
-            for feature, data in obj.get_result().features.items()
-        }
-        return base
-
     def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
-        df = pd.DataFrame(
-            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-            columns=[
-                "Feature name",
-                "Stattest",
-                "Drift score",
-                "Threshold",
-                "Data Drift",
-            ],
-        )
+        parameters = obj.get_result().parameters
+        assert isinstance(parameters, ColumnsDriftParameters)
+        df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
         info.details = [
             DetailsInfo(
@@ -454,20 +456,6 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
 
 @default_renderer(wrap_type=TestColumnDrift)
 class TestColumnDriftRenderer(TestRenderer):
-    def render_json(self, obj: TestColumnDrift) -> dict:
-        feature_name = obj.column_name
-        drift_data = obj.metric.get_result()
-        base = super().render_json(obj)
-        base["parameters"]["features"] = {
-            feature_name: {
-                "stattest_name": drift_data.stattest_name,
-                "score": np.round(drift_data.drift_score, 3),
-                "stattest_threshold": drift_data.stattest_threshold,
-                "data_drift": drift_data.drift_detected,
-            }
-        }
-        return base
-
     def render_html(self, obj: TestColumnDrift) -> TestHtmlInfo:
         info = super().render_html(obj)
         result = obj.metric.get_result()

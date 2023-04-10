@@ -14,9 +14,10 @@ import pandas as pd
 
 import evidently
 from evidently.base_metric import ErrorResult
-from evidently.base_metric import IncludeOptions
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
+from evidently.core import IncludeOptions
 from evidently.options import OptionsProvider
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
@@ -27,7 +28,9 @@ from evidently.suite.execution_graph import ExecutionGraph
 from evidently.suite.execution_graph import SimpleExecutionGraph
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestStatus
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import SaveMode
 from evidently.utils.dashboard import SaveModeMap
@@ -81,8 +84,8 @@ class Context:
     execution_graph: Optional[ExecutionGraph]
     metrics: list
     tests: list
-    metric_results: dict
-    test_results: dict
+    metric_results: Dict[Metric, MetricResult]
+    test_results: Dict[Test, TestResult]
     state: State
     renderers: RenderersDefinitions
 
@@ -164,29 +167,52 @@ class Display:
                 out_file.write(self._render(determine_template("inline"), template_params))
 
     @abc.abstractmethod
-    def as_dict(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> dict:
+    def as_dict(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ) -> dict:
         raise NotImplementedError()
 
     def _get_json_content(
-        self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
     ) -> dict:
         """Return all data for json representation"""
         result = {
             "version": evidently.__version__,
             "timestamp": str(datetime.now()),
         }
-        result.update(self.as_dict(include=include, exclude=exclude))
+        result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude))
         return result
 
-    def json(self, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None) -> str:
+    def json(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ) -> str:
         return json.dumps(
-            self._get_json_content(include=include, exclude=exclude),
+            self._get_json_content(include_render=include_render, include=include, exclude=exclude),
             cls=NumpyEncoder,
         )
 
-    def save_json(self, filename, include: Dict[str, IncludeOptions] = None, exclude: Dict[str, IncludeOptions] = None):
+    def save_json(
+        self,
+        filename,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+    ):
         with open(filename, "w", encoding="utf-8") as out_file:
-            json.dump(self._get_json_content(include=include, exclude=exclude), out_file, cls=NumpyEncoder)
+            json.dump(
+                self._get_json_content(include_render=include_render, include=include, exclude=exclude),
+                out_file,
+                cls=NumpyEncoder,
+            )
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)
@@ -314,8 +340,10 @@ class Suite:
             except BaseException as ex:
                 test_results[test] = TestResult(
                     name=test.name,
-                    status=TestResult.ERROR,
+                    status=TestStatus.ERROR,
+                    group=test.group,
                     description=f"Test failed with exceptions: {ex}",
+                    parameters=TestParameters(),
                     exception=ex,
                 )
             test_results[test].groups.update(

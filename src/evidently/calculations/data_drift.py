@@ -14,6 +14,7 @@ from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import MetricResult
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Distribution
 from evidently.metric_results import DistributionIncluded
@@ -30,7 +31,9 @@ Words = List[str]
 
 class DriftStatsField(MetricResult):
     class Config:
-        dict_include_fields = {"small_distribution"}
+        dict_exclude_fields = {"characteristic_examples", "characteristic_words", "correlations"}
+        # todo: after tests PR
+        field_tags = {k: {IncludeTags.Render} for k in dict_exclude_fields}
         pd_include = False
 
     distribution: Optional[Distribution]
@@ -41,9 +44,6 @@ class DriftStatsField(MetricResult):
 
 
 class ColumnDataDriftMetrics(ColumnMetricResult):
-    class Config:
-        dict_exclude_fields = {"scatter"}
-
     stattest_name: str
     stattest_threshold: Optional[float]
     drift_score: Numeric

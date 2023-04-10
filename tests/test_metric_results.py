@@ -1,5 +1,6 @@
 import glob
 import os
+from enum import Enum
 from importlib import import_module
 from typing import Dict
 from typing import List
@@ -9,9 +10,11 @@ from typing import Type
 import pytest
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import MetricResult
+from evidently.tests.base_test import EnumValueMixin
 
 
 @pytest.fixture
@@ -21,7 +24,7 @@ def all_metric_results():
     metric_result_field_classes = set()
     for mod in glob.glob(path + "/**/*.py", recursive=True):
         mod_path = os.path.relpath(mod, path)[:-3]
-        mod_name = "evidently." + mod_path.replace("/", ".")
+        mod_name = "evidently." + mod_path.replace("/", ".").replace("\\", ".")
         if mod_name.endswith("__"):
             continue
         module = import_module(mod_name)
@@ -50,6 +53,22 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]
                     errors.append((cls, config_field, field_name))
 
     assert len(errors) == 0, f"Wrong config for field classes: {errors}"
+
+
+class SimpleField(MetricResult):
+    f1: str
+
+
+class ExcludeModel(MetricResult):
+    class Config:
+        dict_exclude_fields = {"simple"}
+
+    simple: SimpleField
+
+
+@pytest.mark.parametrize("obj, expected", [(ExcludeModel(simple=SimpleField(f1="a")), {})])
+def test_default_json(obj: MetricResult, expected):
+    assert obj.get_dict() == expected
 
 
 class FieldExclude(MetricResult):
@@ -184,3 +203,32 @@ def test_polymorphic():
     assert PModel(vals={"a": A(f1="a", f2="b"), "b": B(a="a", b="b")}).get_dict() == {
         "vals": {"a": {"f1": "a"}, "b": {"a": "a"}}
     }
+
+
+def test_model_enum():
+    class MyEnum(Enum):
+        A = "a"
+        B = "b"
+
+    class Container(EnumValueMixin, BaseModel):
+        value: MyEnum
+
+    obj = Container(value=MyEnum.A)
+    assert obj.value == MyEnum.A
+    d = obj.dict()
+    assert d == {"value": "a"}
+    obj2 = parse_obj_as(Container, d)
+    assert obj2.value == MyEnum.A
+    assert obj2 == obj
+
+
+def test_model_list():
+    class SimpleField(MetricResult):
+        field: str
+        field2: str
+
+    class Container(MetricResult):
+        field: List[SimpleField]
+
+    obj = Container(field=[SimpleField(field="a", field2="b")])
+    assert obj.get_dict() == {"field": [{"field": "a", "field2": "b"}]}
