@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotly import figure_factory as ff
 
+from evidently.base_metric import IncludeTags
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -25,6 +26,7 @@ class ClassificationProbDistributionResults(MetricResult):
     class Config:
         dict_include = False
         pd_include = False
+        tags = {IncludeTags.Render}
 
     current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
     reference_distribution: Optional[Dict[str, list]]
