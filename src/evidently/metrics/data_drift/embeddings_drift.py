@@ -9,6 +9,7 @@ import umap
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.metrics.data_drift.embedding_drift_methods import model
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -29,6 +30,7 @@ class EmbeddingsDriftMetricResults(MetricResult):
             "reference",
             "current",
         }
+        field_tags = {k: {IncludeTags.Render} for k in dict_exclude_fields}
 
     embeddings_name: str
     drift_score: float

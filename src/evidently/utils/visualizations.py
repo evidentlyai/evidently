@@ -763,7 +763,7 @@ def get_gaussian_kde(m1, m2):
     return Z
 
 
-def plot_contour(z1: np.array, z2: Optional[np.array], xtitle: str = "", ytitle: str = ""):
+def plot_contour(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = "", ytitle: str = ""):
     color_options = ColorOptions()
     if z2 is not None:
         cols = 2
