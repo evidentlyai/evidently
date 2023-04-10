@@ -242,9 +242,7 @@ class HistogramData(MetricResult):
     name: Optional[str] = None
 
     @classmethod
-    def from_df(cls, value: Optional[pd.DataFrame]):
-        if value is None:
-            return None
+    def from_df(cls, value: pd.DataFrame):
         return cls(x=value["x"], count=value["count"])
 
     @classmethod

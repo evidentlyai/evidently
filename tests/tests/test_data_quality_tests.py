@@ -27,7 +27,6 @@ from evidently.tests import TestTargetPredictionCorrelation
 from evidently.tests import TestUniqueValuesShare
 from evidently.tests import TestValueList
 from evidently.tests import TestValueRange
-from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.utils import approx
 
@@ -89,7 +88,8 @@ def test_data_quality_test_min(
     test_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, test_object: TestColumnValueMin, expected_success: bool
 ) -> None:
     suite = TestSuite(tests=[test_object])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset)
+    mapping = ColumnMapping(categorical_features=["category_feature"], numerical_features=["numerical_feature"])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=mapping)
     if expected_success:
         suite._inner_suite.raise_for_error()
     assert bool(suite) is expected_success
@@ -119,12 +119,14 @@ def test_data_quality_test_min_exception(
 def test_data_quality_test_min_render():
     test_dataset = pd.DataFrame({"numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]})
     suite = TestSuite(tests=[TestColumnValueMin(column_name="numerical_feature", eq=0)])
-    suite.run(current_data=test_dataset, reference_data=None)
+    column_mapping = ColumnMapping(numerical_features=["numerical_feature"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite.show()
     assert suite.json()
 
     suite = TestSuite(tests=[TestColumnValueMin(column_name="numerical_feature")])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    mapping = ColumnMapping(numerical_features=["numerical_feature"])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=mapping)
     assert suite.show()
     assert suite.json()
 
@@ -134,23 +136,25 @@ def test_data_quality_test_max() -> None:
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", gt=10)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(categorical_features=["category_feature"], numerical_features=["numerical_feature"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
 
     suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", eq=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
 
 
 def test_data_quality_test_max_render():
     test_dataset = pd.DataFrame({"numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]})
     suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", eq=0)])
-    suite.run(current_data=test_dataset, reference_data=None)
+    mapping = ColumnMapping(numerical_features=["numerical_feature"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite.show()
     assert suite.json()
 
     suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature")])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=mapping)
     assert suite.show()
     assert suite.json()
 
@@ -160,27 +164,29 @@ def test_data_quality_test_mean() -> None:
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", eq=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(categorical_features=["category_feature"], numerical_features=["numerical_feature"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
 
     suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", gt=0, lt=10)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
 
     suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", eq=2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
 
 
 def test_data_quality_test_mean_render():
     test_dataset = pd.DataFrame({"numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]})
+    mapping = ColumnMapping(numerical_features=["numerical_feature"])
     suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", eq=0)])
-    suite.run(current_data=test_dataset, reference_data=None)
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite.show()
     assert suite.json()
 
     suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature")])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=mapping)
     assert suite.show()
     assert suite.json()
 
@@ -189,15 +195,16 @@ def test_data_quality_test_conflict_target() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "n", "p", "n"], "numerical_feature": [0, 0, 2, 5], "target": [0, 1, 0, 1]}
     )
+    mapping = ColumnMapping(categorical_features=["category_feature"], numerical_features=["numerical_feature"])
     suite = TestSuite(tests=[TestConflictTarget()])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
 
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestConflictTarget()])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -207,8 +214,9 @@ def test_data_quality_test_conflict_prediction() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "n", "p", "n"], "numerical_feature": [0, 0, 2, 5], "prediction": [0, 1, 0, 1]}
     )
+    mapping = ColumnMapping(categorical_features=["category_feature"], numerical_features=["numerical_feature"])
     suite = TestSuite(tests=[TestConflictPrediction()])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     suite._inner_suite.raise_for_error()
     assert not suite
 
@@ -216,7 +224,7 @@ def test_data_quality_test_conflict_prediction() -> None:
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "prediction": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestConflictPrediction()])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -231,8 +239,9 @@ def test_data_quality_test_target_prediction_correlation() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
+    mapping = ColumnMapping(categorical_features=["category_feature"], numerical_features=["numerical_feature"])
     suite = TestSuite(tests=[TestTargetPredictionCorrelation(gt=0.5, method="cramer_v")])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -246,11 +255,12 @@ def test_data_quality_test_median() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
+    mapping = ColumnMapping(numerical_features=["feature1"])
     suite = TestSuite(tests=[TestColumnValueMedian(column_name="no_existing_feature", eq=1.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
     suite = TestSuite(tests=[TestColumnValueMedian(column_name="feature1", eq=1.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -268,10 +278,11 @@ def test_data_quality_test_std() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
     suite = TestSuite(tests=[TestColumnValueStd(column_name="feature1", lt=2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
     suite = TestSuite(tests=[TestColumnValueStd(column_name="feature1", gt=2, lt=3)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -289,10 +300,11 @@ def test_data_quality_test_unique_number() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
     suite = TestSuite(tests=[TestNumberOfUniqueValues(column_name="feature1", lt=2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
     suite = TestSuite(tests=[TestNumberOfUniqueValues(column_name="feature1", eq=4)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -310,10 +322,11 @@ def test_data_quality_test_unique_share() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
     suite = TestSuite(tests=[TestUniqueValuesShare(column_name="feature1", lt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
     suite = TestSuite(tests=[TestUniqueValuesShare(column_name="feature1", eq=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -328,16 +341,17 @@ def test_data_quality_test_most_common_value_share() -> None:
         }
     )
     suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1")])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=mapping)
     assert suite
     suite = TestSuite(tests=[TestMostCommonValueShare(column_name="no_existing_feature", eq=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
     suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1", lt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
     suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1", eq=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -350,7 +364,8 @@ def test_data_quality_test_most_common_value_share_json_render() -> None:
         }
     )
     suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1", eq=0.5)])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=mapping)
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -383,7 +398,8 @@ def test_data_quality_test_value_in_n_sigmas() -> None:
         }
     )
     suite = TestSuite(tests=[TestMeanInNSigmas(column_name="feature1")])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=mapping)
     assert not suite
 
     suite = TestSuite(tests=[TestMeanInNSigmas(column_name="not_exist_feature", n_sigmas=3)])
@@ -391,7 +407,7 @@ def test_data_quality_test_value_in_n_sigmas() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestMeanInNSigmas(column_name="feature1", n_sigmas=4)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -406,7 +422,8 @@ def test_data_quality_test_value_in_n_sigmas_json_render() -> None:
         }
     )
     suite = TestSuite(tests=[TestMeanInNSigmas(column_name="feature1", n_sigmas=5)])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=mapping)
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -487,7 +504,10 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
     suite.run(
         current_data=test_dataset,
         reference_data=reference_dataset,
-        column_mapping=ColumnMapping(prediction=None),
+        column_mapping=ColumnMapping(
+            prediction=None,
+            numerical_features=["feature1"],
+        ),
     )
     assert not suite
 
@@ -495,7 +515,10 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
     suite.run(
         current_data=test_dataset,
         reference_data=reference_dataset,
-        column_mapping=ColumnMapping(prediction=None),
+        column_mapping=ColumnMapping(
+            prediction=None,
+            numerical_features=["feature1"],
+        ),
     )
     assert suite
     assert suite.show()
@@ -510,11 +533,12 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
         }
     )
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, lt=0.1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
 
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, lt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert suite
 
     reference_dataset = pd.DataFrame(
@@ -528,7 +552,10 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
     suite.run(
         current_data=test_dataset,
         reference_data=reference_dataset,
-        column_mapping=ColumnMapping(prediction=None),
+        column_mapping=ColumnMapping(
+            prediction=None,
+            numerical_features=["feature1"],
+        ),
     )
     assert not suite
 
@@ -536,7 +563,10 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
     suite.run(
         current_data=test_dataset,
         reference_data=reference_dataset,
-        column_mapping=ColumnMapping(prediction=None),
+        column_mapping=ColumnMapping(
+            prediction=None,
+            numerical_features=["feature1"],
+        ),
     )
     assert suite
     assert suite.show()
@@ -550,7 +580,8 @@ def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
         }
     )
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, gt=0.2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    mapping = ColumnMapping(numerical_features=["feature1"])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
     assert not suite
 
     result_from_json = json.loads(suite.json())
