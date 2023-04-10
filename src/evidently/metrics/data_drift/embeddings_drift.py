@@ -25,7 +25,10 @@ SAMPLE_CONSTANT = 2500
 
 class EmbeddingsDriftMetricResults(MetricResult):
     class Config:
-        dict_exclude_fields = {"reference", "current",}
+        dict_exclude_fields = {
+            "reference",
+            "current",
+        }
 
     embeddings_name: str
     drift_score: float
@@ -72,16 +75,16 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
             min(SAMPLE_CONSTANT, data.current_data.shape[0]), random_state=24
         )
         data_2d = umap.UMAP().fit_transform(pd.concat([ref_sample, curr_sample]))
-        plot_ref = get_gaussian_kde(data_2d[:SAMPLE_CONSTANT, 0], data_2d[:SAMPLE_CONSTANT, 1])
-        plot_curr = get_gaussian_kde(data_2d[SAMPLE_CONSTANT:, 0], data_2d[SAMPLE_CONSTANT:, 1])
+        reference = get_gaussian_kde(data_2d[:SAMPLE_CONSTANT, 0], data_2d[:SAMPLE_CONSTANT, 1])
+        current = get_gaussian_kde(data_2d[SAMPLE_CONSTANT:, 0], data_2d[SAMPLE_CONSTANT:, 1])
 
         return EmbeddingsDriftMetricResults(
             embeddings_name=self.embeddings_name,
             drift_score=drift_score,
             drift_detected=drift_detected,
             method_name=method_name,
-            reference=plot_ref,
-            current=plot_curr,
+            reference=reference,
+            current=current,
         )
 
 

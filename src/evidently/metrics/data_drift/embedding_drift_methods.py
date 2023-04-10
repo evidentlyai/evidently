@@ -26,7 +26,9 @@ DISTANCE_DICT = {
 N_BOOTSTRAP = 100
 
 
-def get_pca_df(reference_emb: pd.DataFrame, current_emb: pd.DataFrame, n_comp: int) -> Tuple[pd.DataFrame]:
+def get_pca_df(
+    reference_emb: pd.DataFrame, current_emb: pd.DataFrame, n_comp: int
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Takes two dataframes and reduces their dimensionality using the PCA method
     Args:
         reference_emb: reference embeddings data
@@ -44,7 +46,7 @@ def distance(
     dist: str = "euclidean",
     threshold: float = 0.2,
     bootstrap: Optional[bool] = None,
-    p_value: Optional[float] = 0.05,
+    p_value: float = 0.05,
     pca_components: Optional[int] = None,
 ) -> Callable:
     """Returns a function for calculating drift on embeddings using the average distance method with specified parameters
@@ -97,7 +99,7 @@ def calc_roc_auc_random(y_test, i):
 def model(
     threshold: float = 0.55,
     bootstrap: Optional[bool] = None,
-    p_value: Optional[float] = 0.05,
+    p_value: float = 0.05,
     pca_components: Optional[int] = None,
 ) -> Callable:
     """Returns a function for calculating drift on embeddings using the classifier method with specified parameters
@@ -199,7 +201,7 @@ def MMD2u_bstrp(K, m, n, x_idx, y_idx):
 def mmd(
     threshold: float = 0.015,
     bootstrap: Optional[bool] = None,
-    p_value: Optional[float] = 0.05,
+    p_value: float = 0.05,
     pca_components: Optional[int] = None,
 ) -> Callable:
     """Returns a function for calculating drift on embeddings using the mmd method with specified parameters
@@ -244,7 +246,7 @@ def mmd(
                 y_idxs = np.random.choice(m, y_size)
                 bstrp_res.append(MMD2u_bstrp(K, x_size, y_size, x_idxs, y_idxs))
                 perc = np.percentile(bstrp_res, 100 * (1 - p_value))
-                return max(mmd2u, 0), mmd2u > perc, "mmd"
+            return max(mmd2u, 0), mmd2u > perc, "mmd"
         else:
             return max(mmd2u, 0), mmd2u > threshold, "mmd"
 

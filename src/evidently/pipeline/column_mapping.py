@@ -14,6 +14,7 @@ class TaskType:
 TargetNames = Union[List[int], List[str], Dict[int, str], Dict[str, str]]
 Embeddings = Dict[str, List[str]]
 
+
 @dataclass
 class ColumnMapping:
     target: Optional[str] = "target"
