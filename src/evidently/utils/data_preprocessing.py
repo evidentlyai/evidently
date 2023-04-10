@@ -1,6 +1,7 @@
 import dataclasses
 import logging
 from enum import Enum
+from typing import Collection
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -71,6 +72,7 @@ class DataDefinition:
     _prediction_columns: Optional[PredictionColumns]
     _id_column: Optional[ColumnDefinition]
     _datetime_column: Optional[ColumnDefinition]
+    _embeddings: Optional[Dict[str, List[str]]]
 
     _task: Optional[str]
     _classification_labels: Optional[TargetNames]
@@ -82,6 +84,7 @@ class DataDefinition:
         prediction_columns: Optional[PredictionColumns],
         id_column: Optional[ColumnDefinition],
         datetime_column: Optional[ColumnDefinition],
+        embeddings: Optional[Dict[str, List[str]]],
         task: Optional[str],
         classification_labels: Optional[TargetNames],
     ):
@@ -92,6 +95,7 @@ class DataDefinition:
         self._target = target
         self._prediction_columns = prediction_columns
         self._classification_labels = classification_labels
+        self._embeddings = embeddings
 
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self._columns[column_name]
@@ -130,6 +134,9 @@ class DataDefinition:
 
     def classification_labels(self) -> Optional[TargetNames]:
         return self._classification_labels
+
+    def embeddings(self) -> Optional[Dict]:
+        return self._embeddings
 
 
 def _process_column(
@@ -203,18 +210,76 @@ def _filter_by_type(column: Optional[ColumnDefinition], column_type: ColumnType,
     return column is not None and column.column_type == column_type and column.column_name not in exclude
 
 
+def _column_not_present_in_list(
+    column: Optional[str],
+    columns: Collection[str],
+    handle_error: str,
+    message: str,
+) -> Optional[str]:
+    if column is None:
+        return None
+    if column not in columns:
+        return column
+    if handle_error == "error":
+        raise ValueError(message.format(column=column))
+    if handle_error == "warning":
+        logging.warning(message.format(column=column))
+        return None
+    if handle_error == "skip":
+        return None
+    raise ValueError(f"Unknown handle error type {handle_error}")
+
+
 def create_data_definition(
     reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame, mapping: ColumnMapping
 ) -> DataDefinition:
     data = _InputData(reference_data, current_data)
-    id_column = _process_column(mapping.id, data)
-    target_column = _process_column(mapping.target, data, mapping=mapping)
-    datetime_column = _process_column(mapping.datetime, data)
+    embedding_columns = set()
+    embeddings: Optional[Dict[str, List[str]]] = None
+    if mapping.embeddings is not None:
+        embeddings = dict()
+        for (embedding_name, columns) in mapping.embeddings.items():
+            embeddings[embedding_name] = []
+            for column in columns:
+                presence = _get_column_presence(column, data)
+                if presence != ColumnPresenceState.Present:
+                    logging.warning(f"Column {column} isn't present in data. Skipping it.")
+                else:
+                    embeddings[embedding_name].append(column)
+                    embedding_columns.add(column)
+
+    id_column = _process_column(
+        _column_not_present_in_list(
+            mapping.id,
+            embedding_columns,
+            "warning",
+            "Column {column} is in embeddings list and as an ID field. Ignoring ID field.",
+        ),
+        data,
+    )
+    target_column = _process_column(
+        _column_not_present_in_list(
+            mapping.target,
+            embedding_columns,
+            "warning",
+            "Column {column} is in embeddings list and as a target field. Ignoring target field.",
+        ),
+        data,
+        mapping=mapping,
+    )
+    datetime_column = _process_column(
+        _column_not_present_in_list(
+            mapping.datetime,
+            embedding_columns,
+            "warning",
+            "Column {column} is in embeddings list and as a datetime field. Ignoring datetime field.",
+        ),
+        data,
+    )
 
     prediction_columns = _prediction_column(
         mapping.prediction,
         target_column.column_type if target_column is not None else None,
-        # mapping.target_names,
         mapping.task,
         data,
         mapping,
@@ -235,7 +300,13 @@ def create_data_definition(
     ]
 
     if mapping.numerical_features is None:
-        num = [column for column in col_defs if _filter_by_type(column, ColumnType.Numerical, utility_column_names)]
+        num = [
+            column
+            for column in col_defs
+            if column is not None
+            and _filter_by_type(column, ColumnType.Numerical, utility_column_names)
+            and _column_not_present_in_list(column.column_name, embedding_columns, "skip", "")
+        ]
         all_columns.extend(num)
     else:
         all_columns.extend(
@@ -248,11 +319,24 @@ def create_data_definition(
                 )
                 for column_name in mapping.numerical_features
                 if column_name not in utility_column_names
+                and _column_not_present_in_list(
+                    column_name,
+                    embedding_columns,
+                    "warning",
+                    "Column {column} is in embedding list and in numerical features list."
+                    " Ignoring it in a features list.",
+                )
             ]
         )
 
     if mapping.categorical_features is None:
-        cat = [column for column in col_defs if _filter_by_type(column, ColumnType.Categorical, utility_column_names)]
+        cat = [
+            column
+            for column in col_defs
+            if column is not None
+            and _filter_by_type(column, ColumnType.Categorical, utility_column_names)
+            and _column_not_present_in_list(column.column_name, embedding_columns, "skip", "")
+        ]
         all_columns.extend(cat)
     else:
         all_columns.extend(
@@ -265,11 +349,24 @@ def create_data_definition(
                 )
                 for column_name in mapping.categorical_features
                 if column_name not in utility_column_names
+                and _column_not_present_in_list(
+                    column_name,
+                    embedding_columns,
+                    "warning",
+                    "Column {column} is in embedding list and in categorical features list."
+                    " Ignoring it in a features list.",
+                )
             ]
         )
 
     if mapping.datetime_features is None:
-        dt = [column for column in col_defs if _filter_by_type(column, ColumnType.Datetime, utility_column_names)]
+        dt = [
+            column
+            for column in col_defs
+            if column is not None
+            and _filter_by_type(column, ColumnType.Datetime, utility_column_names)
+            and _column_not_present_in_list(column.column_name, embedding_columns, "skip", "")
+        ]
         all_columns.extend(dt)
     else:
         all_columns.extend(
@@ -282,6 +379,13 @@ def create_data_definition(
                 )
                 for column_name in mapping.datetime_features
                 if column_name not in utility_column_names
+                and _column_not_present_in_list(
+                    column_name,
+                    embedding_columns,
+                    "warning",
+                    "Column {column} is in embedding list and in datetime features list."
+                    " Ignoring it in a features list.",
+                )
             ]
         )
 
@@ -291,6 +395,13 @@ def create_data_definition(
                 _process_column(column_name, data, predefined_type=ColumnType.Text, mapping=mapping)
                 for column_name in mapping.text_features
                 if column_name not in utility_column_names
+                and _column_not_present_in_list(
+                    column_name,
+                    embedding_columns,
+                    "warning",
+                    "Column {column} is in embedding list and in text features list."
+                    " Ignoring it in a features list.",
+                )
             ]
         )
     task = mapping.task
@@ -312,6 +423,7 @@ def create_data_definition(
         prediction_columns=prediction_columns,
         task=task,
         classification_labels=mapping.target_names,
+        embeddings=embeddings,
     )
 
 
