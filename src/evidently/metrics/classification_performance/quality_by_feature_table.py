@@ -153,16 +153,18 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
             table_columns += [prediction_name]
         if isinstance(prediction_name, list):
             table_columns += prediction_name
-
+        reference = None
+        if ref_df is not None:
+            reference = StatsByFeature(
+                plot_data=ref_df[table_columns],
+                predictions=ref_predictions,
+            )
         return ClassificationQualityByFeatureTableResults(
             current=StatsByFeature(
                 plot_data=curr_df[table_columns],
                 predictions=curr_predictions,
             ),
-            reference=StatsByFeature(
-                plot_data=None if ref_df is None else ref_df[table_columns],
-                predictions=ref_predictions,
-            ),
+            reference=reference,
             columns=columns,
             target_name=target_name,
         )
