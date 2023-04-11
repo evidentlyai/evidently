@@ -145,7 +145,9 @@ def df_from_column_scatter(value: ColumnScatter) -> pd.DataFrame:
     return df
 
 
-def column_scatter_from_df(df: pd.DataFrame, with_index: bool) -> ColumnScatter:
+def column_scatter_from_df(df: Optional[pd.DataFrame], with_index: bool) -> Optional[ColumnScatter]:
+    if df is None:
+        return None
     data = {column: df[column] for column in df.columns}
     if with_index:
         data["index"] = df.index
