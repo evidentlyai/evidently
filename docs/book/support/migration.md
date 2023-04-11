@@ -6,7 +6,7 @@ description: How to migrate to the new Evidently API.
 
 Starting from Evidently 0.1.59, the old API that uses `Dashboards` and `json profiles` was deprecated. This functionality is now available using the `Report` object. 
 
-In Evidently 0.2.9, the old API was removed from the code base.
+In Evidently 0.3.0, the old API was removed from the code base.
 
 # If your code breaks
 
