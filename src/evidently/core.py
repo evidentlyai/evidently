@@ -99,7 +99,7 @@ class BaseResult(BaseModel):
         include_tags: Set[IncludeTags],
         include=None,
     ) -> "MappingIntStrAny":
-        if not self.__config__.dict_include and not include:
+        if not self.__config__.dict_include and not include and all(t not in include_tags for t in self.__config__.tags):
             return {}
         include = include or {}
         dict_include_fields = (
