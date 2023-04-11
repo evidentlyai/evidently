@@ -2,9 +2,7 @@
 description: Sample notebooks and tutorials
 ---
 
-# Examples
-
-## Sample notebooks
+# Sample notebooks
 
 These simple examples show what Evidently can do out of the box. Head to Colab examples to see the pre-rendered reports.
 
@@ -15,7 +13,7 @@ Evidently Tests| [link](https://github.com/evidentlyai/evidently/blob/main/examp
 Evidently Metric Presets| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1-0-itoET4dQHo8dcoC0fKZ5VhugliLxj) | All pre-built Reports: <ul><li>Data Drift</li><li>Target Drift</li><li>Data Quality</li><li>Regression</li><li>Classification</li></ul>     
 Evidently Metrics| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1c7HQz920Q-BPazDOujL4PgckuKIzFebn) | <ul><li>All individual metrics (30+) that one can use to create a custom Report.</li><li>How to set simple metric parameters.</li></ul>
 
-## Tutorials
+# Tutorials
 
 To better understand the use cases (such as model evaluation and monitoring), refer to the **detailed tutorials** accompanied by the blog posts.
 
