@@ -104,7 +104,7 @@ class TestSuite(Display):
 
     def as_dict(
         self,
-            include_metrics: bool = False,
+        include_metrics: bool = False,
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
@@ -129,8 +129,8 @@ class TestSuite(Display):
                 test_results.append(test_data)
 
         total_tests = len(self._inner_suite.context.test_results)
-        self._inner_suite.context.metric_results[...]
-        return {
+
+        result = {
             "tests": test_results,
             "metric_results": ...,
             "summary": {
@@ -141,6 +141,13 @@ class TestSuite(Display):
                 "by_status": {k.value: v for k, v in counter.items()},
             },
         }
+        if include_metrics:
+            from evidently.report import Report
+            report = Report([])
+            report._first_level_metrics = self._inner_suite.context.metrics
+            report._inner_suite.context = self._inner_suite.context
+            result["metric_results"] = report.as_dict(include_render=include_render, include=include, exclude=exclude)["metrics"]
+        return result
 
     def _build_dashboard_info(self):
         test_results = []
