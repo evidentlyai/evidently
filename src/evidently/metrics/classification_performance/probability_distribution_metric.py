@@ -12,6 +12,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -25,6 +26,7 @@ class ClassificationProbDistributionResults(MetricResult):
     class Config:
         dict_include = False
         pd_include = False
+        tags = {IncludeTags.Render}
 
     current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
     reference_distribution: Optional[Dict[str, list]]

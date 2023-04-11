@@ -3,10 +3,10 @@ from typing import Optional
 
 import numpy as np
 
-from evidently.base_metric import IncludeTags
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.metrics.regression_performance.objects import PredActualScatter
 from evidently.metrics.regression_performance.objects import scatter_as_dict
 from evidently.model.widget import BaseWidgetInfo

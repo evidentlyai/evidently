@@ -12,13 +12,13 @@ from pandas.api.types import is_string_dtype
 
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnMetricResult
-from evidently.base_metric import IncludeTags
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -127,7 +127,6 @@ class DataQualityPlot(MetricResult):
 
 class ColumnSummaryResult(ColumnMetricResult):
     class Config:
-        pd_exclude_fields = {"plot_data"}
         pd_name_mapping = {
             "reference_characteristics": "ref",
             "current_characteristics": "cur",

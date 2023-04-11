@@ -12,6 +12,7 @@ class TaskType:
 
 
 TargetNames = Union[List[int], List[str], Dict[int, str], Dict[str, str]]
+Embeddings = Dict[str, List[str]]
 
 
 @dataclass
@@ -27,6 +28,7 @@ class ColumnMapping:
     task: Optional[str] = None
     pos_label: Optional[Union[str, int]] = 1
     text_features: Optional[List[str]] = None
+    embeddings: Optional[Embeddings] = None
 
     def is_classification_task(self):
         return self.task == TaskType.CLASSIFICATION_TASK

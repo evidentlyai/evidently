@@ -11,9 +11,10 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 
 if TYPE_CHECKING:
-    from evidently.base_metric import IncludeOptions
     from evidently.base_metric import Metric
     from evidently.base_metric import TResult
+    from evidently.core import IncludeOptions
+    from evidently.tests.base_test import Test
 
 
 class BaseRenderer:
@@ -68,10 +69,10 @@ class TestHtmlInfo:
 
 
 class TestRenderer(BaseRenderer):
-    def html_description(self, obj):
+    def html_description(self, obj: "Test"):
         return obj.get_result().description
 
-    def json_description(self, obj):
+    def json_description(self, obj: "Test"):
         return obj.get_result().description
 
     def render_html(self, obj) -> TestHtmlInfo:
@@ -79,20 +80,19 @@ class TestRenderer(BaseRenderer):
         return TestHtmlInfo(
             name=result.name,
             description=self.html_description(obj),
-            status=result.status,
+            status=result.status.value,
             details=[],
             groups=result.groups,
         )
 
-    def render_json(self, obj) -> dict:
-        result = obj.get_result()
-        return {
-            "name": result.name,
-            "description": self.json_description(obj),
-            "status": result.status,
-            "group": obj.group,
-            "parameters": {},
-        }
+    def render_json(
+        self,
+        obj: "Test",
+        include_render: bool = False,
+        include: "IncludeOptions" = None,
+        exclude: "IncludeOptions" = None,
+    ) -> dict:
+        return obj.get_result().get_dict(include_render=include_render, include=include, exclude=exclude)
 
 
 @dataclasses.dataclass

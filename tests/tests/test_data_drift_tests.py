@@ -20,6 +20,7 @@ def test_data_drift_test_number_of_drifted_features() -> None:
     )
     suite = TestSuite(tests=[TestNumberOfDriftedColumns()])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     suite = TestSuite(tests=[TestNumberOfDriftedColumns(is_in=[234, 14])])
@@ -28,6 +29,7 @@ def test_data_drift_test_number_of_drifted_features() -> None:
 
     suite = TestSuite(tests=[TestNumberOfDriftedColumns(lt=1)])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()
@@ -66,25 +68,25 @@ def test_data_drift_test_number_of_drifted_features_json_render() -> None:
             "condition": {"lt": 1},
             "features": {
                 "category_feature": {
-                    "data_drift": "Not Detected",
+                    "detected": False,
                     "score": 1.0,
                     "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "numerical_feature": {
-                    "data_drift": "Not Detected",
+                    "detected": False,
                     "score": 1.0,
                     "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "prediction": {
-                    "data_drift": "Not Detected",
+                    "detected": False,
                     "score": 0.157,
                     "stattest": "Z-test p_value",
                     "threshold": 0.05,
                 },
                 "target": {
-                    "data_drift": "Not Detected",
+                    "detected": False,
                     "score": 0.157,
                     "stattest": "Z-test p_value",
                     "threshold": 0.05,
@@ -106,6 +108,7 @@ def test_data_drift_test_share_of_drifted_features() -> None:
     )
     suite = TestSuite(tests=[TestShareOfDriftedColumns()])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     suite = TestSuite(tests=[TestShareOfDriftedColumns(gt=0.6)])
@@ -114,6 +117,7 @@ def test_data_drift_test_share_of_drifted_features() -> None:
 
     suite = TestSuite(tests=[TestShareOfDriftedColumns(lte=0.5)])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()
@@ -130,6 +134,7 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
     )
     suite = TestSuite(tests=[TestShareOfDriftedColumns()])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -143,24 +148,24 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
             "condition": {"lt": 0.3},
             "features": {
                 "category_feature": {
-                    "data_drift": "Not Detected",
+                    "detected": False,
                     "score": 1.0,
                     "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "numerical_feature": {
-                    "data_drift": "Not Detected",
+                    "detected": False,
                     "score": 1.0,
                     "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "prediction": {
-                    "data_drift": "Not Detected",
+                    "detected": False,
                     "score": 1.0,
                     "stattest": "Z-test p_value",
                     "threshold": 0.05,
                 },
-                "target": {"data_drift": "Not Detected", "score": 1.0, "stattest": "Z-test p_value", "threshold": 0.05},
+                "target": {"detected": False, "score": 1.0, "stattest": "Z-test p_value", "threshold": 0.05},
             },
         },
         "status": "SUCCESS",
@@ -174,6 +179,7 @@ def test_data_drift_test_feature_value_drift() -> None:
     )
     suite = TestSuite(tests=[TestColumnDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=ColumnMapping())
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()
@@ -186,6 +192,7 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
     )
     suite = TestSuite(tests=[TestColumnDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset)
+    suite._inner_suite.raise_for_error()
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -197,14 +204,11 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
         "group": "data_drift",
         "name": "Drift per Column",
         "parameters": {
-            "features": {
-                "feature_1": {
-                    "data_drift": False,
-                    "score": 0.064,
-                    "stattest_name": "chi-square p_value",
-                    "stattest_threshold": 0.05,
-                }
-            }
+            "detected": False,
+            "score": 0.064,
+            "stattest": "chi-square p_value",
+            "threshold": 0.05,
+            "column_name": "feature_1",
         },
         "status": "SUCCESS",
     }
