@@ -98,8 +98,13 @@ class TestSuite(Display):
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
+    def json(self,  include_metrics: bool = False, include_render: bool = False, include: Dict[str, IncludeOptions] = None,
+             exclude: Dict[str, IncludeOptions] = None, **kwargs) -> str:
+        return super().json(include_render, include, exclude)
+
     def as_dict(
         self,
+            include_metrics: bool = False,
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
@@ -124,9 +129,10 @@ class TestSuite(Display):
                 test_results.append(test_data)
 
         total_tests = len(self._inner_suite.context.test_results)
-
+        self._inner_suite.context.metric_results[...]
         return {
             "tests": test_results,
+            "metric_results": ...,
             "summary": {
                 "all_passed": bool(self),
                 "total_tests": total_tests,

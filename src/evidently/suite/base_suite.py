@@ -194,9 +194,10 @@ class Display:
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
+            **_
     ) -> str:
         return json.dumps(
-            self._get_json_content(include_render=include_render, include=include, exclude=exclude),
+            self._get_json_content(include_render=include_render, include=include, exclude=exclude, **_),
             cls=NumpyEncoder,
         )
 
