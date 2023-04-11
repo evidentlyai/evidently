@@ -20,7 +20,7 @@ _TYPES_MAPPING = (
     ((pd.Timestamp, datetime.datetime, datetime.date), lambda obj: obj.isoformat()),
     # map ApproxValue to json value
     ((ApproxValue,), lambda obj: obj.as_dict()),
-    ((pd.Series, pd.Index), lambda obj: obj.tolist()),
+    ((pd.Series, pd.Index, pd.Categorical), lambda obj: obj.tolist()),
 )
 
 
