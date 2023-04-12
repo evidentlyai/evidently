@@ -11,7 +11,7 @@ How to calculate embeddings drift? | [link](how_to_calculate_embeddings_drift.ip
 How to run calculations over raw text data? | [link](how_to_run_calculations_over_text_data.ipynb)
 How to get Report data in CSV format? | [link](how_to_get_report_results_in_csv.ipynb)
 How to use text descriptors in text-specific Metrics? | [link](how_to_use_text_descriptors_in_text_specific_metrics.ipynb) 
-How to use text descriptors in tabular Metrics and Tests?? | [link](how_to_apply_table_metrics_and_tests_to_text_descriptors.ipynb) 
+How to use text descriptors in tabular Metrics and Tests? | [link](how_to_apply_table_metrics_and_tests_to_text_descriptors.ipynb) 
 How to customize JSON output for Tests and Metrics? | [link](how_to_customize_json_output.ipynb) 
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
