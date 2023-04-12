@@ -98,16 +98,23 @@ class TestSuite(Display):
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
-    def json(self,  include_metrics: bool = False, include_render: bool = False, include: Dict[str, IncludeOptions] = None,
-             exclude: Dict[str, IncludeOptions] = None, **kwargs) -> str:
-        return super().json(include_render, include, exclude)
-
-    def as_dict(
+    def json(  # type: ignore[override]
         self,
         include_metrics: bool = False,
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
+    ) -> str:
+        return super().json(include_render, include, exclude, include_metrics=include_metrics)
+
+    def as_dict(  # type: ignore[override]
+        self,
+        include_metrics: bool = False,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
     ) -> dict:
         test_results = []
         include = include or {}
@@ -143,10 +150,13 @@ class TestSuite(Display):
         }
         if include_metrics:
             from evidently.report import Report
+
             report = Report([])
             report._first_level_metrics = self._inner_suite.context.metrics
             report._inner_suite.context = self._inner_suite.context
-            result["metric_results"] = report.as_dict(include_render=include_render, include=include, exclude=exclude)["metrics"]
+            result["metric_results"] = report.as_dict(include_render=include_render, include=include, exclude=exclude)[
+                "metrics"
+            ]
         return result
 
     def _build_dashboard_info(self):

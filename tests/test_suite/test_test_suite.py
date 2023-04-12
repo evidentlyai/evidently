@@ -52,6 +52,7 @@ class ErrorTest(Test):
     def check(self):
         raise ValueError("Test Exception")
 
+
 @pytest.fixture
 def suite():
     tests = [
@@ -96,6 +97,7 @@ def suite():
     suite = TestSuite(tests=tests)
     return suite
 
+
 @pytest.fixture()
 def data():
     current_data = pd.DataFrame(
@@ -127,6 +129,7 @@ def data():
     )
     return current_data, reference_data, column_mapping
 
+
 def test_export_to_json(suite, data):
     current_data, reference_data, column_mapping = data
     suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
@@ -148,7 +151,7 @@ def test_export_to_json(suite, data):
     assert "summary" in result
     assert isinstance(result["summary"], dict)
 
-    assert len(result["tests"]) == len(tests)
+    assert len(result["tests"]) == len(suite._inner_suirte.context.tests)
 
     for test_info in result["tests"]:
         assert "description" in test_info, test_info
@@ -178,7 +181,7 @@ def test_include_metric_results(suite: TestSuite, data):
     current_data, reference_data, column_mapping = data
     suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
 
-    data =  suite.as_dict(include_metrics=True)
+    data = suite.as_dict(include_metrics=True)
 
     assert "metric_results" in data
     metric_results = data["metric_results"]

@@ -172,21 +172,23 @@ class Display:
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
     ) -> dict:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _get_json_content(
         self,
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
     ) -> dict:
         """Return all data for json representation"""
         result = {
             "version": evidently.__version__,
             "timestamp": str(datetime.now()),
         }
-        result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude))
+        result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude, **kwargs))
         return result
 
     def json(
@@ -194,10 +196,10 @@ class Display:
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
-            **_
+        **kwargs,
     ) -> str:
         return json.dumps(
-            self._get_json_content(include_render=include_render, include=include, exclude=exclude, **_),
+            self._get_json_content(include_render=include_render, include=include, exclude=exclude, **kwargs),
             cls=NumpyEncoder,
         )
 
