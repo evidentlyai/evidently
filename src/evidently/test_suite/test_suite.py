@@ -139,7 +139,6 @@ class TestSuite(Display):
 
         result = {
             "tests": test_results,
-            "metric_results": ...,
             "summary": {
                 "all_passed": bool(self),
                 "total_tests": total_tests,
