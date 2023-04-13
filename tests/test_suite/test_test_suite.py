@@ -151,7 +151,7 @@ def test_export_to_json(suite, data):
     assert "summary" in result
     assert isinstance(result["summary"], dict)
 
-    assert len(result["tests"]) == len(suite._inner_suirte.context.tests)
+    assert len(result["tests"]) == len(suite._inner_suite.context.tests)
 
     for test_info in result["tests"]:
         assert "description" in test_info, test_info
