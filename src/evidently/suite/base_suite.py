@@ -88,6 +88,7 @@ class Context:
     test_results: Dict[Test, TestResult]
     state: State
     renderers: RenderersDefinitions
+    agg_data: bool = False
 
 
 class ExecutionError(Exception):

@@ -45,6 +45,7 @@ class Report(Display):
         reference_data: Optional[pd.DataFrame],
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
+        agg_data: bool = False
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -104,6 +105,8 @@ class Report(Display):
             column_mapping,
             data_definition,
         )
+        if agg_data:
+            self._inner_suite.context.agg_data = True
         self._inner_suite.run_calculate(data)
 
     def as_dict(
