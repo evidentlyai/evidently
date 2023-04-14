@@ -12,4 +12,3 @@ from .color_scheme import SOLARIZED_COLOR_OPTIONS
 from .color_scheme import ColorOptions
 from .data_drift import DataDriftOptions
 from .quality_metrics import QualityMetricsOptions
-

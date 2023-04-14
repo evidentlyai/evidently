@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -9,6 +10,10 @@ from evidently.options.option import Option
 class Options(BaseModel):
     color: Optional[ColorOptions] = None
     agg_data: bool = False
+
+    @property
+    def color_options(self) -> ColorOptions:
+        return self.color or ColorOptions()
 
     @classmethod
     def from_list(cls, values: List[Option]):

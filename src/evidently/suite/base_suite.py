@@ -4,8 +4,9 @@ import dataclasses
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 from typing import Iterator
+from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -100,12 +101,15 @@ class Display:
     options: Options
 
     def __init__(self, options: Union[Options, dict, List[Option], None] = None):
+        _options = None
         if isinstance(options, dict):
-            options = Options(**options)
+            _options = Options(**options)
         if isinstance(options, list):
-            options = Options.from_list(options)
+            _options = Options.from_list(options)
+        if isinstance(options, Options):
+            _options = options
 
-        self.options = options or Options()
+        self.options = _options or Options()
 
     @abc.abstractmethod
     def _build_dashboard_info(self):
