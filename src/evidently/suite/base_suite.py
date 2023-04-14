@@ -19,6 +19,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeOptions
+from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.options.option import Option
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
@@ -100,16 +101,8 @@ class Display:
     # collection of all possible common options
     options: Options
 
-    def __init__(self, options: Union[Options, dict, List[Option], None] = None):
-        _options = None
-        if isinstance(options, dict):
-            _options = Options(**options)
-        if isinstance(options, list):
-            _options = Options.from_list(options)
-        if isinstance(options, Options):
-            _options = options
-
-        self.options = _options or Options()
+    def __init__(self, options: AnyOptions = None):
+        self.options = Options.from_any_options(options)
 
     @abc.abstractmethod
     def _build_dashboard_info(self):
