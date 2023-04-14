@@ -6,9 +6,11 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
+from typing import overload
 
 import numpy as np
 from plotly import graph_objs as go
+from typing_extensions import Literal
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -39,7 +41,19 @@ TR = TypeVar("TR")
 TA = TypeVar("TA")
 
 
-def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: bool):
+@overload
+def raw_agg_properties(
+    field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[True]
+) -> Tuple[Optional[TR], Optional[TA]]:
+    ...
+
+
+@overload
+def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]) -> Tuple[TR, TA]:
+    ...
+
+
+def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: bool) -> Tuple[TR, TA]:
     def property_raw(self):
         val = getattr(self, field_name)
         if optional and val is None:
@@ -56,7 +70,7 @@ def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optio
             raise ValueError("Agg data not available")
         return val
 
-    return property(property_raw), property(property_agg)
+    return property(property_raw), property(property_agg)  # type: ignore[return-value]
 
 
 class RegressionPredictedVsActualScatterResults2(MetricResult):
@@ -67,11 +81,7 @@ class RegressionPredictedVsActualScatterResults2(MetricResult):
     current: Union[PredActualScatter, AggPredActualScatter]
     reference: Optional[Union[PredActualScatter, AggPredActualScatter]]
 
-    current_raw: PredActualScatter
-    current_agg: AggPredActualScatter
     current_raw, current_agg = raw_agg_properties("current", PredActualScatter, AggPredActualScatter, False)
-    reference_raw: Optional[PredActualScatter]
-    reference_agg: Optional[AggPredActualScatter]
     reference_raw, reference_agg = raw_agg_properties("reference", PredActualScatter, AggPredActualScatter, True)
 
 
