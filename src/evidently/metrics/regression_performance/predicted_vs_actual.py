@@ -8,7 +8,7 @@ from typing import TypeVar
 from typing import Union
 
 import numpy as np
-from pygments.lexers import go
+from plotly import graph_objs as go
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
