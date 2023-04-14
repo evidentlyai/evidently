@@ -45,7 +45,7 @@ class Report(Display):
         reference_data: Optional[pd.DataFrame],
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
-        agg_data: bool = False
+        agg_data: bool = False,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
