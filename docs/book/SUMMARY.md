@@ -39,6 +39,7 @@
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Add a custom drift method](customization/add-custom-drift-method.md)
   * [Add a custom metric or test](customization/add-custom-metric-or-test.md)
+  * [Customize JSON output](customization/json-dict-output.md)
   * [Options for color schema](customization/options-for-color-schema.md)
 * [How-to guides](how-to-guides/README.md)
 
@@ -68,6 +69,7 @@
 
 ## SUPPORT
 
+* [Migration](support/migration.md)
 * [Contact](support/contact.md)
 * [F.A.Q.](support/f.a.q..md)
 * [Telemetry](support/telemetry.md)

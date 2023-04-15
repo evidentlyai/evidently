@@ -77,7 +77,7 @@ BinaryClassificationTestPreset
 ```
 
 {% hint style="info" %} 
-Refer to the [Presets overview](../presets/README.md) to understand the use case for each preset and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
+Refer to the [Presets overview](../presets/all-presets.md) to understand the use case for each preset and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
 {% endhint %}
 
 # Output formats 

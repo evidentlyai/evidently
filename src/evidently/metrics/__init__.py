@@ -19,6 +19,7 @@ from .data_drift.column_drift_metric import ColumnDriftMetric
 from .data_drift.column_value_plot import ColumnValuePlot
 from .data_drift.data_drift_table import DataDriftTable
 from .data_drift.dataset_drift_metric import DatasetDriftMetric
+from .data_drift.embeddings_drift import EmbeddingsDriftMetric
 from .data_drift.target_by_features_table import TargetByFeaturesTable
 from .data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
 from .data_integrity.column_missing_values_metric import ColumnMissingValuesMetric

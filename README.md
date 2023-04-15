@@ -34,7 +34,7 @@ Tests are best for automated batch model checks. You can integrate them as a pip
 ## 2. Reports: interactive dashboards
 
 > **Note**
-> We added a new Report object starting from v0.1.57.dev0. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. The old Dashboards API is deprecated and will be removed.
+> We added a new Report object starting from v0.1.59. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. The old Dashboards API was removed from the code base in v0.3.0. If your existing code is breaking, read the [guide](docs/book/support/migration.md).
 
 ![Report example](docs/images/evidently_reports_main-min.png)
 

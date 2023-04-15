@@ -52,6 +52,9 @@ class ColumnName:
     def main_dataset(name: str):
         return ColumnName(name, name, DatasetType.MAIN, None)
 
+    def __str__(self):
+        return self.display_name
+
 
 def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
     return ColumnName(

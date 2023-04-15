@@ -12,11 +12,7 @@ import yaml
 from evidently._config import TELEMETRY_ADDRESS
 from evidently._config import TELEMETRY_ENABLED
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.runner.dashboard_runner import DashboardRunner
-from evidently.runner.dashboard_runner import DashboardRunnerOptions
 from evidently.runner.loader import SamplingOptions
-from evidently.runner.profile_runner import ProfileRunner
-from evidently.runner.profile_runner import ProfileRunnerOptions
 from evidently.runner.runner import DataOptions
 from evidently.runner.runner import parse_options
 from evidently.telemetry import TelemetrySender
@@ -68,105 +64,6 @@ def __load_config_file(config_file: str):
     return opts_data
 
 
-def calculate_dashboard(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
-    usage = dict(type="dashboard")
-
-    opts_data = __load_config_file(config)
-
-    sampling = __get_not_none(opts_data, "sampling", {})
-    ref_sampling = __get_not_none(sampling, "reference", {})
-    cur_sampling = __get_not_none(sampling, "current", {})
-
-    usage["tabs"] = opts_data["dashboard_tabs"]
-    usage["sampling"] = sampling
-    opts = DashboardOptions(
-        data_format=DataFormatOptions(**opts_data["data_format"]),
-        column_mapping=opts_data["column_mapping"],
-        dashboard_tabs=opts_data["dashboard_tabs"],
-        sampling=Sampling(
-            reference=SamplingOptions(**ref_sampling),
-            current=SamplingOptions(**cur_sampling),
-        ),
-    )
-
-    runner = DashboardRunner(
-        DashboardRunnerOptions(
-            reference_data_path=reference,
-            reference_data_options=DataOptions(
-                date_column=opts.data_format.date_column,
-                separator=opts.data_format.separator,
-                header=opts.data_format.header,
-            ),
-            reference_data_sampling=opts.sampling.reference,
-            current_data_path=current,
-            current_data_options=DataOptions(
-                date_column=opts.data_format.date_column,
-                separator=opts.data_format.separator,
-                header=opts.data_format.header,
-            ),
-            current_data_sampling=opts.sampling.current,
-            dashboard_tabs=opts.dashboard_tabs,
-            options=parse_options(opts_data["options"]),
-            column_mapping=ColumnMapping(**opts.column_mapping),
-            output_path=os.path.join(output_path, report_name),
-        )
-    )
-    runner.run()
-    if TELEMETRY_ENABLED:
-        sender = TelemetrySender(TELEMETRY_ADDRESS)
-        sender.send(usage)
-
-
-def calculate_profile(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
-    usage = dict(type="profile")
-
-    opts_data = __load_config_file(config)
-
-    sampling = __get_not_none(opts_data, "sampling", {})
-    ref_sampling = __get_not_none(sampling, "reference", {})
-    cur_sampling = __get_not_none(sampling, "current", {})
-    usage["parts"] = opts_data["profile_sections"]
-    usage["sampling"] = sampling
-    opts = ProfileOptions(
-        data_format=DataFormatOptions(**opts_data["data_format"]),
-        column_mapping=opts_data["column_mapping"],
-        profile_parts=opts_data["profile_sections"],
-        pretty_print=opts_data["pretty_print"],
-        sampling=Sampling(
-            reference=SamplingOptions(**ref_sampling),
-            current=SamplingOptions(**cur_sampling),
-        ),
-    )
-
-    runner = ProfileRunner(
-        ProfileRunnerOptions(
-            reference_data_path=reference,
-            reference_data_options=DataOptions(
-                date_column=opts.data_format.date_column,
-                separator=opts.data_format.separator,
-                header=opts.data_format.header,
-            ),
-            reference_data_sampling=opts.sampling.reference,
-            current_data_path=current,
-            current_data_options=DataOptions(
-                date_column=opts.data_format.date_column,
-                separator=opts.data_format.separator,
-                header=opts.data_format.header,
-            ),
-            current_data_sampling=opts.sampling.current,
-            profile_parts=opts.profile_parts,
-            column_mapping=ColumnMapping(**opts.column_mapping),
-            options=parse_options(opts_data.get("options", None)),
-            output_path=os.path.join(output_path, report_name),
-            pretty_print=opts.pretty_print,
-        )
-    )
-    runner.run()
-    if TELEMETRY_ENABLED:
-        sender = TelemetrySender(TELEMETRY_ADDRESS)
-        sender.send(usage)
-
-
 def help_handler(**_kv):
     parser.print_help()
     sys.exit(1)
@@ -190,12 +87,7 @@ parsers = parser.add_subparsers()
 parser.set_defaults(handler=help_handler)
 calculate_parser = parsers.add_parser("calculate")
 calc_subparsers = calculate_parser.add_subparsers()
-profile_parser = calc_subparsers.add_parser("profile")
-_add_default_parameters(profile_parser, "profile")
-profile_parser.set_defaults(handler=calculate_profile)
-dashboard_parser = calc_subparsers.add_parser("dashboard")
-_add_default_parameters(dashboard_parser, "dashboard")
-dashboard_parser.set_defaults(handler=calculate_dashboard)
+
 
 parsed = parser.parse_args(sys.argv[1:])
 
