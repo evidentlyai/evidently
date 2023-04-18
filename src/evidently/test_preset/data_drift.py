@@ -1,6 +1,9 @@
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
+
+import numpy as np
 
 from evidently import TaskType
 from evidently.base_metric import InputData
@@ -9,6 +12,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestColumnDrift
+from evidently.tests import TestEmbeddingsDrift
 from evidently.tests import TestShareOfDriftedColumns
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 
@@ -21,9 +25,12 @@ class DataDriftTestPreset(TestPreset):
     - `TestShareOfDriftedColumns`
     - `TestColumnValueDrift`
     - `TestAllFeaturesValueDrift`
+    - 'TestEmbeddingsDrift'
     """
 
     columns: Optional[List[str]]
+    embeddings: Optional[List[str]]
+    embeddings_drift_method: Optional[Dict[str, Callable]]
     drift_share: Optional[float]
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
@@ -39,6 +46,8 @@ class DataDriftTestPreset(TestPreset):
     def __init__(
         self,
         columns: Optional[List[str]] = None,
+        embeddings: Optional[List[str]] = None,
+        embeddings_drift_method: Optional[Dict[str, Callable]] = None,
         drift_share: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
@@ -53,6 +62,8 @@ class DataDriftTestPreset(TestPreset):
     ):
         super().__init__()
         self.columns = columns
+        self.embeddings = embeddings
+        self.embeddings_drift_method = embeddings_drift_method
         self.drift_share = drift_share
         self.stattest = stattest
         self.cat_stattest = cat_stattest
@@ -66,6 +77,18 @@ class DataDriftTestPreset(TestPreset):
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
+        embeddings_data = data.column_mapping.embeddings
+        if embeddings_data is not None:
+            embs = list(set(v for values in embeddings_data.values() for v in values))
+            if self.columns is None:
+                self.columns = list(
+                    np.setdiff1d(
+                        columns.num_feature_names + columns.cat_feature_names + columns.text_feature_names, embs
+                    )
+                )
+            else:
+                self.columns = list(np.setdiff1d(self.columns, embs))
+
         preset_tests: list = [
             TestShareOfDriftedColumns(
                 columns=self.columns,
@@ -144,5 +167,18 @@ class DataDriftTestPreset(TestPreset):
                 self.per_column_stattest_threshold,
             )
         )
+
+        if embeddings_data is not None:
+            sets = list(embeddings_data.keys())
+            if self.embeddings is not None:
+                sets = np.intersect1d(sets, self.embeddings)
+            if len(sets) > 0:
+                f: Optional[Callable]
+                for emb_set in sets:
+                    if self.embeddings_drift_method is not None:
+                        f = self.embeddings_drift_method.get(emb_set)
+                    else:
+                        f = None
+                    preset_tests.append(TestEmbeddingsDrift(embeddings_name=emb_set, drift_method=f))
 
         return preset_tests

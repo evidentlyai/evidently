@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -13,6 +14,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
+from evidently.metrics import EmbeddingsDriftMetric
 from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
@@ -35,6 +37,7 @@ from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import plot_contour
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
@@ -501,4 +504,52 @@ class TestColumnDriftRenderer(TestRenderer):
                 color_options=self.color_options,
             )
             info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
+        return info
+
+
+class TestEmbeddingsDrift(Test):
+    name = "Drift for embeddings"
+    group = DATA_DRIFT_GROUP.id
+    metric: EmbeddingsDriftMetric
+    embeddings: str
+    drift_method: Optional[Callable]
+
+    def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None):
+        self.metric = EmbeddingsDriftMetric(embeddings_name=embeddings_name, drift_method=drift_method)
+
+    def check(self):
+        drift_info = self.metric.get_result()
+        drift_score = drift_info.drift_score
+        if drift_info.drift_detected:
+            drift = "detected"
+
+        else:
+            drift = "not detected"
+
+        description = (
+            f"Data drift {drift}. "
+            f"The drift score for the embedding set **{drift_info.embeddings_name}** is {drift_score:.3g}. "
+            f"The drift detection method is **{drift_info.method_name}**. "
+        )
+        if not drift_info.drift_detected:
+            result_status = TestStatus.SUCCESS
+
+        else:
+            result_status = TestStatus.FAIL
+        return TestResult(
+            name=self.name,
+            description=description,
+            status=result_status,
+            group=self.group,
+            # parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name.display_name),
+        )
+
+
+@default_renderer(wrap_type=TestEmbeddingsDrift)
+class TestEmbeddingsDriftRenderer(TestRenderer):
+    def render_html(self, obj: TestEmbeddingsDrift) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        result = obj.metric.get_result()
+        fig = plot_contour(result.current, result.reference, "component 1", "component 2")
+        info.with_details(f"Drift in embeddings '{result.embeddings_name}'", plotly_figure(title="", figure=fig))
         return info
