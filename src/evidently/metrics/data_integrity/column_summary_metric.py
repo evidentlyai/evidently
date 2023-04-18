@@ -18,8 +18,8 @@ from evidently.calculations.data_quality import get_features_stats
 from evidently.calculations.data_quality import plot_data
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.metric_results import Histogram
 from evidently.model.widget import AdditionalGraphInfo
