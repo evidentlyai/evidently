@@ -14,6 +14,7 @@ from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestColumnDrift
 from evidently.tests import TestEmbeddingsDrift
 from evidently.tests import TestShareOfDriftedColumns
+from evidently.utils.data_drift_utils import add_emb_drift_to_reports
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 
 
@@ -168,17 +169,13 @@ class DataDriftTestPreset(TestPreset):
             )
         )
 
-        if embeddings_data is not None:
-            sets = list(embeddings_data.keys())
-            if self.embeddings is not None:
-                sets = np.intersect1d(sets, self.embeddings)
-            if len(sets) > 0:
-                f: Optional[Callable]
-                for emb_set in sets:
-                    if self.embeddings_drift_method is not None:
-                        f = self.embeddings_drift_method.get(emb_set)
-                    else:
-                        f = None
-                    preset_tests.append(TestEmbeddingsDrift(embeddings_name=emb_set, drift_method=f))
-
+        if embeddings_data is None:
+            return preset_tests
+        preset_tests = add_emb_drift_to_reports(
+            preset_tests,
+            embeddings_data,
+            self.embeddings,
+            self.embeddings_drift_method,
+            TestEmbeddingsDrift,
+        )
         return preset_tests

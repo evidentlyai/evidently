@@ -12,6 +12,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
 from evidently.metrics import EmbeddingsDriftMetric
+from evidently.utils.data_drift_utils import add_emb_drift_to_reports
 
 
 class DataDriftPreset(MetricPreset):
@@ -102,16 +103,9 @@ class DataDriftPreset(MetricPreset):
             ),
         ]
         embeddings_data = data.column_mapping.embeddings
-        if embeddings_data is not None:
-            sets = list(embeddings_data.keys())
-            if self.embeddings is not None:
-                sets = np.intersect1d(sets, self.embeddings)
-            if len(sets) > 0:
-                f: Optional[Callable]
-                for emb_set in sets:
-                    if self.embeddings_drift_method is not None:
-                        f = self.embeddings_drift_method.get(emb_set)
-                    else:
-                        f = None
-                    result.append(EmbeddingsDriftMetric(embeddings_name=emb_set, drift_method=f))
+        if embeddings_data is None:
+            return result
+        result = add_emb_drift_to_reports(
+            result, embeddings_data, self.embeddings, self.embeddings_drift_method, EmbeddingsDriftMetric
+        )
         return result

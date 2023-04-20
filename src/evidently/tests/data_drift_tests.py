@@ -511,8 +511,6 @@ class TestEmbeddingsDrift(Test):
     name = "Drift for embeddings"
     group = DATA_DRIFT_GROUP.id
     metric: EmbeddingsDriftMetric
-    embeddings: str
-    drift_method: Optional[Callable]
 
     def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None):
         self.metric = EmbeddingsDriftMetric(embeddings_name=embeddings_name, drift_method=drift_method)
@@ -541,7 +539,6 @@ class TestEmbeddingsDrift(Test):
             description=description,
             status=result_status,
             group=self.group,
-            # parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name.display_name),
         )
 
 
