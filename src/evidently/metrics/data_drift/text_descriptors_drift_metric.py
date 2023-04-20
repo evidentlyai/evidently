@@ -79,7 +79,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         return []
 
     def get_parameters(self) -> tuple:
-        return self.column_name, self.options
+        return self.column_name, self.drift_options
 
     def calculate(self, data: InputData) -> TextDescriptorsDriftMetricResults:
         if data.reference_data is None:

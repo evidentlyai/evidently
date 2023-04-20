@@ -35,7 +35,6 @@ class Options(BaseModel):
 
     @classmethod
     def from_list(cls, values: List[Option]):
-
         kwargs: Dict = {"custom": {}}
         for value in values:
             field = _option_cls_mapping.get(type(value), None)
@@ -70,6 +69,11 @@ class Options(BaseModel):
             setattr(res, name, override)
 
         return res
+
+    def __hash__(self):
+        value_pairs = [(f, getattr(self, f)) for f in self.__fields__ if f != "custom"]
+        value_pairs.extend(sorted(list(self.custom.items())))
+        return hash((type(self),) + tuple(value_pairs))
 
 
 _option_cls_mapping = {field.type_: name for name, field in Options.__fields__.items()}
