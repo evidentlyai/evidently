@@ -47,7 +47,7 @@ class TextDescriptorsDriftMetricResults(MetricResult):
 
 class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
-    options: DataDriftOptions
+    drift_options: DataDriftOptions
     generated_text_features: Dict[str, GeneratedFeature]
 
     def __init__(
@@ -58,7 +58,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
-        self.options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
+        self.drift_options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
         if descriptors:
             self.descriptors = descriptors
         else:
@@ -104,7 +104,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
                 current_data=curr_text_df,
                 reference_data=ref_text_df,
                 column_name=col,
-                options=self.options,
+                options=self.drift_options,
                 dataset_columns=text_dataset_columns,
             )
         dataset_drift = get_dataset_drift(drift_by_columns, 0)
