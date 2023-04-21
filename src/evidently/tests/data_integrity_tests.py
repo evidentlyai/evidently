@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.base_metric import ColumnName
 from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import ColumnSummaryMetric
@@ -735,11 +736,11 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: ColumnSummaryMetric
-    column_name: str
+    column_name: ColumnName
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -759,26 +760,32 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.column_name = column_name
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.data_integrity_metric = ColumnSummaryMetric(column_name=column_name)
 
     def groups(self) -> Dict[str, str]:
         if self.column_name is not None:
-            return {GroupingTypes.ByFeature.id: self.column_name}
+            return {GroupingTypes.ByFeature.id: self.column_name.display_name}
         return {}
 
 
 class BaseIntegrityOneColumnTest(Test, ABC):
     group = DATA_INTEGRITY_GROUP.id
     metric: ColumnSummaryMetric
-    column_name: str
+    column_name: ColumnName
 
-    def __init__(self, column_name: str):
-        self.column_name = column_name
-        self.metric = ColumnSummaryMetric(column_name)
+    def __init__(self, column_name: Union[str, ColumnName]):
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
+        self.metric = ColumnSummaryMetric(self.column_name)
 
     def groups(self) -> Dict[str, str]:
-        return {GroupingTypes.ByFeature.id: self.column_name}
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
 
 
 class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):

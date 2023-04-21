@@ -63,7 +63,7 @@ class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacte
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -383,11 +383,11 @@ class TestCorrelationChangesRenderer(TestRenderer):
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
-    column_name: str
+    column_name: ColumnName
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -397,7 +397,10 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        self.column_name = column_name
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         super().__init__(
             column_name=column_name,
             eq=eq,
@@ -412,7 +415,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 
     def groups(self) -> Dict[str, str]:
         return {
-            GroupingTypes.ByFeature.id: self.column_name,
+            GroupingTypes.ByFeature.id: self.column_name.display_name,
         }
 
     def check(self):
@@ -727,7 +730,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def get_parameters(self) -> ColumnCheckValueParameters:
         return ColumnCheckValueParameters(
-            column_name=self.column_name, condition=self.get_condition(), value=self.value
+            column_name=self.column_name.display_name, condition=self.get_condition(), value=self.value
         )
 
 
@@ -782,11 +785,14 @@ class TestMeanInNSigmas(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Mean Value Stability"
     metric: ColumnSummaryMetric
-    column_name: str
+    column_name: ColumnName
     n_sigmas: int
 
-    def __init__(self, column_name: str, n_sigmas: int = 2):
-        self.column_name = column_name
+    def __init__(self, column_name: Union[str, ColumnName], n_sigmas: int = 2):
+        if isinstance(column_name, str):
+            self.column_name = ColumnName.main_dataset(column_name)
+        else:
+            self.column_name = column_name
         self.n_sigmas = n_sigmas
         self.metric = ColumnSummaryMetric(column_name)
 
@@ -828,7 +834,7 @@ class TestMeanInNSigmas(Test):
                 test_result = TestStatus.FAIL
 
             parameters = MeanInNSigmasParameter(
-                column_name=self.column_name,
+                column_name=self.column_name.display_name,
                 n_sigmas=self.n_sigmas,
                 current_mean=current_mean,
                 reference_mean=reference_mean,
@@ -839,7 +845,7 @@ class TestMeanInNSigmas(Test):
             name=self.name,
             description=description,
             status=test_result,
-            groups={GroupingTypes.ByFeature.id: self.column_name},
+            groups={GroupingTypes.ByFeature.id: self.column_name.display_name},
             parameters=parameters,
             group=self.group,
         )
