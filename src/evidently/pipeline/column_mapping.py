@@ -11,7 +11,7 @@ class TaskType:
     CLASSIFICATION_TASK: str = "classification"
 
 
-TargetNames = Union[List[int], List[str], Dict[int, str], Dict[str, str]]
+TargetNames = Union[List[Union[int, str]], Dict[Union[int, str], str]]
 Embeddings = Dict[str, List[str]]
 
 

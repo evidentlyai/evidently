@@ -1,3 +1,4 @@
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -61,7 +62,11 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
 class ClassificationConfusionMatrixRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationConfusionMatrix) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        target_names = metric_result.target_names
+        target_names: Optional[Dict[Union[int, str], str]]
+        if isinstance(metric_result.target_names, list):
+            target_names = {idx: str(item) for idx, item in enumerate(metric_result.target_names)}
+        else:
+            target_names = metric_result.target_names
         curr_matrix = metric_result.current_matrix
         ref_matrix = metric_result.reference_matrix
         if target_names is not None:
