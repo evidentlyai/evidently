@@ -47,7 +47,7 @@ It can also compare the performance against the past, or the performance of an a
 
 * To generate a comparative report, you will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data.
 
-![](<../.gitbook/assets/two\_datasets\_regression (1).png>)
+![](<../.gitbook/assets/two\_datasets\_regression.png>)
 
 You can also run this report for a **single** dataset, with no comparison performed. 
 
