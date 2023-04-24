@@ -2,6 +2,7 @@ import json
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from evidently import ColumnMapping
 from evidently.test_suite import TestSuite
@@ -52,35 +53,8 @@ class ErrorTest(Test):
         raise ValueError("Test Exception")
 
 
-def test_export_to_json():
-    current_data = pd.DataFrame(
-        {
-            "num_feature_1": [1, 2, 3, 4, 5, 6, 7, np.nan, 9, 10],
-            "num_feature_2": [-1, 2, 3.4, 4, -5, 6, 7, 99.1, np.nan, np.nan],
-            "cat_feature_1": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
-            "cat_feature_2": ["y", "n", "n/a", "n", "y", "y", "n", "y", "n", "n/a"],
-            "result": [1, 0, 1, 0, 1, 1, 0, 0, 1, 0],
-            "pred_result": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
-        }
-    )
-
-    reference_data = pd.DataFrame(
-        {
-            "num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            "num_feature_2": [0.1, 2, 0.3, 4, 5, -0.6, 7, 8, 9, -10],
-            "cat_feature_1": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
-            "cat_feature_2": ["y", "n", "n/a", "n", "y", "y", "n", "y", "n", "n/a"],
-            "result": [1, 0, 1, 0, 1, 1, 0, 0, 1, 0],
-            "pred_result": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
-        }
-    )
-    column_mapping = ColumnMapping(
-        target="result",
-        prediction="pred_result",
-        numerical_features=["num_feature_1", "num_feature_2"],
-        categorical_features=["cat_feature_1", "cat_feature_2"],
-    )
-
+@pytest.fixture
+def suite():
     tests = [
         TestNumberOfDriftedColumns(),
         TestShareOfDriftedColumns(),
@@ -121,6 +95,43 @@ def test_export_to_json():
         ErrorTest(),
     ]
     suite = TestSuite(tests=tests)
+    return suite
+
+
+@pytest.fixture()
+def data():
+    current_data = pd.DataFrame(
+        {
+            "num_feature_1": [1, 2, 3, 4, 5, 6, 7, np.nan, 9, 10],
+            "num_feature_2": [-1, 2, 3.4, 4, -5, 6, 7, 99.1, np.nan, np.nan],
+            "cat_feature_1": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
+            "cat_feature_2": ["y", "n", "n/a", "n", "y", "y", "n", "y", "n", "n/a"],
+            "result": [1, 0, 1, 0, 1, 1, 0, 0, 1, 0],
+            "pred_result": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
+        }
+    )
+
+    reference_data = pd.DataFrame(
+        {
+            "num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "num_feature_2": [0.1, 2, 0.3, 4, 5, -0.6, 7, 8, 9, -10],
+            "cat_feature_1": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
+            "cat_feature_2": ["y", "n", "n/a", "n", "y", "y", "n", "y", "n", "n/a"],
+            "result": [1, 0, 1, 0, 1, 1, 0, 0, 1, 0],
+            "pred_result": [1, 0, 1, 0, 2, 1, 0, 3, 1, 0],
+        }
+    )
+    column_mapping = ColumnMapping(
+        target="result",
+        prediction="pred_result",
+        numerical_features=["num_feature_1", "num_feature_2"],
+        categorical_features=["cat_feature_1", "cat_feature_2"],
+    )
+    return current_data, reference_data, column_mapping
+
+
+def test_export_to_json(suite, data):
+    current_data, reference_data, column_mapping = data
     suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
 
     # assert suite
@@ -140,7 +151,7 @@ def test_export_to_json():
     assert "summary" in result
     assert isinstance(result["summary"], dict)
 
-    assert len(result["tests"]) == len(tests)
+    assert len(result["tests"]) == len(suite._inner_suite.context.tests)
 
     for test_info in result["tests"]:
         assert "description" in test_info, test_info
@@ -164,3 +175,14 @@ def test_export_to_json():
 
     assert "by_status" in summary_result
     assert summary_result["by_status"] == {"FAIL": 8, "SUCCESS": 28, "ERROR": 1}
+
+
+def test_include_metric_results(suite: TestSuite, data):
+    current_data, reference_data, column_mapping = data
+    suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+
+    data = suite.as_dict(include_metrics=True)
+
+    assert "metric_results" in data
+    metric_results = data["metric_results"]
+    assert len(metric_results) > 0
