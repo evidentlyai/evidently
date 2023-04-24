@@ -1,8 +1,7 @@
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Union
-
-import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -36,7 +35,11 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
         ref_target = None
         if data.reference_data is not None:
             ref_target = data.reference_data[target_name]
-        target_names = dataset_columns.target_names
+        target_names: Optional[Dict[Union[int, str], str]]
+        if isinstance(dataset_columns.target_names, list):
+            target_names = {idx: str(val) for idx, val in enumerate(dataset_columns.target_names)}
+        else:
+            target_names = dataset_columns.target_names
         if target_names is not None:
             curr_target = curr_target.map(target_names)
             if ref_target is not None:
