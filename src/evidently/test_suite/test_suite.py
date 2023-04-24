@@ -162,7 +162,7 @@ class TestSuite(Display):
         test_results = []
         total_tests = len(self._inner_suite.context.test_results)
         by_status = {}
-        color_options = self.options_provider.get(ColorOptions)
+        color_options = self.options.color_options
 
         for test, test_result in self._inner_suite.context.test_results.items():
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)

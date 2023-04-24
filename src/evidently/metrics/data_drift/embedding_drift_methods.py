@@ -46,7 +46,7 @@ def distance(
     dist: str = "euclidean",
     threshold: float = 0.2,
     bootstrap: Optional[bool] = None,
-    p_value: float = 0.05,
+    quantile_probability: float = 0.95,
     pca_components: Optional[int] = None,
 ) -> Callable:
     """Returns a function for calculating drift on embeddings using the average distance method with specified parameters
@@ -54,7 +54,7 @@ def distance(
         dist: "euclidean", "cosine", "cityblock" or "chebyshev"
         threshold: all values above this threshold means data drift. Applies when bootstrap != True
         bootstrap: boolean parameter to determine whether to apply statistical hypothesis testing
-        p_value: applies when bootstrap == True
+        quantile_probability: applies when bootstrap == True
         pca_components: number of components to keep
     Returns:
         func: a function for calculating drift, which takes in reference and current embeddings data
@@ -80,7 +80,7 @@ def distance(
                         reference_emb.iloc[b_ref_idx, :].mean(axis=0), reference_emb.iloc[b_curr_idx, :].mean(axis=0)
                     )
                 )
-            perc = np.percentile(bstrp_res, 100 * (1 - p_value))
+            perc = np.percentile(bstrp_res, 100 * quantile_probability)
             return res, res > perc, "distance"
         return res, res > threshold, "distance"
 
@@ -99,14 +99,14 @@ def calc_roc_auc_random(y_test, i):
 def model(
     threshold: float = 0.55,
     bootstrap: Optional[bool] = None,
-    p_value: float = 0.05,
+    quantile_probability: float = 0.95,
     pca_components: Optional[int] = None,
 ) -> Callable:
     """Returns a function for calculating drift on embeddings using the classifier method with specified parameters
     Args:
         threshold: all values above this threshold means data drift. Applies when bootstrap != True
         bootstrap: boolean parameter to determine whether to apply statistical hypothesis testing
-        p_value: applies when bootstrap == True
+        quantile_probability: applies when bootstrap == True
         pca_components: number of components to keep
     Returns:
         func: a function for calculating drift, which takes in reference and current embeddings data
@@ -129,7 +129,7 @@ def model(
         roc_auc = roc_auc_score(y_test, y_pred_proba)
         if bootstrap:
             roc_auc_values = [calc_roc_auc_random(y_test, i) for i in range(100)]
-            rand_roc_auc = np.percentile(roc_auc_values, 100 * (1 - p_value))
+            rand_roc_auc = np.percentile(roc_auc_values, 100 * quantile_probability)
             return roc_auc, roc_auc > rand_roc_auc, "model"
         return roc_auc, roc_auc > threshold, "model"
 
@@ -201,14 +201,14 @@ def MMD2u_bstrp(K, m, n, x_idx, y_idx):
 def mmd(
     threshold: float = 0.015,
     bootstrap: Optional[bool] = None,
-    p_value: float = 0.05,
+    quantile_probability: float = 0.05,
     pca_components: Optional[int] = None,
 ) -> Callable:
     """Returns a function for calculating drift on embeddings using the mmd method with specified parameters
     Args:
         threshold: all values above this threshold means data drift. Applies when bootstrap != True
         bootstrap: boolean parameter to determine whether to apply statistical hypothesis testing
-        p_value: applies when bootstrap == True
+        quantile_probability: applies when bootstrap == True
         pca_components: number of components to keep
     Returns:
         func: a function for calculating drift, which takes in reference and current embeddings data
@@ -245,7 +245,7 @@ def mmd(
                 x_idxs = np.random.choice(m, x_size)
                 y_idxs = np.random.choice(m, y_size)
                 bstrp_res.append(MMD2u_bstrp(K, x_size, y_size, x_idxs, y_idxs))
-                perc = np.percentile(bstrp_res, 100 * (1 - p_value))
+                perc = np.percentile(bstrp_res, 100 * quantile_probability)
             return max(mmd2u, 0), mmd2u > perc, "mmd"
         else:
             return max(mmd2u, 0), mmd2u > threshold, "mmd"

@@ -6,6 +6,7 @@ import logging
 from datetime import datetime
 from typing import Dict
 from typing import Iterator
+from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -18,7 +19,9 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeOptions
-from evidently.options import OptionsProvider
+from evidently.options.base import AnyOptions
+from evidently.options.base import Options
+from evidently.options.option import Option
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
@@ -96,16 +99,10 @@ class ExecutionError(Exception):
 
 class Display:
     # collection of all possible common options
-    options_provider: OptionsProvider
+    options: Options
 
-    def __init__(self, options: Optional[list] = None):
-        if options is None:
-            options = []
-
-        self.options_provider = OptionsProvider()
-
-        for option in options:
-            self.options_provider.add(option)
+    def __init__(self, options: AnyOptions = None):
+        self.options = Options.from_any_options(options)
 
     @abc.abstractmethod
     def _build_dashboard_info(self):

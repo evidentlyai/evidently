@@ -40,7 +40,7 @@ class DataDriftTableResults(MetricResult):
 
 class DataDriftTable(Metric[DataDriftTableResults]):
     columns: Optional[List[str]]
-    options: DataDriftOptions
+    drift_options: DataDriftOptions
 
     def __init__(
         self,
@@ -57,7 +57,7 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.columns = columns
-        self.options = DataDriftOptions(
+        self.drift_options = DataDriftOptions(
             all_features_stattest=stattest,
             cat_features_stattest=cat_stattest,
             num_features_stattest=num_stattest,
@@ -71,7 +71,7 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         )
 
     def get_parameters(self) -> tuple:
-        return None if self.columns is None else tuple(self.columns), self.options
+        return None if self.columns is None else tuple(self.columns), self.drift_options
 
     def calculate(self, data: InputData) -> DataDriftTableResults:
         if data.reference_data is None:
@@ -81,7 +81,7 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         result = get_drift_for_columns(
             current_data=data.current_data,
             reference_data=data.reference_data,
-            data_drift_options=self.options,
+            data_drift_options=self.drift_options,
             dataset_columns=dataset_columns,
             columns=self.columns,
         )

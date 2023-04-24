@@ -8,7 +8,7 @@ COPY metrics_app/requirements.txt requirements.txt
 
 RUN pip3 install -r requirements.txt
 
-RUN pip3 install evidently
+RUN pip3 install evidently==0.2.8
 
 COPY metrics_app .
 
