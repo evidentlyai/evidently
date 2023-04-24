@@ -52,7 +52,7 @@ The tool does not yet work for multi-label classification. It expects a single t
 
 To generate a comparative report, you will need **two** datasets. 
 
-![](<../.gitbook/assets/two\_datasets\_classification (1) (1).png>)
+![](<../.gitbook/assets/two\_datasets\_classification.png>)
 
 You can also run this report for a **single** dataset, with no comparison performed.
 
