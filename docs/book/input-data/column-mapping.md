@@ -163,6 +163,18 @@ column_mapping.target_names = ['Setosa', 'Versicolour', 'Virginica']
 
 If you pass the target names, they will appear on the visualizations. 
 
+You can also pass the target names as a dictionary:
+
+```python
+column_mapping.target_names = {'0':'Setosa', '1':'Versicolor', '2':'Virginica'}
+```
+
+or
+
+```python
+column_mapping.target_names = {0:'Setosa', 1:'Versicolor', 2:'Virginica'} 
+```
+
 ### Multiclass classification, option 2
 
 Target: labels, Preds: labels. 
