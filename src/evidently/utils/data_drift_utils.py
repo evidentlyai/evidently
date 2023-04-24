@@ -1,3 +1,4 @@
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -220,3 +221,25 @@ def get_text_data_for_plots(reference_data: pd.Series, current_data: pd.Series):
     typical_words_cur, typical_words_ref = get_typical_words(classifier_pipeline)
 
     return typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref
+
+
+def add_emb_drift_to_reports(
+    result,
+    embeddings_data,
+    embeddings,
+    embeddings_drift_method,
+    entity,
+):
+    sets = list(embeddings_data.keys())
+    if embeddings is not None:
+        sets = np.intersect1d(sets, embeddings)
+    if len(sets) == 0:
+        return result
+    f: Optional[Callable]
+    for emb_set in sets:
+        if embeddings_drift_method is not None:
+            f = embeddings_drift_method.get(emb_set)
+        else:
+            f = None
+        result.append(entity(embeddings_name=emb_set, drift_method=f))
+    return result
