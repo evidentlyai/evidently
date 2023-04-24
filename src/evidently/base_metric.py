@@ -15,6 +15,8 @@ import pandas as pd
 from evidently.core import BaseResult
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
+from evidently.options.base import AnyOptions
+from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -139,6 +141,14 @@ TResult = TypeVar("TResult", bound=MetricResult)
 
 class Metric(Generic[TResult]):
     context: Optional["Context"] = None
+
+    # TODO: if we want metric-specific options
+    options: Options
+    # resulting options will be determined via
+    # options = global_option.override(display_options).override(metric_options)
+
+    def __init__(self, options: AnyOptions = None):
+        self.options = Options.from_any_options(options)
 
     def get_id(self) -> str:
         return self.__class__.__name__

@@ -157,7 +157,7 @@ class Report(Display):
         metrics_results = []
         additional_graphs = []
 
-        color_options = self.options_provider.get(ColorOptions)
+        color_options = self.options.color_options
 
         for test in self._first_level_metrics:
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
