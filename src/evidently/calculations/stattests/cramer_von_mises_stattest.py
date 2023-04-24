@@ -213,7 +213,7 @@ def _cramer_von_mises(
 
 cramer_von_mises = StatTest(
     name="cramer_von_mises",
-    display_name="Cramer-Von-mises",
+    display_name="Cramer-von Mises",
     func=_cramer_von_mises,
     allowed_feature_types=["num"],
     default_threshold=0.1,
