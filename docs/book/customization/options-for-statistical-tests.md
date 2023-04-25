@@ -115,7 +115,7 @@ The following text drift detection parameters are available in the `DataDriftTab
 
 ## Drift detection methods - Text
 
-To use the following text drift detection methods, pass them using the `stattest` parameter. Currently a single method is available.
+To use the following text drift detection methods, pass them using the `stattest` parameter. 
 
 | StatTest  | Description | Drift score |
 |---|---|---|
