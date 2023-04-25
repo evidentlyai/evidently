@@ -118,3 +118,12 @@ To use the following text drift detection methods, pass them using the `stattest
 You can also check for distribution drift in text descriptors (such as text length, etc.) 
 
 To use this method, call a separate `TextDescriptorsDriftMetric()`. You can pass any of the tabular drift detection methods as a parameter.
+
+```python
+report = Report(metrics=[
+    TextDescriptorsDriftMetric("Review_Text"),
+])
+
+report.run(reference_data=reviews_ref, current_data=reviews_cur, column_mapping=column_mapping)
+report
+```
