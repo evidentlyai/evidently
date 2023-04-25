@@ -69,3 +69,71 @@ report = Report(metrics = [
 | bootstrap (optional)  | Boolean parameter (True/False) to determine whether to apply statistical hypothesis testing. <br>If applied, the ROC AUC of the classifier is compared to the ROC AUC of the random classifier at a set percentile. The calculation is repeated 1000 times with randomly assigned target class probabilities. This produces a distribution of random roc_auc scores with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, data drift is detected.<br>Default: True if <= 1000 objects, False if > 1000 objects. |
 | quantile_probability (optional)  | Sets the percentile of the possible ROC AUC values of the random classifier to compare against. <br>This applies when bootstrap is True.<br>Default: 0.95 |
 | pca_components (optional)  | The number of PCA components. If specified, dimensionality reduction will be applied to project data to n-dimensional space based on the number of pca_components.<br>Default: None. |
+
+## Maximum mean discrepancy (“mmd”)
+
+```python
+report = Report(metrics = [
+    EmbeddingsDriftMetric('small_subset', 
+                          drift_method = mmd(
+                              threshold = 0.015,
+                              bootstrap = None,
+                              quantile_probability = 0.05,
+                              pca_components = None,
+                          )
+                         )
+])
+```
+
+| Parameter | Description |
+|---|---|
+| threshold | Sets the threshold value of MMD for drift detection. Drift is detected when drift_score > threshold. <br>Applies when bootstrap != True. <br>Default threshold: 0.015 (MMD).  |
+| bootstrap (optional)  | Boolean parameter (True/False) to determine whether to apply statistical hypothesis testing. <br>If applied, the value of MMD between reference and current (mmd_0) is tested against possible MMD values in reference. We randomly split the reference data into two parts and compute MMD values (mmd_i) between them. The calculation is repeated 100 times. This produces a distribution of MMD values obtained for a reference dataset. We then take the 95th percentile (default) of this distribution and compare it to the MMD between reference and current datasets. If the mmd_0 > mmd_95, data drift is detected.<br>Default: True if <= 1000 objects, False if > 1000 objects. |
+| quantile_probability  (optional)  | Sets the percentile of the possible MMD values in reference to compare against.<br>Applies when bootstrap == True.<br>Default: 0.95. |
+| pca_components (optional)  | The number of PCA components. If specified, dimensionality reduction will be applied to project data to n-dimensional space based on the number of pca_components. <br>Default: None.  |
+
+## Share of drifted embedding components (“ratio”)
+
+```python
+report = Report(metrics = [
+    EmbeddingsDriftMetric('small_subset', 
+                          drift_method = ratio(
+                              component_stattest = 'wasserstein',
+                              component_stattest_threshold = 0.1,
+                              threshold = 0.2,
+                              pca_components = None,
+                          )
+                         )
+])
+```
+
+| Parameter | Description |
+|---|---|
+| component_stattest (optional)  | Sets the tabular drift detection method (any of the tabular drift detection methods for numerical features available in Evidently).<br>Default: Wasserstein |
+| component_stattest_threshold (optional)  | Sets the threshold for drift detection for individual embedding components. Drift is detected when drift_score > component_stattest_threshold in case of distance/divergence metrics where the threshold is the metric value or drift_score < component_stattest_threshold in case of statistical tests where the threshold is the p-value.<br>Default: 0.1 |
+| threshold (optional)  | Sets the threshold (share of drifted embedding components) for drift detection for the overall dataset. <br>Default: 0.2 |
+| pca_components (optional)  | The number of PCA components. If specified, dimensionality reduction will be applied to project data to n-dimensional space based on the number of pca_components. <br>Default: None. |
+
+## Distance-based methods (“distance”)
+
+```python
+report = Report(metrics = [
+    EmbeddingsDriftMetric('small_subset', 
+                          drift_method = distance(
+                              dist = 'euclidean', #"euclidean", "cosine", "cityblock" or "chebyshev"
+                              threshold = 0.2,
+                              pca_components = None,
+                              bootstrap = None,
+                              quantile_probability = 0.05
+                          )
+                         )
+])
+```
+
+| Parameter | Description |
+|---|---|
+| dist (optional) <br>Available: <br>euclidean <br>cosine<br>cityblock (manhattan distance)<br>chebyshev | Sets the distance metric for drift detection. <br>Default: Euclidean distance |
+| threshold (optional)  | Sets the threshold for drift detection. Drift is detected when drift_score > threshold.<br>Applies when bootstrap != True<br>Default: 0.2 (relevant for euclidean distance) |
+| bootstap (optional)  | Boolean parameter (True/False) to determine whether to apply statistical hypothesis testing. <br>If applied, the distance between reference and current is tested against possible distance values in reference. We randomly split the reference data into two parts and compute the distance between them. The calculation is repeated 100 times. This produces a distribution of distance values obtained for a reference dataset. We then take the 95th percentile (default) of this distribution and compare it to the distance between reference and current datasets. If the distance between the reference and current is higher than the 95th percentile of the distance obtained for the reference dataset, the drift is detected. <br>Default: True if <= 1000 objects, False if > 1000 objects. |
+| quantile_probability (optional)  | Sets the percentile of the possible distance values in reference to compare against.<br>Applies when bootstrap == True.<br>Default: 0.95. |
+| pca_components (optional)  | The number of PCA components. If specified, dimensionality reduction will be applied to reduce the number of components to the specified number.  <br>Default: None. |
