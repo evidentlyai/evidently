@@ -109,7 +109,7 @@ report = Report(metrics = [
 
 | Parameter | Description |
 |---|---|
-| `component_stattest` (optional)  | Sets the tabular drift detection method (any of the tabular drift detection methods for numerical features available in Evidently).<br>**Default: Wasserstein** |
+| `component_stattest` (optional)  | Sets the tabular drift detection method (any of the tabular drift detection methods for numerical features available in Evidently).<br><br>**Default: Wasserstein** |
 | `component_stattest_threshold` (optional)  | Sets the threshold for drift detection for individual embedding components. Drift is detected when `drift_score` > `component_stattest_threshold` in case of distance/divergence metrics where the threshold is the metric value or `drift_score` < `component_stattest_threshold` in case of statistical tests where the threshold is the p-value.<br><br>**Default: 0.1** (relevant for Wasserstein). |
 | `threshold` (optional)  | Sets the threshold (share of drifted embedding components) for drift detection for the overall dataset. <br><br>**Default: 0.2** |
 | `pca_components` (optional)  | The number of PCA components. If specified, dimensionality reduction will be applied to project data to n-dimensional space based on the number of pca_components. <br><br>**Default: None**. |
