@@ -104,12 +104,14 @@ Text drift detection applies to columns with **raw text data**, as specified in 
 
 ## Drift parameters - Text
 
-The following drift detection parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests and Presets that contain them, when applied to text data.
+The following text drift detection parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests and Presets that contain them. 
 
 | Parameter | Description |
 |---|---|
-| `stattest` | Defines the drift detection method for a given column that contains text data. |
+| `stattest` | Defines the drift detection method for a given column that contains text data, or for all columns in the dataset if all columns contain text data. |
 | `stattest_threshold` | Sets the threshold as a drift detection parameter. |
+| `text_stattest` | Defines the drift detection method for all text columns in the dataset. |
+| `text_stattest_threshold` | Sets the threshold as a drift detection parameter. |
 
 ## Drift detection methods - Text
 
@@ -117,7 +119,8 @@ To use the following text drift detection methods, pass them using the `stattest
 
 | StatTest  | Description | Drift score |
 |---|---|---|
-| `text_content_drift`<br> Text content drift (domain classifier) | Applies only to text data. Trains a classifier model to distinguish between text in “current” and “reference” datasets.<br><br>**Default for text data.** | <ul><li>returns `roc_auc` of the classifier as a `drift_score`</li><li>drift detected when `roc_auc` > ROC AUC of the random classifier at a set percentile</li><li>`threshold` sets the percentile of the possible ROC AUC values of the random classifier to compare against</li><li>default threshold: 0.95 (95th percentile)</li><li> `roc_auc` values can be 0 to 1 (typically 0.5 to 1); a higher value means more confident drift detection</ul> |
+| `perc_text_content_drift`<br> Text content drift (domain classifier, with bootstrap) | Applies only to text data. Trains a classifier model to distinguish between text in “current” and “reference” datasets.<br><br>**Default for text data.** | <ul><li>returns `roc_auc` of the classifier as a `drift_score`</li><li>drift detected when `roc_auc` > ROC AUC of the random classifier at a set percentile</li><li>`threshold` sets the percentile of the possible ROC AUC values of the random classifier to compare against</li><li>default threshold: 0.95 (95th percentile)</li><li> `roc_auc` values can be 0 to 1 (typically 0.5 to 1); a higher value means more confident drift detection</ul> |
+| `abs_text_content_drift`<br> Text content drift (domain classifier) | Applies only to text data. Trains a classifier model to distinguish between text in “current” and “reference” datasets.<br><br>**Default for text data.** | <ul><li>returns `roc_auc` of the classifier as a `drift_score`</li><li>drift detected when `roc_auc` > `threshold` </li><li>`threshold` sets the ROC AUC thresold</li><li>default threshold: 0.55</li><li> `roc_auc` values can be 0 to 1 (typically 0.5 to 1); a higher value means more confident drift detection</ul> |
 
 ## Text descriptors drift 
 
