@@ -99,3 +99,5 @@ Text drift detection methods and parameters are available in the `DataDriftTable
 | StatTest  | Description | Drift score |
 |---|---|---|
 | `text_content_drift`<br> Text content drift (domain classifier) | Applies only to text data. Trains a classifier model to distinguish between text in “current” and “reference” datasets.<br><br>**Default for text data.** | <ul><li>returns `roc_auc` of the classifier as a `drift_score`</li><li>drift detected when `roc_auc` > ROC AUC of the random classifier at a set percentile</li><li>`threshold` sets the percentile of the possible ROC AUC values of the random classifier to compare against</li><li>default threshold: 0.95 (95th percentile)</li><li> `roc_auc` values can be 0 to 1 (typically 0.5 to 1); a higher value means more confident drift detection</ul> |
+
+Note that you can also use a separate `TextDescriptorsDriftMetric()` for raw text data. In this case, it will detect drift in text descriptors (text length, etc.). You can pass any of the tabular drift detection methods as a parameter.
