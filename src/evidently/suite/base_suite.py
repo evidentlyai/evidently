@@ -91,7 +91,7 @@ class Context:
     test_results: Dict[Test, TestResult]
     state: State
     renderers: RenderersDefinitions
-    agg_data: bool = False
+    options: Options = Options()
 
 
 class ExecutionError(Exception):
@@ -222,7 +222,7 @@ class Display:
 class Suite:
     context: Context
 
-    def __init__(self):
+    def __init__(self, options: Options):
         self.context = Context(
             execution_graph=None,
             metrics=[],
@@ -231,6 +231,7 @@ class Suite:
             test_results={},
             state=States.Init,
             renderers=DEFAULT_RENDERERS,
+            options=options,
         )
 
     def add_test(self, test: Test):

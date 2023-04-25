@@ -57,7 +57,7 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
-        if not self.options.agg_data:
+        if not self.get_options().agg_data:
             curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
             current_scatter = PredActualScatter(predicted=curr_df[prediction_name], actual=curr_df[target_name])
             reference_scatter: Optional[PredActualScatter] = None
@@ -128,6 +128,6 @@ class RegressionPredictedVsActualScatterRenderer(MetricRenderer):
 
     def render_html(self, obj: RegressionPredictedVsActualScatter) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        if obj.options.agg_data:
+        if obj.get_options().agg_data:
             return self.render_agg(result.current_agg, result.reference_agg)
         return self.render_raw(result.current_raw, result.reference_raw)

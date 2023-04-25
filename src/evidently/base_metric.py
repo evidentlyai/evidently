@@ -196,6 +196,12 @@ class Metric(Generic[TResult]):
                 required_features.append(value.feature_class)
         return required_features
 
+    def get_options(self):
+        options = self.options if hasattr(self, "options") else Options()
+        if self.context is not None:
+            options = self.context.options.override(options)
+        return options
+
 
 class ColumnMetricResult(MetricResult):
     column_name: str
