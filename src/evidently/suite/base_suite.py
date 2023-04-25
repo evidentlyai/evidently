@@ -275,7 +275,7 @@ class Suite:
                 try:
                     required_features = metric.required_features(data_definition)
                 except Exception as e:
-                    logging.error(f"failed to get features for {type(metric)}: {e}")
+                    logging.error(f"failed to get features for {type(metric)}: {e}", exc_info=e)
                     continue
                 for feature in required_features:
                     params = feature.get_parameters()

@@ -147,6 +147,8 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         self.generated_text_features = None
 
     def required_features(self, data_definition: DataDefinition):
+        if not self.column.is_main_dataset():
+            return ColumnMetric.required_features(self, data_definition)
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
             self.generated_text_features = {
@@ -165,73 +167,11 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         return [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
 
     def calculate(self, data: InputData) -> ColumnSummaryResult:
-        # columns = process_columns(data.current_data, data.column_mapping)
 
         if not data.has_column(self.column):
             raise ValueError(f"Column '{self.column.display_name}' not found in dataset.")
 
         column_type, column_current_data, column_reference_data = data.get_data(self.column)
-        # column_type = None
-        # target_name = columns.utility_columns.target
-        # target_type = None
-        # data_by_target = None
-        #
-        # # define target type and prediction type. TODO move it to process_columns func
-        # if columns.utility_columns.target is not None:
-        #     reg_condition = data.column_mapping.task == "regression" or (
-        #         is_numeric_dtype(data.current_data[target_name])
-        #         and columns.task != "classification"
-        #         and data.current_data[target_name].nunique() > 5
-        #     )
-        #     if reg_condition:
-        #         target_type = "num"
-        #     else:
-        #         target_type = "cat"
-        #     if target_name == self.column_name:
-        #         column_type = target_type
-        #
-        # if columns.utility_columns.prediction is not None:
-        #     if (
-        #         isinstance(columns.utility_columns.prediction, str)
-        #         and columns.utility_columns.prediction == self.column_name
-        #     ):
-        #         if (
-        #             is_string_dtype(data.current_data[columns.utility_columns.prediction])
-        #             or (
-        #                 is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
-        #                 and columns.task != "classification"
-        #                 and data.current_data[columns.utility_columns.prediction].nunique() < 5
-        #             )
-        #             or (
-        #                 is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
-        #                 and columns.task == "classification"
-        #                 and (
-        #                     data.current_data[columns.utility_columns.prediction].max() > 1
-        #                     or data.current_data[columns.utility_columns.prediction].min() < 0
-        #                 )
-        #             )
-        #         ):
-        #             column_type = "cat"
-        #         else:
-        #             column_type = "num"
-        #
-        #     if (
-        #         isinstance(columns.utility_columns.prediction, list)
-        #         and self.column_name in columns.utility_columns.prediction
-        #     ):
-        #         column_type = "num"
-        # if self.column_name in columns.num_feature_names:
-        #     column_type = "num"
-        # elif self.column_name in columns.cat_feature_names:
-        #     column_type = "cat"
-        # elif self.column_name in columns.datetime_feature_names or (
-        #     columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
-        # ):
-        #     column_type = "datetime"
-        # elif self.column_name in columns.text_feature_names:
-        #     column_type = "text"
-        # if column_type is None:
-        #     raise ValueError(f"column {self.column_name} not in num, cat, text or datetime features lists")
 
         curr_characteristics: ColumnCharacteristics
         ref_characteristics: Optional[ColumnCharacteristics] = None
@@ -297,11 +237,11 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         counts_of_values = None
         if column_type in [ColumnType.Categorical, ColumnType.Numerical]:
             counts_of_values = {}
-            current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
+            current_counts = column_current_data.value_counts(dropna=False).reset_index()
             current_counts.columns = ["x", "count"]
             counts_of_values["current"] = current_counts.head(10)
-            if data.reference_data is not None:
-                reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
+            if column_reference_data is not None:
+                reference_counts = column_reference_data.value_counts(dropna=False).reset_index()
                 reference_counts.columns = ["x", "count"]
                 counts_of_values["reference"] = reference_counts.head(10)
 
