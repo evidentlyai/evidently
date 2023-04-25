@@ -65,7 +65,7 @@ report = Report(metrics = [
 
 | Parameter | Description |
 |---|---|
-| threshold | Sets the threshold for drift detection (ROC AUC). Drift is detected when drift_score > threshold. <br>Applies when bootstrap != True.<br>Default: 0.55. |
+| threshold | Sets the threshold for drift detection (ROC AUC). Drift is detected when `drift_score` > `threshold`. <br>Applies when `bootstrap` != True.<br>**Default: 0.55**. |
 | bootstrap (optional)  | Boolean parameter (True/False) to determine whether to apply statistical hypothesis testing. <br>If applied, the ROC AUC of the classifier is compared to the ROC AUC of the random classifier at a set percentile. The calculation is repeated 1000 times with randomly assigned target class probabilities. This produces a distribution of random roc_auc scores with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, data drift is detected.<br>Default: True if <= 1000 objects, False if > 1000 objects. |
 | quantile_probability (optional)  | Sets the percentile of the possible ROC AUC values of the random classifier to compare against. <br>This applies when bootstrap is True.<br>Default: 0.95 |
 | pca_components (optional)  | The number of PCA components. If specified, dimensionality reduction will be applied to project data to n-dimensional space based on the number of pca_components.<br>Default: None. |
