@@ -43,3 +43,22 @@ report = Report(metrics = [
 | `drift_method=ratio` | <ul><li>Computes the distribution drift between individual embedding components using any of the tabular numerical drift detection methods available in Evidently. </li><li>Default tabular drift detection method: Wasserstein distance, with the 0.1 threshold.</li><li>Returns the **share of drifted embeddings** as `drift_score`. </li><li>Drift detected when `drift_score` > `threshold` </li><li>Default threshold: 0.2 (share of drifted embedding components).</li></ul> |
 | `drift_method=distance` | <ul><li>Computes the distance between average embeddings in “current” and “reference” datasets using a specified distance metric (euclidean, cosine, cityblock, chebyshev). Default: `euclidean`. </li><li>Returns the **distance metric value** as `drift_score`.</li><li>Drift detected when drift_score > threshold or when `drift_score` > obtained distance in reference at a set `quantile_probability`.</li><li>Default threshold: 0.2 (relevant for Euclidean distance).</li><li>Default quantile_probability: 0.95. Applies when bootstrap is True; default True if <= 1000 objects.</li></ul> |
 | `drift_method=mmd` | <ul><li>Computes the Maximum Mean Discrepancy (MMD)</li><li>Returns the **MMD value** as a `drift_score`</li><li>Drift detected when `drift_score` > `threshold` or when `drift_score` >  obtained MMD values in reference at a set `quantile_probability`.</li><li>Default threshold: 0.015 (MMD). </li><li>Default quantile_probability: 0.95. Applies when bootstrap is True; default True if <= 1000 objects.</li></ul> |
+
+If you specify an embedding drift detection method but do not pass additional parameters, defaults will apply. 
+
+You can also specify parameters for any chosen method. Since the methods are different, each has a different set of parameters. Note that you should pass the parameters **directly to the chosen drift detection method**, not to the Metric. 
+
+## Model-based (“model”) 
+
+```python
+report = Report(metrics = [
+    EmbeddingsDriftMetric('small_subset', 
+                          drift_method = model(
+                              threshold = 0.55,
+                              bootstrap = None,
+                              quantile_probability = 0.05,
+                              pca_components = None,
+                          )
+                         )
+])
+```
