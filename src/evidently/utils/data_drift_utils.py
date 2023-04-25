@@ -131,7 +131,13 @@ def roc_auc_random_classifier_percentile(y_test: np.ndarray, p_value=0.05, iter_
     return np.percentile(roc_auc_values, 100 * (1 - p_value))
 
 
-def calculate_text_drift_score(reference_data: pd.Series, current_data: pd.Series, p_value=0.05) -> Tuple[float, bool]:
+def calculate_text_drift_score(
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    bootstrap: bool,
+    p_value=0.05,
+    threshold=0.55,
+) -> Tuple[float, bool]:
     domain_data = pd.concat(
         [
             pd.DataFrame({"text": reference_data, "target": 0}),
@@ -153,9 +159,10 @@ def calculate_text_drift_score(reference_data: pd.Series, current_data: pd.Serie
         y_train,
         y_test,
     )
-
-    random_classifier_95_percentile = roc_auc_random_classifier_percentile(y_test, p_value=p_value)
-    return domain_classifier_roc_auc, domain_classifier_roc_auc > random_classifier_95_percentile
+    if not bootstrap:
+        return domain_classifier_roc_auc, domain_classifier_roc_auc > threshold
+    random_classifier_percentile = roc_auc_random_classifier_percentile(y_test, p_value=p_value)
+    return domain_classifier_roc_auc, domain_classifier_roc_auc > random_classifier_percentile
 
 
 def get_typical_examples(X_test, y_test, y_pred_proba, examples_num=10) -> Tuple[List[str], List[str]]:
