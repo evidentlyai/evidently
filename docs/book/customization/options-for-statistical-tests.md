@@ -5,6 +5,7 @@ description: How to set custom data drift conditions and thresholds for tabular 
 **Pre-requisites**:
 * You know how to generate Reports or Test Suites with default parameters.
 * You know how to pass custom parameters for Reports or Test Suites.
+* You know how to use Column Mapping to set the input data type. 
 
 # Default 
 
@@ -43,9 +44,11 @@ TestShareOfDriftedColumns(lt=0.5)
 ```
 # Tabular drift detection 
 
-All the following drift detection methods and parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests, and Presets that contain them. They apply to **tabular** data. 
+The following methods and parameters apply to **tabular** data (as parsed automatically or specified as numerical or categorical columns in the column mapping).
 
-## Available drift parameters - Tabular
+## Drift parameters - Tabular
+
+The following drift detection parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests, and Presets that contain them. 
 
 | Parameter | Description |
 |---|---|
@@ -61,6 +64,8 @@ All the following drift detection methods and parameters are available in the `D
 {% endhint %}
 
 ## Drift detection methods - Tabular
+
+To use the following drift detection methods, pass them using the `stattest` parameter.
 
 | StatTest  | Applicable to | Drift score |
 |---|---|---|
@@ -85,9 +90,15 @@ All the following drift detection methods and parameters are available in the `D
 
 # Text drift detection 
 
-Text drift detection methods and parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests and Presets that contain them. Text drift detection applies to columns with **raw text data**, as specified in column mapping. 
+Text drift detection applies to columns with **raw text data**, as specified in column mapping. 
 
-## Available drift parameters - Text
+{% hint style="info" %}
+**Embedding drift detection.** If you work with embeddings, you can use [Embeddings Drift Detection methods](embeddings-drift-detection.md).
+{% endhint %}
+
+## Drift parameters - Text
+
+Text drift detection methods and parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests and Presets that contain them. 
 
 | Parameter | Description |
 |---|---|
@@ -100,4 +111,6 @@ Text drift detection methods and parameters are available in the `DataDriftTable
 |---|---|---|
 | `text_content_drift`<br> Text content drift (domain classifier) | Applies only to text data. Trains a classifier model to distinguish between text in “current” and “reference” datasets.<br><br>**Default for text data.** | <ul><li>returns `roc_auc` of the classifier as a `drift_score`</li><li>drift detected when `roc_auc` > ROC AUC of the random classifier at a set percentile</li><li>`threshold` sets the percentile of the possible ROC AUC values of the random classifier to compare against</li><li>default threshold: 0.95 (95th percentile)</li><li> `roc_auc` values can be 0 to 1 (typically 0.5 to 1); a higher value means more confident drift detection</ul> |
 
-Note that you can also use a separate `TextDescriptorsDriftMetric()` for raw text data. In this case, it will detect drift in text descriptors (text length, etc.). You can pass any of the tabular drift detection methods as a parameter.
+## Drift detection methods - Text
+Note that you can also use a separate `TextDescriptorsDriftMetric()` for raw text data. To use this method 
+In this case, it will detect drift in text descriptors (text length, etc.). You can pass any of the tabular drift detection methods as a parameter.
