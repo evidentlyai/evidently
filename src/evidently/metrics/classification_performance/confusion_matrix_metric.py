@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -10,6 +9,7 @@ from evidently.calculations.classification_performance import calculate_matrix
 from evidently.metric_results import ConfusionMatrix
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pipeline.column_mapping import TargetNames
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -22,7 +22,7 @@ DEFAULT_THRESHOLD = 0.5
 class ClassificationConfusionMatrixResult(MetricResult):
     current_matrix: ConfusionMatrix
     reference_matrix: Optional[ConfusionMatrix]
-    target_names: Optional[Dict[Union[str, int], str]] = None
+    target_names: Optional[TargetNames] = None
 
 
 class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult]):
@@ -62,7 +62,11 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
 class ClassificationConfusionMatrixRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationConfusionMatrix) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        target_names = metric_result.target_names
+        target_names: Optional[Dict[Union[int, str], str]]
+        if isinstance(metric_result.target_names, list):
+            target_names = {idx: str(item) for idx, item in enumerate(metric_result.target_names)}
+        else:
+            target_names = metric_result.target_names
         curr_matrix = metric_result.current_matrix
         ref_matrix = metric_result.reference_matrix
         if target_names is not None:

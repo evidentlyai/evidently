@@ -109,11 +109,12 @@ class Report(Display):
             self._inner_suite.context.agg_data = True
         self._inner_suite.run_calculate(data)
 
-    def as_dict(
+    def as_dict(  # type: ignore[override]
         self,
         include_render: bool = False,
         include: Dict[str, IncludeOptions] = None,
         exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
     ) -> dict:
         metrics = []
         include = include or {}

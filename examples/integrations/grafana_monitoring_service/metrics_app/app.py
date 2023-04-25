@@ -114,7 +114,7 @@ class MonitoringService:
         window_size = self.window_size
 
         if dataset_name in self.current:
-            current_data = self.current[dataset_name].append(new_rows, ignore_index=True)
+            current_data = pd.concat([self.current[dataset_name], new_rows], ignore_index=True)
 
         else:
             current_data = new_rows

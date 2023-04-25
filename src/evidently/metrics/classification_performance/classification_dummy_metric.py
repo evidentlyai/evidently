@@ -4,7 +4,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import classification_report
 from sklearn.metrics import log_loss
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
@@ -121,16 +120,17 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
             coeff_precision = min(1.0, (1 - threshold) / 0.5)
             neg_label_precision = precision_score(target, dummy_preds, pos_label=labels[1]) * coeff_precision
             neg_label_recall = recall_score(target, dummy_preds, pos_label=labels[1]) * coeff_recall
+            f1_label2_value = 2 * neg_label_precision * neg_label_recall / (neg_label_precision + neg_label_recall)
             metrics_matrix = {
                 str(labels[0]): ClassMetric(
                     precision=current_dummy.precision,
                     recall=current_dummy.recall,
-                    f1=current_dummy.f1,
+                    **{"f1-score": current_dummy.f1},
                 ),
                 str(labels[1]): ClassMetric(
                     precision=neg_label_precision,
                     recall=neg_label_recall,
-                    f1=2 * neg_label_precision * neg_label_recall / (neg_label_precision + neg_label_recall),
+                    **{"f1-score": f1_label2_value},
                 ),
             }
         if prediction is not None and prediction.prediction_probas is not None:

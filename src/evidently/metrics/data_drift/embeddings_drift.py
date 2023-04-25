@@ -41,7 +41,7 @@ class EmbeddingsDriftMetricResults(MetricResult):
 
 
 class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
-    embeddings: str
+    embeddings_name: str
     drift_method: Optional[Callable]
 
     def __init__(

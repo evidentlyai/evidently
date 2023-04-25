@@ -7,6 +7,7 @@ These example notebooks and how-to guides show how to solve specific tasks.
 Topic | Question| Guide or example 
 | --- | --- | --- 
 Input data | How to load data from different sources to pandas.Dataframes? | <ul><li>[Guide](../input-data/load-data-to-pandas.md)</li></ul> 
+Input data | How to use column mapping? | <ul><li>[Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb)</li></ul> 
 Test and Reports | How to generate multiple Tests or Metrics quickly? (Test and Metric Generators). | <ul><li>[Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_apply_tests_and_metrics_generators.ipynb)</li></ul>
 Test and Reports | How to calculate drift in embeddings? | <ul><li>[Jupyter notebook](https://github.com/elenasamuylova/evidently/blob/main/examples/how_to_questions/how_to_calculate_embeddings_drift.ipynb)</li></ul>
 Test and Reports | How to run evaluations on raw text data? (Tests, Metrics and Presets that work with Text).| <ul><li>[Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_run_calculations_over_text_data.ipynb)</li></ul> 
