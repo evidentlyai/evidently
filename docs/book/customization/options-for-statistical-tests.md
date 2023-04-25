@@ -63,13 +63,13 @@ All the following drift detection methods are available in the `DataDriftTable()
 
 | StatTest  | Applicable to | Drift score |
 |---|---|---|
-| `ks`<br>Kolmogorov–Smirnov (K-S) test | tabular data<br>only numerical <br>**Default method for numerical data, if <= 1000 objects** | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
-| `chisquare`<br>Chi-Square test | tabular data<br>only categorical<br>**Default method for categorical with > 2 labels, if <= 1000 objects** | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
-| `z`<br>Z-test | tabular data<br>only categorical<br>**Default method for binary data, if <= 1000 objects** | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
-| `wasserstein`<br> Wasserstein distance (normed) | tabular data<br>only numerical<br>**Default method for numerical data, if > 1000 objects** | returns `distance`<br>drift detected when `distance` >= `threshold`<br>default threshold: 0.1 |
+| `ks`<br>Kolmogorov–Smirnov (K-S) test | tabular data<br>only numerical <br><br>**Default method for numerical data, if <= 1000 objects** | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
+| `chisquare`<br>Chi-Square test | tabular data<br>only categorical<br><br>**Default method for categorical with > 2 labels, if <= 1000 objects** | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
+| `z`<br>Z-test | tabular data<br>only categorical<br><br>**Default method for binary data, if <= 1000 objects** | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
+| `wasserstein`<br> Wasserstein distance (normed) | tabular data<br>only numerical<br><br>**Default method for numerical data, if > 1000 objects** | returns `distance`<br>drift detected when `distance` >= `threshold`<br>default threshold: 0.1 |
 | `kl_div`<br>Kullback-Leibler divergence | tabular data<br>numerical and categorical | returns `divergence`<br>drift detected when `divergence` >= `threshold`<br>default threshold: 0.1 |
 | `psi`<br> Population Stability Index (PSI) | tabular data<br>numerical and categorical | returns `psi_value`<br>drift detected when `psi_value` >= `threshold`<br>default threshold: 0.1 |
-| `jensenshannon`<br> Jensen-Shannon distance | tabular data<br>numerical and categorical<br>**Default method for categorical, if > 1000 objects** | returns `distance`<br>drift detected when `distance` >= `threshold`<br>default threshold: 0.1 |
+| `jensenshannon`<br> Jensen-Shannon distance | tabular data<br>numerical and categorical<br><br>**Default method for categorical, if > 1000 objects** | returns `distance`<br>drift detected when `distance` >= `threshold`<br>default threshold: 0.1 |
 | `anderson`<br> Anderson-Darling test | tabular data<br>only numerical  | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
 | `fisher_exact`<br> Fisher's Exact test | tabular data<br>only categorical  | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
 | `cramer_von_mises`<br> Cramer-Von-Mises test | tabular data<br>only numerical  | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
