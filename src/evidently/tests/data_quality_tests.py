@@ -1240,12 +1240,12 @@ class TestColumnQuantile(BaseCheckValueTest):
     group = DATA_QUALITY_GROUP.id
     name = "Quantile Value"
     metric: ColumnQuantileMetric
-    column_name: str
+    column: ColumnName
     quantile: float
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         quantile: float,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -1256,7 +1256,10 @@ class TestColumnQuantile(BaseCheckValueTest):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        self.column_name = column_name
+        if isinstance(column_name, str):
+            self.column = ColumnName.main_dataset(column_name)
+        else:
+            self.column = column_name
         self.quantile = quantile
         super().__init__(
             eq=eq,
@@ -1271,7 +1274,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         self.metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
 
     def groups(self) -> Dict[str, str]:
-        return {GroupingTypes.ByFeature.id: self.column_name}
+        return {GroupingTypes.ByFeature.id: self.column.display_name}
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -1289,7 +1292,7 @@ class TestColumnQuantile(BaseCheckValueTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The {self.quantile} quantile value of the column **{self.column_name}** is {value:.3g}. "
+            f"The {self.quantile} quantile value of the column **{self.column}** is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 
