@@ -13,6 +13,12 @@ All Presets, Tests, and Metrics that include data or target (prediction) drift e
 
 You can override the defaults by passing a custom parameter to the chosen Test, Metric, or Preset. You can define the drift detection method, the threshold, or both. 
 
+# Code example
+
+You can refer to an example How-to-notebook showing how to pass custom drift parameters:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_specify_stattest_for_a_testsuite.ipynb" %}
+
 # Examples
 
 To set a custom drift method and threshold on the **column level**:
