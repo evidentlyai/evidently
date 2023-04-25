@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Optional
 from typing import Sequence
 
+from evidently.options.option import Option
+
 RED = "#ed0400"
 GREY = "#4d4d4d"
 COLOR_DISCRETE_SEQUENCE = (
@@ -14,8 +16,7 @@ COLOR_DISCRETE_SEQUENCE = (
 )
 
 
-@dataclass
-class ColorOptions:
+class ColorOptions(Option):
     """Collection of colors for data visualization
 
     - primary_color - basic color for data visualization.
