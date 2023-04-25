@@ -24,7 +24,15 @@ You can refer to an example How-to-notebook showing how to pass parameters for d
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_calculate_embeddings_drift.ipynb" %}
 
+# Embedding drift detection methods
 
-# Examples
+Currently 4 embeddings drift detection methods are available. You can specify the method using the `drift_method` parameter:
 
-To set a custom embeddings drift detection method:
+```python
+from evidently.metrics.data_drift.embedding_drift_methods import model
+report = Report(metrics = [
+    EmbeddingsDriftMetric('small_subset', 
+                          drift_method = model()
+                         )
+])
+```
