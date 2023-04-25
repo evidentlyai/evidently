@@ -22,7 +22,7 @@ You can override the defaults by passing a custom parameter to the relevant Test
 
 You can refer to an example How-to-notebook showing how to pass parameters for different embeddings drift detection methods:
 
-https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_calculate_embeddings_drift.ipynb
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_calculate_embeddings_drift.ipynb" %}
 
 
 # Examples
