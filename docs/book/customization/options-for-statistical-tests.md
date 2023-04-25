@@ -94,7 +94,7 @@ Text drift detection methods and parameters are available in the `DataDriftTable
 | `stattest` | Defines the drift detection method for a given column that contains text data. |
 | `stattest_threshold` | Sets the threshold as a drift detection parameter. |
 
-# Drift detection methods - Text
+## Drift detection methods - Text
 
 | StatTest  | Description | Drift score |
 |---|---|---|
