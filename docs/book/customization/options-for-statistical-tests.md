@@ -41,8 +41,11 @@ To set a custom condition for the **dataset drift** when you run a relevant **Te
 ```python
 TestShareOfDriftedColumns(lt=0.5)
 ```
+# Tabular drift detection 
 
-# Available drift parameters
+All the following drift detection methods and parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests, and Presets that contain them. They apply to **tabular** data. 
+
+## Available drift parameters - Tabular
 
 | Parameter | Description |
 |---|---|
@@ -57,9 +60,7 @@ TestShareOfDriftedColumns(lt=0.5)
 **How to check available parameters.** You can verify which parameters are available for a specific test, metric, or preset in the [All tests](../reference/all-tests.md) or [All metrics](../reference/all-metrics.md) tables or consult the [API reference]([../reference/api-reference](https://docs.evidentlyai.com/reference/api-reference))
 {% endhint %}
 
-# Drift detection methods - Tabular
-
-All the following drift detection methods are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, and related Tests.
+## Drift detection methods - Tabular
 
 | StatTest  | Applicable to | Drift score |
 |---|---|---|
@@ -81,3 +82,21 @@ All the following drift detection methods are available in the `DataDriftTable()
 | `t_test`<br> T-Test | tabular data<br>only numerical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
 | `emperical_mmd`<br> Emperical-MMD | tabular data<br>only numerical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
 | `TVD`<br> Total-Variation-Distance | tabular data<br>only categorical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
+
+# Text drift detection 
+
+Text drift detection methods and parameters are available in the `DataDriftTable()`, `DatasetDriftMetric()`, `ColumnDriftMetric()`, related Tests and Presets that contain them. Text drift detection applies to columns with **raw text data**, as specified in column mapping. 
+
+## Available drift parameters - Text
+
+| Parameter | Description |
+|---|---|
+| `stattest` | Defines the drift detection method for a given column that contains text data. |
+| `stattest_threshold` | Sets the threshold as a drift detection parameter. |
+
+# Drift detection methods - Text
+
+| StatTest  | Applicable to | Drift score |
+|---|---|---|
+| `text_content_drift`<br> Text content drift (domain classifier) | Applies only to text data. Trains a classifier model to distinguish between text in “current” and “reference” datasets.<br><br>**Default for text data** | <ul><li>returns `roc_auc` of the classifier as a `drift_score`</li>
+<li>drift detected when `roc_auc` > roc_auc of the random classifier at a set percentile </li><li>`threshold` sets the percentile of the possible ROC AUC values of the random classifier to compare against</li><li>default threshold: 0.95 (95th percentile)</li><li> roc_auc values can be 0 to 1 (typically 0.5 to 1); a higher value means more confident drift detection</ul> |
