@@ -93,7 +93,7 @@ To use the following drift detection methods, pass them using the `stattest` par
 Text drift detection applies to columns with **raw text data**, as specified in column mapping. 
 
 {% hint style="info" %}
-**Embedding drift detection.** If you work with embeddings, you can use [Embeddings Drift Detection methods](embeddings-drift-detection.md).
+**Embedding drift detection.** If you work with embeddings, you can use [Embeddings Drift Detection methods](embeddings-drift-parameters.md).
 {% endhint %}
 
 ## Drift parameters - Text
