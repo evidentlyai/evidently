@@ -37,6 +37,7 @@
   * [Generate multiple test or metrics](tests-and-reports/test-metric-generator.md)
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
+  * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)
   * [Add a custom drift method](customization/add-custom-drift-method.md)
   * [Add a custom metric or test](customization/add-custom-metric-or-test.md)
   * [Customize JSON output](customization/json-dict-output.md)
