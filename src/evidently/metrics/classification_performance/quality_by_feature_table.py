@@ -163,7 +163,10 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         assert curr_predictions is not None
         ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
-        labels = curr_predictions.labels
+        if ref_predictions is not None:
+            labels = np.union1d(curr_predictions.labels, ref_predictions.labels).tolist()
+        else:
+            labels = curr_predictions.labels
 
         color_options = self.color_options
 
