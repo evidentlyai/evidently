@@ -7,18 +7,18 @@ from evidently.calculations.stattests.registry import register_stattest
 from evidently.utils.data_drift_utils import calculate_text_drift_score
 
 
-def _perc_text_content_drift(
+def _abs_text_content_drift(
     reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
-    return calculate_text_drift_score(reference_data, current_data, bootstrap=True, p_value=1 - threshold)
+    return calculate_text_drift_score(reference_data, current_data, bootstrap=False, threshold=threshold)
 
 
-perc_text_content_drift_stat_test = StatTest(
-    name="perc_text_content_drift",
-    display_name="Percentile text content drift",
-    func=_perc_text_content_drift,
+abs_text_content_drift_stat_test = StatTest(
+    name="abs_text_content_drift",
+    display_name="Absolute text content drift",
+    func=_abs_text_content_drift,
     allowed_feature_types=["text"],
-    default_threshold=0.95,
+    default_threshold=0.55,
 )
 
-register_stattest(perc_text_content_drift_stat_test)
+register_stattest(abs_text_content_drift_stat_test)
