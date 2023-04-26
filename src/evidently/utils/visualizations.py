@@ -770,7 +770,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
 
 def get_gaussian_kde(m1, m2):
     def border(x):
-        return int(max(2, abs(x) * 0.2))
+        return int(max(2, abs(x) * 0.7))
 
     xmin = m1.min()
     xmax = m1.max()
