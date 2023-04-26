@@ -15,6 +15,8 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
+from evidently.options.base import AnyOptions
+from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import Display
@@ -38,10 +40,10 @@ class TestSuite(Display):
     def __init__(
         self,
         tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
-        options: Optional[list] = None,
+        options: AnyOptions = None,
     ):
         super().__init__(options)
-        self._inner_suite = Suite()
+        self._inner_suite = Suite(self.options)
         self._test_presets = []
         self._test_generators = []
 

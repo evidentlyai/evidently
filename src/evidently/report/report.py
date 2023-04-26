@@ -16,7 +16,7 @@ from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
-from evidently.options import ColorOptions
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
@@ -32,11 +32,11 @@ class Report(Display):
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: Optional[List] = None):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: AnyOptions = None):
         super().__init__(options)
         # just save all metrics and metric presets
         self.metrics = metrics
-        self._inner_suite = Suite()
+        self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
 
     def run(
@@ -45,6 +45,7 @@ class Report(Display):
         reference_data: Optional[pd.DataFrame],
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
+        agg_data: bool = False,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -104,6 +105,8 @@ class Report(Display):
             column_mapping,
             data_definition,
         )
+        if agg_data:
+            self._inner_suite.context.options.agg_data = True
         self._inner_suite.run_calculate(data)
 
     def as_dict(  # type: ignore[override]

@@ -2,10 +2,15 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
+from typing import Type
+from typing import TypeVar
 from typing import Union
+from typing import overload
 
 import numpy as np
 import pandas as pd
+from typing_extensions import Literal
 
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
@@ -292,3 +297,39 @@ class DatasetClassificationQuality(MetricResult):
     fnr: Optional[float] = None
     rate_plots_data: Optional[RatesPlotData] = None
     plot_data: Optional[Boxes] = None
+
+
+TR = TypeVar("TR")
+TA = TypeVar("TA")
+
+
+@overload
+def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]) -> Tuple[TR, TA]:
+    ...
+
+
+@overload
+def raw_agg_properties(
+    field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[True]
+) -> Tuple[Optional[TR], Optional[TA]]:
+    ...
+
+
+def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: bool) -> Tuple[TR, TA]:
+    def property_raw(self):
+        val = getattr(self, field_name)
+        if optional and val is None:
+            return None
+        if not isinstance(val, raw_type):
+            raise ValueError("Raw data not available")
+        return val
+
+    def property_agg(self):
+        val = getattr(self, field_name)
+        if optional and val is None:
+            return None
+        if not isinstance(val, agg_type):
+            raise ValueError("Agg data not available")
+        return val
+
+    return property(property_raw), property(property_agg)  # type: ignore[return-value]
