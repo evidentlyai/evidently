@@ -29,13 +29,13 @@ def test_data_quality_quantile_metric_success() -> None:
             pd.DataFrame({"feature": [1, 2, 3]}),
             None,
             ColumnQuantileMetric(column_name="test", quantile=0.5),
-            "Column 'test' is not in current data.",
+            "Column 'test' is not in data.",
         ),
         (
             pd.DataFrame({"test": [1, 2, 3]}),
             pd.DataFrame({"feature": [1, 2, 3]}),
             ColumnQuantileMetric(column_name="test", quantile=0.5),
-            "Column 'test' is not in reference data.",
+            "Column 'test' is not in data.",
         ),
         (
             pd.DataFrame({"category_feature": ["a", "b", "c"]}),

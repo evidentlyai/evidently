@@ -321,7 +321,10 @@ def plot_boxes(
     return fig
 
 
-def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None) -> Histogram:
+def histogram_for_data(
+    curr: pd.Series,
+    ref: Optional[pd.Series] = None,
+) -> Tuple[HistogramData, Optional[HistogramData]]:
     if ref is not None:
         ref = ref.dropna()
     bins = np.histogram_bin_edges(pd.concat([curr.dropna(), ref]), bins="doane")
@@ -331,7 +334,25 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None) -> Histogram:
     if ref is not None:
         ref_hist = np.histogram(ref, bins=bins)
         reference = make_hist_df(ref_hist)
-    return Histogram(current=HistogramData.from_df(current), reference=HistogramData.from_df(reference))
+
+    return HistogramData.from_df(current), HistogramData.from_df(reference) if reference is not None else None
+
+
+def make_hist_for_num_plot(curr: pd.Series, ref: Optional[pd.Series] = None, calculate_log: bool = False) -> Histogram:
+    current, reference = histogram_for_data(curr, ref)
+    current_log = None
+    reference_log = None
+    if calculate_log:
+        current_log, reference_log = histogram_for_data(
+            np.log10(curr[curr > 0]),
+            np.log10(ref[ref > 0]) if ref is not None else None,
+        )
+    return Histogram(
+        current=current,
+        reference=reference,
+        current_log=current_log,
+        reference_log=reference_log,
+    )
 
 
 def plot_cat_cat_rel(

@@ -70,7 +70,7 @@ def test_column_summary_metric_success(
             ),
             None,
             ColumnSummaryMetric(column_name="col2"),
-            "Column 'col2' not found in current dataset.",
+            "Column 'col2' not found in dataset.",
         ),
         (
             pd.DataFrame(
@@ -84,7 +84,7 @@ def test_column_summary_metric_success(
                 }
             ),
             ColumnSummaryMetric(column_name="col2"),
-            "Column 'col2' not found in reference dataset.",
+            "Column 'col2' not found in dataset.",
         ),
     ),
 )
@@ -162,7 +162,7 @@ def test_column_summary_metric_value_error(
         (
             pd.DataFrame({"test1": [1, 2, 3], "test2": [1, 2, 3], "test3": [1, 1, 1]}),
             pd.DataFrame({"test1": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}),
-            ColumnMapping(),
+            ColumnMapping(numerical_features=["test1"]),
             ColumnSummaryMetric(column_name="test1"),
             {
                 "column_name": "test1",

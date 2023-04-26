@@ -7,16 +7,15 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
-from pandas.api.types import is_string_dtype
 
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnMetricResult
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
-from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
+from evidently.calculations.data_quality import plot_data
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
@@ -27,7 +26,6 @@ from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes
@@ -140,11 +138,17 @@ class ColumnSummaryResult(ColumnMetricResult):
 class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
     generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
-    def __init__(self, column_name: str):
-        self.column_name = column_name
+    def __init__(self, column_name: Union[str, ColumnName]):
+        if isinstance(column_name, str):
+            self.column = ColumnName.main_dataset(column_name)
+        else:
+            self.column = column_name
+        self.column_name = self.column.name
         self.generated_text_features = None
 
     def required_features(self, data_definition: DataDefinition):
+        if not self.column.is_main_dataset():
+            return ColumnMetric.required_features(self, data_definition)
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
             self.generated_text_features = {
@@ -163,104 +167,36 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         return [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
 
     def calculate(self, data: InputData) -> ColumnSummaryResult:
-        columns = process_columns(data.current_data, data.column_mapping)
 
-        if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' not found in current dataset.")
+        if not data.has_column(self.column):
+            raise ValueError(f"Column '{self.column.display_name}' not found in dataset.")
 
-        if data.reference_data is not None and self.column_name not in data.reference_data:
-            raise ValueError(f"Column '{self.column_name}' not found in reference dataset.")
-
-        column_type = None
-        target_name = columns.utility_columns.target
-        target_type = None
-        data_by_target = None
-
-        # define target type and prediction type. TODO move it to process_columns func
-        if columns.utility_columns.target is not None:
-            reg_condition = data.column_mapping.task == "regression" or (
-                is_numeric_dtype(data.current_data[target_name])
-                and columns.task != "classification"
-                and data.current_data[target_name].nunique() > 5
-            )
-            if reg_condition:
-                target_type = "num"
-            else:
-                target_type = "cat"
-            if target_name == self.column_name:
-                column_type = target_type
-
-        if columns.utility_columns.prediction is not None:
-            if (
-                isinstance(columns.utility_columns.prediction, str)
-                and columns.utility_columns.prediction == self.column_name
-            ):
-                if (
-                    is_string_dtype(data.current_data[columns.utility_columns.prediction])
-                    or (
-                        is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
-                        and columns.task != "classification"
-                        and data.current_data[columns.utility_columns.prediction].nunique() < 5
-                    )
-                    or (
-                        is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
-                        and columns.task == "classification"
-                        and (
-                            data.current_data[columns.utility_columns.prediction].max() > 1
-                            or data.current_data[columns.utility_columns.prediction].min() < 0
-                        )
-                    )
-                ):
-                    column_type = "cat"
-                else:
-                    column_type = "num"
-
-            if (
-                isinstance(columns.utility_columns.prediction, list)
-                and self.column_name in columns.utility_columns.prediction
-            ):
-                column_type = "num"
-        if self.column_name in columns.num_feature_names:
-            column_type = "num"
-        elif self.column_name in columns.cat_feature_names:
-            column_type = "cat"
-        elif self.column_name in columns.datetime_feature_names or (
-            columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
-        ):
-            column_type = "datetime"
-        elif self.column_name in columns.text_feature_names:
-            column_type = "text"
-        if column_type is None:
-            raise ValueError(f"column {self.column_name} not in num, cat, text or datetime features lists")
+        column_type, column_current_data, column_reference_data = data.get_data(self.column)
 
         curr_characteristics: ColumnCharacteristics
-        reference_data = None
         ref_characteristics: Optional[ColumnCharacteristics] = None
-        if column_type == "text" and self.generated_text_features is not None:
-            if data.reference_data is not None:
+        if column_type == ColumnType.Text and self.generated_text_features is not None:
+            if column_reference_data is not None:
                 ref_characteristics = self.get_text_stats(
                     "reference",
                     data,
-                    data.reference_data[self.column_name],
+                    column_reference_data,
                     self.generated_text_features,
                 )
             curr_characteristics = self.get_text_stats(
                 "current",
                 data,
-                data.current_data[self.column_name],
+                column_current_data,
                 self.generated_text_features,
             )
         else:
-            if data.reference_data is not None:
-                reference_data = data.reference_data
-                ref_characteristics = self.map_data(
-                    get_features_stats(data.reference_data[self.column_name], column_type)
-                )
-            curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
+            if column_reference_data is not None:
+                ref_characteristics = self.map_data(get_features_stats(column_reference_data, column_type))
+            curr_characteristics = self.map_data(get_features_stats(column_current_data, column_type))
 
-            if data.reference_data is not None and column_type == "cat":
-                current_values_set = set(data.current_data[self.column_name].unique())
-                reference_values_set = set(data.reference_data[self.column_name].unique())
+            if column_reference_data is not None and column_type == ColumnType.Categorical:
+                current_values_set = set(column_current_data.unique())
+                reference_values_set = set(column_reference_data.unique())
                 unique_in_current = current_values_set - reference_values_set
                 new_in_current_values_count: int = len(unique_in_current)
                 unique_in_reference = reference_values_set - current_values_set
@@ -273,75 +209,53 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
                 curr_characteristics.new_in_current_values_count = new_in_current_values_count
                 curr_characteristics.unused_in_current_values_count = unused_in_current_values_count
 
-        # plot data
-        gpd = DataQualityGetPlotData()
-        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name, column_type)
-        data_in_time = None
+        datetime_column = data.data_definition.get_datetime_column()
+        datetime_data = None
         if (
-            columns.utility_columns.date is not None
-            and columns.utility_columns.date != self.column_name
-            and column_type != "datetime"
+            datetime_column is not None
+            and datetime_column.column_name != self.column.name
+            and column_type != ColumnType.Datetime
         ):
-            data_in_time = gpd.calculate_data_in_time(
-                data.current_data,
-                reference_data,
-                self.column_name,
-                column_type,
-                columns.utility_columns.date,
-            )
-            data_in_time = DataInTime(
-                data_for_plots={
-                    "current": data_in_time["current"],
-                    "reference": data_in_time["reference"],
-                },
-                freq=data_in_time["freq"],
-                datetime_name=data_in_time["datetime_name"],
-            )
+            datetime_type, datetime_current, datetime_reference = data.get_data(datetime_column.column_name)
+            datetime_data = (datetime_column.column_name, datetime_type, datetime_current, datetime_reference)
 
+        target_column = data.data_definition.get_target_column()
+        target_data = None
         if (
-            target_name is not None
-            and target_type is not None
-            and columns.utility_columns.target != self.column_name
-            and column_type != "datetime"
+            target_column is not None
+            and target_column.column_name != self.column.name
+            and column_type != ColumnType.Datetime
         ):
+            target_type, target_current, target_reference = data.get_data(target_column.column_name)
+            target_data = (target_column.column_name, target_type, target_current, target_reference)
+        bins_for_hist, data_in_time, data_by_target = plot_data(
+            (self.column.display_name, column_type, column_current_data, column_reference_data),
+            datetime_data,
+            target_data,
+        )
 
-            data_for_plots = gpd.calculate_data_by_target(
-                data.current_data,
-                reference_data,
-                self.column_name,
-                column_type,
-                target_name,
-                target_type,
-            )
-            data_by_target = DataByTarget(
-                data_for_plots=data_for_plots,
-                target_name=target_name,
-                target_type=target_type,
-            )
         counts_of_values = None
-        if column_type in ["cat", "num"]:
+        if column_type in [ColumnType.Categorical, ColumnType.Numerical]:
             counts_of_values = {}
-            current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
+            current_counts = column_current_data.value_counts(dropna=False).reset_index()
             current_counts.columns = ["x", "count"]
             counts_of_values["current"] = current_counts.head(10)
-            if data.reference_data is not None:
-                reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
+            if column_reference_data is not None:
+                reference_counts = column_reference_data.value_counts(dropna=False).reset_index()
                 reference_counts.columns = ["x", "count"]
                 counts_of_values["reference"] = reference_counts.head(10)
 
-        plot_data = DataQualityPlot(
-            bins_for_hist=bins_for_hist,
-            data_in_time=data_in_time,
-            data_by_target=data_by_target,
-            counts_of_values=counts_of_values,
-        )
-
         return ColumnSummaryResult(
             column_name=self.column_name,
-            column_type=column_type,
+            column_type=column_type.value,
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,
-            plot_data=plot_data,
+            plot_data=DataQualityPlot(
+                bins_for_hist=bins_for_hist,
+                data_in_time=data_in_time,
+                data_by_target=data_by_target,
+                counts_of_values=counts_of_values,
+            ),
         )
 
     @staticmethod
