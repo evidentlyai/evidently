@@ -3,8 +3,6 @@ import json
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Type
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -17,6 +15,8 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import error_bias_table
 from evidently.calculations.regression_performance import error_with_quantiles
+from evidently.features.generated_features import FeatureDescriptor
+from evidently.features.generated_features import GeneratedFeature
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -52,14 +52,15 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     TOP_ERROR_MAX = 0.5
     top_error: float
     columns: Optional[List[str]]
-    text_features_gen: Optional[
-        Dict[
-            str,
-            Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
-        ]
-    ]
+    descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
+    text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
 
-    def __init__(self, columns: Optional[List[str]] = None, top_error: Optional[float] = None):
+    def __init__(
+        self,
+        columns: Optional[List[str]] = None,
+        top_error: Optional[float] = None,
+        descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
+    ):
         if top_error is None:
             self.top_error = self.TOP_ERROR_DEFAULT
 
@@ -68,6 +69,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
         self.columns = columns
         self.text_features_gen = None
+        self.descriptors = descriptors
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
@@ -75,19 +77,19 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict: Dict[
-                    str,
-                    Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
-                ] = {}
-                col_dict[f"{col}: Text Length"] = TextLength(col)
-                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
-                col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
+                if self.columns is not None and col not in self.columns:
+                    continue
+                if self.descriptors is None or col not in self.descriptors:
+                    col_dict = {
+                        f"{col}: Text Length": TextLength(col),
+                        f"{col}: Non Letter Character %": NonLetterCharacterPercentage(col),
+                        f"{col}: OOV %": OOVWordsPercentage(col),
+                    }
+                else:
+                    column_descriptors = self.descriptors[col]
+                    col_dict = {f"{col}: " + name: value.feature(col) for name, value in column_descriptors.items()}
 
-                text_features_gen_result += [
-                    col_dict[f"{col}: Text Length"],
-                    col_dict[f"{col}: Non Letter Character %"],
-                    col_dict[f"{col}: OOV %"],
-                ]
+                text_features_gen_result += list(col_dict.values())
                 text_features_gen[col] = col_dict
             self.text_features_gen = text_features_gen
 
@@ -133,43 +135,23 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
         cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
         # process text columns
-        if (
-            self.text_features_gen is not None
-            and len(np.intersect1d(list(self.text_features_gen.keys()), columns)) >= 1
-        ):
-            for col in np.intersect1d(list(self.text_features_gen.keys()), columns):
-                num_feature_names += list(self.text_features_gen[col].keys())
-                columns += list(self.text_features_gen[col].keys())
-                columns.remove(col)
-                curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
-                    axis=1,
-                )
-                curr_text_df.columns = list(self.text_features_gen[col].keys())
-                curr_df = pd.concat(
-                    [
-                        curr_df.reset_index(drop=True),
-                        curr_text_df.reset_index(drop=True),
-                    ],
-                    axis=1,
-                )
+        if self.text_features_gen is not None:
+            for column, features in self.text_features_gen.items():
+                columns.remove(column)
+                num_feature_names += list(features.keys())
+                columns += list(features.keys())
+                curr_text_df = pd.concat([data.get_current_column(x.feature_name()) for x in features.values()], axis=1)
+                curr_text_df.columns = list(features.keys())
+                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
-                        [
-                            data.get_reference_column(x.feature_name())
-                            for x in list(self.text_features_gen[col].values())
-                        ],
+                        [data.get_reference_column(x.feature_name()) for x in features.values()],
                         axis=1,
                     )
-                    ref_text_df.columns = list(self.text_features_gen[col].keys())
-                    ref_df = pd.concat(
-                        [
-                            ref_df.reset_index(drop=True),
-                            ref_text_df.reset_index(drop=True),
-                        ],
-                        axis=1,
-                    )
+                    ref_text_df.columns = list(features.keys())
+                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
+
         columns_ext = np.union1d(columns, [target_name, prediction_name])
         curr_df = self._make_df_for_plot(curr_df[columns_ext], target_name, prediction_name, None)
 
