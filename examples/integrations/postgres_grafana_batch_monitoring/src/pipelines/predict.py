@@ -5,9 +5,11 @@ from typing import Text
 import joblib
 import pandas as pd
 import pendulum
-
-from prefect import flow, task
-from src.utils.utils import get_batch_interval, extract_batch_data, prepare_scoring_data
+from prefect import flow
+from prefect import task
+from src.utils.utils import extract_batch_data
+from src.utils.utils import get_batch_interval
+from src.utils.utils import prepare_scoring_data
 
 
 @task

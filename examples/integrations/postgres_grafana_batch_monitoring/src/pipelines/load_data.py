@@ -1,5 +1,6 @@
-from typing import Text
 import os
+from typing import Text
+
 import requests
 from tqdm import tqdm
 

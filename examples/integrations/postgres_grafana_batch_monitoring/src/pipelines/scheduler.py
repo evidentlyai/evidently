@@ -1,10 +1,10 @@
-import pendulum
-from prefect import flow
 from typing import Text
 
-from src.pipelines.predict import predict
+import pendulum
+from prefect import flow
 from src.pipelines.monitor_data import monitor_data
 from src.pipelines.monitor_model import monitor_model
+from src.pipelines.predict import predict
 
 
 @flow(name="scheduled_taxi_nyc")

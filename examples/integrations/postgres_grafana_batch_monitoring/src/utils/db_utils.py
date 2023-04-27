@@ -3,8 +3,6 @@ from typing import Callable
 import sqlalchemy
 import sqlalchemy.orm
 from sqlalchemy.orm import sessionmaker
-
-
 from src.utils.models import Base
 
 

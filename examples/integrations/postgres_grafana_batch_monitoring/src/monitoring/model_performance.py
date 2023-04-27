@@ -1,10 +1,14 @@
-import numpy as np
-from sqlalchemy import create_engine
-from typing import Dict, List, Text
+from typing import Dict
+from typing import List
+from typing import Text
 
+import numpy as np
 from config.db_config import DATABASE_URI
-from src.utils.db_utils import open_sqa_session, add_or_update_by_ts
-from src.utils.models import ModelPerformanceTable, TargetDriftTable
+from sqlalchemy import create_engine
+from src.utils.db_utils import add_or_update_by_ts
+from src.utils.db_utils import open_sqa_session
+from src.utils.models import ModelPerformanceTable
+from src.utils.models import TargetDriftTable
 from src.utils.type_conv import numpy_to_standard_types
 
 

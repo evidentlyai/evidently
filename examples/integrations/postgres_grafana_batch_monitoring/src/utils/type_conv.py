@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Dict
+
+import numpy as np
 
 
 def numpy_to_standard_types(input_data: Dict) -> Dict:
