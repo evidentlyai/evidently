@@ -20,12 +20,9 @@ def download_data(destination: Text):
     download_data(destination_directory)
     """
 
-    NYC_SOURCE_URL = 'https://d37ci6vzurychx.cloudfront.net/trip-data'
+    NYC_SOURCE_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data"
 
-    files = [
-        "green_tripdata_2021-01.parquet",
-        "green_tripdata_2021-02.parquet"
-    ]
+    files = ["green_tripdata_2021-01.parquet", "green_tripdata_2021-02.parquet"]
 
     print("Download files:")
     for file in files:
@@ -40,9 +37,7 @@ def download_data(destination: Text):
         with open(save_path, "wb") as handle:
 
             total_size = int(resp.headers.get("Content-Length", 0))
-            progress_bar = tqdm(
-                total=total_size, desc=file, unit="B", unit_scale=True
-            )
+            progress_bar = tqdm(total=total_size, desc=file, unit="B", unit_scale=True)
 
             for data in resp.iter_content(chunk_size=8192):
 
@@ -56,6 +51,6 @@ def download_data(destination: Text):
 
 if __name__ == "__main__":
 
-    DATA_RAW_DIR = 'data/raw'
+    DATA_RAW_DIR = "data/raw"
 
     download_data(DATA_RAW_DIR)

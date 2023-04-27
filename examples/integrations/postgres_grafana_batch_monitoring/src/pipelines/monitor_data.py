@@ -29,27 +29,23 @@ def prepare_current_data(start_time: Text, end_time: Text) -> pd.DataFrame:
             A DataFrame containing the current data merged with predictions.
     """
 
-    DATA_FEATURES_DIR = 'data/features'
-    PREDICTIONS_DIR = 'data/predictions'
+    DATA_FEATURES_DIR = "data/features"
+    PREDICTIONS_DIR = "data/predictions"
 
     # Get current data (features)
-    data_path = f'{DATA_FEATURES_DIR}/green_tripdata_2021-02.parquet'
+    data_path = f"{DATA_FEATURES_DIR}/green_tripdata_2021-02.parquet"
     data = pd.read_parquet(data_path)
-    current_data = extract_batch_data(
-        data,
-        start_time=start_time,
-        end_time=end_time
-    )
+    current_data = extract_batch_data(data, start_time=start_time, end_time=end_time)
 
     # Get predictions for the current data
     filename = pendulum.parse(end_time).to_date_string()
-    path = Path(f'{PREDICTIONS_DIR}/{filename}.parquet')
+    path = Path(f"{PREDICTIONS_DIR}/{filename}.parquet")
     predictions = pd.read_parquet(path)
 
     # Merge current data with predictions
-    current_data = current_data.merge(predictions, on='uuid', how='left')
-    
-    # Fill missing values 
+    current_data = current_data.merge(predictions, on="uuid", how="left")
+
+    # Fill missing values
     current_data = current_data.fillna(current_data.median()).fillna(-1)
 
     return current_data
@@ -62,7 +58,7 @@ def generate_reports(
     num_features: List[Text],
     cat_features: List[Text],
     prediction_col: Text,
-    timestamp: float
+    timestamp: float,
 ) -> None:
     """
     Generate data quality and data drift reports and
@@ -96,32 +92,29 @@ def generate_reports(
     data_quality_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
 
-    logging.info('Data drift report')
+    logging.info("Data drift report")
     data_drift_report = Report(metrics=[DataDriftPreset()])
     data_drift_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
 
-    logging.info('Commit metrics into database')
+    logging.info("Commit metrics into database")
     data_quality_report_content: Dict = data_quality_report.as_dict()
     data_drift_report_content: Dict = data_drift_report.as_dict()
     commit_data_metrics_to_db(
         data_quality_report=data_quality_report_content,
         data_drift_report=data_drift_report_content,
-        timestamp=timestamp
+        timestamp=timestamp,
     )
 
 
 @flow(flow_run_name="monitor-data-on-{ts}", log_prints=True)
-def monitor_data(
-    ts: pendulum.DateTime,
-    interval: int = 60
-) -> None:
+def monitor_data(ts: pendulum.DateTime, interval: int = 60) -> None:
     """Build and save data validation reports.
 
     Args:
@@ -129,20 +122,17 @@ def monitor_data(
         interval (int, optional): Interval. Defaults to 60.
     """
 
-    num_features = [
-        'passenger_count', 'trip_distance',
-        'fare_amount', 'total_amount'
-    ]
-    cat_features = ['PULocationID', 'DOLocationID']
-    prediction_col = 'predictions'
+    num_features = ["passenger_count", "trip_distance", "fare_amount", "total_amount"]
+    cat_features = ["PULocationID", "DOLocationID"]
+    prediction_col = "predictions"
 
     # Prepare current data
     start_time, end_time = get_batch_interval(ts, interval)
     current_data: pd.DataFrame = prepare_current_data(start_time, end_time)
 
     # Prepare reference data
-    DATA_REF_DIR = 'data/reference'
-    ref_path = f'{DATA_REF_DIR}/reference_data_2021-01.parquet'
+    DATA_REF_DIR = "data/reference"
+    ref_path = f"{DATA_REF_DIR}/reference_data_2021-01.parquet"
     ref_data = pd.read_parquet(ref_path)
     columns: List[Text] = num_features + cat_features + [prediction_col]
     reference_data = ref_data.loc[:, columns]
@@ -162,24 +152,15 @@ def monitor_data(
             num_features=num_features,
             cat_features=cat_features,
             prediction_col=prediction_col,
-            timestamp=ts.timestamp()
+            timestamp=ts.timestamp(),
         )
 
 
 if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument(
-        "--ts",
-        dest="ts",
-        required=True
-    )
-    args_parser.add_argument(
-        "--interval",
-        dest="interval",
-        required=False,
-        default=60
-    )
+    args_parser.add_argument("--ts", dest="ts", required=True)
+    args_parser.add_argument("--interval", dest="interval", required=False, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

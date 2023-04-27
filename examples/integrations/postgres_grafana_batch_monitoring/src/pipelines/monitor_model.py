@@ -22,7 +22,7 @@ def generate_reports(
     cat_features: List[Text],
     prediction_col: Text,
     target_col: Text,
-    timestamp: float
+    timestamp: float,
 ) -> None:
     """
     Generate data quality and data drift reports
@@ -55,7 +55,7 @@ def generate_reports(
     model_performance_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
 
     logging.info("Target drift report")
@@ -63,24 +63,21 @@ def generate_reports(
     target_drift_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
 
-    logging.info('Save metrics to database')
+    logging.info("Save metrics to database")
     model_performance_report_content: Dict = model_performance_report.as_dict()
     target_drift_report_content: Dict = target_drift_report.as_dict()
     commit_model_metrics_to_db(
         model_performance_report=model_performance_report_content,
         target_drift_report=target_drift_report_content,
-        timestamp=timestamp
+        timestamp=timestamp,
     )
 
 
 @flow(flow_run_name="monitor-model-on-{ts}", log_prints=True)
-def monitor_model(
-    ts: pendulum.DateTime,
-    interval: int = 60
-) -> None:
+def monitor_model(ts: pendulum.DateTime, interval: int = 60) -> None:
     """Build and save monitoring reports.
 
     Args:
@@ -88,14 +85,11 @@ def monitor_model(
         interval (int, optional): Interval. Defaults to 60.
     """
 
-    DATA_REF_DIR = 'data/reference'
-    target_col = 'duration_min'
-    prediction_col = 'predictions'
-    num_features = [
-        'passenger_count', 'trip_distance',
-        'fare_amount', 'total_amount'
-    ]
-    cat_features = ['PULocationID', 'DOLocationID']
+    DATA_REF_DIR = "data/reference"
+    target_col = "duration_min"
+    prediction_col = "predictions"
+    num_features = ["passenger_count", "trip_distance", "fare_amount", "total_amount"]
+    cat_features = ["PULocationID", "DOLocationID"]
 
     # Prepare current data
     start_time, end_time = get_batch_interval(ts, interval)
@@ -110,11 +104,9 @@ def monitor_model(
     else:
 
         # Prepare reference data
-        ref_path = f'{DATA_REF_DIR}/reference_data_2021-01.parquet'
+        ref_path = f"{DATA_REF_DIR}/reference_data_2021-01.parquet"
         ref_data = pd.read_parquet(ref_path)
-        columns: List[Text] = (
-            num_features + cat_features + [target_col, prediction_col]
-        )
+        columns: List[Text] = num_features + cat_features + [target_col, prediction_col]
         reference_data = ref_data.loc[:, columns]
 
         # Generate reports
@@ -125,24 +117,15 @@ def monitor_model(
             cat_features=cat_features,
             prediction_col=prediction_col,
             target_col=target_col,
-            timestamp=ts.timestamp()
+            timestamp=ts.timestamp(),
         )
 
 
 if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument(
-        "--ts",
-        dest="ts",
-        required=True
-    )
-    args_parser.add_argument(
-        "--interval",
-        dest="interval",
-        required=False,
-        default=60
-    )
+    args_parser.add_argument("--ts", dest="ts", required=True)
+    args_parser.add_argument("--interval", dest="interval", required=False, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

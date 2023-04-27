@@ -8,11 +8,7 @@ from src.pipelines.monitor_model import monitor_model
 
 
 @flow(name="scheduled_taxi_nyc")
-def scheduled_flow(
-    start_date: Text,
-    end_date: Text,
-    interval: int = 60
-) -> None:
+def scheduled_flow(start_date: Text, end_date: Text, interval: int = 60) -> None:
     """
         Runs a scheduled flow for predicting and monitoring taxi
     demand in New York City.
@@ -63,12 +59,10 @@ def scheduled_flow(
 
 if __name__ == "__main__":
 
-    START_DATE_TIME = '2021-02-01 02:00:00'
-    END_DATE_TIME = '2021-02-28 23:00:00'
+    START_DATE_TIME = "2021-02-01 02:00:00"
+    END_DATE_TIME = "2021-02-28 23:00:00"
     BATCH_INTERVAL = 60
 
     scheduled_flow(
-        start_date=START_DATE_TIME,
-        end_date=END_DATE_TIME,
-        interval=BATCH_INTERVAL
+        start_date=START_DATE_TIME, end_date=END_DATE_TIME, interval=BATCH_INTERVAL
     )

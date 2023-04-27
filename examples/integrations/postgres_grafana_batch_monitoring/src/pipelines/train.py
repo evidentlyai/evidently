@@ -7,18 +7,15 @@ from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
 def train() -> None:
     """Train a linear regression model on the given dataset."""
 
-    DATA_DIR = 'data/features'
+    DATA_DIR = "data/features"
 
     # Define the target variable, numerical features, and categorical features
-    target = 'duration_min'
-    num_features = [
-        'passenger_count', 'trip_distance',
-        'fare_amount', 'total_amount'
-    ]
-    cat_features = ['PULocationID', 'DOLocationID']
+    target = "duration_min"
+    num_features = ["passenger_count", "trip_distance", "fare_amount", "total_amount"]
+    cat_features = ["PULocationID", "DOLocationID"]
 
     print("Load train data")
-    data = pd.read_parquet(f'{DATA_DIR}/green_tripdata_2021-01.parquet')
+    data = pd.read_parquet(f"{DATA_DIR}/green_tripdata_2021-01.parquet")
 
     # Filter out outliers
     data = data[(data.duration_min >= 1) & (data.duration_min <= 60)]
@@ -35,21 +32,21 @@ def train() -> None:
         y=train_data[target],
     )
 
-    print('Get predictions for validation')
+    print("Get predictions for validation")
     train_preds = model.predict(train_data[num_features + cat_features])
     val_preds = model.predict(val_data[num_features + cat_features])
 
-    print('Calculate validation metrics: MAE')
+    print("Calculate validation metrics: MAE")
     # Scoring
     print(mean_absolute_error(train_data[target], train_preds))
     print(mean_absolute_error(val_data[target], val_preds))
 
-    print('Calculate validation metrics: MAPE')
+    print("Calculate validation metrics: MAPE")
     print(mean_absolute_percentage_error(train_data[target], train_preds))
     print(mean_absolute_percentage_error(val_data[target], val_preds))
 
     print("Save the model")
-    joblib.dump(model, 'models/model.joblib')
+    joblib.dump(model, "models/model.joblib")
 
 
 if __name__ == "__main__":

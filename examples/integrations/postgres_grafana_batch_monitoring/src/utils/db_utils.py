@@ -23,10 +23,7 @@ def open_sqa_session(engine: sqlalchemy.engine) -> sqlalchemy.orm.Session:
     return session
 
 
-def add_or_update_by_ts(
-    session: sqlalchemy.orm.Session,
-    record: Base
-) -> None:
+def add_or_update_by_ts(session: sqlalchemy.orm.Session, record: Base) -> None:
     """Add or update record by timestamp.
 
     Args:
@@ -35,10 +32,7 @@ def add_or_update_by_ts(
     """
 
     # Search record with the same timestamp
-    query = (
-        session.query(type(record))
-               .filter_by(timestamp=record.timestamp)
-    )
+    query = session.query(type(record)).filter_by(timestamp=record.timestamp)
 
     # If such record found
     if query.count() > 0:
@@ -47,7 +41,7 @@ def add_or_update_by_ts(
             {
                 column: getattr(record, column)
                 for column in record.__table__.columns.keys()
-                if column != 'id'
+                if column != "id"
             }
         )
     else:

@@ -7,13 +7,14 @@ Base = declarative_base()
 
 # [Data drift]
 
+
 class DataDriftPredictionTable(Base):
     """Implement table for prediction column drift metrics.
     Evidently metric functions:
         - DataDriftPreset/DataDriftTable
     """
 
-    __tablename__ = 'data_drift_prediction'
+    __tablename__ = "data_drift_prediction"
     id = Column(Integer, primary_key=True)
     timestamp = Column(Float)
     column_name = Column(String)
@@ -26,6 +27,7 @@ class DataDriftPredictionTable(Base):
 
 # [Data quality]
 
+
 class DataQualityTable(Base):
     """Implement table for data quality metrics.
     Evidently metric functions:
@@ -33,7 +35,7 @@ class DataQualityTable(Base):
         - DatasetSummaryMetric
     """
 
-    __tablename__ = 'data_quality'
+    __tablename__ = "data_quality"
     id = Column(Integer, primary_key=True)
     timestamp = Column(Float)
 
@@ -69,7 +71,8 @@ class ModelPerformanceTable(Base):
     Evidently metric functions:
         - RegressionQualityMetric
     """
-    __tablename__ = 'model_performance'
+
+    __tablename__ = "model_performance"
     id = Column(Integer, primary_key=True)
     timestamp = Column(Float)
     r2_score = Column(Float)
@@ -106,7 +109,7 @@ class TargetDriftTable(Base):
         - ColumnDriftMetric from target column
     """
 
-    __tablename__ = 'target_drift'
+    __tablename__ = "target_drift"
     id = Column(Integer, primary_key=True)
     timestamp = Column(Float)
     stattest_name = Column(String)
