@@ -62,6 +62,9 @@ pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
 
+**Note:** this example requires Python 3.9 or above 
+  
+
 ## :rocket: Launch Monitoring Cluster
 
 ### 1 - Launch a cluster 
