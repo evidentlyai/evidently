@@ -1,0 +1,65 @@
+version: "3.9"
+services:
+ 
+  # Prefect UI (Orion)
+  prefect:
+    image: prefecthq/prefect:2-python3.10
+    restart: always
+    volumes:
+      - ./prefect:/root/.prefect
+    entrypoint: ["prefect", "server", "start"]
+    environment:
+      - PREFECT_ORION_API_HOST=0.0.0.0
+    ports:
+      - 4200:4200
+    networks:
+      - monitoring
+  
+  monitoring-db:
+    image: postgres:15.2-alpine
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "monitoring_db"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    container_name: monitoring-db-postgres
+    ports:
+    - 5432:5432
+    networks:
+      - monitoring
+    volumes:
+      - monitoring_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d monitoring_db -U admin" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:9.4.7
+    container_name: grafana
+    depends_on:
+      - monitoring-db
+    networks:
+      - monitoring
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - 3000:3000
+    user: "0"
+    volumes:
+      - ./grafana/config/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+      - ./grafana/config/grafana_dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - grafana_data:/var/lib/grafana
+
+
+volumes:
+    grafana_data: {}
+    monitoring_db_data: {}
+
+
+networks:
+  monitoring:
+    name: monitoring

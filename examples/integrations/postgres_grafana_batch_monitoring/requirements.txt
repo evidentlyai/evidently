@@ -1,0 +1,12 @@
+click
+evidently==0.2.5
+fastparquet==2023.2.0
+numpy==1.24.2
+pandas==1.5.3
+python-dotenv>=0.5.1
+prefect==2.9.0
+psycopg2-binary==2.9.5
+pyarrow==11.0.0
+scikit-learn==1.2.2
+sqlalchemy
+tqdm
