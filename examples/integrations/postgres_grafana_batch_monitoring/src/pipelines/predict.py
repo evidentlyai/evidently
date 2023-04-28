@@ -30,7 +30,6 @@ def load_data(path: Path, start_time: Text, end_time: Text) -> pd.DataFrame:
 
     print("Extract batch data")
     data = extract_batch_data(data, start_time=start_time, end_time=end_time)
-    data = data.fillna(data.median()).fillna(0)
 
     return data
 

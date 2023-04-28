@@ -16,8 +16,13 @@ def prepare_reference_dataset():
     path = f"{DATA_FEATURES_DIR}/green_tripdata_2021-01.parquet"
     data = pd.read_parquet(path)
     data = data.sample(frac=0.3)
-    clean_data = data.fillna(data.median())
-    scoring_data = prepare_scoring_data(clean_data)
+    
+    # Fill missing values with the median for numeric columns only
+    # numeric_columns = data.select_dtypes(include='number').columns
+    # medians = data[numeric_columns].median()
+    # clean_data = data.fillna(medians)
+    
+    scoring_data = prepare_scoring_data(data)
 
     print("Load model")
     model = joblib.load("models/model.joblib")

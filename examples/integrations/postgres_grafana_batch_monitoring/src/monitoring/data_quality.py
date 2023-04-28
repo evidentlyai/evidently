@@ -80,10 +80,8 @@ def parse_data_drift_report(data_drift_report: Dict) -> Tuple[Dict, Dict]:
         "predictions"
     ]
     remove_prediction_fields: List[Text] = [
-        "typical_examples_cur",
-        "typical_examples_ref",
-        "typical_words_cur",
-        "typical_words_ref",
+        "current",
+        "reference"
     ]
 
     for field in remove_prediction_fields:

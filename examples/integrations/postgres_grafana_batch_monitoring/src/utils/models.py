@@ -25,7 +25,7 @@ class DataDriftPredictionTable(Base):
     stattest_name = Column(String)
     drift_score = Column(Float)
     drift_detected = Column(Boolean)
-    threshold = Column(Float)
+    stattest_threshold = Column(Float)
 
 
 # [Data quality]

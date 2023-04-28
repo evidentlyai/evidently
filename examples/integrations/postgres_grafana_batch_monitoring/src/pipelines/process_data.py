@@ -27,6 +27,14 @@ def process() -> None:
         data.duration_min = data.duration_min.apply(
             lambda td: float(td.total_seconds() / 60)
         )
+        
+        # Drop unused columns
+        data = data.drop(["store_and_fwd_flag"], axis=1)
+        
+        # Fill missing values with the median for numeric columns only
+        numeric_columns = data.select_dtypes(include='number').columns
+        medians = data[numeric_columns].median()
+        data = data.fillna(medians).fillna(0)
 
         print("Save data")
         path_destination = f"{DATA_FEATURES_DIR}/{file}"

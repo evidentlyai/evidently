@@ -162,7 +162,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  \"timestamp\" AS \"time\",\n  threshold\nFROM\n  data_drift_prediction\n",
+          "rawSql": "SELECT\n  \"timestamp\" AS \"time\",\n  stattest_threshold\nFROM\n  data_drift_prediction\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -469,7 +469,7 @@
           "legendFormat": "{{kind}}",
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  \"timestamp\" AS \"time\",\n  drift_score, threshold\nFROM data_drift_prediction\nORDER BY 1",
+          "rawSql": "SELECT\n  \"timestamp\" AS \"time\",\n  drift_score, stattest_threshold\nFROM data_drift_prediction\nORDER BY 1",
           "refId": "A",
           "select": [
             [
