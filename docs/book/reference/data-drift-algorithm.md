@@ -67,9 +67,11 @@ Default for **larger data with > 1000 observations** detects drift if the ROC AU
 
 ## Dataset-level drift
 
-Using metrics like `DatasetDriftMetric()` or tests like `TestShareOfDriftedColumns()` you set a rule on top of the individual feature results to detect dataset-level drift.
+Using Presets like `DatasetDriftPreset()`, Metrics like `DatasetDriftMetric()` or Tests like `TestShareOfDriftedColumns()` you set a rule on top of the individual feature results to detect dataset-level drift. 
 
 For example, you can declare dataset drift if at least 50% of all features (columns) drifted or if ⅓ of the most important features drifted. Some of the Evidently tests and presets include such defaults. You can always modify them and set custom parameters.
+
+[](../.gitbook/assets/reports/report_example_data_drift-min.png)
 
 ## Nulls in the input data 
 
