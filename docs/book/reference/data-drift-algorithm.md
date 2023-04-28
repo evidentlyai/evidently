@@ -71,7 +71,7 @@ Using Presets like `DatasetDriftPreset()`, Metrics like `DatasetDriftMetric()` o
 
 For example, you can declare dataset drift if at least 50% of all features (columns) drifted or if ⅓ of the most important features drifted. Some of the Evidently tests and presets include such defaults. You can always modify them and set custom parameters.
 
-[](../.gitbook/assets/reports/report_example_data_drift-min.png)
+![](../.gitbook/assets/reports/report_example_data_drift-min.png)
 
 ## Nulls in the input data 
 
