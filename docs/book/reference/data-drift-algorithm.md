@@ -55,6 +55,8 @@ The default for **larger data with > 1000 observations** detects drift if the RO
 **You can also check for drift in Text Descriptors**. There is an additional method that detects drift in Text Descriptors (such as text length, share of OOV words). This test is available as part of [Text Overview Preset](../presets/text-overview.md). You can also include it as a **TextDescriptorsDriftMetric()** in a custom Report, or in a Test Suite accordingly.  
 {% endhint %}
 
+![](../.gitbook/assets/reports/metric_text_descriptors_drift-min.png)
+
 ## Embeddings 
 
 Embedding drift using a **classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
