@@ -12,6 +12,7 @@ Real-time ML monitoring with Grafana | [Evidently + Grafana](grafana_monitoring_
 Batch ML monitoring with Airflow | [Evidently + Airflow](airflow_drift_detection/)
 Log Evidently metrics in MLflow UI | [Evidently + MLflow](mlflow_logging/)
 Monitoring dashboard with Evidently and Streamlit | [Evidently + Streamlit](streamlit_dashboard/)
+Monitoring pipeline with Evidently, PostgreSQL, Grafana, and Prefect| [Evidently + PostgreSQL + Grafana + Prefect](postgres_grafana_batch_monitoring/)
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
 

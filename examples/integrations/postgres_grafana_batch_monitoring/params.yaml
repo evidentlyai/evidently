@@ -1,0 +1,43 @@
+base:
+  workdir: .
+  # logging_level: INFO
+
+data:
+  
+  raw_data: data/hour.csv
+  train_data: data/train.csv
+  test_data: data/test.csv
+  
+  target_col: cnt
+  prediction_col: prediction
+  numerical_features: ['temp', 'atemp', 'hum', 'windspeed', 'hr', 'weekday']
+  categorical_features: ['season', 'holiday', 'workingday']
+
+extract_data:
+  train_dates_range: '2011-01-01--2011-01-28'
+  test_dates_range: '2011-01-29--2011-02-28'
+
+train:
+  n_estimators: 50
+  model_path: &model_path models/model.joblib
+
+predict: 
+  model_path: *model_path
+  week_start: '2011-01-29'
+  week_end: '2011-02-04'
+  predictions_dir: data/predictions
+
+monitoring:
+  
+  reports_dir: reports
+  train_reports_subdir: train
+  model_performance_path: model_performance.html
+
+  # Reference data and predictions for monitoring 
+  reference_data: data/reference_data.csv
+
+  data_drift_path: data_drift.json
+  data_quality_path: data_quality.json
+
+  model_performance_path: model_performance.json
+  target_drift_path: target_drift.json
