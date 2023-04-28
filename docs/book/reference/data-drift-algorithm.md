@@ -80,7 +80,7 @@ Note that by default this includes all columns in the dataset. Suppose your data
 **You can set different thresholds**. You can specify a custom threshold as a [parameter](../customization/options-for-statistical-tests.md).
 {% endhint %}
 
-## Nulls in the input data 
+# Input data requirements
 
 ### Empty columns 
 
@@ -92,7 +92,7 @@ If some columns contain empty or infinite values (+-np.inf), these values will b
 
 By default, drift tests do not react to changes or increases in the number of empty values. Since the high number of nulls can be an important indicator, we recommend grouping the data drift tests (that check for distribution shift) with data integrity tests (that check for a share of nulls). You can choose from several null-related [tests](all-tests.md#data-integrity) and metrics and set a threshold.
 
-## Resources
+# Resources
 
 To build up a better intuition for which tests are better in different kinds of use cases, you can read our in-depth blog with experimental code:   
 
