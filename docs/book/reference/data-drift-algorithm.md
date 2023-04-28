@@ -35,9 +35,9 @@ All metrics use a threshold = 0.1 by default.
 
 Text content drift using a **domain classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
 
-Default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
+The default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
 
-Default for **larger data with > 1000 observations** detects drift if the ROC AUC > 0.55.
+The default for **larger data with > 1000 observations** detects drift if the ROC AUC > 0.55.
 
 <details>
 <summary>Text content drift detection method</summary>
@@ -57,17 +57,17 @@ Default for **larger data with > 1000 observations** detects drift if the ROC AU
 
 Embedding drift using a **classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
 
-Default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
+The default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
 
-Default for **larger data with > 1000 observations** detects drift if the ROC AUC > 0.55.
+The default for **larger data with > 1000 observations** detects drift if the ROC AUC > 0.55.
 
 {% hint style="info" %}
-**You can choose other embedding drift detection methods**. You can specify custom thresholds, parameters such as dimensionality reduction and choose from other methods, include Euclidean distance, Cosine Similarity, Maximum Mean Discrepance, share of drifted embeddings. You need to specify this as a [parameter](../customization/embeddings-drift-parameters.md).
+**You can choose other embedding drift detection methods**. You can specify custom thresholds and parameters such as dimensionality reduction and choose from other methods, including Euclidean distance, Cosine Similarity, Maximum Mean Discrepancy, and share of drifted embeddings. You must specify this as a [parameter](../customization/embeddings-drift-parameters.md).
 {% endhint %}
 
 ## Dataset-level drift
 
-With Presets like `DatasetDriftPreset()`, Metrics like `DatasetDriftMetric()` or Tests like `TestShareOfDriftedColumns()` you can also set a rule on top of the individual feature results to detect dataset-level drift. 
+With Presets like `DatasetDriftPreset()`, Metrics like `DatasetDriftMetric()` or Tests like `TestShareOfDriftedColumns()` you can also set a rule on top of the individual feature drift results to detect dataset-level drift. 
 
 For example, you can declare dataset drift if 50% of all features (columns) drifted or if ⅓ of the most important features drifted. 
 **The default in `DatasetDriftPreset()` is 0.5**. 
@@ -76,7 +76,9 @@ Note that by default this includes all columns in the dataset. Suppose your data
 
 ![](../.gitbook/assets/reports/report_example_data_drift-min.png)
 
-You can always set a custom threshold.
+{% hint style="info" %}
+**You can set different thresholds**. You can specify a custom threshold as a [parameter](../customization/options-for-statistical-tests.md).
+{% endhint %}
 
 ## Nulls in the input data 
 
