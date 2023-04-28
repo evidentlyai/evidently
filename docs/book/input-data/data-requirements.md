@@ -15,7 +15,7 @@ You typically need **two datasets**. In Evidently, we call them `reference` and 
 * **Reference** dataset is a baseline for comparison. This can be training data or earlier production data.
 * **Current** dataset is the second dataset compared to the baseline. It can include the most recent production data.
 
-![](<../.gitbook/assets/two\_datasets\_classification (1) (2).png>)
+![](<../.gitbook/assets/two\_datasets\_classification.png>)
 
 ## Single dataset
 
