@@ -12,6 +12,8 @@ There is a default logic to choosing the appropriate drift test for each column.
 
 ## Tabular Data 
 
+![](../.gitbook/assets/reports/preset_data_drift.png)
+
 For **small data with <= 1000 observations** in the reference dataset:
 
 * For numerical columns (n\_unique \> 5): [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test).
