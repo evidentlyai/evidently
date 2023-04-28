@@ -12,7 +12,7 @@ There is a default logic to choosing the appropriate drift test for each column.
 
 ## Tabular Data 
 
-![](../.gitbook/assets/reports/preset_data_drift.png)
+![](../.gitbook/assets/reports/data_drift_table_2-min.png)
 
 For **small data with <= 1000 observations** in the reference dataset:
 
