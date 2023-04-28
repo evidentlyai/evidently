@@ -61,6 +61,8 @@ The default for **larger data with > 1000 observations** detects drift if the RO
 
 ## Embeddings 
 
+![](../.gitbook/assets/reports/metric_embeddings_drift.png)
+
 Embedding drift using a **classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
 
 The default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
