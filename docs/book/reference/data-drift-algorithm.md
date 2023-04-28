@@ -1,14 +1,16 @@
 In some tests and metrics, Evidently uses the default Data Drift Detection algorithm. It helps detect the distribution drift in the individual features, prediction, or target. This page describes how the **default** algorithm works.
 
-## How it works
+# How it works
 
-Evidently compares the distributions of the values in a given column (or columns) of the two datasets. You should pass these datasets as **reference** and **current**. Evidently applies several statistical tests and metrics to detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result for each column.   
+Evidently compares the distributions of the values in a given column (or columns) of the two datasets. You should pass these datasets as **reference** and **current**. Evidently applies several statistical tests and drift detection methods to detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result.
 
 There is a default logic to choosing the appropriate drift test for each column. It is based on:
 
-* column type: categorical, numerical or text data
+* column type: categorical, numerical, text data or embeddings
 * the number of observations in the reference dataset
 * the number of unique values in the column (n\_unique)
+
+## Tabular Data 
 
 For **small data with <= 1000 observations** in the reference dataset:
 
@@ -29,20 +31,45 @@ All metrics use a threshold = 0.1 by default.
 **You can always modify this drift detection logic**. You can select any of the statistical tests available in the library (including PSI, K-L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. You can read more about using [data drift parameters and available drift detection methods](../customization/options-for-statistical-tests.md).
 {% endhint %}
 
-For **text data**:
+## Text Data 
 
-* Text content drift using a **domain classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
+Text content drift using a **domain classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
+
+Default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
+
+Default for **larger data with > 1000 observations** detects drift if the ROC AUC > 0.55.
 
 <details>
 <summary>Text content drift detection method</summary>
-The drift score, in this case, is the ROC-AUC score of the domain classifier computed on a validation dataset. The ROC AUC of the created classifier is compared to the ROC AUC of the random classifier at a set percentile (threshold). To ensure the result is statistically meaningful, we repeat the calculation 1000 times with randomly assigned target class probabilities. This produces a distribution with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, we consider the data drift to be detected. You can also set a different percentile as a parameter.
+**For small data**. The drift score is the ROC-AUC score of the domain classifier computed on a validation dataset. The ROC AUC of the created classifier is compared to the ROC AUC of the random classifier at a set percentile. To ensure the result is statistically meaningful, we repeat the calculation 1000 times with randomly assigned target class probabilities. This produces a distribution with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, we consider the data drift to be detected. You can also set a different percentile as a parameter.
+**For large data**. Directly compare against defined ROC AUC threshold. 
 </details>
+
+{% hint style="info" %}
+**You can set different thresholds**. You can specify a custom threshold as a [parameter](../customization/options-for-statistical-tests.md).
+{% endhint %}
+
+{% hint style="info" %}
+**You can also check for drift in Text Descriptors**. There is an additional method that detects drift in Text Descriptors (such as text length, share of OOV words). This test is available as part of [Text Overview Preset](../presets/text-overview.md). You can also include it as a **TextDescriptorsDriftMetric()** in a custom Report, or in a Test Suite accordingly.  
+{% endhint %}
+
+## Embeddings 
+
+Embedding drift using a **classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
+
+Default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
+
+Default for **larger data with > 1000 observations** detects drift if the ROC AUC > 0.55.
+
+{% hint style="info" %}
+**You can choose other embedding drift detection methods**. You can specify custom thresholds, parameters such as dimensionality reduction and choose from other methods, include Euclidean distance, Cosine Similarity, Maximum Mean Discrepance, share of drifted embeddings. You need to specify this as a [parameter](../customization/embeddings-drift-parameters.md).
+{% endhint %}
 
 ## Dataset-level drift
 
-The method above calculates drift for each column individually.   
+Using metrics like `DatasetDriftMetric()` or tests like `TestShareOfDriftedColumns()` you set a rule on top of the individual feature results to detect dataset-level drift.
 
-To detect dataset-level drift, you can set a rule on top of the individual feature results. For example, you can declare dataset drift if at least 50% of all features (columns) drifted or if ⅓ of the most important features drifted. Some of the Evidently tests and presets include such defaults. You can always modify them and set custom parameters.
+For example, you can declare dataset drift if at least 50% of all features (columns) drifted or if ⅓ of the most important features drifted. Some of the Evidently tests and presets include such defaults. You can always modify them and set custom parameters.
 
 ## Nulls in the input data 
 
