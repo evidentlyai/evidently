@@ -33,6 +33,8 @@ All metrics use a threshold = 0.1 by default.
 
 ## Text Data 
 
+![](../.gitbook/assets/reports/metric_column_drift_text-min.png)
+
 Text content drift using a **domain classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
 
 The default for **small data with <= 1000 observations** detects drift if the ROC AUC of the drift detection classifier > possible ROC AUC of the random classifier at a 95th percentile.
