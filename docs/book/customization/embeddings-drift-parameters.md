@@ -35,9 +35,9 @@ tests = TestSuite(tests=[
 
 It works the same inside presets, like `DataDriftPreset`. 
 
-# Drift parameters - Reports 
+# Embedding parameters - Metrics and Tests 
 
-You can override the defaults by passing a custom `drift_method` parameter to the relevant Metric or Preset. You can define the embeddings drift detection method, the threshold, or both. 
+You can override the defaults by passing a custom `drift_method` parameter to the relevant Metric or Test. You can define the embeddings drift detection method, the threshold, or both. 
 
 Pass the `drift_method` parameter:
 
@@ -50,11 +50,11 @@ report = Report(metrics = [
 ])
 ```
 
-# Drift parameters - Test Suites
+# Embedding parameters - Presets
 
-When you use `NoTargetPerformanceTestPreset` or `DataDriftTestPreset`, you can specify which subsets of columns with embeddings to include using `embeddings`, and the drift detection method using `embeddings_drift_method`.
+When you use `NoTargetPerformanceTestPreset`, `DataDriftTestPreset` or `DataDriftPreset` you can specify which subsets of columns with embeddings to include using `embeddings`, and the drift detection method using `embeddings_drift_method`.
 
-By default, the Test Presets will include all columns mapped as containing embeddings in `column_mapping`.
+By default, the Presets will include all columns mapped as containing embeddings in `column_mapping`.
 
 To exclude columns with embeddings:
 
