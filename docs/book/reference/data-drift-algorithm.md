@@ -45,8 +45,9 @@ The default for **larger data with > 1000 observations** detects drift if the RO
 
 <details>
 <summary>Text content drift detection method</summary>
-**For small data**. The drift score is the ROC-AUC score of the domain classifier computed on a validation dataset. The ROC AUC of the created classifier is compared to the ROC AUC of the random classifier at a set percentile. To ensure the result is statistically meaningful, we repeat the calculation 1000 times with randomly assigned target class probabilities. This produces a distribution with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, we consider the data drift to be detected. You can also set a different percentile as a parameter.
-**For large data**. Directly compare against defined ROC AUC threshold. 
+For small data, the drift score is the ROC-AUC score of the domain classifier computed on a validation dataset. The ROC AUC of the created classifier is compared to the ROC AUC of the random classifier at a set percentile. To ensure the result is statistically meaningful, we repeat the calculation 1000 times with randomly assigned target class probabilities. This produces a distribution with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, we consider the data drift to be detected. You can also set a different percentile as a parameter.
+
+For large data, the ROC AUC of the obtained classifier is directly compared against the set ROC AUC threshold. 
 </details>
 
 {% hint style="info" %}
