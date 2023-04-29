@@ -53,11 +53,13 @@ The default for **larger data with > 1000 observations** detects drift if the RO
 **You can set different thresholds**. You can specify a custom threshold as a [parameter](../customization/options-for-statistical-tests.md).
 {% endhint %}
 
-{% hint style="info" %}
-**You can also check for drift in Text Descriptors**. There is an additional method that detects drift in Text Descriptors (such as text length, share of OOV words). This test is available as part of [Text Overview Preset](../presets/text-overview.md). You can also include it as a **TextDescriptorsDriftMetric()** in a custom Report, or in a Test Suite accordingly.  
-{% endhint %}
+## Text Descriptors Drift  
 
 ![](../.gitbook/assets/reports/metric_text_descriptors_drift-min.png)
+
+**You can also check for drift in Text Descriptors**. There is an additional method that detects drift in Text Descriptors (such as text length, share of OOV words). This test is available as part of [Text Overview Preset](../presets/text-overview.md). You can also include it as a **TextDescriptorsDriftMetric()** in a custom Report, or in a Test Suite accordingly.  
+
+The descriptors are treated as tabular features. The default drift detection methods for tabular features apply.
 
 ## Embeddings 
 
