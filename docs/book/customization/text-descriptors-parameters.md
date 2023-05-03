@@ -18,12 +18,12 @@ Using descriptors with text-specific Metrics and Tests:
 
 # Available descriptors
 
-| Descriptor | Description |  |
-|---|---|---|
-| `TextLength()` | Calculates the length of text.  |  |
-| `OOV()` | Calculates the share of out-of-vocabulary words. |  |
-| `NonLetterCharacterPercentage()` | Calculates the share of non-letter characters. |  |
-| `TriggerWordsPresence(words_list=['dress', 'gown'])` | Checks for the presence of any of the specified words, as determined by the user. (Boolean).  |  |
+| Descriptor | Description |  
+|---|---|
+| `TextLength()` | Calculates the length of text.  |  
+| `OOV()` | Calculates the share of out-of-vocabulary words. |  
+| `NonLetterCharacterPercentage()` | Calculates the share of non-letter characters. |  
+| `TriggerWordsPresence(words_list=['dress', 'gown'])` | Checks for the presence of any of the specified words, as determined by the user. (Boolean).  |  
 
 # Descriptors in text-specific metrics
 
