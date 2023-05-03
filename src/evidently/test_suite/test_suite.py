@@ -79,6 +79,7 @@ class TestSuite(Display):
             column_mapping = ColumnMapping()
 
         self._columns_info = process_columns(current_data, column_mapping)
+        self._inner_suite.reset()
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
         data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
         for preset in self._test_presets:
