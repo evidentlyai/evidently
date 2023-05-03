@@ -58,7 +58,7 @@ In these cases, the defaults will apply:
 ## Descriptors parameters 
 If you want to customize the text-related Metrics or use `TriggerWordsPresence()` Descriptor, you should use the `descriptors` parameter. Pass it to the chosen Metric or Preset. 
 
-**Example 1**. Here is how you specify which Descriptors to include in a specific Metric, the titles for the corresponding Descriptor columns (they will appear in visualizations), and the list of trigger words to track.    
+**Example 1**. Here is how you specify which Descriptors to include in a specific Metric, the titles for the corresponding Descriptor columns (they will appear in visualizations), and the list of trigger words to track:    
 
 ```python
 report = Report(metrics=[
@@ -75,7 +75,7 @@ report = Report(metrics=[
 ])
 ```
 
-**Example 2**. Here is how to do this for a Preset.
+**Example 2**. Here is how to do this for a Preset:
 
 ```python
 text_overview_report = Report(metrics=[
@@ -95,7 +95,7 @@ You can also use Descriptors as if they exist as additional columns in the datas
 
 You should use a specific syntax to refer to the “virtual” Descriptor columns.  
 
-**Example 1**. Descriptors in column-level Metrics.
+**Example 1**. Descriptors in column-level Metrics:
 
 ```python
 table_column_metrics_report = Report(metrics=[
@@ -110,7 +110,7 @@ table_column_metrics_report = Report(metrics=[
 
 For example, when you call `ColumnDriftMetric()` for the "virtual" column `TextLength().for_column("Review_Text")`, you will evaluate statistical distribution drift in the length of texts that appear in the “Review_Text” column.
 
-**Example 2**. Descriptors in column-level Tests.
+**Example 2**. Descriptors in column-level Tests:
 
 ```python
 table_column_test_suite = TestSuite(tests=[
@@ -135,7 +135,7 @@ For example, when you call `TestValueRange()` for the “virtual” column `Text
 **Test conditions.** Refer to the [All tests](../reference/all-tests.md) table to see the default conditions for individual Tests, and [How to set test conditions](../tests-and-reports/custom-test-suite.md)  to learn how to specify conditions manually.
 {% endhint %}
 
-**Example 3**. Descriptors in dataset-level Metrics.
+**Example 3**. Descriptors in dataset-level Metrics:
 
 ```python
 classification_report = Report(metrics=[
