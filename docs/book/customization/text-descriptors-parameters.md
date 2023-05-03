@@ -5,6 +5,7 @@ description: How to work with Metrics and Tests that use text descriptors.
 **Pre-requisites**:
 * You know how to generate Reports or Test Suites for text data.
 * You know how to pass custom parameters for Reports or Test Suites.
+* You know to specify text data in column mapping.
 
 Text descriptors are various characteristics of the text datasets computed by Evidently. You can use them across different Metrics, Tests, and Presets and treat Descriptors as if they exist as an extra tabular feature that describes the text dataset.   
 
