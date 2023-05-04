@@ -36,6 +36,7 @@ class TestSuite(Display):
     _columns_info: DatasetColumns
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
+    _tests: List[Test]
 
     def __init__(
         self,
@@ -46,8 +47,10 @@ class TestSuite(Display):
         self._inner_suite = Suite(self.options)
         self._test_presets = []
         self._test_generators = []
+        self._tests = tests
 
-        for original_test in tests or []:
+    def _add_tests(self):
+        for original_test in self._tests or []:
             if isinstance(original_test, TestPreset):
                 self._test_presets.append(original_test)
 
@@ -80,6 +83,7 @@ class TestSuite(Display):
 
         self._columns_info = process_columns(current_data, column_mapping)
         self._inner_suite.reset()
+        self._add_tests()
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
         data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
         for preset in self._test_presets:
