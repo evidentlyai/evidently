@@ -47,10 +47,8 @@ class TestSuite(Display):
         self._inner_suite = Suite(self.options)
         self._test_presets = []
         self._test_generators = []
-        self._tests = tests
-
-    def _add_tests(self):
-        for original_test in self._tests or []:
+        self._tests = []
+        for original_test in tests or []:
             if isinstance(original_test, TestPreset):
                 self._test_presets.append(original_test)
 
@@ -58,7 +56,11 @@ class TestSuite(Display):
                 self._test_generators.append(original_test)
 
             else:
-                self._add_test(original_test)
+                self._tests.append(original_test)
+
+    def _add_tests(self):
+        for original_test in self._tests or []:
+            self._add_test(original_test)
 
     def _add_test(self, test: Test):
         new_test = copy.copy(test)
