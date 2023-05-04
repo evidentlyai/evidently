@@ -41,13 +41,14 @@ To set a custom condition for the **dataset drift** (share of drifting columns i
 DatasetDriftMetric(drift_share=0.7)
 ```
 
-Note that this works slightly differently for the **individual Tests**. The reason is that Tests expect you to define a condition to the **Test output**. You should use standard Test parameters like `lt` and `gt` to set the condition. 
-
-To set a custom condition for the **dataset drift** when you run a relevant **Test**, you should set a condition for the share of drifted features using standard parameters:
+Note that this works slightly differently for Tests. To set a custom condition for the **dataset drift** when you run a relevant **Test**, you should set a condition for the share of drifted features using standard `lt` and `gt` parameters:
 
 ```python
 TestShareOfDriftedColumns(lt=0.5)
 ```
+
+When you set drift threshold for `ColumnDriftTest()`, you should use `stattest_threshold` and other parameters the same way as it works in Metrics (not `lt` and `gt`).
+
 # Tabular drift detection 
 
 The following methods and parameters apply to **tabular** data (as parsed automatically or specified as numerical or categorical columns in the column mapping).
