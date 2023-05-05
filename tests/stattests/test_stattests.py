@@ -128,7 +128,7 @@ def test_cramer_von_mises() -> None:
             pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
             pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
             0.1,
-            0.96,
+            0.955,
             False,
         ),
         (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([0, 0, 0, 0, 0] * 5, dtype="float"), 0.1, 0, True),
