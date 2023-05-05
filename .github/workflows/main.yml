@@ -74,13 +74,17 @@ jobs:
       - name: Run Tests
         run: python -m pytest
       - name: Prepare examples dependencies
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.7'
         run: pip install catboost
       - name: Export examples
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.7'
         run: jupyter nbconvert --to script examples/*/*.ipynb --output-dir example_scripts
       - name: Download test data
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.7'
         run: curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip -o Bike-Sharing-Dataset.zip &&
              unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
       - name: Run examples
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.7'
         run: python example_test.py
   build:
     # The type of runner that the job will run on
