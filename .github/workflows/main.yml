@@ -53,12 +53,18 @@ jobs:
         run: mypy
   test:
     # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
+    name: Test ${{ matrix.os }} with py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        python: [ "3.8", "3.9", "3.10", "3.11" ]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.7'
+          python-version: ${{ matrix.python }}
           architecture: 'x64'
           cache: 'pip'
       - name: Install dependencies
