@@ -1,5 +1,5 @@
 ---
-description: How to customize data drift detection methods for embeddings.
+description: How to customize data drift detection for embeddings.
 ---
 
 **Pre-requisites**:
@@ -7,8 +7,17 @@ description: How to customize data drift detection methods for embeddings.
 * You know how to pass custom parameters for Reports or Test Suites.
 * You know how to use Column Mapping to map embeddings in the input data. 
 
+# Code example
+
+You can refer to an example How-to-notebook showing how to pass parameters for different embeddings drift detection methods:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_calculate_embeddings_drift.ipynb" %}
+
 # Default
-When you calculate embeddings drift (for example, using EmbeddingsDriftMetric()), Evidently automatically applies the default drift detection method (“model”).
+
+When you calculate embeddings drift, Evidently automatically applies the default drift detection method (“model”).
+
+In Reports:
 
 ```python
 report = Report(metrics=[
@@ -16,17 +25,21 @@ report = Report(metrics=[
 ])
 ```
 
-You can override the defaults by passing a custom parameter to the relevant Test, Metric, or Preset. You can define the embeddings drift detection method, the threshold, or both. 
+In Test Suites:
 
-# Code example
+```python
+tests = TestSuite(tests=[
+    TestEmbeddingsDrift(embeddings_name='small_subset')
+])
+```
 
-You can refer to an example How-to-notebook showing how to pass parameters for different embeddings drift detection methods:
+It works the same inside presets, like `DataDriftPreset`. 
 
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_calculate_embeddings_drift.ipynb" %}
+# Embedding parameters - Metrics and Tests 
 
-# Embedding drift detection methods
+You can override the defaults by passing a custom `drift_method` parameter to the relevant Metric or Test. You can define the embeddings drift detection method, the threshold, or both. 
 
-Currently 4 embeddings drift detection methods are available. You can specify the method using the `drift_method` parameter:
+Pass the `drift_method` parameter:
 
 ```python
 from evidently.metrics.data_drift.embedding_drift_methods import model
@@ -36,6 +49,36 @@ report = Report(metrics = [
                          )
 ])
 ```
+
+# Embedding parameters - Presets
+
+When you use `NoTargetPerformanceTestPreset`, `DataDriftTestPreset` or `DataDriftPreset` you can specify which subsets of columns with embeddings to include using `embeddings`, and the drift detection method using `embeddings_drift_method`.
+
+By default, the Presets will include all columns mapped as containing embeddings in `column_mapping`.
+
+To exclude columns with embeddings:
+
+```python
+embeddings = []
+```
+
+To specify which sets of columns to include (with the default drift detection method):
+
+```python
+embeddings = [‘set1’, ‘set2’]
+```
+
+To specify which sets of columns to include, and specify the method:
+
+```python
+embeddings = [‘set1’, ‘set2’]
+embeddings_drift_method = {‘set1’: model(), ‘set2’: ratio())}
+```
+
+
+# Embedding drift detection methods
+
+Currently 4 embeddings drift detection methods are available. 
 
 | Embeddings drift detection method | Description and default |
 |---|---|

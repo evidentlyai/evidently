@@ -41,6 +41,7 @@
   * [Add a custom drift method](customization/add-custom-drift-method.md)
   * [Add a custom metric or test](customization/add-custom-metric-or-test.md)
   * [Customize JSON output](customization/json-dict-output.md)
+  * [Text descriptors parameters](customization/text-descriptors-parameters.md)
   * [Options for color schema](customization/options-for-color-schema.md)
 * [How-to guides](how-to-guides/README.md)
 
