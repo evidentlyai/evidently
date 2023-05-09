@@ -54,7 +54,7 @@ setup_args = dict(
         "scipy>=1.5.4",
         "requests>=2.19.0",
         "PyYAML>=5.1",
-        "pydantic<2",
+        "pydantic>=1.9,<2",
     ],
     extras_require={
         "dev": [
@@ -67,6 +67,7 @@ setup_args = dict(
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
             "types-dataclasses==0.6",
+            "pillow==9.5.0",
             "black==22.8.0",
             "isort==5.10.1",
         ]
