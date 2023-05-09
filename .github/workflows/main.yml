@@ -97,7 +97,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-        minimal: [ "true", "false" ]
+        minimal: [ true, false ]
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
@@ -109,7 +109,7 @@ jobs:
       - name: Install package
         run: pip install -e .[dev]
       - name: Install minimal reqs
-        if: matrix.minimal == "true"
+        if: matrix.minimal
         run: pip install -r requirements.min.txt
       - name: Prepare examples dependencies
         run: pip install catboost
