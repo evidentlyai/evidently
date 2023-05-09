@@ -62,11 +62,11 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-          run: pip install -e .[dev]
+        run: pip install -e .[dev]
       - name: Install minimal dependencies
-          run: pip install -r requirements.min.txt
+        run: pip install -r requirements.min.txt
       - name: Run Tests
-          run: python -m pytest
+        run: python -m pytest
   test:
     # The type of runner that the job will run on
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
