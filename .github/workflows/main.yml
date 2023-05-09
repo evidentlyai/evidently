@@ -57,10 +57,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
-          with:
-            python-version: ${{ matrix.python }}
-            architecture: 'x64'
-            cache: 'pip'
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: 'x64'
+          cache: 'pip'
       - name: Install package
           run: pip install -e .[dev]
       - name: Install minimal dependencies
