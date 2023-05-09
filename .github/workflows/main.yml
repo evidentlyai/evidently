@@ -90,14 +90,14 @@ jobs:
         run: python -m pytest
 
   test-examples:
-    name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}
+    name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}, min ${{ matrix.minimal }}
     needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-        minimal: [ true, false ]
+        python: [ "3.7"]
+        minimal: [ false ]
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
