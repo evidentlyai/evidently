@@ -358,7 +358,7 @@ def _choose_agg_period(
     }
     datetime_feature = current_date_column
     if reference_date_column is not None:
-        datetime_feature = datetime_feature.append(reference_date_column)
+        datetime_feature = pd.concat([datetime_feature, reference_date_column])
     days = (datetime_feature.max() - datetime_feature.min()).days
     time_points = pd.Series(
         index=["A", "Q", "M", "W", "D", "H"],

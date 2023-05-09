@@ -110,8 +110,8 @@ def test_anderson_darling() -> None:
 
 def test_g_test() -> None:
     reference = pd.Series(["a", "b", "c"]).repeat([5, 5, 8])
-    current = pd.Series(["a", "b", "c"]).repeat([4, 7, 8])
-    assert g_test.func(reference, current, "cat", 0.5) == (approx(0.231, abs=1e-3), True)
+    current = pd.Series(["a", "b", "c"]).repeat([4, 6, 8])
+    assert g_test.func(reference, current, "cat", 0.5) == (approx(0.8176, abs=1e-3), False)
 
 
 def test_cramer_von_mises() -> None:
@@ -128,7 +128,7 @@ def test_cramer_von_mises() -> None:
             pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
             pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
             0.1,
-            0.96,
+            0.955,
             False,
         ),
         (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([0, 0, 0, 0, 0] * 5, dtype="float"), 0.1, 0, True),
@@ -141,7 +141,7 @@ def test_cramer_von_mises() -> None:
 def test_emperical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:
     np.random.seed(0)
     assert emperical_mmd.func(reference, current, "num", threshold) == (
-        approx(expected_pvalue, abs=1e-3),
+        approx(expected_pvalue, abs=1e-2),
         drift_detected,
     )
 

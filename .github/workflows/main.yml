@@ -31,7 +31,7 @@ jobs:
           cache: 'pip'
       # Runs a single command using the runners shell
       - name: Install dependencies
-        run: pip install -r requirements.txt && pip install -r dev_requirements.txt
+        run: pip install -r requirements.min.txt && pip install -r requirements.dev.txt
       # run black separately for source and tests folders (prevent generated examples folder checking)
       # temporary specify line length and python version explicitly for black
       # it cannot find the settings in setup.cfg
@@ -51,31 +51,76 @@ jobs:
         run: flake8 tests
       - name: Run Mypy
         run: mypy
-  test:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
+  test-minimal:
+    name: Test on minimal requirements
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.7'
+          python-version: "3.7"
           architecture: 'x64'
           cache: 'pip'
-      - name: Install dependencies
-        run: pip install -r requirements.txt && pip install -r dev_requirements.txt && pip install --upgrade pygments
       - name: Install package
-        run: pip install -e .
+        run: pip install -e .[dev]
+      - name: Install minimal dependencies
+        run: pip install -r requirements.min.txt
       - name: Run Tests
         run: python -m pytest
+  test:
+    # The type of runner that the job will run on
+    name: Test ${{ matrix.os }} with py${{ matrix.python }}
+    needs: linter
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        python: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: 'x64'
+          cache: 'pip'
+      - name: Install package
+        run: pip install -e .[dev]
+      - name: Run Tests
+        run: python -m pytest
+
+  test-examples:
+    name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}, min ${{ matrix.minimal }}
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        python: [ "3.7"]
+        minimal: [ false ]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: 'x64'
+          cache: 'pip'
+      - name: Install package
+        run: pip install -e .[dev]
+      - name: Install minimal reqs
+        if: matrix.minimal
+        run: pip install -r requirements.min.txt
       - name: Prepare examples dependencies
         run: pip install catboost
       - name: Export examples
         run: jupyter nbconvert --to script examples/*/*.ipynb --output-dir example_scripts
       - name: Download test data
         run: curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip -o Bike-Sharing-Dataset.zip &&
-             unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
+          unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
       - name: Run examples
         run: python example_test.py
+
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
@@ -87,7 +132,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.min.txt
       - name: Install wheel
         run: pip install wheel
       - name: Build package
