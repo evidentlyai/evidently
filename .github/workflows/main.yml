@@ -31,7 +31,7 @@ jobs:
           cache: 'pip'
       # Runs a single command using the runners shell
       - name: Install dependencies
-        run: pip install .[dev] && pip install -r requirements.min.txt
+        run: pip install -r requirements.dev.txt && pip install -r requirements.min.txt
       # run black separately for source and tests folders (prevent generated examples folder checking)
       # temporary specify line length and python version explicitly for black
       # it cannot find the settings in setup.cfg
