@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python }}
+          python-version: "3.7"
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
