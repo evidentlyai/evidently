@@ -1,10 +1,14 @@
 import dataclasses
+from typing import TYPE_CHECKING
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -22,12 +26,26 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
-PRTable = Dict[Label, List[List[Union[float, int]]]]
+if TYPE_CHECKING:
+    from pydantic.main import Model
+
+
+class LabelModel(BaseModel):
+    __root__: Union[int, str]
+
+    def validate(cls: Type["Model"], value: Any):  # type: ignore[override]
+        try:
+            return int(value)
+        except TypeError:
+            return value
+
+
+PRTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 
 
 class ClassificationPRTableResults(MetricResult):
-    class Config:
-        smart_union = True
+    # class Config:
+    #     smart_union = True
 
     current: Optional[PRTable] = None
     reference: Optional[PRTable] = None

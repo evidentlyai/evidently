@@ -1,16 +1,25 @@
+import builtins
 import dataclasses
+import json
 import uuid
 from collections import defaultdict
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import parse_obj_as
+from pydantic.utils import import_string
+from typing_extensions import get_args
 
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.core import IncludeOptions
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
@@ -21,6 +30,7 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
+from evidently.utils import NumpyEncoder
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
@@ -187,3 +197,91 @@ class Report(Display):
                 for item in additional_graphs
             },
         )
+
+    def save_profile(self, path):
+        payload = _ReportPayload(
+            metrics=[
+                (_MetricPayload.from_metric(m), res["result"])
+                for m, res in zip(self._first_level_metrics, self.as_dict(include_render=True)["metrics"])
+            ]
+        )
+
+        with open(path, "w") as f:
+            json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
+
+    @classmethod
+    def load_profile(cls, path):
+        with open(path, "r") as f:
+            payload = parse_obj_as(_ReportPayload, json.load(f))
+
+        report = payload.load
+
+        return report
+
+
+class _MetricPayload(BaseModel):
+    cls: str
+    params: Dict[str, Tuple[str, Any]]
+
+    @classmethod
+    def from_metric(cls, metric: Metric):
+        parameters = {
+            name: (f"{value.__class__.__module__}.{value.__class__.__name__}", value)
+            for name, value in metric.__dict__.items()
+            if name not in ["context"]
+        }
+        parameters = {
+            name: (t, p if not isinstance(p, Metric) else _MetricPayload.from_metric(p))
+            for name, (t, p) in parameters.items()
+        }
+        return _MetricPayload(cls=f"{metric.__class__.__module__}.{metric.__class__.__name__}", params=parameters)
+
+    def to_metric(self) -> Metric:
+        metric_cls = import_string(self.cls)
+        cls = metric_cls()
+        for name, (type_name, value) in self.params.items():
+            type_ = smart_import_string(type_name)
+            if isinstance(type_, type) and issubclass(type_, Metric):
+                value = _MetricPayload(**value).to_metric()
+            elif isinstance(type_, type) and issubclass(type_, BaseModel):
+                value = type_(**value)
+            else:
+                try:
+                    value = type_(value) if type_ is not None else None
+                except TypeError:
+                    raise
+            cls.__dict__[name] = value
+        return cls
+
+
+def smart_import_string(dotted_path):
+    if dotted_path.startswith("builtins."):
+        dotted_path = dotted_path[len("builtins.") :]
+        if dotted_path == "NoneType":
+            return None
+        return getattr(builtins, dotted_path)
+    return import_string(dotted_path)
+
+
+class _ReportPayload(BaseModel):
+    metrics: List[Tuple[_MetricPayload, Dict]]
+
+    @property
+    def load(self):
+        metrics = []
+        results = []
+        for mp, result in self.metrics:
+            metric = mp.to_metric()
+            metrics.append(metric)
+            result_type = get_args(metric.__class__.__orig_bases__[0])[0]
+            assert issubclass(result_type, MetricResult)
+            results.append(parse_obj_as(result_type, result))
+
+        report = Report(metrics=metrics)
+        report._first_level_metrics = metrics
+        context = report._inner_suite.context
+        for metric, result in zip(metrics, results):
+            metric.set_context(context)
+            context.metrics.append(metric)
+            context.metric_results[metric] = result
+        return report

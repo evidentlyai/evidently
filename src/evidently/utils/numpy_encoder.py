@@ -21,6 +21,7 @@ _TYPES_MAPPING = (
     # map ApproxValue to json value
     ((ApproxValue,), lambda obj: obj.as_dict()),
     ((pd.Series, pd.Index, pd.Categorical), lambda obj: obj.tolist()),
+    ((pd.DataFrame,), lambda obj: obj.to_dict()),
 )
 
 

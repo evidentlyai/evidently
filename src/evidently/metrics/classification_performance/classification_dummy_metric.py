@@ -125,12 +125,12 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
                 str(labels[0]): ClassMetric(
                     precision=current_dummy.precision,
                     recall=current_dummy.recall,
-                    **{"f1-score": current_dummy.f1},
+                    **{"f1": current_dummy.f1},
                 ),
                 str(labels[1]): ClassMetric(
                     precision=neg_label_precision,
                     recall=neg_label_recall,
-                    **{"f1-score": f1_label2_value},
+                    **{"f1": f1_label2_value},
                 ),
             }
         if prediction is not None and prediction.prediction_probas is not None:

@@ -3,9 +3,13 @@
 from typing import Any
 from typing import Dict
 from typing import Optional
+from typing import Type
 from typing import Union
 
 # type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
+import pandas as pd
+from pydantic import BaseModel
+
 Numeric = Union[float, int]
 
 # type for distributions - list of tuples (value, count)
@@ -79,3 +83,29 @@ class ApproxValue:
 
 
 NumericApprox = Union[int, float, ApproxValue]
+
+
+class SeriesFieldModel(BaseModel, pd.Series):
+    __root__: pd.Series
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def validate(cls: Type, value: Any):  # type: ignore[override]
+        return pd.Series(value)
+
+
+SeriesField = Union[SeriesFieldModel, pd.Series]
+
+
+class DataFrameFieldModel(BaseModel, pd.DataFrame):
+    __root__: pd.DataFrame
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def validate(cls: Type, value: Any):  # type: ignore[override]
+        return pd.DataFrame(value)
+
+
+DataFrameField = Union[DataFrameFieldModel, pd.DataFrame]

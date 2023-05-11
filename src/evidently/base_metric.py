@@ -11,6 +11,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+import pydantic
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType

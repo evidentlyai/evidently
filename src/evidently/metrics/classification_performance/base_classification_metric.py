@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Generic
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -31,7 +32,7 @@ def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.Dat
     return data
 
 
-class ThresholdClassificationMetric(Metric[TResult], ABC):
+class ThresholdClassificationMetric(Metric, Generic[TResult], ABC):
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
