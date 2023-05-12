@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -12,12 +13,19 @@ from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import column_scatter_from_df
+from evidently.metric_results import ScatterData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
+from evidently.options.base import AnyOptions
+from evidently.utils.visualizations import choose_agg_period
+from evidently.utils.visualizations import prepare_df_for_time_index_plot
+from evidently.utils.visualizations import plot_agg_line_data
+from evidently.metric_results import raw_agg_properties
+from evidently.renderers.html_widgets import header_text
 
 
 class ColumnValuePlotResults(MetricResult):
@@ -31,12 +39,14 @@ class ColumnValuePlotResults(MetricResult):
     datetime_column_name: Optional[str]
     current: ColumnScatter
     reference: ColumnScatter
+    prefix: Optional[str] = None
 
 
 class ColumnValuePlot(Metric[ColumnValuePlotResults]):
     column_name: str
 
-    def __init__(self, column_name: str):
+    def __init__(self, column_name: str, options: AnyOptions = None):
+        super().__init__(options=options)
         self.column_name = column_name
 
     def calculate(self, data: InputData) -> ColumnValuePlotResults:
@@ -64,16 +74,34 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         ):
             raise ValueError("Expected numerical feature")
         datetime_column_name = dataset_columns.utility_columns.date
-        curr_df = data.current_data
-        ref_df = data.reference_data
+        curr_df = data.current_data.copy()
+        ref_df = data.reference_data.copy()
         curr_df = self._make_df_for_plot(curr_df, self.column_name, datetime_column_name)
         ref_df = self._make_df_for_plot(ref_df, self.column_name, datetime_column_name)
+        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+            return ColumnValuePlotResults(
+                column_name=self.column_name,
+                datetime_column_name=datetime_column_name,
+                current=column_scatter_from_df(curr_df, True),
+                reference=column_scatter_from_df(ref_df, True),
+            )
+        prefix = None
+        if datetime_column_name is not None:
+            prefix, freq = choose_agg_period(curr_df[datetime_column_name], ref_df[datetime_column_name])
+            curr_plot, _ = prepare_df_for_time_index_plot(curr_df, self.column_name, datetime_column_name, prefix, freq)
+            ref_plot, _ = prepare_df_for_time_index_plot(ref_df, self.column_name, datetime_column_name, prefix, freq)
+        else:
+            _, bins = pd.cut(list(curr_df.index) + list(ref_df.index), 150, retbins=True)
+            curr_plot, _ = prepare_df_for_time_index_plot(curr_df, self.column_name, datetime_column_name, bins=bins)
+            ref_plot, _ = prepare_df_for_time_index_plot(ref_df, self.column_name, datetime_column_name, bins=bins)
         return ColumnValuePlotResults(
             column_name=self.column_name,
             datetime_column_name=datetime_column_name,
-            current=column_scatter_from_df(curr_df, True),
-            reference=column_scatter_from_df(ref_df, True),
+            current={'current': curr_plot},
+            reference={'reference': ref_plot},
+            prefix=prefix,
         )
+
 
     def _make_df_for_plot(self, df, column_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -88,15 +116,10 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         result.dropna(axis=0, how="any", inplace=True, subset=[column_name])
         return result.sort_index()
 
-
+import logging
 @default_renderer(wrap_type=ColumnValuePlot)
 class ColumnValuePlotRenderer(MetricRenderer):
-    def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
-        result = obj.get_result()
-        current_scatter = result.current
-        reference_scatter = result.reference
-        column_name = result.column_name
-
+    def render_raw(self, current_scatter, reference_scatter, column_name, datetime_column_name):
         # todo: better typing
         column = reference_scatter[column_name]
         assert isinstance(column, pd.Series)
@@ -105,9 +128,9 @@ class ColumnValuePlotRenderer(MetricRenderer):
         y0 = mean_ref - std_ref
         y1 = mean_ref + std_ref
 
-        if result.datetime_column_name is not None:
-            curr_x = current_scatter[result.datetime_column_name]
-            ref_x = reference_scatter[result.datetime_column_name]
+        if datetime_column_name is not None:
+            curr_x = current_scatter[datetime_column_name]
+            ref_x = reference_scatter[datetime_column_name]
             x_name = "Timestamp"
 
         else:
@@ -186,3 +209,38 @@ class ColumnValuePlotRenderer(MetricRenderer):
             ],
         )
         return [plotly_figure(title=f"Column '{column_name}' Values", figure=fig, size=WidgetSize.FULL)]
+
+    def render_agg(self, current, reference, column_name, datetime_column_name, prefix):
+        data = current | reference
+        xaxis_name = 'Index binned'
+        if prefix is not None:
+            xaxis_name = datetime_column_name + f' ({prefix})'
+        fig = plot_agg_line_data(
+            curr_data=data,
+            ref_data=None,
+            line=None,
+            std=None,
+            xaxis_name=xaxis_name,
+            xaxis_name_ref=None,
+            yaxis_name=column_name + ' value'
+        )
+        
+        return [
+            header_text(label=f"Column '{column_name}' Values"),
+            BaseWidgetInfo(
+                title=f"",
+                size=2,
+                type="big_graph",
+                params={"data": fig["data"], "layout": fig["layout"]},
+            ),
+        ]
+    
+    def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
+        result = obj.get_result()
+        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+            return self.render_raw(
+                result.current, result.reference, result.column_name, result.datetime_column_name
+            )
+        return self.render_agg(
+            result.current, result.reference, result.column_name, result.datetime_column_name, result.prefix
+        )

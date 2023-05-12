@@ -23,6 +23,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
+from evidently.utils.visualizations import get_gaussian_kde
 
 MAX_CATEGORIES = 5
 
@@ -398,8 +399,8 @@ def _transform_df_to_time_mean_view(
     column_data: pd.Series,
 ):
     df = pd.DataFrame({"period": period_data, data_column_name: column_data, datetime_column_name: datetime_data})
-    df = df.groupby("period")[datetime_column_name].mean().reset_index()
-    df[datetime_data] = df["period"].dt.to_timestamp()
+    df = df.groupby("period")[data_column_name].mean().reset_index()
+    df[datetime_column_name] = df["period"].dt.to_timestamp()
     return df
 
 
@@ -464,6 +465,7 @@ def plot_data(
     data: Data,
     datetime_data: Optional[Data],
     target_data: Optional[Data],
+    agg_data: bool,
     merge_small_categories: Optional[int] = MAX_CATEGORIES,
 ) -> Tuple[Optional[Histogram], Optional[Dict[str, Collection[str]]], Optional[Dict[str, Collection[str]]]]:
     """
@@ -594,22 +596,32 @@ def plot_data(
                 "target_type": target_type.value,
             }
         if column_type == ColumnType.Numerical and target_type == ColumnType.Numerical:
-            result = {
-                "current": {
-                    column_name: current_data.tolist(),
-                    target_name: target_current.tolist(),
+            if not agg_data:
+                result = {
+                    "current": {
+                        column_name: current_data.tolist(),
+                        target_name: target_current.tolist(),
+                    }
                 }
-            }
-            if reference_data is not None and target_reference is not None:
-                result["reference"] = {
-                    column_name: reference_data.tolist(),
-                    target_name: target_reference.tolist(),
+                if reference_data is not None and target_reference is not None:
+                    result["reference"] = {
+                        column_name: reference_data.tolist(),
+                        target_name: target_reference.tolist(),
+                    }
+                
+            else:
+                result = {
+                    "current": get_gaussian_kde(target_current, current_data)
                 }
+                if reference_data is not None and target_reference is not None:
+                    result["reference"] = get_gaussian_kde(target_reference, reference_data)
+
             data_by_target = {
-                "data_for_plots": result,
-                "target_name": target_name,
-                "target_type": target_type.value,
-            }
+                    "data_for_plots": result,
+                    "target_name": target_name,
+                    "target_type": target_type.value,
+                }
+
         if column_type == ColumnType.Categorical and target_type == ColumnType.Categorical:
             result = {"current": _get_count_values(current_data, target_current, target_name, column_name)}
             if target_reference is not None and reference_data is not None:

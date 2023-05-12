@@ -17,7 +17,8 @@ from evidently.core import IncludeTags
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
-ScatterData = Union[pd.Series, List[float], pd.Index]
+ScatterData = Union[pd.Series, List[float], pd.Index, pd.DataFrame]
+ContourData = Tuple[np.ndarray, List[float], List[float]]
 ColumnScatter = Dict[Label, ScatterData]
 
 
@@ -182,6 +183,7 @@ class ColumnScatterResult(MetricResult):
     current: ColumnScatter
     reference: Optional[ColumnScatter]
     x_name: str
+    x_name_ref: Optional[str] = None
 
 
 PlotData = List[float]

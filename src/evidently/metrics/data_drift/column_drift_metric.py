@@ -1,3 +1,4 @@
+from tkinter import N
 from typing import List
 from typing import Optional
 from typing import Union
@@ -31,6 +32,9 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.visualizations import plot_scatter_for_data_drift
+from evidently.options.base import AnyOptions
+from evidently.utils.visualizations import prepare_df_for_time_index_plot
+from evidently.utils.visualizations import plot_agg_line_data
 
 
 def get_one_column_drift(
@@ -43,6 +47,7 @@ def get_one_column_drift(
     options: DataDriftOptions,
     data_definition: DataDefinition,
     column_type: ColumnType,
+    agg_data: bool,
 ) -> ColumnDataDriftMetrics:
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column}' with type {column_type}")
@@ -119,13 +124,36 @@ def get_one_column_drift(
                 density=True,
             )
         ]
-        current_scatter = {column.display_name: current_column}
-        if datetime_data is not None:
-            current_scatter["Timestamp"] = datetime_data
-            x_name = "Timestamp"
+        if not agg_data:
+            current_scatter = {column.display_name: current_column}
+            if datetime_data is not None:
+                current_scatter["Timestamp"] = datetime_data
+                x_name = "Timestamp"
+            else:
+                current_scatter["Index"] = index_data
+                x_name = "Index"
         else:
-            current_scatter["Index"] = index_data
-            x_name = "Index"
+            current_scatter = {}
+            datetime_name = None
+            if datetime_data is not None:
+                datetime_name = "Timestamp"
+
+            df, prefix = prepare_df_for_time_index_plot(
+                pd.DataFrame(
+                    {
+                        column: current_feature_data.values,
+                        "Timestamp": None if datetime_data is None else datetime_data.values
+                    },
+                    index=index_data.values
+                ),
+                column,
+                datetime_name,
+            )
+            current_scatter["current"] = df
+            if prefix is None:
+                x_name = "Index binned"
+            else:
+                x_name = f"Timestamp ({prefix})"
 
         plot_shape = {}
         reference_mean = reference_column.mean()
@@ -251,7 +279,9 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
         column_name: Union[ColumnName, str],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
+        options: AnyOptions = None,
     ):
+        super().__init__(options=options)
         if isinstance(column_name, str):
             column = ColumnName.main_dataset(column_name)
         else:
@@ -282,6 +312,10 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
             column_type = data.data_definition.get_column(self.column.name).column_type
         datetime_column = data.data_definition.get_datetime_column()
         options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
+        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+            agg_data = False
+        else:
+            agg_data = True
         drift_result = get_one_column_drift(
             current_feature_data=current_feature_data,
             reference_feature_data=reference_feature_data,
@@ -291,6 +325,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
             datetime_data=data.current_data[datetime_column.column_name] if datetime_column else None,
             data_definition=data.data_definition,
             options=options,
+            agg_data=agg_data,
         )
 
         return ColumnDataDriftMetrics(
@@ -323,15 +358,27 @@ class ColumnDriftMetricRenderer(MetricRenderer):
 
         # fig_json = fig.to_plotly_json()
         if result.scatter is not None:
-            scatter_fig = plot_scatter_for_data_drift(
-                curr_y=result.scatter.scatter[result.column_name],
-                curr_x=result.scatter.scatter[result.scatter.x_name],
-                y0=result.scatter.plot_shape["y0"],
-                y1=result.scatter.plot_shape["y1"],
-                y_name=result.column_name,
-                x_name=result.scatter.x_name,
-                color_options=self.color_options,
-            )
+            if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+                scatter_fig = plot_scatter_for_data_drift(
+                    curr_y=result.scatter.scatter[result.column_name],
+                    curr_x=result.scatter.scatter[result.scatter.x_name],
+                    y0=result.scatter.plot_shape["y0"],
+                    y1=result.scatter.plot_shape["y1"],
+                    y_name=result.column_name,
+                    x_name=result.scatter.x_name,
+                    color_options=self.color_options,
+                )
+            else:
+                scatter_fig = plot_agg_line_data(
+                    curr_data=result.scatter.scatter,
+                    ref_data=None,
+                    line=(result.scatter.plot_shape["y0"] + result.scatter.plot_shape["y1"]) / 2,
+                    std=(result.scatter.plot_shape["y0"] - result.scatter.plot_shape["y1"]) / 2,
+                    xaxis_name=result.scatter.x_name,
+                    xaxis_name_ref=None,
+                    yaxis_name=result.column_name,
+                    return_json=False,
+                )
             tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
         if result.current.distribution is not None and result.reference.distribution is not None:

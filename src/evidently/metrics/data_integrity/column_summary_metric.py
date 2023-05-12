@@ -22,6 +22,7 @@ from evidently.features.non_letter_character_percentage_feature import NonLetter
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.metric_results import Histogram
+from evidently.metric_results import ContourData
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -36,6 +37,8 @@ from evidently.utils.visualizations import plot_distr_with_log_button
 from evidently.utils.visualizations import plot_num_feature_in_time
 from evidently.utils.visualizations import plot_num_num_rel
 from evidently.utils.visualizations import plot_time_feature_distr
+from evidently.utils.visualizations import plot_contour
+from evidently.options.base import AnyOptions
 
 
 class ColumnCharacteristics(MetricResult):
@@ -107,6 +110,7 @@ class DataByTarget(MetricResult):
             ],
         ],
         None,
+        Dict[str, ContourData]
     ]
     target_name: str
     target_type: str
@@ -138,7 +142,8 @@ class ColumnSummaryResult(ColumnMetricResult):
 class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
     generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
-    def __init__(self, column_name: Union[str, ColumnName]):
+    def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None):
+        super().__init__(options=options)
         if isinstance(column_name, str):
             self.column = ColumnName.main_dataset(column_name)
         else:
@@ -228,10 +233,14 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         ):
             target_type, target_current, target_reference = data.get_data(target_column.column_name)
             target_data = (target_column.column_name, target_type, target_current, target_reference)
+        agg_data = True
+        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+            agg_data = False
         bins_for_hist, data_in_time, data_by_target = plot_data(
             (self.column.display_name, column_type, column_current_data, column_reference_data),
             datetime_data,
             target_data,
+            agg_data
         )
 
         counts_of_values = None
@@ -347,6 +356,9 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
+        agg_data = True
+        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+            agg_data = False
         # main plot
         bins_for_hist: Histogram = metric_result.plot_data.bins_for_hist
         if bins_for_hist is not None:
@@ -417,7 +429,6 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 )
             )
             parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
-
         if (
             metric_result.plot_data.data_by_target is not None
             and metric_result.plot_data.data_by_target.data_for_plots is not None
@@ -427,6 +438,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 ref_data_by_target = metric_result.plot_data.data_by_target.data_for_plots["reference"]
             target_type = metric_result.plot_data.data_by_target.target_type
             target_name = metric_result.plot_data.data_by_target.target_name
+
             if column_type == "num" and target_type == "cat":
                 feature_by_target_figure = plot_boxes(
                     metric_result.plot_data.data_by_target.data_for_plots["current"],
@@ -444,13 +456,22 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     self.color_options,
                 )
             if column_type == "num" and target_type == "num":
-                feature_by_target_figure = plot_num_num_rel(
-                    metric_result.plot_data.data_by_target.data_for_plots["current"],
-                    ref_data_by_target,
-                    target_name,
-                    column_name,
-                    color_options=self.color_options,
-                )
+                if not agg_data:
+                    feature_by_target_figure = plot_num_num_rel(
+                        metric_result.plot_data.data_by_target.data_for_plots["current"],
+                        ref_data_by_target,
+                        target_name,
+                        column_name,
+                        color_options=self.color_options,
+                    )
+                else:
+                    feature_by_target_figure = plot_contour(
+                        metric_result.plot_data.data_by_target.data_for_plots["current"],
+                        ref_data_by_target,
+                        column_name,
+                        target_name,
+                    )
+                    feature_by_target_figure = json.loads(feature_by_target_figure.to_json())
             if column_type == "cat" and target_type == "cat":
                 feature_by_target_figure = plot_cat_cat_rel(
                     metric_result.plot_data.data_by_target.data_for_plots["current"],
