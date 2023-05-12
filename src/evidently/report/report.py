@@ -228,7 +228,7 @@ class _MetricPayload(BaseModel):
         parameters = {
             name: (f"{value.__class__.__module__}.{value.__class__.__name__}", value)
             for name, value in metric.__dict__.items()
-            if name not in ["context"]
+            if name not in ["_context"]
         }
         parameters = {
             name: (t, p if not isinstance(p, Metric) else _MetricPayload.from_metric(p))

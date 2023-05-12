@@ -23,6 +23,4 @@ def test_report_loading():
 
     report2 = Report.load_profile("profile.json")
 
-    print(report2.as_dict())
-
     assert report.as_dict() == report2.as_dict()

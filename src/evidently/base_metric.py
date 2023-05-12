@@ -141,7 +141,7 @@ TResult = TypeVar("TResult", bound=MetricResult)
 
 
 class Metric(Generic[TResult]):
-    context: Optional["Context"] = None
+    _context: Optional["Context"] = None
 
     # TODO: if we want metric-specific options
     options: Options
@@ -159,12 +159,12 @@ class Metric(Generic[TResult]):
         raise NotImplementedError()
 
     def set_context(self, context):
-        self.context = context
+        self._context = context
 
     def get_result(self) -> TResult:
-        if self.context is None:
+        if self._context is None:
             raise ValueError("No context is set")
-        result = self.context.metric_results.get(self, None)
+        result = self._context.metric_results.get(self, None)
         if isinstance(result, ErrorResult):
             raise result.exception
         if result is None:
@@ -174,7 +174,7 @@ class Metric(Generic[TResult]):
     def get_parameters(self) -> Optional[tuple]:
         attributes = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
-            if field in ["context"]:
+            if field in ["_context"]:
                 continue
             if isinstance(value, list):
                 attributes.append(tuple(value))
@@ -199,8 +199,8 @@ class Metric(Generic[TResult]):
 
     def get_options(self):
         options = self.options if hasattr(self, "options") else Options()
-        if self.context is not None:
-            options = self.context.options.override(options)
+        if self._context is not None:
+            options = self._context.options.override(options)
         return options
 
 
