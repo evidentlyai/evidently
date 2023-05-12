@@ -1,3 +1,4 @@
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -15,8 +16,6 @@ from typing_extensions import Literal
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.pipeline.column_mapping import TargetNames
-from evidently.utils.types import DataFrameField
-from evidently.utils.types import SeriesField
 
 Label = Union[int, str]
 ScatterData = Union[pd.Series, List[float], pd.Index]
@@ -45,8 +44,8 @@ class PredictionData(MetricResult):
     class Config:
         dict_include = False
 
-    predictions: SeriesField
-    prediction_probas: Optional[DataFrameField]
+    predictions: pd.Series
+    prediction_probas: Optional[pd.DataFrame]
     labels: List[Label]
 
 
@@ -56,7 +55,7 @@ class StatsByFeature(MetricResult):
         pd_include = False
         tags = {IncludeTags.Render}
 
-    plot_data: DataFrameField  # todo what type of plot?
+    plot_data: pd.DataFrame  # todo what type of plot?
     predictions: Optional[PredictionData]
 
 
@@ -244,8 +243,8 @@ class HistogramData(MetricResult):
         dict_include = False
         tags = {IncludeTags.Render}
 
-    x: SeriesField
-    count: SeriesField
+    x: pd.Series
+    count: pd.Series
     name: Optional[str] = None
 
     @classmethod

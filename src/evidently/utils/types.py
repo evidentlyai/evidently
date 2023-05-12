@@ -83,29 +83,3 @@ class ApproxValue:
 
 
 NumericApprox = Union[int, float, ApproxValue]
-
-
-class SeriesFieldModel(BaseModel, pd.Series):
-    __root__: pd.Series
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    def validate(cls: Type, value: Any):  # type: ignore[override]
-        return pd.Series(value)
-
-
-SeriesField = Union[SeriesFieldModel, pd.Series]
-
-
-class DataFrameFieldModel(BaseModel, pd.DataFrame):
-    __root__: pd.DataFrame
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    def validate(cls: Type, value: Any):  # type: ignore[override]
-        return pd.DataFrame(value)
-
-
-DataFrameField = Union[DataFrameFieldModel, pd.DataFrame]

@@ -66,6 +66,32 @@ class IncludeTags(Enum):
     Render = "render"
 
 
+def pydantic_type_validator(type_: Type[Any]):
+    def decorator(f):
+        from pydantic.validators import _VALIDATORS
+
+        for cls, validators in _VALIDATORS:
+            if cls is type_:
+                validators.append(f)
+                return
+
+        _VALIDATORS.append(
+            (type_, [f]),
+        )
+
+    return decorator
+
+
+@pydantic_type_validator(pd.Series)
+def series_validator(value):
+    return pd.Series(value)
+
+
+@pydantic_type_validator(pd.DataFrame)
+def dataframe_validator(value):
+    return pd.DataFrame(value)
+
+
 class BaseResult(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
