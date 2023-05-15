@@ -11,6 +11,7 @@ import plotly.graph_objs as go
 from pandas.api.types import is_integer_dtype
 from pandas.api.types import is_string_dtype
 from plotly.subplots import make_subplots
+from pydantic import PrivateAttr
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -42,16 +43,17 @@ class TargetByFeaturesTableResults(MetricResult):
 
 class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
     columns: Optional[List[str]]
-    text_features_gen: Optional[
+    _text_features_gen: Optional[
         Dict[
             str,
             Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
         ]
-    ]
+    ] = PrivateAttr(None)
 
     def __init__(self, columns: Optional[List[str]] = None):
         self.columns = columns
-        self.text_features_gen = None
+        self._text_features_gen = None
+        super().__init__()
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
@@ -73,7 +75,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                     col_dict[f"{col}: OOV %"],
                 ]
                 text_features_gen[col] = col_dict
-            self.text_features_gen = text_features_gen
+            self._text_features_gen = text_features_gen
 
             return text_features_gen_result
         else:
@@ -134,17 +136,17 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                 raise ValueError("Task parameter of column_mapping should be specified")
         # process text columns
         if (
-            self.text_features_gen is not None
-            and len(np.intersect1d(list(self.text_features_gen.keys()), columns)) >= 1
+            self._text_features_gen is not None
+            and len(np.intersect1d(list(self._text_features_gen.keys()), columns)) >= 1
         ):
-            for col in np.intersect1d(list(self.text_features_gen.keys()), columns):
-                columns += list(self.text_features_gen[col].keys())
+            for col in np.intersect1d(list(self._text_features_gen.keys()), columns):
+                columns += list(self._text_features_gen[col].keys())
                 columns.remove(col)
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
+                    [data.get_current_column(x.feature_name()) for x in list(self._text_features_gen[col].values())],
                     axis=1,
                 )
-                curr_text_df.columns = list(self.text_features_gen[col].keys())
+                curr_text_df.columns = list(self._text_features_gen[col].keys())
                 curr_df = pd.concat(
                     [
                         curr_df.reset_index(drop=True),
@@ -157,11 +159,11 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                     ref_text_df = pd.concat(
                         [
                             data.get_reference_column(x.feature_name())
-                            for x in list(self.text_features_gen[col].values())
+                            for x in list(self._text_features_gen[col].values())
                         ],
                         axis=1,
                     )
-                    ref_text_df.columns = list(self.text_features_gen[col].keys())
+                    ref_text_df.columns = list(self._text_features_gen[col].keys())
                     ref_df = pd.concat(
                         [
                             ref_df.reset_index(drop=True),

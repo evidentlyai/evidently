@@ -48,6 +48,7 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
                 "OOV %": OOV(),
             }
         self.generated_text_features = {}
+        super().__init__()
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type

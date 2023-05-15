@@ -98,6 +98,9 @@ class DataInTime(MetricResult):
 
 
 class DataByTarget(MetricResult):
+    class Config:
+        smart_union = True
+
     data_for_plots: Union[
         Dict[
             str,
@@ -136,27 +139,32 @@ class ColumnSummaryResult(ColumnMetricResult):
 
 
 class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
-    generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+    _generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
     def __init__(self, column_name: Union[str, ColumnName]):
         if isinstance(column_name, str):
             self.column = ColumnName.main_dataset(column_name)
         else:
             self.column = column_name
-        self.column_name = self.column.name
-        self.generated_text_features = None
+        # self.column_name = self.column.name
+        self._generated_text_features = None
+        super().__init__()
+
+    @property
+    def column_name(self) -> str:
+        return self.column.name if isinstance(self.column, ColumnName) else self.column
 
     def required_features(self, data_definition: DataDefinition):
         if not self.column.is_main_dataset():
             return ColumnMetric.required_features(self, data_definition)
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
-            self.generated_text_features = {
+            self._generated_text_features = {
                 "text_length": TextLength(self.column_name),
                 "non_letter_char": NonLetterCharacterPercentage(self.column_name),
                 "oov": OOVWordsPercentage(self.column_name),
             }
-            return list(self.generated_text_features.values())
+            return list(self._generated_text_features.values())
         return []
 
     def get_parameters(self) -> tuple:
@@ -175,19 +183,19 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
 
         curr_characteristics: ColumnCharacteristics
         ref_characteristics: Optional[ColumnCharacteristics] = None
-        if column_type == ColumnType.Text and self.generated_text_features is not None:
+        if column_type == ColumnType.Text and self._generated_text_features is not None:
             if column_reference_data is not None:
                 ref_characteristics = self.get_text_stats(
                     "reference",
                     data,
                     column_reference_data,
-                    self.generated_text_features,
+                    self._generated_text_features,
                 )
             curr_characteristics = self.get_text_stats(
                 "current",
                 data,
                 column_current_data,
-                self.generated_text_features,
+                self._generated_text_features,
             )
         else:
             if column_reference_data is not None:

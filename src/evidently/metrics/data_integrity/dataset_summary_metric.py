@@ -71,6 +71,7 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
     def __init__(self, almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95):
         self.almost_duplicated_threshold = almost_duplicated_threshold
         self.almost_constant_threshold = almost_constant_threshold
+        super().__init__()
 
     def _calculate_dataset_common_stats(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetSummary:
         columns = process_columns(dataset, column_mapping)

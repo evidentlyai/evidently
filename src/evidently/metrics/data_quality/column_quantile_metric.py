@@ -49,6 +49,7 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
             self.column = ColumnName.main_dataset(column_name)
         else:
             self.column = column_name
+        super().__init__()
 
     def calculate(self, data: InputData) -> ColumnQuantileMetricResult:
         if not 0 < self.quantile <= 1:

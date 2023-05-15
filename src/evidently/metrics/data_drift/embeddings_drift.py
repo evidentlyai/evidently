@@ -51,6 +51,7 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
     ):
         self.embeddings_name = embeddings_name
         self.drift_method = drift_method
+        super().__init__()
 
     def calculate(self, data: InputData) -> EmbeddingsDriftMetricResults:
         if data.reference_data is None:

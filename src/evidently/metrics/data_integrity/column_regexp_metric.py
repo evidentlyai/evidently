@@ -6,6 +6,7 @@ from typing import Optional
 from typing import Pattern
 
 import pandas as pd
+from pydantic import PrivateAttr
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -58,13 +59,14 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
     reg_exp: str
     top: int
     # compiled regular expression for speed optimization
-    _reg_exp_compiled: Pattern
+    _reg_exp_compiled: Pattern = PrivateAttr()
 
     def __init__(self, column_name: str, reg_exp: str, top: int = 10):
         self.top = top
         self.reg_exp = reg_exp
         self.column_name = column_name
         self._reg_exp_compiled = re.compile(reg_exp)
+        super().__init__()
 
     def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
         number_of_matched = 0

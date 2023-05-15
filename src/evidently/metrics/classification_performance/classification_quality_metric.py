@@ -27,8 +27,8 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
     confusion_matrix_metric: ClassificationConfusionMatrix
 
     def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
-        super().__init__(probas_threshold=probas_threshold, k=k)
         self.confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
+        super().__init__(probas_threshold=probas_threshold, k=k)
 
     def calculate(self, data: InputData) -> ClassificationQualityMetricResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

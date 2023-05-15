@@ -44,6 +44,7 @@ class ThresholdClassificationMetric(Metric, Generic[TResult], ABC):
 
         self.probas_threshold = probas_threshold
         self.k = k
+        super().__init__()
 
     def get_target_prediction_data(
         self, data: pd.DataFrame, column_mapping: ColumnMapping

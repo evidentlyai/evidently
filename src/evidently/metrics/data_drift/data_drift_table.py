@@ -69,6 +69,7 @@ class DataDriftTable(Metric[DataDriftTableResults]):
             text_features_threshold=text_stattest_threshold,
             per_feature_threshold=per_column_stattest_threshold,
         )
+        super().__init__()
 
     def get_parameters(self) -> tuple:
         return None if self.columns is None else tuple(self.columns), self.drift_options

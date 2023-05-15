@@ -40,6 +40,7 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
 
     def __init__(self):
         self.quality_metric = RegressionQualityMetric()
+        super().__init__()
 
     def calculate(self, data: InputData) -> RegressionDummyMetricResults:
         quality_metric: Optional[RegressionQualityMetric]

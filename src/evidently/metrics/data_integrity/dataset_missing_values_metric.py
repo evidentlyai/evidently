@@ -1,6 +1,7 @@
 import dataclasses
 from dataclasses import dataclass
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -81,20 +82,24 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
     """
 
     # default missing values list
-    DEFAULT_MISSING_VALUES = ["", np.inf, -np.inf, None]
+    DEFAULT_MISSING_VALUES: ClassVar = ["", np.inf, -np.inf, None]
     missing_values: frozenset
 
     def __init__(self, missing_values: Optional[list] = None, replace: bool = True) -> None:
+        _missing_values: list
         if missing_values is None:
             # use default missing values list if we have no user-defined values
-            missing_values = self.DEFAULT_MISSING_VALUES
+            _missing_values = self.DEFAULT_MISSING_VALUES
 
         elif not replace:
             # add default values to the user-defined list
-            missing_values = self.DEFAULT_MISSING_VALUES + missing_values
+            _missing_values = self.DEFAULT_MISSING_VALUES + missing_values
+        else:
+            _missing_values = missing_values
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
-        self.missing_values = frozenset(missing_values)
+        self.missing_values = frozenset(_missing_values)
+        super().__init__()
 
     def _calculate_missing_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
         different_missing_values = {value: 0 for value in self.missing_values}

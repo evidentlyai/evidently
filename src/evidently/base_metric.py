@@ -3,15 +3,22 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 from typing import Union
 
 import pandas as pd
 import pydantic
+from pydantic import Field
+from pydantic.main import BaseModel
+from pydantic.main import ModelMetaclass
+from pydantic.utils import import_string
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType
@@ -19,6 +26,10 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import FrozenBaseMeta
+from evidently.pydantic_utils import FrozenBaseModel
+from evidently.pydantic_utils import PolymorphicModel
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
@@ -140,16 +151,21 @@ class InputData:
 TResult = TypeVar("TResult", bound=MetricResult)
 
 
-class Metric(Generic[TResult]):
+class Metric(EvidentlyBaseModel, Generic[TResult]):
     _context: Optional["Context"] = None
+
+    class Config:
+        underscore_attrs_are_private = True
 
     # TODO: if we want metric-specific options
     options: Options
+
     # resulting options will be determined via
     # options = global_option.override(display_options).override(metric_options)
 
     def __init__(self, options: AnyOptions = None):
         self.options = Options.from_any_options(options)
+        super().__init__()
 
     def get_id(self) -> str:
         return self.__class__.__name__
@@ -162,7 +178,7 @@ class Metric(Generic[TResult]):
         self._context = context
 
     def get_result(self) -> TResult:
-        if self._context is None:
+        if not hasattr(self, "_context") or self._context is None:
             raise ValueError("No context is set")
         result = self._context.metric_results.get(self, None)
         if isinstance(result, ErrorResult):
@@ -217,4 +233,4 @@ ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 
 class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
-    column_name: str
+    column: ColumnName

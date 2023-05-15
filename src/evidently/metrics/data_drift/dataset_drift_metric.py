@@ -58,6 +58,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             per_feature_threshold=per_column_stattest_threshold,
         )
         self.drift_share = drift_share
+        super().__init__()
 
     def get_parameters(self) -> tuple:
         return (

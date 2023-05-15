@@ -1,0 +1,94 @@
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import Dict
+from typing import Optional
+from typing import Set
+from typing import Type
+from typing import TypeVar
+from typing import Union
+
+from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic.main import BaseModel
+from pydantic.main import ModelMetaclass
+from pydantic.main import validate_model
+from pydantic.utils import import_string
+
+if TYPE_CHECKING:
+    from pydantic.main import Model
+T = TypeVar("T")
+
+
+class FrozenBaseMeta(ModelMetaclass):
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        res = super().__new__(mcs, name, bases, namespace, **kwargs)
+        res.__config__.frozen = True
+        return res
+
+
+object_setattr = object.__setattr__
+object_delattr = object.__delattr__
+
+
+class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
+    class Config:
+        underscore_attrs_are_private = True
+
+    _init_values: Optional[Dict]
+
+    def __init__(self, **data: Any):
+        super().__init__(**self.__init_values__, **data)
+        for private_attr in self.__private_attributes__:
+            if private_attr in self.__init_values__:
+                object_setattr(self, private_attr, self.__init_values__[private_attr])
+        object_setattr(self, "_init_values", None)
+
+    @property
+    def __init_values__(self):
+        if not hasattr(self, "_init_values"):
+            object_setattr(self, "_init_values", {})
+        return self._init_values
+
+    def __setattr__(self, key, value):
+        if self.__init_values__ is not None:
+            self.__init_values__[key] = value
+            return
+        super().__setattr__(key, value)
+
+    def __hash__(self):
+        return hash(self.__class__) + hash(
+            tuple(tuple(v) if isinstance(v, list) else v for v in self.__dict__.values())
+        )
+
+
+def all_subclasses(cls: Type[T]) -> Set[Type[T]]:
+    return set(cls.__subclasses__()).union([s for c in cls.__subclasses__() for s in all_subclasses(c)])
+
+
+class PolymorphicModel(BaseModel):
+    @classmethod
+    def __get_type__(cls):
+        return f"{cls.__module__}.{cls.__name__}"
+
+    type: str = Field("")
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+        if cls == PolymorphicModel:
+            return
+        cls.__fields__["type"].default = cls.__get_type__()
+
+    @classmethod
+    def __subtypes__(cls):
+        return Union[tuple(all_subclasses(cls))]
+
+    @classmethod
+    def validate(cls: Type["Model"], value: Any) -> "Model":
+        if isinstance(value, dict) and "type" in value:
+            subcls = import_string(value.pop("type"))
+            return subcls.validate(value)
+        return super().validate(value)  # type: ignore[misc]
+
+
+class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
+    pass

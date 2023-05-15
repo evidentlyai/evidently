@@ -260,6 +260,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
         self.column_name = column.name
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
+        super().__init__()
 
     def get_parameters(self) -> tuple:
         return self.column, self.stattest_threshold, self.stattest

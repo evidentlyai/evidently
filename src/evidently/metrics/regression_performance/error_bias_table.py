@@ -1,5 +1,6 @@
 import copy
 import json
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -47,9 +48,9 @@ class RegressionErrorBiasTableResults(MetricResult):
 
 class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     # by default, we get 5% values for the error bias calculations
-    TOP_ERROR_DEFAULT = 0.05
-    TOP_ERROR_MIN = 0
-    TOP_ERROR_MAX = 0.5
+    TOP_ERROR_DEFAULT: ClassVar = 0.05
+    TOP_ERROR_MIN: ClassVar = 0
+    TOP_ERROR_MAX: ClassVar = 0.5
     top_error: float
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
@@ -70,6 +71,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         self.columns = columns
         self.text_features_gen = None
         self.descriptors = descriptors
+        super().__init__()
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:

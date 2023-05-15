@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 class LabelModel(BaseModel):
     __root__: Union[int, str]
 
-    def validate(cls: Type["Model"], value: Any):  # type: ignore[override]
+    def validate(cls: Type["Model"], value: Any):  # type: ignore[override, misc]
         try:
             return int(value)
         except TypeError:

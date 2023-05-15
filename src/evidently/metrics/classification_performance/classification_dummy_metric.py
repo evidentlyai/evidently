@@ -43,10 +43,10 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
     quality_metric: ClassificationQualityMetric
 
     def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
-        super().__init__(probas_threshold, k)
         self.probas_threshold = probas_threshold
         self.k = k
         self.quality_metric = ClassificationQualityMetric()
+        super().__init__(probas_threshold, k)
 
     def calculate(self, data: InputData) -> ClassificationDummyMetricResults:
         quality_metric: Optional[ClassificationQualityMetric]

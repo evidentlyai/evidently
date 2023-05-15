@@ -62,6 +62,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         self.left = left
         self.right = right
         self.column_name = column_name
+        super().__init__()
 
     @staticmethod
     def _calculate_in_range_stats(

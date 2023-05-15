@@ -46,6 +46,7 @@ class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
     def __init__(self, column_name: str, values: Optional[list] = None) -> None:
         self.values = values
         self.column_name = column_name
+        super().__init__()
 
     @staticmethod
     def _calculate_stats(values: list, column: pd.Series) -> ValueListStat:

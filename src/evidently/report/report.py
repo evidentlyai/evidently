@@ -247,7 +247,7 @@ class _MetricPayload(BaseModel):
                 value = type_(**value)
             else:
                 try:
-                    value = type_(value) if type_ is not None else None
+                    value = type_(value) if type_ is not None else None  # type: ignore[call-arg]
                 except TypeError:
                     raise
             cls.__dict__[name] = value

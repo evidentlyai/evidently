@@ -40,6 +40,7 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
             self.column_name = column_name
         else:
             self.column_name = ColumnName.main_dataset(column_name)
+        super().__init__()
 
     @staticmethod
     def _calculate_correlation(
