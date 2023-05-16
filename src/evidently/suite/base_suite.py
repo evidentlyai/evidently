@@ -75,6 +75,9 @@ def find_metric_renderer(obj, renderers: RenderersDefinitions) -> MetricRenderer
 
 
 def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Union[Metric, Test]]]:
+    if hasattr(test, "__evidently_dependencies__"):
+        yield from test.__evidently_dependencies__()  # type: ignore[union-attr]
+        return
     for field_name, field in test.__dict__.items():
         if issubclass(type(field), (Metric, Test)):
             yield field_name, field

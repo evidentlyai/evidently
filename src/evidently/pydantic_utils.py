@@ -90,5 +90,19 @@ class PolymorphicModel(BaseModel):
         return super().validate(value)  # type: ignore[misc]
 
 
+BaseModel
+
+
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     pass
+    # @classmethod
+    # def validate(cls: Type["Model"], value: Any) -> "Model":
+    #     if isinstance(value, dict):
+    #         kwargs  = {}
+    #         if "type" in value:
+    #             kwargs["type"]  =value.pop("type")
+    #         result = super().validate(kwargs)
+    #         for key, value in value.items():
+    #             setattr(result, key, value)
+    #         return result
+    #     return super().validate(value)

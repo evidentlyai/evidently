@@ -201,7 +201,7 @@ class Report(Display):
     def save_profile(self, path):
         payload = _ReportPayload(
             metrics=[
-                (_MetricPayload.from_metric(m), res["result"])
+                (m, res["result"])
                 for m, res in zip(self._first_level_metrics, self.as_dict(include_render=True)["metrics"])
             ]
         )
@@ -219,59 +219,14 @@ class Report(Display):
         return report
 
 
-class _MetricPayload(BaseModel):
-    cls: str
-    params: Dict[str, Tuple[str, Any]]
-
-    @classmethod
-    def from_metric(cls, metric: Metric):
-        parameters = {
-            name: (f"{value.__class__.__module__}.{value.__class__.__name__}", value)
-            for name, value in metric.__dict__.items()
-            if name not in ["_context"]
-        }
-        parameters = {
-            name: (t, p if not isinstance(p, Metric) else _MetricPayload.from_metric(p))
-            for name, (t, p) in parameters.items()
-        }
-        return _MetricPayload(cls=f"{metric.__class__.__module__}.{metric.__class__.__name__}", params=parameters)
-
-    def to_metric(self) -> Metric:
-        metric_cls = import_string(self.cls)
-        cls = metric_cls()
-        for name, (type_name, value) in self.params.items():
-            type_ = smart_import_string(type_name)
-            if isinstance(type_, type) and issubclass(type_, Metric):
-                value = _MetricPayload(**value).to_metric()
-            elif isinstance(type_, type) and issubclass(type_, BaseModel):
-                value = type_(**value)
-            else:
-                try:
-                    value = type_(value) if type_ is not None else None  # type: ignore[call-arg]
-                except TypeError:
-                    raise
-            cls.__dict__[name] = value
-        return cls
-
-
-def smart_import_string(dotted_path):
-    if dotted_path.startswith("builtins."):
-        dotted_path = dotted_path[len("builtins.") :]
-        if dotted_path == "NoneType":
-            return None
-        return getattr(builtins, dotted_path)
-    return import_string(dotted_path)
-
-
 class _ReportPayload(BaseModel):
-    metrics: List[Tuple[_MetricPayload, Dict]]
+    metrics: List[Tuple[Metric, Dict]]
 
     @property
     def load(self):
         metrics = []
         results = []
-        for mp, result in self.metrics:
-            metric = mp.to_metric()
+        for metric, result in self.metrics:
             metrics.append(metric)
             result_type = get_args(metric.__class__.__orig_bases__[0])[0]
             assert issubclass(result_type, MetricResult)
@@ -281,6 +236,7 @@ class _ReportPayload(BaseModel):
         report._first_level_metrics = metrics
         context = report._inner_suite.context
         for metric, result in zip(metrics, results):
+            # todo: dependencies results too?
             metric.set_context(context)
             context.metrics.append(metric)
             context.metric_results[metric] = result

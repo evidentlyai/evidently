@@ -9,6 +9,7 @@ from evidently.calculations.classification_performance import calculate_matrix
 from evidently.metric_results import ConfusionMatrix
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import TargetNames
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -29,8 +30,13 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
-    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
-        super().__init__(probas_threshold=probas_threshold, k=k)
+    def __init__(
+        self,
+        probas_threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
+        options: AnyOptions = None,
+    ):
+        super().__init__(probas_threshold=probas_threshold, k=k, options=options)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
         current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)

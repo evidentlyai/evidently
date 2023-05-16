@@ -1,4 +1,5 @@
 import abc
+import itertools
 import logging
 from dataclasses import dataclass
 from enum import Enum
@@ -218,6 +219,15 @@ class Metric(EvidentlyBaseModel, Generic[TResult]):
         if self._context is not None:
             options = self._context.options.override(options)
         return options
+
+    def __evidently_dependencies__(self):
+        from evidently.tests.base_test import Test
+
+        for field_name, field in itertools.chain(
+            self.__dict__.items(), ((pa, getattr(self, pa)) for pa in self.__private_attributes__)
+        ):
+            if issubclass(type(field), (Metric, Test)):
+                yield field_name, field
 
 
 class ColumnMetricResult(MetricResult):

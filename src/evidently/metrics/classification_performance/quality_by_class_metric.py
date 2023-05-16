@@ -18,6 +18,7 @@ from evidently.metrics.classification_performance.base_classification_metric imp
 from evidently.metrics.classification_performance.objects import ClassesMetrics
 from evidently.metrics.classification_performance.objects import ClassificationReport
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
@@ -42,8 +43,13 @@ class ClassificationQualityByClassResult(MetricResult):
 
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
-    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
-        super().__init__(probas_threshold, k)
+    def __init__(
+        self,
+        probas_threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
+        options: AnyOptions = None,
+    ):
+        super().__init__(probas_threshold, k, options=options)
 
     def calculate(self, data: InputData) -> ClassificationQualityByClassResult:
         columns = process_columns(data.current_data, data.column_mapping)

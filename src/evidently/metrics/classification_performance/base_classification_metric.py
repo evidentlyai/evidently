@@ -14,6 +14,7 @@ from evidently.calculations.classification_performance import get_prediction_dat
 from evidently.calculations.classification_performance import k_probability_threshold
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import PredictionData
+from evidently.options.base import AnyOptions
 from evidently.utils.data_operations import process_columns
 
 
@@ -36,7 +37,7 @@ class ThresholdClassificationMetric(Metric, Generic[TResult], ABC):
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
-    def __init__(self, probas_threshold: Optional[float], k: Optional[Union[float, int]]):
+    def __init__(self, probas_threshold: Optional[float], k: Optional[Union[float, int]], options: AnyOptions = None):
         if probas_threshold is not None and k is not None:
             raise ValueError(
                 f"{self.__class__.__name__}: should provide only stattest_threshold or top_k argument, not both."
@@ -44,7 +45,7 @@ class ThresholdClassificationMetric(Metric, Generic[TResult], ABC):
 
         self.probas_threshold = probas_threshold
         self.k = k
-        super().__init__()
+        super().__init__(options=options)
 
     def get_target_prediction_data(
         self, data: pd.DataFrame, column_mapping: ColumnMapping

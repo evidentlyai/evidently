@@ -22,6 +22,7 @@ from evidently.features.text_length_feature import TextLength
 from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -43,12 +44,15 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
     _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]] = PrivateAttr(None)
 
     def __init__(
-        self, columns: Optional[List[str]] = None, descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None
+        self,
+        columns: Optional[List[str]] = None,
+        descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
+        options: AnyOptions = None,
     ):
         self.columns = columns
         self._text_features_gen = None
         self.descriptors = descriptors
-        super().__init__()
+        super().__init__(options=options)
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
