@@ -12,6 +12,7 @@ from evidently.metric_results import ColumnScatter
 from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import df_from_column_scatter
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
@@ -20,7 +21,6 @@ from evidently.renderers.html_widgets import get_class_separation_plot_data_agg
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
-from evidently.options.base import AnyOptions
 
 
 class ClassificationClassSeparationPlotResults(MetricResult):
@@ -53,7 +53,7 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
         res_df["uppers"] = _quantiles(df_for_plot, 0.75)
         res_df["maxs"] = _quantiles(df_for_plot, 1)
         res_df["values"] = values
-        res_df["values"] = res_df["values"].map({1: name, 0: 'others'})
+        res_df["values"] = res_df["values"].map({1: name, 0: "others"})
         res[name] = res_df
     return res
 

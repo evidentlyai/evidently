@@ -21,10 +21,11 @@ from evidently.core import IncludeTags
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metric_results import Histogram
 from evidently.metric_results import ContourData
+from evidently.metric_results import Histogram
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_preprocessing import DataDefinition
@@ -32,13 +33,12 @@ from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes
 from evidently.utils.visualizations import plot_cat_cat_rel
 from evidently.utils.visualizations import plot_cat_feature_in_time
+from evidently.utils.visualizations import plot_contour
 from evidently.utils.visualizations import plot_distr
 from evidently.utils.visualizations import plot_distr_with_log_button
 from evidently.utils.visualizations import plot_num_feature_in_time
 from evidently.utils.visualizations import plot_num_num_rel
 from evidently.utils.visualizations import plot_time_feature_distr
-from evidently.utils.visualizations import plot_contour
-from evidently.options.base import AnyOptions
 
 
 class ColumnCharacteristics(MetricResult):
@@ -110,7 +110,7 @@ class DataByTarget(MetricResult):
             ],
         ],
         None,
-        Dict[str, ContourData]
+        Dict[str, ContourData],
     ]
     target_name: str
     target_type: str
@@ -240,7 +240,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
             (self.column.display_name, column_type, column_current_data, column_reference_data),
             datetime_data,
             target_data,
-            agg_data
+            agg_data,
         )
 
         counts_of_values = None

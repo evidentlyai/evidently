@@ -6,19 +6,18 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pandas import IntervalIndex
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
 
+from evidently.metric_results import ContourData
 from evidently.metric_results import Distribution
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
 from evidently.metric_results import ScatterData
 from evidently.options.color_scheme import ColorOptions
-from evidently.metric_results import ContourData
-from pandas import IntervalIndex
-
 
 OPTIMAL_POINTS = 150
 
@@ -836,7 +835,7 @@ def plot_top_error_contours(
     curr_contour: Dict[str, ContourData],
     ref_contour: Optional[Dict[str, ContourData]],
     xtitle: str = "",
-    ytitle: str = ""
+    ytitle: str = "",
 ):
     color_options = ColorOptions()
     if ref_contour is not None:
@@ -847,8 +846,8 @@ def plot_top_error_contours(
         subplot_titles = [""]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     for label, color in zip(
-        ['underestimation', 'majority', 'overestimation'],
-        [color_options.underestimation_color, color_options.majority_color, color_options.overestimation_color]
+        ["underestimation", "majority", "overestimation"],
+        [color_options.underestimation_color, color_options.majority_color, color_options.overestimation_color],
     ):
         z, y, x = curr_contour[label]
         trace = go.Contour(
@@ -860,8 +859,8 @@ def plot_top_error_contours(
             showscale=False,
             legendgroup=label,
             showlegend=True,
-            contours_coloring='lines',
-            colorscale=[[0, color], [1, color]]
+            contours_coloring="lines",
+            colorscale=[[0, color], [1, color]],
         )
         fig.add_trace(trace, 1, 1)
         fig.update_xaxes(title_text=xtitle, row=1, col=1)
@@ -877,8 +876,8 @@ def plot_top_error_contours(
                 showscale=False,
                 legendgroup=label,
                 showlegend=False,
-                contours_coloring='lines',
-                colorscale=[[0, color], [1, color]]
+                contours_coloring="lines",
+                colorscale=[[0, color], [1, color]],
             )
             fig.add_trace(trace, 1, 2)
             fig.update_xaxes(title_text=xtitle, row=1, col=2)
@@ -886,10 +885,7 @@ def plot_top_error_contours(
     return fig
 
 
-def choose_agg_period(
-    current_date_column: pd.Series,
-    reference_date_column: Optional[pd.Series]
-) -> Tuple[str, str]:
+def choose_agg_period(current_date_column: pd.Series, reference_date_column: Optional[pd.Series]) -> Tuple[str, str]:
     prefix_dict = {
         "A": "year",
         "Q": "quarter",
@@ -920,7 +916,7 @@ def choose_agg_period(
 def get_plot_df(df, datetime_name, column_name, freq):
     plot_df = df.copy()
     plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
-    plot_df = plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
+    plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     plot_df["per"] = plot_df["per"].dt.to_timestamp()
     return plot_df
 
@@ -938,31 +934,31 @@ def prepare_df_for_time_index_plot(
             prefix, freq = choose_agg_period(df[datetime_name], None)
         plot_df = df.copy()
         plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
-        plot_df = plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
+        plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
         plot_df["per"] = plot_df["per"].dt.to_timestamp()
         return plot_df, prefix
-    plot_df = df[column_name].reset_index().sort_values('index')
-    plot_df['per'] = pd.cut(plot_df['index'], OPTIMAL_POINTS if bins is None else bins, labels=False)
-    plot_df = plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
+    plot_df = df[column_name].reset_index().sort_values("index")
+    plot_df["per"] = pd.cut(plot_df["index"], OPTIMAL_POINTS if bins is None else bins, labels=False)
+    plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
 
 
 def get_traces(df, color, error_band_opacity, name, showlegend):
     error_band_trace = go.Scatter(
-        x=list(df['per']) + list(df['per'][::-1]),  # x, then x reversed
-        y=list(df['mean'] + df['std']) + list(df['mean'] - df['std'])[::-1],  # upper, then lower reversed
-        fill='toself',
+        x=list(df["per"]) + list(df["per"][::-1]),  # x, then x reversed
+        y=list(df["mean"] + df["std"]) + list(df["mean"] - df["std"])[::-1],  # upper, then lower reversed
+        fill="toself",
         fillcolor=color,
         opacity=error_band_opacity,
         line=dict(color=color),
         hoverinfo="skip",
-        showlegend=False
+        showlegend=False,
     )
     line_trace = go.Scatter(
-        x=df['per'],
-        y=df['mean'],
+        x=df["per"],
+        y=df["mean"],
         line=dict(color=color),
-        mode='lines',
+        mode="lines",
         name=name,
         legendgroup=name,
         showlegend=showlegend,
@@ -970,20 +966,24 @@ def get_traces(df, color, error_band_opacity, name, showlegend):
     return error_band_trace, line_trace
 
 
-def collect_traces(data: Dict, line: Optional[float], std: Optional[float], color_options: ColorOptions, showlegend: bool):
+def collect_traces(
+    data: Dict, line: Optional[float], std: Optional[float], color_options: ColorOptions, showlegend: bool
+):
     name = list(data.keys())[0]
     traces = []
     if line is not None:
         green_line_trace = go.Scatter(
-            x=data[name]['per'],
-            y=[line] * len(data[name]['per']),
+            x=data[name]["per"],
+            y=[line] * len(data[name]["per"]),
             mode="lines",
             marker_color=color_options.zero_line_color,
             showlegend=False,
         )
         traces.append(green_line_trace)
     if len(data.keys()) == 1:
-        error_band_trace, line_trace = get_traces(data[name], color_options.get_current_data_color(), 0.2, name, showlegend)
+        error_band_trace, line_trace = get_traces(
+            data[name], color_options.get_current_data_color(), 0.2, name, showlegend
+        )
         traces += [error_band_trace, line_trace]
         return traces
     if {"Predicted", "Actual"} == set(data.keys()):
@@ -1030,7 +1030,7 @@ def plot_agg_line_data(
     xaxis_name: str,
     xaxis_name_ref: Optional[str],
     yaxis_name: str,
-    return_json: bool = True
+    return_json: bool = True,
 ):
     color_options = ColorOptions()
     cols = 1

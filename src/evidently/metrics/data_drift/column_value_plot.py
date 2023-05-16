@@ -12,20 +12,20 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.metric_results import ColumnScatter
-from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import ScatterData
+from evidently.metric_results import column_scatter_from_df
+from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
-from evidently.options.base import AnyOptions
 from evidently.utils.visualizations import choose_agg_period
-from evidently.utils.visualizations import prepare_df_for_time_index_plot
 from evidently.utils.visualizations import plot_agg_line_data
-from evidently.metric_results import raw_agg_properties
-from evidently.renderers.html_widgets import header_text
+from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class ColumnValuePlotResults(MetricResult):
@@ -97,8 +97,8 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         return ColumnValuePlotResults(
             column_name=self.column_name,
             datetime_column_name=datetime_column_name,
-            current={'current': curr_plot},
-            reference={'reference': ref_plot},
+            current={"current": curr_plot},
+            reference={"reference": ref_plot},
             prefix=prefix,
         )
 
@@ -211,9 +211,9 @@ class ColumnValuePlotRenderer(MetricRenderer):
 
     def render_agg(self, current, reference, column_name, datetime_column_name, prefix):
         data = current | reference
-        xaxis_name = 'Index binned'
+        xaxis_name = "Index binned"
         if prefix is not None:
-            xaxis_name = datetime_column_name + f' ({prefix})'
+            xaxis_name = datetime_column_name + f" ({prefix})"
         fig = plot_agg_line_data(
             curr_data=data,
             ref_data=None,
@@ -221,7 +221,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
             std=None,
             xaxis_name=xaxis_name,
             xaxis_name_ref=None,
-            yaxis_name=column_name + ' value'
+            yaxis_name=column_name + " value",
         )
 
         return [
@@ -237,9 +237,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
-            return self.render_raw(
-                result.current, result.reference, result.column_name, result.datetime_column_name
-            )
+            return self.render_raw(result.current, result.reference, result.column_name, result.datetime_column_name)
         return self.render_agg(
             result.current, result.reference, result.column_name, result.datetime_column_name, result.prefix
         )

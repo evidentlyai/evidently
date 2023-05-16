@@ -10,14 +10,14 @@ from evidently.base_metric import MetricResult
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import plot_line_in_time
-from evidently.options.base import AnyOptions
-from evidently.utils.visualizations import prepare_df_for_time_index_plot
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_line_in_time
+from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
@@ -36,11 +36,15 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, datetime_column_name)
-        curr_df["Absolute Percentage Error"] = 100 * np.abs(curr_df[prediction_name] - curr_df[target_name]) / curr_df[target_name]
+        curr_df["Absolute Percentage Error"] = (
+            100 * np.abs(curr_df[prediction_name] - curr_df[target_name]) / curr_df[target_name]
+        )
         curr_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
-            ref_df["Absolute Percentage Error"] = 100 * np.abs(ref_df[prediction_name] - ref_df[target_name]) / ref_df[target_name]
+            ref_df["Absolute Percentage Error"] = (
+                100 * np.abs(ref_df[prediction_name] - ref_df[target_name]) / ref_df[target_name]
+            )
             ref_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
         reference_scatter: Optional[Union[ColumnScatter, dict]] = None
         if self.get_options().agg_data is not None and self.get_options().agg_data is False:
@@ -74,13 +78,13 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
             )
             reference_scatter["Absolute Percentage Error"] = plot_df
             if datetime_column_name is None:
-                x_name_ref = 'Index binned'
+                x_name_ref = "Index binned"
             else:
-                x_name_ref = datetime_column_name + f' ({prefix_ref})'
+                x_name_ref = datetime_column_name + f" ({prefix_ref})"
         if datetime_column_name is None:
-            x_name = 'Index binned'
+            x_name = "Index binned"
         else:
-            x_name = datetime_column_name + f' ({prefix})'
+            x_name = datetime_column_name + f" ({prefix})"
         return ColumnScatterResult(
             current=current_scatter,
             reference=reference_scatter,

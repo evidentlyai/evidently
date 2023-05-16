@@ -22,6 +22,7 @@ from evidently.calculations.data_drift import get_text_data_for_plots
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -31,10 +32,9 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.options.base import AnyOptions
-from evidently.utils.visualizations import prepare_df_for_time_index_plot
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_scatter_for_data_drift
+from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 def get_one_column_drift(
@@ -141,9 +141,9 @@ def get_one_column_drift(
                 pd.DataFrame(
                     {
                         column.name: current_feature_data.values,
-                        "Timestamp": None if datetime_data is None else datetime_data.values
+                        "Timestamp": None if datetime_data is None else datetime_data.values,
                     },
-                    index=index_data.values
+                    index=index_data.values,
                 ),
                 column.name,
                 datetime_name,

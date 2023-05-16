@@ -12,14 +12,14 @@ from evidently.base_metric import Metric
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import plot_line_in_time
-from evidently.options.base import AnyOptions
-from evidently.utils.visualizations import prepare_df_for_time_index_plot
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_line_in_time
+from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class RegressionErrorPlot(Metric[ColumnScatterResult]):
@@ -71,18 +71,16 @@ class RegressionErrorPlot(Metric[ColumnScatterResult]):
         if ref_df is not None:
             reference_scatter = {}
             ref_df["Predicted - Actual"] = ref_error
-            plot_df, prefix_ref = prepare_df_for_time_index_plot(
-                ref_df, "Predicted - Actual", datetime_column_name
-            )
+            plot_df, prefix_ref = prepare_df_for_time_index_plot(ref_df, "Predicted - Actual", datetime_column_name)
             reference_scatter["Predicted - Actual"] = plot_df
             if datetime_column_name is None:
-                x_name_ref = 'Index binned'
+                x_name_ref = "Index binned"
             else:
-                x_name_ref = datetime_column_name + f' ({prefix_ref})'
+                x_name_ref = datetime_column_name + f" ({prefix_ref})"
         if datetime_column_name is None:
-            x_name = 'Index binned'
+            x_name = "Index binned"
         else:
-            x_name = datetime_column_name + f' ({prefix})'
+            x_name = datetime_column_name + f" ({prefix})"
         return ColumnScatterResult(
             current=current_scatter,
             reference=reference_scatter,

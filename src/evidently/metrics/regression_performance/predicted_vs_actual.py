@@ -8,21 +8,21 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
-from evidently.metrics.regression_performance.objects import PredActualScatter
-from evidently.metrics.regression_performance.objects import scatter_as_dict
 from evidently.metric_results import ContourData
 from evidently.metric_results import raw_agg_properties
+from evidently.metrics.regression_performance.objects import PredActualScatter
+from evidently.metrics.regression_performance.objects import scatter_as_dict
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.html_widgets import WidgetSize
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import get_gaussian_kde
 from evidently.utils.visualizations import plot_contour
 from evidently.utils.visualizations import plot_scatter
-from evidently.renderers.html_widgets import plotly_figure
 
 
 class AggPredActualScatter(MetricResult):
@@ -120,10 +120,7 @@ class RegressionPredictedVsActualScatterRenderer(MetricRenderer):
             ref_data = reference.data
         fig = plot_contour(current.data, ref_data, "Actual value", "Predicted value")
 
-        return [
-            header_text(label="Predicted vs Actual"),
-            plotly_figure(title="", figure=fig, size=WidgetSize.FULL)
-        ]
+        return [header_text(label="Predicted vs Actual"), plotly_figure(title="", figure=fig, size=WidgetSize.FULL)]
 
     def render_html(self, obj: RegressionPredictedVsActualScatter) -> List[BaseWidgetInfo]:
         result = obj.get_result()

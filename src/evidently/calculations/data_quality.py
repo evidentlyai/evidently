@@ -21,9 +21,9 @@ from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
+from evidently.utils.visualizations import get_gaussian_kde
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
-from evidently.utils.visualizations import get_gaussian_kde
 
 MAX_CATEGORIES = 5
 
@@ -610,9 +610,7 @@ def plot_data(
                     }
 
             else:
-                result = {
-                    "current": get_gaussian_kde(target_current, current_data)
-                }
+                result = {"current": get_gaussian_kde(target_current, current_data)}
                 if reference_data is not None and target_reference is not None:
                     result["reference"] = get_gaussian_kde(target_reference, reference_data)
 

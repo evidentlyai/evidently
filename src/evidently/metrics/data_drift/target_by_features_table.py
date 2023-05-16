@@ -23,11 +23,11 @@ from evidently.metric_results import PredictionData
 from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
-from evidently.options.base import AnyOptions
 
 
 class TargetByFeaturesTableResults(MetricResult):

@@ -15,14 +15,14 @@ from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
+from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_pred_actual_time
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
-from evidently.utils.visualizations import plot_agg_line_data
-from evidently.options.base import AnyOptions
 
 
 class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
@@ -71,19 +71,17 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
         x_name_ref: Optional[str] = None
         if ref_df is not None:
             reference_scatter = {}
-            plot_df, prefix_ref = prepare_df_for_time_index_plot(
-                ref_df, prediction_name, datetime_column_name
-            )
+            plot_df, prefix_ref = prepare_df_for_time_index_plot(ref_df, prediction_name, datetime_column_name)
             reference_scatter["Predicted"] = plot_df
             reference_scatter["Actual"], _ = prepare_df_for_time_index_plot(ref_df, target_name, datetime_column_name)
             if datetime_column_name is None:
-                x_name_ref = 'Index binned'
+                x_name_ref = "Index binned"
             else:
-                x_name_ref = datetime_column_name + f' ({prefix_ref})'
+                x_name_ref = datetime_column_name + f" ({prefix_ref})"
         if datetime_column_name is None:
-            x_name = 'Index binned'
+            x_name = "Index binned"
         else:
-            x_name = datetime_column_name + f' ({prefix})'
+            x_name = datetime_column_name + f" ({prefix})"
         return ColumnScatterResult(
             current=current_scatter,
             reference=reference_scatter,
@@ -127,11 +125,7 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
         ]
 
     def render_agg(
-        self,
-        current: ColumnScatter,
-        reference: Optional[ColumnScatter],
-        x_name: str,
-        x_name_ref: Optional[str]
+        self, current: ColumnScatter, reference: Optional[ColumnScatter], x_name: str, x_name_ref: Optional[str]
     ):
         fig = plot_agg_line_data(
             curr_data=current,

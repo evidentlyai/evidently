@@ -11,6 +11,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
@@ -23,9 +24,8 @@ from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.options.base import AnyOptions
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 class DataDriftTableResults(MetricResult):

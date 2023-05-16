@@ -1,9 +1,9 @@
+import json
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
-import json
 import numpy as np
 import pandas as pd
 
@@ -11,6 +11,8 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.metric_results import ContourData
+from evidently.metric_results import raw_agg_properties
 from evidently.metrics.regression_performance.objects import PredActualScatter
 from evidently.metrics.regression_performance.objects import RegressionScatter
 from evidently.metrics.regression_performance.visualization import plot_error_bias_colored_scatter
@@ -21,8 +23,6 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-from evidently.metric_results import ContourData
-from evidently.metric_results import raw_agg_properties
 from evidently.utils.visualizations import get_gaussian_kde
 from evidently.utils.visualizations import plot_top_error_contours
 
@@ -146,20 +146,19 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
         underestimation = get_gaussian_kde(
             df.loc[df["Error bias"] == "Underestimation", prediction_name],
-            df.loc[df["Error bias"] == "Underestimation", target_name]
+            df.loc[df["Error bias"] == "Underestimation", target_name],
         )
 
         majority = get_gaussian_kde(
-            df.loc[df["Error bias"] == "Majority", prediction_name],
-            df.loc[df["Error bias"] == "Majority", target_name]
+            df.loc[df["Error bias"] == "Majority", prediction_name], df.loc[df["Error bias"] == "Majority", target_name]
         )
 
         overestimation = get_gaussian_kde(
             df.loc[df["Error bias"] == "Overestimation", prediction_name],
-            df.loc[df["Error bias"] == "Overestimation", target_name]
+            df.loc[df["Error bias"] == "Overestimation", target_name],
         )
 
-        return {'underestimation': underestimation, 'majority': majority, 'overestimation': overestimation}
+        return {"underestimation": underestimation, "majority": majority, "overestimation": overestimation}
 
     def _calculate_underperformance(
         self, error: pd.Series, quantile_5: float, quantile_95: float, conf_interval_n_sigmas: int = 1

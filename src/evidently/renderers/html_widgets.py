@@ -837,7 +837,7 @@ def class_separation_traces_raw(df, label, target_name, color_options):
     return traces
 
 
-def class_separation_traces_agg(df, label, target_name, color_options):
+def class_separation_traces_agg(df, label, color_options):
     traces = []
     df_name = df[df["values"] == label]
     traces.append(
@@ -847,10 +847,8 @@ def class_separation_traces_agg(df, label, target_name, color_options):
             q3=df_name["uppers"],
             median=df_name["means"],
             upperfence=df_name["maxs"],
-            x=df_name["values"],
-            # name=str(label),
-            # legendgroup=str(label),
-            marker_color=color_options.get_current_data_color()
+            x=df_name["values"].astype(str),
+            marker_color=color_options.get_current_data_color(),
         )
     )
     df_name = df[df["values"] == "others"]
@@ -862,19 +860,14 @@ def class_separation_traces_agg(df, label, target_name, color_options):
             median=df_name["means"],
             upperfence=df_name["maxs"],
             x=df_name["values"],
-            # name=str(label),
-            # legendgroup=str(label),
-            marker_color=color_options.get_reference_data_color()
+            marker_color=color_options.get_reference_data_color(),
         )
     )
     return traces
 
 
 def get_class_separation_plot_data(
-    current_plot: pd.DataFrame,
-    reference_plot: Optional[pd.DataFrame],
-    target_name: str,
-    color_options: ColorOptions
+    current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str, color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -905,7 +898,7 @@ def get_class_separation_plot_data_agg(
     current_plot: Dict[Union[int, str], pd.DataFrame],
     reference_plot: Optional[Dict[Union[int, str], pd.DataFrame]],
     target_name: str,
-    color_options: ColorOptions
+    color_options: ColorOptions,
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -915,18 +908,14 @@ def get_class_separation_plot_data_agg(
         subplot_titles = ["current", "reference"]
     for label in current_plot.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
-        # logging.warning(label)
-        # logging.warning(current_plot[label])
-        traces = class_separation_traces_agg(current_plot[label], label, target_name, color_options)
+        traces = class_separation_traces_agg(current_plot[label], label, color_options)
         for trace in traces:
             fig.add_trace(trace, 1, 1)
-        # fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=1)
 
         if reference_plot is not None:
-            traces = class_separation_traces_agg(reference_plot[label], label, target_name, color_options)
+            traces = class_separation_traces_agg(reference_plot[label], label, color_options)
             for trace in traces:
                 fig.add_trace(trace, 1, 2)
-            # fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=2)
 
         fig.update_layout(yaxis_title="Probability", showlegend=False)
 

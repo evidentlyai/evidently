@@ -4,8 +4,8 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy.stats import probplot
@@ -14,16 +14,16 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-from evidently.options.base import AnyOptions
 
 
 class RegressionErrorNormalityResults(MetricResult):
     class Config:
-        dict_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", 'reference_theoretical'}
+        dict_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
         pd_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
 
     current_plot: pd.DataFrame
@@ -85,23 +85,17 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
     def _get_theoretical_line(self, res: Tuple[Tuple[np.ndarray], Tuple[float]]):
         x = [res[0][0][0], res[0][0][-1]]
         y = [res[1][0] * res[0][0][0] + res[1][1], res[1][0] * res[0][0][-1] + res[1][1]]
-        return pd.DataFrame({'x': x, 'y': y})
+        return pd.DataFrame({"x": x, "y": y})
 
-    def _get_plot_data(
-        self,
-        res: Tuple[Tuple[np.ndarray], Tuple[float]],
-        err_data: pd.Series,
-        agg_data: bool
-    ):
-        df = pd.DataFrame({'x': res[0][0], 'y': res[0][1]})
+    def _get_plot_data(self, res: Tuple[Tuple[np.ndarray], Tuple[float]], err_data: pd.Series, agg_data: bool):
+        df = pd.DataFrame({"x": res[0][0], "y": res[0][1]})
         if not agg_data:
             return df
-        df['bin'] = pd.cut(err_data.sort_values().values, bins=10, labels=False, retbins=False)
+        df["bin"] = pd.cut(err_data.sort_values().values, bins=10, labels=False, retbins=False)
         return (
-            df
-            .groupby('bin', group_keys=False)
+            df.groupby("bin", group_keys=False)
             .apply(lambda x: x.sample(n=min(100, x.shape[0]), random_state=0))
-            .drop('bin', axis=1)
+            .drop("bin", axis=1)
         )
 
 
@@ -124,8 +118,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
         fig = make_subplots(rows=1, cols=cols, shared_yaxes=False, subplot_titles=subplot_titles)
 
         sample_quantile_trace = go.Scatter(
-            x=current_plot['x'],
-            y=current_plot['y'],
+            x=current_plot["x"],
+            y=current_plot["y"],
             mode="markers",
             name="Dataset Quantiles",
             legendgroup="Dataset Quantiles",
@@ -133,8 +127,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
         )
 
         theoretical_quantile_trace = go.Scatter(
-            x=current_theoretical['x'],
-            y=current_theoretical['y'],
+            x=current_theoretical["x"],
+            y=current_theoretical["y"],
             mode="lines",
             name="Theoretical Quantiles",
             legendgroup="Theoretical Quantiles",
@@ -145,8 +139,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
         fig.update_xaxes(title_text="Theoretical Quantiles", row=1, col=1)
         if reference_plot is not None and reference_theoretical is not None:
             sample_quantile_trace = go.Scatter(
-                x=reference_plot['x'],
-                y=reference_plot['y'],
+                x=reference_plot["x"],
+                y=reference_plot["y"],
                 mode="markers",
                 name="Dataset Quantiles",
                 legendgroup="Dataset Quantiles",
@@ -155,8 +149,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
             )
 
             theoretical_quantile_trace = go.Scatter(
-                x=reference_theoretical['x'],
-                y=reference_theoretical['y'],
+                x=reference_theoretical["x"],
+                y=reference_theoretical["y"],
                 mode="lines",
                 name="Theoretical Quantiles",
                 legendgroup="Theoretical Quantiles",

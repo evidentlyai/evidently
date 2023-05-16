@@ -22,12 +22,12 @@ from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
-from evidently.options.base import AnyOptions
 
 
 class RegressionErrorBiasTableResults(MetricResult):
@@ -61,7 +61,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         columns: Optional[List[str]] = None,
         top_error: Optional[float] = None,
         descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
-        options: AnyOptions = None
+        options: AnyOptions = None,
     ):
         super().__init__(options=options)
         if top_error is None:
