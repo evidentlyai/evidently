@@ -34,6 +34,8 @@ from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import plot_scatter_for_data_drift
+from evidently.options.base import AnyOptions
+from evidently.utils.visualizations import plot_agg_line_data
 
 
 class TextDescriptorsDriftMetricResults(MetricResult):
@@ -56,7 +58,9 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         descriptors: Optional[Dict[str, FeatureDescriptor]] = None,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
+        options: AnyOptions = None,
     ):
+        super().__init__(options=options)
         self.column_name = column_name
         self.drift_options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
         if descriptors:
@@ -84,6 +88,10 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     def calculate(self, data: InputData) -> TextDescriptorsDriftMetricResults:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
+        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+            agg_data = False
+        else:
+            agg_data = True
         curr_text_df = pd.concat(
             [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
             axis=1,
@@ -106,6 +114,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
                 column_name=col,
                 options=self.drift_options,
                 dataset_columns=text_dataset_columns,
+                agg_data=agg_data,
             )
         dataset_drift = get_dataset_drift(drift_by_columns, 0)
 
@@ -121,7 +130,9 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
 
 @default_renderer(wrap_type=TextDescriptorsDriftMetric)
 class DataDriftTableRenderer(MetricRenderer):
-    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
+    def _generate_column_params(
+        self, column_name: str, data: ColumnDataDriftMetrics, agg_data: bool
+    ) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if (
             data.current.small_distribution is None
@@ -129,20 +140,31 @@ class DataDriftTableRenderer(MetricRenderer):
             or data.current.distribution is None
         ):
             return None
-
         current_small_hist = data.current.small_distribution
         ref_small_hist = data.reference.small_distribution
         data_drift = "Detected" if data.drift_detected else "Not Detected"
         if data.column_type == "num" and data.scatter is not None:
-            scatter_fig = plot_scatter_for_data_drift(
-                curr_y=data.scatter.scatter[data.column_name],
-                curr_x=data.scatter.scatter[data.scatter.x_name],
-                y0=data.scatter.plot_shape["y0"],
-                y1=data.scatter.plot_shape["y1"],
-                y_name=data.column_name,
-                x_name=data.scatter.x_name,
-                color_options=self.color_options,
-            )
+            if not agg_data:
+                scatter_fig = plot_scatter_for_data_drift(
+                    curr_y=data.scatter.scatter[data.column_name],
+                    curr_x=data.scatter.scatter[data.scatter.x_name],
+                    y0=data.scatter.plot_shape["y0"],
+                    y1=data.scatter.plot_shape["y1"],
+                    y_name=data.column_name,
+                    x_name=data.scatter.x_name,
+                    color_options=self.color_options,
+                )
+            else:
+                scatter_fig = plot_agg_line_data(
+                    curr_data=data.scatter.scatter,
+                    ref_data=None,
+                    line=(data.scatter.plot_shape["y0"] + data.scatter.plot_shape["y1"]) / 2,
+                    std=(data.scatter.plot_shape["y0"] - data.scatter.plot_shape["y1"]) / 2,
+                    xaxis_name=data.scatter.x_name,
+                    xaxis_name_ref=None,
+                    yaxis_name=data.column_name,
+                    return_json=False,
+                )
             scatter = plotly_figure(title="", figure=scatter_fig)
             details.with_part("DATA DRIFT", info=scatter)
             fig = get_distribution_plot_figure(
@@ -180,6 +202,10 @@ class DataDriftTableRenderer(MetricRenderer):
         # set params data
         params_data = []
 
+        agg_data = True
+        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+            agg_data = False
+
         # sort columns by drift score
         columns = sorted(
             results.drift_by_columns.keys(),
@@ -188,7 +214,7 @@ class DataDriftTableRenderer(MetricRenderer):
         )
 
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
+            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name], agg_data)
 
             if column_params is not None:
                 params_data.append(column_params)

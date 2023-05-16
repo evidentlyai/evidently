@@ -32,19 +32,20 @@ class RegressionErrorPlot(Metric[ColumnScatterResult]):
         prediction_name = dataset_columns.utility_columns.prediction
         datetime_column_name = dataset_columns.utility_columns.date
         curr_df = data.current_data.copy()
-        ref_df = data.reference_data.copy()
+        ref_df = data.reference_data
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, datetime_column_name)
         curr_error = curr_df[prediction_name] - curr_df[target_name]
-        ref_error: Optional[pd.Series] =  None
+        ref_error: Optional[pd.Series] = None
         if ref_df is not None:
-            ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, datetime_column_name)
+            ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
             ref_error = ref_df[prediction_name] - ref_df[target_name]
+        current_scatter = {}
+        reference_scatter: Optional[Union[dict, ColumnScatter]] = None
         if self.get_options().agg_data is not None and self.get_options().agg_data is False:
-            current_scatter = {}
             current_scatter["Predicted - Actual"] = curr_error
             if datetime_column_name is not None:
                 current_scatter["x"] = curr_df[datetime_column_name]
@@ -53,7 +54,6 @@ class RegressionErrorPlot(Metric[ColumnScatterResult]):
                 current_scatter["x"] = curr_df.index
                 x_name = "Index"
 
-            reference_scatter: Optional[dict] = None
             if ref_df is not None:
                 reference_scatter = {}
                 reference_scatter["Predicted - Actual"] = ref_error
@@ -64,11 +64,9 @@ class RegressionErrorPlot(Metric[ColumnScatterResult]):
                 reference=reference_scatter,
                 x_name=x_name,
             )
-        current_scatter = {}
         curr_df["Predicted - Actual"] = curr_error
         plot_df, prefix = prepare_df_for_time_index_plot(curr_df, "Predicted - Actual", datetime_column_name)
         current_scatter["Predicted - Actual"] = plot_df
-        reference_scatter: Optional[ColumnScatter] = None
         x_name_ref: Optional[str] = None
         if ref_df is not None:
             reference_scatter = {}
@@ -86,11 +84,11 @@ class RegressionErrorPlot(Metric[ColumnScatterResult]):
         else:
             x_name = datetime_column_name + f' ({prefix})'
         return ColumnScatterResult(
-                current=current_scatter,
-                reference=reference_scatter,
-                x_name=x_name,
-                x_name_ref=x_name_ref,
-            )
+            current=current_scatter,
+            reference=reference_scatter,
+            x_name=x_name,
+            x_name_ref=x_name_ref,
+        )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -126,14 +124,14 @@ class RegressionErrorPlotRenderer(MetricRenderer):
             )
         else:
             fig = plot_agg_line_data(
-            curr_data=current,
-            ref_data=reference,
-            line=0,
-            std=None,
-            xaxis_name=result.x_name,
-            xaxis_name_ref=result.x_name_ref,
-            yaxis_name="Error",
-        )
+                curr_data=current,
+                ref_data=reference,
+                line=0,
+                std=None,
+                xaxis_name=result.x_name,
+                xaxis_name_ref=result.x_name_ref,
+                yaxis_name="Error",
+            )
         return [
             header_text(label="Error (Predicted - Actual)"),
             BaseWidgetInfo(

@@ -102,7 +102,6 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
             prefix=prefix,
         )
 
-
     def _make_df_for_plot(self, df, column_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
@@ -116,7 +115,7 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         result.dropna(axis=0, how="any", inplace=True, subset=[column_name])
         return result.sort_index()
 
-import logging
+
 @default_renderer(wrap_type=ColumnValuePlot)
 class ColumnValuePlotRenderer(MetricRenderer):
     def render_raw(self, current_scatter, reference_scatter, column_name, datetime_column_name):
@@ -224,17 +223,17 @@ class ColumnValuePlotRenderer(MetricRenderer):
             xaxis_name_ref=None,
             yaxis_name=column_name + ' value'
         )
-        
+
         return [
             header_text(label=f"Column '{column_name}' Values"),
             BaseWidgetInfo(
-                title=f"",
+                title="",
                 size=2,
                 type="big_graph",
                 params={"data": fig["data"], "layout": fig["layout"]},
             ),
         ]
-    
+
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:

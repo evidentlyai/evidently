@@ -137,16 +137,15 @@ def get_one_column_drift(
             datetime_name = None
             if datetime_data is not None:
                 datetime_name = "Timestamp"
-
             df, prefix = prepare_df_for_time_index_plot(
                 pd.DataFrame(
                     {
-                        column: current_feature_data.values,
+                        column.name: current_feature_data.values,
                         "Timestamp": None if datetime_data is None else datetime_data.values
                     },
                     index=index_data.values
                 ),
-                column,
+                column.name,
                 datetime_name,
             )
             current_scatter["current"] = df

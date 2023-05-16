@@ -782,8 +782,8 @@ def get_gaussian_kde(m1, m2):
     ydelta = 2 * (ymax - ymin) / 10
     # X, Y = np.mgrid[xmin - border(xmin) : xmax + border(xmax) : 30j, ymin - border(ymin) : ymax + border(ymax) : 30j]
     X, Y = np.mgrid[xmin - xdelta : xmax + xdelta : 30j, ymin - ydelta : ymax + ydelta : 30j]
-    x=np.linspace(xmin - xdelta, xmax + xdelta, num=30)
-    y=np.linspace(ymin - ydelta, ymax + ydelta, num=30)
+    x = np.linspace(xmin - xdelta, xmax + xdelta, num=30)
+    y = np.linspace(ymin - ydelta, ymax + ydelta, num=30)
     positions = np.vstack([X.ravel(), Y.ravel()])
     values = np.vstack([m1, m2])
     kernel = stats.gaussian_kde(values)
@@ -861,7 +861,7 @@ def plot_top_error_contours(
             legendgroup=label,
             showlegend=True,
             contours_coloring='lines',
-            colorscale=[[0, color], [1, color],]
+            colorscale=[[0, color], [1, color]]
         )
         fig.add_trace(trace, 1, 1)
         fig.update_xaxes(title_text=xtitle, row=1, col=1)
@@ -878,7 +878,7 @@ def plot_top_error_contours(
                 legendgroup=label,
                 showlegend=False,
                 contours_coloring='lines',
-                colorscale=[[0, color], [1, color],]
+                colorscale=[[0, color], [1, color]]
             )
             fig.add_trace(trace, 1, 2)
             fig.update_xaxes(title_text=xtitle, row=1, col=2)
@@ -920,7 +920,7 @@ def choose_agg_period(
 def get_plot_df(df, datetime_name, column_name, freq):
     plot_df = df.copy()
     plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
-    plot_df= plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
+    plot_df = plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
     plot_df["per"] = plot_df["per"].dt.to_timestamp()
     return plot_df
 
@@ -938,19 +938,19 @@ def prepare_df_for_time_index_plot(
             prefix, freq = choose_agg_period(df[datetime_name], None)
         plot_df = df.copy()
         plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
-        plot_df= plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
+        plot_df = plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
         plot_df["per"] = plot_df["per"].dt.to_timestamp()
         return plot_df, prefix
     plot_df = df[column_name].reset_index().sort_values('index')
     plot_df['per'] = pd.cut(plot_df['index'], OPTIMAL_POINTS if bins is None else bins, labels=False)
-    plot_df= plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
+    plot_df = plot_df.groupby('per')[column_name].agg(['mean', 'std']).reset_index()
     return plot_df, None
 
 
 def get_traces(df, color, error_band_opacity, name, showlegend):
     error_band_trace = go.Scatter(
-        x=list(df['per'])+list(df['per'][::-1]), # x, then x reversed
-        y=list(df['mean'] + df['std'])+list(df['mean'] - df['std'])[::-1], # upper, then lower reversed
+        x=list(df['per']) + list(df['per'][::-1]),  # x, then x reversed
+        y=list(df['mean'] + df['std']) + list(df['mean'] - df['std'])[::-1],  # upper, then lower reversed
         fill='toself',
         fillcolor=color,
         opacity=error_band_opacity,
@@ -1060,9 +1060,7 @@ def plot_agg_line_data(
             layer="below",
             line_width=0,
         )
-        # fig.update_layout(
-        #     shapes=collect_shapes(curr_data, color_options)
-        # )
+
     if return_json:
         return json.loads(fig.to_json())
     return fig

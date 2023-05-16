@@ -80,7 +80,7 @@ class DataDriftTable(Metric[DataDriftTableResults]):
     def calculate(self, data: InputData) -> DataDriftTableResults:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
-        
+
         if self.get_options().agg_data is not None and self.get_options().agg_data is False:
             agg_data = False
         else:

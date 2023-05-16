@@ -608,7 +608,7 @@ def plot_data(
                         column_name: reference_data.tolist(),
                         target_name: target_reference.tolist(),
                     }
-                
+
             else:
                 result = {
                     "current": get_gaussian_kde(target_current, current_data)
@@ -617,10 +617,10 @@ def plot_data(
                     result["reference"] = get_gaussian_kde(target_reference, reference_data)
 
             data_by_target = {
-                    "data_for_plots": result,
-                    "target_name": target_name,
-                    "target_type": target_type.value,
-                }
+                "data_for_plots": result,
+                "target_name": target_name,
+                "target_type": target_type.value,
+            }
 
         if column_type == ColumnType.Categorical and target_type == ColumnType.Categorical:
             result = {"current": _get_count_values(current_data, target_current, target_name, column_name)}

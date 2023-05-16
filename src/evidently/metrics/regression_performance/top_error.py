@@ -55,7 +55,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         curr_df = data.current_data.copy()
-        ref_df = data.reference_data.copy()
+        ref_df = data.reference_data
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
@@ -73,9 +73,9 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         )
         curr_mean_err_per_group = self._calculate_underperformance(curr_error, quantile_5, quantile_95)
 
-        reference = None
+        reference: Optional[Union[TopData, AggTopData]] = None
         if ref_df is not None:
-            ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
+            ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, None)
             ref_error = ref_df[prediction_name] - ref_df[target_name]
             quantile_5 = np.quantile(ref_error, 0.05)
             quantile_95 = np.quantile(ref_error, 0.95)
@@ -108,7 +108,6 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
             current=AggTopData(mean_err_per_group=curr_mean_err_per_group, contour=curr_contour),
             reference=reference,
         )
-
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -143,8 +142,8 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         return RegressionScatter(underestimation=underestimation, majority=majority, overestimation=overestimation)
 
     @staticmethod
-    def _get_data_for_сontour(df: pd.DataFrame, target_name: str, prediction_name: str) -> RegressionScatter:
-        
+    def _get_data_for_сontour(df: pd.DataFrame, target_name: str, prediction_name: str) -> dict:
+
         underestimation = get_gaussian_kde(
             df.loc[df["Error bias"] == "Underestimation", prediction_name],
             df.loc[df["Error bias"] == "Underestimation", target_name]

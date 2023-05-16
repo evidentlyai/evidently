@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 
@@ -29,7 +30,7 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
         prediction_name = dataset_columns.utility_columns.prediction
         datetime_column_name = dataset_columns.utility_columns.date
         curr_df = data.current_data.copy()
-        ref_df = data.reference_data.copy()
+        ref_df = data.reference_data
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
@@ -38,9 +39,10 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
         curr_df["Absolute Percentage Error"] = 100 * np.abs(curr_df[prediction_name] - curr_df[target_name]) / curr_df[target_name]
         curr_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
         if ref_df is not None:
-            ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, datetime_column_name)
+            ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
             ref_df["Absolute Percentage Error"] = 100 * np.abs(ref_df[prediction_name] - ref_df[target_name]) / ref_df[target_name]
             ref_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
+        reference_scatter: Optional[Union[ColumnScatter, dict]] = None
         if self.get_options().agg_data is not None and self.get_options().agg_data is False:
             current_scatter = {}
             current_scatter["Absolute Percentage Error"] = curr_df["Absolute Percentage Error"]
@@ -51,7 +53,6 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
                 current_scatter["x"] = curr_df.index
                 x_name = "Index"
 
-            reference_scatter: Optional[dict] = None
             if ref_df is not None:
                 reference_scatter = {}
                 reference_scatter["Absolute Percentage Error"] = ref_df["Absolute Percentage Error"]
@@ -65,7 +66,6 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
         current_scatter = {}
         plot_df, prefix = prepare_df_for_time_index_plot(curr_df, "Absolute Percentage Error", datetime_column_name)
         current_scatter["Absolute Percentage Error"] = plot_df
-        reference_scatter: Optional[ColumnScatter] = None
         x_name_ref: Optional[str] = None
         if ref_df is not None:
             reference_scatter = {}
@@ -82,11 +82,11 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
         else:
             x_name = datetime_column_name + f' ({prefix})'
         return ColumnScatterResult(
-                current=current_scatter,
-                reference=reference_scatter,
-                x_name=x_name,
-                x_name_ref=x_name_ref,
-            )
+            current=current_scatter,
+            reference=reference_scatter,
+            x_name=x_name,
+            x_name_ref=x_name_ref,
+        )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -121,14 +121,14 @@ class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
             )
         else:
             fig = plot_agg_line_data(
-            curr_data=current,
-            ref_data=reference,
-            line=0,
-            std=None,
-            xaxis_name=result.x_name,
-            xaxis_name_ref=result.x_name_ref,
-            yaxis_name="Percent",
-        )
+                curr_data=current,
+                ref_data=reference,
+                line=0,
+                std=None,
+                xaxis_name=result.x_name,
+                xaxis_name_ref=result.x_name_ref,
+                yaxis_name="Percent",
+            )
         return [
             header_text(label="Absolute Percentage Error"),
             BaseWidgetInfo(

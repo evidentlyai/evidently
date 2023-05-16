@@ -130,5 +130,3 @@ class RegressionPredictedVsActualScatterRenderer(MetricRenderer):
         if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
             return self.render_raw(result.current_raw, result.reference_raw)
         return self.render_agg(result.current_agg, result.reference_agg)
-
-

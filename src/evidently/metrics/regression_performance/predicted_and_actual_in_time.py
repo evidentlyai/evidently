@@ -35,14 +35,15 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
         prediction_name = dataset_columns.utility_columns.prediction
         datetime_column_name = dataset_columns.utility_columns.date
         curr_df = data.current_data.copy()
-        ref_df = data.reference_data.copy()
+        ref_df = data.reference_data
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, datetime_column_name)
-        if data.reference_data is not None:
-            ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, datetime_column_name)
+        if ref_df is not None:
+            ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
+        reference_scatter: Optional[Union[dict, ColumnScatter]] = None
         if self.get_options().agg_data is not None and self.get_options().agg_data is False:
             current_scatter = {}
             current_scatter["Predicted"] = curr_df[prediction_name]
@@ -53,7 +54,6 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
             else:
                 current_scatter["x"] = curr_df.index
                 x_name = "Index"
-            reference_scatter: Optional[dict] = None
             if ref_df is not None:
                 reference_scatter = {}
                 reference_scatter["Predicted"] = ref_df[prediction_name]
@@ -68,7 +68,6 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
         plot_df, prefix = prepare_df_for_time_index_plot(curr_df, prediction_name, datetime_column_name)
         current_scatter["Predicted"] = plot_df
         current_scatter["Actual"], _ = prepare_df_for_time_index_plot(curr_df, target_name, datetime_column_name)
-        reference_scatter: Optional[ColumnScatter] = None
         x_name_ref: Optional[str] = None
         if ref_df is not None:
             reference_scatter = {}
@@ -86,11 +85,11 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
         else:
             x_name = datetime_column_name + f' ({prefix})'
         return ColumnScatterResult(
-                current=current_scatter,
-                reference=reference_scatter,
-                x_name=x_name,
-                x_name_ref=x_name_ref,
-            )
+            current=current_scatter,
+            reference=reference_scatter,
+            x_name=x_name,
+            x_name_ref=x_name_ref,
+        )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -159,13 +158,13 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
         reference = result.reference
         if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
             fig = plot_pred_actual_time(
-            curr=current,
-            ref=reference,
-            x_name="x",
-            xaxis_name=result.x_name,
-            yaxis_name="Value",
-            color_options=self.color_options,
-        )
+                curr=current,
+                ref=reference,
+                x_name="x",
+                xaxis_name=result.x_name,
+                yaxis_name="Value",
+                color_options=self.color_options,
+            )
             return [
                 header_text(label="Predicted vs Actual in Time"),
                 BaseWidgetInfo(
@@ -193,4 +192,3 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
                 params={"data": fig["data"], "layout": fig["layout"]},
             ),
         ]
-

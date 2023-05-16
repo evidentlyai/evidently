@@ -8,6 +8,7 @@ from evidently.metric_preset import RegressionPreset
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
+from evidently.options.base import Options
 
 
 @pytest.mark.parametrize(
@@ -37,7 +38,7 @@ def test_metric_presets(preset: MetricPreset):
         }
     )
     data_mapping = ColumnMapping()
-    report = Report(metrics=[preset])
+    report = Report(metrics=[preset], options=Options(agg_data=False))
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
     assert report.show()
     assert report.json()

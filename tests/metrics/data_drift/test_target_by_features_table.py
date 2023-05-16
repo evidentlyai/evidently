@@ -7,6 +7,7 @@ import pytest
 from evidently.metrics import TargetByFeaturesTable
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
+from evidently.options.base import Options
 
 
 @pytest.mark.parametrize(
@@ -35,7 +36,7 @@ def test_target_by_features_table_success(
     metric: TargetByFeaturesTable,
     expected_json: dict,
 ) -> None:
-    report = Report(metrics=[metric])
+    report = Report(metrics=[metric], options=Options(agg_data=False))
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
     assert report.show()
     result_json = report.json()

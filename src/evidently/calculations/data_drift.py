@@ -204,7 +204,6 @@ def get_one_column_drift(
             else:
                 x_name = f"{datetime_column_name} ({prefix})"
 
-
         plot_shape = {}
         reference_mean = reference_data[column_name].mean()
         reference_std = reference_data[column_name].std()

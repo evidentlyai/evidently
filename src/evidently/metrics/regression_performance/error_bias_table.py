@@ -27,6 +27,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.options.base import AnyOptions
 
 
 class RegressionErrorBiasTableResults(MetricResult):
@@ -60,7 +61,9 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         columns: Optional[List[str]] = None,
         top_error: Optional[float] = None,
         descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
+        options: AnyOptions = None
     ):
+        super().__init__(options=options)
         if top_error is None:
             self.top_error = self.TOP_ERROR_DEFAULT
 
@@ -101,6 +104,18 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         return ()
 
     def calculate(self, data: InputData) -> RegressionErrorBiasTableResults:
+        if self.get_options().agg_data is None or self.get_options().agg_data:
+            return RegressionErrorBiasTableResults(
+                top_error=-1,
+                current_plot_data=pd.DataFrame(),
+                reference_plot_data=None,
+                target_name="",
+                prediction_name="",
+                num_feature_names=[],
+                cat_feature_names=[],
+                error_bias=None,
+                columns=None,
+            )
         if self.top_error <= self.TOP_ERROR_MIN or self.top_error >= self.TOP_ERROR_MAX:
             raise ValueError(
                 f"Cannot calculate error bias - "
@@ -227,6 +242,8 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 @default_renderer(wrap_type=RegressionErrorBiasTable)
 class RegressionErrorBiasTableRenderer(MetricRenderer):
     def render_html(self, obj: RegressionErrorBiasTable) -> List[BaseWidgetInfo]:
+        if obj.get_options().agg_data is None or obj.get_options().agg_data:
+            return []
         result = obj.get_result()
         current_data = result.current_plot_data
         reference_data = result.reference_plot_data

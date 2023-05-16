@@ -26,6 +26,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.options.base import AnyOptions
 
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
@@ -45,7 +46,9 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         self,
         columns: Optional[List[str]] = None,
         descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
+        options: AnyOptions = None,
     ):
+        super().__init__(options=options)
         self.columns = columns
         self.text_features_gen = None
         self.descriptors = descriptors
@@ -80,6 +83,13 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         return ()
 
     def calculate(self, data: InputData) -> ClassificationQualityByFeatureTableResults:
+        if self.get_options().agg_data is None or self.get_options().agg_data:
+            return ClassificationQualityByFeatureTableResults(
+                current=StatsByFeature(),
+                reference=None,
+                target_name="",
+                columns=[],
+            )
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -154,6 +164,8 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
+        if obj.get_options().agg_data is None or obj.get_options().agg_data:
+            return []
         result = obj.get_result()
         current_data = result.current.plot_data
         reference_data = result.reference.plot_data if result.reference is not None else None
