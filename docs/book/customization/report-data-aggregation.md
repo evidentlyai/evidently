@@ -35,7 +35,7 @@ Here is how the Scatter Plot in this Report will look:
 **This does not affect Test Suites.** All visualizations in Test Suites are already aggregated.
 {% endhint %}
 
-# Non-aggregated plots in Reports 
+# Non-aggregated plots for Reports 
 
 If you want to see non-aggregated plots, you can set the `agg_data` parameter as `false`.
 
