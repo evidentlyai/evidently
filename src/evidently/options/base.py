@@ -65,7 +65,9 @@ class Options(BaseModel):
         for name in self.__fields__:
             if name == "custom":
                 continue
-            override = getattr(other, name) or getattr(self, name)
+            override = getattr(other, name)
+            if override is None:
+                override = getattr(self, name)
             setattr(res, name, override)
 
         return res
