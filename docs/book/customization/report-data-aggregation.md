@@ -4,7 +4,7 @@ description: How to change data aggregation in plots.
 
 **Pre-requisites**:
 * You know how to generate Reports with default parameters.
-* You know how to pass custom parameters for Reports or Metrics
+* You know how to pass custom parameters for Reports or Metrics.
 
 # Code example
 
