@@ -1,5 +1,3 @@
-Data Aggregation in Reports
-
 ---
 description: How to change data aggregation in plots.
 ---
@@ -16,7 +14,7 @@ You can refer to an example How-to-notebook showing how to use `agg_data` parame
 
 # Default
 
-Starting from version 0.3.2, all visualization in Reports are aggregated by default. This helps reduce the size of the resulting HTML.
+Starting from version 0.3.2, all visualizations in Reports are aggregated by default. This helps reduce the size of the resulting HTML.
 
 For example, you can create a custom Report:
 
@@ -29,7 +27,7 @@ report.run(reference_data=housing_ref, current_data=housing_cur)
 report
 ```
 
-Here is how the Scatter Plot will look:
+Here is how the Scatter Plot in this Report will look:
 
 ![RegressionPredictedVsActualScatter()](../.gitbook/assets/reports/metric_regression_predvsactual_scatter_agg-min.png)
 
@@ -37,4 +35,44 @@ Here is how the Scatter Plot will look:
 **This does not affect Test Suites.** All visualizations in Test Suites are already aggregated.
 {% endhint %}
 
-# Embedding parameters - Metrics and Tests 
+# Aggregation on the Report level
+
+If you want to see non-aggregated plots, you can set the `agg_data` parameter as `true`.
+
+You can set on the level of the Report by passing the corresponding option. 
+
+```python
+report = Report(
+    metrics=[
+      RegressionPredictedVsActualScatter(),
+      RegressionPredictedVsActualPlot()
+    ],
+    options={"agg_data": False}
+  )
+report.run(reference_data=housing_ref, current_data=housing_cur)
+report
+```
+
+Here is how the Scatter Plot in this Report will look:
+
+![RegressionPredictedVsActualScatter()](../.gitbook/assets/reports/metric_regression_predvsactual_scatter_non_agg-min.png)
+
+{% hint style="info" %}
+**Consider the data size.** We recommend setting this option for smaller datasets or when you apply sampling. With non-aggregated plots, the HTML will contain all the data on individual datapoints. They make take significant time to load and be large in size. 
+{% endhint %}
+
+# Aggregation on the Metric level
+
+If you want to generate non-aggregated plots only for some visualizations. you can pass the `agg_data` option to the chosen Metrics:
+
+```python
+report = Report(
+    metrics=[
+      RegressionQualityMetric(),
+      RegressionPredictedVsActualScatter(options={"agg_data": False}),
+      RegressionPredictedVsActualPlot()
+    ],
+  )
+report.run(reference_data=housing_ref, current_data=housing_cur)
+report
+```
