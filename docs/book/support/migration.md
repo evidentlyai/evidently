@@ -55,7 +55,7 @@ To get what was previously as JSON profile (and has now been improved and re-wor
 data_drift_report.json()
 ```
 
-If you want to include all the render data in the JSON output, use [parmeters to include additional information in JSON](../customization/json-dict-output.md).
+If you want to include all the render data in the JSON output, use [parameters to include additional information in JSON](../customization/json-dict-output.md).
 
 You can also get the output as a Python dictionary.
 
