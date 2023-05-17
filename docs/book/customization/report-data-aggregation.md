@@ -8,7 +8,7 @@ description: How to change data aggregation in plots.
 
 # Code example
 
-You can refer to an example How-to-notebook showing how to use `agg_data` parameter:
+You can refer to an example How-to-notebook on using `agg_data` parameter:
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_agg_data_param.ipynb" %}
 
@@ -39,7 +39,7 @@ Here is how the Scatter Plot in this Report will look:
 
 If you want to see non-aggregated plots, you can set the `agg_data` parameter as `true`.
 
-You can set on the level of the Report by passing the corresponding option. 
+You can set it on the level of the complete Report by passing the corresponding option. 
 
 ```python
 report = Report(
@@ -53,14 +53,12 @@ report.run(reference_data=housing_ref, current_data=housing_cur)
 report
 ```
 
-All plots in the report will look
-
-Here is how the Scatter Plot in this Report will look:
+All plots in the Report will be non-aggregated. Here is how the Scatter Plot in this Report will look:
 
 ![RegressionPredictedVsActualScatter()](../.gitbook/assets/reports/metric_regression_predvsactual_scatter_non_agg-min.png)
 
 {% hint style="info" %}
-**Consider the data size.** We recommend setting this option for smaller datasets or when you apply sampling. With non-aggregated plots, the HTML will contain all the data on individual datapoints. They make take significant time to load and be large in size. 
+**Consider the data size.** We recommend setting this option for smaller datasets or when you apply sampling. With non-aggregated plots, the HTML will contain all the data on individual data points. They may take significant time to load and be large in size. 
 {% endhint %}
 
 # Non-aggregated plots for Metrics
