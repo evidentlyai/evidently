@@ -10,6 +10,8 @@ In Evidently 0.3.0, the old API was removed from the code base.
 
 # If your code breaks
 
+If you get an error `no module named 'evidently.dashboard'`, you might be running the code that uses old API, with a newer Evidently version.
+
 To make sure your existing code that uses `Dashboards` or `json profiles` works, **fix the Evidently version to 0.2.8 or earlier**.
 
 For example, when installing Evidently, specify:
