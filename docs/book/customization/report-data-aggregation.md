@@ -37,9 +37,9 @@ Here is how the Scatter Plot in this Report will look:
 
 # Non-aggregated plots in Reports 
 
-If you want to see non-aggregated plots, you can set the `agg_data` parameter as `true`.
+If you want to see non-aggregated plots, you can set the `agg_data` parameter as `false`.
 
-You can set it on the level of the complete Report by passing the corresponding option. 
+You can set it on the Report level by passing the corresponding option. 
 
 ```python
 report = Report(
