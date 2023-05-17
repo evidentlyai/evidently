@@ -35,7 +35,7 @@ Here is how the Scatter Plot in this Report will look:
 **This does not affect Test Suites.** All visualizations in Test Suites are already aggregated.
 {% endhint %}
 
-# Aggregation on the Report level
+# Non-aggregated plots in Reports 
 
 If you want to see non-aggregated plots, you can set the `agg_data` parameter as `true`.
 
@@ -53,6 +53,8 @@ report.run(reference_data=housing_ref, current_data=housing_cur)
 report
 ```
 
+All plots in the report will look
+
 Here is how the Scatter Plot in this Report will look:
 
 ![RegressionPredictedVsActualScatter()](../.gitbook/assets/reports/metric_regression_predvsactual_scatter_non_agg-min.png)
@@ -61,7 +63,7 @@ Here is how the Scatter Plot in this Report will look:
 **Consider the data size.** We recommend setting this option for smaller datasets or when you apply sampling. With non-aggregated plots, the HTML will contain all the data on individual datapoints. They make take significant time to load and be large in size. 
 {% endhint %}
 
-# Aggregation on the Metric level
+# Non-aggregated plots for Metrics
 
 If you want to generate non-aggregated plots only for some visualizations. you can pass the `agg_data` option to the chosen Metrics:
 
