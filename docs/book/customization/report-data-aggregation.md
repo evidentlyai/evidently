@@ -63,7 +63,7 @@ All plots in the Report will be non-aggregated. Here is how the Scatter Plot in 
 
 # Non-aggregated plots for Metrics
 
-If you want to generate non-aggregated plots only for some visualizations. you can pass the `agg_data` option to the chosen Metrics:
+If you want to generate non-aggregated plots only for some visualizations, you can pass the `agg_data` option to the chosen Metrics:
 
 ```python
 report = Report(
