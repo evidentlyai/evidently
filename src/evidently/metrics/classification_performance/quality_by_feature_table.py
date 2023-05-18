@@ -83,7 +83,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         return ()
 
     def calculate(self, data: InputData) -> ClassificationQualityByFeatureTableResults:
-        if self.get_options().agg_data is None or self.get_options().agg_data:
+        if not self.get_options().render_options.raw_data:
             return ClassificationQualityByFeatureTableResults(
                 current=StatsByFeature(),
                 reference=None,
@@ -164,7 +164,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
-        if obj.get_options().agg_data is None or obj.get_options().agg_data:
+        if not obj.get_options().render_options.raw_data:
             return []
         result = obj.get_result()
         current_data = result.current.plot_data

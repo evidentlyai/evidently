@@ -48,7 +48,7 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
         agg_data = True
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             agg_data = False
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         current_error = curr_df[prediction_name] - curr_df[target_name]

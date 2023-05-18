@@ -311,7 +311,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
             column_type = data.data_definition.get_column(self.column.name).column_type
         datetime_column = data.data_definition.get_datetime_column()
         options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             agg_data = False
         else:
             agg_data = True
@@ -357,7 +357,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
 
         # fig_json = fig.to_plotly_json()
         if result.scatter is not None:
-            if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+            if obj.get_options().render_options.raw_data:
                 scatter_fig = plot_scatter_for_data_drift(
                     curr_y=result.scatter.scatter[result.column_name],
                     curr_x=result.scatter.scatter[result.scatter.x_name],

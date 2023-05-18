@@ -91,7 +91,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
                 )
             )
             ref_mean_err_per_group = self._calculate_underperformance(ref_error, quantile_5, quantile_95)
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             curr_scatter = self._get_data_for_scatter(curr_df, target_name, prediction_name)
             if ref_df is not None:
                 ref_scatter = self._get_data_for_scatter(ref_df, target_name, prediction_name)
@@ -194,7 +194,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         result = obj.get_result()
         curr_mean_err_per_group = result.current.mean_err_per_group
         ref_mean_err_per_group = result.reference.mean_err_per_group if result.reference is not None else None
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+        if obj.get_options().render_options.raw_data:
             curr_scatter = result.current_raw.scatter
             ref_scatter = result.reference_raw.scatter if result.reference_raw is not None else None
             fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter, color_options=self.color_options)

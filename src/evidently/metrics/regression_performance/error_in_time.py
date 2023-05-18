@@ -45,7 +45,7 @@ class RegressionErrorPlot(Metric[ColumnScatterResult]):
             ref_error = ref_df[prediction_name] - ref_df[target_name]
         current_scatter = {}
         reference_scatter: Optional[Union[dict, ColumnScatter]] = None
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             current_scatter["Predicted - Actual"] = curr_error
             if datetime_column_name is not None:
                 current_scatter["x"] = curr_df[datetime_column_name]
@@ -110,7 +110,7 @@ class RegressionErrorPlotRenderer(MetricRenderer):
         reference = None
         if result.reference is not None:
             reference = result.reference
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+        if obj.get_options().render_options.raw_data:
             fig = plot_line_in_time(
                 curr=current,
                 ref=reference,

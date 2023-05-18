@@ -63,7 +63,7 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
 
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             current_scatter = PredActualScatter(predicted=curr_df[prediction_name], actual=curr_df[target_name])
             reference_scatter: Optional[PredActualScatter] = None
             if ref_df is not None:
@@ -124,6 +124,6 @@ class RegressionPredictedVsActualScatterRenderer(MetricRenderer):
 
     def render_html(self, obj: RegressionPredictedVsActualScatter) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+        if obj.get_options().render_options.raw_data:
             return self.render_raw(result.current_raw, result.reference_raw)
         return self.render_agg(result.current_agg, result.reference_agg)

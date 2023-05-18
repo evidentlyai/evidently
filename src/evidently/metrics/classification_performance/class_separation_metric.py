@@ -85,7 +85,7 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
                 )
             reference_plot = ref_predictions.prediction_probas.copy()
             reference_plot[target_name] = data.reference_data[target_name]
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             return ClassificationClassSeparationPlotResults(
                 current=column_scatter_from_df(current_plot, True),
                 reference=column_scatter_from_df(reference_plot, True),
@@ -107,9 +107,7 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
         current_plot = obj.get_result().current
         reference_plot = obj.get_result().reference
         target_name = obj.get_result().target_name
-        agg_data = True
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
-            agg_data = False
+        agg_data = not obj.get_options().render_options.raw_data
         if current_plot is None:
             return []
         if not agg_data:

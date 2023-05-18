@@ -88,7 +88,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     def calculate(self, data: InputData) -> TextDescriptorsDriftMetricResults:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             agg_data = False
         else:
             agg_data = True
@@ -202,9 +202,7 @@ class DataDriftTableRenderer(MetricRenderer):
         # set params data
         params_data = []
 
-        agg_data = True
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
-            agg_data = False
+        agg_data = not obj.get_options().render_options.raw_data
 
         # sort columns by drift score
         columns = sorted(

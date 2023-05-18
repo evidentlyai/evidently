@@ -104,7 +104,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         return ()
 
     def calculate(self, data: InputData) -> RegressionErrorBiasTableResults:
-        if self.get_options().agg_data is None or self.get_options().agg_data:
+        if not self.get_options().render_options.raw_data:
             return RegressionErrorBiasTableResults(
                 top_error=-1,
                 current_plot_data=pd.DataFrame(),
@@ -242,7 +242,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 @default_renderer(wrap_type=RegressionErrorBiasTable)
 class RegressionErrorBiasTableRenderer(MetricRenderer):
     def render_html(self, obj: RegressionErrorBiasTable) -> List[BaseWidgetInfo]:
-        if obj.get_options().agg_data is None or obj.get_options().agg_data:
+        if not obj.get_options().render_options.raw_data:
             return []
         result = obj.get_result()
         current_data = result.current_plot_data

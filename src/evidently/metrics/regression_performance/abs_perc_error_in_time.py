@@ -47,7 +47,7 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
             )
             ref_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
         reference_scatter: Optional[Union[ColumnScatter, dict]] = None
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             current_scatter = {}
             current_scatter["Absolute Percentage Error"] = curr_df["Absolute Percentage Error"]
             if datetime_column_name is not None:
@@ -113,7 +113,7 @@ class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
         current = result.current
         reference = result.reference
 
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+        if obj.get_options().render_options.raw_data:
             fig = plot_line_in_time(
                 curr=current,
                 ref=reference,

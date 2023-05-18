@@ -78,7 +78,7 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
         ref_df = data.reference_data.copy()
         curr_df = self._make_df_for_plot(curr_df, self.column_name, datetime_column_name)
         ref_df = self._make_df_for_plot(ref_df, self.column_name, datetime_column_name)
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             return ColumnValuePlotResults(
                 column_name=self.column_name,
                 datetime_column_name=datetime_column_name,
@@ -236,7 +236,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
 
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+        if obj.get_options().render_options.raw_data:
             return self.render_raw(result.current, result.reference, result.column_name, result.datetime_column_name)
         return self.render_agg(
             result.current, result.reference, result.column_name, result.datetime_column_name, result.prefix

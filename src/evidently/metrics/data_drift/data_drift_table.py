@@ -81,7 +81,7 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
 
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             agg_data = False
         else:
             agg_data = True
@@ -231,9 +231,7 @@ class DataDriftTableRenderer(MetricRenderer):
         color_options = self.color_options
         target_column = results.dataset_columns.utility_columns.target
         prediction_column = results.dataset_columns.utility_columns.prediction
-        agg_data = True
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
-            agg_data = False
+        agg_data = not obj.get_options().render_options.raw_data
 
         # set params data
         params_data = []

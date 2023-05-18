@@ -85,7 +85,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
         return ()
 
     def calculate(self, data: InputData) -> TargetByFeaturesTableResults:
-        if self.get_options().agg_data is None or self.get_options().agg_data:
+        if not self.get_options().render_options.raw_data:
             return TargetByFeaturesTableResults(
                 current=StatsByFeature(),
                 reference=None,
@@ -205,7 +205,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
 @default_renderer(wrap_type=TargetByFeaturesTable)
 class TargetByFeaturesTableRenderer(MetricRenderer):
     def render_html(self, obj: TargetByFeaturesTable) -> List[BaseWidgetInfo]:
-        if obj.get_options().agg_data is None or obj.get_options().agg_data:
+        if not obj.get_options().render_options.raw_data:
             return []
         result = obj.get_result()
         current_data = result.current.plot_data

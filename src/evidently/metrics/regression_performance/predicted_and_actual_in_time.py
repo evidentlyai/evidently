@@ -44,7 +44,7 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
         reference_scatter: Optional[Union[dict, ColumnScatter]] = None
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             current_scatter = {}
             current_scatter["Predicted"] = curr_df[prediction_name]
             current_scatter["Actual"] = curr_df[target_name]
@@ -150,7 +150,7 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
         result = obj.get_result()
         current = result.current
         reference = result.reference
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
+        if obj.get_options().render_options.raw_data:
             fig = plot_pred_actual_time(
                 curr=current,
                 ref=reference,

@@ -6,6 +6,7 @@ from evidently.metric_preset import DataDriftPreset
 from evidently.metric_preset import DataQualityPreset
 from evidently.metric_preset import RegressionPreset
 from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
@@ -38,7 +39,7 @@ def test_metric_presets(preset: MetricPreset):
         }
     )
     data_mapping = ColumnMapping()
-    report = Report(metrics=[preset], options=Options(agg_data=False))
+    report = Report(metrics=[preset], options=Options(render=RenderOptions(raw_data=True)))
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
     assert report.show()
     assert report.json()

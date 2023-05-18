@@ -234,7 +234,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
             target_type, target_current, target_reference = data.get_data(target_column.column_name)
             target_data = (target_column.column_name, target_type, target_current, target_reference)
         agg_data = True
-        if self.get_options().agg_data is not None and self.get_options().agg_data is False:
+        if self.get_options().render_options.raw_data:
             agg_data = False
         bins_for_hist, data_in_time, data_by_target = plot_data(
             (self.column.display_name, column_type, column_current_data, column_reference_data),
@@ -356,9 +356,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
-        agg_data = True
-        if obj.get_options().agg_data is not None and obj.get_options().agg_data is False:
-            agg_data = False
+        agg_data = not obj.get_options().render_options.raw_data
         # main plot
         bins_for_hist: Histogram = metric_result.plot_data.bins_for_hist
         if bins_for_hist is not None:
