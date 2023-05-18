@@ -24,6 +24,7 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import get_gaussian_kde
+from evidently.utils.visualizations import is_possible_contour
 from evidently.utils.visualizations import plot_top_error_contours
 
 
@@ -44,6 +45,7 @@ class RegressionTopErrorMetricResults(MetricResult):
 
     current: Union[TopData, AggTopData]
     reference: Optional[Union[TopData, AggTopData]]
+    agg_data: bool
 
     current_raw, current_agg = raw_agg_properties("current", TopData, AggTopData, False)
     reference_raw, reference_agg = raw_agg_properties("reference", TopData, AggTopData, True)
@@ -91,14 +93,19 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
                 )
             )
             ref_mean_err_per_group = self._calculate_underperformance(ref_error, quantile_5, quantile_95)
-        if self.get_options().render_options.raw_data:
+        if self.get_options().render_options.raw_data or not self._is_possible_contour(
+            curr_df, ref_df, prediction_name, target_name
+        ):
+            curr_df.drop_duplicates(subset=[prediction_name, target_name], inplace=True)
             curr_scatter = self._get_data_for_scatter(curr_df, target_name, prediction_name)
             if ref_df is not None:
+                ref_df.drop_duplicates(subset=[prediction_name, target_name], inplace=True)
                 ref_scatter = self._get_data_for_scatter(ref_df, target_name, prediction_name)
                 reference = TopData(mean_err_per_group=ref_mean_err_per_group, scatter=ref_scatter)
             return RegressionTopErrorMetricResults(
                 current=TopData(mean_err_per_group=curr_mean_err_per_group, scatter=curr_scatter),
                 reference=reference,
+                agg_data=False,
             )
         curr_contour = self._get_data_for_сontour(curr_df, target_name, prediction_name)
         if ref_df is not None:
@@ -107,6 +114,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         return RegressionTopErrorMetricResults(
             current=AggTopData(mean_err_per_group=curr_mean_err_per_group, contour=curr_contour),
             reference=reference,
+            agg_data=True,
         )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
@@ -140,6 +148,44 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         )
 
         return RegressionScatter(underestimation=underestimation, majority=majority, overestimation=overestimation)
+
+    @staticmethod
+    def _is_possible_contour(
+        curr_df: pd.DataFrame, ref_df: Optional[pd.DataFrame], prediction_name: str, target_name: str
+    ):
+        curr_condition = (
+            is_possible_contour(
+                curr_df.loc[curr_df["Error bias"] == "Underestimation", prediction_name],
+                curr_df.loc[curr_df["Error bias"] == "Underestimation", target_name],
+            )
+            and is_possible_contour(
+                curr_df.loc[curr_df["Error bias"] == "Majority", prediction_name],
+                curr_df.loc[curr_df["Error bias"] == "Majority", target_name],
+            )
+            and is_possible_contour(
+                curr_df.loc[curr_df["Error bias"] == "Overestimation", prediction_name],
+                curr_df.loc[curr_df["Error bias"] == "Overestimation", target_name],
+            )
+        )
+        ref_condition = True
+        if ref_df is not None:
+            ref_condition = (
+                is_possible_contour(
+                    ref_df.loc[ref_df["Error bias"] == "Underestimation", prediction_name],
+                    ref_df.loc[ref_df["Error bias"] == "Underestimation", target_name],
+                )
+                and is_possible_contour(
+                    ref_df.loc[ref_df["Error bias"] == "Majority", prediction_name],
+                    ref_df.loc[ref_df["Error bias"] == "Majority", target_name],
+                )
+                and is_possible_contour(
+                    ref_df.loc[ref_df["Error bias"] == "Overestimation", prediction_name],
+                    ref_df.loc[ref_df["Error bias"] == "Overestimation", target_name],
+                )
+            )
+        if curr_condition and ref_condition:
+            return True
+        return False
 
     @staticmethod
     def _get_data_for_сontour(df: pd.DataFrame, target_name: str, prediction_name: str) -> dict:
@@ -194,7 +240,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         result = obj.get_result()
         curr_mean_err_per_group = result.current.mean_err_per_group
         ref_mean_err_per_group = result.reference.mean_err_per_group if result.reference is not None else None
-        if obj.get_options().render_options.raw_data:
+        if not result.agg_data:
             curr_scatter = result.current_raw.scatter
             ref_scatter = result.reference_raw.scatter if result.reference_raw is not None else None
             fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter, color_options=self.color_options)

@@ -85,7 +85,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
     def calculate(self, data: InputData) -> ClassificationQualityByFeatureTableResults:
         if not self.get_options().render_options.raw_data:
             return ClassificationQualityByFeatureTableResults(
-                current=StatsByFeature(),
+                current=StatsByFeature(plot_data=pd.DataFrame()),
                 reference=None,
                 target_name="",
                 columns=[],

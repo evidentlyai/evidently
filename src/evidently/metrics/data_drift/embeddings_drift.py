@@ -72,8 +72,8 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
         ref_sample = data.reference_data[emb_list].sample(ref_sample_size, random_state=24)
         curr_sample = data.current_data[emb_list].sample(curr_sample_size, random_state=24)
         data_2d = umap.UMAP().fit_transform(pd.concat([ref_sample, curr_sample]))
-        reference = get_gaussian_kde(data_2d[:ref_sample_size, 0], data_2d[:ref_sample_size, 1])
-        current = get_gaussian_kde(data_2d[ref_sample_size:, 0], data_2d[ref_sample_size:, 1])
+        reference, _, _ = get_gaussian_kde(data_2d[:ref_sample_size, 0], data_2d[:ref_sample_size, 1])
+        current, _, _ = get_gaussian_kde(data_2d[ref_sample_size:, 0], data_2d[ref_sample_size:, 1])
 
         return EmbeddingsDriftMetricResults(
             embeddings_name=self.embeddings_name,

@@ -87,7 +87,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
     def calculate(self, data: InputData) -> TargetByFeaturesTableResults:
         if not self.get_options().render_options.raw_data:
             return TargetByFeaturesTableResults(
-                current=StatsByFeature(),
+                current=StatsByFeature(plot_data=pd.DataFrame()),
                 reference=None,
                 target_name=None,
                 columns=[],

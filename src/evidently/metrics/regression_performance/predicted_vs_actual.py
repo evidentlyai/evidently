@@ -21,6 +21,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import get_gaussian_kde
+from evidently.utils.visualizations import is_possible_contour
 from evidently.utils.visualizations import plot_contour
 from evidently.utils.visualizations import plot_scatter
 
@@ -40,6 +41,7 @@ class RegressionPredictedVsActualScatterResults(MetricResult):
 
     current: Union[PredActualScatter, AggPredActualScatter]
     reference: Optional[Union[PredActualScatter, AggPredActualScatter]]
+    agg_data: bool
 
     current_raw, current_agg = raw_agg_properties("current", PredActualScatter, AggPredActualScatter, False)
     reference_raw, reference_agg = raw_agg_properties("reference", PredActualScatter, AggPredActualScatter, True)
@@ -59,22 +61,30 @@ class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatt
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
-        curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
+        curr_df = self._make_df_for_plot(curr_df.copy(), target_name, prediction_name, None)
         if ref_df is not None:
-            ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
+            ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, None)
 
-        if self.get_options().render_options.raw_data:
+        if (
+            self.get_options().render_options.raw_data
+            or not is_possible_contour(curr_df[prediction_name], curr_df[target_name])
+            or (ref_df is not None and not is_possible_contour(ref_df[prediction_name], ref_df[target_name]))
+        ):
+            curr_df.drop_duplicates(subset=[prediction_name, target_name], inplace=True)
             current_scatter = PredActualScatter(predicted=curr_df[prediction_name], actual=curr_df[target_name])
             reference_scatter: Optional[PredActualScatter] = None
             if ref_df is not None:
+                ref_df.drop_duplicates(subset=[prediction_name, target_name], inplace=True)
                 reference_scatter = PredActualScatter(predicted=ref_df[prediction_name], actual=ref_df[target_name])
-            return RegressionPredictedVsActualScatterResults(current=current_scatter, reference=reference_scatter)
+            return RegressionPredictedVsActualScatterResults(
+                current=current_scatter, reference=reference_scatter, agg_data=False
+            )
 
         current_agg = AggPredActualScatter(data=get_gaussian_kde(curr_df[prediction_name], curr_df[target_name]))
         reference_agg = AggPredActualScatter(data=None)
         if ref_df is not None:
             reference_agg = AggPredActualScatter(data=get_gaussian_kde(ref_df[prediction_name], ref_df[target_name]))
-        return RegressionPredictedVsActualScatterResults(current=current_agg, reference=reference_agg)
+        return RegressionPredictedVsActualScatterResults(current=current_agg, reference=reference_agg, agg_data=True)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -124,6 +134,6 @@ class RegressionPredictedVsActualScatterRenderer(MetricRenderer):
 
     def render_html(self, obj: RegressionPredictedVsActualScatter) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        if obj.get_options().render_options.raw_data:
+        if not result.agg_data:
             return self.render_raw(result.current_raw, result.reference_raw)
         return self.render_agg(result.current_agg, result.reference_agg)

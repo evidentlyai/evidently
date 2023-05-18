@@ -454,7 +454,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     self.color_options,
                 )
             if column_type == "num" and target_type == "num":
-                if not agg_data:
+                if not agg_data or isinstance(metric_result.plot_data.data_by_target.data_for_plots["current"], dict):
                     feature_by_target_figure = plot_num_num_rel(
                         metric_result.plot_data.data_by_target.data_for_plots["current"],
                         ref_data_by_target,

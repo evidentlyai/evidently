@@ -10,6 +10,7 @@ from pandas import IntervalIndex
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
+from scipy.linalg.basic import LinAlgError
 
 from evidently.metric_results import ContourData
 from evidently.metric_results import Distribution
@@ -770,6 +771,15 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
         fig.add_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig
+
+
+def is_possible_contour(m1, m2) -> bool:
+    try:
+        values = np.vstack([m1, m2])
+        stats.gaussian_kde(values)
+        return True
+    except LinAlgError:
+        return False
 
 
 def get_gaussian_kde(m1, m2):
