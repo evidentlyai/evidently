@@ -8,6 +8,7 @@ from typing import Union
 from pydantic import BaseModel
 
 from evidently.options import ColorOptions
+from evidently.options.agg_data import RenderOptions
 from evidently.options.option import Option
 
 TypeParam = TypeVar("TypeParam", bound=Option)
@@ -15,7 +16,7 @@ TypeParam = TypeVar("TypeParam", bound=Option)
 
 class Options(BaseModel):
     color: Optional[ColorOptions] = None
-    agg_data: Optional[bool] = None
+    render: Optional[RenderOptions] = None
     custom: Dict[Type[Option], Option] = {}
 
     @property
@@ -23,8 +24,8 @@ class Options(BaseModel):
         return self.color or ColorOptions()
 
     @property
-    def agg_data_option(self) -> bool:
-        return self.agg_data or False
+    def render_options(self) -> RenderOptions:
+        return self.render or RenderOptions()
 
     def get(self, option_type: Type[TypeParam]) -> TypeParam:
         if option_type in _option_cls_mapping:
@@ -65,7 +66,9 @@ class Options(BaseModel):
         for name in self.__fields__:
             if name == "custom":
                 continue
-            override = getattr(other, name) or getattr(self, name)
+            override = getattr(other, name)
+            if override is None:
+                override = getattr(self, name)
             setattr(res, name, override)
 
         return res

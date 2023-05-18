@@ -21,6 +21,7 @@ from evidently.features.text_length_feature import TextLength
 from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -45,7 +46,9 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         self,
         columns: Optional[List[str]] = None,
         descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
+        options: AnyOptions = None,
     ):
+        super().__init__(options=options)
         self.columns = columns
         self.text_features_gen = None
         self.descriptors = descriptors
@@ -80,6 +83,13 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         return ()
 
     def calculate(self, data: InputData) -> ClassificationQualityByFeatureTableResults:
+        if not self.get_options().render_options.raw_data:
+            return ClassificationQualityByFeatureTableResults(
+                current=StatsByFeature(plot_data=pd.DataFrame()),
+                reference=None,
+                target_name="",
+                columns=[],
+            )
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -154,6 +164,8 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
+        if not obj.get_options().render_options.raw_data:
+            return []
         result = obj.get_result()
         current_data = result.current.plot_data
         reference_data = result.reference.plot_data if result.reference is not None else None

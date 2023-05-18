@@ -12,10 +12,12 @@ from evidently.metric_results import ColumnScatter
 from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import df_from_column_scatter
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_class_separation_plot_data
+from evidently.renderers.html_widgets import get_class_separation_plot_data_agg
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
@@ -32,7 +34,34 @@ class ClassificationClassSeparationPlotResults(MetricResult):
     reference: Optional[ColumnScatter] = None
 
 
+def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[str]):
+    res = {}
+    for name in prediction_names:
+        df_name = df.copy()
+        df_name[target_name] = (df_name[target_name] == name).astype(int)
+        df_for_plot = df_name.groupby(target_name)[name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
+        df_for_plot.columns = [target_name, "q", name]
+        res_df = pd.DataFrame()
+        values = df_for_plot[target_name].unique()
+
+        def _quantiles(qdf, value):
+            return qdf[df_for_plot.q == value].set_index(target_name).loc[values, name].tolist()
+
+        res_df["mins"] = _quantiles(df_for_plot, 0)
+        res_df["lowers"] = _quantiles(df_for_plot, 0.25)
+        res_df["means"] = _quantiles(df_for_plot, 0.5)
+        res_df["uppers"] = _quantiles(df_for_plot, 0.75)
+        res_df["maxs"] = _quantiles(df_for_plot, 1)
+        res_df["values"] = values
+        res_df["values"] = res_df["values"].map({1: name, 0: "others"})
+        res[name] = res_df
+    return res
+
+
 class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
+    def __init__(self, options: AnyOptions = None):
+        super().__init__(options=options)
+
     def calculate(self, data: InputData) -> ClassificationClassSeparationPlotResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
@@ -45,6 +74,7 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
                 "ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions"
             )
         current_plot = curr_predictions.prediction_probas.copy()
+        prediction_names = current_plot.columns
         current_plot[target_name] = data.current_data[target_name]
         reference_plot = None
         if data.reference_data is not None:
@@ -55,9 +85,18 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
                 )
             reference_plot = ref_predictions.prediction_probas.copy()
             reference_plot[target_name] = data.reference_data[target_name]
+        if self.get_options().render_options.raw_data:
+            return ClassificationClassSeparationPlotResults(
+                current=column_scatter_from_df(current_plot, True),
+                reference=column_scatter_from_df(reference_plot, True),
+                target_name=target_name,
+            )
+        current_plot = prepare_box_data(current_plot, target_name, prediction_names)
+        if reference_plot is not None:
+            reference_plot = prepare_box_data(reference_plot, target_name, prediction_names)
         return ClassificationClassSeparationPlotResults(
-            current=column_scatter_from_df(current_plot, True),
-            reference=column_scatter_from_df(reference_plot, True),
+            current=current_plot,
+            reference=reference_plot,
             target_name=target_name,
         )
 
@@ -68,22 +107,30 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
         current_plot = obj.get_result().current
         reference_plot = obj.get_result().reference
         target_name = obj.get_result().target_name
+        agg_data = not obj.get_options().render_options.raw_data
         if current_plot is None:
             return []
-        # todo changing data here, consider doing this in calculation
-        current_df = df_from_column_scatter(current_plot)
-        current_df.replace([np.inf, -np.inf], np.nan, inplace=True)
-        reference_df = None
-        if reference_plot is not None:
-            reference_df = df_from_column_scatter(reference_plot)
-            reference_df.replace([np.inf, -np.inf], np.nan, inplace=True)
-
-        tab_data = get_class_separation_plot_data(
-            current_df,
-            reference_df,
-            target_name,
-            color_options=self.color_options,
-        )
+        if not agg_data:
+            # todo changing data here, consider doing this in calculation
+            current_df = df_from_column_scatter(current_plot)
+            current_df.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_df = None
+            if reference_plot is not None:
+                reference_df = df_from_column_scatter(reference_plot)
+                reference_df.replace([np.inf, -np.inf], np.nan, inplace=True)
+            tab_data = get_class_separation_plot_data(
+                current_df,
+                reference_df,
+                target_name,
+                color_options=self.color_options,
+            )
+        else:
+            tab_data = get_class_separation_plot_data_agg(
+                current_plot,
+                reference_plot,
+                target_name,
+                color_options=self.color_options,
+            )
         tabs = [TabData(name, widget) for name, widget in tab_data]
         return [
             header_text(label="Class Separation Quality"),

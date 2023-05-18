@@ -6,16 +6,21 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pandas import IntervalIndex
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
+from scipy.linalg.basic import LinAlgError
 
+from evidently.metric_results import ContourData
 from evidently.metric_results import Distribution
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
 from evidently.metric_results import ScatterData
 from evidently.options.color_scheme import ColorOptions
+
+OPTIMAL_POINTS = 150
 
 
 def plot_distr(
@@ -768,23 +773,34 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     return fig
 
 
-def get_gaussian_kde(m1, m2):
-    def border(x):
-        return int(max(2, abs(x) * 0.7))
+def is_possible_contour(m1, m2) -> bool:
+    try:
+        values = np.vstack([m1, m2])
+        stats.gaussian_kde(values)
+        return True
+    except LinAlgError:
+        return False
 
+
+def get_gaussian_kde(m1, m2):
     xmin = m1.min()
     xmax = m1.max()
     ymin = m2.min()
     ymax = m2.max()
-    X, Y = np.mgrid[xmin - border(xmin) : xmax + border(xmax) : 30j, ymin - border(ymin) : ymax + border(ymax) : 30j]
+    xdelta = 2 * (xmax - xmin) / 10
+    ydelta = 2 * (ymax - ymin) / 10
+    # X, Y = np.mgrid[xmin - border(xmin) : xmax + border(xmax) : 30j, ymin - border(ymin) : ymax + border(ymax) : 30j]
+    X, Y = np.mgrid[xmin - xdelta : xmax + xdelta : 30j, ymin - ydelta : ymax + ydelta : 30j]
+    x = np.linspace(xmin - xdelta, xmax + xdelta, num=30)
+    y = np.linspace(ymin - ydelta, ymax + ydelta, num=30)
     positions = np.vstack([X.ravel(), Y.ravel()])
     values = np.vstack([m1, m2])
     kernel = stats.gaussian_kde(values)
     Z = np.reshape(kernel(positions).T, X.shape)
-    return Z
+    return Z, list(x), list(y)
 
 
-def plot_contour(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = "", ytitle: str = ""):
+def plot_contour_single(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = "", ytitle: str = ""):
     color_options = ColorOptions()
     if z2 is not None:
         cols = 2
@@ -816,4 +832,280 @@ def plot_contour(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = "", yti
         fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xtitle, row=1, col=2)
     fig.update_layout(yaxis_title=ytitle)
+    return fig
+
+
+def plot_contour(curr_contour: ContourData, ref_contour: Optional[ContourData], xtitle: str = "", ytitle: str = ""):
+    color_options = ColorOptions()
+    if ref_contour is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    z1, y1, x1 = curr_contour
+    trace = go.Contour(
+        z=z1,
+        x=x1,
+        y=y1,
+        line_width=1,
+        name="current",
+        showscale=False,
+        showlegend=True,
+        colorscale=[[0, "white"], [1, color_options.get_current_data_color()]],
+    )
+    fig.add_trace(trace, 1, 1)
+    fig.update_xaxes(title_text=xtitle, row=1, col=1)
+
+    if ref_contour is not None:
+        z2, y2, x2 = ref_contour
+        trace = go.Contour(
+            z=z2,
+            x=x2,
+            y=y2,
+            line_width=1,
+            name="reference",
+            showscale=False,
+            showlegend=True,
+            colorscale=[[0, "white"], [1, color_options.get_reference_data_color()]],
+        )
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xtitle, row=1, col=2)
+    fig.update_layout(yaxis_title=ytitle)
+    return fig
+
+
+def plot_top_error_contours(
+    curr_contour: Dict[str, ContourData],
+    ref_contour: Optional[Dict[str, ContourData]],
+    xtitle: str = "",
+    ytitle: str = "",
+):
+    color_options = ColorOptions()
+    if ref_contour is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    for label, color in zip(
+        ["underestimation", "majority", "overestimation"],
+        [color_options.underestimation_color, color_options.majority_color, color_options.overestimation_color],
+    ):
+        z, y, x = curr_contour[label]
+        trace = go.Contour(
+            z=z,
+            x=x,
+            y=y,
+            line_width=1,
+            name=label,
+            showscale=False,
+            legendgroup=label,
+            showlegend=True,
+            contours_coloring="lines",
+            colorscale=[[0, color], [1, color]],
+        )
+        fig.add_trace(trace, 1, 1)
+        fig.update_xaxes(title_text=xtitle, row=1, col=1)
+
+        if ref_contour is not None:
+            z, y, x = ref_contour[label]
+            trace = go.Contour(
+                z=z,
+                x=x,
+                y=y,
+                line_width=1,
+                name=label,
+                showscale=False,
+                legendgroup=label,
+                showlegend=False,
+                contours_coloring="lines",
+                colorscale=[[0, color], [1, color]],
+            )
+            fig.add_trace(trace, 1, 2)
+            fig.update_xaxes(title_text=xtitle, row=1, col=2)
+    fig.update_layout(yaxis_title=ytitle)
+    return fig
+
+
+def choose_agg_period(current_date_column: pd.Series, reference_date_column: Optional[pd.Series]) -> Tuple[str, str]:
+    prefix_dict = {
+        "A": "year",
+        "Q": "quarter",
+        "M": "month",
+        "W": "week",
+        "D": "day",
+        "H": "hour",
+    }
+    datetime_feature = current_date_column
+    if reference_date_column is not None:
+        datetime_feature = datetime_feature.append(reference_date_column)
+    days = (datetime_feature.max() - datetime_feature.min()).days
+    time_points = pd.Series(
+        index=["A", "Q", "M", "W", "D", "H"],
+        data=[
+            abs(OPTIMAL_POINTS - days / 365),
+            abs(OPTIMAL_POINTS - days / 90),
+            abs(OPTIMAL_POINTS - days / 30),
+            abs(OPTIMAL_POINTS - days / 7),
+            abs(OPTIMAL_POINTS - days),
+            abs(OPTIMAL_POINTS - days * 24),
+        ],
+    )
+    period_prefix = prefix_dict[time_points.idxmin()]
+    return period_prefix, str(time_points.idxmin())
+
+
+def get_plot_df(df, datetime_name, column_name, freq):
+    plot_df = df.copy()
+    plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
+    plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
+    plot_df["per"] = plot_df["per"].dt.to_timestamp()
+    return plot_df
+
+
+def prepare_df_for_time_index_plot(
+    df: pd.DataFrame,
+    column_name: str,
+    datetime_name: Optional[str],
+    prefix: Optional[str] = None,
+    freq: Optional[str] = None,
+    bins: Optional[np.ndarray] = None,
+) -> Tuple[pd.DataFrame, Optional[str]]:
+    if datetime_name is not None:
+        if prefix is None and freq is None:
+            prefix, freq = choose_agg_period(df[datetime_name], None)
+        plot_df = df.copy()
+        plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
+        plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
+        plot_df["per"] = plot_df["per"].dt.to_timestamp()
+        return plot_df, prefix
+    plot_df = df[column_name].reset_index().sort_values("index")
+    plot_df["per"] = pd.cut(plot_df["index"], OPTIMAL_POINTS if bins is None else bins, labels=False)
+    plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
+    return plot_df, None
+
+
+def get_traces(df, color, error_band_opacity, name, showlegend):
+    error_band_trace = go.Scatter(
+        x=list(df["per"]) + list(df["per"][::-1]),  # x, then x reversed
+        y=list(df["mean"] + df["std"]) + list(df["mean"] - df["std"])[::-1],  # upper, then lower reversed
+        fill="toself",
+        fillcolor=color,
+        opacity=error_band_opacity,
+        line=dict(color=color),
+        hoverinfo="skip",
+        showlegend=False,
+    )
+    line_trace = go.Scatter(
+        x=df["per"],
+        y=df["mean"],
+        line=dict(color=color),
+        mode="lines",
+        name=name,
+        legendgroup=name,
+        showlegend=showlegend,
+    )
+    return error_band_trace, line_trace
+
+
+def collect_traces(
+    data: Dict, line: Optional[float], std: Optional[float], color_options: ColorOptions, showlegend: bool
+):
+    name = list(data.keys())[0]
+    traces = []
+    if line is not None:
+        green_line_trace = go.Scatter(
+            x=data[name]["per"],
+            y=[line] * len(data[name]["per"]),
+            mode="lines",
+            marker_color=color_options.zero_line_color,
+            showlegend=False,
+        )
+        traces.append(green_line_trace)
+    if len(data.keys()) == 1:
+        error_band_trace, line_trace = get_traces(
+            data[name], color_options.get_current_data_color(), 0.2, name, showlegend
+        )
+        traces += [error_band_trace, line_trace]
+        return traces
+    if {"Predicted", "Actual"} == set(data.keys()):
+        error_band_trace_pred, line_trace_pred = get_traces(
+            data["Predicted"],
+            color_options.get_current_data_color(),
+            0.2,
+            "Predicted",
+            showlegend,
+        )
+        error_band_trace_act, line_trace_act = get_traces(
+            data["Actual"],
+            color_options.get_reference_data_color(),
+            0.3,
+            "Actual",
+            showlegend,
+        )
+        traces += [error_band_trace_act, error_band_trace_pred, line_trace_act, line_trace_pred]
+        return traces
+    assert {"reference", "current"} == set(data.keys())
+    error_band_trace_pred, line_trace_pred = get_traces(
+        data["current"],
+        color_options.get_current_data_color(),
+        0.2,
+        "current",
+        showlegend,
+    )
+    error_band_trace_act, line_trace_act = get_traces(
+        data["reference"],
+        color_options.get_reference_data_color(),
+        0.2,
+        "reference",
+        showlegend,
+    )
+    traces += [error_band_trace_act, error_band_trace_pred, line_trace_act, line_trace_pred]
+    return traces
+
+
+def plot_agg_line_data(
+    curr_data: Dict,
+    ref_data: Optional[Dict],
+    line: Optional[float],
+    std: Optional[float],
+    xaxis_name: str,
+    xaxis_name_ref: Optional[str],
+    yaxis_name: str,
+    return_json: bool = True,
+):
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if ref_data is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    curr_traces = collect_traces(curr_data, line, std, color_options, True)
+    for trace in curr_traces:
+        fig.add_trace(trace, 1, 1)
+    if ref_data is not None:
+        ref_traces = collect_traces(ref_data, line, std, color_options, False)
+        for trace in ref_traces:
+            fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name_ref, row=1, col=2)
+    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
+    fig.update_layout(yaxis_title=yaxis_name)
+    if std is not None and line is not None:
+        fig.add_hrect(
+            y0=line - std,
+            y1=line + std,
+            fillcolor=color_options.fill_color,
+            opacity=0.5,
+            layer="below",
+            line_width=0,
+        )
+
+    if return_json:
+        return json.loads(fig.to_json())
     return fig
