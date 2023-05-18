@@ -8,9 +8,9 @@ description: How to change data aggregation in plots.
 
 # Code example
 
-You can refer to an example How-to-notebook on using `agg_data` parameter:
+You can refer to an example How-to-notebook:
 
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_agg_data_param.ipynb" %}
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_aggregated_data_option.ipynb" %}
 
 # Default
 
@@ -37,9 +37,9 @@ Here is how the Scatter Plot in this Report will look:
 
 # Non-aggregated plots for Reports 
 
-If you want to see non-aggregated plots, you can set the `agg_data` parameter as `false`.
+If you want to see non-aggregated plots, you can set the `raw_data` parameter as `True` in the render options.
 
-You can set it on the Report level by passing the corresponding option. 
+You can set it on the Report level: 
 
 ```python
 report = Report(
@@ -47,7 +47,7 @@ report = Report(
       RegressionPredictedVsActualScatter(),
       RegressionPredictedVsActualPlot()
     ],
-    options={"agg_data": False}
+    options={"render": {"raw_data": True}}
   )
 report.run(reference_data=housing_ref, current_data=housing_cur)
 report
@@ -63,13 +63,12 @@ All plots in the Report will be non-aggregated. Here is how the Scatter Plot in 
 
 # Non-aggregated plots for Metrics
 
-If you want to generate non-aggregated plots only for some visualizations, you can pass the `agg_data` option to the chosen Metrics:
+If you want to generate non-aggregated plots only for some visualizations, you can pass the option to the chosen Metrics:
 
 ```python
 report = Report(
     metrics=[
-      RegressionQualityMetric(),
-      RegressionPredictedVsActualScatter(options={"agg_data": False}),
+      RegressionPredictedVsActualScatter(options={"render": {"raw_data": True}}),
       RegressionPredictedVsActualPlot()
     ],
   )
