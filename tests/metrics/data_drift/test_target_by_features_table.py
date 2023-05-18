@@ -5,9 +5,9 @@ import pandas as pd
 import pytest
 
 from evidently.metrics import TargetByFeaturesTable
+from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
-from evidently.options.base import Options
 
 
 @pytest.mark.parametrize(

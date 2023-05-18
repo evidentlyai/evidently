@@ -210,7 +210,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
         return [plotly_figure(title=f"Column '{column_name}' Values", figure=fig, size=WidgetSize.FULL)]
 
     def render_agg(self, current, reference, column_name, datetime_column_name, prefix):
-        data = current | reference
+        data = {**current, **reference}
         xaxis_name = "Index binned"
         if prefix is not None:
             xaxis_name = datetime_column_name + f" ({prefix})"

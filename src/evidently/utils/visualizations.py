@@ -790,6 +790,41 @@ def get_gaussian_kde(m1, m2):
     return Z, list(x), list(y)
 
 
+def plot_contour_single(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = "", ytitle: str = ""):
+    color_options = ColorOptions()
+    if z2 is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Contour(
+        z=z1,
+        line_width=1,
+        name="current",
+        showscale=False,
+        showlegend=True,
+        colorscale=[[0, "white"], [1, color_options.get_current_data_color()]],
+    )
+    fig.add_trace(trace, 1, 1)
+    fig.update_xaxes(title_text=xtitle, row=1, col=1)
+
+    if z2 is not None:
+        trace = go.Contour(
+            z=z2,
+            line_width=1,
+            name="reference",
+            showscale=False,
+            showlegend=True,
+            colorscale=[[0, "white"], [1, color_options.get_reference_data_color()]],
+        )
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xtitle, row=1, col=2)
+    fig.update_layout(yaxis_title=ytitle)
+    return fig
+
+
 def plot_contour(curr_contour: ContourData, ref_contour: Optional[ContourData], xtitle: str = "", ytitle: str = ""):
     color_options = ColorOptions()
     if ref_contour is not None:

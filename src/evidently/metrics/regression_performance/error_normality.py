@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -82,12 +83,12 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
-    def _get_theoretical_line(self, res: Tuple[Tuple[np.ndarray], Tuple[float]]):
+    def _get_theoretical_line(self, res: Any):
         x = [res[0][0][0], res[0][0][-1]]
         y = [res[1][0] * res[0][0][0] + res[1][1], res[1][0] * res[0][0][-1] + res[1][1]]
         return pd.DataFrame({"x": x, "y": y})
 
-    def _get_plot_data(self, res: Tuple[Tuple[np.ndarray], Tuple[float]], err_data: pd.Series, agg_data: bool):
+    def _get_plot_data(self, res: Any, err_data: pd.Series, agg_data: bool):
         df = pd.DataFrame({"x": res[0][0], "y": res[0][1]})
         if not agg_data:
             return df

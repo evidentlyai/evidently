@@ -19,7 +19,7 @@ from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_gaussian_kde
-from evidently.utils.visualizations import plot_contour
+from evidently.utils.visualizations import plot_contour_single
 
 SAMPLE_CONSTANT = 2500
 
@@ -44,11 +44,8 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
     embeddings_name: str
     drift_method: Optional[Callable]
 
-    def __init__(
-        self,
-        embeddings_name: str,
-        drift_method: Optional[Callable] = None,
-    ):
+    def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None):
+        super().__init__()
         self.embeddings_name = embeddings_name
         self.drift_method = drift_method
 
@@ -98,7 +95,7 @@ class EmbeddingsDriftMetricRenderer(MetricRenderer):
         else:
             drift = "not detected"
         drift_score = round(result.drift_score, 3)
-        fig = plot_contour(result.current, result.reference, "component 1", "component 2")
+        fig = plot_contour_single(result.current, result.reference, "component 1", "component 2")
         return [
             counter(
                 counters=[

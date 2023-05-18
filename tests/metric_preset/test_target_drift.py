@@ -7,8 +7,8 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metric_preset import TargetDriftPreset
-from evidently.report import Report
 from evidently.options.base import Options
+from evidently.report import Report
 
 
 @pytest.mark.parametrize(
