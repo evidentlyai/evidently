@@ -54,7 +54,7 @@ class Report(Display):
             raise ValueError("Current dataset should be present")
 
         self._columns_info = process_columns(current_data, column_mapping)
-
+        self._inner_suite.reset()
         self._inner_suite.verify()
 
         data_definition = create_data_definition(reference_data, current_data, column_mapping)

@@ -36,6 +36,7 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
     k: Optional[Union[float, int]]
 
     def __init__(self, probas_threshold: Optional[float], k: Optional[Union[float, int]]):
+        super().__init__()
         if probas_threshold is not None and k is not None:
             raise ValueError(
                 f"{self.__class__.__name__}: should provide only stattest_threshold or top_k argument, not both."
