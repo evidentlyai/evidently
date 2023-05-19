@@ -8,6 +8,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import Union
 
 import pandas as pd
@@ -29,6 +30,7 @@ from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
+from evidently.suite.base_suite import T
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils import NumpyEncoder
 from evidently.utils.data_operations import process_columns
@@ -198,31 +200,22 @@ class Report(Display):
             },
         )
 
-    def save_profile(self, path):
-        payload = _ReportPayload(
+    def _get_payload(self) -> BaseModel:
+        return _ReportPayload(
             metrics=[
                 (m, res["result"])
                 for m, res in zip(self._first_level_metrics, self.as_dict(include_render=True)["metrics"])
             ]
         )
 
-        with open(path, "w") as f:
-            json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
-
     @classmethod
-    def load_profile(cls, path):
-        with open(path, "r") as f:
-            payload = parse_obj_as(_ReportPayload, json.load(f))
-
-        report = payload.load
-
-        return report
+    def _parse_payload(cls, payload: Dict) -> "Report":
+        return parse_obj_as(_ReportPayload, payload).load()
 
 
 class _ReportPayload(BaseModel):
     metrics: List[Tuple[Metric, Dict]]
 
-    @property
     def load(self):
         metrics = []
         results = []

@@ -1,3 +1,5 @@
+import itertools
+from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -16,6 +18,8 @@ from pydantic.utils import import_string
 
 if TYPE_CHECKING:
     from pydantic.main import Model
+
+    from pydantic.typing import DictStrAny
 T = TypeVar("T")
 
 
@@ -90,11 +94,11 @@ class PolymorphicModel(BaseModel):
         return super().validate(value)  # type: ignore[misc]
 
 
-BaseModel
-
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    pass
+    class Config:
+        underscore_attrs_are_private = True
+
     # @classmethod
     # def validate(cls: Type["Model"], value: Any) -> "Model":
     #     if isinstance(value, dict):
@@ -106,3 +110,25 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     #             setattr(result, key, value)
     #         return result
     #     return super().validate(value)
+
+class WithTestAndMetricDependencies(EvidentlyBaseModel):
+    def __evidently_dependencies__(self):
+        from evidently.tests.base_test import Test
+        from evidently.base_metric import Metric
+
+        for field_name, field in itertools.chain(
+                self.__dict__.items(), ((pa, getattr(self, pa, None)) for pa in self.__private_attributes__)
+        ):
+            if issubclass(type(field), (Metric, Test)):
+                yield field_name, field
+
+class EnumValueMixin(BaseModel):
+    def dict(self, *args, **kwargs) -> "DictStrAny":
+        res = super().dict(*args, **kwargs)
+        return {k: v.value if isinstance(v, Enum) else v for k, v in res.items()}
+
+
+class ExcludeNoneMixin(BaseModel):
+    def dict(self, *args, **kwargs) -> "DictStrAny":
+        kwargs["exclude_none"] = True
+        return super().dict(*args, **kwargs)

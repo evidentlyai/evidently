@@ -13,6 +13,7 @@ from evidently.metrics.classification_performance.classification_dummy_metric im
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationConfusionMatrix
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
+from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrixParameters
 from evidently.metrics.classification_performance.objects import ClassMetric
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
@@ -42,10 +43,10 @@ GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
 class SimpleClassificationTest(BaseCheckValueTest):
     condition_arg: ClassVar[str] = "gt"
 
-    group = CLASSIFICATION_GROUP.id
-    name: str
-    metric: ClassificationQualityMetric
-    dummy_metric: ClassificationDummyMetric
+    group: ClassVar = CLASSIFICATION_GROUP.id
+    name: ClassVar[str]
+    _metric: ClassificationQualityMetric
+    _dummy_metric: ClassificationDummyMetric
 
     def __init__(
         self,
@@ -58,6 +59,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+
         super().__init__(
             eq=eq,
             gt=gt,
@@ -68,8 +70,18 @@ class SimpleClassificationTest(BaseCheckValueTest):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = ClassificationQualityMetric()
-        self.dummy_metric = ClassificationDummyMetric()
+
+    @property
+    def metric(self):
+        if self._metric is None:
+            self._metric = ClassificationQualityMetric()
+        return self._metric
+
+    @property
+    def dummy_metric(self):
+        if self._dummy_metric is None:
+            self._dummy_metric = ClassificationDummyMetric()
+        return self._dummy_metric
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -97,12 +109,8 @@ class SimpleClassificationTest(BaseCheckValueTest):
         raise NotImplementedError()
 
 
-class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
-    metric: ClassificationQualityMetric
-    dummy_metric: ClassificationDummyMetric
-    conf_matrix: ClassificationConfusionMatrix
-    probas_threshold: Optional[float]
-    k: Optional[Union[float, int]]
+class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfusionMatrixParameters, ABC):
+    _conf_matrix: ClassificationConfusionMatrix
 
     def __init__(
         self,
@@ -117,6 +125,11 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+
+        if k is not None and probas_threshold is not None:
+            raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
+        self.k = k
+        self.probas_threshold = probas_threshold
         super().__init__(
             eq=eq,
             gt=gt,
@@ -127,13 +140,9 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        if k is not None and probas_threshold is not None:
-            raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
-        self.k = k
-        self.probas_threshold = probas_threshold
-        self.dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self.metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self.conf_matrix = ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
+        self._dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self._conf_matrix = self.confusion_matric_metric()
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -182,7 +191,7 @@ class TestPrecisionScoreRenderer(TestRenderer):
 
 
 class TestF1Score(SimpleClassificationTestTopK):
-    name = "F1 Score"
+    name: ClassVar = "F1 Score"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.f1
@@ -224,8 +233,8 @@ class TestRecallScoreRenderer(TestRenderer):
 
 
 class TestRocAuc(SimpleClassificationTest):
-    name = "ROC AUC Score"
-    roc_curve: ClassificationRocCurve
+    name: ClassVar = "ROC AUC Score"
+    _roc_curve: ClassificationRocCurve
 
     def __init__(
         self,
@@ -238,6 +247,7 @@ class TestRocAuc(SimpleClassificationTest):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+        self._roc_curve = ClassificationRocCurve()
         super().__init__(
             eq=eq,
             gt=gt,
@@ -248,7 +258,6 @@ class TestRocAuc(SimpleClassificationTest):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.roc_curve = ClassificationRocCurve()
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.roc_auc
@@ -265,8 +274,8 @@ class TestRocAuc(SimpleClassificationTest):
 class TestRocAucRenderer(TestRenderer):
     def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_roc_curve: Optional[ROCCurve] = obj.roc_curve.get_result().current_roc_curve
-        ref_roc_curve: Optional[ROCCurve] = obj.roc_curve.get_result().reference_roc_curve
+        curr_roc_curve: Optional[ROCCurve] = obj._roc_curve.get_result().current_roc_curve
+        ref_roc_curve: Optional[ROCCurve] = obj._roc_curve.get_result().reference_roc_curve
 
         if curr_roc_curve is None:
             return info

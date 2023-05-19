@@ -4,7 +4,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
@@ -241,23 +240,18 @@ def get_one_column_drift(
 class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
     """Calculate drift metric for a column"""
 
-    column: ColumnName
-
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
     def __init__(
         self,
-        column_name: Union[ColumnName, str],
+        column: Union[ColumnName, str],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        if isinstance(column_name, str):
-            column = ColumnName.main_dataset(column_name)
-        else:
-            column = column_name
+        if isinstance(column, str):
+            column = ColumnName.main_dataset(column)
         self.column = column
-        self.column_name = column.name
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
         super().__init__()

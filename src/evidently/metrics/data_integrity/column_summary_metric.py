@@ -150,9 +150,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         self._generated_text_features = None
         super().__init__()
 
-    @property
-    def column_name(self) -> str:
-        return self.column.name if isinstance(self.column, ColumnName) else self.column
+
 
     def required_features(self, data_definition: DataDefinition):
         if not self.column.is_main_dataset():

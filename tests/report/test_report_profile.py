@@ -1,12 +1,16 @@
 import numpy as np
 import pandas as pd
+import pytest
 from sklearn.datasets import load_breast_cancer
 
 from evidently.metric_preset import ClassificationPreset
 from evidently.report import Report
+from evidently.test_preset import BinaryClassificationTestPreset
+from evidently.test_suite import TestSuite
 
 
-def test_report_loading():
+@pytest.fixture
+def data():
     dataset = load_breast_cancer(as_frame=True)
 
     ref = pd.DataFrame(dataset["target"])
@@ -14,13 +18,29 @@ def test_report_loading():
 
     ref["prediction"] = [np.random.random() for i in range(ref.shape[0])]
     curr["prediction"] = [np.random.random() for i in range(curr.shape[0])]
+    return ref, curr
+def test_report_loading(data):
+    ref, curr = data
 
     report = Report(metrics=[ClassificationPreset(probas_threshold=0.7)])
 
     report.run(reference_data=ref, current_data=curr)
 
-    report.save_profile("profile.json")
+    report.save("profile.json")
 
-    report2 = Report.load_profile("profile.json")
+    report2 = Report.load("profile.json")
 
     assert report.as_dict() == report2.as_dict()
+
+def test_suite_loading(data):
+    ref, curr = data
+
+    ts = TestSuite([BinaryClassificationTestPreset()])
+
+    ts.run(reference_data=ref, current_data=curr)
+
+    ts.save("profile.json")
+
+    ts2 = TestSuite.load("profile.json")
+
+    assert ts.as_dict() == ts2.as_dict()

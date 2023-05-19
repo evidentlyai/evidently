@@ -27,7 +27,7 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import EnumValueMixin, EvidentlyBaseModel, WithTestAndMetricDependencies
 from evidently.pydantic_utils import FrozenBaseMeta
 from evidently.pydantic_utils import FrozenBaseModel
 from evidently.pydantic_utils import PolymorphicModel
@@ -53,12 +53,17 @@ class DatasetType(Enum):
     ADDITIONAL = "additional"
 
 
-@dataclass(eq=True, unsafe_hash=True)
-class ColumnName:
+class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: str
     dataset: DatasetType
     feature_class: Optional[GeneratedFeature]
+
+    def __init__(self, name: str,
+                 display_name: str,
+                 dataset: DatasetType,
+                 feature_class: Optional[GeneratedFeature]):
+        super().__init__(name=name, display_name=display_name, dataset=dataset, feature_class=feature_class)
 
     def is_main_dataset(self):
         return self.dataset == DatasetType.MAIN
@@ -152,11 +157,10 @@ class InputData:
 TResult = TypeVar("TResult", bound=MetricResult)
 
 
-class Metric(EvidentlyBaseModel, Generic[TResult]):
+class Metric(WithTestAndMetricDependencies, Generic[TResult]):
     _context: Optional["Context"] = None
 
-    class Config:
-        underscore_attrs_are_private = True
+
 
     # TODO: if we want metric-specific options
     options: Options
@@ -220,14 +224,7 @@ class Metric(EvidentlyBaseModel, Generic[TResult]):
             options = self._context.options.override(options)
         return options
 
-    def __evidently_dependencies__(self):
-        from evidently.tests.base_test import Test
 
-        for field_name, field in itertools.chain(
-            self.__dict__.items(), ((pa, getattr(self, pa)) for pa in self.__private_attributes__)
-        ):
-            if issubclass(type(field), (Metric, Test)):
-                yield field_name, field
 
 
 class ColumnMetricResult(MetricResult):
@@ -244,3 +241,7 @@ ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
     column: ColumnName
+
+    @property
+    def column_name(self) -> str:
+        return self.column.name if isinstance(self.column, ColumnName) else self.column

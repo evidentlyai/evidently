@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Callable
+from typing import Callable, ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -90,7 +90,7 @@ class ColumnsDriftParameters(ConditionTestParameters):
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
-    group = DATA_DRIFT_GROUP.id
+    group:ClassVar = DATA_DRIFT_GROUP.id
     metric: DataDriftTable
 
     def __init__(
@@ -194,9 +194,9 @@ class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
 
 
 class TestColumnDrift(Test):
-    name = "Drift per Column"
-    group = DATA_DRIFT_GROUP.id
-    metric: ColumnDriftMetric
+    name :ClassVar= "Drift per Column"
+    group :ClassVar= DATA_DRIFT_GROUP.id
+    _metric: ColumnDriftMetric
     column_name: ColumnName
 
     def __init__(
@@ -209,11 +209,16 @@ class TestColumnDrift(Test):
             self.column_name = ColumnName.main_dataset(column_name)
         else:
             self.column_name = column_name
-        self.metric = ColumnDriftMetric(
-            column_name=column_name,
+        self._metric = ColumnDriftMetric(
+            column=column_name,
             stattest=stattest,
             stattest_threshold=stattest_threshold,
         )
+        super().__init__()
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         drift_info = self.metric.get_result()

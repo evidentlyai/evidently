@@ -5,9 +5,14 @@ from collections import Counter
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
+from typing import Type
 from typing import Union
+from typing import get_args
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 from evidently.base_metric import InputData
 from evidently.core import IncludeOptions
@@ -21,10 +26,12 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
+from evidently.suite.base_suite import T
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
@@ -58,7 +65,7 @@ class TestSuite(Display):
                 self._add_test(original_test)
 
     def _add_test(self, test: Test):
-        new_test = copy.copy(test)
+        new_test = test.copy() #copy.copy(test)
         self._inner_suite.add_test(new_test)
 
     def __bool__(self):
@@ -87,7 +94,6 @@ class TestSuite(Display):
             for test in tests:
                 if isinstance(test, BaseGenerator):
                     self._add_tests_from_generator(test)
-
                 else:
                     self._add_test(test)
 
@@ -210,3 +216,38 @@ class TestSuite(Display):
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
             {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
         )
+
+    def _get_payload(self) -> BaseModel:
+        return _TestSuitePayload(
+            tests=[
+                (t, res)
+                for t, res in zip(self._inner_suite.context.tests, self.as_dict(include_render=True)["tests"])
+            ]
+        )
+
+    @classmethod
+    def _parse_payload(cls, payload: Dict) -> "TestSuite":
+        return parse_obj_as(_TestSuitePayload, payload).load()
+
+
+class _TestSuitePayload(BaseModel):
+    tests: List[Tuple[Test, Dict]]
+
+    def load(self):
+        tests = []
+        results = []
+        for test, result in self.tests:
+            tests.append(test)
+            # result_type = get_args(metric.__class__.__orig_bases__[0])[0]
+            # assert issubclass(result_type, MetricResult)
+            results.append(parse_obj_as(TestResult, result))
+
+        suite = TestSuite(tests=tests)
+        # report._first_level_metrics = metrics
+        context = suite._inner_suite.context
+        for test, result in zip(tests, results):
+            # todo: dependencies results too?
+            test.set_context(context)
+            context.tests.append(test)
+            context.test_results[test] = result
+        return suite

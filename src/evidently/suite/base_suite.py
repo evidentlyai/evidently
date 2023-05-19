@@ -9,9 +9,12 @@ from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
+from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
 
 import evidently
 from evidently.base_metric import ErrorResult
@@ -99,6 +102,9 @@ class Context:
 
 class ExecutionError(Exception):
     pass
+
+
+T = TypeVar("T", bound="Display")
 
 
 class Display:
@@ -220,6 +226,26 @@ class Display:
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)
+
+    @abc.abstractmethod
+    def _get_payload(self) -> BaseModel:
+        raise NotImplementedError
+
+    @classmethod
+    @abc.abstractmethod
+    def _parse_payload(cls: Type[T], payload: Dict) -> T:
+        raise NotImplementedError
+
+    def save(self, filename):
+        payload = self._get_payload()
+
+        with open(filename, "w") as f:
+            json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
+
+    @classmethod
+    def load(cls: Type[T], filename) -> T:
+        with open(filename, "r") as f:
+            return cls._parse_payload(json.load(f))
 
 
 class Suite:
