@@ -19,6 +19,8 @@ To run drift checks as part of the pipeline, use the Test Suite. To explore and 
 
 If you want to visually explore the prediction or target drift, you can create a new Report object and use the `TargetDriftPreset`.
 
+**Aggregated visuals in plots.** Starting from v 0.3.2, all visuals in the Evidently Reports are aggregated by default. This helps decrease the load time and report size for larger datasets. If you work with smaller datasets or samples, you can pass an [option to generate plots with raw data](../customization/report-data-aggregation.md). You can choose whether you want it on not based on the size of your dataset.
+
 ## Code example
 
 ```python
