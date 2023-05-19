@@ -45,7 +45,6 @@ class Report(Display):
         reference_data: Optional[pd.DataFrame],
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
-        agg_data: bool = False,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -54,7 +53,7 @@ class Report(Display):
             raise ValueError("Current dataset should be present")
 
         self._columns_info = process_columns(current_data, column_mapping)
-
+        self._inner_suite.reset()
         self._inner_suite.verify()
 
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
@@ -105,8 +104,6 @@ class Report(Display):
             column_mapping,
             data_definition,
         )
-        if agg_data:
-            self._inner_suite.context.options.agg_data = True
         self._inner_suite.run_calculate(data)
 
     def as_dict(  # type: ignore[override]

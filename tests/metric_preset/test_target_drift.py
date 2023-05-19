@@ -7,6 +7,8 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metric_preset import TargetDriftPreset
+from evidently.options.agg_data import RenderOptions
+from evidently.options.base import Options
 from evidently.report import Report
 
 
@@ -52,7 +54,7 @@ from evidently.report import Report
 def test_target_drift_preset_with_report(
     current_data: pd.DataFrame, reference_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
 ) -> None:
-    report = Report(metrics=[TargetDriftPreset()])
+    report = Report(metrics=[TargetDriftPreset()], options=Options(render=RenderOptions(raw_data=True)))
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
     assert report.show()
     json_result = report.json()

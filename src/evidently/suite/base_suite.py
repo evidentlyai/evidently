@@ -312,6 +312,7 @@ class Suite:
         if self.context.state in [States.Calculated, States.Tested]:
             return
 
+        self.context.metric_results = {}
         if self.context.execution_graph is not None:
             execution_graph: ExecutionGraph = self.context.execution_graph
 
@@ -362,3 +363,15 @@ class Suite:
         for result in self.context.test_results.values():
             if result.exception is not None:
                 raise result.exception
+
+    def reset(self):
+        self.context = Context(
+            execution_graph=None,
+            metrics=[],
+            tests=[],
+            metric_results={},
+            test_results={},
+            state=States.Init,
+            renderers=DEFAULT_RENDERERS,
+            options=self.context.options,
+        )

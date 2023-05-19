@@ -7,6 +7,8 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import RegressionErrorBiasTable
+from evidently.options.agg_data import RenderOptions
+from evidently.options.base import Options
 from evidently.report import Report
 
 
@@ -54,7 +56,7 @@ def test_regression_error_bias_table_value_errors(
     data_mapping = ColumnMapping()
 
     with pytest.raises(ValueError) as error:
-        report = Report(metrics=[metric])
+        report = Report(metrics=[metric], options=Options(render=RenderOptions(raw_data=True)))
         report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
         metric.get_result()
 
@@ -115,7 +117,7 @@ def test_regression_error_bias_table_value_errors(
 def test_regression_error_bias_table_with_report(
     current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: RegressionErrorBiasTable, expected_json: dict
 ) -> None:
-    report = Report(metrics=[metric])
+    report = Report(metrics=[metric], options=Options(render=RenderOptions(raw_data=True)))
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     assert report.show()
     result_json = report.json()
