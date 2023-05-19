@@ -60,6 +60,8 @@ You can also run this report for a **single** dataset, with no comparison perfor
 
 The report includes multiple components. The composition might vary based on problem type (there are more plots in the case of probabilistic classification). All plots are interactive.
 
+**Aggregated visuals in plots.** Starting from v 0.3.2, all visuals in the Evidently Reports are aggregated by default. This helps decrease the load time and report size for larger datasets. If you work with smaller datasets or samples, you can pass an [option to generate plots with raw data](../customization/report-data-aggregation.md). You can choose whether you want it on not based on the size of your dataset.
+
 ### **1. Model Quality Summary Metrics**
 
 Evidently calculates a few standard model quality metrics: Accuracy, Precision, Recall, F1-score, ROC AUC, and LogLoss.
