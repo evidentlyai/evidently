@@ -47,6 +47,8 @@ data_quality_report.run(current_data=current, reference_data = None, column_mapp
 data_quality_report
 ```
 
+**Aggregated visuals in plots.** Starting from v 0.3.2, all visuals in the Evidently Reports are aggregated by default. This helps decrease the load time and report size for larger datasets. If you work with smaller datasets or samples, you can pass an [option to generate plots with raw data](../customization/report-data-aggregation.md). You can choose whether you want it on not based on the size of your dataset.
+
 # Available presets
 
 Here is a list of Metric Presets you can try:
