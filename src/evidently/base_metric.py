@@ -235,12 +235,12 @@ ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 
 class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
-    column: ColumnName
+    column_name: ColumnName
 
-    def __init__(self, column: Union[ColumnName, str], options: AnyOptions = None):
-        self.column = column if not isinstance(column, str) else ColumnName.main_dataset(column)
+    def __init__(self, column_name: Union[ColumnName, str], options: AnyOptions = None):
+        self.column_name = column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
         super().__init__(options)
 
-    @property
-    def column_name(self) -> str:
-        return self.column.name if isinstance(self.column, ColumnName) else self.column
+    # @property
+    # def column_name(self) -> str:
+    #     return self.column.name if isinstance(self.column, ColumnName) else self.column

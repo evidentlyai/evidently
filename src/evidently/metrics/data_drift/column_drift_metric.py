@@ -246,40 +246,40 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
 
     def __init__(
         self,
-        column: Union[ColumnName, str],
+        column_name: Union[ColumnName, str],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
 
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
-        super().__init__(column=column)
+        super().__init__(column_name=column_name)
 
     def get_parameters(self) -> tuple:
-        return self.column, self.stattest_threshold, self.stattest
+        return self.column_name, self.stattest_threshold, self.stattest
 
     def calculate(self, data: InputData) -> ColumnDataDriftMetrics:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
 
         try:
-            current_feature_data = data.get_current_column(self.column)
+            current_feature_data = data.get_current_column(self.column_name)
         except ColumnNotFound as ex:
             raise ValueError(f"Cannot find column '{ex.column_name}' in current dataset")
         try:
-            reference_feature_data = data.get_reference_column(self.column)
+            reference_feature_data = data.get_reference_column(self.column_name)
         except ColumnNotFound as ex:
             raise ValueError(f"Cannot find column '{ex.column_name}' in reference dataset")
 
         column_type = ColumnType.Numerical
-        if self.column.is_main_dataset():
-            column_type = data.data_definition.get_column(self.column.name).column_type
+        if self.column_name.is_main_dataset():
+            column_type = data.data_definition.get_column(self.column_name.name).column_type
         datetime_column = data.data_definition.get_datetime_column()
         options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
         drift_result = get_one_column_drift(
             current_feature_data=current_feature_data,
             reference_feature_data=reference_feature_data,
-            column=self.column,
+            column=self.column_name,
             index_data=data.current_data.index,
             column_type=column_type,
             datetime_data=data.current_data[datetime_column.column_name] if datetime_column else None,

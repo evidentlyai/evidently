@@ -44,7 +44,7 @@ DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 
-class ColumnDriftParameter(ExcludeNoneMixin, TestParameters):
+class ColumnDriftParameter(ExcludeNoneMixin, TestParameters):  # type: ignore[misc] # pydantic Config
     stattest: str
     score: float
     threshold: float
@@ -211,7 +211,7 @@ class TestColumnDrift(Test):
         else:
             self.column_name = column_name
         self._metric = ColumnDriftMetric(
-            column=column_name,
+            column_name=column_name,
             stattest=stattest,
             stattest_threshold=stattest_threshold,
         )
