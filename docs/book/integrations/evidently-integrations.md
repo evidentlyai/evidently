@@ -10,7 +10,9 @@ Below are a few specific examples of how to integrate Evidently with other tools
 |---|---|---|
 | Notebook environments (Jupyter, Colab, etc.) | Render visual Evidently Reports and Test Suites. | [Docs](notebook-environments.md)<br>[Code examples](../examples/examples.md) |
 | Streamlit | Create a web app with Evidently Reports.  | [Code example](https://github.com/evidentlyai/evidently/tree/main/examples/integrations/streamlit_dashboard)<br>[Blog tutorial](https://www.evidentlyai.com/blog/ml-model-monitoring-dashboard-tutorial) |
-| MLflow | Log metrics calculated by Evidently in MLflow UI. | [Docs](evidently-and-mlflow.md)<br>[Code example](https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/mlflow_integration.ipynb) |
+| MLflow | Log metrics calculated by Evidently to MLflow. | [Docs](evidently-and-mlflow.md)<br>[Code example](https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/mlflow_integration.ipynb) |
 | Airflow | Run data and ML model checks as part of an Airflow DAG. | [Docs](evidently-and-airflow.md)<br>[Code example](https://github.com/evidentlyai/evidently/tree/main/examples/integrations/airflow_drift_detection) |
 | Metaflow | Run data and ML model checks as part of a Metaflow Flow. | [Docs](evidently-and-metaflow.md) |
-| Grafana | Real-time ML monitoring with Grafana.  | [Docs](evidently-and-grafana.md)<br>[Code example](https://github.com/evidentlyai/evidently/tree/main/examples/integrations/grafana_monitoring_service) |
+| Grafana, PostgreSQL, and Prefect | Run ML monitoring jobs with Prefect and visualize metrics in Grafana.  | [Tutorial](https://www.evidentlyai.com/blog/batch-ml-monitoring-architecture)<br>[Code example](https://github.com/evidentlyai/evidently/tree/main/examples/integrations/postgres_grafana_batch_monitoring/) |
+| AWS SES | Send email alerts with attached Evidently Reports (Community contribution). | [Tutorial](https://www.evidentlyai.com/blog/ml-monitoring-with-email-alerts-tutorial)<br>[Code example](https://github.com/evidentlyai/aws_alerting)
+| Grafana | Real-time ML monitoring with Grafana. (Old API). | [Docs](evidently-and-grafana.md)<br>[Code example](https://github.com/evidentlyai/evidently/tree/main/examples/integrations/grafana_monitoring_service) |

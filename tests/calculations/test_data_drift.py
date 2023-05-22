@@ -122,6 +122,7 @@ def test_get_one_column_drift_success(
         options=options,
         dataset_columns=dataset_columns,
         column_type=column_type,
+        agg_data=False,
     )
     assert result.drift_detected == expected_drift_detected
 
@@ -196,5 +197,6 @@ def test_get_one_column_drift_value_error(
             options=options,
             dataset_columns=dataset_columns,
             column_type=column_type,
+            agg_data=False,
         )
     assert error.value.args[0] == expected_value_error

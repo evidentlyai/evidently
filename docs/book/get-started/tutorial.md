@@ -166,7 +166,7 @@ The data drift report compares the distributions of each feature in the two data
 </details>
 
 {% hint style="info" %}
-**Large reports might take time to load.** The example dataset is small, so the report appears quickly. If you use a larger dataset, the report might take time to show. The size limitation depends on your infrastructure. In this case, we suggest taking a sample of your dataset before passing it to Evidently. 
+**Aggregated visuals in plots.** Starting from v 0.3.2, all visuals in the Evidently Reports are aggregated by default. This helps decrease the load time and report size for larger datasets. If you work with smaller datasets or samples, you can pass an [option to generate plots with raw data](../customization/report-data-aggregation.md). You can choose whether you want it on not based on the size of your dataset.
 {% endhint %}
 
 ## 5. Customize the report

@@ -24,6 +24,7 @@ from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import recognize_column_type_
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 Examples = List[str]
 Words = List[str]
@@ -82,6 +83,7 @@ def get_one_column_drift(
     options: DataDriftOptions,
     dataset_columns: DatasetColumns,
     column_type: Union[str, ColumnType] = None,
+    agg_data: bool,
 ) -> ColumnDataDriftMetrics:
     if column_name not in current_data:
         raise ValueError(f"Cannot find column '{column_name}' in current dataset")
@@ -177,14 +179,30 @@ def get_one_column_drift(
                 density=True,
             )
         ]
-        current_scatter = {column_name: current_data[column_name]}
         datetime_column_name = dataset_columns.utility_columns.date
-        if datetime_column_name is not None:
-            current_scatter["Timestamp"] = current_data[datetime_column_name]
-            x_name = "Timestamp"
+        if not agg_data:
+            current_scatter = {column_name: current_data[column_name]}
+            if datetime_column_name is not None:
+                current_scatter["Timestamp"] = current_data[datetime_column_name]
+                x_name = "Timestamp"
+            else:
+                current_scatter["Index"] = current_data.index
+                x_name = "Index"
         else:
-            current_scatter["Index"] = current_data.index
-            x_name = "Index"
+            current_scatter = {}
+            curr_data = current_data.copy()
+            curr_data.dropna(axis=0, how="any", inplace=True, subset=[column_name])
+
+            df, prefix = prepare_df_for_time_index_plot(
+                curr_data,
+                column_name,
+                datetime_column_name,
+            )
+            current_scatter["current"] = df
+            if prefix is None:
+                x_name = "Index binned"
+            else:
+                x_name = f"{datetime_column_name} ({prefix})"
 
         plot_shape = {}
         reference_mean = reference_data[column_name].mean()
@@ -381,6 +399,7 @@ def get_drift_for_columns(
     data_drift_options: DataDriftOptions,
     drift_share_threshold: Optional[float] = None,
     columns: Optional[List[str]] = None,
+    agg_data: bool,
 ) -> DatasetDriftMetrics:
     if columns is None:
         # ensure prediction column is a string - add label values for classification tasks
@@ -403,6 +422,7 @@ def get_drift_for_columns(
             column_name=column_name,
             options=data_drift_options,
             dataset_columns=dataset_columns,
+            agg_data=agg_data,
         )
 
     dataset_drift = get_dataset_drift(drift_by_columns, drift_share_threshold)

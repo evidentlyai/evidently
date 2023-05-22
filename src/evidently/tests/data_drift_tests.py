@@ -38,7 +38,7 @@ from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import plot_contour
+from evidently.utils.visualizations import plot_contour_single
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
@@ -568,6 +568,6 @@ class TestEmbeddingsDriftRenderer(TestRenderer):
     def render_html(self, obj: TestEmbeddingsDrift) -> TestHtmlInfo:
         info = super().render_html(obj)
         result = obj.metric.get_result()
-        fig = plot_contour(result.current, result.reference, "component 1", "component 2")
+        fig = plot_contour_single(result.current, result.reference, "component 1", "component 2")
         info.with_details(f"Drift in embeddings '{result.embeddings_name}'", plotly_figure(title="", figure=fig))
         return info

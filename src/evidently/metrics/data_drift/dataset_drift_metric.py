@@ -79,6 +79,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             drift_share_threshold=self.drift_share,
             dataset_columns=dataset_columns,
             columns=self.columns,
+            agg_data=True,
         )
         return DatasetDriftMetricResults(
             drift_share=self.drift_share,

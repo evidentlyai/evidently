@@ -1,5 +1,6 @@
 import dataclasses
 from enum import Enum
+from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -811,6 +812,60 @@ def get_pr_rec_plot_data(
     return additional_plots
 
 
+def class_separation_traces_raw(df, label, target_name, color_options):
+    traces = []
+    traces.append(
+        go.Scatter(
+            x=np.random.random(df[df[target_name] == label].shape[0]),
+            y=df[df[target_name] == label][label],
+            mode="markers",
+            name=str(label),
+            legendgroup=str(label),
+            marker=dict(size=6, color=color_options.primary_color),
+        )
+    )
+    traces.append(
+        go.Scatter(
+            x=np.random.random(df[df[target_name] != label].shape[0]),
+            y=df[df[target_name] != label][label],
+            mode="markers",
+            name="other",
+            legendgroup="other",
+            marker=dict(size=6, color=color_options.secondary_color),
+        )
+    )
+    return traces
+
+
+def class_separation_traces_agg(df, label, color_options):
+    traces = []
+    df_name = df[df["values"] == label]
+    traces.append(
+        go.Box(
+            lowerfence=df_name["mins"],
+            q1=df_name["lowers"],
+            q3=df_name["uppers"],
+            median=df_name["means"],
+            upperfence=df_name["maxs"],
+            x=df_name["values"].astype(str),
+            marker_color=color_options.get_current_data_color(),
+        )
+    )
+    df_name = df[df["values"] == "others"]
+    traces.append(
+        go.Box(
+            lowerfence=df_name["mins"],
+            q1=df_name["lowers"],
+            q3=df_name["uppers"],
+            median=df_name["means"],
+            upperfence=df_name["maxs"],
+            x=df_name["values"],
+            marker_color=color_options.get_reference_data_color(),
+        )
+    )
+    return traces
+
+
 def get_class_separation_plot_data(
     current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str, color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
@@ -822,51 +877,47 @@ def get_class_separation_plot_data(
         subplot_titles = ["current", "reference"]
     for label in current_plot.columns.drop(target_name):
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
-        trace = go.Scatter(
-            x=np.random.random(current_plot[current_plot[target_name] == label].shape[0]),
-            y=current_plot[current_plot[target_name] == label][label],
-            mode="markers",
-            name=str(label),
-            legendgroup=str(label),
-            marker=dict(size=6, color=color_options.primary_color),
-        )
-        fig.add_trace(trace, 1, 1)
-
-        trace = go.Scatter(
-            x=np.random.random(current_plot[current_plot[target_name] != label].shape[0]),
-            y=current_plot[current_plot[target_name] != label][label],
-            mode="markers",
-            name="other",
-            legendgroup="other",
-            marker=dict(size=6, color=color_options.secondary_color),
-        )
-        fig.add_trace(trace, 1, 1)
+        traces = class_separation_traces_raw(current_plot, label, target_name, color_options)
+        for trace in traces:
+            fig.add_trace(trace, 1, 1)
         fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=1)
 
         if reference_plot is not None:
-            trace = go.Scatter(
-                x=np.random.random(reference_plot[reference_plot[target_name] == label].shape[0]),
-                y=reference_plot[reference_plot[target_name] == label][label],
-                mode="markers",
-                name=str(label),
-                legendgroup=str(label),
-                showlegend=False,
-                marker=dict(size=6, color=color_options.primary_color),
-            )
-            fig.add_trace(trace, 1, 2)
-
-            trace = go.Scatter(
-                x=np.random.random(reference_plot[reference_plot[target_name] != label].shape[0]),
-                y=reference_plot[reference_plot[target_name] != label][label],
-                mode="markers",
-                name="other",
-                legendgroup="other",
-                showlegend=False,
-                marker=dict(size=6, color=color_options.secondary_color),
-            )
-            fig.add_trace(trace, 1, 2)
+            traces = class_separation_traces_raw(reference_plot, label, target_name, color_options)
+            for trace in traces:
+                fig.add_trace(trace, 1, 2)
             fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=2)
+
         fig.update_layout(yaxis_title="Probability", showlegend=True)
+
+        additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
+    return additional_plots
+
+
+def get_class_separation_plot_data_agg(
+    current_plot: Dict[Union[int, str], pd.DataFrame],
+    reference_plot: Optional[Dict[Union[int, str], pd.DataFrame]],
+    target_name: str,
+    color_options: ColorOptions,
+) -> List[Tuple[str, BaseWidgetInfo]]:
+    additional_plots = []
+    cols = 1
+    subplot_titles = [""]
+    if reference_plot is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    for label in current_plot.keys():
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        traces = class_separation_traces_agg(current_plot[label], label, color_options)
+        for trace in traces:
+            fig.add_trace(trace, 1, 1)
+
+        if reference_plot is not None:
+            traces = class_separation_traces_agg(reference_plot[label], label, color_options)
+            for trace in traces:
+                fig.add_trace(trace, 1, 2)
+
+        fig.update_layout(yaxis_title="Probability", showlegend=False)
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots

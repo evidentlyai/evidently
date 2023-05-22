@@ -10,6 +10,8 @@ In Evidently 0.3.0, the old API was removed from the code base.
 
 # If your code breaks
 
+If you get an error `no module named 'evidently.dashboard'`, you might be running the code that uses old API, with a newer Evidently version.
+
 To make sure your existing code that uses `Dashboards` or `json profiles` works, **fix the Evidently version to 0.2.8 or earlier**.
 
 For example, when installing Evidently, specify:
@@ -45,11 +47,15 @@ data_drift_report.run(reference_data=ref, current_data=cur)
 data_drift_report
 ```
 
+If you want to keep non-aggregated visualization from the earlier Evidently version, set the [corresponding "agg_data" parmeter to False](../customization/report-data-aggregation.md).
+
 To get what was previously as JSON profile (and has now been improved and re-worked!), simply get the Report output as JSON:
 
 ```
 data_drift_report.json()
 ```
+
+If you want to include all the render data in the JSON output, use [parameters to include additional information in JSON](../customization/json-dict-output.md).
 
 You can also get the output as a Python dictionary.
 

@@ -38,10 +38,11 @@
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)
+  * [Text descriptors parameters](customization/text-descriptors-parameters.md)
+  * [Customize JSON output](customization/json-dict-output.md)
+  * [Plot aggregation in Reports](customization/report-data-aggregation.md)
   * [Add a custom drift method](customization/add-custom-drift-method.md)
   * [Add a custom metric or test](customization/add-custom-metric-or-test.md)
-  * [Customize JSON output](customization/json-dict-output.md)
-  * [Text descriptors parameters](customization/text-descriptors-parameters.md)
   * [Options for color schema](customization/options-for-color-schema.md)
 * [How-to guides](how-to-guides/README.md)
 
