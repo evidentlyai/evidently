@@ -136,13 +136,13 @@ You can also set a custom condition for each test to encode your expectations. Y
 | Condition parameter name | Explanation                                | Usage Example                                                   |
 |--------------------------|--------------------------------------------|-----------------------------------------------------------------|
 | eq: val                  | test_result == val                         | TestColumnValueMin(feature_name=”numeric_feature”, eq=5)            |
-| not_eq: val              | test_result != val                         | TestColumnValuMin(feature_name=”numeric_feature”, ne=0)            |
-| gt: val                  | test_result > val                          | TestColumnValuMin(feature_name=”numeric_feature”, gt=5)            |
+| not_eq: val              | test_result != val                         | TestColumnValueMin(feature_name=”numeric_feature”, ne=0)            |
+| gt: val                  | test_result > val                          | TestColumnValueMin(feature_name=”numeric_feature”, gt=5)            |
 | gte: val                 | test_result >= val                         | TestColumnValueMin(feature_name=”numeric_feature”, gte=5)           |
-| lt: val                  | test_result < val                          | TestColumnValuMin(feature_name=”numeric_feature”, lt=5)            |
+| lt: val                  | test_result < val                          | TestColumnValueMin(feature_name=”numeric_feature”, lt=5)            |
 | lte: val                 | test_result <= val                         | TestColumnValueMin(feature_name=”numeric_feature”, lte=5)           |
-| is_in: list              | test_result == one of the values from list | TestColumnValuMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
-| not_in: list             | test_result != any of the values from list | TestColumnValuMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
+| is_in: list              | test_result == one of the values from list | TestColumnValueMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
+| not_in: list             | test_result != any of the values from list | TestColumnValueMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
 
 **Example 1**. You can set the upper or lower boundaries of a specific value by defining `gt` (greater than) and `lt` (less than):
 
