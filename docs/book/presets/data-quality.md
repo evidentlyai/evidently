@@ -64,6 +64,8 @@ You can read more to understand [column mapping](../input-data/column-mapping.md
 
 The default report includes 3 widgets. All plots are interactive.
 
+**Aggregated visuals in plots.** Starting from v 0.3.2, all visuals in the Evidently Reports are aggregated by default. This helps decrease the load time and report size for larger datasets. If you work with smaller datasets or samples, you can pass an [option to generate plots with raw data](../customization/report-data-aggregation.md). You can choose whether you want it on not based on the size of your dataset.
+
 ### 1. Summary widget
 
 The table gives an overview of the dataset, including missing or empty features and other general information. It also shows the share of almost empty and almost constant features. This applies to cases when 95% or more features are missing or constant.
