@@ -109,7 +109,7 @@ To build up a better intuition for which tests are better in different kinds of 
 
 * [Which test is the best? We compared 5 methods to detect data drift on large datasets](https://evidentlyai.com/blog/data-drift-detection-large-datasets).  
 
-* [Shift happens: how to detect drift in ML embeddings](https://www.evidentlyai.com/blog/embedding-drift-detection)).  
+* [Shift happens: how to detect drift in ML embeddings](https://www.evidentlyai.com/blog/embedding-drift-detection).  
 
 Additional links:  
 
