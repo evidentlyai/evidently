@@ -70,17 +70,15 @@ class SimpleClassificationTest(BaseCheckValueTest):
             not_eq=not_eq,
             not_in=not_in,
         )
+        self._metric = ClassificationQualityMetric()
+        self._dummy_metric = ClassificationDummyMetric()
 
     @property
     def metric(self):
-        if self._metric is None:
-            self._metric = ClassificationQualityMetric()
         return self._metric
 
     @property
     def dummy_metric(self):
-        if self._dummy_metric is None:
-            self._dummy_metric = ClassificationDummyMetric()
         return self._dummy_metric
 
     def calculate_value_for_test(self) -> Optional[Any]:
@@ -146,6 +144,10 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
+
+    @property
+    def conf_matrix(self):
+        return self._conf_matrix
 
 
 class TestAccuracyScore(SimpleClassificationTestTopK):
@@ -542,11 +544,11 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         raise NotImplementedError()
 
     def get_parameters(self) -> ByClassParameters:
-        return ByClassParameters(condition=self.get_condition(), value=self.value, label=self.label)
+        return ByClassParameters(condition=self.get_condition(), value=self._value, label=self.label)
 
 
 class TestPrecisionByClass(ByClassClassificationTest):
-    name: str = "Precision Score by Class"
+    name: ClassVar[str] = "Precision Score by Class"
 
     def get_value(self, result: ClassMetric):
         return result.precision
@@ -570,7 +572,7 @@ class TestPrecisionByClassRenderer(TestRenderer):
 
 
 class TestRecallByClass(ByClassClassificationTest):
-    name: str = "Recall Score by Class"
+    name: ClassVar[str] = "Recall Score by Class"
 
     def get_value(self, result: ClassMetric):
         return result.recall
@@ -594,7 +596,7 @@ class TestRecallByClassRenderer(TestRenderer):
 
 
 class TestF1ByClass(ByClassClassificationTest):
-    name: str = "F1 Score by Class"
+    name: ClassVar[str] = "F1 Score by Class"
 
     def get_value(self, result: ClassMetric):
         return result.f1

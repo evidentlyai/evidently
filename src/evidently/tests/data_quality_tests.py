@@ -730,7 +730,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def get_parameters(self) -> ColumnCheckValueParameters:
         return ColumnCheckValueParameters(
-            column_name=self.column_name.display_name, condition=self.get_condition(), value=self.value
+            column_name=self.column_name.display_name, condition=self.get_condition(), value=self._value
         )
 
 
@@ -1052,7 +1052,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
     def get_parameters(self) -> ShareOfOutRangeParameters:
         return ShareOfOutRangeParameters(
-            condition=self.get_condition(), value=self.value, left=self.left, right=self.right
+            condition=self.get_condition(), value=self._value, left=self.left, right=self.right
         )
 
 
@@ -1215,7 +1215,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         )
 
     def get_parameters(self) -> CheckValueParameters:
-        return ValueListParameters(condition=self.get_condition(), value=self.value, values=self.values)
+        return ValueListParameters(condition=self.get_condition(), value=self._value, values=self.values)
 
 
 class TestCatColumnsOutOfListValues(BaseGenerator):

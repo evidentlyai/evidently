@@ -18,7 +18,6 @@ from pydantic.utils import import_string
 
 if TYPE_CHECKING:
     from pydantic.main import Model
-
     from pydantic.typing import DictStrAny
 T = TypeVar("T")
 
@@ -94,7 +93,6 @@ class PolymorphicModel(BaseModel):
         return super().validate(value)  # type: ignore[misc]
 
 
-
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     class Config:
         underscore_attrs_are_private = True
@@ -111,16 +109,18 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     #         return result
     #     return super().validate(value)
 
+
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
     def __evidently_dependencies__(self):
-        from evidently.tests.base_test import Test
         from evidently.base_metric import Metric
+        from evidently.tests.base_test import Test
 
         for field_name, field in itertools.chain(
-                self.__dict__.items(), ((pa, getattr(self, pa, None)) for pa in self.__private_attributes__)
+            self.__dict__.items(), ((pa, getattr(self, pa, None)) for pa in self.__private_attributes__)
         ):
             if issubclass(type(field), (Metric, Test)):
                 yield field_name, field
+
 
 class EnumValueMixin(BaseModel):
     def dict(self, *args, **kwargs) -> "DictStrAny":

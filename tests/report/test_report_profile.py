@@ -19,6 +19,8 @@ def data():
     ref["prediction"] = [np.random.random() for i in range(ref.shape[0])]
     curr["prediction"] = [np.random.random() for i in range(curr.shape[0])]
     return ref, curr
+
+
 def test_report_loading(data):
     ref, curr = data
 
@@ -32,15 +34,16 @@ def test_report_loading(data):
 
     assert report.as_dict() == report2.as_dict()
 
+
 def test_suite_loading(data):
     ref, curr = data
 
     ts = TestSuite([BinaryClassificationTestPreset()])
 
     ts.run(reference_data=ref, current_data=curr)
-
+    ts._inner_suite.raise_for_error()
     ts.save("profile.json")
 
     ts2 = TestSuite.load("profile.json")
 
-    assert ts.as_dict() == ts2.as_dict()
+    assert ts2.as_dict() == ts.as_dict()

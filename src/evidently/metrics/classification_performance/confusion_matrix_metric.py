@@ -35,7 +35,10 @@ class ClassificationConfusionMatrixParameters(BaseModel):
     def confusion_matric_metric(self):
         return ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
 
-class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult], ClassificationConfusionMatrixParameters):
+
+class ClassificationConfusionMatrix(
+    ThresholdClassificationMetric[ClassificationConfusionMatrixResult], ClassificationConfusionMatrixParameters
+):
     def __init__(
         self,
         probas_threshold: Optional[float] = None,

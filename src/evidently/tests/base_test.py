@@ -18,7 +18,10 @@ from pydantic import Field
 
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.pydantic_utils import EnumValueMixin, EvidentlyBaseModel, ExcludeNoneMixin, WithTestAndMetricDependencies
+from evidently.pydantic_utils import EnumValueMixin
+from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import ExcludeNoneMixin
+from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.generators import make_generator_by_columns
 from evidently.utils.types import ApproxValue
@@ -86,8 +89,6 @@ DEFAULT_GROUP = [
 ]
 
 
-
-
 class TestStatus(Enum):
     # Constants for test result status
     SUCCESS = "SUCCESS"  # the test was passed
@@ -97,7 +98,7 @@ class TestStatus(Enum):
     SKIPPED = "SKIPPED"  # the test was skipped
 
 
-class TestParameters(MetricResult):
+class TestParameters(EvidentlyBaseModel, MetricResult):  # type: ignore[misc] # pydantic Config
     pass
 
 
@@ -172,7 +173,7 @@ class ValueSource(Enum):
     OTHER = "other"
 
 
-class TestValueCondition(ExcludeNoneMixin):
+class TestValueCondition(ExcludeNoneMixin, EvidentlyBaseModel):
     """
     Class for processing a value conditions - should it be less, greater than, equals and so on.
 

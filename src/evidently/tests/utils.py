@@ -64,9 +64,9 @@ def plot_check(fig, condition, color_options: ColorOptions):
         left_border = 0.0
         right_border = 0.0
 
-        if condition.eq._relative > 1e-6:
-            left_border = condition.eq.value - condition.eq.value * condition.eq._relative
-            right_border = condition.eq.value + condition.eq.value * condition.eq._relative
+        if condition.eq.relative > 1e-6:
+            left_border = condition.eq.value - condition.eq.value * condition.eq.relative
+            right_border = condition.eq.value + condition.eq.value * condition.eq.relative
             fig.add_vrect(
                 x0=left_border,
                 x1=right_border,
@@ -75,9 +75,9 @@ def plot_check(fig, condition, color_options: ColorOptions):
                 line_width=0,
             )
 
-        elif condition.eq._absolute > 1e-12:
-            left_border = condition.eq.value - condition.eq._absolute
-            right_border = condition.eq.value + condition.eq._absolute
+        elif condition.eq.absolute > 1e-12:
+            left_border = condition.eq.value - condition.eq.absolute
+            right_border = condition.eq.value + condition.eq.absolute
             fig.add_vrect(
                 x0=left_border,
                 x1=right_border,

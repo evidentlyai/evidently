@@ -27,10 +27,12 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.pydantic_utils import EnumValueMixin, EvidentlyBaseModel, WithTestAndMetricDependencies
+from evidently.pydantic_utils import EnumValueMixin
+from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import FrozenBaseMeta
 from evidently.pydantic_utils import FrozenBaseModel
 from evidently.pydantic_utils import PolymorphicModel
+from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
@@ -59,10 +61,7 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     dataset: DatasetType
     feature_class: Optional[GeneratedFeature]
 
-    def __init__(self, name: str,
-                 display_name: str,
-                 dataset: DatasetType,
-                 feature_class: Optional[GeneratedFeature]):
+    def __init__(self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional[GeneratedFeature]):
         super().__init__(name=name, display_name=display_name, dataset=dataset, feature_class=feature_class)
 
     def is_main_dataset(self):
@@ -160,8 +159,6 @@ TResult = TypeVar("TResult", bound=MetricResult)
 class Metric(WithTestAndMetricDependencies, Generic[TResult]):
     _context: Optional["Context"] = None
 
-
-
     # TODO: if we want metric-specific options
     options: Options
 
@@ -225,8 +222,6 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult]):
         return options
 
 
-
-
 class ColumnMetricResult(MetricResult):
     column_name: str
     # todo: use enum
@@ -241,6 +236,10 @@ ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
     column: ColumnName
+
+    def __init__(self, column: Union[ColumnName, str], options: AnyOptions = None):
+        self.column = column if not isinstance(column, str) else ColumnName.main_dataset(column)
+        super().__init__(options)
 
     @property
     def column_name(self) -> str:

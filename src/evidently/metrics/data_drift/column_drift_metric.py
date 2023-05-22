@@ -4,6 +4,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+
 from evidently.base_metric import ColumnMetric
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
@@ -249,12 +250,10 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        if isinstance(column, str):
-            column = ColumnName.main_dataset(column)
-        self.column = column
+
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
-        super().__init__()
+        super().__init__(column=column)
 
     def get_parameters(self) -> tuple:
         return self.column, self.stattest_threshold, self.stattest

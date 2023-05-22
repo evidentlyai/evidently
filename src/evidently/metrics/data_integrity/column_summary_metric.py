@@ -141,16 +141,9 @@ class ColumnSummaryResult(ColumnMetricResult):
 class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
     _generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
-    def __init__(self, column_name: Union[str, ColumnName]):
-        if isinstance(column_name, str):
-            self.column = ColumnName.main_dataset(column_name)
-        else:
-            self.column = column_name
-        # self.column_name = self.column.name
+    def __init__(self, column: Union[str, ColumnName]):
         self._generated_text_features = None
-        super().__init__()
-
-
+        super().__init__(column=column)
 
     def required_features(self, data_definition: DataDefinition):
         if not self.column.is_main_dataset():

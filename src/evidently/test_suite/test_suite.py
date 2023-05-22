@@ -8,7 +8,6 @@ from typing import Optional
 from typing import Tuple
 from typing import Type
 from typing import Union
-from typing import get_args
 
 import pandas as pd
 from pydantic import BaseModel
@@ -65,7 +64,7 @@ class TestSuite(Display):
                 self._add_test(original_test)
 
     def _add_test(self, test: Test):
-        new_test = test.copy() #copy.copy(test)
+        new_test = test.copy()  # copy.copy(test)
         self._inner_suite.add_test(new_test)
 
     def __bool__(self):
@@ -220,8 +219,7 @@ class TestSuite(Display):
     def _get_payload(self) -> BaseModel:
         return _TestSuitePayload(
             tests=[
-                (t, res)
-                for t, res in zip(self._inner_suite.context.tests, self.as_dict(include_render=True)["tests"])
+                (t, res) for t, res in zip(self._inner_suite.context.tests, self.as_dict(include_render=True)["tests"])
             ]
         )
 

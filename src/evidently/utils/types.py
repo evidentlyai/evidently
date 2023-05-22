@@ -1,6 +1,7 @@
 """Additional types, classes, dataclasses, etc."""
 
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import Optional
 from typing import Type
@@ -10,43 +11,40 @@ from typing import Union
 import pandas as pd
 from pydantic import BaseModel
 
+from evidently.pydantic_utils import ExcludeNoneMixin
+
 Numeric = Union[float, int]
 
 # type for distributions - list of tuples (value, count)
 ColumnDistribution = Dict[Any, Numeric]
 
 
-class ApproxValue:
+class ApproxValue(ExcludeNoneMixin):
     """Class for approximate scalar value calculations"""
 
-    DEFAULT_RELATIVE = 1e-6
-    DEFAULT_ABSOLUTE = 1e-12
+    DEFAULT_RELATIVE: ClassVar = 1e-6
+    DEFAULT_ABSOLUTE: ClassVar = 1e-12
+
     value: Numeric
-    _relative: Numeric
-    _absolute: Numeric
+    relative: Numeric
+    absolute: Numeric
 
     def __init__(self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None):
-        self.value = value
-
         if relative is not None and relative <= 0:
             raise ValueError("Relative value for approx should be greater than 0")
 
         if relative is None:
-            self._relative = self.DEFAULT_RELATIVE
-
-        else:
-            self._relative = relative
+            relative = self.DEFAULT_RELATIVE
 
         if absolute is None:
-            self._absolute = self.DEFAULT_ABSOLUTE
+            absolute = self.DEFAULT_ABSOLUTE
 
-        else:
-            self._absolute = absolute
+        super().__init__(value=value, relative=relative, absolute=absolute)
 
     @property
     def tolerance(self) -> Numeric:
-        relative_value = abs(self.value) * self._relative
-        return max(relative_value, self._absolute)
+        relative_value = abs(self.value) * self.relative
+        return max(relative_value, self.absolute)
 
     def __format__(self, format_spec):
         return f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
@@ -69,17 +67,6 @@ class ApproxValue:
 
     def __ge__(self, other):
         return self.value + self.tolerance >= other
-
-    def as_dict(self) -> dict:
-        result = {"value": self.value}
-
-        if self._relative is not None:
-            result["relative"] = self._relative
-
-        if self._absolute is not None:
-            result["absolute"] = self._absolute
-
-        return result
 
 
 NumericApprox = Union[int, float, ApproxValue]
