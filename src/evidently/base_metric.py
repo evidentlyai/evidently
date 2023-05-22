@@ -74,6 +74,10 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     def __str__(self):
         return self.display_name
 
+    @classmethod
+    def from_any(cls, column_name: Union[str, "ColumnName"]):
+        return column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
+
 
 def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
     return ColumnName(
@@ -238,7 +242,7 @@ class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
     column_name: ColumnName
 
     def __init__(self, column_name: Union[ColumnName, str], options: AnyOptions = None):
-        self.column_name = column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
+        self.column_name = ColumnName.from_any(column_name)
         super().__init__(options)
 
     # @property

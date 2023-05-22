@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -25,9 +26,9 @@ GroupingTypes.TestGroup.add_value(REGRESSION_GROUP)
 
 
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
-    group = REGRESSION_GROUP.id
-    metric: RegressionQualityMetric
-    dummy_metric: RegressionDummyMetric
+    group: ClassVar = REGRESSION_GROUP.id
+    _metric: RegressionQualityMetric
+    _dummy_metric: RegressionDummyMetric
 
     def __init__(
         self,
@@ -50,12 +51,20 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = RegressionQualityMetric()
-        self.dummy_metric = RegressionDummyMetric()
+        self._metric = RegressionQualityMetric()
+        self._dummy_metric = RegressionDummyMetric()
+
+    @property
+    def metric(self):
+        return self._metric
+
+    @property
+    def dummy_metric(self):
+        return self._dummy_metric
 
 
 class TestValueMAE(BaseRegressionPerformanceMetricsTest):
-    name = "Mean Absolute Error (MAE)"
+    name: ClassVar = "Mean Absolute Error (MAE)"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -91,7 +100,7 @@ class TestValueMAERenderer(TestRenderer):
 
 
 class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
-    name = "Mean Absolute Percentage Error (MAPE)"
+    name: ClassVar = "Mean Absolute Percentage Error (MAPE)"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -129,7 +138,7 @@ class TestValueMAPERenderer(TestRenderer):
 
 
 class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
-    name = "Root Mean Square Error (RMSE)"
+    name: ClassVar = "Root Mean Square Error (RMSE)"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -165,7 +174,7 @@ class TestValueRMSERenderer(TestRenderer):
 
 
 class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
-    name = "Mean Error (ME)"
+    name: ClassVar = "Mean Error (ME)"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -196,7 +205,7 @@ class TestValueMeanErrorRenderer(TestRenderer):
 
 
 class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
-    name = "Max Absolute Error"
+    name: ClassVar = "Max Absolute Error"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -228,7 +237,7 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
 
 
 class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
-    name = "R2 Score"
+    name: ClassVar = "R2 Score"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():

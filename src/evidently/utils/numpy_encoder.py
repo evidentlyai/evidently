@@ -19,7 +19,7 @@ _TYPES_MAPPING = (
     ((np.void, type(pd.NaT)), lambda obj: None),  # should be before datetime as NaT is subclass of datetime.
     ((pd.Timestamp, datetime.datetime, datetime.date), lambda obj: obj.isoformat()),
     # map ApproxValue to json value
-    ((ApproxValue,), lambda obj: obj.as_dict()),
+    ((ApproxValue,), lambda obj: obj.dict()),
     ((pd.Series, pd.Index, pd.Categorical), lambda obj: obj.tolist()),
     ((pd.DataFrame,), lambda obj: obj.to_dict()),
 )

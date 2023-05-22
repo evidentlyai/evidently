@@ -59,9 +59,18 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
         super().__setattr__(key, value)
 
     def __hash__(self):
-        return hash(self.__class__) + hash(
-            tuple(tuple(v) if isinstance(v, list) else v for v in self.__dict__.values())
-        )
+        try:
+            return hash(self.__class__) + hash(tuple(self._field_hash(v) for v in self.__dict__.values()))
+        except TypeError:
+            raise
+
+    @staticmethod
+    def _field_hash(value):
+        if isinstance(value, list):
+            return tuple(value)
+        if isinstance(value, dict):
+            return tuple(value.items())
+        return value
 
 
 def all_subclasses(cls: Type[T]) -> Set[Type[T]]:
@@ -94,20 +103,7 @@ class PolymorphicModel(BaseModel):
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    class Config:
-        underscore_attrs_are_private = True
-
-    # @classmethod
-    # def validate(cls: Type["Model"], value: Any) -> "Model":
-    #     if isinstance(value, dict):
-    #         kwargs  = {}
-    #         if "type" in value:
-    #             kwargs["type"]  =value.pop("type")
-    #         result = super().validate(kwargs)
-    #         for key, value in value.items():
-    #             setattr(result, key, value)
-    #         return result
-    #     return super().validate(value)
+    pass
 
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):

@@ -477,11 +477,14 @@ class ByClassParameters(CheckValueParameters):
 
 
 class ByClassClassificationTest(BaseCheckValueTest, ABC):
-    group = CLASSIFICATION_GROUP.id
-    metric: ClassificationQualityMetric
-    by_class_metric: ClassificationQualityByClass
-    dummy_metric: ClassificationDummyMetric
-    conf_matrix: ClassificationConfusionMatrix
+    group: ClassVar = CLASSIFICATION_GROUP.id
+    _metric: ClassificationQualityMetric
+    _by_class_metric: ClassificationQualityByClass
+    _dummy_metric: ClassificationDummyMetric
+    _conf_matrix: ClassificationConfusionMatrix
+    label: Label
+    probas_threshold: Optional[float] = None
+    k: Optional[Union[float, int]] = None
 
     def __init__(
         self,
@@ -497,6 +500,12 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+        if k is not None and probas_threshold is not None:
+            raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
+
+        self.label = label
+        self.probas_threshold = probas_threshold
+        self.k = k
         super().__init__(
             eq=eq,
             gt=gt,
@@ -508,16 +517,26 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
             not_in=not_in,
         )
 
-        if k is not None and probas_threshold is not None:
-            raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
+        self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self._dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self._by_class_metric = ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k)
+        self._conf_matrix = ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
 
-        self.label = label
-        self.probas_threshold = probas_threshold
-        self.k = k
-        self.metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self.dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self.by_class_metric = ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k)
-        self.conf_matrix = ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
+    @property
+    def metric(self):
+        return self._metric
+
+    @property
+    def dummy_metric(self):
+        return self._dummy_metric
+
+    @property
+    def by_class_metric(self):
+        return self._by_class_metric
+
+    @property
+    def conf_matrix(self):
+        return self._conf_matrix
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.by_class_metric.get_result().current.metrics[self.label])

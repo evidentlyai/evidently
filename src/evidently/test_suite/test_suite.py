@@ -217,11 +217,7 @@ class TestSuite(Display):
         )
 
     def _get_payload(self) -> BaseModel:
-        return _TestSuitePayload(
-            tests=[
-                (t, res) for t, res in zip(self._inner_suite.context.tests, self.as_dict(include_render=True)["tests"])
-            ]
-        )
+        return _TestSuitePayload(tests=[(t, res.dict()) for t, res in self._inner_suite.context.test_results.items()])
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "TestSuite":

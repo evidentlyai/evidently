@@ -16,8 +16,10 @@ from typing import Union
 from pydantic import BaseModel
 from pydantic import Field
 
+from evidently.base_metric import BaseResult
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import ExcludeNoneMixin
@@ -98,8 +100,9 @@ class TestStatus(Enum):
     SKIPPED = "SKIPPED"  # the test was skipped
 
 
-class TestParameters(EvidentlyBaseModel, MetricResult):  # type: ignore[misc] # pydantic Config
-    pass
+class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc] # pydantic Config
+    class Config:
+        field_tags = {"type": {IncludeTags.TypeField}}
 
 
 class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
@@ -173,7 +176,7 @@ class ValueSource(Enum):
     OTHER = "other"
 
 
-class TestValueCondition(ExcludeNoneMixin, EvidentlyBaseModel):
+class TestValueCondition(ExcludeNoneMixin):
     """
     Class for processing a value conditions - should it be less, greater than, equals and so on.
 
@@ -271,6 +274,12 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
     """
     Base class for all tests with a condition
     """
+
+    class Config:
+        arbitrary_types_allowed = True
+        use_enum_values = True
+        smart_union = True
+        underscore_attrs_are_private = True
 
     # condition: TestValueCondition
 
@@ -370,7 +379,7 @@ T = TypeVar("T", bound=MetricResult)
 
 class ConditionFromReferenceMixin(BaseCheckValueTest, Generic[T], ABC):
     reference_field: ClassVar[str] = "reference"
-    metric: Metric
+    _metric: Metric
 
     def get_condition_from_reference(self, reference: Optional[T]) -> TestValueCondition:
         raise NotImplementedError
@@ -382,6 +391,10 @@ class ConditionFromReferenceMixin(BaseCheckValueTest, Generic[T], ABC):
         reference_stats = getattr(self.metric.get_result(), self.reference_field)
 
         return self.get_condition_from_reference(reference_stats)
+
+    @property
+    def metric(self):
+        return self._metric
 
 
 def generate_column_tests(
