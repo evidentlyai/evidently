@@ -52,10 +52,9 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
     ] = PrivateAttr(None)
 
     def __init__(self, columns: Optional[List[str]] = None, options: AnyOptions = None):
-        super().__init__(options=options)
         self.columns = columns
+        super().__init__(options=options)
         self._text_features_gen = None
-        super().__init__()
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:

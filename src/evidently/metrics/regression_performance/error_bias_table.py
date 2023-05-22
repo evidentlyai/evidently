@@ -64,7 +64,6 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
         options: AnyOptions = None,
     ):
-        super().__init__(options=options)
         if top_error is None:
             self.top_error = self.TOP_ERROR_DEFAULT
 
@@ -74,7 +73,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         self.columns = columns
         self.text_features_gen = None
         self.descriptors = descriptors
-        super().__init__()
+        super().__init__(options=options)
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:

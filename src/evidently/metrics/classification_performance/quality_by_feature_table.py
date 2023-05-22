@@ -49,7 +49,6 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
         options: AnyOptions = None,
     ):
-        super().__init__(options=options)
         self.columns = columns
         self._text_features_gen = None
         self.descriptors = descriptors
