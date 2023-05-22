@@ -136,7 +136,7 @@ You can also set a custom condition for each test to encode your expectations. Y
 | Condition parameter name | Explanation                                | Usage Example                                                   |
 |--------------------------|--------------------------------------------|-----------------------------------------------------------------|
 | eq: val                  | test_result == val                         | TestColumnValueMin(column_name=”num_feature”, eq=5)            |
-| not_eq: val              | test_result != val                         | TestColumnValueMin(column_name=”num_feature”, ne=0)            |
+| not_eq: val              | test_result != val                         | TestColumnValueMin(column_name=”num_feature”, not_eq=0)            |
 | gt: val                  | test_result > val                          | TestColumnValueMin(column_name=”num_feature”, gt=5)            |
 | gte: val                 | test_result >= val                         | TestColumnValueMin(column_name=”num_feature”, gte=5)           |
 | lt: val                  | test_result < val                          | TestColumnValueMin(column_name=”num_feature”, lt=5)            |
