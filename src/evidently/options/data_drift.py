@@ -1,8 +1,12 @@
+import abc
 import warnings
 from dataclasses import dataclass
 from typing import Dict
 from typing import Optional
 from typing import Union
+
+from pydantic import BaseModel
+from pydantic import PrivateAttr
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
@@ -11,8 +15,7 @@ from evidently.utils.data_drift_utils import resolve_stattest_threshold
 DEFAULT_NBINSX = 10
 
 
-@dataclass
-class DataDriftOptions:
+class DataDriftOptions(BaseModel):
     """Configuration for Data Drift calculations.
 
     Args:

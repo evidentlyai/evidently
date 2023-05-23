@@ -55,7 +55,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     top_error: float
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
-    text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
+    _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
 
     def __init__(
         self,
@@ -71,7 +71,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             self.top_error = top_error
 
         self.columns = columns
-        self.text_features_gen = None
+        self._text_features_gen = None
         self.descriptors = descriptors
         super().__init__(options=options)
 
@@ -95,7 +95,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
                 text_features_gen_result += list(col_dict.values())
                 text_features_gen[col] = col_dict
-            self.text_features_gen = text_features_gen
+            self._text_features_gen = text_features_gen
 
             return text_features_gen_result
         else:
@@ -151,8 +151,8 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
         cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
         # process text columns
-        if self.text_features_gen is not None:
-            for column, features in self.text_features_gen.items():
+        if self._text_features_gen is not None:
+            for column, features in self._text_features_gen.items():
                 columns.remove(column)
                 num_feature_names += list(features.keys())
                 columns += list(features.keys())

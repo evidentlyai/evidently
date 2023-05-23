@@ -171,9 +171,9 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult]):
     # resulting options will be determined via
     # options = global_option.override(display_options).override(metric_options)
 
-    def __init__(self, options: AnyOptions = None):
+    def __init__(self, options: AnyOptions = None, **data):
         self.options = Options.from_any_options(options)
-        super().__init__()
+        super().__init__(**data)
 
     def get_id(self) -> str:
         return self.__class__.__name__

@@ -7,8 +7,10 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metrics.data_drift.base import WithDriftOptions
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -24,9 +26,10 @@ class DatasetDriftMetricResults(MetricResult):
     dataset_drift: bool
 
 
-class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
+class DatasetDriftMetric(
+    WithDriftOptions[DatasetDriftMetricResults],
+):
     columns: Optional[List[str]]
-    drift_options: DataDriftOptions
     drift_share: float
 
     def __init__(
@@ -43,22 +46,35 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
         num_stattest_threshold: Optional[float] = None,
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        options: AnyOptions = None,
     ):
         self.columns = columns
-        self.drift_options = DataDriftOptions(
-            all_features_stattest=stattest,
-            cat_features_stattest=cat_stattest,
-            num_features_stattest=num_stattest,
-            text_features_stattest=text_stattest,
-            per_feature_stattest=per_column_stattest,
-            all_features_threshold=stattest_threshold,
-            cat_features_threshold=cat_stattest_threshold,
-            num_features_threshold=num_stattest_threshold,
-            text_features_threshold=text_stattest_threshold,
-            per_feature_threshold=per_column_stattest_threshold,
-        )
         self.drift_share = drift_share
-        super().__init__()
+        super().__init__(
+            stattest=stattest,
+            cat_stattest=cat_stattest,
+            num_stattest=num_stattest,
+            text_stattest=text_stattest,
+            per_column_stattest=per_column_stattest,
+            stattest_threshold=stattest_threshold,
+            cat_stattest_threshold=cat_stattest_threshold,
+            num_stattest_threshold=num_stattest_threshold,
+            text_stattest_threshold=text_stattest_threshold,
+            per_column_stattest_threshold=per_column_stattest_threshold,
+            options=options,
+        )
+        self._drift_options = DataDriftOptions(
+            all_features_stattest=self.stattest,
+            cat_features_stattest=self.cat_stattest,
+            num_features_stattest=self.num_stattest,
+            text_features_stattest=self.text_stattest,
+            per_feature_stattest=self.per_column_stattest,
+            all_features_threshold=self.stattest_threshold,
+            cat_features_threshold=self.cat_stattest_threshold,
+            num_features_threshold=self.num_stattest_threshold,
+            text_features_threshold=self.text_stattest_threshold,
+            per_feature_threshold=self.per_column_stattest_threshold,
+        )
 
     def get_parameters(self) -> tuple:
         return (

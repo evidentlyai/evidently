@@ -10,6 +10,7 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
+import numpy as np
 import pandas as pd
 from pydantic.fields import SHAPE_DICT
 from pydantic.fields import SHAPE_LIST
@@ -94,6 +95,11 @@ def series_validator(value):
 @pydantic_type_validator(pd.DataFrame)
 def dataframe_validator(value):
     return pd.DataFrame(value)
+
+
+@pydantic_type_validator(np.float_)
+def np_inf_valudator(value):
+    return np.float(value)
 
 
 class BaseResult(BaseModel):

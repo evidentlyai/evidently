@@ -18,6 +18,7 @@ from evidently.features.non_letter_character_percentage_feature import NonLetter
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import HeatmapData
@@ -62,16 +63,16 @@ class DatasetCorrelationsMetricResult(MetricResult):
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
 
-    text_features_gen: Optional[
+    _text_features_gen: Optional[
         Dict[
             str,
             Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
         ]
     ]
 
-    def __init__(self):
-        self.text_features_gen = None
-        super().__init__()
+    def __init__(self, options: AnyOptions = None):
+        self._text_features_gen = None
+        super().__init__(options=options)
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
@@ -93,7 +94,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     col_dict[f"{col}: OOV %"],
                 ]
                 text_features_gen[col] = col_dict
-            self.text_features_gen = text_features_gen
+            self._text_features_gen = text_features_gen
 
             return text_features_gen_result
         else:
@@ -232,13 +233,13 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
         # process text columns
         text_columns = []
-        if self.text_features_gen is not None:
-            for col in list(self.text_features_gen.keys()):
+        if self._text_features_gen is not None:
+            for col in list(self._text_features_gen.keys()):
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
+                    [data.get_current_column(x.feature_name()) for x in list(self._text_features_gen[col].values())],
                     axis=1,
                 )
-                curr_text_df.columns = list(self.text_features_gen[col].keys())
+                curr_text_df.columns = list(self._text_features_gen[col].keys())
                 text_columns.append(list(curr_text_df.columns))
                 curr_df = pd.concat(
                     [
@@ -252,11 +253,11 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     ref_text_df = pd.concat(
                         [
                             data.get_reference_column(x.feature_name())
-                            for x in list(self.text_features_gen[col].values())
+                            for x in list(self._text_features_gen[col].values())
                         ],
                         axis=1,
                     )
-                    ref_text_df.columns = list(self.text_features_gen[col].keys())
+                    ref_text_df.columns = list(self._text_features_gen[col].keys())
                     ref_df = pd.concat(
                         [
                             ref_df.copy().reset_index(drop=True),

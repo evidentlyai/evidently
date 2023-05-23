@@ -22,6 +22,7 @@ _TYPES_MAPPING = (
     ((ApproxValue,), lambda obj: obj.dict()),
     ((pd.Series, pd.Index, pd.Categorical), lambda obj: obj.tolist()),
     ((pd.DataFrame,), lambda obj: obj.to_dict()),
+    ((frozenset,), lambda obj: list(obj)),
 )
 
 

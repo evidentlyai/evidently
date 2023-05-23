@@ -1,3 +1,4 @@
+import numpy.testing
 import pandas as pd
 import pytest
 
@@ -21,7 +22,7 @@ from evidently.report import Report
         RegressionPreset(),
     ),
 )
-def test_metric_presets(preset: MetricPreset):
+def test_metric_presets(preset: MetricPreset, tmp_path):
     current_data = pd.DataFrame(
         {
             "category_feature": ["t", "e", "t"],
@@ -44,3 +45,8 @@ def test_metric_presets(preset: MetricPreset):
     report._inner_suite.raise_for_error()
     assert report.show()
     assert report.json()
+
+    path = str(tmp_path / "report.json")
+    report.save(path)
+    report2 = Report.load(path)
+    numpy.testing.assert_equal(report2.as_dict(), report.as_dict())  # has nans

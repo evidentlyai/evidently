@@ -3,8 +3,10 @@ from dataclasses import dataclass
 from typing import Any
 from typing import ClassVar
 from typing import Dict
+from typing import FrozenSet
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -13,7 +15,9 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
+from evidently.core import pydantic_type_validator
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -25,16 +29,28 @@ from evidently.renderers.html_widgets import histogram
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
+NoneKey = type("NoneKey", tuple(), {})
+
+
+@pydantic_type_validator(NoneKey)
+def null_valudator(value):
+    if value is None or value == "null":
+        return None
+    raise ValueError("not a None")
+
+
+MissingValue = Union[np.float_, NoneKey, Any]  # type: ignore[valid-type]
+
 
 class DatasetMissingValues(MetricResult):
     """Statistics about missed values in a dataset"""
 
     # set of different missing values in the dataset
-    different_missing_values: Dict[Any, int]
+    different_missing_values: Dict[MissingValue, int]
     # number of different missing values in the dataset
     number_of_different_missing_values: int
     # set of different missing values for each column
-    different_missing_values_by_column: Dict[str, Dict[Any, int]]
+    different_missing_values_by_column: Dict[str, Dict[MissingValue, int]]
     # count of different missing values for each column
     number_of_different_missing_values_by_column: Dict[str, int]
     # count of missing values in all dataset
@@ -83,9 +99,9 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
     # default missing values list
     DEFAULT_MISSING_VALUES: ClassVar = ["", np.inf, -np.inf, None]
-    missing_values: frozenset
+    missing_values: FrozenSet[MissingValue]
 
-    def __init__(self, missing_values: Optional[list] = None, replace: bool = True) -> None:
+    def __init__(self, missing_values: Optional[list] = None, replace: bool = True, options: AnyOptions = None) -> None:
         _missing_values: list
         if missing_values is None:
             # use default missing values list if we have no user-defined values
@@ -99,7 +115,7 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
         self.missing_values = frozenset(_missing_values)
-        super().__init__()
+        super().__init__(options=options)
 
     def _calculate_missing_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
         different_missing_values = {value: 0 for value in self.missing_values}
