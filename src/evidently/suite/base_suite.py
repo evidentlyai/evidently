@@ -100,6 +100,41 @@ class Context:
     options: Options = Options()
 
 
+class ContextPayload(BaseModel):
+    metrics: List[Metric]
+    metric_results: List[MetricResult]
+    tests: List[Test]
+    test_results: List[TestResult]
+    options: Options = Options()
+
+    @classmethod
+    def from_context(cls, context: Context):
+        return cls(
+            metrics=list(context.metric_results.keys()),
+            metric_results=list(context.metric_results.values()),
+            tests=list(context.test_results.keys()),
+            test_results=list(context.test_results.values()),
+            options=context.options,
+        )
+
+    def to_context(self) -> Context:
+        ctx = Context(
+            None,
+            metrics=self.metrics,
+            tests=self.tests,
+            metric_results={m: mr for m, mr in zip(self.metrics, self.metric_results)},
+            test_results={t: tr for t, tr in zip(self.tests, self.test_results)},
+            state=States.Calculated,
+            renderers=DEFAULT_RENDERERS,
+            options=self.options,
+        )
+        for m in ctx.metrics:
+            m.set_context(ctx)
+        for t in ctx.tests:
+            t.set_context(ctx)
+        return ctx
+
+
 class ExecutionError(Exception):
     pass
 

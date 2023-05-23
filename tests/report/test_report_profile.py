@@ -32,7 +32,7 @@ def test_report_loading(data):
 
     report2 = Report.load("profile.json")
 
-    assert report.as_dict() == report2.as_dict()
+    assert report2.as_dict() == report.as_dict()
 
 
 def test_suite_loading(data):

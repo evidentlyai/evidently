@@ -13,6 +13,7 @@ from plotly.subplots import make_subplots
 
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
+from evidently.core import AllDict
 from evidently.metric_results import DatasetColumns
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.objects import ClassesMetrics
@@ -33,7 +34,7 @@ class ClassificationQuality(MetricResult):
 
     @property
     def metrics_dict(self):
-        return self.dict(include={"metrics"})["metrics"]
+        return self.dict(include={"metrics"}, exclude={"metrics": AllDict({"type"})})["metrics"]
 
 
 class ClassificationQualityByClassResult(MetricResult):

@@ -41,5 +41,6 @@ def test_metric_presets(preset: MetricPreset):
     data_mapping = ColumnMapping()
     report = Report(metrics=[preset], options=Options(render=RenderOptions(raw_data=True)))
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+    report._inner_suite.raise_for_error()
     assert report.show()
     assert report.json()

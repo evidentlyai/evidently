@@ -23,6 +23,7 @@ from pydantic.utils import import_string
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
@@ -39,8 +40,9 @@ if TYPE_CHECKING:
     from evidently.suite.base_suite import Context
 
 
-class MetricResult(BaseResult):
-    pass
+class MetricResult(PolymorphicModel, BaseResult):  # type: ignore[misc] # pydantic Config
+    class Config:
+        field_tags = {"type": {IncludeTags.TypeField}}
 
 
 class ErrorResult:

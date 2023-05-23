@@ -28,6 +28,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import T
@@ -198,12 +199,9 @@ class Report(Display):
         )
 
     def _get_payload(self) -> BaseModel:
-        return _ReportPayload(
-            metrics=[
-                (m, res["result"])
-                for m, res in zip(self._first_level_metrics, self.as_dict(include_render=True)["metrics"])
-            ]
-        )
+        ctx = self._inner_suite.context
+        suite = ContextPayload.from_context(ctx)
+        return _ReportPayload(suite=suite, metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics])
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "Report":
@@ -211,23 +209,14 @@ class Report(Display):
 
 
 class _ReportPayload(BaseModel):
-    metrics: List[Tuple[Metric, Dict]]
+    suite: ContextPayload
+    metrics_ids: List[int]
 
     def load(self):
-        metrics = []
-        results = []
-        for metric, result in self.metrics:
-            metrics.append(metric)
-            result_type = get_args(metric.__class__.__orig_bases__[0])[0]
-            assert issubclass(result_type, MetricResult)
-            results.append(parse_obj_as(result_type, result))
-
+        ctx = self.suite.to_context()
+        metrics = [ctx.metrics[i] for i in self.metrics_ids]
         report = Report(metrics=metrics)
         report._first_level_metrics = metrics
-        context = report._inner_suite.context
-        for metric, result in zip(metrics, results):
-            # todo: dependencies results too?
-            metric.set_context(context)
-            context.metrics.append(metric)
-            context.metric_results[metric] = result
+        report._inner_suite.context = ctx
+
         return report

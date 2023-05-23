@@ -23,6 +23,7 @@ from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
+from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import T
@@ -224,7 +225,9 @@ class TestSuite(Display):
         )
 
     def _get_payload(self) -> BaseModel:
-        return _TestSuitePayload(tests=[(t, res.dict()) for t, res in self._inner_suite.context.test_results.items()])
+        return _TestSuitePayload(
+            suite=ContextPayload.from_context(self._inner_suite.context),
+        )
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "TestSuite":
@@ -232,23 +235,9 @@ class TestSuite(Display):
 
 
 class _TestSuitePayload(BaseModel):
-    tests: List[Tuple[Test, Dict]]
+    suite: ContextPayload
 
     def load(self):
-        tests = []
-        results = []
-        for test, result in self.tests:
-            tests.append(test)
-            # result_type = get_args(metric.__class__.__orig_bases__[0])[0]
-            # assert issubclass(result_type, MetricResult)
-            results.append(parse_obj_as(TestResult, result))
-
-        suite = TestSuite(tests=tests)
-        # report._first_level_metrics = metrics
-        context = suite._inner_suite.context
-        for test, result in zip(tests, results):
-            # todo: dependencies results too?
-            test.set_context(context)
-            context.tests.append(test)
-            context.test_results[test] = result
+        suite = TestSuite(tests=None)
+        suite._inner_suite.context = self.suite.to_context()
         return suite

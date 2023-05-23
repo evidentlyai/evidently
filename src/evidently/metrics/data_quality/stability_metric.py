@@ -21,29 +21,31 @@ class DataQualityStabilityMetric(Metric[DataQualityStabilityMetricResult]):
     """Calculates stability by target and prediction"""
 
     def calculate(self, data: InputData) -> DataQualityStabilityMetricResult:
-        result = DataQualityStabilityMetricResult()
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
         columns = [column for column in data.current_data.columns if column not in (target_name, prediction_name)]
 
         if not columns:
-            result.number_not_stable_target = 0
-            result.number_not_stable_prediction = 0
-            return result
+            return DataQualityStabilityMetricResult(number_not_stable_target=0, number_not_stable_prediction=0)
 
         duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
 
+        number_not_stable_target = None
+        number_not_stable_prediction = None
+
         if target_name in data.current_data:
-            result.number_not_stable_target = duplicates.drop(
+            number_not_stable_target = duplicates.drop(
                 data.current_data[data.current_data.duplicated(subset=columns + [target_name], keep=False)].index
             ).shape[0]
 
         if prediction_name in data.current_data:
-            result.number_not_stable_prediction = duplicates.drop(
+            number_not_stable_prediction = duplicates.drop(
                 data.current_data[data.current_data.duplicated(subset=columns + [prediction_name], keep=False)].index
             ).shape[0]
 
-        return result
+        return DataQualityStabilityMetricResult(
+            number_not_stable_target=number_not_stable_target, number_not_stable_prediction=number_not_stable_prediction
+        )
 
 
 @default_renderer(wrap_type=DataQualityStabilityMetric)
