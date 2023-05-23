@@ -118,7 +118,7 @@ class ClassificationLiftTableRenderer(MetricRenderer):
                 "percent",
             ],
         )
-        if reference_lift_table == None:
+        if reference_lift_table is None:
             return {
                 "current": {
                     "top": list(current_lift_table["top"]),

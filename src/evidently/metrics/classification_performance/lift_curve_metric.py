@@ -117,7 +117,7 @@ class ClassificationLiftCurveRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationLiftCurve) -> dict:
         current_lift_curve = obj.get_result().current_lift_curve
         reference_lift_curve = obj.get_result().reference_lift_curve
-        if reference_lift_curve == None:
+        if reference_lift_curve is None:
             return {
                 "current": {
                     "top": current_lift_curve[1]["top"],
