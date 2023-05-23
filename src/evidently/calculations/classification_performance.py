@@ -266,12 +266,10 @@ def calculate_pr_table(binded):
 def calculate_lift_table(binded: List[tuple]) -> List[List]:
     """
     Calculate all needed table data for lift metric analysis and visualization
-
     Parameters
     ----------
     binded: List[tuple]
         Zipped together binarized facts(0 or 1) and probabilistic prediction
-
     Return values
     -------------
     result: List[List]
@@ -283,9 +281,9 @@ def calculate_lift_table(binded: List[tuple]) -> List[List]:
     target_class_size = sum([x[0] for x in binded])
     # we don't use declared STEP_SIZE due to specifics
     # of lift metric calculation and visualization
-    offset = max(round(data_size * 0.01), 1)
+    offset = int(max(np.floor(data_size * 0.01), 1))
 
-    for step in np.arange(offset, data_size + offset, offset):
+    for step in np.arange(offset, data_size + 1, offset):
         count = min(step, data_size)
         prob = round(binded[min(step, data_size - 1)][1], 2)
         top = round(100.0 * min(step, data_size) / data_size)
