@@ -46,8 +46,8 @@ class DatasetSummary(MetricResult):
     """Columns information in a dataset"""
 
     class Config:
-        dict_exclude_fields = {"columns_type"}
-        pd_exclude_fields = {"columns_type"}
+        dict_exclude_fields = {"columns_type_data"}
+        pd_exclude_fields = {"columns_type_data"}
 
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]

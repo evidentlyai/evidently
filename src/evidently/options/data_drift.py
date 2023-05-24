@@ -1,6 +1,7 @@
 import abc
 import warnings
 from dataclasses import dataclass
+from typing import ClassVar
 from typing import Dict
 from typing import Optional
 from typing import Union
@@ -11,8 +12,6 @@ from pydantic import PrivateAttr
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
-
-DEFAULT_NBINSX = 10
 
 
 class DataDriftOptions(BaseModel):
@@ -43,6 +42,8 @@ class DataDriftOptions(BaseModel):
         cat_target_stattest_func: Defines a custom statistical test to detect target drift in category target.
         num_target_stattest_func: Defines a custom statistical test to detect target drift in numeric target.
     """
+
+    DEFAULT_NBINSX: ClassVar = 10
 
     confidence: Optional[Union[float, Dict[str, float]]] = None
     threshold: Optional[Union[float, Dict[str, float]]] = None
@@ -128,7 +129,7 @@ class DataDriftOptions(BaseModel):
         if isinstance(self.nbinsx, int):
             return self.nbinsx
         if isinstance(self.nbinsx, dict):
-            return self.nbinsx.get(feature_name, DEFAULT_NBINSX)
+            return self.nbinsx.get(feature_name, DataDriftOptions.DEFAULT_NBINSX)
         raise ValueError(f"DataDriftOptions.nbinsx is incorrect type {type(self.nbinsx)}")
 
     def get_feature_stattest_func(self, feature_name: str, feature_type: str) -> Optional[PossibleStatTestType]:
