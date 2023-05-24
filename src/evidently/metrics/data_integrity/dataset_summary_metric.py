@@ -23,6 +23,7 @@ from evidently.calculations.data_quality import get_rows_count
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pydantic_utils import ExcludeNoneMixin
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -30,15 +31,20 @@ from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 
 
-class NumpyDtype(BaseModel):
+class NumpyDtype(ExcludeNoneMixin):
     dtype: str
+    categories: Optional[List[str]] = None
 
     @property
     def type(self):
+        if self.dtype == "category":
+            return pd.CategoricalDtype(categories=self.categories)
         return np.dtype(self.dtype)
 
     @classmethod
     def from_dtype(cls, dtype: np.dtype):
+        if isinstance(dtype, pd.CategoricalDtype):
+            return cls(dtype=dtype.name, categories=list(dtype.categories))
         return cls(dtype=dtype.name)
 
 

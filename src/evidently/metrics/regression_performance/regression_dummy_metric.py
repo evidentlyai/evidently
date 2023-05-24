@@ -13,6 +13,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -36,11 +37,15 @@ class RegressionDummyMetricResults(MetricResult):
 
 
 class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
-    quality_metric: RegressionQualityMetric
+    _quality_metric: RegressionQualityMetric
 
-    def __init__(self):
-        self.quality_metric = RegressionQualityMetric()
-        super().__init__()
+    def __init__(self, options: AnyOptions = None):
+        super().__init__(options=options)
+        self._quality_metric = RegressionQualityMetric()
+
+    @property
+    def quality_metric(self):
+        return self._quality_metric
 
     def calculate(self, data: InputData) -> RegressionDummyMetricResults:
         quality_metric: Optional[RegressionQualityMetric]

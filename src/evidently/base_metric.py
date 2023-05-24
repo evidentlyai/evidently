@@ -63,7 +63,9 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     dataset: DatasetType
     feature_class: Optional[GeneratedFeature]
 
-    def __init__(self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional[GeneratedFeature]):
+    def __init__(
+        self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional[GeneratedFeature] = None
+    ):
         super().__init__(name=name, display_name=display_name, dataset=dataset, feature_class=feature_class)
 
     def is_main_dataset(self):

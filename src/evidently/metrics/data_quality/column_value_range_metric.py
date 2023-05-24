@@ -13,6 +13,7 @@ from evidently.calculations.data_quality import get_rows_count
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -58,11 +59,12 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         column_name: Union[str, ColumnName],
         left: Optional[Numeric] = None,
         right: Optional[Numeric] = None,
+        options: AnyOptions = None,
     ) -> None:
         self.left = left
         self.right = right
         self.column_name = column_name
-        super().__init__()
+        super().__init__(options=options)
 
     @staticmethod
     def _calculate_in_range_stats(

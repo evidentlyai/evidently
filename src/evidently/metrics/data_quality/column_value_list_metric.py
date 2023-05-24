@@ -10,6 +10,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -43,10 +44,10 @@ class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
     column_name: str
     values: Optional[list]
 
-    def __init__(self, column_name: str, values: Optional[list] = None) -> None:
+    def __init__(self, column_name: str, values: Optional[list] = None, options: AnyOptions = None) -> None:
         self.values = values
         self.column_name = column_name
-        super().__init__()
+        super().__init__(options=options)
 
     @staticmethod
     def _calculate_stats(values: list, column: pd.Series) -> ValueListStat:
