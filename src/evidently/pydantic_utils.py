@@ -54,6 +54,8 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
 
     def __setattr__(self, key, value):
         if self.__init_values__ is not None:
+            if key not in self.__fields__ and key not in self.__private_attributes__:
+                raise AttributeError(f"{self.__class__.__name__} has no attribute {key}")
             self.__init_values__[key] = value
             return
         super().__setattr__(key, value)
@@ -64,12 +66,12 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
         except TypeError:
             raise
 
-    @staticmethod
-    def _field_hash(value):
+    @classmethod
+    def _field_hash(cls, value):
         if isinstance(value, list):
-            return tuple(value)
+            return tuple(cls._field_hash(v) for v in value)
         if isinstance(value, dict):
-            return tuple(value.items())
+            return tuple((k, cls._field_hash(v)) for k, v in value.items())
         return value
 
 

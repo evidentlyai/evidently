@@ -49,8 +49,11 @@ class TextDescriptorsDriftMetricResults(MetricResult):
 
 class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
-    drift_options: DataDriftOptions
-    generated_text_features: Dict[str, GeneratedFeature]
+    stattest: Optional[PossibleStatTestType] = None
+    stattest_threshold: Optional[float] = None
+    descriptors: Dict[str, FeatureDescriptor]
+    _drift_options: DataDriftOptions
+    _generated_text_features: Dict[str, GeneratedFeature]
 
     def __init__(
         self,
@@ -60,9 +63,8 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         stattest_threshold: Optional[float] = None,
         options: AnyOptions = None,
     ):
-        super().__init__(options=options)
         self.column_name = column_name
-        self.drift_options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
+
         if descriptors:
             self.descriptors = descriptors
         else:
@@ -71,20 +73,27 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
                 "Non Letter Character %": NonLetterCharacterPercentage(),
                 "OOV %": OOV(),
             }
-        self.generated_text_features = {}
-        super().__init__()
+        super().__init__(stattest=stattest, stattest_threshold=stattest_threshold, options=options)
+        self._generated_text_features = {}
+        self._drift_options = DataDriftOptions(
+            all_features_stattest=stattest, all_features_threshold=stattest_threshold
+        )
+
+    @property
+    def generated_text_features(self):
+        return self._generated_text_features
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
-            self.generated_text_features = {
+            self._generated_text_features = {
                 name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
             }
             return list(self.generated_text_features.values())
         return []
 
     def get_parameters(self) -> tuple:
-        return self.column_name, self.drift_options
+        return self.column_name, self._drift_options
 
     def calculate(self, data: InputData) -> TextDescriptorsDriftMetricResults:
         if data.reference_data is None:
@@ -113,7 +122,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
                 current_data=curr_text_df,
                 reference_data=ref_text_df,
                 column_name=col,
-                options=self.drift_options,
+                options=self._drift_options,
                 dataset_columns=text_dataset_columns,
                 agg_data=agg_data,
             )

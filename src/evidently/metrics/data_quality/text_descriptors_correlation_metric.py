@@ -16,6 +16,7 @@ from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_results import ColumnCorrelations
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
@@ -35,9 +36,12 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
     """Calculates correlations between each auto-generated text feature for column_name and other dataset columns"""
 
     column_name: str
-    generated_text_features: Dict[str, GeneratedFeature]
+    _generated_text_features: Dict[str, GeneratedFeature]
+    descriptors: Dict[str, FeatureDescriptor]
 
-    def __init__(self, column_name: str, descriptors: Optional[Dict[str, FeatureDescriptor]] = None) -> None:
+    def __init__(
+        self, column_name: str, descriptors: Optional[Dict[str, FeatureDescriptor]] = None, options: AnyOptions = None
+    ) -> None:
         self.column_name = column_name
         if descriptors:
             self.descriptors = descriptors
@@ -47,13 +51,17 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
                 "Non Letter Character %": NonLetterCharacterPercentage(),
                 "OOV %": OOV(),
             }
-        self.generated_text_features = {}
-        super().__init__()
+        super().__init__(options=options)
+        self._generated_text_features = {}
+
+    @property
+    def generated_text_features(self):
+        return self._generated_text_features
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
-            self.generated_text_features = {
+            self._generated_text_features = {
                 name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
             }
             return list(self.generated_text_features.values())
