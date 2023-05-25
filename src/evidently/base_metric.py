@@ -1,25 +1,16 @@
 import abc
-import itertools
 import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
-from typing import Any
 from typing import Generic
 from typing import List
 from typing import Optional
-from typing import Set
 from typing import Tuple
-from typing import Type
 from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-import pydantic
-from pydantic import Field
-from pydantic.main import BaseModel
-from pydantic.main import ModelMetaclass
-from pydantic.utils import import_string
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType
@@ -30,8 +21,6 @@ from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
-from evidently.pydantic_utils import FrozenBaseMeta
-from evidently.pydantic_utils import FrozenBaseModel
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.utils.data_preprocessing import DataDefinition
