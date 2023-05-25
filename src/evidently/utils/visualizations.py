@@ -6,7 +6,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pandas import IntervalIndex
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
