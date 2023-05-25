@@ -49,9 +49,9 @@ class RegressionErrorBiasTableResults(MetricResult):
 
 class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     # by default, we get 5% values for the error bias calculations
-    TOP_ERROR_DEFAULT: ClassVar = 0.05
-    TOP_ERROR_MIN: ClassVar = 0
-    TOP_ERROR_MAX: ClassVar = 0.5
+    TOP_ERROR_DEFAULT: ClassVar[float] = 0.05
+    TOP_ERROR_MIN: ClassVar[float] = 0
+    TOP_ERROR_MAX: ClassVar[float] = 0.5
     top_error: float
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]

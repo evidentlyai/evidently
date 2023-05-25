@@ -11,7 +11,6 @@ import plotly.graph_objs as go
 from pandas.api.types import is_integer_dtype
 from pandas.api.types import is_string_dtype
 from plotly.subplots import make_subplots
-from pydantic import PrivateAttr
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -20,7 +19,6 @@ from evidently.calculations.classification_performance import get_prediction_dat
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metric_results import PredictionData
 from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -49,7 +47,7 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
             str,
             Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
         ]
-    ] = PrivateAttr(None)
+    ]
 
     def __init__(self, columns: Optional[List[str]] = None, options: AnyOptions = None):
         self.columns = columns

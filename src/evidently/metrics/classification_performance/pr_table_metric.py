@@ -44,9 +44,6 @@ PRTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 
 
 class ClassificationPRTableResults(MetricResult):
-    # class Config:
-    #     smart_union = True
-
     current: Optional[PRTable] = None
     reference: Optional[PRTable] = None
 

@@ -5,17 +5,11 @@ from typing import Dict
 from typing import Generic
 from typing import Optional
 from typing import TypeVar
-from typing import Union
-
-from pydantic import BaseModel
-from pydantic import PrivateAttr
 
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.calculations.stattests import StatTest
 from evidently.options import DataDriftOptions
-from evidently.utils.data_drift_utils import resolve_stattest_threshold
 
 T = TypeVar("T", bound=MetricResult)
 

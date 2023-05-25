@@ -7,7 +7,6 @@ from typing import Optional
 from typing import Union
 
 from pydantic import BaseModel
-from pydantic import PrivateAttr
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest

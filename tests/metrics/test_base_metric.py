@@ -3,7 +3,6 @@ from typing import Optional
 
 import pandas as pd
 import pytest
-from pydantic import PrivateAttr
 
 from evidently import ColumnMapping
 from evidently.base_metric import ColumnName
@@ -57,7 +56,7 @@ class SimpleMetric(Metric[int]):
 
 class SimpleMetricWithFeatures(Metric[int]):
     column_name: str
-    _feature: Optional[GeneratedFeature] = PrivateAttr(None)
+    _feature: Optional[GeneratedFeature]
 
     def __init__(self, column_name: str):
         self.column_name = column_name
@@ -78,7 +77,7 @@ class SimpleMetricWithFeatures(Metric[int]):
 
 
 class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
-    _features: Dict[str, "LengthFeature"] = PrivateAttr(None)
+    _features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
         return {k: data.get_current_column(v.feature_name()).sum() for k, v in self._features.items()}

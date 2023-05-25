@@ -272,6 +272,7 @@ class Display:
         raise NotImplementedError
 
     def save(self, filename):
+        """Save state to file (experimental)"""
         payload = self._get_payload()
 
         with open(filename, "w") as f:
@@ -279,6 +280,7 @@ class Display:
 
     @classmethod
     def load(cls: Type[T], filename) -> T:
+        """Load state from file (experimental)"""
         with open(filename, "r") as f:
             return cls._parse_payload(json.load(f))
 

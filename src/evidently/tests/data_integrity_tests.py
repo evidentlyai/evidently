@@ -761,10 +761,7 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
         self._data_integrity_metric = ColumnSummaryMetric(column_name=column_name)
 
     def groups(self) -> Dict[str, str]:

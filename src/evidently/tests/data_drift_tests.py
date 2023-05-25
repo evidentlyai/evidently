@@ -210,10 +210,7 @@ class TestColumnDrift(Test):
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
         self._metric = ColumnDriftMetric(
             column_name=column_name,
             stattest=stattest,

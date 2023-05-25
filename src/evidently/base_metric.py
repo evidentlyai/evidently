@@ -248,7 +248,3 @@ class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
     def __init__(self, column_name: Union[ColumnName, str], options: AnyOptions = None):
         self.column_name = ColumnName.from_any(column_name)
         super().__init__(options)
-
-    # @property
-    # def column_name(self) -> str:
-    #     return self.column.name if isinstance(self.column, ColumnName) else self.column

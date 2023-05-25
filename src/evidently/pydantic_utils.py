@@ -10,10 +10,8 @@ from typing import TypeVar
 from typing import Union
 
 from pydantic import Field
-from pydantic import PrivateAttr
 from pydantic.main import BaseModel
 from pydantic.main import ModelMetaclass
-from pydantic.main import validate_model
 from pydantic.utils import import_string
 
 if TYPE_CHECKING:

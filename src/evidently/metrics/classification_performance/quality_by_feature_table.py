@@ -8,7 +8,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-from pydantic import PrivateAttr
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -41,7 +40,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
 class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults]):
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
-    _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]] = PrivateAttr(None)
+    _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
 
     def __init__(
         self,
