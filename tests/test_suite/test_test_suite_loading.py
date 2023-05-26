@@ -121,6 +121,6 @@ def test_suite(request, preset, data, tmp_path):
     suite.json()
     suite.as_dict()
     path = str(tmp_path / "suite.json")
-    suite.save(path)
-    suite2 = TestSuite.load(path)
+    suite._save(path)
+    suite2 = TestSuite._load(path)
     numpy.testing.assert_equal(suite2.as_dict(), suite.as_dict())

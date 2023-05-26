@@ -47,6 +47,6 @@ def test_metric_presets(preset: MetricPreset, tmp_path):
     assert report.json()
 
     path = str(tmp_path / "report.json")
-    report.save(path)
-    report2 = Report.load(path)
+    report._save(path)
+    report2 = Report._load(path)
     numpy.testing.assert_equal(report2.as_dict(), report.as_dict())  # has nans

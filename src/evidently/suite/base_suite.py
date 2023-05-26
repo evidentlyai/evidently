@@ -271,7 +271,7 @@ class Display:
     def _parse_payload(cls: Type[T], payload: Dict) -> T:
         raise NotImplementedError
 
-    def save(self, filename):
+    def _save(self, filename):
         """Save state to file (experimental)"""
         payload = self._get_payload()
 
@@ -279,7 +279,7 @@ class Display:
             json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
 
     @classmethod
-    def load(cls: Type[T], filename) -> T:
+    def _load(cls: Type[T], filename) -> T:
         """Load state from file (experimental)"""
         with open(filename, "r") as f:
             return cls._parse_payload(json.load(f))
