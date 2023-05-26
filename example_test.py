@@ -20,7 +20,7 @@ if __name__ == "__main__":
             if file.endswith(".py"):
                 if file in excludes:
                     continue
-                result = os.system(f"python example_scripts/{file}")
+                result = os.system(f"ipython example_scripts/{file}")
                 if result != 0:
                     failed_scripts.append((file, result))
 
