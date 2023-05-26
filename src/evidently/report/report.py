@@ -1,5 +1,6 @@
 import builtins
 import dataclasses
+import datetime
 import json
 import uuid
 from collections import defaultdict
@@ -45,8 +46,13 @@ class Report(Display):
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: AnyOptions = None):
-        super().__init__(options)
+    def __init__(
+        self,
+        metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
+        options: AnyOptions = None,
+        timestamp: Optional[datetime.datetime] = None,
+    ):
+        super().__init__(options, timestamp)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
@@ -201,7 +207,11 @@ class Report(Display):
     def _get_payload(self) -> BaseModel:
         ctx = self._inner_suite.context
         suite = ContextPayload.from_context(ctx)
-        return _ReportPayload(suite=suite, metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics])
+        return _ReportPayload(
+            suite=suite,
+            metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics],
+            timestamp=self.timestamp,
+        )
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "Report":
@@ -211,11 +221,12 @@ class Report(Display):
 class _ReportPayload(BaseModel):
     suite: ContextPayload
     metrics_ids: List[int]
+    timestamp: datetime.datetime
 
     def load(self):
         ctx = self.suite.to_context()
         metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics)
+        report = Report(metrics=metrics, timestamp=self.timestamp)
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
 

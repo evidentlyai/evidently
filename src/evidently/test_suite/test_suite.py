@@ -2,6 +2,7 @@ import copy
 import dataclasses
 import uuid
 from collections import Counter
+from datetime import datetime
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -49,8 +50,9 @@ class TestSuite(Display):
         self,
         tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
         options: AnyOptions = None,
+        timestamp: Optional[datetime] = None,
     ):
-        super().__init__(options)
+        super().__init__(options, timestamp)
         self._inner_suite = Suite(self.options)
         self._test_presets = []
         self._test_generators = []
@@ -225,9 +227,7 @@ class TestSuite(Display):
         )
 
     def _get_payload(self) -> BaseModel:
-        return _TestSuitePayload(
-            suite=ContextPayload.from_context(self._inner_suite.context),
-        )
+        return _TestSuitePayload(suite=ContextPayload.from_context(self._inner_suite.context), timestamp=self.timestamp)
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "TestSuite":
@@ -236,8 +236,9 @@ class TestSuite(Display):
 
 class _TestSuitePayload(BaseModel):
     suite: ContextPayload
+    timestamp: datetime
 
     def load(self):
-        suite = TestSuite(tests=None)
+        suite = TestSuite(tests=None, timestamp=self.timestamp)
         suite._inner_suite.context = self.suite.to_context()
         return suite

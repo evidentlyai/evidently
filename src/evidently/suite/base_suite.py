@@ -145,9 +145,11 @@ T = TypeVar("T", bound="Display")
 class Display:
     # collection of all possible common options
     options: Options
+    timestamp: datetime
 
-    def __init__(self, options: AnyOptions = None):
+    def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None):
         self.options = Options.from_any_options(options)
+        self.timestamp = timestamp or datetime.now()
 
     @abc.abstractmethod
     def _build_dashboard_info(self):
@@ -228,7 +230,7 @@ class Display:
         """Return all data for json representation"""
         result = {
             "version": evidently.__version__,
-            "timestamp": str(datetime.now()),
+            "timestamp": str(self.timestamp),
         }
         result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude, **kwargs))
         return result
