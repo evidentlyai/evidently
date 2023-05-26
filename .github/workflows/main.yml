@@ -111,7 +111,7 @@ jobs:
       - name: Install minimal reqs
         if: matrix.minimal
         run: pip install -r requirements.min.txt
-      - name: Prepare examples dependenciesk
+      - name: Prepare examples dependencies
         run: pip install catboost
       - name: Export examples
         run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
