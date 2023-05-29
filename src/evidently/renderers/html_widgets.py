@@ -82,6 +82,22 @@ def plotly_graph(*, graph_data: GraphData, size: WidgetSize = WidgetSize.FULL) -
     )
 
 
+def text_widget(*, text: str, title: str = "", size: WidgetSize = WidgetSize.FULL):
+    """
+    generate widget with markdown text
+    Args:
+        text: markdown formatted text
+        title: widget title
+        size: widget size
+    """
+    return BaseWidgetInfo(
+        title=title,
+        type="text",
+        size=size.value,
+        params={"text": text}
+    )
+
+
 def plotly_data(*, title: str, data: dict, layout: dict, size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
     """
     generate plotly plot with given data and layout (can be generated from plotly).

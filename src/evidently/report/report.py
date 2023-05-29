@@ -18,6 +18,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.html_widgets import text_widget
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
@@ -32,7 +33,7 @@ class Report(Display):
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: AnyOptions = None):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: AnyOptions = None) -> object:
         super().__init__(options)
         # just save all metrics and metric presets
         self.metrics = metrics
@@ -160,11 +161,11 @@ class Report(Display):
 
         color_options = self.options.color_options
 
-        for test in self._first_level_metrics:
-            renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
+        for metric in self._first_level_metrics:
+            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
             # set the color scheme from the report for each render
             renderer.color_options = color_options
-            html_info = renderer.render_html(test)
+            html_info = renderer.render_html(metric)
 
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():
@@ -174,6 +175,13 @@ class Report(Display):
                     else:
                         additional_graphs.append(DetailsInfo("", additional_graph, additional_graph.id))
 
+            if metric.comment is not None:
+                for item in metric.comment:
+                    comment, position = item
+                    if position == "before":
+                        html_info = [text_widget(text=comment)] + html_info
+                    else:
+                        html_info = html_info + [text_widget(text=comment)]
             metrics_results.extend(html_info)
 
         return (

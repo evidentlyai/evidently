@@ -141,6 +141,7 @@ TResult = TypeVar("TResult", bound=MetricResult)
 
 class Metric(Generic[TResult]):
     context: Optional["Context"] = None
+    comment: Optional[List[Tuple[str, str]]] = None
 
     # TODO: if we want metric-specific options
     options: Options
@@ -202,6 +203,14 @@ class Metric(Generic[TResult]):
             options = self.context.options.override(options)
         return options
 
+    def with_comment(self, comment: str, position: str = "before"):
+        if position not in ["before", "after"]:
+            raise ValueError("position should be one of 'before' or 'after'")
+        if self.comment is None:
+            self.comment = [(comment, position)]
+        else:
+            self.comment.append((comment, position))
+        return self
 
 class ColumnMetricResult(MetricResult):
     column_name: str
