@@ -921,3 +921,14 @@ def get_class_separation_plot_data_agg(
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots
+
+
+def text_widget(*, text: str, title: str = "", size: WidgetSize = WidgetSize.FULL):
+    """
+    generate widget with markdown text
+    Args:
+        text: markdown formatted text
+        title: widget title
+        size: widget size
+    """
+    return BaseWidgetInfo(title=title, type="text", size=size.value, params={"text": text})
