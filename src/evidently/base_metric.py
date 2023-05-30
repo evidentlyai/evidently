@@ -212,6 +212,7 @@ class Metric(Generic[TResult]):
             self.comment.append((comment, position))
         return self
 
+
 class ColumnMetricResult(MetricResult):
     column_name: str
     # todo: use enum

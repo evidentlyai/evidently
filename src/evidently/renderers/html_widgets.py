@@ -94,7 +94,7 @@ def text_widget(*, text: str, title: str = "", size: WidgetSize = WidgetSize.FUL
         title=title,
         type="text",
         size=size.value,
-        params={"text": text}
+        params={"text": text},
     )
 
 
