@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
-from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns

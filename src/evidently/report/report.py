@@ -1,26 +1,18 @@
-import builtins
 import dataclasses
-import json
 import uuid
 from collections import defaultdict
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
-from typing import Type
 from typing import Union
 
 import pandas as pd
 from pydantic import BaseModel
 from pydantic import parse_obj_as
-from pydantic.utils import import_string
-from typing_extensions import get_args
 
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
 from evidently.core import IncludeOptions
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
@@ -31,9 +23,7 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
-from evidently.suite.base_suite import T
 from evidently.suite.base_suite import find_metric_renderer
-from evidently.utils import NumpyEncoder
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator

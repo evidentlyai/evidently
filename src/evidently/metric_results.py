@@ -1,4 +1,3 @@
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -19,7 +18,12 @@ from evidently.core import pydantic_type_validator
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
-_LabelKeyType = type("_LabelKeyType", (int,), {})
+
+
+class _LabelKeyType(int):
+    pass
+
+
 LabelKey = Union[_LabelKeyType, Label]  # type: ignore[valid-type]
 
 
