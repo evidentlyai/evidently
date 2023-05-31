@@ -22,6 +22,11 @@ ContourData = Tuple[np.ndarray, List[float], List[float]]
 ColumnScatter = Dict[Label, ScatterData]
 
 
+class SimpleMetricValues(MetricResult):
+    value: float
+    std: float
+
+
 class Distribution(MetricResult):
     class Config:
         dict_include = False

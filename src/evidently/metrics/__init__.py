@@ -43,6 +43,7 @@ from .regression_performance.error_bias_table import RegressionErrorBiasTable
 from .regression_performance.error_distribution import RegressionErrorDistribution
 from .regression_performance.error_in_time import RegressionErrorPlot
 from .regression_performance.error_normality import RegressionErrorNormality
+from .regression_performance.mae import MAEMetric
 from .regression_performance.predicted_and_actual_in_time import RegressionPredictedVsActualPlot
 from .regression_performance.predicted_vs_actual import RegressionPredictedVsActualScatter
 from .regression_performance.regression_dummy_metric import RegressionDummyMetric
