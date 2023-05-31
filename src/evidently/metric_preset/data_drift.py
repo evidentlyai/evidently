@@ -3,8 +3,6 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-import numpy as np
-
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset

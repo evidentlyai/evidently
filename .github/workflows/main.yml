@@ -112,9 +112,9 @@ jobs:
         if: matrix.minimal
         run: pip install -r requirements.min.txt
       - name: Prepare examples dependencies
-        run: pip install catboost
+        run: pip install catboost sentence-transformers
       - name: Export examples
-        run: jupyter nbconvert --to script examples/*/*.ipynb --output-dir example_scripts
+        run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
       - name: Download test data
         run: curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip -o Bike-Sharing-Dataset.zip &&
           unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset

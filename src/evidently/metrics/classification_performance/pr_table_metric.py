@@ -1,4 +1,3 @@
-import dataclasses
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict

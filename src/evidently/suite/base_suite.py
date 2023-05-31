@@ -6,7 +6,6 @@ import logging
 from datetime import datetime
 from typing import Dict
 from typing import Iterator
-from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Type
@@ -24,7 +23,6 @@ from evidently.base_metric import MetricResult
 from evidently.core import IncludeOptions
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
-from evidently.options.option import Option
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions

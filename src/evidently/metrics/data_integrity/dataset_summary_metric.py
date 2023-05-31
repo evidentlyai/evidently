@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -7,7 +6,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel
 
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
