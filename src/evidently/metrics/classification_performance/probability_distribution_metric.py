@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict
 from typing import Iterable
 from typing import List
