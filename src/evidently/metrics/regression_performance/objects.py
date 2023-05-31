@@ -34,6 +34,9 @@ class RegressionScatter(MetricResult):
 
 
 class RegressionMetricScatter(MetricResult):
+    class Config:
+        smart_union = True
+
     current: ScatterData
     reference: Optional[ScatterData] = None
 

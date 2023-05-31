@@ -50,3 +50,5 @@ def test_metric_presets(preset: MetricPreset, tmp_path):
     report._save(path)
     report2 = Report._load(path)
     numpy.testing.assert_equal(report2.as_dict(), report.as_dict())  # has nans
+    report2.show()
+    report2.save_html(str(tmp_path / "report.html"))

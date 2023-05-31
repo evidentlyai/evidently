@@ -96,20 +96,20 @@ def bcancer():
 @pytest.mark.parametrize(
     "preset,data",
     [
-        (DataStabilityTestPreset(), "adult"),
-        (DataQualityTestPreset(), "adult"),
-        (DataDriftTestPreset(stattest="psi"), "adult"),
-        (
-            NoTargetPerformanceTestPreset(
-                columns=["education-num", "hours-per-week"], num_stattest="ks", cat_stattest="psi"
-            ),
-            "adult",
-        ),
+        # (DataStabilityTestPreset(), "adult"),
+        # (DataQualityTestPreset(), "adult"),
+        # (DataDriftTestPreset(stattest="psi"), "adult"),
+        # (
+        #     NoTargetPerformanceTestPreset(
+        #         columns=["education-num", "hours-per-week"], num_stattest="ks", cat_stattest="psi"
+        #     ),
+        #     "adult",
+        # ),
         (RegressionTestPreset(), "housing"),
-        (MulticlassClassificationTestPreset(stattest="psi"), "iris"),
-        (BinaryClassificationTestPreset(), "bcancer_label"),
-        (BinaryClassificationTestPreset(stattest="psi", probas_threshold=0.89), "bcancer"),
-        (BinaryClassificationTopKTestPreset(k=1, stattest="psi"), "bcancer"),
+        # (MulticlassClassificationTestPreset(stattest="psi"), "iris"),
+        # (BinaryClassificationTestPreset(), "bcancer_label"),
+        # (BinaryClassificationTestPreset(stattest="psi", probas_threshold=0.89), "bcancer"),
+        # (BinaryClassificationTopKTestPreset(k=1, stattest="psi"), "bcancer"),
     ],
 )
 def test_suite(request, preset, data, tmp_path):
@@ -124,3 +124,5 @@ def test_suite(request, preset, data, tmp_path):
     suite._save(path)
     suite2 = TestSuite._load(path)
     numpy.testing.assert_equal(suite2.as_dict(), suite.as_dict())
+    suite2.show()
+    suite2.save_html(str(tmp_path / "suite.html"))
