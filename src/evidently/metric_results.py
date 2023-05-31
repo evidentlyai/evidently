@@ -204,6 +204,11 @@ class ColumnScatterResult(MetricResult):
     x_name_ref: Optional[str] = None
 
 
+class ColumnAggScatterResult(ColumnScatterResult):
+    current: ColumnAggScatter
+    reference: Optional[ColumnAggScatter]
+
+
 PlotData = List[float]
 
 
