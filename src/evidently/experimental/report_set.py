@@ -11,16 +11,15 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.report import Report
 from evidently.suite.base_suite import Display
-from evidently.tests.base_test import Test
 
 
-def load_metric_time_series(
+def load_metric_report_set(
     path: str,
     date_from: Optional[datetime.datetime] = None,
     date_to: Optional[datetime.datetime] = None,
     metrics: Optional[List[Metric]] = None,
 ) -> Dict[Metric, Dict[datetime.datetime, MetricResult]]:
-    reports = load_time_series_data(path, Report, date_from, date_to)
+    reports = load_report_set(path, Report, date_from, date_to)
     result: Dict[Metric, Dict[datetime.datetime, MetricResult]] = defaultdict(dict)
     if metrics is None:
         for timestamp, report in reports.items():
@@ -38,7 +37,7 @@ def load_metric_time_series(
 T = TypeVar("T", bound=Display)
 
 
-def load_time_series_data(
+def load_report_set(
     path: str, cls: Type[T], date_from: Optional[datetime.datetime] = None, date_to: Optional[datetime.datetime] = None
 ) -> Dict[datetime.datetime, T]:
     result = {}
