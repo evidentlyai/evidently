@@ -1,4 +1,3 @@
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -15,12 +14,30 @@ from typing_extensions import Literal
 
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.core import pydantic_type_validator
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
-ScatterData = Union[pd.Series, List[float], pd.Index, pd.DataFrame]
+
+
+class _LabelKeyType(int):
+    pass
+
+
+LabelKey = Union[_LabelKeyType, Label]  # type: ignore[valid-type]
+
+
+@pydantic_type_validator(_LabelKeyType)
+def label_key_valudator(value):
+    try:
+        return int(value)
+    except ValueError:
+        return value
+
+
+ScatterData = Union[pd.DataFrame, pd.Series, List[float], pd.Index]
 ContourData = Tuple[np.ndarray, List[float], List[float]]
-ColumnScatter = Dict[Label, ScatterData]
+ColumnScatter = Dict[LabelKey, ScatterData]
 
 
 class Distribution(MetricResult):

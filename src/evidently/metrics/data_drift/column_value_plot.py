@@ -1,6 +1,5 @@
 from typing import List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -12,9 +11,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.metric_results import ColumnScatter
-from evidently.metric_results import ScatterData
 from evidently.metric_results import column_scatter_from_df
-from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer

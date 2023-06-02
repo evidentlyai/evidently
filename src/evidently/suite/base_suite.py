@@ -24,7 +24,6 @@ from evidently.base_metric import MetricResult
 from evidently.core import IncludeOptions
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
-from evidently.options.option import Option
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
@@ -130,8 +129,12 @@ class ContextPayload(BaseModel):
         )
         for m in ctx.metrics:
             m.set_context(ctx)
+            for _, dep in _discover_dependencies(m):
+                dep.set_context(ctx)
         for t in ctx.tests:
             t.set_context(ctx)
+            for _, dep in _discover_dependencies(t):
+                dep.set_context(ctx)
         return ctx
 
 

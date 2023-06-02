@@ -13,7 +13,6 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from pydantic import BaseModel
 from pydantic import Field
 
 from evidently.base_metric import BaseResult
@@ -31,8 +30,6 @@ from evidently.utils.types import Numeric
 from evidently.utils.types import NumericApprox
 
 if TYPE_CHECKING:
-    from pydantic.typing import DictStrAny
-
     from evidently.suite.base_suite import Context
 
 

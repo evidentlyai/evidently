@@ -50,7 +50,7 @@ class ColumnValueRangeMetricResult(MetricResult):
 class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
     """Calculates count and shares of values in the predefined values range"""
 
-    column_name: Union[str, ColumnName]
+    column_name: ColumnName
     left: Optional[Numeric]
     right: Optional[Numeric]
 
@@ -63,7 +63,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
     ) -> None:
         self.left = left
         self.right = right
-        self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
         super().__init__(options=options)
 
     @staticmethod

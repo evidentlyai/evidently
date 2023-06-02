@@ -203,6 +203,8 @@ class TestColumnDrift(Test):
     group: ClassVar = DATA_DRIFT_GROUP.id
     _metric: ColumnDriftMetric
     column_name: ColumnName
+    stattest: Optional[PossibleStatTestType] = None
+    stattest_threshold: Optional[float] = None
 
     def __init__(
         self,
@@ -211,6 +213,9 @@ class TestColumnDrift(Test):
         stattest_threshold: Optional[float] = None,
     ):
         self.column_name = ColumnName.from_any(column_name)
+        self.stattest = stattest
+        self.stattest_threshold = stattest_threshold
+
         self._metric = ColumnDriftMetric(
             column_name=column_name,
             stattest=stattest,

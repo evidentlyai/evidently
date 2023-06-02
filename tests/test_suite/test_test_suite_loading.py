@@ -124,3 +124,5 @@ def test_suite(request, preset, data, tmp_path):
     suite._save(path)
     suite2 = TestSuite._load(path)
     numpy.testing.assert_equal(suite2.as_dict(), suite.as_dict())
+    suite2.show()
+    suite2.save_html(str(tmp_path / "suite.html"))

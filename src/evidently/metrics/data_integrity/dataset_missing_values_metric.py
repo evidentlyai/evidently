@@ -1,5 +1,3 @@
-import dataclasses
-from dataclasses import dataclass
 from typing import Any
 from typing import ClassVar
 from typing import Dict

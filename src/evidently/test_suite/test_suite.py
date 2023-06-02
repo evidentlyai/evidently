@@ -1,4 +1,3 @@
-import copy
 import dataclasses
 import uuid
 from collections import Counter
@@ -6,8 +5,6 @@ from datetime import datetime
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
-from typing import Type
 from typing import Union
 
 import pandas as pd
@@ -19,20 +16,16 @@ from evidently.core import IncludeOptions
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
 from evidently.options.base import AnyOptions
-from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
-from evidently.suite.base_suite import T
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
-from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition

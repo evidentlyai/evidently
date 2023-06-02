@@ -105,9 +105,11 @@ By default, drift tests do not react to changes or increases in the number of em
 
 # Resources
 
-To build up a better intuition for which tests are better in different kinds of use cases, you can read our in-depth blog with experimental code:   
+To build up a better intuition for which tests are better in different kinds of use cases, you can read our in-depth blogs with experimental code:   
 
-[Which test is the best? We compared 5 methods to detect data drift on large datasets](https://evidentlyai.com/blog/data-drift-detection-large-datasets).  
+* [Which test is the best? We compared 5 methods to detect data drift on large datasets](https://evidentlyai.com/blog/data-drift-detection-large-datasets).  
+
+* [Shift happens: how to detect drift in ML embeddings](https://www.evidentlyai.com/blog/embedding-drift-detection).  
 
 Additional links:  
 
