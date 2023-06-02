@@ -610,9 +610,9 @@ def plot_data(
                     }
 
             else:
-                result = {"current": get_gaussian_kde(target_current, current_data)}
+                result = {"current": get_gaussian_kde(target_current.loc[current_data.index], current_data)}
                 if reference_data is not None and target_reference is not None:
-                    result["reference"] = get_gaussian_kde(target_reference, reference_data)
+                    result["reference"] = get_gaussian_kde(target_reference.loc[reference_data.index], reference_data)
 
             data_by_target = {
                 "data_for_plots": result,
@@ -805,7 +805,11 @@ def calculate_numerical_correlation(
 
         for other_column_name in features.columns:
             correlations_columns.append(other_column_name)
-            correlations_values.append(column.corr(features[other_column_name], method=kind))
+            correlations_values.append(
+                column.replace([np.inf, -np.inf], np.nan).corr(
+                    features[other_column_name].replace([np.inf, -np.inf], np.nan), method=kind
+                )
+            )
 
         result.append(
             ColumnCorrelations(
