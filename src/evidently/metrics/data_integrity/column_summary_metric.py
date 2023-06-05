@@ -236,6 +236,9 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         agg_data = True
         if self.get_options().render_options.raw_data:
             agg_data = False
+        column_current_data = column_current_data.replace([np.inf, -np.inf], np.nan)
+        if column_reference_data is not None:
+            column_reference_data = column_reference_data.replace([np.inf, -np.inf], np.nan)
         bins_for_hist, data_in_time, data_by_target = plot_data(
             (self.column.display_name, column_type, column_current_data, column_reference_data),
             datetime_data,
