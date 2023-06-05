@@ -1,21 +1,20 @@
 import dataclasses
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 import pandas as pd
-from evidently.calculations.classification_performance import (
-    PredictionData,
-    calculate_lift_table,
-    get_prediction_data,
-)
+
+from evidently.calculations.classification_performance import PredictionData
+from evidently.calculations.classification_performance import calculate_lift_table
+from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer, default_renderer
-from evidently.renderers.html_widgets import (
-    TabData,
-    WidgetSize,
-    table_data,
-    widget_tabs,
-)
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
