@@ -80,6 +80,7 @@ __all__ = [
     "ColumnQuantileMetric",
     "ColumnValueListMetric",
     "ColumnValueRangeMetric",
+    "Comment",
     "ConflictPredictionMetric",
     "ConflictTargetMetric",
     "DatasetCorrelationsMetric",
