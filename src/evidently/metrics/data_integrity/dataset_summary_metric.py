@@ -1,4 +1,3 @@
-import dataclasses
 from typing import List
 from typing import Optional
 from typing import Sequence
