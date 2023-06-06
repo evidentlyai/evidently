@@ -7,8 +7,10 @@ from typing import Optional
 
 import pandas as pd
 
+from evidently.base_metric import SimpleMetric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
+from evidently.renderers.html_widgets import simple_metric_widget
 
 if TYPE_CHECKING:
     from evidently.base_metric import Metric
@@ -111,3 +113,11 @@ def default_renderer(wrap_type):
 
 
 DEFAULT_RENDERERS = RenderersDefinitions(default_html_test_renderer=TestRenderer())
+
+
+class SimpleMetricRenderer(MetricRenderer):
+    label: str
+
+    def render_html(self, obj: SimpleMetric) -> List[BaseWidgetInfo]:
+        metric_result = obj.get_result()
+        return simple_metric_widget(metric_result, self.label)

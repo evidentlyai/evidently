@@ -21,6 +21,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
+    from evidently.metric_results import SimpleMetricResults
     from evidently.suite.base_suite import Context
 
 
@@ -217,3 +218,7 @@ ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
     column_name: str
+
+
+class SimpleMetric(Metric["SimpleMetricResults"]):
+    pass

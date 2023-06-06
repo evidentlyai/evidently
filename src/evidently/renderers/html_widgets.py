@@ -17,6 +17,7 @@ from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.metric_results import PRCurve
 from evidently.metric_results import ROCCurve
+from evidently.metric_results import SimpleMetricResults
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
@@ -921,3 +922,24 @@ def get_class_separation_plot_data_agg(
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots
+
+
+def simple_metric_widget(metric_result: SimpleMetricResults, label: str) -> List[BaseWidgetInfo]:
+    counters = [
+        CounterData(
+            "Current data",
+            f"{round(metric_result.current.value, 2)} ({round(metric_result.current.std, 2)})",
+        ),
+    ]
+    if metric_result.reference is not None:
+        counters.append(
+            CounterData(
+                "Reference data",
+                f"{round(metric_result.reference.value, 2)} ({round(metric_result.reference.std, 2)})",
+            ),
+        )
+    result = [
+        header_text(label=label),
+        counter(title="", counters=counters),
+    ]
+    return result

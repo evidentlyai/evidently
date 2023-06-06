@@ -27,6 +27,11 @@ class SimpleMetricValues(MetricResult):
     std: float
 
 
+class SimpleMetricResults(MetricResult):
+    current: SimpleMetricValues
+    reference: Optional[SimpleMetricValues]
+
+
 class Distribution(MetricResult):
     class Config:
         dict_include = False
