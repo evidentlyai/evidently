@@ -1,6 +1,5 @@
 import dataclasses
 import datetime
-import json
 import uuid
 from collections import defaultdict
 from typing import Dict
@@ -9,6 +8,7 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
+from pydantic import UUID4
 from pydantic import BaseModel
 from pydantic import parse_obj_as
 
@@ -35,6 +35,7 @@ class Report(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
+    id: uuid.UUID
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
     def __init__(
@@ -42,12 +43,14 @@ class Report(Display):
         metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
         options: AnyOptions = None,
         timestamp: Optional[datetime.datetime] = None,
+        id: uuid.UUID = None,
     ):
         super().__init__(options, timestamp)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
+        self.id = id or uuid.uuid4()
 
     def run(
         self,
@@ -199,6 +202,7 @@ class Report(Display):
         ctx = self._inner_suite.context
         suite = ContextPayload.from_context(ctx)
         return _ReportPayload(
+            id=self.id,
             suite=suite,
             metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics],
             timestamp=self.timestamp,
@@ -210,6 +214,7 @@ class Report(Display):
 
 
 class _ReportPayload(BaseModel):
+    id: UUID4
     suite: ContextPayload
     metrics_ids: List[int]
     timestamp: datetime.datetime
@@ -217,7 +222,7 @@ class _ReportPayload(BaseModel):
     def load(self):
         ctx = self.suite.to_context()
         metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics, timestamp=self.timestamp)
+        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id)
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
 

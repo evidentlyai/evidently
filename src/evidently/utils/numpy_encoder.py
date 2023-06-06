@@ -1,5 +1,6 @@
 import datetime
 import json
+import uuid
 
 import numpy as np
 import pandas as pd
@@ -22,6 +23,7 @@ _TYPES_MAPPING = (
     ((pd.Series, pd.Index, pd.Categorical), lambda obj: obj.tolist()),
     ((pd.DataFrame,), lambda obj: obj.to_dict()),
     ((frozenset,), lambda obj: list(obj)),
+    ((uuid.UUID,), lambda obj: str(obj)),
 )
 
 
