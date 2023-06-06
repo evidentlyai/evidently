@@ -202,7 +202,13 @@ def get_one_column_drift(
             if prefix is None:
                 x_name = "Index binned"
             else:
-                x_name = f"{datetime_column_name} ({prefix})"
+                if datetime_column_name is not None:
+                    name = datetime_column_name
+                elif curr_data.index.name is not None:
+                    name = curr_data.index.name
+                else:
+                    name = "Index"
+                x_name = f"{name} ({prefix})"
 
         plot_shape = {}
         reference_mean = reference_data[column_name].mean()
