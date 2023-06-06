@@ -59,7 +59,7 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
             self.drift_method = model(bootstrap=is_bootstrap)
         emb_dict = data.data_definition.embeddings()
         if emb_dict is None:
-            raise ValueError("Embeddings shold be defined in column mapping")
+            raise ValueError("Embeddings should be defined in column mapping")
         if self.embeddings_name not in emb_dict.keys():
             raise ValueError(f"{self.embeddings_name} not in column_mapping.embeddings")
         emb_list = emb_dict[self.embeddings_name]
