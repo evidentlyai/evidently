@@ -85,7 +85,8 @@ def regression_perf_plot(
     reference_color = color_options.get_reference_data_color()
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
     # todo: better typing
-    assert isinstance(val_for_plot.current, pd.Series)
+    if not isinstance(val_for_plot.current, pd.Series):
+        val_for_plot.current = pd.Series(val_for_plot.current)
     sorted_index = val_for_plot.current.sort_index()
     x = [str(idx) for idx in sorted_index.index]
     y = list(sorted_index)
@@ -100,7 +101,8 @@ def regression_perf_plot(
 
     if hist_for_plot.reference is not None:
         # todo: better typing
-        assert isinstance(val_for_plot.reference, pd.Series)
+        if not isinstance(val_for_plot.reference, pd.Series):
+            val_for_plot.reference = pd.Series(val_for_plot.reference)
         sorted_index = val_for_plot.reference.sort_index()
         x = [str(idx) for idx in sorted_index.index]
         y = list(sorted_index)
