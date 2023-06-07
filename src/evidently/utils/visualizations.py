@@ -778,7 +778,7 @@ def is_possible_contour(m1, m2) -> bool:
         values = np.vstack([m1, m2])
         stats.gaussian_kde(values)
         return True
-    except LinAlgError:
+    except (LinAlgError, ValueError):
         return False
 
 
