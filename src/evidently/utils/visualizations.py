@@ -6,6 +6,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_datetime64_any_dtype
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
@@ -973,6 +974,12 @@ def prepare_df_for_time_index_plot(
     freq: Optional[str] = None,
     bins: Optional[np.ndarray] = None,
 ) -> Tuple[pd.DataFrame, Optional[str]]:
+    index_name = df.index.name
+    if index_name is None:
+        index_name = "index"
+    if datetime_name is None and is_datetime64_any_dtype(df.index):
+        df = df.copy().reset_index()
+        datetime_name = index_name
     if datetime_name is not None:
         if prefix is None and freq is None:
             prefix, freq = choose_agg_period(df[datetime_name], None)
@@ -982,7 +989,7 @@ def prepare_df_for_time_index_plot(
         plot_df["per"] = plot_df["per"].dt.to_timestamp()
         return plot_df, prefix
     plot_df = df[column_name].reset_index().sort_values("index")
-    plot_df["per"] = pd.cut(plot_df["index"], OPTIMAL_POINTS if bins is None else bins, labels=False)
+    plot_df["per"] = pd.cut(plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False)
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
 

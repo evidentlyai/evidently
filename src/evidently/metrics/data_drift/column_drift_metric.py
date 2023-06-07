@@ -19,6 +19,7 @@ from evidently.calculations.data_drift import get_distribution_for_column
 from evidently.calculations.data_drift import get_stattest
 from evidently.calculations.data_drift import get_text_data_for_plots
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options.base import AnyOptions
@@ -104,7 +105,7 @@ def get_one_column_drift(
     drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
     drift_result = drift_test_function(reference_column, current_column, column_type.value, threshold)
 
-    scatter: Optional[ScatterField] = None
+    scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:
         current_nbinsx = options.get_nbinsx(column.name)
         current_small_distribution = [
@@ -158,7 +159,10 @@ def get_one_column_drift(
         reference_std = reference_column.std()
         plot_shape["y0"] = reference_mean - reference_std
         plot_shape["y1"] = reference_mean + reference_std
-        scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
+        if agg_data:
+            scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
+        else:
+            scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
     elif column_type == ColumnType.Categorical:
         reference_counts = reference_column.value_counts(sort=False)

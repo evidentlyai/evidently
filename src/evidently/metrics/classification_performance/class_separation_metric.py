@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -8,9 +9,11 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.metric_results import ColumnAggScatter
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import df_from_column_scatter
+from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -30,8 +33,12 @@ class ClassificationClassSeparationPlotResults(MetricResult):
         pd_exclude_fields = {"current", "reference"}
 
     target_name: str
-    current: Optional[ColumnScatter] = None
-    reference: Optional[ColumnScatter] = None
+
+    current: Optional[Union[ColumnScatter, ColumnAggScatter]] = None
+    current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, True)
+
+    reference: Optional[Union[ColumnScatter, ColumnAggScatter]] = None
+    reference_raw, reference_agg = raw_agg_properties("reference", ColumnScatter, ColumnAggScatter, True)
 
 
 def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[str]):

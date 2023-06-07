@@ -22,6 +22,7 @@ from .data_drift.dataset_drift_metric import DatasetDriftMetric
 from .data_drift.embeddings_drift import EmbeddingsDriftMetric
 from .data_drift.target_by_features_table import TargetByFeaturesTable
 from .data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
+from .data_drift.text_metric import Comment
 from .data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
 from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_integrity.column_summary_metric import ColumnSummaryMetric
@@ -79,6 +80,7 @@ __all__ = [
     "ColumnQuantileMetric",
     "ColumnValueListMetric",
     "ColumnValueRangeMetric",
+    "Comment",
     "ConflictPredictionMetric",
     "ConflictTargetMetric",
     "DatasetCorrelationsMetric",

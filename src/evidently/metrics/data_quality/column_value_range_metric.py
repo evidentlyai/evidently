@@ -122,8 +122,8 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         # calculate distribution for visualisation
         cur_distribution, ref_distribution = get_distribution_for_column(
             column_type="num",
-            current=current_data,
-            reference=reference_data if reference_data is not None else None,
+            current=current_data.replace([np.inf, -np.inf], np.nan),
+            reference=reference_data.replace([np.inf, -np.inf], np.nan) if reference_data is not None else None,
         )
 
         current = self._calculate_in_range_stats(current_data, left, right, cur_distribution)

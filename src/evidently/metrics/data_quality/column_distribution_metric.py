@@ -2,6 +2,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import numpy as np
+
 from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -41,10 +43,10 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
             column_type = ColumnType.Numerical
         else:
             column_type = data.data_definition.get_column(self.column_name.name).column_type
-        current_column = data.get_current_column(self.column_name)
-        reference_column = None
-        if data.reference_data is not None:
-            reference_column = data.get_reference_column(self.column_name)
+        current_column = data.get_current_column(self.column_name).replace([np.inf, -np.inf], np.nan)
+        reference_column = data.get_reference_column(self.column_name)
+        if reference_column is not None:
+            reference_column = reference_column.replace([np.inf, -np.inf], np.nan)
         current, reference = get_distribution_for_column(
             column_type=column_type.value,
             current=current_column,

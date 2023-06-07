@@ -2,6 +2,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import numpy as np
 import pandas as pd
 
 from evidently.base_metric import ColumnMetricResult
@@ -67,13 +68,14 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
                 raise ValueError(f"Column '{self.column}' in reference data is not numeric.")
 
             reference_quantile = reference_column.quantile(self.quantile)
+            reference_column = reference_column.replace([np.inf, -np.inf], np.nan)
 
         else:
             reference_column = None
             reference_quantile = None
 
         distributions = get_distribution_for_column(
-            column_type="num", current=current_column, reference=reference_column
+            column_type="num", current=current_column.replace([np.inf, -np.inf], np.nan), reference=reference_column
         )
         reference = None
         if reference_quantile is not None:
