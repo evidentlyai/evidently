@@ -12,6 +12,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -60,12 +61,12 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
     # compiled regular expression for speed optimization
     _reg_exp_compiled: Pattern
 
-    def __init__(self, column_name: str, reg_exp: str, top: int = 10):
+    def __init__(self, column_name: str, reg_exp: str, top: int = 10, options: AnyOptions = None):
         self.top = top
         self.reg_exp = reg_exp
         self.column_name = column_name
         self._reg_exp_compiled = re.compile(reg_exp)
-        super().__init__()
+        super().__init__(options=options)
 
     def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
         number_of_matched = 0

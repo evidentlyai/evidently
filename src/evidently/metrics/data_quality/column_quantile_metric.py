@@ -13,6 +13,7 @@ from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -44,10 +45,10 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
     column: ColumnName
     quantile: float
 
-    def __init__(self, column_name: Union[str, ColumnName], quantile: float) -> None:
+    def __init__(self, column_name: Union[str, ColumnName], quantile: float, options: AnyOptions = None) -> None:
         self.quantile = quantile
         self.column = ColumnName.from_any(column_name)
-        super().__init__()
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnQuantileMetricResult:
         if not 0 < self.quantile <= 1:
