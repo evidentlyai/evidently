@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -57,23 +58,27 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
     """
 
     # default missing values list
-    DEFAULT_MISSING_VALUES = ["", np.inf, -np.inf, None]
+    DEFAULT_MISSING_VALUES: ClassVar = ["", np.inf, -np.inf, None]
     missing_values: frozenset
     column_name: str
 
     def __init__(self, column_name: str, missing_values: Optional[list] = None, replace: bool = True) -> None:
         self.column_name = column_name
 
+        _missing_values: list
         if missing_values is None:
             # use default missing values list if we have no user-defined missed values
-            missing_values = self.DEFAULT_MISSING_VALUES
+            _missing_values = self.DEFAULT_MISSING_VALUES
 
         elif not replace:
             # add default missing values to user-defined list
-            missing_values = self.DEFAULT_MISSING_VALUES + missing_values
+            _missing_values = self.DEFAULT_MISSING_VALUES + missing_values
+        else:
+            _missing_values = missing_values
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
-        self.missing_values = frozenset(missing_values)
+        self.missing_values = frozenset(_missing_values)
+        super().__init__()
 
     def _calculate_missing_values_stats(self, column: pd.Series) -> ColumnMissingValues:
         different_missing_values = {value: 0 for value in self.missing_values}

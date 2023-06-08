@@ -42,6 +42,7 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
 
     def __init__(self, text_column_name: str) -> None:
         self.text_column_name = text_column_name
+        super().__init__()
 
     @staticmethod
     def roc_auc_domain_classifier(X_train, X_test, y_train, y_test) -> Tuple:

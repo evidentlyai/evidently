@@ -48,6 +48,7 @@ class SimpleMetric(Metric[int]):
 
     def __init__(self, column_name: ColumnName):
         self.column_name = column_name
+        super().__init__()
 
     def calculate(self, data: InputData) -> int:
         return data.get_current_column(self.column_name).sum()
@@ -55,41 +56,46 @@ class SimpleMetric(Metric[int]):
 
 class SimpleMetricWithFeatures(Metric[int]):
     column_name: str
+    _feature: Optional[GeneratedFeature]
 
     def __init__(self, column_name: str):
         self.column_name = column_name
-        self.feature = None
+        self._feature = None
+        super().__init__()
 
     def calculate(self, data: InputData) -> int:
         if data.data_definition.get_column(self.column_name).column_type == ColumnType.Categorical:
-            return data.get_current_column(self.feature.feature_name()).sum()
+            return data.get_current_column(self._feature.feature_name()).sum()
         return data.get_current_column(self.column_name).sum()
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
-        self.feature = LengthFeature(self.column_name)
+        self._feature = LengthFeature(self.column_name)
         if column_type == ColumnType.Categorical:
-            return [self.feature]
+            return [self._feature]
         return []
 
 
 class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
-    features: Dict[str, "LengthFeature"]
+    _features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
-        return {k: data.get_current_column(v.feature_name()).sum() for k, v in self.features.items()}
+        return {k: data.get_current_column(v.feature_name()).sum() for k, v in self._features.items()}
 
     def required_features(self, data_definition: DataDefinition):
-        self.features = {
+        self._features = {
             column.column_name: LengthFeature(column.column_name)
             for column in data_definition.get_columns("text_features")
         }
-        return list(self.features.values())
+        return list(self._features.values())
 
 
 class SimpleGeneratedFeature(GeneratedFeature):
+    column_name: str
+
     def __init__(self, column_name: str):
         self.column_name = column_name
+        super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name] * 2)]))
@@ -99,9 +105,13 @@ class SimpleGeneratedFeature(GeneratedFeature):
 
 
 class LengthFeature(GeneratedFeature):
+    column_name: str
+    max_length: Optional[int] = None
+
     def __init__(self, column_name: str, max_length: Optional[int] = None):
         self.column_name = column_name
         self.max_length = max_length
+        super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(len))]))
@@ -140,4 +150,5 @@ def test_additional_features(metric, result):
             text_features=["col3", "col4"],
         ),
     )
+    report._inner_suite.raise_for_error()
     assert metric.get_result() == result

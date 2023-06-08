@@ -587,7 +587,7 @@ def plot_pred_actual_time(
     # Add zero trace
     trace = go.Scatter(
         x=curr[x_name],
-        y=[0] * curr[x_name].shape[0],
+        y=[0] * len(curr[x_name]),
         mode="lines",
         marker_color=color_options.zero_line_color,
         showlegend=False,
@@ -596,7 +596,7 @@ def plot_pred_actual_time(
     if ref is not None:
         trace = go.Scatter(
             x=ref[x_name],
-            y=[0] * ref[x_name].shape[0],
+            y=[0] * len(ref[x_name]),
             mode="lines",
             marker_color=color_options.zero_line_color,
             showlegend=False,
@@ -641,7 +641,7 @@ def plot_line_in_time(
     # Add zero trace
     trace = go.Scatter(
         x=curr[x_name],
-        y=[0] * curr[x_name].shape[0],
+        y=[0] * len(curr[x_name]),
         mode="lines",
         marker_color=color_options.zero_line_color,
         showlegend=False,
@@ -662,7 +662,7 @@ def plot_line_in_time(
         # Add zero trace
         trace = go.Scatter(
             x=ref[x_name],
-            y=[0] * ref[x_name].shape[0],
+            y=[0] * len(ref[x_name]),
             mode="lines",
             marker_color=color_options.zero_line_color,
             showlegend=False,

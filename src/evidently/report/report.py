@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import uuid
 from collections import defaultdict
 from typing import Dict
@@ -7,6 +8,9 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
+from pydantic import UUID4
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
@@ -18,6 +22,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
@@ -30,14 +35,22 @@ class Report(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
+    id: uuid.UUID
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: AnyOptions = None):
-        super().__init__(options)
+    def __init__(
+        self,
+        metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
+        options: AnyOptions = None,
+        timestamp: Optional[datetime.datetime] = None,
+        id: uuid.UUID = None,
+    ):
+        super().__init__(options, timestamp)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
+        self.id = id or uuid.uuid4()
 
     def run(
         self,
@@ -184,3 +197,33 @@ class Report(Display):
                 for item in additional_graphs
             },
         )
+
+    def _get_payload(self) -> BaseModel:
+        ctx = self._inner_suite.context
+        suite = ContextPayload.from_context(ctx)
+        return _ReportPayload(
+            id=self.id,
+            suite=suite,
+            metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics],
+            timestamp=self.timestamp,
+        )
+
+    @classmethod
+    def _parse_payload(cls, payload: Dict) -> "Report":
+        return parse_obj_as(_ReportPayload, payload).load()
+
+
+class _ReportPayload(BaseModel):
+    id: UUID4
+    suite: ContextPayload
+    metrics_ids: List[int]
+    timestamp: datetime.datetime
+
+    def load(self):
+        ctx = self.suite.to_context()
+        metrics = [ctx.metrics[i] for i in self.metrics_ids]
+        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id)
+        report._first_level_metrics = metrics
+        report._inner_suite.context = ctx
+
+        return report

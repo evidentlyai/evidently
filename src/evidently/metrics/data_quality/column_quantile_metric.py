@@ -46,10 +46,8 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
 
     def __init__(self, column_name: Union[str, ColumnName], quantile: float) -> None:
         self.quantile = quantile
-        if isinstance(column_name, str):
-            self.column = ColumnName.main_dataset(column_name)
-        else:
-            self.column = column_name
+        self.column = ColumnName.from_any(column_name)
+        super().__init__()
 
     def calculate(self, data: InputData) -> ColumnQuantileMetricResult:
         if not 0 < self.quantile <= 1:

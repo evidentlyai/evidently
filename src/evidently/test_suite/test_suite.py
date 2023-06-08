@@ -1,13 +1,15 @@
-import copy
 import dataclasses
 import uuid
 from collections import Counter
+from datetime import datetime
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 from evidently.base_metric import InputData
 from evidently.core import IncludeOptions
@@ -17,6 +19,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
+from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
@@ -40,8 +43,9 @@ class TestSuite(Display):
         self,
         tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
         options: AnyOptions = None,
+        timestamp: Optional[datetime] = None,
     ):
-        super().__init__(options)
+        super().__init__(options, timestamp)
         self._inner_suite = Suite(self.options)
         self._test_presets = []
         self._test_generators = []
@@ -61,7 +65,7 @@ class TestSuite(Display):
             self._add_test(original_test)
 
     def _add_test(self, test: Test):
-        new_test = copy.copy(test)
+        new_test = test.copy()  # copy.copy(test)
         self._inner_suite.add_test(new_test)
 
     def __bool__(self):
@@ -92,7 +96,6 @@ class TestSuite(Display):
             for test in tests:
                 if isinstance(test, BaseGenerator):
                     self._add_tests_from_generator(test)
-
                 else:
                     self._add_test(test)
 
@@ -215,3 +218,20 @@ class TestSuite(Display):
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
             {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
         )
+
+    def _get_payload(self) -> BaseModel:
+        return _TestSuitePayload(suite=ContextPayload.from_context(self._inner_suite.context), timestamp=self.timestamp)
+
+    @classmethod
+    def _parse_payload(cls, payload: Dict) -> "TestSuite":
+        return parse_obj_as(_TestSuitePayload, payload).load()
+
+
+class _TestSuitePayload(BaseModel):
+    suite: ContextPayload
+    timestamp: datetime
+
+    def load(self):
+        suite = TestSuite(tests=None, timestamp=self.timestamp)
+        suite._inner_suite.context = self.suite.to_context()
+        return suite

@@ -13,6 +13,7 @@ from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
@@ -35,9 +36,12 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
     """Calculates distribution for the column"""
 
     column_name: str
-    generated_text_features: Dict[str, GeneratedFeature]
+    _generated_text_features: Dict[str, GeneratedFeature]
+    descriptors: Dict[str, FeatureDescriptor]
 
-    def __init__(self, column_name: str, descriptors: Optional[Dict[str, FeatureDescriptor]] = None) -> None:
+    def __init__(
+        self, column_name: str, descriptors: Optional[Dict[str, FeatureDescriptor]] = None, options: AnyOptions = None
+    ) -> None:
         self.column_name = column_name
         if descriptors:
             self.descriptors = descriptors
@@ -47,12 +51,17 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
                 "Non Letter Character %": NonLetterCharacterPercentage(),
                 "OOV %": OOV(),
             }
-        self.generated_text_features = {}
+        super().__init__(options=options)
+        self._generated_text_features = {}
+
+    @property
+    def generated_text_features(self):
+        return self._generated_text_features
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
-            self.generated_text_features = {
+            self._generated_text_features = {
                 name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
             }
             return list(self.generated_text_features.values())

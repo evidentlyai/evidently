@@ -13,6 +13,7 @@ from evidently.calculations.data_quality import get_rows_count
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -49,7 +50,7 @@ class ColumnValueRangeMetricResult(MetricResult):
 class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
     """Calculates count and shares of values in the predefined values range"""
 
-    column_name: Union[str, ColumnName]
+    column_name: ColumnName
     left: Optional[Numeric]
     right: Optional[Numeric]
 
@@ -58,10 +59,12 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         column_name: Union[str, ColumnName],
         left: Optional[Numeric] = None,
         right: Optional[Numeric] = None,
+        options: AnyOptions = None,
     ) -> None:
         self.left = left
         self.right = right
-        self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
+        super().__init__(options=options)
 
     @staticmethod
     def _calculate_in_range_stats(

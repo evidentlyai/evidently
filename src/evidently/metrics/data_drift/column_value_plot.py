@@ -43,8 +43,8 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
     column_name: str
 
     def __init__(self, column_name: str, options: AnyOptions = None):
-        super().__init__(options=options)
         self.column_name = column_name
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnValuePlotResults:
         if self.column_name not in data.current_data.columns:

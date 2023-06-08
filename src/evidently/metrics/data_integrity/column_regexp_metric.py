@@ -65,6 +65,7 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
         self.reg_exp = reg_exp
         self.column_name = column_name
         self._reg_exp_compiled = re.compile(reg_exp)
+        super().__init__()
 
     def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
         number_of_matched = 0

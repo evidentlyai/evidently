@@ -36,10 +36,8 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
     column_name: ColumnName
 
     def __init__(self, column_name: Union[str, ColumnName]) -> None:
-        if isinstance(column_name, ColumnName):
-            self.column_name = column_name
-        else:
-            self.column_name = ColumnName.main_dataset(column_name)
+        self.column_name = ColumnName.from_any(column_name)
+        super().__init__()
 
     @staticmethod
     def _calculate_correlation(

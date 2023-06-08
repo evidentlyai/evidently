@@ -101,6 +101,9 @@ class DataInTime(MetricResult):
 
 
 class DataByTarget(MetricResult):
+    class Config:
+        smart_union = True
+
     data_for_plots: Union[
         Dict[
             str,
@@ -140,28 +143,23 @@ class ColumnSummaryResult(ColumnMetricResult):
 
 
 class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
-    generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+    _generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
     def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None):
-        super().__init__(options=options)
-        if isinstance(column_name, str):
-            self.column = ColumnName.main_dataset(column_name)
-        else:
-            self.column = column_name
-        self.column_name = self.column.name
-        self.generated_text_features = None
+        self._generated_text_features = None
+        super().__init__(column_name=column_name, options=options)
 
     def required_features(self, data_definition: DataDefinition):
-        if not self.column.is_main_dataset():
+        if not self.column_name.is_main_dataset():
             return ColumnMetric.required_features(self, data_definition)
-        column_type = data_definition.get_column(self.column_name).column_type
+        column_type = data_definition.get_column(self.column_name.name).column_type
         if column_type == ColumnType.Text:
-            self.generated_text_features = {
-                "text_length": TextLength(self.column_name),
-                "non_letter_char": NonLetterCharacterPercentage(self.column_name),
-                "oov": OOVWordsPercentage(self.column_name),
+            self._generated_text_features = {
+                "text_length": TextLength(self.column_name.name),
+                "non_letter_char": NonLetterCharacterPercentage(self.column_name.name),
+                "oov": OOVWordsPercentage(self.column_name.name),
             }
-            return list(self.generated_text_features.values())
+            return list(self._generated_text_features.values())
         return []
 
     def get_parameters(self) -> tuple:
@@ -173,26 +171,26 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
 
     def calculate(self, data: InputData) -> ColumnSummaryResult:
 
-        if not data.has_column(self.column):
-            raise ValueError(f"Column '{self.column.display_name}' not found in dataset.")
+        if not data.has_column(self.column_name):
+            raise ValueError(f"Column '{self.column_name.display_name}' not found in dataset.")
 
-        column_type, column_current_data, column_reference_data = data.get_data(self.column)
+        column_type, column_current_data, column_reference_data = data.get_data(self.column_name)
 
         curr_characteristics: ColumnCharacteristics
         ref_characteristics: Optional[ColumnCharacteristics] = None
-        if column_type == ColumnType.Text and self.generated_text_features is not None:
+        if column_type == ColumnType.Text and self._generated_text_features is not None:
             if column_reference_data is not None:
                 ref_characteristics = self.get_text_stats(
                     "reference",
                     data,
                     column_reference_data,
-                    self.generated_text_features,
+                    self._generated_text_features,
                 )
             curr_characteristics = self.get_text_stats(
                 "current",
                 data,
                 column_current_data,
-                self.generated_text_features,
+                self._generated_text_features,
             )
         else:
             if column_reference_data is not None:
@@ -218,7 +216,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         datetime_data = None
         if (
             datetime_column is not None
-            and datetime_column.column_name != self.column.name
+            and datetime_column.column_name != self.column_name.name
             and column_type != ColumnType.Datetime
         ):
             datetime_type, datetime_current, datetime_reference = data.get_data(datetime_column.column_name)
@@ -228,7 +226,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         target_data = None
         if (
             target_column is not None
-            and target_column.column_name != self.column.name
+            and target_column.column_name != self.column_name.name
             and column_type != ColumnType.Datetime
         ):
             target_type, target_current, target_reference = data.get_data(target_column.column_name)
@@ -240,7 +238,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         if column_reference_data is not None:
             column_reference_data = column_reference_data.replace([np.inf, -np.inf], np.nan)
         bins_for_hist, data_in_time, data_by_target = plot_data(
-            (self.column.display_name, column_type, column_current_data, column_reference_data),
+            (self.column_name.display_name, column_type, column_current_data, column_reference_data),
             datetime_data,
             target_data,
             agg_data,
@@ -258,7 +256,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
                 counts_of_values["reference"] = reference_counts.head(10)
 
         return ColumnSummaryResult(
-            column_name=self.column_name,
+            column_name=self.column_name.name,
             column_type=column_type.value,
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,

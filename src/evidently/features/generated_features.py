@@ -5,13 +5,14 @@ from typing import Optional
 
 import pandas as pd
 
+from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
 
 if typing.TYPE_CHECKING:
     from evidently.base_metric import ColumnName
 
 
-class GeneratedFeature:
+class GeneratedFeature(EvidentlyBaseModel):
     """
     Class for computation of additional features.
     """
@@ -54,7 +55,7 @@ class GeneratedFeature:
         return params
 
 
-class FeatureDescriptor:
+class FeatureDescriptor(EvidentlyBaseModel):
     @abc.abstractmethod
     def for_column(self, column_name: str):
         raise NotImplementedError()

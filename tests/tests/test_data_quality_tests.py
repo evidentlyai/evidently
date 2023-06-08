@@ -205,6 +205,7 @@ def test_data_quality_test_conflict_target() -> None:
     )
     suite = TestSuite(tests=[TestConflictTarget()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=mapping)
+    suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
     assert suite.json()
@@ -458,6 +459,7 @@ def test_data_quality_test_value_in_range() -> None:
 
     suite = TestSuite(tests=[TestValueRange(column_name="feature1", left=0, right=100)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite._inner_suite.raise_for_error()
     assert suite
 
     reference_dataset = pd.DataFrame(

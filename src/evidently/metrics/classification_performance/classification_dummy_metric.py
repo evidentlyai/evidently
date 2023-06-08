@@ -21,6 +21,7 @@ from evidently.metrics.classification_performance.objects import ClassesMetrics
 from evidently.metrics.classification_performance.objects import ClassificationReport
 from evidently.metrics.classification_performance.objects import ClassMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -40,13 +41,18 @@ class ClassificationDummyMetricResults(MetricResult):
 
 
 class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
-    quality_metric: ClassificationQualityMetric
+    _quality_metric: ClassificationQualityMetric
 
-    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
-        super().__init__(probas_threshold, k)
+    def __init__(
+        self,
+        probas_threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
+        options: AnyOptions = None,
+    ):
         self.probas_threshold = probas_threshold
         self.k = k
-        self.quality_metric = ClassificationQualityMetric()
+        super().__init__(probas_threshold, k, options)
+        self._quality_metric = ClassificationQualityMetric()
 
     def calculate(self, data: InputData) -> ClassificationDummyMetricResults:
         quality_metric: Optional[ClassificationQualityMetric]
@@ -59,7 +65,7 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         if prediction_name is None:
             quality_metric = None
         else:
-            quality_metric = self.quality_metric
+            quality_metric = self._quality_metric
 
         #  dummy by current
         labels_ratio = data.current_data[target_name].value_counts(normalize=True)
@@ -125,12 +131,12 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
                 str(labels[0]): ClassMetric(
                     precision=current_dummy.precision,
                     recall=current_dummy.recall,
-                    **{"f1-score": current_dummy.f1},
+                    **{"f1": current_dummy.f1},
                 ),
                 str(labels[1]): ClassMetric(
                     precision=neg_label_precision,
                     recall=neg_label_recall,
-                    **{"f1-score": f1_label2_value},
+                    **{"f1": f1_label2_value},
                 ),
             }
         if prediction is not None and prediction.prediction_probas is not None:

@@ -14,18 +14,24 @@ import pandas as pd
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pydantic_utils import EnumValueMixin
+from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import PolymorphicModel
+from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
     from evidently.suite.base_suite import Context
 
 
-class MetricResult(BaseResult):
-    pass
+class MetricResult(PolymorphicModel, BaseResult):  # type: ignore[misc] # pydantic Config
+    class Config:
+        field_tags = {"type": {IncludeTags.TypeField}}
 
 
 class ErrorResult:
@@ -40,12 +46,16 @@ class DatasetType(Enum):
     ADDITIONAL = "additional"
 
 
-@dataclass(eq=True, unsafe_hash=True)
-class ColumnName:
+class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: str
     dataset: DatasetType
     feature_class: Optional[GeneratedFeature]
+
+    def __init__(
+        self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional[GeneratedFeature] = None
+    ):
+        super().__init__(name=name, display_name=display_name, dataset=dataset, feature_class=feature_class)
 
     def is_main_dataset(self):
         return self.dataset == DatasetType.MAIN
@@ -56,6 +66,10 @@ class ColumnName:
 
     def __str__(self):
         return self.display_name
+
+    @classmethod
+    def from_any(cls, column_name: Union[str, "ColumnName"]):
+        return column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
 
 
 def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
@@ -139,16 +153,18 @@ class InputData:
 TResult = TypeVar("TResult", bound=MetricResult)
 
 
-class Metric(Generic[TResult]):
-    context: Optional["Context"] = None
+class Metric(WithTestAndMetricDependencies, Generic[TResult]):
+    _context: Optional["Context"] = None
 
     # TODO: if we want metric-specific options
     options: Options
+
     # resulting options will be determined via
     # options = global_option.override(display_options).override(metric_options)
 
-    def __init__(self, options: AnyOptions = None):
+    def __init__(self, options: AnyOptions = None, **data):
         self.options = Options.from_any_options(options)
+        super().__init__(**data)
 
     def get_id(self) -> str:
         return self.__class__.__name__
@@ -158,12 +174,12 @@ class Metric(Generic[TResult]):
         raise NotImplementedError()
 
     def set_context(self, context):
-        self.context = context
+        self._context = context
 
     def get_result(self) -> TResult:
-        if self.context is None:
+        if not hasattr(self, "_context") or self._context is None:
             raise ValueError("No context is set")
-        result = self.context.metric_results.get(self, None)
+        result = self._context.metric_results.get(self, None)
         if isinstance(result, ErrorResult):
             raise result.exception
         if result is None:
@@ -173,7 +189,7 @@ class Metric(Generic[TResult]):
     def get_parameters(self) -> Optional[tuple]:
         attributes = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
-            if field in ["context"]:
+            if field in ["_context"]:
                 continue
             if isinstance(value, list):
                 attributes.append(tuple(value))
@@ -198,8 +214,8 @@ class Metric(Generic[TResult]):
 
     def get_options(self):
         options = self.options if hasattr(self, "options") else Options()
-        if self.context is not None:
-            options = self.context.options.override(options)
+        if self._context is not None:
+            options = self._context.options.override(options)
         return options
 
 
@@ -216,4 +232,8 @@ ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 
 class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
-    column_name: str
+    column_name: ColumnName
+
+    def __init__(self, column_name: Union[ColumnName, str], options: AnyOptions = None):
+        self.column_name = ColumnName.from_any(column_name)
+        super().__init__(options)

@@ -12,6 +12,7 @@ from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.metrics.data_drift.embedding_drift_methods import model
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -42,28 +43,28 @@ class EmbeddingsDriftMetricResults(MetricResult):
 
 class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
     embeddings_name: str
-    drift_method: Optional[Callable]
+    _drift_method: Optional[Callable]
 
-    def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None):
-        super().__init__()
+    def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None, options: AnyOptions = None):
         self.embeddings_name = embeddings_name
-        self.drift_method = drift_method
+        self._drift_method = drift_method
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> EmbeddingsDriftMetricResults:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
-        if self.drift_method is None:
+        if self._drift_method is None:
             is_bootstrap = False
             if data.reference_data.shape[0] < 1000:
                 is_bootstrap = True
-            self.drift_method = model(bootstrap=is_bootstrap)
+            self._drift_method = model(bootstrap=is_bootstrap)
         emb_dict = data.data_definition.embeddings()
         if emb_dict is None:
             raise ValueError("Embeddings shold be defined in column mapping")
         if self.embeddings_name not in emb_dict.keys():
             raise ValueError(f"{self.embeddings_name} not in column_mapping.embeddings")
         emb_list = emb_dict[self.embeddings_name]
-        drift_score, drift_detected, method_name = self.drift_method(
+        drift_score, drift_detected, method_name = self._drift_method(
             data.current_data[emb_list], data.reference_data[emb_list]
         )
         # visualisation
