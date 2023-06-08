@@ -10,6 +10,7 @@ from typing import overload
 
 import numpy as np
 import pandas as pd
+from pydantic import validator
 from typing_extensions import Literal
 
 from evidently.base_metric import MetricResult
@@ -66,8 +67,27 @@ class PredictionData(MetricResult):
         dict_include = False
 
     predictions: pd.Series
-    prediction_probas: Optional[pd.DataFrame]
     labels: List[Label]
+    prediction_probas: Optional[pd.DataFrame]
+
+    @validator("prediction_probas")
+    def validate_prediction_probas(cls, value: pd.DataFrame, values):
+        """Align label types"""
+        if value is None:
+            return None
+        labels = values["labels"]
+        for col in list(value.columns):
+            if col not in labels:
+                if str(col) in labels:
+                    value.rename(columns={col: str(col)}, inplace=True)
+                    continue
+                try:
+                    int_col = int(col)
+                    if int_col in labels:
+                        value.rename(columns={col: int_col}, inplace=True)
+                except ValueError:
+                    pass
+        return value
 
 
 class StatsByFeature(MetricResult):
