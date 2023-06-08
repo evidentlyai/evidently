@@ -118,7 +118,8 @@ class ColumnValuePlotRenderer(MetricRenderer):
     def render_raw(self, current_scatter, reference_scatter, column_name, datetime_column_name):
         # todo: better typing
         column = reference_scatter[column_name]
-        assert isinstance(column, pd.Series)
+        if not isinstance(column, pd.Series):
+            column = pd.Series(column)
         mean_ref = column.mean()
         std_ref = column.std()
         y0 = mean_ref - std_ref
