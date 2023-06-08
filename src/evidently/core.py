@@ -98,6 +98,7 @@ def dataframe_validator(value):
 def np_inf_valudator(value):
     return np.float(value)
 
+
 @pydantic_type_validator(np.ndarray)
 def np_array_valudator(value):
     return np.array(value)
