@@ -3,7 +3,6 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
@@ -84,10 +83,7 @@ def regression_perf_plot(
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
-    # todo: better typing
-    if not isinstance(val_for_plot.current, pd.Series):
-        val_for_plot.current = pd.Series(val_for_plot.current)
-    sorted_index = val_for_plot.current.sort_index()
+    sorted_index = val_for_plot.current.data.sort_index()
     x = [str(idx) for idx in sorted_index.index]
     y = list(sorted_index)
     trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=current_color)
@@ -100,10 +96,8 @@ def regression_perf_plot(
     fig.add_trace(trace, 2, 1)
 
     if hist_for_plot.reference is not None:
-        # todo: better typing
-        if not isinstance(val_for_plot.reference, pd.Series):
-            val_for_plot.reference = pd.Series(val_for_plot.reference)
-        sorted_index = val_for_plot.reference.sort_index()
+        assert val_for_plot.reference is not None
+        sorted_index = val_for_plot.reference.data.sort_index()
         x = [str(idx) for idx in sorted_index.index]
         y = list(sorted_index)
         trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=reference_color)
