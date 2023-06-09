@@ -41,7 +41,22 @@ ContourData = Tuple[np.ndarray, List[float], List[float]]
 ColumnScatter = Dict[LabelKey, ScatterData]
 
 ScatterAggData = Union[pd.DataFrame]
-ColumnAggScatter = Dict[Label, ScatterAggData]
+ColumnAggScatter = Dict[LabelKey, ScatterAggData]
+
+
+class _ColumnScatterOrAggType:
+    pass
+
+
+ColumnScatterOrAgg = Union[_ColumnScatterOrAggType, ColumnScatter, ColumnAggScatter]  # type: ignore[valid-type]
+
+
+@pydantic_type_validator(_ColumnScatterOrAggType)
+def column_scatter_valudator(value):
+    if any(isinstance(o, dict) for o in value.values()):
+        # dict -> dataframe -> agg
+        return {k: pd.DataFrame(v) for k, v in value.items()}
+    return {k: pd.Series(v) for k, v in value.items()}
 
 
 class Distribution(MetricResult):

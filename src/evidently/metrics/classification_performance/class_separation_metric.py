@@ -1,6 +1,5 @@
 from typing import List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -11,6 +10,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_results import ColumnAggScatter
 from evidently.metric_results import ColumnScatter
+from evidently.metric_results import ColumnScatterOrAgg
 from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import df_from_column_scatter
 from evidently.metric_results import raw_agg_properties
@@ -28,16 +28,15 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationClassSeparationPlotResults(MetricResult):
     class Config:
-        smart_union = True
         dict_exclude_fields = {"current", "reference"}
         pd_exclude_fields = {"current", "reference"}
 
     target_name: str
 
-    current: Optional[Union[ColumnScatter, ColumnAggScatter]] = None
+    current: Optional[ColumnScatterOrAgg] = None
     current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, True)
 
-    reference: Optional[Union[ColumnScatter, ColumnAggScatter]] = None
+    reference: Optional[ColumnScatterOrAgg] = None
     reference_raw, reference_agg = raw_agg_properties("reference", ColumnScatter, ColumnAggScatter, True)
 
 
@@ -111,17 +110,18 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
 @default_renderer(wrap_type=ClassificationClassSeparationPlot)
 class ClassificationClassSeparationPlotRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationClassSeparationPlot) -> List[BaseWidgetInfo]:
-        current_plot = obj.get_result().current
-        reference_plot = obj.get_result().reference
-        target_name = obj.get_result().target_name
+        metric_result = obj.get_result()
+        target_name = metric_result.target_name
         agg_data = not obj.get_options().render_options.raw_data
-        if current_plot is None:
+        if metric_result.current is None:
             return []
         if not agg_data:
+            assert metric_result.current_raw is not None  # checked before
             # todo changing data here, consider doing this in calculation
-            current_df = df_from_column_scatter(current_plot)
+            current_df = df_from_column_scatter(metric_result.current_raw)
             current_df.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_df = None
+            reference_plot = metric_result.reference_raw
             if reference_plot is not None:
                 reference_df = df_from_column_scatter(reference_plot)
                 reference_df.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -132,9 +132,10 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
                 color_options=self.color_options,
             )
         else:
+            assert metric_result.current_agg is not None  # checked before
             tab_data = get_class_separation_plot_data_agg(
-                current_plot,
-                reference_plot,
+                metric_result.current_agg,
+                metric_result.reference_agg,
                 target_name,
                 color_options=self.color_options,
             )

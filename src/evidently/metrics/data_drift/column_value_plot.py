@@ -13,6 +13,7 @@ from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.metric_results import ColumnAggScatter
 from evidently.metric_results import ColumnScatter
+from evidently.metric_results import ColumnScatterOrAgg
 from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
@@ -37,10 +38,10 @@ class ColumnValuePlotResults(MetricResult):
 
     column_name: str
     datetime_column_name: Optional[str]
-    current: Union[ColumnScatter, ColumnAggScatter]
+    current: Union[ColumnScatterOrAgg]
     current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, False)
 
-    reference: Union[ColumnScatter, ColumnAggScatter]
+    reference: Union[ColumnScatterOrAgg]
     reference_raw, reference_agg = raw_agg_properties("reference", ColumnScatter, ColumnAggScatter, False)
     prefix: Optional[str] = None
 
