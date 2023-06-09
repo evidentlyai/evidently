@@ -9,20 +9,20 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TriggerWordsPresent(GeneratedFeature):
-    def __init__(self, column_name: str, words_list=(), lemmatisize=True):
+    def __init__(self, column_name: str, words_list=(), lemmatize=True):
         self.lem = WordNetLemmatizer()
         self.column_name = column_name
         self.words_list = words_list
-        self.lemmatisize = lemmatisize
+        self.lemmatize = lemmatize
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        def listed_words_present(s, words_list=(), lemmatisize=True):
+        def listed_words_present(s, words_list=(), lemmatize=True):
             if s is None:
                 return 0
             words = re.sub("[^A-Za-z0-9 ]+", "", s).split()
             for word_ in words:
                 word = word_.lower()
-                if lemmatisize:
+                if lemmatize:
                     word = self.lem.lemmatize(word)
                 if word in words_list:
                     return 1
@@ -37,7 +37,7 @@ class TriggerWordsPresent(GeneratedFeature):
                             lambda x: listed_words_present(
                                 x,
                                 words_list=self.words_list,
-                                lemmatisize=self.lemmatisize,
+                                lemmatize=self.lemmatize,
                             )
                         ),
                     )
@@ -46,13 +46,13 @@ class TriggerWordsPresent(GeneratedFeature):
         )
 
     def get_parameters(self):
-        return self.column_name, tuple(self.words_list), self.lemmatisize
+        return self.column_name, tuple(self.words_list), self.lemmatize
 
     def feature_name(self):
         return additional_feature(self, self._feature_column_name(), self._feature_display_name())
 
     def _feature_column_name(self):
-        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatisize)
+        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatize)
 
     def _feature_display_name(self):
-        return f"TriggerWordsPresent [words: {self.words_list}, lemmatisize: {self.lemmatisize}] for {self.column_name}"
+        return f"TriggerWordsPresent [words: {self.words_list}, lemmatize: {self.lemmatize}] for {self.column_name}"
