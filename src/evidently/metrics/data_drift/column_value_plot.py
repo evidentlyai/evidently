@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -11,7 +12,9 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.metric_results import ColumnAggScatter
+from evidently.metric_results import ColumnScatter
 from evidently.metric_results import column_scatter_from_df
+from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -34,8 +37,11 @@ class ColumnValuePlotResults(MetricResult):
 
     column_name: str
     datetime_column_name: Optional[str]
-    current: ColumnAggScatter
-    reference: ColumnAggScatter
+    current: Union[ColumnScatter, ColumnAggScatter]
+    current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, False)
+
+    reference: Union[ColumnScatter, ColumnAggScatter]
+    reference_raw, reference_agg = raw_agg_properties("reference", ColumnScatter, ColumnAggScatter, False)
     prefix: Optional[str] = None
 
 
