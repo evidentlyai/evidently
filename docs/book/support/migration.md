@@ -4,8 +4,8 @@ description: How to migrate to the new Evidently API.
 
 # Errors
 
-## no module named 'evidently.dashboard'
-## modulenotfounderror: no module named 'evidently.dashboard'
+* no module named 'evidently.dashboard'
+* modulenotfounderror: no module named 'evidently.dashboard'
 
 # What changed
 
