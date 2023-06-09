@@ -10,6 +10,7 @@ from typing import overload
 
 import numpy as np
 import pandas as pd
+from pydantic import parse_obj_as
 from pydantic import validator
 from typing_extensions import Literal
 
@@ -36,7 +37,7 @@ def label_key_valudator(value):
         return value
 
 
-ScatterData = Union[pd.Series, List[float], pd.Index]
+ScatterData = Union[pd.Series]
 ContourData = Tuple[np.ndarray, List[float], List[float]]
 ColumnScatter = Dict[LabelKey, ScatterData]
 
@@ -55,8 +56,10 @@ ColumnScatterOrAgg = Union[_ColumnScatterOrAggType, ColumnScatter, ColumnAggScat
 def column_scatter_valudator(value):
     if any(isinstance(o, dict) for o in value.values()):
         # dict -> dataframe -> agg
-        return {k: pd.DataFrame(v) for k, v in value.items()}
-    return {k: pd.Series(v) for k, v in value.items()}
+        return parse_obj_as(ColumnAggScatter, value)
+    if any(isinstance(o, (pd.DataFrame, pd.Series)) for o in value.values()):
+        return value
+    return parse_obj_as(ColumnScatter, value)
 
 
 class Distribution(MetricResult):
@@ -397,7 +400,7 @@ def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optio
         val = getattr(self, field_name)
         if optional and val is None:
             return None
-        if not isinstance(val, raw_type):
+        if isinstance(raw_type, type) and not isinstance(val, raw_type):
             raise ValueError("Raw data not available")
         return val
 
@@ -405,7 +408,7 @@ def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optio
         val = getattr(self, field_name)
         if optional and val is None:
             return None
-        if not isinstance(val, agg_type):
+        if isinstance(agg_type, type) and not isinstance(val, agg_type):
             raise ValueError("Agg data not available")
         return val
 

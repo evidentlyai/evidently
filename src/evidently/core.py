@@ -94,6 +94,11 @@ def dataframe_validator(value):
     return pd.DataFrame(value)
 
 
+# @pydantic_type_validator(pd.Index)
+# def index_validator(value):
+#     return pd.Index(value)
+
+
 @pydantic_type_validator(np.float_)
 def np_inf_valudator(value):
     return np.float(value)
