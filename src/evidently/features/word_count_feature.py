@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
 from evidently.features.generated_features import GeneratedFeature
@@ -15,7 +16,8 @@ class WordCount(GeneratedFeature):
         def word_count_f(s):
             if s is None:
                 return 0
-            return len(re.sub(r'[^a-zA-Z ]+', "", s).split())
+            return len(re.sub(r"[^a-zA-Z ]+", "", s).split())
+
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(word_count_f))]))
 
     def feature_name(self) -> ColumnName:

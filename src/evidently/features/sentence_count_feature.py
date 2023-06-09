@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
 from evidently.features.generated_features import GeneratedFeature
@@ -15,8 +16,9 @@ class SentenceCount(GeneratedFeature):
         def sentence_count_f(s):
             if s is None:
                 return 0
-            number = len(re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', s))
+            number = len(re.split(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s", s))
             return max(1, number)
+
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(sentence_count_f))]))
 
     def feature_name(self) -> ColumnName:

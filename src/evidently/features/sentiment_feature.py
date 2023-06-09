@@ -1,5 +1,4 @@
 import pandas as pd
-
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 from evidently.base_metric import ColumnName
@@ -18,7 +17,8 @@ class Sentiment(GeneratedFeature):
         def sentiment_f(s, sid=sid):
             if s is None:
                 return 0
-            return sid.polarity_scores(s)['compound']
+            return sid.polarity_scores(s)["compound"]
+
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(sentiment_f))]))
 
     def feature_name(self) -> ColumnName:

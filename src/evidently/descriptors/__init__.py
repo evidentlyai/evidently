@@ -1,10 +1,10 @@
 from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage
 from .oov_words_percentage_descriptor import OOV
+from .sentence_count_descriptor import SentenceCount
+from .sentiment_descriptor import Sentiment
 from .text_length_descriptor import TextLength
 from .trigger_words_presence_descriptor import TriggerWordsPresence
 from .word_count_descriptor import WordCount
-from .sentence_count_descriptor import SentenceCount
-from .sentiment_descriptor import Sentiment
 
 __all__ = [
     "NonLetterCharacterPercentage",
