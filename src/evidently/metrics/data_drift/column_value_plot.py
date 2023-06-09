@@ -226,6 +226,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
             xaxis_name=xaxis_name,
             xaxis_name_ref=None,
             yaxis_name=column_name + " value",
+            color_options=self.color_options,
         )
 
         return [

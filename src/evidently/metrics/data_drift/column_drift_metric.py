@@ -372,6 +372,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     xaxis_name=result.scatter.x_name,
                     xaxis_name_ref=None,
                     yaxis_name=result.column_name,
+                    color_options=self.color_options,
                     return_json=False,
                 )
             tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))

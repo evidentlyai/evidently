@@ -16,6 +16,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import ContextPayload
@@ -218,9 +219,7 @@ class TestSuite(Display):
         )
 
     def _get_payload(self) -> BaseModel:
-        return _TestSuitePayload(
-            suite=ContextPayload.from_context(self._inner_suite.context),
-        )
+        return _TestSuitePayload(suite=ContextPayload.from_context(self._inner_suite.context), options=self.options)
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "TestSuite":
@@ -229,8 +228,9 @@ class TestSuite(Display):
 
 class _TestSuitePayload(BaseModel):
     suite: ContextPayload
+    options: Options
 
     def load(self):
-        suite = TestSuite(tests=None)
+        suite = TestSuite(tests=None, options=self.options)
         suite._inner_suite.context = self.suite.to_context()
         return suite

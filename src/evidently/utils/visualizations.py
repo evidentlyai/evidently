@@ -1081,9 +1081,9 @@ def plot_agg_line_data(
     xaxis_name: str,
     xaxis_name_ref: Optional[str],
     yaxis_name: str,
+    color_options: ColorOptions,
     return_json: bool = True,
 ):
-    color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
 

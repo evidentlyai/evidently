@@ -19,6 +19,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
+from evidently.options.base import Options
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
@@ -191,7 +192,9 @@ class Report(Display):
     def _get_payload(self) -> BaseModel:
         ctx = self._inner_suite.context
         suite = ContextPayload.from_context(ctx)
-        return _ReportPayload(suite=suite, metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics])
+        return _ReportPayload(
+            suite=suite, metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics], options=self.options
+        )
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "Report":
@@ -201,11 +204,12 @@ class Report(Display):
 class _ReportPayload(BaseModel):
     suite: ContextPayload
     metrics_ids: List[int]
+    options: Options
 
     def load(self):
         ctx = self.suite.to_context()
         metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics)
+        report = Report(metrics=metrics, options=self.options)
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
 
