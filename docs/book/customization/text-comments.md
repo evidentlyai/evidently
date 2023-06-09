@@ -22,7 +22,7 @@ You can add a widget that contains any custom text to the Evidently Report. Here
 
 To add a text widget, you must first define the contents of the comment. You can use markdown to format the text.
 
-Example:
+An example of adding "model_description" comment:
 
 ```python
 model_description = """
