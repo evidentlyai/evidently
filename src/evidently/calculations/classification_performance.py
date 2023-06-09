@@ -263,18 +263,7 @@ def calculate_pr_table(binded):
     return result
 
 
-def calculate_lift_table(binded: List[tuple]) -> List[List]:
-    """
-    Calculate all needed table data for lift metric analysis and visualization
-    Parameters
-    ----------
-    binded: List[tuple]
-        Zipped together binarized facts(0 or 1) and probabilistic prediction
-    Return values
-    -------------
-    result: List[List]
-        Data for lift metric analysis and visualization
-    """
+def calculate_lift_table(binded):
     result = []
     binded.sort(key=lambda item: item[1], reverse=True)
     data_size = len(binded)

@@ -1,9 +1,10 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
 import pandas as pd
 
+from evidently.base_metric import InputData
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_lift_table
 from evidently.calculations.classification_performance import get_prediction_data
@@ -18,11 +19,10 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationLiftTableResults:
+class ClassificationLiftTableResults(MetricResult):
     current_lift_table: Optional[dict] = None
     reference_lift_table: Optional[dict] = None
-    top: Optional[dict] = 10
+    top: Optional[int] = 10
 
 
 class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
@@ -38,10 +38,10 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
 
     top: int
 
-    def __init__(self, top: Optional[int] = 10) -> None:
+    def __init__(self, top: int = 10) -> None:
         self.top = top
 
-    def calculate(self, data) -> ClassificationLiftTableResults:
+    def calculate(self, data: InputData) -> ClassificationLiftTableResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -79,7 +79,7 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
                     prediction.prediction_probas.iloc[:, 0].tolist(),
                 )
             )
-            lift_table[prediction.prediction_probas.columns[0]] = calculate_lift_table(binded)
+            lift_table[int(prediction.prediction_probas.columns[0])] = calculate_lift_table(binded)
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
@@ -91,97 +91,12 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
                         prediction.prediction_probas[label],
                     )
                 )
-                lift_table[label] = calculate_lift_table(binded)
+                lift_table[int(label)] = calculate_lift_table(binded)
         return lift_table
 
 
 @default_renderer(wrap_type=ClassificationLiftTable)
 class ClassificationLiftTableRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationLiftTable) -> dict:
-        current_lift_table = obj.get_result().current_lift_table
-        reference_lift_table = obj.get_result().reference_lift_table
-        current_lift_table = pd.DataFrame(
-            current_lift_table[1],
-            columns=[
-                "top",
-                "count",
-                "prob",
-                "tp",
-                "fp",
-                "precision",
-                "recall",
-                "f1_score",
-                "lift",
-                "max_lift",
-                "relative_lift",
-                "percent",
-            ],
-        )
-        if reference_lift_table is None:
-            return {
-                "current": {
-                    "top": list(current_lift_table["top"]),
-                    "lift": list(current_lift_table["lift"]),
-                    "count": list(current_lift_table["count"]),
-                    "prob": list(current_lift_table["prob"]),
-                    "tp": list(current_lift_table["tp"]),
-                    "fp": list(current_lift_table["fp"]),
-                    "precision": list(current_lift_table["precision"]),
-                    "recall": list(current_lift_table["recall"]),
-                    "f1_score": list(current_lift_table["f1_score"]),
-                    "max_lift": list(current_lift_table["max_lift"]),
-                    "relative_lift": list(current_lift_table["relative_lift"]),
-                    "percent": current_lift_table["percent"][0],
-                },
-            }
-        reference_lift_table = pd.DataFrame(
-            reference_lift_table[1],
-            columns=[
-                "top",
-                "count",
-                "prob",
-                "tp",
-                "fp",
-                "precision",
-                "recall",
-                "f1_score",
-                "lift",
-                "max_lift",
-                "relative_lift",
-                "percent",
-            ],
-        )
-        return {
-            "current": {
-                "top": list(current_lift_table["top"]),
-                "lift": list(current_lift_table["lift"]),
-                "count": list(current_lift_table["count"]),
-                "prob": list(current_lift_table["prob"]),
-                "tp": list(current_lift_table["tp"]),
-                "fp": list(current_lift_table["fp"]),
-                "precision": list(current_lift_table["precision"]),
-                "recall": list(current_lift_table["recall"]),
-                "f1_score": list(current_lift_table["f1_score"]),
-                "max_lift": list(current_lift_table["max_lift"]),
-                "relative_lift": list(current_lift_table["relative_lift"]),
-                "percent": current_lift_table["percent"][0],
-            },
-            "reference": {
-                "top": list(reference_lift_table["top"]),
-                "lift": list(reference_lift_table["lift"]),
-                "count": list(reference_lift_table["count"]),
-                "prob": list(reference_lift_table["prob"]),
-                "tp": list(reference_lift_table["tp"]),
-                "fp": list(reference_lift_table["fp"]),
-                "precision": list(reference_lift_table["precision"]),
-                "recall": list(reference_lift_table["recall"]),
-                "f1_score": list(reference_lift_table["f1_score"]),
-                "max_lift": list(reference_lift_table["max_lift"]),
-                "relative_lift": list(reference_lift_table["relative_lift"]),
-                "percent": reference_lift_table["percent"][0],
-            },
-        }
-
     def render_html(self, obj: ClassificationLiftTable) -> List[BaseWidgetInfo]:
         reference_lift_table = obj.get_result().reference_lift_table
         current_lift_table = obj.get_result().current_lift_table

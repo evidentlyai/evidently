@@ -1,9 +1,10 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
 import pandas as pd
 
+from evidently.base_metric import InputData
+from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_lift_table
 from evidently.calculations.classification_performance import get_prediction_data
@@ -18,14 +19,13 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
-@dataclasses.dataclass
-class ClassificationLiftCurveResults:
+class ClassificationLiftCurveResults(MetricResult):
     current_lift_curve: Optional[dict] = None
     reference_lift_curve: Optional[dict] = None
 
 
 class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
-    def calculate(self, data) -> ClassificationLiftCurveResults:
+    def calculate(self, data: InputData) -> ClassificationLiftCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -63,9 +63,9 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                     prediction.prediction_probas.iloc[:, 0].tolist(),
                 )
             )
-            lift_table[prediction.prediction_probas.columns[0]] = calculate_lift_table(binded)
+            lift_table[int(prediction.prediction_probas.columns[0])] = calculate_lift_table(binded)
 
-            lift_curve[prediction.prediction_probas.columns[0]] = {
+            lift_curve[int(prediction.prediction_probas.columns[0])] = {
                 "lift": [i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
                 "top": [i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
                 "count": [i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
@@ -90,11 +90,11 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                         prediction.prediction_probas[label],
                     )
                 )
-                lift_table[label] = calculate_lift_table(binded)
+                lift_table[int(label)] = calculate_lift_table(binded)
 
             for label in labels:
 
-                lift_curve[prediction.prediction_probas.columns[0]] = {
+                lift_curve[int(prediction.prediction_probas.columns[0])] = {
                     "lift": [i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     "top": [i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     "count": [i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
@@ -113,57 +113,6 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
 
 @default_renderer(wrap_type=ClassificationLiftCurve)
 class ClassificationLiftCurveRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationLiftCurve) -> dict:
-        current_lift_curve = obj.get_result().current_lift_curve
-        reference_lift_curve = obj.get_result().reference_lift_curve
-        if reference_lift_curve is None:
-            return {
-                "current": {
-                    "top": current_lift_curve[1]["top"],
-                    "lift": current_lift_curve[1]["lift"],
-                    "count": current_lift_curve[1]["count"],
-                    "prob": current_lift_curve[1]["prob"],
-                    "tp": current_lift_curve[1]["tp"],
-                    "fp": current_lift_curve[1]["fp"],
-                    "precision": current_lift_curve[1]["precision"],
-                    "recall": current_lift_curve[1]["recall"],
-                    "f1_score": current_lift_curve[1]["f1_score"],
-                    "max_lift": current_lift_curve[1]["max_lift"],
-                    "relative_lift": current_lift_curve[1]["relative_lift"],
-                    "percent": current_lift_curve[1]["percent"],
-                },
-            }
-        return {
-            "current": {
-                "top": current_lift_curve[1]["top"],
-                "lift": current_lift_curve[1]["lift"],
-                "count": current_lift_curve[1]["count"],
-                "prob": current_lift_curve[1]["prob"],
-                "tp": current_lift_curve[1]["tp"],
-                "fp": current_lift_curve[1]["fp"],
-                "precision": current_lift_curve[1]["precision"],
-                "recall": current_lift_curve[1]["recall"],
-                "f1_score": current_lift_curve[1]["f1_score"],
-                "max_lift": current_lift_curve[1]["max_lift"],
-                "relative_lift": current_lift_curve[1]["relative_lift"],
-                "percent": current_lift_curve[1]["percent"],
-            },
-            "reference": {
-                "top": reference_lift_curve[1]["top"],
-                "lift": reference_lift_curve[1]["lift"],
-                "count": reference_lift_curve[1]["count"],
-                "prob": reference_lift_curve[1]["prob"],
-                "tp": reference_lift_curve[1]["tp"],
-                "fp": reference_lift_curve[1]["fp"],
-                "precision": reference_lift_curve[1]["precision"],
-                "recall": reference_lift_curve[1]["recall"],
-                "f1_score": reference_lift_curve[1]["f1_score"],
-                "max_lift": reference_lift_curve[1]["max_lift"],
-                "relative_lift": reference_lift_curve[1]["relative_lift"],
-                "percent": reference_lift_curve[1]["percent"],
-            },
-        }
-
     def render_html(self, obj: ClassificationLiftCurve) -> List[BaseWidgetInfo]:
         current_lift_curve = obj.get_result().current_lift_curve
         reference_lift_curve = obj.get_result().reference_lift_curve
