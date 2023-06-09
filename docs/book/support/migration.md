@@ -28,7 +28,7 @@ You can continue using the older versions and access old documentation, but they
 
 # Migrate to the new version
 
-To make use of all the latest Evidently functionality, including Test Suites, data drift detection and evaluations for text data, new Metrics and Presets, parameter customization, etc. you should migrate to the new API. 
+To make use of all the latest Evidently functionality, including data drift detection and evaluations for text data, embeddings and various new Metrics and Presets, you should migrate to the new API. 
 
 To understand the new API, go through the [Getting Started tutorial](../get-started/tutorial.md) or any of the [sample notebooks](../examples/examples.md). 
 
