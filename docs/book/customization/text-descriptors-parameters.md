@@ -145,9 +145,8 @@ classification_report = Report(metrics=[
         "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown']),
         "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
     }})
-```python
+```
 
 In this case, you will generate the Classification Quality By Feature Metric, which will plot the model performance against virtual features like “whether the reviews contained the word blouse or shirt”). 
 
 **Note**: For dataset-level metrics, you currently cannot exclude Descriptors. All default Descriptors will be included. 
-
