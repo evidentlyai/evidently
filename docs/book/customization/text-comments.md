@@ -36,7 +36,7 @@ model_description = """
 """
 ```
 
-When creating the Report, include the “Comment” Metric and reference the earlier defined text.
+When creating the Report, include the `Comment` Metric and reference the earlier defined text.
 
 Example:
 
