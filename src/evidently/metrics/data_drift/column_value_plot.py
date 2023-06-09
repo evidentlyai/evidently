@@ -31,7 +31,6 @@ from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 class ColumnValuePlotResults(MetricResult):
     class Config:
-        smart_union = True
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
