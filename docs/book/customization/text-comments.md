@@ -1,4 +1,3 @@
-
 ---
 description: How to add a widget with custom text.
 ---
