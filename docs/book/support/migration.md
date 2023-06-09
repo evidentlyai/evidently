@@ -2,6 +2,11 @@
 description: How to migrate to the new Evidently API.
 ---
 
+# Errors
+
+## no module named 'evidently.dashboard'
+## modulenotfounderror: no module named 'evidently.dashboard'
+
 # What changed
 
 Starting from Evidently 0.1.59, the old API that uses `Dashboards` and `json profiles` was deprecated. This functionality is now available using the `Report` object. 
@@ -10,7 +15,7 @@ In Evidently 0.3.0, the old API was removed from the code base.
 
 # If your code breaks
 
-If you get an error `no module named 'evidently.dashboard'`, you might be running the code that uses old API, with a newer Evidently version.
+If you get an error `no module named 'evidently.dashboard'` or similar, you might be running the code that uses old API, with a newer Evidently version.
 
 To make sure your existing code that uses `Dashboards` or `json profiles` works, **fix the Evidently version to 0.2.8 or earlier**.
 
