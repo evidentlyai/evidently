@@ -241,6 +241,22 @@ def header_text(*, label: str, title: str = "", size: WidgetSize = WidgetSize.FU
     )
 
 
+def text_widget(*, text: str, title: str = "", size: WidgetSize = WidgetSize.FULL):
+    """
+    generate widget with markdown text
+    Args:
+        text: markdown formatted text
+        title: widget title
+        size: widget size
+    """
+    return BaseWidgetInfo(
+        title=title,
+        type="text",
+        size=size.value,
+        params={"text": text}
+    )
+
+
 def table_data(
     *, column_names: Iterable[str], data: Iterable[Iterable], title: str = "", size: WidgetSize = WidgetSize.FULL
 ) -> BaseWidgetInfo:
