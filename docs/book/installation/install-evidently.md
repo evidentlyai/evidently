@@ -1,3 +1,5 @@
+Looking for old Evidently Dashboards? Read the [migration guide](../support/migration.md).
+
 # MAC OS and Linux
 
 `Evidently` is available as a PyPI package. To install it using the **pip package manager**, run:

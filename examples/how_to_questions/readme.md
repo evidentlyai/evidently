@@ -16,6 +16,7 @@ How to use text descriptors in tabular Metrics and Tests? | [link](how_to_apply_
 How to customize JSON output for Tests and Metrics? | [link](how_to_customize_json_output.ipynb) 
 How to use column mapping? | [link](how_to_use_column_mapping.ipynb)
 How to get non-aggregated visuals in Reports? | [link](how_to_use_aggregated_data_option.ipynb)
+How to add text comments to Reports? | [link](how_to_add_a_text_comment_to_the_report.ipynb) 
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
 

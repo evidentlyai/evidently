@@ -2,6 +2,10 @@
 description: How to migrate to the new Evidently API.
 ---
 
+This page will help if you get one of the following errors:
+* no module named 'evidently.dashboard'
+* modulenotfounderror: no module named 'evidently.dashboard'
+
 # What changed
 
 Starting from Evidently 0.1.59, the old API that uses `Dashboards` and `json profiles` was deprecated. This functionality is now available using the `Report` object. 
@@ -10,7 +14,7 @@ In Evidently 0.3.0, the old API was removed from the code base.
 
 # If your code breaks
 
-If you get an error `no module named 'evidently.dashboard'`, you might be running the code that uses old API, with a newer Evidently version.
+If you get an error `no module named 'evidently.dashboard'` or similar, you might be running the code that uses old API, with a newer Evidently version.
 
 To make sure your existing code that uses `Dashboards` or `json profiles` works, **fix the Evidently version to 0.2.8 or earlier**.
 
@@ -24,7 +28,7 @@ You can continue using the older versions and access old documentation, but they
 
 # Migrate to the new version
 
-To make use of all the latest Evidently functionality, including Test Suites, data drift detection and evaluations for text data, new Metrics and Presets, parameter customization, etc. you should migrate to the new API. 
+To make use of all the latest Evidently functionality, including data drift detection and evaluations for text data, embeddings and various new Metrics and Presets, you should migrate to the new API. 
 
 To understand the new API, go through the [Getting Started tutorial](../get-started/tutorial.md) or any of the [sample notebooks](../examples/examples.md). 
 
@@ -47,7 +51,7 @@ data_drift_report.run(reference_data=ref, current_data=cur)
 data_drift_report
 ```
 
-If you want to keep non-aggregated visualization from the earlier Evidently version, set the [corresponding "agg_data" parmeter to False](../customization/report-data-aggregation.md).
+If you want to keep non-aggregated visualization from the earlier Evidently version, set the [corresponding "raw_data" parmeter to False](../customization/report-data-aggregation.md).
 
 To get what was previously as JSON profile (and has now been improved and re-worked!), simply get the Report output as JSON:
 
