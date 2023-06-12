@@ -20,7 +20,10 @@ Using descriptors with text-specific Metrics and Tests:
 
 | Descriptor | Description |  
 |---|---|
-| `TextLength()` | Calculates the length of text.  |  
+| `TextLength()` | Calculates the length of text in symbols.  |  
+| `SentenceCount()` | Calculates the number of sentences.  | 
+| `WordCount()` | Calculates the number of words.  |  
+| `Sentiment()` | Evaluates the text sentiment.  |  
 | `OOV()` | Calculates the share of out-of-vocabulary words. |  
 | `NonLetterCharacterPercentage()` | Calculates the share of non-letter characters. |  
 | `TriggerWordsPresence(words_list=['dress', 'gown'])` | Checks for the presence of any of the specified words, as determined by the user. (Boolean).  |  
