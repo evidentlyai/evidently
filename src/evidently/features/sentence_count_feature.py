@@ -9,8 +9,11 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class SentenceCount(GeneratedFeature):
+    column_name: str
+
     def __init__(self, column_name: str):
         self.column_name = column_name
+        super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def sentence_count_f(s):
