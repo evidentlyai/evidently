@@ -28,6 +28,15 @@ Using descriptors with text-specific Metrics and Tests:
 | `NonLetterCharacterPercentage()` | Default). Calculates the share of non-letter characters. |  
 | `TriggerWordsPresence(words_list=['dress', 'gown'])` | Checks for the presence of any of the specified words, as determined by the user. (Boolean).  |  
 
+**Note**: you must import specific `nltk` components to use all available descriptors:
+
+```python
+nltk.download('words')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+nltk.download('vader_lexicon')
+```
+
 # Descriptors in text-specific metrics
 
 Several Metrics and Presets are specifically created to generate Descriptors from raw text data. For example, `TextDescriptorsDriftMetric()` or `TextDescriptorsCorrelationMetric()`. 
