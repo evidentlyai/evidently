@@ -30,7 +30,7 @@ export function ServiceHeader() {
                 <Typography variant="h6"
                             className={classes.title}
                 >
-                    <img src={logo} height={100} /> <span style={{verticalAlign:"super", fontSize: "0.75rem"}}>0.4.2</span>
+                    <img src={logo} height={"55px"} /> <span style={{verticalAlign:"super", fontSize: "0.75rem"}}>0.4.2</span>
                 </Typography>
                 <Link href={"https://github.com/evidentlyai/evidently"}>
                     <IconButton>
