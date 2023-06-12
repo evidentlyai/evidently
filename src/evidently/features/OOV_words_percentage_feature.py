@@ -1,5 +1,7 @@
 import re
 from typing import Optional
+from typing import Set
+from typing import Tuple
 
 import pandas as pd
 from nltk.corpus import words
@@ -11,11 +13,17 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class OOVWordsPercentage(GeneratedFeature):
+    column_name: str
+    ignore_words: Tuple = ()
+    _lem: WordNetLemmatizer
+    _eng_words: Set
+
     def __init__(self, column_name: str, ignore_words=()):
-        self.lem = WordNetLemmatizer()
-        self.eng_words = set(words.words())
+        self._lem = WordNetLemmatizer()
+        self._eng_words = set(words.words())
         self.column_name = column_name
         self.ignore_words = ignore_words
+        super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def oov_share(s, ignore_words=()):
@@ -24,7 +32,7 @@ class OOVWordsPercentage(GeneratedFeature):
             oov_num = 0
             words_ = re.sub("[^A-Za-z0-9 ]+", "", s).split()  # leave only letters, digits and spaces, split by spaces
             for word in words_:
-                if word.lower() not in ignore_words and self.lem.lemmatize(word.lower()) not in self.eng_words:
+                if word.lower() not in ignore_words and self._lem.lemmatize(word.lower()) not in self._eng_words:
                     oov_num += 1
             return 100 * oov_num / len(words_)
 

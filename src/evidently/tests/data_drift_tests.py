@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Callable
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -43,7 +44,7 @@ DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 
-class ColumnDriftParameter(ExcludeNoneMixin, TestParameters):
+class ColumnDriftParameter(ExcludeNoneMixin, TestParameters):  # type: ignore[misc] # pydantic Config
     stattest: str
     score: float
     threshold: float
@@ -90,8 +91,8 @@ class ColumnsDriftParameters(ConditionTestParameters):
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
-    group = DATA_DRIFT_GROUP.id
-    metric: DataDriftTable
+    group: ClassVar = DATA_DRIFT_GROUP.id
+    _metric: DataDriftTable
 
     def __init__(
         self,
@@ -125,7 +126,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = DataDriftTable(
+        self._metric = DataDriftTable(
             columns=columns,
             stattest=stattest,
             cat_stattest=cat_stattest,
@@ -138,6 +139,10 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             text_stattest_threshold=text_stattest_threshold,
             per_column_stattest_threshold=per_column_stattest_threshold,
         )
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         result = super().check()
@@ -153,7 +158,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
-    name = "Number of Drifted Features"
+    name: ClassVar = "Number of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -173,7 +178,7 @@ class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
 
 
 class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
-    name = "Share of Drifted Columns"
+    name: ClassVar = "Share of Drifted Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -194,10 +199,12 @@ class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
 
 
 class TestColumnDrift(Test):
-    name = "Drift per Column"
-    group = DATA_DRIFT_GROUP.id
-    metric: ColumnDriftMetric
+    name: ClassVar = "Drift per Column"
+    group: ClassVar = DATA_DRIFT_GROUP.id
+    _metric: ColumnDriftMetric
     column_name: ColumnName
+    stattest: Optional[PossibleStatTestType] = None
+    stattest_threshold: Optional[float] = None
 
     def __init__(
         self,
@@ -205,15 +212,20 @@ class TestColumnDrift(Test):
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
-        self.metric = ColumnDriftMetric(
+        self.column_name = ColumnName.from_any(column_name)
+        self.stattest = stattest
+        self.stattest_threshold = stattest_threshold
+
+        self._metric = ColumnDriftMetric(
             column_name=column_name,
             stattest=stattest,
             stattest_threshold=stattest_threshold,
         )
+        super().__init__()
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         drift_info = self.metric.get_result()
@@ -514,12 +526,17 @@ class TestColumnDriftRenderer(TestRenderer):
 
 
 class TestEmbeddingsDrift(Test):
-    name = "Drift for embeddings"
-    group = DATA_DRIFT_GROUP.id
-    metric: EmbeddingsDriftMetric
+    name: ClassVar = "Drift for embeddings"
+    group: ClassVar = DATA_DRIFT_GROUP.id
+    _metric: EmbeddingsDriftMetric
 
     def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None):
-        self.metric = EmbeddingsDriftMetric(embeddings_name=embeddings_name, drift_method=drift_method)
+        super().__init__()
+        self._metric = EmbeddingsDriftMetric(embeddings_name=embeddings_name, drift_method=drift_method)
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         drift_info = self.metric.get_result()

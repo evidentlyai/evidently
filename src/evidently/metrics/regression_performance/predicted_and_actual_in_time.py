@@ -134,6 +134,7 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
             xaxis_name=x_name,
             xaxis_name_ref=x_name_ref,
             yaxis_name="Value",
+            color_options=self.color_options,
         )
         return [
             header_text(label="Predicted vs Actual in Time"),
@@ -175,6 +176,7 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
             xaxis_name=result.x_name,
             xaxis_name_ref=result.x_name_ref,
             yaxis_name="Value",
+            color_options=self.color_options,
         )
         return [
             header_text(label="Predicted vs Actual in Time"),

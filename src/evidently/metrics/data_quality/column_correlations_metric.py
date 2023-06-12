@@ -14,6 +14,7 @@ from evidently.calculations.data_quality import calculate_numerical_correlation
 from evidently.core import ColumnType
 from evidently.metric_results import ColumnCorrelations
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
@@ -35,11 +36,9 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
 
     column_name: ColumnName
 
-    def __init__(self, column_name: Union[str, ColumnName]) -> None:
-        if isinstance(column_name, ColumnName):
-            self.column_name = column_name
-        else:
-            self.column_name = ColumnName.main_dataset(column_name)
+    def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None) -> None:
+        self.column_name = ColumnName.from_any(column_name)
+        super().__init__(options=options)
 
     @staticmethod
     def _calculate_correlation(

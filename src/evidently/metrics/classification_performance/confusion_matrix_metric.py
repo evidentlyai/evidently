@@ -3,12 +3,15 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from pydantic import BaseModel
+
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
 from evidently.metric_results import ConfusionMatrix
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import TargetNames
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -25,12 +28,24 @@ class ClassificationConfusionMatrixResult(MetricResult):
     target_names: Optional[TargetNames] = None
 
 
-class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult]):
+class ClassificationConfusionMatrixParameters(BaseModel):
     probas_threshold: Optional[float]
     k: Optional[Union[float, int]]
 
-    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
-        super().__init__(probas_threshold=probas_threshold, k=k)
+    def confusion_matric_metric(self):
+        return ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
+
+
+class ClassificationConfusionMatrix(
+    ThresholdClassificationMetric[ClassificationConfusionMatrixResult], ClassificationConfusionMatrixParameters
+):
+    def __init__(
+        self,
+        probas_threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
+        options: AnyOptions = None,
+    ):
+        super().__init__(probas_threshold=probas_threshold, k=k, options=options)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
         current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)

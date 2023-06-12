@@ -588,7 +588,7 @@ def plot_pred_actual_time(
     # Add zero trace
     trace = go.Scatter(
         x=curr[x_name],
-        y=[0] * curr[x_name].shape[0],
+        y=[0] * len(curr[x_name]),
         mode="lines",
         marker_color=color_options.zero_line_color,
         showlegend=False,
@@ -597,7 +597,7 @@ def plot_pred_actual_time(
     if ref is not None:
         trace = go.Scatter(
             x=ref[x_name],
-            y=[0] * ref[x_name].shape[0],
+            y=[0] * len(ref[x_name]),
             mode="lines",
             marker_color=color_options.zero_line_color,
             showlegend=False,
@@ -642,7 +642,7 @@ def plot_line_in_time(
     # Add zero trace
     trace = go.Scatter(
         x=curr[x_name],
-        y=[0] * curr[x_name].shape[0],
+        y=[0] * len(curr[x_name]),
         mode="lines",
         marker_color=color_options.zero_line_color,
         showlegend=False,
@@ -663,7 +663,7 @@ def plot_line_in_time(
         # Add zero trace
         trace = go.Scatter(
             x=ref[x_name],
-            y=[0] * ref[x_name].shape[0],
+            y=[0] * len(ref[x_name]),
             mode="lines",
             marker_color=color_options.zero_line_color,
             showlegend=False,
@@ -1081,9 +1081,9 @@ def plot_agg_line_data(
     xaxis_name: str,
     xaxis_name_ref: Optional[str],
     yaxis_name: str,
+    color_options: ColorOptions,
     return_json: bool = True,
 ):
-    color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
 

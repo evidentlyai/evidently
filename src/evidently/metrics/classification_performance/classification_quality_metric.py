@@ -9,6 +9,7 @@ from evidently.metric_results import DatasetClassificationQuality
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -24,11 +25,16 @@ class ClassificationQualityMetricResult(MetricResult):
 
 
 class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityMetricResult]):
-    confusion_matrix_metric: ClassificationConfusionMatrix
+    _confusion_matrix_metric: ClassificationConfusionMatrix
 
-    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None):
-        super().__init__(probas_threshold=probas_threshold, k=k)
-        self.confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
+    def __init__(
+        self,
+        probas_threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
+        options: AnyOptions = None,
+    ):
+        self._confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
+        super().__init__(probas_threshold=probas_threshold, k=k, options=options)
 
     def calculate(self, data: InputData) -> ClassificationQualityMetricResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
@@ -39,16 +45,16 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
         target, prediction = self.get_target_prediction_data(data.current_data, data.column_mapping)
         current = calculate_metrics(
             data.column_mapping,
-            self.confusion_matrix_metric.get_result().current_matrix,
+            self._confusion_matrix_metric.get_result().current_matrix,
             target,
             prediction,
         )
 
         reference = None
         if data.reference_data is not None:
-            ref_matrix = self.confusion_matrix_metric.get_result().reference_matrix
+            ref_matrix = self._confusion_matrix_metric.get_result().reference_matrix
             if ref_matrix is None:
-                raise ValueError(f"Dependency {self.confusion_matrix_metric.__class__} should have reference data")
+                raise ValueError(f"Dependency {self._confusion_matrix_metric.__class__} should have reference data")
             target, prediction = self.get_target_prediction_data(data.reference_data, data.column_mapping)
             reference = calculate_metrics(
                 data.column_mapping,

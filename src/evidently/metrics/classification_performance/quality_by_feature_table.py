@@ -40,7 +40,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
 class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults]):
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
-    text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
+    _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
 
     def __init__(
         self,
@@ -48,10 +48,10 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None,
         options: AnyOptions = None,
     ):
-        super().__init__(options=options)
         self.columns = columns
-        self.text_features_gen = None
+        self._text_features_gen = None
         self.descriptors = descriptors
+        super().__init__(options=options)
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
@@ -73,7 +73,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 
                 text_features_gen_result += list(col_dict.values())
                 text_features_gen[col] = col_dict
-            self.text_features_gen = text_features_gen
+            self._text_features_gen = text_features_gen
 
             return text_features_gen_result
         else:
@@ -123,8 +123,8 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 
         # process text columns
 
-        if self.text_features_gen is not None:
-            for column, features in self.text_features_gen.items():
+        if self._text_features_gen is not None:
+            for column, features in self._text_features_gen.items():
                 columns.remove(column)
                 columns += list(features.keys())
                 curr_text_df = pd.concat([data.get_current_column(x.feature_name()) for x in features.values()], axis=1)

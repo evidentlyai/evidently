@@ -137,6 +137,7 @@ class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
                 xaxis_name=result.x_name,
                 xaxis_name_ref=result.x_name_ref,
                 yaxis_name="Percent",
+                color_options=self.color_options,
             )
         return [
             header_text(label="Absolute Percentage Error"),

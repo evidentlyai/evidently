@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -46,8 +47,8 @@ GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
 
 
 class BaseIntegrityValueTest(ConditionFromReferenceMixin[DatasetSummary], ABC):
-    group = DATA_INTEGRITY_GROUP.id
-    metric: DatasetSummaryMetric
+    group: ClassVar = DATA_INTEGRITY_GROUP.id
+    _metric: DatasetSummaryMetric
 
     def __init__(
         self,
@@ -70,13 +71,13 @@ class BaseIntegrityValueTest(ConditionFromReferenceMixin[DatasetSummary], ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = DatasetSummaryMetric()
+        self._metric = DatasetSummaryMetric()
 
 
 class TestNumberOfColumns(BaseIntegrityValueTest):
     """Number of all columns in the data, including utility columns (id/index, datetime, target, predictions)"""
 
-    name = "Number of Columns"
+    name: ClassVar = "Number of Columns"
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
@@ -111,7 +112,7 @@ class TestNumberOfColumnsRenderer(TestRenderer):
 class TestNumberOfRows(BaseIntegrityValueTest):
     """Number of rows in the data"""
 
-    name = "Number of Rows"
+    name: ClassVar = "Number of Rows"
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
@@ -127,8 +128,8 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 
 
 class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMissingValues], ABC):
-    group = DATA_INTEGRITY_GROUP.id
-    metric: DatasetMissingValuesMetric
+    group: ClassVar = DATA_INTEGRITY_GROUP.id
+    _metric: DatasetMissingValuesMetric
 
     def __init__(
         self,
@@ -153,7 +154,7 @@ class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMi
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
+        self._metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
 
 class BaseTestMissingValuesRenderer(TestRenderer):
@@ -234,7 +235,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
 class TestNumberOfDifferentMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a number of different encoded missing values."""
 
-    name = "Different Types of Missing Values"
+    name: ClassVar = "Different Types of Missing Values"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -277,7 +278,7 @@ class TestNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
 class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a number of missing values."""
 
-    name = "The Number of Missing Values"
+    name: ClassVar = "The Number of Missing Values"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -314,7 +315,7 @@ class TestNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
 class TestShareOfMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a share of missing values."""
 
-    name = "Share of Missing Values"
+    name: ClassVar = "Share of Missing Values"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -342,7 +343,7 @@ class TestShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
 class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a number of columns with a missing value."""
 
-    name = "The Number of Columns With Missing Values"
+    name: ClassVar = "The Number of Columns With Missing Values"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -372,7 +373,7 @@ class TestNumberOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer
 class TestShareOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a share of columns with a missing value."""
 
-    name = "The Share of Columns With Missing Values"
+    name: ClassVar = "The Share of Columns With Missing Values"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -403,7 +404,7 @@ class TestShareOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer)
 class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a number of rows with a missing value."""
 
-    name = "The Number Of Rows With Missing Values"
+    name: ClassVar = "The Number Of Rows With Missing Values"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -427,7 +428,7 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
     """Check a share of rows with a missing value."""
 
-    name = "The Share of Rows With Missing Values"
+    name: ClassVar = "The Share of Rows With Missing Values"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -447,8 +448,8 @@ class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 
 class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMissingValues], ABC):
-    group = DATA_INTEGRITY_GROUP.id
-    metric: DatasetMissingValuesMetric
+    group: ClassVar = DATA_INTEGRITY_GROUP.id
+    _metric: DatasetMissingValuesMetric
     column_name: str
 
     def __init__(
@@ -465,6 +466,7 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+        self.column_name = column_name
         super().__init__(
             eq=eq,
             gt=gt,
@@ -475,14 +477,13 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.column_name = column_name
-        self.metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
+        self._metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
 
 class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesTest):
     """Check a number of differently encoded missing values in one column."""
 
-    name = "Different Types of Missing Values in a Column"
+    name: ClassVar = "Different Types of Missing Values in a Column"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -532,7 +533,7 @@ class TestColumnNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRend
 class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
     """Check a number of missing values in one column."""
 
-    name = "The Number of Missing Values in a Column"
+    name: ClassVar = "The Number of Missing Values in a Column"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -557,7 +558,7 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
     """Check a share of missing values in one column."""
 
-    name = "The Share of Missing Values in a Column"
+    name: ClassVar = "The Share of Missing Values in a Column"
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
@@ -577,7 +578,7 @@ class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
     def get_parameters(self):
         return ColumnCheckValueParameters(
-            condition=self.get_condition(), value=self.value, column_name=self.column_name
+            condition=self.get_condition(), value=self._value, column_name=self.column_name
         )
 
 
@@ -600,7 +601,7 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     """Number of columns contained only one unique value"""
 
-    name = "Number of Constant Columns"
+    name: ClassVar = "Number of Constant Columns"
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
@@ -637,7 +638,7 @@ class TestNumberOfConstantColumnsRenderer(TestRenderer):
 class TestNumberOfEmptyRows(BaseIntegrityValueTest):
     """Number of rows contained all NAN values"""
 
-    name = "Number of Empty Rows"
+    name: ClassVar = "Number of Empty Rows"
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
@@ -659,7 +660,7 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
 class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
     """Number of columns contained all NAN values"""
 
-    name = "Number of Empty Columns"
+    name: ClassVar = "Number of Empty Columns"
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
@@ -695,7 +696,7 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
 class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
     """How many rows have duplicates in the dataset"""
 
-    name = "Number of Duplicate Rows"
+    name: ClassVar = "Number of Duplicate Rows"
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
@@ -717,7 +718,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
     """How many columns have duplicates in the dataset"""
 
-    name = "Number of Duplicate Columns"
+    name: ClassVar = "Number of Duplicate Columns"
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
@@ -734,8 +735,8 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
-    group = DATA_INTEGRITY_GROUP.id
-    data_integrity_metric: ColumnSummaryMetric
+    group: ClassVar = DATA_INTEGRITY_GROUP.id
+    _data_integrity_metric: ColumnSummaryMetric
     column_name: ColumnName
 
     def __init__(
@@ -760,11 +761,8 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
-        self.data_integrity_metric = ColumnSummaryMetric(column_name=column_name)
+        self.column_name = ColumnName.from_any(column_name)
+        self._data_integrity_metric = ColumnSummaryMetric(column_name=column_name)
 
     def groups(self) -> Dict[str, str]:
         if self.column_name is not None:
@@ -773,16 +771,18 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
 
 
 class BaseIntegrityOneColumnTest(Test, ABC):
-    group = DATA_INTEGRITY_GROUP.id
-    metric: ColumnSummaryMetric
+    group: ClassVar = DATA_INTEGRITY_GROUP.id
+    _metric: ColumnSummaryMetric
     column_name: ColumnName
 
     def __init__(self, column_name: Union[str, ColumnName]):
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
-        self.metric = ColumnSummaryMetric(self.column_name)
+        self.column_name = ColumnName.from_any(column_name)
+        super().__init__()
+        self._metric = ColumnSummaryMetric(self.column_name)
+
+    @property
+    def metric(self):
+        return self._metric
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name.display_name}
@@ -791,8 +791,8 @@ class BaseIntegrityOneColumnTest(Test, ABC):
 class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
     """Test that there is only one unique value in a column"""
 
-    name = "All Constant Values in a Column"
-    metric: ColumnSummaryMetric
+    name: ClassVar = "All Constant Values in a Column"
+    _metric: ColumnSummaryMetric
 
     def check(self):
         uniques_in_column = self.metric.get_result().current_characteristics.unique
@@ -834,7 +834,7 @@ class TestColumnAllConstantValuesRenderer(TestRenderer):
 class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
     """Test that there is only uniques values in a column"""
 
-    name = "All Unique Values in a Column"
+    name: ClassVar = "All Unique Values in a Column"
 
     def check(self):
         uniques_in_column = self.metric.get_result().current_characteristics.unique
@@ -887,14 +887,19 @@ class ColumnTypesParameter(TestParameters):
 class TestColumnsType(Test):
     """This test compares columns type against the specified ones or a reference dataframe"""
 
-    group = DATA_INTEGRITY_GROUP.id
-    name = "Column Types"
+    group: ClassVar = DATA_INTEGRITY_GROUP.id
+    name: ClassVar = "Column Types"
     columns_type: Optional[dict]
-    metric: DatasetSummaryMetric
+    _metric: DatasetSummaryMetric
 
     def __init__(self, columns_type: Optional[dict] = None):
         self.columns_type = columns_type
-        self.metric = DatasetSummaryMetric()
+        self._metric = DatasetSummaryMetric()
+        super().__init__()
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         status = TestStatus.SUCCESS
@@ -978,10 +983,11 @@ class TestColumnsTypeRenderer(TestRenderer):
 
 
 class TestColumnRegExp(BaseCheckValueTest, ABC):
-    group = DATA_INTEGRITY_GROUP.id
-    name = "RegExp Match"
-    metric: ColumnRegExpMetric
+    group: ClassVar = DATA_INTEGRITY_GROUP.id
+    name: ClassVar = "RegExp Match"
+    _metric: ColumnRegExpMetric
     column_name: str
+    reg_exp: str
 
     def __init__(
         self,
@@ -996,6 +1002,8 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+        self.column_name = column_name
+        self.reg_exp = reg_exp
         super().__init__(
             eq=eq,
             gt=gt,
@@ -1006,8 +1014,11 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.column_name = column_name
-        self.metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
+        self._metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
+
+    @property
+    def metric(self):
+        return self._metric
 
     def groups(self) -> Dict[str, str]:
         if self.column_name is not None:

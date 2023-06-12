@@ -36,7 +36,12 @@ class DriftStatsField(MetricResult):
     class Config:
         dict_exclude_fields = {"characteristic_examples", "characteristic_words", "correlations"}
         # todo: after tests PR
-        field_tags = {k: {IncludeTags.Render} for k in dict_exclude_fields}
+        field_tags = {
+            "characteristic_examples": {IncludeTags.Render},
+            "characteristic_words": {IncludeTags.Render},
+            "correlations": {IncludeTags.Render},
+            "type": {IncludeTags.TypeField},
+        }
         pd_include = False
 
     distribution: Optional[Distribution]

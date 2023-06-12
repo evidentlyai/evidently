@@ -58,8 +58,9 @@ GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
 
 class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacteristics], ABC):
     reference_field: ClassVar = "reference_characteristics"
-    group = DATA_QUALITY_GROUP.id
-    metric: ColumnSummaryMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    _metric: ColumnSummaryMetric
+    column_name: ColumnName
 
     def __init__(
         self,
@@ -82,17 +83,23 @@ class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacte
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            column_name=ColumnName.from_any(column_name),
         )
-        self.metric = ColumnSummaryMetric(column_name)
+        self._metric = ColumnSummaryMetric(column_name)
 
 
 class TestConflictTarget(Test):
-    group = DATA_QUALITY_GROUP.id
-    name = "Test number of conflicts in target"
-    metric: ConflictTargetMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    name: ClassVar = "Test number of conflicts in target"
+    _metric: ConflictTargetMetric
 
     def __init__(self):
-        self.metric = ConflictTargetMetric()
+        self._metric = ConflictTargetMetric()
+        super().__init__()
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -113,12 +120,17 @@ class TestConflictTarget(Test):
 
 
 class TestConflictPrediction(Test):
-    group = DATA_QUALITY_GROUP.id
-    name = "Test number of conflicts in prediction"
-    metric: ConflictPredictionMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    name: ClassVar = "Test number of conflicts in prediction"
+    _metric: ConflictPredictionMetric
 
     def __init__(self):
-        self.metric = ConflictPredictionMetric()
+        self._metric = ConflictPredictionMetric()
+        super().__init__()
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -139,8 +151,8 @@ class TestConflictPrediction(Test):
 
 
 class BaseDataQualityCorrelationsMetricsValueTest(ConditionFromReferenceMixin[DatasetCorrelation], ABC):
-    group = DATA_QUALITY_GROUP.id
-    metric: DatasetCorrelationsMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    _metric: DatasetCorrelationsMetric
     method: Optional[str]
 
     def __init__(
@@ -166,11 +178,11 @@ class BaseDataQualityCorrelationsMetricsValueTest(ConditionFromReferenceMixin[Da
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = DatasetCorrelationsMetric()
+        self._metric = DatasetCorrelationsMetric()
 
 
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Correlation between Target and Prediction"
+    name: ClassVar = "Correlation between Target and Prediction"
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
         if reference is not None:
@@ -196,7 +208,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
 
 
 class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Highly Correlated Columns"
+    name: ClassVar = "Highly Correlated Columns"
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
         if reference is not None:
@@ -234,7 +246,7 @@ class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
 
 
 class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Correlation between Target and Features"
+    name: ClassVar = "Correlation between Target and Features"
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
         if reference is not None:
@@ -259,7 +271,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
 
 
 class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Correlation between Prediction and Features"
+    name: ClassVar = "Correlation between Prediction and Features"
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
         if reference is not None:
@@ -304,9 +316,9 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
 
 
 class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
-    group = DATA_QUALITY_GROUP.id
-    name = "Change in Correlation"
-    metric: DatasetCorrelationsMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    name: ClassVar = "Change in Correlation"
+    _metric: DatasetCorrelationsMetric
     corr_diff: float
 
     def __init__(
@@ -322,6 +334,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+        self.corr_diff = corr_diff
         super().__init__(
             method=method,
             eq=eq,
@@ -333,7 +346,6 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.corr_diff = corr_diff
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
         pass
@@ -383,8 +395,6 @@ class TestCorrelationChangesRenderer(TestRenderer):
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
-    column_name: ColumnName
-
     def __init__(
         self,
         column_name: Union[str, ColumnName],
@@ -397,10 +407,6 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
         super().__init__(
             column_name=column_name,
             eq=eq,
@@ -421,7 +427,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
     def check(self):
         result = super().check()
 
-        if self.value is None:
+        if self._value is None:
             result.mark_as_error(f"No value for the feature '{self.column_name}'")
             return result
 
@@ -432,7 +438,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 
 
 class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
-    name = "Min Value"
+    name: ClassVar = "Min Value"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.min
@@ -457,7 +463,7 @@ class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
 
 
 class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
-    name = "Max Value"
+    name: ClassVar = "Max Value"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.max
@@ -484,7 +490,7 @@ class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
 
 
 class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
-    name = "Mean Value"
+    name: ClassVar = "Mean Value"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.mean
@@ -507,7 +513,7 @@ class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
 
 
 class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
-    name = "Median Value"
+    name: ClassVar = "Median Value"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.p50
@@ -561,7 +567,7 @@ class TestColumnValueFeatureRenderer(TestRenderer):
 
 
 class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
-    name = "Standard Deviation (SD)"
+    name: ClassVar = "Standard Deviation (SD)"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.std
@@ -595,7 +601,7 @@ class TestColumnValueStdRenderer(TestColumnValueFeatureRenderer):
 
 
 class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
-    name = "Number of Unique Values"
+    name: ClassVar = "Number of Unique Values"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.unique
@@ -639,7 +645,7 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
 
 
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
-    name = "Share of Unique Values"
+    name: ClassVar = "Share of Unique Values"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.unique_percentage
@@ -690,7 +696,7 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 
 
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
-    name = "Share of the Most Common Value"
+    name: ClassVar = "Share of the Most Common Value"
 
     def get_stat(self, current: NumericCharacteristics):
         return current.most_common_percentage
@@ -730,7 +736,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def get_parameters(self) -> ColumnCheckValueParameters:
         return ColumnCheckValueParameters(
-            column_name=self.column_name.display_name, condition=self.get_condition(), value=self.value
+            column_name=self.column_name.display_name, condition=self.get_condition(), value=self._value
         )
 
 
@@ -782,19 +788,21 @@ class MeanInNSigmasParameter(TestParameters):
 
 class TestMeanInNSigmas(Test):
 
-    group = DATA_QUALITY_GROUP.id
-    name = "Mean Value Stability"
-    metric: ColumnSummaryMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    name: ClassVar = "Mean Value Stability"
+    _metric: ColumnSummaryMetric
     column_name: ColumnName
     n_sigmas: int
 
     def __init__(self, column_name: Union[str, ColumnName], n_sigmas: int = 2):
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
         self.n_sigmas = n_sigmas
-        self.metric = ColumnSummaryMetric(column_name)
+        self._metric = ColumnSummaryMetric(column_name)
+        super().__init__()
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         reference_feature_stats = self.metric.get_result().reference_characteristics
@@ -907,9 +915,9 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 
 
 class TestValueRange(Test):
-    group = DATA_QUALITY_GROUP.id
-    name = "Value Range"
-    metric: ColumnValueRangeMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    name: ClassVar = "Value Range"
+    _metric: ColumnValueRangeMetric
     column_name: ColumnName
     left: Optional[float]
     right: Optional[float]
@@ -920,13 +928,15 @@ class TestValueRange(Test):
         left: Optional[float] = None,
         right: Optional[float] = None,
     ):
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
         self.left = left
         self.right = right
-        self.metric = ColumnValueRangeMetric(column_name=self.column_name, left=left, right=right)
+        super().__init__()
+        self._metric = ColumnValueRangeMetric(column_name=self.column_name, left=left, right=right)
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         number_not_in_range = self.metric.get_result().current.number_not_in_range
@@ -970,8 +980,8 @@ class TestValueRangeRenderer(TestRenderer):
 
 
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
-    group = DATA_QUALITY_GROUP.id
-    metric: ColumnValueRangeMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    _metric: ColumnValueRangeMetric
     column_name: ColumnName
     left: Optional[float]
     right: Optional[float]
@@ -990,13 +1000,10 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        if isinstance(column_name, str):
-            self.column_name = ColumnName.main_dataset(column_name)
-        else:
-            self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
         self.left = left
         self.right = right
-        self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
+        self._metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
         super().__init__(
             eq=eq,
@@ -1017,9 +1024,13 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             return self.condition
         return TestValueCondition(eq=approx(0))
 
+    @property
+    def metric(self):
+        return self._metric
+
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    name = "Number of Out-of-Range Values "
+    name: ClassVar = "Number of Out-of-Range Values "
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.number_not_in_range
@@ -1037,7 +1048,7 @@ class ShareOfOutRangeParameters(CheckValueParameters):
 
 
 class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    name = "Share of Out-of-Range Values"
+    name: ClassVar = "Share of Out-of-Range Values"
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.share_not_in_range
@@ -1052,7 +1063,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
     def get_parameters(self) -> ShareOfOutRangeParameters:
         return ShareOfOutRangeParameters(
-            condition=self.get_condition(), value=self.value, left=self.left, right=self.right
+            condition=self.get_condition(), value=self._value, left=self.left, right=self.right
         )
 
 
@@ -1100,17 +1111,22 @@ class ColumnValueListParameters(TestParameters):
 
 
 class TestValueList(Test):
-    group = DATA_QUALITY_GROUP.id
-    name = "Out-of-List Values"
-    alias = "value_list"
-    metric: ColumnValueListMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    name: ClassVar = "Out-of-List Values"
+    alias: ClassVar = "value_list"
+    _metric: ColumnValueListMetric
     column_name: str
     values: Optional[list]
 
     def __init__(self, column_name: str, values: Optional[list] = None):
         self.column_name = column_name
         self.values = values
-        self.metric = ColumnValueListMetric(column_name=column_name, values=values)
+        self._metric = ColumnValueListMetric(column_name=column_name, values=values)
+        super().__init__()
+
+    @property
+    def metric(self):
+        return self._metric
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -1137,8 +1153,8 @@ class TestValueList(Test):
 
 class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
     alias: ClassVar[str]
-    group = DATA_QUALITY_GROUP.id
-    metric: ColumnValueListMetric
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    _metric: ColumnValueListMetric
     column_name: str
     values: Optional[list]
 
@@ -1167,7 +1183,11 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = ColumnValueListMetric(column_name=column_name, values=values)
+        self._metric = ColumnValueListMetric(column_name=column_name, values=values)
+
+    @property
+    def metric(self):
+        return self._metric
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name}
@@ -1179,8 +1199,8 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Number Out-of-List Values"
-    alias = "number_value_list"
+    name: ClassVar = "Number Out-of-List Values"
+    alias: ClassVar = "number_value_list"
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.number_not_in_list
@@ -1198,8 +1218,8 @@ class ValueListParameters(CheckValueParameters):
 
 
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Share of Out-of-List Values"
-    alias = "share_value_list"
+    name: ClassVar = "Share of Out-of-List Values"
+    alias: ClassVar = "share_value_list"
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.share_not_in_list
@@ -1215,7 +1235,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         )
 
     def get_parameters(self) -> CheckValueParameters:
-        return ValueListParameters(condition=self.get_condition(), value=self.value, values=self.values)
+        return ValueListParameters(condition=self.get_condition(), value=self._value, values=self.values)
 
 
 class TestCatColumnsOutOfListValues(BaseGenerator):
@@ -1237,10 +1257,10 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 
 
 class TestColumnQuantile(BaseCheckValueTest):
-    group = DATA_QUALITY_GROUP.id
-    name = "Quantile Value"
-    metric: ColumnQuantileMetric
-    column: ColumnName
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    name: ClassVar = "Quantile Value"
+    _metric: ColumnQuantileMetric
+    column_name: ColumnName
     quantile: float
 
     def __init__(
@@ -1256,10 +1276,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        if isinstance(column_name, str):
-            self.column = ColumnName.main_dataset(column_name)
-        else:
-            self.column = column_name
+        self.column_name = ColumnName.from_any(column_name)
         self.quantile = quantile
         super().__init__(
             eq=eq,
@@ -1271,10 +1288,14 @@ class TestColumnQuantile(BaseCheckValueTest):
             not_eq=not_eq,
             not_in=not_in,
         )
-        self.metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
+        self._metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
+
+    @property
+    def metric(self):
+        return self._metric
 
     def groups(self) -> Dict[str, str]:
-        return {GroupingTypes.ByFeature.id: self.column.display_name}
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -1292,7 +1313,7 @@ class TestColumnQuantile(BaseCheckValueTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The {self.quantile} quantile value of the column **{self.column}** is {value:.3g}. "
+            f"The {self.quantile} quantile value of the column **{self.column_name}** is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 

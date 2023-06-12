@@ -133,6 +133,7 @@ class RegressionErrorPlotRenderer(MetricRenderer):
                 xaxis_name=result.x_name,
                 xaxis_name_ref=result.x_name_ref,
                 yaxis_name="Error",
+                color_options=self.color_options,
             )
         return [
             header_text(label="Error (Predicted - Actual)"),

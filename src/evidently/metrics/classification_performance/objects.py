@@ -12,7 +12,7 @@ from evidently.metric_results import Label
 class ClassMetric(MetricResult):
     precision: float
     recall: float
-    f1: float = Field(alias="f1-score")
+    f1: float
     support: Optional[float] = None
 
 
@@ -48,6 +48,10 @@ class ClassificationReport(MetricResult):
             output_dict=True,
             zero_division=zero_division,
         )
+        for v in report.values():
+            if not isinstance(v, dict):
+                continue
+            v["f1"] = v.pop("f1-score")
         class_metrics = {k: parse_obj_as(ClassMetric, report[str(k)]) for k in classes}
         other = {k: v for k, v in report.items() if k not in [str(cl) for cl in classes]}
         return parse_obj_as(cls, {"classes": class_metrics, **other})

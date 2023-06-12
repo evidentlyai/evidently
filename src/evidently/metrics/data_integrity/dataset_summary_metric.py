@@ -1,8 +1,10 @@
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Union
 
+import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
@@ -16,7 +18,10 @@ from evidently.calculations.data_integration import get_number_of_constant_colum
 from evidently.calculations.data_integration import get_number_of_duplicated_columns
 from evidently.calculations.data_integration import get_number_of_empty_columns
 from evidently.calculations.data_quality import get_rows_count
+from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
+from evidently.pydantic_utils import ExcludeNoneMixin
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -24,12 +29,29 @@ from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 
 
+class NumpyDtype(ExcludeNoneMixin):
+    dtype: str
+    categories: Optional[List[str]] = None
+
+    @property
+    def type(self):
+        if self.dtype == "category":
+            return pd.CategoricalDtype(categories=self.categories)
+        return np.dtype(self.dtype)
+
+    @classmethod
+    def from_dtype(cls, dtype: np.dtype):
+        if isinstance(dtype, pd.CategoricalDtype):
+            return cls(dtype=dtype.name, categories=list(dtype.categories))
+        return cls(dtype=dtype.name)
+
+
 class DatasetSummary(MetricResult):
     """Columns information in a dataset"""
 
     class Config:
-        dict_exclude_fields = {"columns_type"}
-        pd_exclude_fields = {"columns_type"}
+        dict_exclude_fields = {"columns_type_data"}
+        pd_exclude_fields = {"columns_type_data"}
 
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
@@ -49,9 +71,13 @@ class DatasetSummary(MetricResult):
     number_of_empty_rows: int
     number_of_empty_columns: int
     number_of_duplicated_rows: int
-    columns_type: dict
+    columns_type_data: Dict[Label, NumpyDtype]
     nans_by_columns: dict
     number_uniques_by_columns: dict
+
+    @property
+    def columns_type(self) -> Dict[Label, np.dtype]:
+        return {k: v.type for k, v in self.columns_type_data.items()}
 
 
 class DatasetSummaryMetricResult(MetricResult):
@@ -67,9 +93,15 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
     almost_duplicated_threshold: float
     almost_constant_threshold: float
 
-    def __init__(self, almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95):
+    def __init__(
+        self,
+        almost_duplicated_threshold: float = 0.95,
+        almost_constant_threshold: float = 0.95,
+        options: AnyOptions = None,
+    ):
         self.almost_duplicated_threshold = almost_duplicated_threshold
         self.almost_constant_threshold = almost_constant_threshold
+        super().__init__(options=options)
 
     def _calculate_dataset_common_stats(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetSummary:
         columns = process_columns(dataset, column_mapping)
@@ -96,7 +128,7 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
             ),
             number_of_empty_rows=dataset.isna().all(1).sum(),
             number_of_duplicated_rows=dataset.duplicated().sum(),
-            columns_type=dict(dataset.dtypes.to_dict()),
+            columns_type_data={k: NumpyDtype.from_dtype(v) for k, v in dataset.dtypes.to_dict().items()},
             nans_by_columns=dataset.isna().sum().to_dict(),
             number_uniques_by_columns=dict(dataset.nunique().to_dict()),
         )

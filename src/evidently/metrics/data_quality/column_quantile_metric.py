@@ -13,6 +13,7 @@ from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -41,33 +42,31 @@ class ColumnQuantileMetricResult(ColumnMetricResult):
 class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
     """Calculates quantile with specified range"""
 
-    column: ColumnName
+    column_name: ColumnName
     quantile: float
 
-    def __init__(self, column_name: Union[str, ColumnName], quantile: float) -> None:
+    def __init__(self, column_name: Union[str, ColumnName], quantile: float, options: AnyOptions = None) -> None:
         self.quantile = quantile
-        if isinstance(column_name, str):
-            self.column = ColumnName.main_dataset(column_name)
-        else:
-            self.column = column_name
+        self.column_name = ColumnName.from_any(column_name)
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnQuantileMetricResult:
         if not 0 < self.quantile <= 1:
             raise ValueError("Quantile should all be in the interval (0, 1].")
 
-        if not data.has_column(self.column):
-            raise ValueError(f"Column '{self.column}' is not in data.")
+        if not data.has_column(self.column_name):
+            raise ValueError(f"Column '{self.column_name}' is not in data.")
 
-        column_type, current_column, reference_column = data.get_data(self.column)
+        column_type, current_column, reference_column = data.get_data(self.column_name)
 
         if not pd.api.types.is_numeric_dtype(current_column.dtype):
-            raise ValueError(f"Column '{self.column}' in current data is not numeric.")
+            raise ValueError(f"Column '{self.column_name}' in current data is not numeric.")
 
         current_quantile = current_column.quantile(self.quantile)
 
         if reference_column is not None:
             if not pd.api.types.is_numeric_dtype(reference_column.dtype):
-                raise ValueError(f"Column '{self.column}' in reference data is not numeric.")
+                raise ValueError(f"Column '{self.column_name}' in reference data is not numeric.")
 
             reference_quantile = reference_column.quantile(self.quantile)
             reference_column = reference_column.replace([np.inf, -np.inf], np.nan)
@@ -86,7 +85,7 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
                 distribution=distributions[1],
             )
         return ColumnQuantileMetricResult(
-            column_name=self.column.display_name,
+            column_name=self.column_name.display_name,
             column_type=ColumnType.Numerical.value,
             current=QuantileStats(
                 value=current_quantile,

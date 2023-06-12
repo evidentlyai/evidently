@@ -6,11 +6,15 @@ import logging
 from datetime import datetime
 from typing import Dict
 from typing import Iterator
+from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
+from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
 
 import evidently
 from evidently.base_metric import ErrorResult
@@ -73,6 +77,9 @@ def find_metric_renderer(obj, renderers: RenderersDefinitions) -> MetricRenderer
 
 
 def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Union[Metric, Test]]]:
+    if hasattr(test, "__evidently_dependencies__"):
+        yield from test.__evidently_dependencies__()  # type: ignore[union-attr]
+        return
     for field_name, field in test.__dict__.items():
         if issubclass(type(field), (Metric, Test)):
             yield field_name, field
@@ -92,8 +99,50 @@ class Context:
     options: Options = Options()
 
 
+class ContextPayload(BaseModel):
+    metrics: List[Metric]
+    metric_results: List[MetricResult]
+    tests: List[Test]
+    test_results: List[TestResult]
+    options: Options = Options()
+
+    @classmethod
+    def from_context(cls, context: Context):
+        return cls(
+            metrics=list(context.metric_results.keys()),
+            metric_results=list(context.metric_results.values()),
+            tests=list(context.test_results.keys()),
+            test_results=list(context.test_results.values()),
+            options=context.options,
+        )
+
+    def to_context(self) -> Context:
+        ctx = Context(
+            None,
+            metrics=self.metrics,
+            tests=self.tests,
+            metric_results={m: mr for m, mr in zip(self.metrics, self.metric_results)},
+            test_results={t: tr for t, tr in zip(self.tests, self.test_results)},
+            state=States.Calculated,
+            renderers=DEFAULT_RENDERERS,
+            options=self.options,
+        )
+        for m in ctx.metrics:
+            m.set_context(ctx)
+            for _, dep in _discover_dependencies(m):
+                dep.set_context(ctx)
+        for t in ctx.tests:
+            t.set_context(ctx)
+            for _, dep in _discover_dependencies(t):
+                dep.set_context(ctx)
+        return ctx
+
+
 class ExecutionError(Exception):
     pass
+
+
+T = TypeVar("T", bound="Display")
 
 
 class Display:
@@ -215,6 +264,28 @@ class Display:
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)
+
+    @abc.abstractmethod
+    def _get_payload(self) -> BaseModel:
+        raise NotImplementedError
+
+    @classmethod
+    @abc.abstractmethod
+    def _parse_payload(cls: Type[T], payload: Dict) -> T:
+        raise NotImplementedError
+
+    def _save(self, filename):
+        """Save state to file (experimental)"""
+        payload = self._get_payload()
+
+        with open(filename, "w") as f:
+            json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
+
+    @classmethod
+    def _load(cls: Type[T], filename) -> T:
+        """Load state from file (experimental)"""
+        with open(filename, "r") as f:
+            return cls._parse_payload(json.load(f))
 
 
 class Suite:

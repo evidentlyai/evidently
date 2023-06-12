@@ -3,12 +3,12 @@ from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
-from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
+from evidently.metrics.data_drift.base import WithDriftOptions
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options.base import AnyOptions
@@ -40,9 +40,8 @@ class DataDriftTableResults(MetricResult):
     dataset_columns: DatasetColumns
 
 
-class DataDriftTable(Metric[DataDriftTableResults]):
+class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
     columns: Optional[List[str]]
-    drift_options: DataDriftOptions
 
     def __init__(
         self,
@@ -59,9 +58,21 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
         options: AnyOptions = None,
     ):
-        super().__init__(options=options)
         self.columns = columns
-        self.drift_options = DataDriftOptions(
+        super().__init__(
+            stattest=stattest,
+            cat_stattest=cat_stattest,
+            num_stattest=num_stattest,
+            text_stattest=text_stattest,
+            per_column_stattest=per_column_stattest,
+            stattest_threshold=stattest_threshold,
+            cat_stattest_threshold=cat_stattest_threshold,
+            num_stattest_threshold=num_stattest_threshold,
+            text_stattest_threshold=text_stattest_threshold,
+            per_column_stattest_threshold=per_column_stattest_threshold,
+            options=options,
+        )
+        self._drift_options = DataDriftOptions(
             all_features_stattest=stattest,
             cat_features_stattest=cat_stattest,
             num_features_stattest=num_stattest,
@@ -196,6 +207,7 @@ class DataDriftTableRenderer(MetricRenderer):
                         xaxis_name=data.scatter.x_name,
                         xaxis_name_ref=None,
                         yaxis_name=data.column_name,
+                        color_options=self.color_options,
                         return_json=False,
                     )
                 scatter = plotly_figure(title="", figure=scatter_fig)

@@ -1,4 +1,5 @@
 import re
+from typing import Tuple
 
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -9,11 +10,17 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TriggerWordsPresent(GeneratedFeature):
+    column_name: str
+    words_list: Tuple = ()
+    lemmatize: bool = True
+    _lem: WordNetLemmatizer
+
     def __init__(self, column_name: str, words_list=(), lemmatize=True):
-        self.lem = WordNetLemmatizer()
+        self._lem = WordNetLemmatizer()
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize
+        super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def listed_words_present(s, words_list=(), lemmatize=True):
@@ -23,7 +30,7 @@ class TriggerWordsPresent(GeneratedFeature):
             for word_ in words:
                 word = word_.lower()
                 if lemmatize:
-                    word = self.lem.lemmatize(word)
+                    word = self._lem.lemmatize(word)
                 if word in words_list:
                     return 1
             return 0

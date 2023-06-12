@@ -7,6 +7,7 @@ from typing import Set
 from typing import Type
 from typing import Union
 
+import numpy as np
 import pandas as pd
 from pydantic.fields import SHAPE_DICT
 from pydantic.fields import SHAPE_LIST
@@ -64,6 +65,48 @@ class AllDict(dict):
 
 class IncludeTags(Enum):
     Render = "render"
+    TypeField = "type_field"
+
+
+def pydantic_type_validator(type_: Type[Any]):
+    def decorator(f):
+        from pydantic.validators import _VALIDATORS
+
+        for cls, validators in _VALIDATORS:
+            if cls is type_:
+                validators.append(f)
+                return
+
+        _VALIDATORS.append(
+            (type_, [f]),
+        )
+
+    return decorator
+
+
+@pydantic_type_validator(pd.Series)
+def series_validator(value):
+    return pd.Series(value)
+
+
+@pydantic_type_validator(pd.DataFrame)
+def dataframe_validator(value):
+    return pd.DataFrame(value)
+
+
+# @pydantic_type_validator(pd.Index)
+# def index_validator(value):
+#     return pd.Index(value)
+
+
+@pydantic_type_validator(np.float_)
+def np_inf_valudator(value):
+    return np.float(value)
+
+
+@pydantic_type_validator(np.ndarray)
+def np_array_valudator(value):
+    return np.array(value)
 
 
 class BaseResult(BaseModel):
@@ -79,6 +122,7 @@ class BaseResult(BaseModel):
         pd_exclude_fields: set = set()
 
         tags: Set[IncludeTags] = set()
+        field_tags: Dict[str, set] = {}
 
     if TYPE_CHECKING:
         __config__: ClassVar[Type[Config]] = Config
@@ -112,8 +156,11 @@ class BaseResult(BaseModel):
             or set(self.__fields__.keys())
         )
         dict_exclude_fields = self.__config__.dict_exclude_fields or set()
+        field_tags = self.__config__.field_tags or {}
         result: Dict[str, Any] = {}
         for name, field in self.__fields__.items():
+            if field_tags.get(name) and all(tag not in include_tags for tag in field_tags.get(name, set())):
+                continue
             if isinstance(field.type_, type) and issubclass(field.type_, BaseResult):
                 if (
                     (not field.type_.__config__.dict_include or name in dict_exclude_fields)

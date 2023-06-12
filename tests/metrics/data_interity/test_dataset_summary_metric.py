@@ -8,6 +8,7 @@ from evidently import ColumnMapping
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummary
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
+from evidently.metrics.data_integrity.dataset_summary_metric import NumpyDtype
 from evidently.report import Report
 
 
@@ -40,7 +41,7 @@ from evidently.report import Report
                     number_of_almost_duplicated_columns=0,
                     number_of_empty_rows=0,
                     number_of_duplicated_rows=0,
-                    columns_type={},
+                    columns_type_data={},
                     nans_by_columns={},
                     number_uniques_by_columns={},
                 ),
@@ -73,7 +74,7 @@ from evidently.report import Report
                     number_of_empty_rows=0,
                     number_of_empty_columns=0,
                     number_of_duplicated_rows=0,
-                    columns_type={"target": np.dtype("O"), "prediction": np.dtype("O")},
+                    columns_type_data={"target": NumpyDtype(dtype="O"), "prediction": NumpyDtype(dtype="O")},
                     nans_by_columns={"target": 0, "prediction": 0},
                     number_uniques_by_columns={"target": 3, "prediction": 3},
                 ),
@@ -96,7 +97,7 @@ from evidently.report import Report
                     number_of_empty_rows=0,
                     number_of_empty_columns=0,
                     number_of_duplicated_rows=0,
-                    columns_type={"target": np.dtype("int64"), "prediction": np.dtype("float64")},
+                    columns_type_data={"target": NumpyDtype(dtype="int64"), "prediction": NumpyDtype(dtype="float64")},
                     nans_by_columns={"target": 0, "prediction": 1},
                     number_uniques_by_columns={"target": 5, "prediction": 4},
                 ),

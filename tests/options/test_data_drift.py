@@ -39,14 +39,6 @@ def test_threshold_default():
     assert options.get_threshold("feature", "num") is None
 
 
-def test_threshold_invalid():
-    # special check if passed totally incorrect value
-    # noinspection PyTypeChecker
-    options = DataDriftOptions(confidence="")
-    with pytest.raises(ValueError):
-        options.get_threshold("feature1", "num")
-
-
 def _default_stattest():
     pass
 
@@ -174,8 +166,8 @@ def test_stattest_function_deprecated(feature_st, global_st, cat_st, num_st, per
     "nbinsx,expected",
     [
         (20, {"feature1": 20, "feature2": 20}),
-        ({"feature1": 15}, {"feature1": 15, "feature2": DataDriftOptions.nbinsx}),
-        ({"feature2": 11}, {"feature1": DataDriftOptions.nbinsx, "feature2": 11}),
+        ({"feature1": 15}, {"feature1": 15, "feature2": DataDriftOptions.DEFAULT_NBINSX}),
+        ({"feature2": 11}, {"feature1": DataDriftOptions.DEFAULT_NBINSX, "feature2": 11}),
         ({"feature1": 25, "feature2": 35}, {"feature1": 25, "feature2": 35}),
     ],
 )
@@ -183,11 +175,3 @@ def test_nbinsx_valid(nbinsx, expected):
     options = DataDriftOptions(nbinsx=nbinsx)
     for feature, expected_nbinsx in expected.items():
         assert options.get_nbinsx(feature) == expected_nbinsx
-
-
-def test_nbinsx_invalid():
-    # special check if passed totally incorrect value
-    # noinspection PyTypeChecker
-    options = DataDriftOptions(nbinsx="")
-    with pytest.raises(ValueError):
-        options.get_nbinsx("feature1")

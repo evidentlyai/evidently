@@ -14,6 +14,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -40,8 +41,9 @@ class TextDomainClassifierDriftResult(MetricResult):
 class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
     text_column_name: str
 
-    def __init__(self, text_column_name: str) -> None:
+    def __init__(self, text_column_name: str, options: AnyOptions = None) -> None:
         self.text_column_name = text_column_name
+        super().__init__(options=options)
 
     @staticmethod
     def roc_auc_domain_classifier(X_train, X_test, y_train, y_test) -> Tuple:

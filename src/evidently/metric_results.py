@@ -10,21 +10,56 @@ from typing import overload
 
 import numpy as np
 import pandas as pd
+from pydantic import parse_obj_as
+from pydantic import validator
 from typing_extensions import Literal
 
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.core import pydantic_type_validator
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
 
 
-ScatterData = Union[pd.Series, List[float], pd.Index]
+class _LabelKeyType(int):
+    pass
+
+
+LabelKey = Union[_LabelKeyType, Label]  # type: ignore[valid-type]
+
+
+@pydantic_type_validator(_LabelKeyType)
+def label_key_valudator(value):
+    try:
+        return int(value)
+    except ValueError:
+        return value
+
+
+ScatterData = Union[pd.Series]
 ContourData = Tuple[np.ndarray, List[float], List[float]]
-ColumnScatter = Dict[Label, ScatterData]
+ColumnScatter = Dict[LabelKey, ScatterData]
 
 ScatterAggData = Union[pd.DataFrame]
-ColumnAggScatter = Dict[Label, ScatterAggData]
+ColumnAggScatter = Dict[LabelKey, ScatterAggData]
+
+
+class _ColumnScatterOrAggType:
+    pass
+
+
+ColumnScatterOrAgg = Union[_ColumnScatterOrAggType, ColumnScatter, ColumnAggScatter]  # type: ignore[valid-type]
+
+
+@pydantic_type_validator(_ColumnScatterOrAggType)
+def column_scatter_valudator(value):
+    if any(isinstance(o, dict) for o in value.values()):
+        # dict -> dataframe -> agg
+        return parse_obj_as(ColumnAggScatter, value)
+    if any(isinstance(o, (pd.DataFrame, pd.Series)) for o in value.values()):
+        return value
+    return parse_obj_as(ColumnScatter, value)
 
 
 class Distribution(MetricResult):
@@ -32,6 +67,7 @@ class Distribution(MetricResult):
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
+        smart_union = True
 
     x: Union[np.ndarray, list, pd.Categorical, pd.Series]
     y: Union[np.ndarray, list, pd.Categorical, pd.Series]
@@ -50,8 +86,27 @@ class PredictionData(MetricResult):
         dict_include = False
 
     predictions: pd.Series
-    prediction_probas: Optional[pd.DataFrame]
     labels: List[Label]
+    prediction_probas: Optional[pd.DataFrame]
+
+    @validator("prediction_probas")
+    def validate_prediction_probas(cls, value: pd.DataFrame, values):
+        """Align label types"""
+        if value is None:
+            return None
+        labels = values["labels"]
+        for col in list(value.columns):
+            if col not in labels:
+                if str(col) in labels:
+                    value.rename(columns={col: str(col)}, inplace=True)
+                    continue
+                try:
+                    int_col = int(col)
+                    if int_col in labels:
+                        value.rename(columns={col: int_col}, inplace=True)
+                except ValueError:
+                    pass
+        return value
 
 
 class StatsByFeature(MetricResult):
@@ -345,7 +400,7 @@ def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optio
         val = getattr(self, field_name)
         if optional and val is None:
             return None
-        if not isinstance(val, raw_type):
+        if isinstance(raw_type, type) and not isinstance(val, raw_type):
             raise ValueError("Raw data not available")
         return val
 
@@ -353,7 +408,7 @@ def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optio
         val = getattr(self, field_name)
         if optional and val is None:
             return None
-        if not isinstance(val, agg_type):
+        if isinstance(agg_type, type) and not isinstance(val, agg_type):
             raise ValueError("Agg data not available")
         return val
 
