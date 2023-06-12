@@ -22,6 +22,7 @@ from evidently.metric_results import HistogramData
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
 from evidently.utils.visualizations import get_gaussian_kde
+from evidently.utils.visualizations import is_possible_contour
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
@@ -596,7 +597,15 @@ def plot_data(
                 "target_type": target_type.value,
             }
         if column_type == ColumnType.Numerical and target_type == ColumnType.Numerical:
-            if not agg_data:
+            if (
+                not agg_data
+                or not is_possible_contour(target_current.loc[current_data.index], current_data)
+                or (
+                    reference_data is not None
+                    and target_reference is not None
+                    and not is_possible_contour(target_reference.loc[reference_data.index], reference_data)
+                )
+            ):
                 result = {
                     "current": {
                         column_name: current_data.tolist(),
