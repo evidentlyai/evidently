@@ -1,0 +1,21 @@
+import glob
+import os
+from importlib import import_module
+from typing import Type
+
+import evidently
+
+
+def find_all_subclasses(base: Type, base_module: str = "evidently", path: str = os.path.dirname(evidently.__file__)):
+    classes = []
+    for mod in glob.glob(path + "/**/*.py", recursive=True):
+        mod_path = os.path.relpath(mod, path)[:-3]
+        mod_name = f"{base_module}." + mod_path.replace("/", ".")
+        if mod_name.endswith("__"):
+            continue
+        module = import_module(mod_name)
+        for key, value in module.__dict__.items():
+            if isinstance(value, type) and value is not base and issubclass(value, base):
+                classes.append(value)
+
+    return classes
