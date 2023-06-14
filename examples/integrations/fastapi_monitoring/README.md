@@ -47,7 +47,7 @@ Get the tutorial example code:
 
 ```bash
 git clone git@github.com:evidentlyai/evidently.git
-cd evidently/examples/integrations/<...>
+cd evidently/examples/integrations/fastapi_monitoring
 ```
 
 
