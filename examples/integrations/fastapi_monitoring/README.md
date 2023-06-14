@@ -6,7 +6,8 @@ This example shows steps to integrate Evidently into your production pipeline us
 
 - Run production ML pipelines for inference and monitoring with [FastAPI](https://fastapi.tiangolo.com/). 
 - Generate data quality and model monitoring reports with EvidenltyAI
-- Save monitoring metrics to [PostgreSQL](https://www.postgresql.org/) database
+- Save predictions to [PostgreSQL](https://www.postgresql.org/) database
+- View monitoring reports using API endpoints or [Streamlit](https://streamlit.io/) UI 
 
 
 
