@@ -44,7 +44,7 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
                 </TableCell>
                 <TableCell>
                     <Link component={RouterLink}
-                          to={`/projects/${props.projectId}/reports/${report.id}`}><Button>View</Button></Link>
+                          to={`/projects/${props.projectId}/test_suites/${report.id}`}><Button>View</Button></Link>
                     <Button disabled={true}>Download</Button>
                 </TableCell>
             </TableRow>)}
@@ -52,7 +52,7 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
     </>
 }
 
-export function Reports(props: { projectId: string }) {
+export function TestSuites(props: { projectId: string }) {
     let {projectId} = props;
     return <>
         <Grid container>
@@ -60,8 +60,8 @@ export function Reports(props: { projectId: string }) {
             <Grid item xs={12}>
                 <ApiContext.Consumer>
                     {api =>
-                        <LoadableView func={() => api.Api.getReports(projectId)}>
-                            {reports => <ReportList projectId={projectId} reports={reports}/>}
+                        <LoadableView func={() => api.Api.getTestSuites(projectId)}>
+                            {reports => <ReportList projectId={projectId} reports={reports} />}
                         </LoadableView>}
                 </ApiContext.Consumer>
             </Grid>

@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
+from evidently.test_suite import TestSuite
 from evidently_service.workspace import Project
 
 
@@ -40,6 +41,18 @@ class ReportModel(BaseModel):
             id=report.id,
             timestamp=report.timestamp,
             metrics=[MetricModel.from_metric(m) for m in report._first_level_metrics],
+        )
+
+
+class TestSuiteModel(BaseModel):
+    id: uuid.UUID
+    timestamp: datetime.datetime
+
+    @classmethod
+    def from_report(cls, report: TestSuite):
+        return cls(
+            id=report.id,
+            timestamp=report.timestamp,
         )
 
 

@@ -35,6 +35,8 @@ data_drift_dataset_tests.run(reference_data=adult_ref, current_data=adult_cur)
 if not os.path.exists("workspace"):
     os.mkdir("workspace")
     os.mkdir("workspace/project1")
+    os.mkdir("workspace/project1/reports")
+    os.mkdir("workspace/project1/test_suites")
 
-data_drift_report._save(f"workspace/project1/{uuid.uuid4()}")
-data_drift_dataset_tests._save(f"workspace/project1/ts_{uuid.uuid4()}")
+data_drift_report._save(f"workspace/project1/reports/{data_drift_report.id}")
+data_drift_dataset_tests._save(f"workspace/project1/test_suites/{data_drift_dataset_tests.id}")

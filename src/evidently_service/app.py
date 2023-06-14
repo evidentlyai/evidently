@@ -7,12 +7,14 @@ from typing import List
 import uvicorn
 from fastapi import APIRouter
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi import Path
 from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
 from evidently.utils import NumpyEncoder
+from evidently_service.models import TestSuiteModel
 
 from .models import DashboardInfoModel
 from .models import ProjectModel
@@ -31,7 +33,6 @@ async def lifespan(app: FastAPI):
         Close the connection
         Clear variables and release the resources
     '''
-    app.state.n_client.close()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -61,27 +62,44 @@ async def root():
 
 @api_router.get("/projects")
 async def list_projects() -> List[ProjectModel]:
-    workspace = app.state.workspace
+    workspace: Workspace = app.state.workspace
     return [ProjectModel.from_project(p) for p in workspace.list_projects()]
 
 
 @api_router.get("/projects/{project_id}/reports")
 async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[ReportModel]:
-    workspace = app.state.workspace
-    return [ReportModel.from_report(r) for r in workspace.list_project_reports(project_id)]
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="project not found")
+    return [ReportModel.from_report(r) for r in project.reports.values()]
 
 
-@api_router.get("/projects/{project_id}/reports/{report_id}/data")
+@api_router.get("/projects/{project_id}/test_suites")
+async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[TestSuiteModel]:
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="project not found")
+    return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
+
+
+@api_router.get("/projects/{project_id}/{report_id}/data")
 async def get_report_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID], report_id: Annotated[uuid.UUID, REPORT_ID]
 ) -> Response:  # DashboardInfoModel:
-    workspace = app.state.workspace
-    info = DashboardInfoModel.from_dashboard_info(workspace.get_report_dashboard_info(project_id, report_id))
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    report = project.get_item(report_id)
+    if report is None:
+        raise HTTPException(status_code=404, detail="Report not found")
+    info = DashboardInfoModel.from_dashboard_info(report._build_dashboard_info()[1])
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
     return Response(media_type="application/json", content=json_str)
-
 
 app.include_router(api_router)
 
