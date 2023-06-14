@@ -1,0 +1,25 @@
+evidently==0.3.2.1
+fastapi[all]==0.95.1
+fastparquet==2023.2.0
+joblib==1.2.0
+httpx==0.23.3
+pandas==1.5.3
+pendulum==2.1.2
+python-dotenv>=0.5.1
+pyarrow==11.0.0
+requests==2.30.0
+scikit-learn==1.2.2
+sqlalchemy==2.0.12
+tqdm==4.65.0
+
+# linters & formatters
+wheel==0.35.1
+setuptools==50.3.2
+flake8==4.0.1
+mypy==0.920
+types-PyYAML==6.0.1
+types-requests==2.26.0
+types-dataclasses==0.6
+black==22.8.0
+isort==5.10.1
+
