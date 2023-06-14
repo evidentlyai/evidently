@@ -1,4 +1,3 @@
-from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import List
@@ -10,6 +9,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.metrics.data_integrity.dataset_missing_values_metric import MissingValue
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -28,7 +28,7 @@ class ColumnMissingValues(MetricResult):
     # count of rows in the column
     number_of_rows: int
     # set of different missed values in the column
-    different_missing_values: Dict[Any, int]
+    different_missing_values: Dict[MissingValue, int]
     # number of different missed values in the column
     number_of_different_missing_values: int
     # count of missed values in the column

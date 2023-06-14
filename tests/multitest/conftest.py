@@ -7,6 +7,15 @@ from typing import Type
 import evidently
 
 
+class TestOutcome:
+    pass
+
+
+class Error(TestOutcome):
+    def __init__(self, exception_type: Type[Exception]):
+        self.exception_type = exception_type
+
+
 def find_all_subclasses(
     base: Type,
     base_module: str = "evidently",
