@@ -1,4 +1,7 @@
+import json
+
 import pandas as pd
+from pytest import approx
 from sklearn import datasets
 from sklearn.datasets import fetch_20newsgroups
 
@@ -12,6 +15,7 @@ from evidently.metrics.data_drift.target_by_features_table import TargetByFeatur
 from evidently.metrics.data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
 from evidently.metrics.data_drift.text_domain_classifier_drift_metric import TextDomainClassifierDriftMetric
 from evidently.metrics.data_drift.text_metric import Comment
+from evidently.report import Report
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.datasets import TestDataset
 from tests.multitest.metrics.conftest import TestMetric
@@ -94,12 +98,22 @@ def text_domain_classifier_drift_metric():
     reference_data = pd.DataFrame({"text": reference.data})
     current_data = pd.DataFrame({"text": current.data})
 
+    def additional_asserts(report: Report):
+        result_json = report.json()
+        result = json.loads(result_json)["metrics"][0]["result"]
+
+        assert result["text_column_name"] == "text"
+        assert result["domain_classifier_roc_auc"] == approx(0.91, abs=0.02)
+        assert result["random_classifier_95_percentile"] == approx(0.53, abs=0.01)
+        assert result["content_drift"]
+
     return TestMetric(
         "text_domain_classifier_drift_metric",
         TextDomainClassifierDriftMetric(text_column_name="text"),
         datasets=[
             TestDataset(
                 "text_domain_classifier_drift_metric_data", current=current_data, reference=reference_data, tags=[]
-            )
+            ),
         ],
+        additional_check=additional_asserts,
     )

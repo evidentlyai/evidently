@@ -33,6 +33,9 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     assert report.show()
     assert report.json()
 
+    if tmetric.additional_check is not None:
+        tmetric.additional_check(report)
+
     path = str(tmp_path / "report.json")
     report._save(path)
     report2 = Report._load(path)

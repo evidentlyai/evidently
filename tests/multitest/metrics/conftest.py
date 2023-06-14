@@ -1,11 +1,13 @@
 import dataclasses
 from importlib import import_module
+from typing import Callable
 from typing import List
 from typing import Optional
 
 from _pytest.python import Metafunc
 
 from evidently.base_metric import Metric
+from evidently.report import Report
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.datasets import TestDataset
 from tests.multitest.datasets import dataset_fixtures
@@ -25,6 +27,9 @@ class TestMetric:
     """Only run on datasets with any theese names"""
     datasets: Optional[List[TestDataset]] = None
     """Only run on those datasets"""
+
+    additional_check: Optional[Callable[[Report], None]] = None
+    """Additional callable to call on report"""
 
 
 metric_fixtures = []
