@@ -72,7 +72,7 @@ async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[Rep
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
-    return [ReportModel.from_report(r) for r in project.reports.values()]
+    return [ReportModel.from_report(r.report) for r in project.reports.values()]
 
 
 @api_router.get("/projects/{project_id}/test_suites")
@@ -81,12 +81,30 @@ async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
-    return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
+    return [TestSuiteModel.from_report(r.report) for r in project.test_suites.values()]
+
+
+@api_router.get("/projects/{project_id}/{report_id}/graphs_data/{graph_id}")
+async def get_report_graph_data(
+    project_id: Annotated[uuid.UUID, PROJECT_ID],
+    report_id: Annotated[uuid.UUID, REPORT_ID],
+    graph_id: Annotated[uuid.UUID, REPORT_ID],
+) -> Response:
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    report = project.get_item(report_id)
+    if report is None:
+        raise HTTPException(status_code=404, detail="Report not found")
+    graphs = report.additional_graphs
+    return Response(media_type="application/json", content=json.dumps(graphs.get(str(graph_id)), cls=NumpyEncoder))
 
 
 @api_router.get("/projects/{project_id}/{report_id}/data")
 async def get_report_data(
-    project_id: Annotated[uuid.UUID, PROJECT_ID], report_id: Annotated[uuid.UUID, REPORT_ID]
+    project_id: Annotated[uuid.UUID, PROJECT_ID],
+    report_id: Annotated[uuid.UUID, REPORT_ID],
 ) -> Response:  # DashboardInfoModel:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
@@ -95,7 +113,7 @@ async def get_report_data(
     report = project.get_item(report_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
-    info = DashboardInfoModel.from_dashboard_info(report._build_dashboard_info()[1])
+    info = DashboardInfoModel.from_dashboard_info(report.dashboard_info)
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")

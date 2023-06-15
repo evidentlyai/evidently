@@ -10,9 +10,14 @@ from pydantic import BaseModel
 from pydantic import Field
 
 from evidently.experimental.report_set import load_report_set
-from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
+
+
+class ProjectItem:
+    def __init__(self, report: Union[Report, TestSuite]):
+        self.report = report
+        _, self.dashboard_info, self.additional_graphs = report._build_dashboard_info()
 
 
 class Project(BaseModel):
@@ -26,20 +31,27 @@ class Project(BaseModel):
 
     _reports: Optional[Dict[uuid.UUID, Report]] = None
     _test_suites: Optional[Dict[uuid.UUID, TestSuite]] = None
+    _items: Optional[Dict[uuid.UUID, ProjectItem]] = None
 
     @property
-    def reports(self) -> Dict[uuid.UUID, Report]:
-        if self._reports is None:
-            self._reports = {r.id: r for r in load_report_set(os.path.join(self.path, "reports"), cls=Report).values()}
-        return self._reports
+    def reports(self) -> Dict[uuid.UUID, ProjectItem]:
+        if self._items is None:
+            self._items = {r.id: ProjectItem(r) for r in
+                           list(load_report_set(os.path.join(self.path, "reports"), cls=Report).values())
+                           + list(load_report_set(os.path.join(self.path, "test_suites"), cls=TestSuite).values())
+                           }
+        return {key: value for key, value in self._items.items() if isinstance(value.report, Report)}
 
     @property
-    def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
-        if self._test_suites is None:
-            self._test_suites = {r.id: r for r in load_report_set(os.path.join(self.path, "test_suites"), cls=TestSuite).values()}
-        return self._test_suites
+    def test_suites(self) -> Dict[uuid.UUID, ProjectItem]:
+        if self._items is None:
+            self._items = {r.id: ProjectItem(r) for r in
+                           list(load_report_set(os.path.join(self.path, "reports"), cls=Report).values())
+                           + list(load_report_set(os.path.join(self.path, "test_suites"), cls=TestSuite).values())
+                           }
+        return {key: value for key, value in self._items.items() if isinstance(value.report, TestSuite)}
 
-    def get_item(self, report_id: uuid.UUID) -> Optional[Union[Report, TestSuite]]:
+    def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
         return self.reports.get(report_id) or self.test_suites.get(report_id)
 
 

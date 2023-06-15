@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently_service.workspace import Project
