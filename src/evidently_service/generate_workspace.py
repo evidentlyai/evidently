@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 
@@ -40,3 +41,57 @@ if not os.path.exists("workspace"):
 
 data_drift_report._save(f"workspace/project1/reports/{data_drift_report.id}")
 data_drift_dataset_tests._save(f"workspace/project1/test_suites/{data_drift_dataset_tests.id}")
+
+
+project_dashboard_data = {
+  "name": "Report",
+  "widgets": [
+    {
+      "type": "counter",
+      "title": "",
+      "size": 2,
+      "id": "69e09b1f-9576-4eb3-8ba9-ff1d9ed09a90",
+      "details": "",
+      "params": {
+        "counters": [
+          {
+            "value": "Project Dashboard",
+            "label": "This is sample project dashboard"
+          }
+        ]
+      },
+      "insights": [],
+      "alerts": [],
+      "tabs": [],
+      "widgets": [],
+      "pageSize": 5
+    },
+    {
+      "type": "counter",
+      "title": "",
+      "size": 2,
+      "id": "3bf77e34-b4e8-491d-99b5-7e7ecd8c44ed",
+      "details": "",
+      "params": {
+        "counters": [
+          {
+            "value": "15",
+            "label": "Metrics count"
+          },
+          {
+            "value": "6",
+            "label": "Reports count"
+          }
+        ]
+      },
+      "insights": [],
+      "alerts": [],
+      "tabs": [],
+      "widgets": [],
+      "pageSize": 5
+    }
+  ]
+}
+
+with open("workspace/project1/dashboard.json", "w") as f:
+    json.dump(project_dashboard_data, f)

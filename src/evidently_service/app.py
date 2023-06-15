@@ -66,6 +66,15 @@ async def list_projects() -> List[ProjectModel]:
     return [ProjectModel.from_project(p) for p in workspace.list_projects()]
 
 
+@api_router.get("/projects/{project_id}/dashboard")
+async def list_projects(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> Response:
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="project not found")
+    return Response(media_type="application/json", content=json.dumps(project.dashboard, cls=NumpyEncoder))
+
+
 @api_router.get("/projects/{project_id}/reports")
 async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[ReportModel]:
     workspace: Workspace = app.state.workspace

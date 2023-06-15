@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 from typing import Dict
@@ -10,6 +11,7 @@ from pydantic import BaseModel
 from pydantic import Field
 
 from evidently.experimental.report_set import load_report_set
+from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 
@@ -27,6 +29,7 @@ class Project(BaseModel):
     id: UUID4 = Field(default_factory=uuid.uuid4)
     name: str
     description: Optional[str] = None
+    _dashboard: Optional[dict] = None  # should be DashboardInfo type
     path: str
 
     _reports: Optional[Dict[uuid.UUID, Report]] = None
@@ -54,6 +57,12 @@ class Project(BaseModel):
     def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
         return self.reports.get(report_id) or self.test_suites.get(report_id)
 
+    @property
+    def dashboard(self) -> dict:
+        if self._dashboard is None:
+            with open(os.path.join(self.path, "dashboard.json"), "r") as f:
+                self._dashboard = json.load(f)
+        return self._dashboard
 
 class Workspace:
     def __init__(self, path: str):
