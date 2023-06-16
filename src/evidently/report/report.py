@@ -37,6 +37,7 @@ class Report(Display):
     _first_level_metrics: List[Union[Metric]]
     id: uuid.UUID
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
+    metadata: Dict[str, str] = {}
 
     def __init__(
         self,
@@ -44,6 +45,7 @@ class Report(Display):
         options: AnyOptions = None,
         timestamp: Optional[datetime.datetime] = None,
         id: uuid.UUID = None,
+        metadata: Dict[str, str] = None,
     ):
         super().__init__(options, timestamp)
         # just save all metrics and metric presets
@@ -51,6 +53,7 @@ class Report(Display):
         self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
         self.id = id or uuid.uuid4()
+        self.metadata = metadata or {}
 
     def run(
         self,
@@ -206,6 +209,7 @@ class Report(Display):
             suite=suite,
             metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics],
             timestamp=self.timestamp,
+            metadata=self.metadata,
         )
 
     @classmethod
@@ -218,11 +222,12 @@ class _ReportPayload(BaseModel):
     suite: ContextPayload
     metrics_ids: List[int]
     timestamp: datetime.datetime
+    metadata: Dict[str, str]
 
     def load(self):
         ctx = self.suite.to_context()
         metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id)
+        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id, metadata=self.metadata)
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
 

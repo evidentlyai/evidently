@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 from typing import Dict
@@ -7,10 +8,14 @@ from typing import Optional
 from pydantic import UUID4
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import parse_obj_as
 
 from evidently.experimental.report_set import load_report_set
 from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
+from evidently_service.dashboards import DashboardConfig
+
+DASHBOARDS_PATH = ".dashboards.json"
 
 
 class Project(BaseModel):
@@ -23,12 +28,23 @@ class Project(BaseModel):
     path: str
 
     _reports: Optional[Dict[uuid.UUID, Report]] = None
+    _dashboards: Optional[Dict[uuid.UUID, DashboardConfig]] = None
 
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
         if self._reports is None:
-            self._reports = {r.id: r for r in load_report_set(self.path, cls=Report).values()}
+            self._reports = {r.id: r for r in load_report_set(self.path, cls=Report, skip_errors=True).values()}
         return self._reports
+
+    @property
+    def dashboards(self) -> Dict[uuid.UUID, DashboardConfig]:
+        if self._dashboards is None:
+            try:
+                with open(self.path + DASHBOARDS_PATH) as f:
+                    self._dashboards = parse_obj_as(Dict[uuid.UUID, DashboardConfig], json.load(f))
+            except FileNotFoundError:
+                return {}
+        return self._dashboards
 
 
 class Workspace:
@@ -55,3 +71,10 @@ class Workspace:
     def get_report_dashboard_info(self, project_id: uuid.UUID, report_id: uuid.UUID) -> DashboardInfo:
         _, dashboard_info, _ = self._projects[project_id].reports[report_id]._build_dashboard_info()
         return dashboard_info
+
+    def list_project_dashboards(self, project_id: uuid.UUID) -> List[DashboardConfig]:
+        return list(self._projects[project_id].dashboards.values())
+
+    def get_dashboard_dashboard_info(self, project_id: uuid.UUID, dashboard_id: uuid.UUID) -> DashboardInfo:
+        dashboard = self._projects[project_id].dashboards[dashboard_id]
+        return dashboard.build_dashboard_info(self._projects[project_id].reports.values())
