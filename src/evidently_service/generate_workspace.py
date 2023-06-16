@@ -30,7 +30,7 @@ def create_report(metric, date: datetime.datetime):
     data_drift_report = Report(metrics=[metric], metadata={"type": metric.__class__.__name__}, timestamp=date)
 
     data_drift_report.run(reference_data=adult_ref, current_data=adult_cur)
-    data_drift_report._save(f"workspace/project1/{uuid.uuid4()}")
+    data_drift_report._save(f"workspace/project1/reports/{uuid.uuid4()}")
     # report_dashboard_id, report_dashboard_info, report_graphs = data_drift_report._build_dashboard_info()
 
 
@@ -43,7 +43,7 @@ def create_test_suite():
     )
 
     data_drift_dataset_tests.run(reference_data=adult_ref, current_data=adult_cur)
-    data_drift_dataset_tests._save(f"workspace/project1/ts_{uuid.uuid4()}.json")
+    data_drift_dataset_tests._save(f"workspace/project1/test_suites/ts_{uuid.uuid4()}.json")
 
 
 def create_dashboard_config():
@@ -51,9 +51,9 @@ def create_dashboard_config():
         id=uuid.uuid4(),
         name="sample_dashboard",
         filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}),
-        value=DashboardValue(metric_id="DataDriftTableResults", field_path="share_of_drifted_columns"),
+        value=DashboardValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
     )
-    with open("workspace/project1.dashboards.json", "w") as f:
+    with open("workspace/project1/dashboards.json", "w") as f:
         json.dump({str(conf.id): conf.dict()}, f, cls=NumpyEncoder)
 
 
@@ -80,4 +80,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

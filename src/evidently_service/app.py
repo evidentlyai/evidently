@@ -15,10 +15,10 @@ from starlette.staticfiles import StaticFiles
 
 from evidently.utils import NumpyEncoder
 from evidently_service.dashboards import DashboardConfig
-from evidently_service.models import TestSuiteModel
 from evidently_service.models import DashboardInfoModel
 from evidently_service.models import ProjectModel
 from evidently_service.models import ReportModel
+from evidently_service.models import TestSuiteModel
 from evidently_service.workspace import Workspace
 
 
@@ -29,10 +29,10 @@ async def lifespan(app: FastAPI):
     """
     app.state.workspace = Workspace(app.state.workspace_path)
     yield
-    ''' Run on shutdown
+    """ Run on shutdown
         Close the connection
         Clear variables and release the resources
-    '''
+    """
 
 
 app = FastAPI(lifespan=lifespan)
@@ -68,22 +68,13 @@ async def list_projects() -> List[ProjectModel]:
     return [ProjectModel.from_project(p) for p in workspace.list_projects()]
 
 
-@api_router.get("/projects/{project_id}/dashboard")
-async def list_projects(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> Response:
-    workspace: Workspace = app.state.workspace
-    project = workspace.get_project(project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="project not found")
-    return Response(media_type="application/json", content=json.dumps(project.dashboard, cls=NumpyEncoder))
-
-
 @api_router.get("/projects/{project_id}/reports")
 async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[ReportModel]:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
-    return [ReportModel.from_report(r.report) for r in project.reports.values()]
+    return [ReportModel.from_report(r) for r in project.reports.values()]
 
 
 @api_router.get("/projects/{project_id}/test_suites")
@@ -92,7 +83,7 @@ async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
-    return [TestSuiteModel.from_report(r.report) for r in project.test_suites.values()]
+    return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
 
 
 @api_router.get("/projects/{project_id}/{report_id}/graphs_data/{graph_id}")
@@ -136,7 +127,11 @@ async def list_project_dashboards(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
 ) -> List[DashboardConfig]:
     workspace: Workspace = app.state.workspace
-    return workspace.list_project_dashboards(project_id)
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return list(project.dashboards.values())
 
 
 @api_router.get("/projects/{project_id}/dashboards/{dashboard_id}/data")
@@ -144,21 +139,19 @@ async def get_dashboard_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID], dashboard_id: Annotated[uuid.UUID, Path(title="dashboard id")]
 ) -> Response:  # DashboardInfoModel
     workspace: Workspace = app.state.workspace
-    info = DashboardInfoModel.from_dashboard_info(workspace.get_dashboard_dashboard_info(project_id, dashboard_id))
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    dashboard = project.dashboards.get(dashboard_id, None)
+    if dashboard is None:
+        raise HTTPException(status_code=404, detail="DashboardConfig not found")
+
+    info = DashboardInfoModel.from_dashboard_info(dashboard.build_dashboard_info(project.reports.values()))
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
     return Response(media_type="application/json", content=json_str)
 
-
-@api_router.get("/sample_dashboard")
-async def sample_dashboard():
-    workspace: Workspace = app.state.workspace
-    project_id = workspace.list_projects()[0].id
-    dashboard_id = workspace.list_project_dashboards(project_id)[0].id
-    info = DashboardInfoModel.from_dashboard_info(workspace.get_dashboard_dashboard_info(project_id, dashboard_id))
-    json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
-    return Response(media_type="application/json", content=json_str)
 
 app.include_router(api_router)
 
