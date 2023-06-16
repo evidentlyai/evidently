@@ -10,6 +10,19 @@ import {ReportInfo} from "../lib/api/Api";
 
 const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
     return <>
+        <form>
+            <input
+                id="contained-button-file"
+                style={{display: "none"}}
+                multiple
+                type="file"
+            />
+            <label htmlFor="contained-button-file">
+                <Button variant="contained" color="primary" component="span">
+                    Upload
+                </Button>
+            </label>
+        </form>
         <Table>
             <TableHead>
                 <TableCell>
@@ -43,7 +56,7 @@ export function Reports(props: { projectId: string }) {
     let {projectId} = props;
     return <>
         <Grid container>
-            <ReportsHeader projectId={projectId} />
+            <ReportsHeader projectId={projectId}/>
             <Grid item xs={12}>
                 <ApiContext.Consumer>
                     {api =>

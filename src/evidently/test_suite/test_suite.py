@@ -38,15 +38,18 @@ class TestSuite(Display):
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
     _tests: List[Test]
+    id: uuid.UUID
 
     def __init__(
         self,
         tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
         options: AnyOptions = None,
         timestamp: Optional[datetime] = None,
+        id: Optional[uuid.UUID] = None,
     ):
         super().__init__(options, timestamp)
         self._inner_suite = Suite(self.options)
+        self.id = id or uuid.uuid4()
         self._test_presets = []
         self._test_generators = []
         self._tests = []
@@ -220,7 +223,11 @@ class TestSuite(Display):
         )
 
     def _get_payload(self) -> BaseModel:
-        return _TestSuitePayload(suite=ContextPayload.from_context(self._inner_suite.context), timestamp=self.timestamp)
+        return _TestSuitePayload(
+            id=self.id,
+            suite=ContextPayload.from_context(self._inner_suite.context),
+            timestamp=self.timestamp,
+        )
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "TestSuite":
@@ -228,10 +235,11 @@ class TestSuite(Display):
 
 
 class _TestSuitePayload(BaseModel):
+    id: uuid.UUID
     suite: ContextPayload
     timestamp: datetime
 
     def load(self):
-        suite = TestSuite(tests=None, timestamp=self.timestamp)
+        suite = TestSuite(tests=None, timestamp=self.timestamp, id=self.id)
         suite._inner_suite.context = self.suite.to_context()
         return suite

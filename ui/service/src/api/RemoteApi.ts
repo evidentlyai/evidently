@@ -1,20 +1,40 @@
-import {AdditionalGraphInfo, Api, DashboardInfo, ProjectInfo, ReportInfo, WidgetInfo} from "../lib/api/Api";
+import {
+    AdditionalGraphInfo,
+    Api,
+    DashboardInfo,
+    ProjectInfo,
+    ReportInfo,
+    TestSuiteInfo,
+    WidgetInfo
+} from "../lib/api/Api";
 
 export default class RemoteApi implements Api {
     private endpoint: string;
     public constructor(endpoint: string) {
         this.endpoint = endpoint;
     }
-    getAdditionalGraphData(projectId: string, dashboardId: string, graphId: string): Promise<AdditionalGraphInfo> {
-        throw Error("not implement");
+    async getAdditionalGraphData(projectId: string, dashboardId: string, graphId: string): Promise<AdditionalGraphInfo> {
+        const resp = await fetch(`${this.endpoint}/projects/${projectId}/${dashboardId}/graphs_data/${graphId}`);
+        if (resp.ok) {
+            return (await resp.json() as AdditionalGraphInfo);
+        }
+        else {
+            throw Error(`${resp.status}, ${resp.statusText}`);
+        }
     }
 
-    getAdditionalWidgetData(projectId: string, dashboardId: string, widgetId: string): Promise<WidgetInfo> {
-        throw Error("not implement");
+    async getAdditionalWidgetData(projectId: string, dashboardId: string, widgetId: string): Promise<WidgetInfo> {
+        const resp = await fetch(`${this.endpoint}/projects/${projectId}/${dashboardId}/graphs_data/${widgetId}`);
+        if (resp.ok) {
+            return (await resp.json() as WidgetInfo);
+        }
+        else {
+            throw Error(`${resp.status}, ${resp.statusText}`);
+        }
     }
 
     async getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfo> {
-        const resp = await fetch(`${this.endpoint}/projects/${projectId}/reports/${dashboardId}/data`);
+        const resp = await fetch(`${this.endpoint}/projects/${projectId}/${dashboardId}/data`);
         if (resp.ok) {
             return (await resp.json() as DashboardInfo);
         }
@@ -51,9 +71,19 @@ export default class RemoteApi implements Api {
 
     async getReports(projectId: string): Promise<ReportInfo[]> {
         const resp = await fetch(`${this.endpoint}/projects/${projectId}/reports`);
-        console.log(resp);
         if (resp.ok) {
             return (await resp.json() as ReportInfo[]);
+        }
+        else
+        {
+            throw Error(`${resp.status}, ${resp.statusText}`);
+        }
+    }
+
+    async getTestSuites(projectId: string): Promise<TestSuiteInfo[]> {
+        const resp = await fetch(`${this.endpoint}/projects/${projectId}/test_suites`);
+        if (resp.ok) {
+            return (await resp.json() as TestSuiteInfo[]);
         }
         else
         {

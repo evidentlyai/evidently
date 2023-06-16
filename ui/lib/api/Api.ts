@@ -240,6 +240,11 @@ export interface ReportInfo {
     timestamp: Date;
 }
 
+export interface TestSuiteInfo {
+    id: string;
+    timestamp: Date;
+}
+
 export interface Api {
     getAdditionalGraphData(projectId: string, dashboardId: string, graphId: string): Promise<AdditionalGraphInfo>
 
@@ -250,6 +255,7 @@ export interface Api {
     getProjectDashboard(projectId: string): Promise<DashboardInfo>
 
     getReports(projectId: string): Promise<ReportInfo[]>
+    getTestSuites(projectId: string): Promise<TestSuiteInfo[]>
 
     getProjects(): Promise<ProjectInfo[]>
 }

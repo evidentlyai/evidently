@@ -61,6 +61,8 @@ def main():
     if not os.path.exists("workspace"):
         os.mkdir("workspace")
         os.mkdir("workspace/project1")
+        os.mkdir("workspace/project1/reports")
+        os.mkdir("workspace/project1/test_suites")
 
     for d in range(1, 10):
         ts = datetime.datetime.combine(datetime.date.today() + datetime.timedelta(days=d), datetime.time())
@@ -78,3 +80,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
