@@ -1,5 +1,3 @@
-import json
-
 import pandas as pd
 from pytest import approx
 from sklearn import datasets
@@ -15,7 +13,8 @@ from evidently.metrics.data_drift.target_by_features_table import TargetByFeatur
 from evidently.metrics.data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
 from evidently.metrics.data_drift.text_domain_classifier_drift_metric import TextDomainClassifierDriftMetric
 from evidently.metrics.data_drift.text_metric import Comment
-from evidently.report import Report
+from tests.multitest.conftest import AssertResultFields
+from tests.multitest.conftest import NoopOutcome
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.datasets import TestDataset
 from tests.multitest.metrics.conftest import TestMetric
@@ -24,27 +23,33 @@ from tests.multitest.metrics.conftest import metric
 
 @metric
 def comment():
-    return TestMetric("comment", Comment(""))
+    return TestMetric(
+        "comment",
+        Comment(""),
+        NoopOutcome(),
+    )
 
 
 @metric
 def data_drift_table():
-    return TestMetric("data_drift_table", DataDriftTable())
+    return TestMetric("data_drift_table", DataDriftTable(), NoopOutcome())
 
 
 @metric
 def column_value_plot():
-    return TestMetric("column_value_plot", ColumnValuePlot("age"), dataset_names=["adult"])
+    return TestMetric("column_value_plot", ColumnValuePlot("age"), NoopOutcome(), dataset_names=["adult"])
 
 
 @metric
 def dataset_drift_metric():
-    return TestMetric("dataset_drift_metric", DatasetDriftMetric())
+    return TestMetric("dataset_drift_metric", DatasetDriftMetric(), NoopOutcome())
 
 
 @metric
 def target_by_features_table():
-    return TestMetric("target_by_features_table", TargetByFeaturesTable(), include_tags=[DatasetTags.HAS_TARGET])
+    return TestMetric(
+        "target_by_features_table", TargetByFeaturesTable(), NoopOutcome(), include_tags=[DatasetTags.HAS_TARGET]
+    )
 
 
 @metric
@@ -52,13 +57,14 @@ def text_descriptors_drift_metric():
     return TestMetric(
         "text_descriptors_drift_metric",
         TextDescriptorsDriftMetric(column_name="Review_Text"),
+        NoopOutcome(),
         dataset_names=["reviews"],
     )
 
 
 @metric
 def column_drift_metric():
-    return TestMetric("column_drift_metric", ColumnDriftMetric("age"), dataset_names=["adult"])
+    return TestMetric("column_drift_metric", ColumnDriftMetric("age"), NoopOutcome(), dataset_names=["adult"])
 
 
 def embeddings_dataset():
@@ -86,7 +92,9 @@ def embeddings_dataset():
 
 @metric
 def embeddings_drift_metric():
-    return TestMetric("embeddings_drift_metric", EmbeddingsDriftMetric("small_subset"), datasets=[embeddings_dataset()])
+    return TestMetric(
+        "embeddings_drift_metric", EmbeddingsDriftMetric("small_subset"), NoopOutcome(), datasets=[embeddings_dataset()]
+    )
 
 
 @metric
@@ -98,22 +106,20 @@ def text_domain_classifier_drift_metric():
     reference_data = pd.DataFrame({"text": reference.data})
     current_data = pd.DataFrame({"text": current.data})
 
-    def additional_asserts(report: Report):
-        result_json = report.json()
-        result = json.loads(result_json)["metrics"][0]["result"]
-
-        assert result["text_column_name"] == "text"
-        assert result["domain_classifier_roc_auc"] == approx(0.91, abs=0.02)
-        assert result["random_classifier_95_percentile"] == approx(0.53, abs=0.01)
-        assert result["content_drift"]
-
     return TestMetric(
         "text_domain_classifier_drift_metric",
         TextDomainClassifierDriftMetric(text_column_name="text"),
+        AssertResultFields(
+            {
+                "text_column_name": "text",
+                "domain_classifier_roc_auc": approx(0.91, abs=0.02),
+                "random_classifier_95_percentile": approx(0.53, abs=0.01),
+                "content_drift": True,
+            }
+        ),
         datasets=[
             TestDataset(
                 "text_domain_classifier_drift_metric_data", current=current_data, reference=reference_data, tags=[]
             ),
         ],
-        additional_check=additional_asserts,
     )

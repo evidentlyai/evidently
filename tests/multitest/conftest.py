@@ -1,19 +1,56 @@
+import abc
 import glob
+import json
 import os
 from importlib import import_module
 from inspect import isabstract
+from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import Type
 
 import evidently
+from evidently.report import Report
 
 
 class TestOutcome:
-    pass
+    @abc.abstractmethod
+    def check(self, report: Report):
+        raise NotImplementedError
 
 
 class Error(TestOutcome):
     def __init__(self, exception_type: Type[Exception]):
         self.exception_type = exception_type
+
+    def check(self, report: Report):
+        pass
+
+
+class AssertResultFields(TestOutcome):
+    def __init__(self, values: Dict[str, Any]):
+        # todo: nested keys
+        self.values = values
+
+    def check(self, report: Report):
+        result_json = report.json()
+        result = json.loads(result_json)["metrics"][0]["result"]
+
+        for key, value in self.values.items():
+            assert result[key] == value
+
+
+class CustomAssert(TestOutcome):
+    def __init__(self, custom_check: Callable[[Report], None]):
+        self.custom_check = custom_check
+
+    def check(self, report: Report):
+        self.custom_check(report)
+
+
+class NoopOutcome(TestOutcome):
+    def check(self, report: Report):
+        pass
 
 
 def find_all_subclasses(
