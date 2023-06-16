@@ -62,7 +62,7 @@ def find_all_subclasses(
     classes = set()
     for mod in glob.glob(path + "/**/*.py", recursive=True):
         mod_path = os.path.relpath(mod, path)[:-3]
-        mod_name = f"{base_module}." + mod_path.replace("/", ".")
+        mod_name = f"{base_module}." + mod_path.replace("/", ".").replace("\\", ".")
         if mod_name.endswith("__"):
             continue
         module = import_module(mod_name)
