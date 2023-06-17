@@ -50,6 +50,7 @@ from .regression_performance.regression_dummy_metric import RegressionDummyMetri
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
+from .data_drift.column_interaction_plot import ColumnInteractionPlot
 
 __all__ = [
     "ClassificationClassBalance",
@@ -77,6 +78,7 @@ __all__ = [
     "DatasetSummaryMetric",
     "ColumnCorrelationsMetric",
     "ColumnDistributionMetric",
+    "ColumnInteractionPlot",
     "ColumnQuantileMetric",
     "ColumnValueListMetric",
     "ColumnValueRangeMetric",
