@@ -134,6 +134,18 @@ async def list_project_dashboards(
     return list(project.dashboards.values())
 
 
+@api_router.get("/projects/{project_id}/dashboard")
+async def project_dashboard(
+    project_id: Annotated[uuid.UUID, PROJECT_ID],
+) -> Response:
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return await get_dashboard_data(project_id, list(project.dashboards.keys())[0])
+
+
 @api_router.get("/projects/{project_id}/dashboards/{dashboard_id}/data")
 async def get_dashboard_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID], dashboard_id: Annotated[uuid.UUID, Path(title="dashboard id")]

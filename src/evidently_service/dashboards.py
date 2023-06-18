@@ -6,9 +6,13 @@ import plotly.subplots
 from plotly import graph_objs as go
 from pydantic import BaseModel
 
+from evidently.core import IncludeOptions
+
 from evidently.model.dashboard import DashboardInfo
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.report import Report
+from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import T
 
 
 class ReportFilter(BaseModel):
@@ -44,9 +48,31 @@ class DashboardConfig(BaseModel):
                 x.append(report.timestamp)
                 y.append(self.value.get(report))
 
-        print(x)
-        print(y)
         scatter = go.Scatter(x=x, y=y)
         fig = plotly.subplots.make_subplots()
         fig.add_trace(scatter, 1, 1)
         return DashboardInfo(self.name, widgets=[plotly_figure(title="kek", figure=fig)])
+
+
+class Dashboard(Display):
+    def __init__(self, config: DashboardConfig):
+        super().__init__()
+        self.reports = []
+        self.config = config
+
+    def add_report(self, report: Report):
+        self.reports.append(report)
+
+    def as_dict(self, include_render: bool = False, include: Dict[str, IncludeOptions] = None,
+                exclude: Dict[str, IncludeOptions] = None, **kwargs) -> dict:
+        raise NotImplemented()
+
+    def _get_payload(self) -> BaseModel:
+        raise NotImplemented()
+
+    @classmethod
+    def _parse_payload(cls, payload: Dict) -> T:
+        raise NotImplemented()
+
+    def _build_dashboard_info(self):
+        return "er_" + str(uuid.uuid4()).replace("-", ""), self.config.build_dashboard_info(self.reports), {}
