@@ -7,6 +7,8 @@ from typing import Optional
 from typing import Type
 from typing import TypeVar
 
+from pydantic import ValidationError
+
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.report import Report
@@ -38,12 +40,21 @@ T = TypeVar("T", bound=Display)
 
 
 def load_report_set(
-    path: str, cls: Type[T], date_from: Optional[datetime.datetime] = None, date_to: Optional[datetime.datetime] = None
+    path: str,
+    cls: Type[T],
+    date_from: Optional[datetime.datetime] = None,
+    date_to: Optional[datetime.datetime] = None,
+    skip_errors: bool = False,
 ) -> Dict[datetime.datetime, T]:
     result = {}
     for file in os.listdir(path):
         filepath = os.path.join(path, file)
-        suite = cls._load(filepath)
+        try:
+            suite = cls._load(filepath)
+        except ValidationError:
+            if skip_errors:
+                continue
+            raise
         if date_from is not None and suite.timestamp < date_from:
             continue
         if date_to is not None and suite.timestamp > date_to:

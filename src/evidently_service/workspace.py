@@ -9,11 +9,14 @@ from typing import Union
 from pydantic import UUID4
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import parse_obj_as
 
 from evidently.experimental.report_set import load_report_set
-from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
+from evidently_service.dashboards import DashboardConfig
+
+DASHBOARDS_PATH = "dashboards.json"
 
 
 class ProjectItem:
@@ -29,40 +32,45 @@ class Project(BaseModel):
     id: UUID4 = Field(default_factory=uuid.uuid4)
     name: str
     description: Optional[str] = None
-    _dashboard: Optional[dict] = None  # should be DashboardInfo type
     path: str
 
     _reports: Optional[Dict[uuid.UUID, Report]] = None
+    _dashboards: Optional[Dict[uuid.UUID, DashboardConfig]] = None
     _test_suites: Optional[Dict[uuid.UUID, TestSuite]] = None
     _items: Optional[Dict[uuid.UUID, ProjectItem]] = None
 
-    @property
-    def reports(self) -> Dict[uuid.UUID, ProjectItem]:
-        if self._items is None:
-            self._items = {r.id: ProjectItem(r) for r in
-                           list(load_report_set(os.path.join(self.path, "reports"), cls=Report).values())
-                           + list(load_report_set(os.path.join(self.path, "test_suites"), cls=TestSuite).values())
-                           }
-        return {key: value for key, value in self._items.items() if isinstance(value.report, Report)}
+    def _load_items(self):
+        self._items = {
+            r.id: ProjectItem(r)
+            for r in list(load_report_set(os.path.join(self.path, "reports"), cls=Report).values())
+            + list(load_report_set(os.path.join(self.path, "test_suites"), cls=TestSuite).values())
+        }
 
     @property
-    def test_suites(self) -> Dict[uuid.UUID, ProjectItem]:
+    def reports(self) -> Dict[uuid.UUID, Report]:
         if self._items is None:
-            self._items = {r.id: ProjectItem(r) for r in
-                           list(load_report_set(os.path.join(self.path, "reports"), cls=Report).values())
-                           + list(load_report_set(os.path.join(self.path, "test_suites"), cls=TestSuite).values())
-                           }
-        return {key: value for key, value in self._items.items() if isinstance(value.report, TestSuite)}
+            self._load_items()
+        return {key: value.report for key, value in self._items.items() if isinstance(value.report, Report)}
+
+    @property
+    def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
+        if self._items is None:
+            self._load_items()
+        return {key: value.report for key, value in self._items.items() if isinstance(value.report, TestSuite)}
 
     def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
         return self.reports.get(report_id) or self.test_suites.get(report_id)
 
     @property
-    def dashboard(self) -> dict:
-        if self._dashboard is None:
-            with open(os.path.join(self.path, "dashboard.json"), "r") as f:
-                self._dashboard = json.load(f)
-        return self._dashboard
+    def dashboards(self) -> Dict[uuid.UUID, DashboardConfig]:
+        if self._dashboards is None:
+            try:
+                with open(os.path.join(self.path, DASHBOARDS_PATH)) as f:
+                    self._dashboards = parse_obj_as(Dict[uuid.UUID, DashboardConfig], json.load(f))
+            except FileNotFoundError:
+                return {}
+        return self._dashboards
+
 
 class Workspace:
     def __init__(self, path: str):
