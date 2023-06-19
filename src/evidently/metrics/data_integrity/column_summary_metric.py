@@ -108,7 +108,7 @@ class DataByTarget(MetricResult):
         Dict[
             str,
             Union[
-                Dict[str, pd.DataFrame],
+                Dict[str, list], #ch
                 pd.DataFrame,
             ],
         ],
