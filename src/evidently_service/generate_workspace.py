@@ -1,5 +1,4 @@
 import datetime
-import json
 import os
 import uuid
 
@@ -12,10 +11,11 @@ from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestShareOfDriftedColumns
-from evidently.utils import NumpyEncoder
 from evidently_service.dashboards import DashboardConfig
-from evidently_service.dashboards import DashboardValue
+from evidently_service.dashboards import DashboardPanel
+from evidently_service.dashboards import PanelValue
 from evidently_service.dashboards import ReportFilter
+from evidently_service.workspace import Project
 
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
 adult = adult_data.frame
@@ -46,15 +46,20 @@ def create_test_suite():
     data_drift_dataset_tests._save(f"workspace/project1/test_suites/ts_{uuid.uuid4()}.json")
 
 
-def create_dashboard_config():
+def create_project_config():
     conf = DashboardConfig(
-        id=uuid.uuid4(),
         name="sample_dashboard",
-        filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}),
-        value=DashboardValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
+        panels=[
+            DashboardPanel(
+                id=uuid.uuid4(),
+                name="sample_panel",
+                filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}),
+                value=PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
+            )
+        ],
     )
-    with open("workspace/project1/dashboards.json", "w") as f:
-        json.dump({str(conf.id): conf.dict()}, f, cls=NumpyEncoder)
+    project = Project(name="project1", path="workspace/project1", dashboard=conf)
+    project.save()
 
 
 def main():
@@ -63,6 +68,8 @@ def main():
         os.mkdir("workspace/project1")
         os.mkdir("workspace/project1/reports")
         os.mkdir("workspace/project1/test_suites")
+
+    create_project_config()
 
     for d in range(1, 10):
         ts = datetime.datetime.combine(datetime.date.today() + datetime.timedelta(days=d), datetime.time())
@@ -75,7 +82,6 @@ def main():
         create_report(DatasetCorrelationsMetric(), ts)
 
     create_test_suite()
-    create_dashboard_config()
 
 
 if __name__ == "__main__":

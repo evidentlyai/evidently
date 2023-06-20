@@ -14,7 +14,7 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
 from evidently.utils import NumpyEncoder
-from evidently_service.dashboards import DashboardConfig
+from evidently_service.dashboards import DashboardPanel
 from evidently_service.models import DashboardInfoModel
 from evidently_service.models import ProjectModel
 from evidently_service.models import ReportModel
@@ -122,16 +122,16 @@ async def get_report_data(
     return Response(media_type="application/json", content=json_str)
 
 
-@api_router.get("/projects/{project_id}/dashboards")
-async def list_project_dashboards(
+@api_router.get("/projects/{project_id}/dashboard/panels")
+async def list_project_dashboard_panels(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
-) -> List[DashboardConfig]:
+) -> List[DashboardPanel]:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    return list(project.dashboards.values())
+    return list(project.dashboard.panels)
 
 
 @api_router.get("/projects/{project_id}/dashboard")
@@ -143,22 +143,7 @@ async def project_dashboard(
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    return await get_dashboard_data(project_id, list(project.dashboards.keys())[0])
-
-
-@api_router.get("/projects/{project_id}/dashboards/{dashboard_id}/data")
-async def get_dashboard_data(
-    project_id: Annotated[uuid.UUID, PROJECT_ID], dashboard_id: Annotated[uuid.UUID, Path(title="dashboard id")]
-) -> Response:  # DashboardInfoModel
-    workspace: Workspace = app.state.workspace
-    project = workspace.get_project(project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-    dashboard = project.dashboards.get(dashboard_id, None)
-    if dashboard is None:
-        raise HTTPException(status_code=404, detail="DashboardConfig not found")
-
-    info = DashboardInfoModel.from_dashboard_info(dashboard.build_dashboard_info(project.reports.values()))
+    info = DashboardInfoModel.from_dashboard_info(project.build_dashboard_info())
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")

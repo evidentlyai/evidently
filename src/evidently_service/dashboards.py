@@ -1,14 +1,15 @@
 import uuid
 from typing import Dict
 from typing import Iterable
+from typing import List
 
 import plotly.subplots
 from plotly import graph_objs as go
 from pydantic import BaseModel
 
 from evidently.core import IncludeOptions
-
 from evidently.model.dashboard import DashboardInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.report import Report
 from evidently.suite.base_suite import Display
@@ -22,7 +23,7 @@ class ReportFilter(BaseModel):
         return all(report.metadata.get(key) == value for key, value in self.metadata_values.items())
 
 
-class DashboardValue(BaseModel):
+class PanelValue(BaseModel):
     metric_id: str
     field_path: str
 
@@ -35,13 +36,13 @@ class DashboardValue(BaseModel):
         return None
 
 
-class DashboardConfig(BaseModel):
+class DashboardPanel(BaseModel):
     id: uuid.UUID
     name: str
     filter: ReportFilter
-    value: DashboardValue
+    value: PanelValue
 
-    def build_dashboard_info(self, reports: Iterable[Report]) -> DashboardInfo:
+    def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
         x, y = [], []
         for report in reports:
             if self.filter.filter(report):
@@ -51,7 +52,15 @@ class DashboardConfig(BaseModel):
         scatter = go.Scatter(x=x, y=y)
         fig = plotly.subplots.make_subplots()
         fig.add_trace(scatter, 1, 1)
-        return DashboardInfo(self.name, widgets=[plotly_figure(title="kek", figure=fig)])
+        return plotly_figure(title="kek", figure=fig)
+
+
+class DashboardConfig(BaseModel):
+    name: str
+    panels: List[DashboardPanel]
+
+    def build_dashboard_info(self, reports: Iterable[Report]) -> DashboardInfo:
+        return DashboardInfo(self.name, widgets=[p.build_widget(reports) for p in self.panels])
 
 
 class Dashboard(Display):
@@ -63,16 +72,21 @@ class Dashboard(Display):
     def add_report(self, report: Report):
         self.reports.append(report)
 
-    def as_dict(self, include_render: bool = False, include: Dict[str, IncludeOptions] = None,
-                exclude: Dict[str, IncludeOptions] = None, **kwargs) -> dict:
-        raise NotImplemented()
+    def as_dict(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
+    ) -> dict:
+        raise NotImplementedError
 
     def _get_payload(self) -> BaseModel:
-        raise NotImplemented()
+        raise NotImplementedError
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> T:
-        raise NotImplemented()
+        raise NotImplementedError
 
     def _build_dashboard_info(self):
         return "er_" + str(uuid.uuid4()).replace("-", ""), self.config.build_dashboard_info(self.reports), {}

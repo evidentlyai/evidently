@@ -12,11 +12,13 @@ from pydantic import Field
 from pydantic import parse_obj_as
 
 from evidently.experimental.report_set import load_report_set
+from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
+from evidently.utils import NumpyEncoder
 from evidently_service.dashboards import DashboardConfig
 
-DASHBOARDS_PATH = "dashboards.json"
+METADATA_PATH = "metadata.json"
 
 
 class ProjectItem:
@@ -33,11 +35,24 @@ class Project(BaseModel):
     name: str
     description: Optional[str] = None
     path: str
+    dashboard: DashboardConfig
 
     _reports: Optional[Dict[uuid.UUID, Report]] = None
-    _dashboards: Optional[Dict[uuid.UUID, DashboardConfig]] = None
     _test_suites: Optional[Dict[uuid.UUID, TestSuite]] = None
     _items: Optional[Dict[uuid.UUID, ProjectItem]] = None
+
+    @classmethod
+    def load(cls, path: str) -> "Project":
+        try:
+            with open(os.path.join(path, METADATA_PATH)) as f:
+                return parse_obj_as(Project, json.load(f))
+        except FileNotFoundError:
+            return Project(name="Unnamed Project", path=path, dashboard=DashboardConfig(name="Dashboard", panels=[]))
+
+    def save(self):
+        # todo: need better `path` handling (either absolute or add workspace arg)
+        with open(os.path.join(self.path, METADATA_PATH), "w") as f:
+            return json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
     def _load_items(self):
         self._items = {
@@ -61,15 +76,8 @@ class Project(BaseModel):
     def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
         return self.reports.get(report_id) or self.test_suites.get(report_id)
 
-    @property
-    def dashboards(self) -> Dict[uuid.UUID, DashboardConfig]:
-        if self._dashboards is None:
-            try:
-                with open(os.path.join(self.path, DASHBOARDS_PATH)) as f:
-                    self._dashboards = parse_obj_as(Dict[uuid.UUID, DashboardConfig], json.load(f))
-            except FileNotFoundError:
-                return {}
-        return self._dashboards
+    def build_dashboard_info(self) -> DashboardInfo:
+        return self.dashboard.build_dashboard_info(self.reports.values())
 
 
 class Workspace:
@@ -78,9 +86,8 @@ class Workspace:
         self._projects: Dict[uuid.UUID, Project] = self._load_projects()
 
     def _load_projects(self) -> Dict[uuid.UUID, Project]:
-        # todo save/load projects metadata
         projects = [
-            Project(name=p, path=os.path.join(self.path, p))
+            Project.load(os.path.join(self.path, p))
             for p in os.listdir(self.path)
             if os.path.isdir(os.path.join(self.path, p))
         ]
