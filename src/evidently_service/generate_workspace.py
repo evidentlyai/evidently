@@ -14,6 +14,7 @@ from evidently.tests import TestShareOfDriftedColumns
 from evidently_service.dashboards import DashboardConfig
 from evidently_service.dashboards import DashboardPanel
 from evidently_service.dashboards import PanelValue
+from evidently_service.dashboards import PlotType
 from evidently_service.dashboards import ReportFilter
 from evidently_service.workspace import Project
 
@@ -52,9 +53,13 @@ def create_project_config():
         panels=[
             DashboardPanel(
                 id=uuid.uuid4(),
-                name="sample_panel",
+                title="sample_panel",
                 filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}),
-                value=PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
+                values=[
+                    PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
+                    PanelValue(metric_id="DatasetDriftMetric", field_path="number_of_drifted_columns"),
+                ],
+                plot_type=PlotType.LINE,
             )
         ],
     )

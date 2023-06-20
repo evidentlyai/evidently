@@ -1,15 +1,17 @@
 import uuid
+from enum import Enum
 from typing import Dict
 from typing import Iterable
 from typing import List
 
-import plotly.subplots
 from plotly import graph_objs as go
 from pydantic import BaseModel
 
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pydantic_utils import EnumValueMixin
+from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.report import Report
 from evidently.suite.base_suite import Display
@@ -36,23 +38,48 @@ class PanelValue(BaseModel):
         return None
 
 
-class DashboardPanel(BaseModel):
+class PlotType(Enum):
+    # todo: move it to core lib?
+    SCATTER = "scatter"
+    BAR = "bar"
+    LINE = "line"
+    HISTOGRAM = "histogram"
+
+
+class DashboardPanel(EnumValueMixin):
     id: uuid.UUID
-    name: str
+    title: str
     filter: ReportFilter
-    value: PanelValue
+    values: List[PanelValue]
+    plot_type: PlotType
+    size: WidgetSize = WidgetSize.FULL
 
     def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
-        x, y = [], []
+        x, ys = [], [[] for _ in range(len(self.values))]
         for report in reports:
-            if self.filter.filter(report):
-                x.append(report.timestamp)
-                y.append(self.value.get(report))
+            if not self.filter.filter(report):
+                continue
+            x.append(report.timestamp)
+            for i, value in enumerate(self.values):
+                ys[i].append(value.get(report))
 
-        scatter = go.Scatter(x=x, y=y)
-        fig = plotly.subplots.make_subplots()
-        fig.add_trace(scatter, 1, 1)
-        return plotly_figure(title="kek", figure=fig)
+        fig = go.Figure()
+        for y in ys:
+            plot = self.plot_type_cls(x=x, y=y)
+            fig.add_trace(plot)
+        return plotly_figure(title=self.title, figure=fig, size=self.size)
+
+    @property
+    def plot_type_cls(self):
+        if self.plot_type == PlotType.SCATTER:
+            return go.Scatter
+        if self.plot_type == PlotType.BAR:
+            return go.Bar
+        if self.plot_type == PlotType.LINE:
+            return go.Line
+        if self.plot_type == PlotType.HISTOGRAM:
+            return go.Histogram
+        raise ValueError(f"Unsupported plot type {self.plot_type}")
 
 
 class DashboardConfig(BaseModel):
