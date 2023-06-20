@@ -74,7 +74,10 @@ class Project(BaseModel):
         return {key: value.report for key, value in self._items.items() if isinstance(value.report, TestSuite)}
 
     def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
-        return self.reports.get(report_id) or self.test_suites.get(report_id)
+        item = self.reports.get(report_id) or self.test_suites.get(report_id)
+        if item is None:
+            return None
+        return self._items.get(item.id)
 
     def build_dashboard_info(self) -> DashboardInfo:
         return self.dashboard.build_dashboard_info(self.reports.values())
