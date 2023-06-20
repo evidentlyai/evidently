@@ -26,8 +26,10 @@ adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])
 adult_cur.iloc[:2000, 3:5] = np.nan
 
 
-def create_report(metric, date: datetime.datetime):
-    data_drift_report = Report(metrics=[metric], metadata={"type": metric.__class__.__name__}, timestamp=date)
+def create_report(metric, date: datetime.datetime, tag: str):
+    data_drift_report = Report(
+        metrics=[metric], metadata={"type": metric.__class__.__name__}, tags=[tag], timestamp=date
+    )
 
     data_drift_report.run(reference_data=adult_ref, current_data=adult_cur)
     data_drift_report._save(f"workspace/project1/reports/{uuid.uuid4()}")
@@ -53,7 +55,7 @@ def create_project_config():
             DashboardPanel(
                 id=uuid.uuid4(),
                 name="sample_panel",
-                filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}),
+                filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}, tag_values=["drift"]),
                 value=PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
             )
         ],
@@ -78,8 +80,9 @@ def main():
                 num_stattest="ks", cat_stattest="psi", num_stattest_threshold=0.2, cat_stattest_threshold=0.2
             ),
             ts,
+            "drift",
         )
-        create_report(DatasetCorrelationsMetric(), ts)
+        create_report(DatasetCorrelationsMetric(), ts, "correlation")
 
     create_test_suite()
 
