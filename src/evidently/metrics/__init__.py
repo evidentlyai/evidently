@@ -16,6 +16,7 @@ from .classification_performance.quality_by_class_metric import ClassificationQu
 from .classification_performance.quality_by_feature_table import ClassificationQualityByFeatureTable
 from .classification_performance.roc_curve_metric import ClassificationRocCurve
 from .data_drift.column_drift_metric import ColumnDriftMetric
+from .data_drift.column_interaction_plot import ColumnInteractionPlot
 from .data_drift.column_value_plot import ColumnValuePlot
 from .data_drift.data_drift_table import DataDriftTable
 from .data_drift.dataset_drift_metric import DatasetDriftMetric
@@ -50,7 +51,6 @@ from .regression_performance.regression_dummy_metric import RegressionDummyMetri
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
-from .data_drift.column_interaction_plot import ColumnInteractionPlot
 
 __all__ = [
     "ClassificationClassBalance",

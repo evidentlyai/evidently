@@ -181,7 +181,7 @@ def plot_num_feature_in_time(
     datetime_name: str,
     freq: str,
     color_options: ColorOptions,
-    transpose: bool = False
+    transpose: bool = False,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
@@ -189,8 +189,12 @@ def plot_num_feature_in_time(
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=curr_data.sort_values(datetime_name)[datetime_name] if not transpose else curr_data.sort_values(datetime_name)[feature_name],
-            y=curr_data.sort_values(datetime_name)[feature_name] if not transpose else curr_data.sort_values(datetime_name)[datetime_name],
+            x=curr_data.sort_values(datetime_name)[datetime_name]
+            if not transpose
+            else curr_data.sort_values(datetime_name)[feature_name],
+            y=curr_data.sort_values(datetime_name)[feature_name]
+            if not transpose
+            else curr_data.sort_values(datetime_name)[datetime_name],
             line=dict(color=color_options.get_current_data_color(), shape="spline"),
             name="current",
         )
@@ -198,8 +202,12 @@ def plot_num_feature_in_time(
     if ref_data is not None:
         fig.add_trace(
             go.Scatter(
-                x=ref_data.sort_values(datetime_name)[datetime_name] if not transpose else ref_data.sort_values(datetime_name)[feature_name],
-                y=ref_data.sort_values(datetime_name)[feature_name] if not transpose else ref_data.sort_values(datetime_name)[datetime_name],
+                x=ref_data.sort_values(datetime_name)[datetime_name]
+                if not transpose
+                else ref_data.sort_values(datetime_name)[feature_name],
+                y=ref_data.sort_values(datetime_name)[feature_name]
+                if not transpose
+                else ref_data.sort_values(datetime_name)[datetime_name],
                 line=dict(color=color_options.get_reference_data_color(), shape="spline"),
                 name="reference",
             )
@@ -256,13 +264,13 @@ def plot_cat_feature_in_time(
     """
     title = "current"
     fig = go.Figure()
-    orientation='v' if not transpose else 'h'
+    orientation = "v" if not transpose else "h"
     values = curr_data[feature_name].astype(str).unique()
     if ref_data is not None:
         values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
     for i, val in enumerate(values):
-        x=curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name]
-        y=curr_data.loc[curr_data[feature_name].astype(str) == val, "num"]
+        x = curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name]
+        y = curr_data.loc[curr_data[feature_name].astype(str) == val, "num"]
         fig.add_trace(
             go.Bar(
                 x=x if not transpose else y,
@@ -275,8 +283,8 @@ def plot_cat_feature_in_time(
         )
         if ref_data is not None:
             title = "reference/current"
-            x=ref_data.loc[ref_data[feature_name].astype(str) == val, datetime_name]
-            y=ref_data.loc[ref_data[feature_name].astype(str) == val, "num"]
+            x = ref_data.loc[ref_data[feature_name].astype(str) == val, datetime_name]
+            y = ref_data.loc[ref_data[feature_name].astype(str) == val, "num"]
             fig.add_trace(
                 go.Bar(
                     x=x if not transpose else y,
@@ -309,7 +317,7 @@ def plot_boxes(
     yaxis_title: str,
     xaxis_title: str,
     color_options: ColorOptions,
-    transpose: bool = False
+    transpose: bool = False,
 ):
     """
     Accepts current and reference data as dicts with box parameters ("mins", "lowers", "uppers", "means", "maxs")
@@ -326,7 +334,7 @@ def plot_boxes(
         y=curr_for_plots["values"] if transpose else None,
         name="current",
         marker_color=color_options.get_current_data_color(),
-        orientation='v' if not transpose else 'h',
+        orientation="v" if not transpose else "h",
     )
     fig.add_trace(trace)
     if ref_for_plots is not None:
@@ -338,16 +346,16 @@ def plot_boxes(
             upperfence=ref_for_plots["maxs"],
             x=ref_for_plots["values"] if not transpose else None,
             y=ref_for_plots["values"] if transpose else None,
-            name="reference", #if transpose else None,
+            name="reference",
             marker_color=color_options.get_reference_data_color(),
-            orientation='v' if not transpose else 'h',
+            orientation="v" if not transpose else "h",
         )
         fig.add_trace(trace)
         fig.update_layout(boxmode="group")
     fig.update_layout(
         yaxis_title=yaxis_title if not transpose else xaxis_title,
         xaxis_title=xaxis_title if not transpose else yaxis_title,
-        boxmode="group"
+        boxmode="group",
     )
     fig = json.loads(fig.to_json())
     return fig
@@ -386,7 +394,7 @@ def make_hist_for_num_plot(curr: pd.Series, ref: Optional[pd.Series] = None, cal
         reference_log=reference_log,
     )
 
-import logging
+
 def plot_cat_cat_rel(
     curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str, color_options: ColorOptions
 ):

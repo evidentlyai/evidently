@@ -13,6 +13,13 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
 
+from evidently.calculations.utils import choose_agg_period
+from evidently.calculations.utils import get_data_for_cat_cat_plot
+from evidently.calculations.utils import get_data_for_num_num_plot
+from evidently.calculations.utils import prepare_box_data
+from evidently.calculations.utils import prepare_data_for_date_cat
+from evidently.calculations.utils import prepare_data_for_date_num
+from evidently.calculations.utils import relabel_data
 from evidently.core import ColumnType
 from evidently.metric_results import ColumnCorrelations
 from evidently.metric_results import DatasetColumns
@@ -23,13 +30,6 @@ from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
-from evidently.calculations.utils import get_data_for_cat_cat_plot
-from evidently.calculations.utils import get_data_for_num_num_plot
-from evidently.calculations.utils import prepare_data_for_date_num
-from evidently.calculations.utils import prepare_data_for_date_cat
-from evidently.calculations.utils import relabel_data
-from evidently.calculations.utils import choose_agg_period
-from evidently.calculations.utils import prepare_box_data
 
 MAX_CATEGORIES = 5
 
@@ -284,7 +284,7 @@ def calculate_data_quality_stats(
             )
 
     return result
- 
+
 
 def _split_periods(curr_data: pd.DataFrame, ref_data: pd.DataFrame, feature_name: str):
     max_ref_date = ref_data[feature_name].max()
@@ -387,12 +387,7 @@ def plot_data(
         datetime_name, _, datetime_current, datetime_reference = datetime_data
         if column_type == ColumnType.Numerical:
             df_for_time_plot_curr, df_for_time_plot_ref, prefix = prepare_data_for_date_num(
-                datetime_current,
-                datetime_reference,
-                datetime_name,
-                column_name,
-                current_data,
-                reference_data
+                datetime_current, datetime_reference, datetime_name, column_name, current_data, reference_data
             )
             data_in_time = {
                 "data_for_plots": {
@@ -405,12 +400,7 @@ def plot_data(
 
         if column_type == ColumnType.Categorical:
             df_for_time_plot_curr, df_for_time_plot_ref, prefix = prepare_data_for_date_cat(
-                datetime_current,
-                datetime_reference,
-                datetime_name,
-                column_name,
-                current_data,
-                reference_data
+                datetime_current, datetime_reference, datetime_name, column_name, current_data, reference_data
             )
             data_in_time = {
                 "data_for_plots": {
@@ -441,6 +431,10 @@ def plot_data(
                 "target_type": target_type.value,
             }
         if column_type == ColumnType.Numerical and target_type == ColumnType.Numerical:
+            if target_reference is not None and reference_data is not None:
+                target_ref = target_reference.loc[reference_data.index]
+            else:
+                target_ref = None
             result = get_data_for_num_num_plot(
                 agg_data,
                 column_name,
@@ -448,7 +442,7 @@ def plot_data(
                 current_data,
                 target_current.loc[current_data.index],
                 reference_data,
-                target_reference.loc[reference_data.index],
+                target_ref,
             )
             data_by_target = {
                 "data_for_plots": result,

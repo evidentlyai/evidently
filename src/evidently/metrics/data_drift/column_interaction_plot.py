@@ -1,8 +1,8 @@
 import json
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -11,33 +11,28 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.calculations.utils import get_data_for_cat_cat_plot
+from evidently.calculations.utils import get_data_for_num_num_plot
+from evidently.calculations.utils import prepare_box_data
+from evidently.calculations.utils import prepare_data_for_date_cat
+from evidently.calculations.utils import prepare_data_for_date_num
+from evidently.calculations.utils import relabel_data
+from evidently.core import ColumnType
 from evidently.core import IncludeTags
-
-from evidently.metric_results import raw_agg_properties
+from evidently.metric_results import ColumnScatter
+from evidently.metric_results import ContourData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.calculations.utils import get_data_for_num_num_plot
-from evidently.calculations.utils import get_data_for_cat_cat_plot
-from evidently.calculations.utils import prepare_box_data
-from evidently.calculations.utils import prepare_data_for_date_num
-from evidently.calculations.utils import prepare_data_for_date_cat
-from evidently.calculations.utils import relabel_data
+from evidently.renderers.html_widgets import header_text
 from evidently.utils.visualizations import plot_boxes
 from evidently.utils.visualizations import plot_cat_cat_rel
 from evidently.utils.visualizations import plot_cat_feature_in_time
 from evidently.utils.visualizations import plot_contour
-from evidently.utils.visualizations import plot_distr
-from evidently.utils.visualizations import plot_distr_with_log_button
 from evidently.utils.visualizations import plot_num_feature_in_time
 from evidently.utils.visualizations import plot_num_num_rel
-from evidently.utils.visualizations import plot_time_feature_distr
-from evidently.renderers.html_widgets import header_text
-from evidently.metric_results import ContourData
-from evidently.metric_results import ColumnScatter
-from evidently.core import ColumnType
-import logging
+
 
 class ColumnInteractionPlotResults(MetricResult):
     class Config:
@@ -68,16 +63,16 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
         super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnInteractionPlotResults:
-        
+
         for col in [self.x_column, self.y_column]:
             if not data.has_column(col):
-                raise ValueError(f"Column '{col.display_name}' not found in dataset.")
+                raise ValueError(f"Column '{col}' not found in dataset.")
 
         x_type, x_curr, x_ref = data.get_data(self.x_column)
         y_type, y_curr, y_ref = data.get_data(self.y_column)
-        for col in [x_curr, x_ref, y_curr, y_ref]:
-            if col is not None:
-                col.replace([np.inf, -np.inf], np.nan, inplace=True)
+        for column in [x_curr, x_ref, y_curr, y_ref]:
+            if column is not None:
+                column.replace(to_replace=[np.inf, -np.inf], value=np.nan, inplace=True)
         if x_type == ColumnType.Categorical:
             x_curr, x_ref = relabel_data(x_curr, x_ref)
         if y_type == ColumnType.Categorical:
@@ -96,18 +91,18 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
                 x_ref if x_ref is not None else None,
                 y_ref if y_ref is not None else None,
             )
-            if isinstance(result['current'], dict):
+            if isinstance(result["current"], dict):
                 return ColumnInteractionPlotResults(
                     x_type=x_type,
                     y_type=y_type,
-                    current_scatter=result['current'],
-                    reference_scatter=result['reference'],
+                    current_scatter=result["current"],
+                    reference_scatter=result.get("reference"),
                 )
             return ColumnInteractionPlotResults(
                 x_type=x_type,
                 y_type=y_type,
-                current_contour=result['current'],
-                reference_contour=result['reference'],
+                current_contour=result["current"],
+                reference_contour=result.get("reference"),
             )
         if x_type == ColumnType.Categorical and y_type == ColumnType.Categorical:
             result = get_data_for_cat_cat_plot(
@@ -121,12 +116,11 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
             return ColumnInteractionPlotResults(
                 x_type=x_type,
                 y_type=y_type,
-                current=result['current'],
-                reference=result['reference'],
+                current=result["current"],
+                reference=result.get("reference"),
             )
-        if (
-            (x_type == ColumnType.Categorical and y_type == ColumnType.Numerical)
-            or (x_type == ColumnType.Numerical and y_type == ColumnType.Categorical)
+        if (x_type == ColumnType.Categorical and y_type == ColumnType.Numerical) or (
+            x_type == ColumnType.Numerical and y_type == ColumnType.Categorical
         ):
             curr_df = pd.DataFrame({self.x_column: x_curr, self.y_column: y_curr})
             ref_df = None
@@ -140,12 +134,11 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
             return ColumnInteractionPlotResults(
                 x_type=x_type,
                 y_type=y_type,
-                current_boxes=result['current'],
-                reference_boxes=result['reference'],
+                current_boxes=result["current"],
+                reference_boxes=result.get("reference"),
             )
-        if (
-            (x_type == ColumnType.Numerical and y_type == ColumnType.Datetime)
-            or (x_type == ColumnType.Datetime and y_type == ColumnType.Numerical)
+        if (x_type == ColumnType.Numerical and y_type == ColumnType.Datetime) or (
+            x_type == ColumnType.Datetime and y_type == ColumnType.Numerical
         ):
             if x_type == ColumnType.Numerical:
                 date_name, date_curr, date_ref = self.y_column, y_curr, y_ref
@@ -163,9 +156,8 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
                 reference=ref_res,
                 prefix=prefix,
             )
-        if (
-            (x_type == ColumnType.Categorical and y_type == ColumnType.Datetime)
-            or (x_type == ColumnType.Datetime and y_type == ColumnType.Categorical)
+        if (x_type == ColumnType.Categorical and y_type == ColumnType.Datetime) or (
+            x_type == ColumnType.Datetime and y_type == ColumnType.Categorical
         ):
             if x_type == ColumnType.Categorical:
                 date_name, date_curr, date_ref = self.y_column, y_curr, y_ref
@@ -174,12 +166,7 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
                 date_name, date_curr, date_ref = self.x_column, x_curr, x_ref
                 cat_name, cat_curr, cat_ref = self.y_column, y_curr, y_ref
             curr_res, ref_res, prefix = prepare_data_for_date_cat(
-                date_curr,
-                date_ref,
-                date_name,
-                cat_name,
-                cat_curr,
-                cat_ref
+                date_curr, date_ref, date_name, cat_name, cat_curr, cat_ref
             )
             return ColumnInteractionPlotResults(
                 x_type=x_type,
@@ -188,6 +175,7 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
                 reference=ref_res,
                 prefix=prefix,
             )
+        raise ValueError(f"Combination of types {x_type} and {y_type} is not supported.")
 
 
 @default_renderer(wrap_type=ColumnInteractionPlot)
@@ -200,21 +188,25 @@ class ColumnInteractionPlotRenderer(MetricRenderer):
             and metric_result.y_type == ColumnType.Numerical
             and (metric_result.current_scatter is not None or metric_result.current_contour is not None)
         ):
-            if not agg_data or metric_result.current_scatter is not None:
-                    fig = plot_num_num_rel(
-                        metric_result.current_scatter,
-                        metric_result.reference_scatter,
-                        obj.y_column,
-                        obj.x_column,
-                        self.color_options,
-                    )
-            else:
+            if (
+                isinstance(metric_result.current_scatter, Dict[str, List[Any]])
+                and isinstance(metric_result.reference_scatter, Dict[str, List[Any]])
+                and (not agg_data or metric_result.current_scatter is not None)
+            ):
+                fig = plot_num_num_rel(
+                    metric_result.current_scatter,
+                    metric_result.reference_scatter,
+                    obj.y_column,
+                    obj.x_column,
+                    self.color_options,
+                )
+            elif metric_result.current_contour is not None:
                 fig = plot_contour(
                     metric_result.current_contour,
                     metric_result.reference_contour,
                     obj.x_column,
                     obj.y_column,
-                    )
+                )
                 fig = json.loads(fig.to_json())
         elif (
             metric_result.x_type == ColumnType.Categorical
@@ -257,6 +249,7 @@ class ColumnInteractionPlotRenderer(MetricRenderer):
             metric_result.x_type == ColumnType.Datetime
             and metric_result.y_type == ColumnType.Numerical
             and metric_result.current is not None
+            and metric_result.prefix is not None
         ):
             fig = plot_num_feature_in_time(
                 metric_result.current,
@@ -270,6 +263,7 @@ class ColumnInteractionPlotRenderer(MetricRenderer):
             metric_result.y_type == ColumnType.Datetime
             and metric_result.x_type == ColumnType.Numerical
             and metric_result.current is not None
+            and metric_result.prefix is not None
         ):
             fig = plot_num_feature_in_time(
                 metric_result.current,
@@ -284,6 +278,7 @@ class ColumnInteractionPlotRenderer(MetricRenderer):
             metric_result.x_type == ColumnType.Datetime
             and metric_result.y_type == ColumnType.Categorical
             and metric_result.current is not None
+            and metric_result.prefix is not None
         ):
             fig = plot_cat_feature_in_time(
                 metric_result.current,
@@ -297,6 +292,7 @@ class ColumnInteractionPlotRenderer(MetricRenderer):
             metric_result.y_type == ColumnType.Datetime
             and metric_result.x_type == ColumnType.Categorical
             and metric_result.current is not None
+            and metric_result.prefix is not None
         ):
             fig = plot_cat_feature_in_time(
                 metric_result.current,

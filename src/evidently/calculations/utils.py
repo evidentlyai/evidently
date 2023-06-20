@@ -1,13 +1,13 @@
-from typing import Tuple
-from typing import Optional
 from typing import Dict
+from typing import Optional
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
 
+from evidently.utils.visualizations import choose_agg_period
 from evidently.utils.visualizations import get_gaussian_kde
 from evidently.utils.visualizations import is_possible_contour
-from evidently.utils.visualizations import choose_agg_period
 
 MAX_CATEGORIES = 5
 
@@ -72,7 +72,6 @@ def get_data_for_cat_cat_plot(
 ):
     result = {}
     result["current"] = get_count_values(col2_curr, col1_curr, col2_name, col1_name)
-    result["reference"] = None
     if col1_ref is not None and col2_ref is not None:
         result["reference"] = get_count_values(col2_ref, col1_ref, col2_name, col1_name)
     return result
@@ -90,11 +89,7 @@ def get_data_for_num_num_plot(
     if (
         not agg_data
         or not is_possible_contour(col2_curr, col1_curr)
-        or (
-            col1_ref is not None
-            and col2_ref is not None
-            and not is_possible_contour(col2_ref, col1_ref)
-        )
+        or (col1_ref is not None and col2_ref is not None and not is_possible_contour(col2_ref, col1_ref))
     ):
         result = {
             "current": {
@@ -102,7 +97,6 @@ def get_data_for_num_num_plot(
                 col2_name: col2_curr.tolist(),
             }
         }
-        result["reference"] = None
         if col1_ref is not None and col2_ref is not None:
             result["reference"] = {
                 col1_name: col1_ref.tolist(),
@@ -111,7 +105,6 @@ def get_data_for_num_num_plot(
         return result
 
     result = {"current": get_gaussian_kde(col2_curr, col1_curr)}
-    result["reference"] = None
     if col1_ref is not None and col2_ref is not None:
         result["reference"] = get_gaussian_kde(col2_ref, col1_ref)
     return result
@@ -145,8 +138,7 @@ def prepare_box_data(
         res_df["maxs"] = _quantiles(df_for_plot, 1)
         res_df["values"] = values
         res[name] = res_df
-    if ref is None:
-        res["reference"] = None
+
     return res
 
 
