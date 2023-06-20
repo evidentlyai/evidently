@@ -9,7 +9,7 @@ from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import Path
-from starlette.responses import FileResponse
+from starlette.responses import FileResponse, StreamingResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
@@ -101,6 +101,25 @@ async def get_report_graph_data(
         raise HTTPException(status_code=404, detail="Report not found")
     graphs = report.additional_graphs
     return Response(media_type="application/json", content=json.dumps(graphs.get(str(graph_id)), cls=NumpyEncoder))
+
+
+@api_router.get("/projects/{project_id}/{report_id}/download")
+async def get_report_download(
+    project_id: Annotated[uuid.UUID, PROJECT_ID],
+    report_id: Annotated[uuid.UUID, REPORT_ID],
+    report_format: str = "html",
+) -> Response:
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    report = project.get_item(report_id)
+    if report is None:
+        raise HTTPException(status_code=404, detail="Report not found")
+    if report_format == "html":
+        return Response(report.report.get_html(), headers={"content-disposition": f"attachment;filename={report_id}.html"})
+    if report_format == "json":
+        return Response(report.report.json(), headers={"content-disposition": f"attachment;filename={report_id}.json"})
 
 
 @api_router.get("/projects/{project_id}/{report_id}/data")
