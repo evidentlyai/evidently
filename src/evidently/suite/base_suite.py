@@ -3,6 +3,7 @@ import copy
 import dataclasses
 import json
 import logging
+import uuid
 from datetime import datetime
 from typing import Dict
 from typing import Iterator
@@ -148,7 +149,10 @@ T = TypeVar("T", bound="Display")
 class Display:
     # collection of all possible common options
     options: Options
+    id: uuid.UUID
     timestamp: datetime
+    metadata: Dict[str, str] = {}
+    tags: List[str] = []
 
     def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None):
         self.options = Options.from_any_options(options)

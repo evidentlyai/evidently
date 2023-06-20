@@ -35,10 +35,7 @@ class Report(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
-    id: uuid.UUID
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
-    metadata: Dict[str, str] = {}
-    tags: List[str] = []
 
     def __init__(
         self,
