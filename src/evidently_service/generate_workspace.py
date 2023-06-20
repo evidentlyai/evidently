@@ -56,8 +56,8 @@ def create_project_config():
                 title="sample_panel",
                 filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}),
                 values=[
-                    PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
-                    PanelValue(metric_id="DatasetDriftMetric", field_path="number_of_drifted_columns"),
+                    PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Share"),
+                    PanelValue(metric_id="DatasetDriftMetric", field_path="number_of_drifted_columns", legend="Count"),
                 ],
                 plot_type=PlotType.LINE,
             )

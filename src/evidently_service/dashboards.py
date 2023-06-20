@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Dict
 from typing import Iterable
 from typing import List
+from typing import Optional
 
 from plotly import graph_objs as go
 from pydantic import BaseModel
@@ -28,6 +29,7 @@ class ReportFilter(BaseModel):
 class PanelValue(BaseModel):
     metric_id: str
     field_path: str
+    legend: Optional[str] = None
 
     def get(self, report: Report):
         # todo: make this more efficient
@@ -64,8 +66,8 @@ class DashboardPanel(EnumValueMixin):
                 ys[i].append(value.get(report))
 
         fig = go.Figure()
-        for y in ys:
-            plot = self.plot_type_cls(x=x, y=y)
+        for val, y in zip(self.values, ys):
+            plot = self.plot_type_cls(x=x, y=y, name=val.legend, legendgroup=val.legend)
             fig.add_trace(plot)
         return plotly_figure(title=self.title, figure=fig, size=self.size)
 
