@@ -55,6 +55,10 @@ class Project(BaseModel):
         with open(os.path.join(self.path, METADATA_PATH), "w") as f:
             return json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
+    def reload(self):
+        project = self.load(self.path)
+        self.__dict__.update(project.__dict__)
+
     def _load_items(self):
         self._items = {
             r.id: ProjectItem(r)
@@ -64,14 +68,14 @@ class Project(BaseModel):
 
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
-        if self._items is None:
-            self._load_items()
+        # if self._items is None:
+        self._load_items()
         return {key: value.report for key, value in self._items.items() if isinstance(value.report, Report)}
 
     @property
     def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
-        if self._items is None:
-            self._load_items()
+        # if self._items is None:
+        self._load_items()
         return {key: value.report for key, value in self._items.items() if isinstance(value.report, TestSuite)}
 
     def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
@@ -83,6 +87,7 @@ class Project(BaseModel):
     def build_dashboard_info(
         self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
     ) -> DashboardInfo:
+        self.reload()
         return self.dashboard.build_dashboard_info(
             r
             for r in self.reports.values()

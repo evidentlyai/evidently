@@ -11,9 +11,12 @@ from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestShareOfDriftedColumns
+from evidently_service.dashboards import CounterAgg
 from evidently_service.dashboards import DashboardConfig
-from evidently_service.dashboards import DashboardPanel
+from evidently_service.dashboards import DashboardPanelCounter
+from evidently_service.dashboards import DashboardPanelPlot
 from evidently_service.dashboards import PanelValue
+from evidently_service.dashboards import PlotType
 from evidently_service.dashboards import ReportFilter
 from evidently_service.workspace import Project
 
@@ -52,12 +55,24 @@ def create_project_config():
     conf = DashboardConfig(
         name="sample_dashboard",
         panels=[
-            DashboardPanel(
-                id=uuid.uuid4(),
-                name="sample_panel",
+            DashboardPanelCounter(
+                filter=ReportFilter(metadata_values={}, tag_values=["drift"]), agg=CounterAgg.NONE, title="My beatifule panels"
+            ),
+            DashboardPanelCounter(
                 filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}, tag_values=["drift"]),
-                value=PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns"),
-            )
+                agg=CounterAgg.SUM,
+                value=PanelValue(metric_id="DatasetDriftMetric", field_path="number_of_columns"),
+                title="sum of number_of_columns",
+            ),
+            DashboardPanelPlot(
+                title="sample_panel",
+                filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}, tag_values=["drift"]),
+                values=[
+                    PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Share"),
+                    PanelValue(metric_id="DatasetDriftMetric", field_path="number_of_drifted_columns", legend="Count"),
+                ],
+                plot_type=PlotType.LINE,
+            ),
         ],
     )
     project = Project(name="project1", path="workspace/project1", dashboard=conf)

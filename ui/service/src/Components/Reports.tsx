@@ -6,6 +6,7 @@ import ApiContext from "../lib/contexts/ApiContext";
 import LoadableView from "../lib/components/LoadableVIew";
 import {ReportsHeader} from "./ReportsHeader";
 import {ReportInfo} from "../lib/api/Api";
+import {DownloadButton} from "./DownloadButton";
 
 
 const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
@@ -45,7 +46,7 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
                 <TableCell>
                     <Link component={RouterLink}
                           to={`/projects/${props.projectId}/reports/${report.id}`}><Button>View</Button></Link>
-                    <Button disabled={true}>Download</Button>
+                    <DownloadButton downloadLink={`/api/projects/${props.projectId}/${report.id}/download`} />
                 </TableCell>
             </TableRow>)}
         </Table>
