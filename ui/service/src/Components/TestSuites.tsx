@@ -1,12 +1,26 @@
 import React from 'react';
-import {Button, Grid, Link, Table, TableCell, TableHead, TableRow} from "@material-ui/core";
+import {Breadcrumbs, Button, Grid, Link, Table, TableCell, TableHead, TableRow} from "@material-ui/core";
 
 import {Link as RouterLink} from 'react-router-dom';
 import ApiContext from "../lib/contexts/ApiContext";
 import LoadableView from "../lib/components/LoadableVIew";
-import {ReportsHeader} from "./ReportsHeader";
 import {ReportInfo} from "../lib/api/Api";
+import {DownloadButton} from "./DownloadButton";
 
+export const TestSuitesHeader = (props: {projectId: string, reportId?: string}) => {
+    return <>
+        <Grid item xs={12}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link component={RouterLink} color="inherit" to={`/projects/${props.projectId}/test_suites`}>
+                        Test Suites
+                    </Link>
+                    {props.reportId ? <Link component={RouterLink} color="inherit" to={`/projects/${props.projectId}/test_suites/${props.reportId}`}>
+                        {props.reportId}
+                    </Link> : null }
+                </Breadcrumbs>
+            </Grid>
+        </>
+};
 
 const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
     return <>
@@ -26,7 +40,7 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
         <Table>
             <TableHead>
                 <TableCell>
-                    Report ID
+                    Test Suite ID
                 </TableCell>
                 <TableCell>
                     Timestamp
@@ -45,7 +59,7 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
                 <TableCell>
                     <Link component={RouterLink}
                           to={`/projects/${props.projectId}/test_suites/${report.id}`}><Button>View</Button></Link>
-                    <Button disabled={true}>Download</Button>
+                    <DownloadButton downloadLink={`/api/projects/${props.projectId}/${report.id}/download`} />
                 </TableCell>
             </TableRow>)}
         </Table>
@@ -56,7 +70,6 @@ export function TestSuites(props: { projectId: string }) {
     let {projectId} = props;
     return <>
         <Grid container>
-            <ReportsHeader projectId={projectId}/>
             <Grid item xs={12}>
                 <ApiContext.Consumer>
                     {api =>

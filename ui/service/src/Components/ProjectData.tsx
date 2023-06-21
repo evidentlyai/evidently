@@ -3,8 +3,9 @@ import {Box, Tab, Tabs, Link} from "@material-ui/core";
 import {ReportViewer} from "./ReportViewer";
 import {Link as RouterLink, useParams} from "react-router-dom";
 import {Reports} from "./Reports";
-import {TestSuites} from "./TestSuites";
+import {TestSuites, TestSuitesHeader} from "./TestSuites";
 import { ProjectDashboard } from '../lib/App';
+import { ReportsHeader } from './ReportsHeader';
 
 
 interface TabPanelProps {
@@ -55,9 +56,11 @@ export function ProjectData() {
             <ProjectDashboard projectId={projectId!} />
         </TabPanel>
         <TabPanel value={page} index={"reports"}>
+            <ReportsHeader projectId={projectId!} reportId={reportId} />
             {reportId ? <ReportViewer projectId={projectId!} reportId={reportId} /> : <Reports projectId={projectId!}/> }
         </TabPanel>
         <TabPanel value={page} index={"test_suites"}>
+            <TestSuitesHeader projectId={projectId!} reportId={reportId} />
             {reportId ? <ReportViewer projectId={projectId!} reportId={reportId} /> : <TestSuites projectId={projectId!}/> }
         </TabPanel>
     </>

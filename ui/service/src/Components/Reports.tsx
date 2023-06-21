@@ -57,7 +57,6 @@ export function Reports(props: { projectId: string }) {
     let {projectId} = props;
     return <>
         <Grid container>
-            <ReportsHeader projectId={projectId}/>
             <Grid item xs={12}>
                 <ApiContext.Consumer>
                     {api =>
