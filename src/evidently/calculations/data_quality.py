@@ -17,6 +17,7 @@ from evidently.core import ColumnType
 from evidently.metric_results import ColumnCorrelations
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Distribution
+from evidently.metric_results import DistributionIncluded
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
 from evidently.utils.data_preprocessing import DataDefinition
@@ -793,7 +794,7 @@ def calculate_category_correlation(
         ColumnCorrelations(
             column_name=column_display_name,
             kind="cramer_v",
-            values=Distribution(x=result_x, y=result_y),
+            values=DistributionIncluded(x=result_x, y=result_y),
         ),
     ]
 
