@@ -1,3 +1,4 @@
+import abc
 import uuid
 from enum import Enum
 from typing import Dict
@@ -12,7 +13,10 @@ from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EnumValueMixin
+from evidently.pydantic_utils import PolymorphicModel
+from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.report import Report
 from evidently.suite.base_suite import Display
@@ -48,13 +52,20 @@ class PlotType(Enum):
     HISTOGRAM = "histogram"
 
 
-class DashboardPanel(EnumValueMixin):
-    id: uuid.UUID
+class DashboardPanel(EnumValueMixin, PolymorphicModel):
+    id: uuid.UUID = uuid.uuid4()
     title: str
     filter: ReportFilter
+    size: WidgetSize = WidgetSize.FULL
+
+    @abc.abstractmethod
+    def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
+        raise NotImplementedError
+
+
+class DashboardPanelPlot(DashboardPanel):
     values: List[PanelValue]
     plot_type: PlotType
-    size: WidgetSize = WidgetSize.FULL
 
     def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
         x, ys = [], [[] for _ in range(len(self.values))]
@@ -82,6 +93,34 @@ class DashboardPanel(EnumValueMixin):
         if self.plot_type == PlotType.HISTOGRAM:
             return go.Histogram
         raise ValueError(f"Unsupported plot type {self.plot_type}")
+
+
+class CounterAgg(Enum):
+    SUM = "sum"
+    LAST = "last"
+    NONE = "none"
+
+
+class DashboardPanelCounter(DashboardPanel):
+    agg: CounterAgg
+    value: Optional[PanelValue] = None
+    text: Optional[str] = None
+
+    def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
+        if self.agg == CounterAgg.NONE:
+            return counter(counters=[CounterData(self.title, self.text)], size=self.size)
+        value = self._get_counter_value(reports)
+        ct = CounterData.float(self.title, value, 3) if isinstance(value, float) else CounterData.int(self.title, value)
+        return counter(title=self.title, counters=[ct], size=self.size)
+
+    def _get_counter_value(self, reports: Iterable[Report]):
+        if self.value is None:
+            raise ValueError("Counters with agg should have value")
+        if self.agg == CounterAgg.LAST:
+            return max(((r.timestamp, self.value.get(r)) for r in reports), key=lambda x: x[0])[1]
+        if self.agg == CounterAgg.SUM:
+            return sum(self.value.get(r) or 0 for r in reports)
+        raise ValueError(f"Unknown agg type {self.agg}")
 
 
 class DashboardConfig(BaseModel):
