@@ -170,6 +170,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         return [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
 
     def calculate(self, data: InputData) -> ColumnSummaryResult:
+
         if not data.has_column(self.column_name):
             raise ValueError(f"Column '{self.column_name.display_name}' not found in dataset.")
 

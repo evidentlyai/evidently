@@ -56,6 +56,7 @@ def test_column_correlations_metric_success(
     metric: ColumnCorrelationsMetric,
     expected_result: ColumnCorrelationsMetricResult,
 ) -> None:
+
     report = Report(metrics=[metric])
     report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=column_mapping)
     result = metric.get_result()

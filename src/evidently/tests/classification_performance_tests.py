@@ -59,6 +59,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+
         super().__init__(
             eq=eq,
             gt=gt,
@@ -122,6 +123,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
+
         if k is not None and probas_threshold is not None:
             raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
         self.k = k

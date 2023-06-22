@@ -238,7 +238,7 @@ def create_data_definition(
     embeddings: Optional[Dict[str, List[str]]] = None
     if mapping.embeddings is not None:
         embeddings = dict()
-        for embedding_name, columns in mapping.embeddings.items():
+        for (embedding_name, columns) in mapping.embeddings.items():
             embeddings[embedding_name] = []
             for column in columns:
                 presence = _get_column_presence(column, data)

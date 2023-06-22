@@ -532,6 +532,7 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
             additional_graphs_data = []
 
             for feature_name in result.num_feature_names:  # + cat_feature_names: #feature_names:
+
                 feature_type = "num"
 
                 hist = px.histogram(

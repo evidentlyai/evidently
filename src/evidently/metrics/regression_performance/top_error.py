@@ -189,6 +189,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
     @staticmethod
     def _get_data_for_сontour(df: pd.DataFrame, target_name: str, prediction_name: str) -> dict:
+
         underestimation = get_gaussian_kde(
             df.loc[df["Error bias"] == "Underestimation", prediction_name],
             df.loc[df["Error bias"] == "Underestimation", target_name],

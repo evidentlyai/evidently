@@ -787,6 +787,7 @@ class MeanInNSigmasParameter(TestParameters):
 
 
 class TestMeanInNSigmas(Test):
+
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Mean Value Stability"
     _metric: ColumnSummaryMetric
