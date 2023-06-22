@@ -35,9 +35,7 @@ class Report(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
-    id: uuid.UUID
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
-    metadata: Dict[str, str] = {}
 
     def __init__(
         self,
@@ -46,6 +44,7 @@ class Report(Display):
         timestamp: Optional[datetime.datetime] = None,
         id: uuid.UUID = None,
         metadata: Dict[str, str] = None,
+        tags: List[str] = None,
     ):
         super().__init__(options, timestamp)
         # just save all metrics and metric presets
@@ -54,6 +53,7 @@ class Report(Display):
         self._first_level_metrics = []
         self.id = id or uuid.uuid4()
         self.metadata = metadata or {}
+        self.tags = tags or []
 
     def run(
         self,
@@ -210,6 +210,7 @@ class Report(Display):
             metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics],
             timestamp=self.timestamp,
             metadata=self.metadata,
+            tags=self.tags,
         )
 
     @classmethod
@@ -223,11 +224,12 @@ class _ReportPayload(BaseModel):
     metrics_ids: List[int]
     timestamp: datetime.datetime
     metadata: Dict[str, str]
+    tags: List[str]
 
     def load(self):
         ctx = self.suite.to_context()
         metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id, metadata=self.metadata)
+        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id, metadata=self.metadata, tags=self.tags)
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
 

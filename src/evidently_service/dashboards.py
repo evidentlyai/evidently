@@ -25,9 +25,12 @@ from evidently.suite.base_suite import T
 
 class ReportFilter(BaseModel):
     metadata_values: Dict[str, str]
+    tag_values: List[str]
 
     def filter(self, report: Report):
-        return all(report.metadata.get(key) == value for key, value in self.metadata_values.items())
+        return all(report.metadata.get(key) == value for key, value in self.metadata_values.items()) and all(
+            tag in report.tags for tag in self.tag_values
+        )
 
 
 class PanelValue(BaseModel):

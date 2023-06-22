@@ -1,8 +1,10 @@
+import datetime
 import json
 import uuid
 from contextlib import asynccontextmanager
 from typing import Annotated
 from typing import List
+from typing import Optional
 
 import uvicorn
 from fastapi import APIRouter
@@ -156,13 +158,17 @@ async def list_project_dashboard_panels(
 @api_router.get("/projects/{project_id}/dashboard")
 async def project_dashboard(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
+    timestamp_start: Optional[datetime.datetime] = None,
+    timestamp_end: Optional[datetime.datetime] = None,
 ) -> Response:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    info = DashboardInfoModel.from_dashboard_info(project.build_dashboard_info())
+    info = DashboardInfoModel.from_dashboard_info(
+        project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
+    )
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")

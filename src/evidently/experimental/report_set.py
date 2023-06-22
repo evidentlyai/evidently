@@ -1,5 +1,6 @@
 import datetime
 import os
+import uuid
 from collections import defaultdict
 from typing import Dict
 from typing import List
@@ -24,15 +25,15 @@ def load_metric_report_set(
     reports = load_report_set(path, Report, date_from, date_to)
     result: Dict[Metric, Dict[datetime.datetime, MetricResult]] = defaultdict(dict)
     if metrics is None:
-        for timestamp, report in reports.items():
+        for _, report in reports.items():
             for metric in report._first_level_metrics:
-                result[metric][timestamp] = metric.get_result()
+                result[metric][report.timestamp] = metric.get_result()
         return result
     for metric in metrics:
-        for timestamp, report in reports.items():
+        for _, report in reports.items():
             if metric in report._first_level_metrics:
                 metric.set_context(report._inner_suite.context)
-                result[metric][timestamp] = metric.get_result()
+                result[metric][report.timestamp] = metric.get_result()
     return result
 
 
@@ -45,7 +46,7 @@ def load_report_set(
     date_from: Optional[datetime.datetime] = None,
     date_to: Optional[datetime.datetime] = None,
     skip_errors: bool = False,
-) -> Dict[datetime.datetime, T]:
+) -> Dict[uuid.UUID, T]:
     result = {}
     for file in os.listdir(path):
         filepath = os.path.join(path, file)
@@ -59,5 +60,5 @@ def load_report_set(
             continue
         if date_to is not None and suite.timestamp > date_to:
             continue
-        result[suite.timestamp] = suite
+        result[suite.id] = suite
     return result

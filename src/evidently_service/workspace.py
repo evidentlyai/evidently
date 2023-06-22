@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import uuid
@@ -83,9 +84,16 @@ class Project(BaseModel):
             return None
         return self._items.get(item.id)
 
-    def build_dashboard_info(self) -> DashboardInfo:
+    def build_dashboard_info(
+        self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
+    ) -> DashboardInfo:
         self.reload()
-        return self.dashboard.build_dashboard_info(self.reports.values())
+        return self.dashboard.build_dashboard_info(
+            r
+            for r in self.reports.values()
+            if (timestamp_start is None or r.timestamp >= timestamp_start)
+            and (timestamp_end is None or r.timestamp < timestamp_end)
+        )
 
 
 class Workspace:
