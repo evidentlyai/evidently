@@ -56,7 +56,6 @@ def get_binned_data(
 
 
 def permutation_test(reference_data, current_data, observed, test_statistic_func, iterations=100):
-
     """Perform a two-sided permutation test
     Args:
         reference_data: reference data

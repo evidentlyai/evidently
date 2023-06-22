@@ -113,7 +113,11 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
     group: str
     groups: Dict[str, str] = Field(default_factory=dict, exclude=True)
     parameters: Optional[TestParameters]
-    exception: Optional[BaseException] = Field(None, exclude=True)
+    _exception: Optional[BaseException] = Field(None, exclude=True)
+
+    @property
+    def exception(self):
+        return self._exception
 
     def set_status(self, status: TestStatus, description: Optional[str] = None) -> None:
         self.status = status

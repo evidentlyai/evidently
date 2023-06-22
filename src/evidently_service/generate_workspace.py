@@ -15,7 +15,6 @@ from evidently_service.dashboards import DashboardPanelPlot
 from evidently_service.dashboards import PanelValue
 from evidently_service.dashboards import PlotType
 from evidently_service.dashboards import ReportFilter
-from evidently_service.workspace import Project
 from evidently_service.workspace import Workspace
 
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
@@ -26,17 +25,19 @@ adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])
 
 adult_cur.iloc[:2000, 3:5] = np.nan
 
+WORKSPACE = "workspace"
 
-def create_report(project: Project, metric, date: datetime.datetime, tag: str):
+
+def create_report(metric, date: datetime.datetime, tag: str):
     data_drift_report = Report(
         metrics=[metric], metadata={"type": metric.__class__.__name__}, tags=[tag], timestamp=date
     )
 
     data_drift_report.run(reference_data=adult_ref, current_data=adult_cur)
-    project.add_report(data_drift_report)
+    return data_drift_report
 
 
-def create_test_suite(project: Project):
+def create_test_suite():
     data_drift_dataset_tests = TestSuite(
         tests=[
             TestNumberOfDriftedColumns(),
@@ -45,12 +46,12 @@ def create_test_suite(project: Project):
     )
 
     data_drift_dataset_tests.run(reference_data=adult_ref, current_data=adult_cur)
-    project.add_test_suite(data_drift_dataset_tests)
+    return data_drift_dataset_tests
 
 
 def create_project():
     ws = Workspace.create("workspace")
-    project = ws.add_project("project1")
+    project = ws.create_project("project1")
     project.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=["drift"]),
@@ -77,27 +78,25 @@ def create_project():
             plot_type=PlotType.LINE,
         )
     )
-    project.save()
     return project
 
 
 def main():
-
     project = create_project()
+    project.save()
 
     for d in range(1, 10):
         ts = datetime.datetime.combine(datetime.date.today() + datetime.timedelta(days=d), datetime.time())
         create_report(
-            project,
             DataDriftPreset(
                 num_stattest="ks", cat_stattest="psi", num_stattest_threshold=0.2, cat_stattest_threshold=0.2
             ),
             ts,
             "drift",
-        )
-        create_report(project, DatasetCorrelationsMetric(), ts, "correlation")
+        ).upload(WORKSPACE, project.id)
+        create_report(DatasetCorrelationsMetric(), ts, "correlation").upload(WORKSPACE, project.id)
 
-    create_test_suite(project)
+    create_test_suite().upload(WORKSPACE, project.id)
 
 
 if __name__ == "__main__":

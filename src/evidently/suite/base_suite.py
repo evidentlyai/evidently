@@ -5,6 +5,7 @@ import json
 import logging
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -44,6 +45,9 @@ from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
 from evidently.utils.data_preprocessing import DataDefinition
+
+if TYPE_CHECKING:
+    from evidently_service.workspace import Workspace
 
 
 @dataclasses.dataclass
@@ -295,6 +299,11 @@ class Display:
 
         with open(filename, "w") as f:
             json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
+
+    def upload(self, workspace_or_url: Union[str, "Workspace"], project_id: Union[uuid.UUID, str]):
+        from evidently_service.workspace import upload_item
+
+        upload_item(self, workspace_or_url, project_id)  # type: ignore[arg-type]
 
     @classmethod
     def _load(cls: Type[T], filename) -> T:

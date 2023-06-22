@@ -139,6 +139,8 @@ class Project(BaseModel):
 class Workspace:
     def __init__(self, path: str):
         self.path = path
+        if not os.path.exists(path):
+            os.mkdir(path)
         self._projects: Dict[uuid.UUID, Project] = self._load_projects()
 
     @classmethod
@@ -146,11 +148,17 @@ class Workspace:
         os.makedirs(path, exist_ok=True)
         return Workspace(path=path)
 
-    def add_project(self, name: str, description: Optional[str] = None) -> Project:
+    def create_project(self, name: str, description: Optional[str] = None) -> Project:
         project = Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[])).bind(
             self
         )
         project.save()
+        return project
+
+    def add_project(self, project: Project) -> Project:
+        project.bind(self)
+        project.save()
+        self._projects[project.id] = project
         return project
 
     def _load_projects(self) -> Dict[uuid.UUID, Project]:
@@ -166,3 +174,24 @@ class Workspace:
 
     def list_projects(self) -> List[Project]:
         return list(self._projects.values())
+
+
+def upload_item(
+    item: Union[Report, TestSuite], workspace_or_url: Union[str, Workspace], project_id: Union[uuid.UUID, str]
+):
+    if isinstance(workspace_or_url, Workspace):
+        workspace_or_url.get_project(project_id).add_item(item)
+        return
+
+    if os.path.exists(workspace_or_url):
+        workspace = Workspace(path=workspace_or_url)
+        workspace.get_project(project_id).add_item(item)
+        return
+
+    from evidently_service.client import EvidentlyClient
+
+    client = EvidentlyClient(workspace_or_url)
+    if isinstance(item, Report):
+        client.add_report(project_id, item)
+    else:
+        client.add_test_suite(project_id, item)
