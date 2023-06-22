@@ -195,7 +195,6 @@ class Display:
         )
         return self._render(determine_template("inline"), template_params)
 
-
     def save_html(self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         if isinstance(mode, str):
