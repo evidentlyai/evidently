@@ -209,6 +209,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
     def _calculate_underperformance(
         self, error: pd.Series, quantile_5: float, quantile_95: float, conf_interval_n_sigmas: int = 1
     ):
+
         mae_under = np.mean(error[error <= quantile_5])
         mae_exp = np.mean(error[(error > quantile_5) & (error < quantile_95)])
         mae_over = np.mean(error[error >= quantile_95])

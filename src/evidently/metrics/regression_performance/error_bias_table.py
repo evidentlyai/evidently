@@ -588,6 +588,7 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 )
 
             for feature_name in result.cat_feature_names:  # feature_names:
+
                 feature_type = "cat"
 
                 hist = px.histogram(
