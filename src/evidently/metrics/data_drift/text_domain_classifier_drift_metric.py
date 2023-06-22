@@ -137,11 +137,7 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
             shuffle=True,
         )
         # calculate domain classifier roc-auc score
-        (
-            domain_classifier_roc_auc,
-            y_pred_proba,
-            classifier_pipeline,
-        ) = self.roc_auc_domain_classifier(
+        (domain_classifier_roc_auc, y_pred_proba, classifier_pipeline,) = self.roc_auc_domain_classifier(
             X_train,
             X_test,
             y_train,
