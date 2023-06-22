@@ -11,7 +11,7 @@ from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import Path
-from starlette.responses import FileResponse, StreamingResponse
+from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
@@ -119,7 +119,9 @@ async def get_report_download(
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
     if report_format == "html":
-        return Response(report.report.get_html(), headers={"content-disposition": f"attachment;filename={report_id}.html"})
+        return Response(
+            report.report.get_html(), headers={"content-disposition": f"attachment;filename={report_id}.html"}
+        )
     if report_format == "json":
         return Response(report.report.json(), headers={"content-disposition": f"attachment;filename={report_id}.json"})
 

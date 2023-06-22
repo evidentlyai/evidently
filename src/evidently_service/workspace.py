@@ -18,8 +18,11 @@ from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.utils import NumpyEncoder
 from evidently_service.dashboards import DashboardConfig
+from evidently_service.dashboards import DashboardPanel
 
 METADATA_PATH = "metadata.json"
+REPORTS_PATH = "reports"
+TEST_SUITES_PATH = "test_suites"
 
 
 class ProjectItem:
@@ -35,12 +38,46 @@ class Project(BaseModel):
     id: UUID4 = Field(default_factory=uuid.uuid4)
     name: str
     description: Optional[str] = None
-    path: str
     dashboard: DashboardConfig
 
     _reports: Optional[Dict[uuid.UUID, Report]] = None
     _test_suites: Optional[Dict[uuid.UUID, TestSuite]] = None
     _items: Optional[Dict[uuid.UUID, ProjectItem]] = None
+    _workspace: "Workspace"
+
+    @property
+    def items(self):
+        if not hasattr(self, "_items") or self._items is None:
+            self._items = {}
+        return self._items
+
+    @property
+    def path(self):
+        return os.path.join(self.workspace.path, str(self.id))
+
+    @property
+    def workspace(self) -> "Workspace":
+        if not hasattr(self, "_workspace"):
+            raise ValueError("Project is not binded to workspace")
+        return self._workspace
+
+    def bind(self, workspace: "Workspace"):
+        self._workspace = workspace
+        return self
+
+    def add_panel(self, panel: DashboardPanel):
+        self.dashboard.panels.append(panel)
+
+    def add_item(self, item: Union[Report, TestSuite]):
+        item_dir = REPORTS_PATH if isinstance(item, Report) else TEST_SUITES_PATH
+        item._save(os.path.join(self.path, item_dir, str(item.id) + ".json"))
+        self.items[item.id] = ProjectItem(item)
+
+    def add_report(self, report: Report):
+        self.add_item(report)
+
+    def add_test_suite(self, test_suite: TestSuite):
+        self.add_item(test_suite)
 
     @classmethod
     def load(cls, path: str) -> "Project":
@@ -48,15 +85,16 @@ class Project(BaseModel):
             with open(os.path.join(path, METADATA_PATH)) as f:
                 return parse_obj_as(Project, json.load(f))
         except FileNotFoundError:
-            return Project(name="Unnamed Project", path=path, dashboard=DashboardConfig(name="Dashboard", panels=[]))
+            return Project(name="Unnamed Project", dashboard=DashboardConfig(name="Dashboard", panels=[]))
 
     def save(self):
-        # todo: need better `path` handling (either absolute or add workspace arg)
+        os.makedirs(os.path.join(self.path, REPORTS_PATH), exist_ok=True)
+        os.makedirs(os.path.join(self.path, TEST_SUITES_PATH), exist_ok=True)
         with open(os.path.join(self.path, METADATA_PATH), "w") as f:
             return json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
     def reload(self):
-        project = self.load(self.path)
+        project = self.load(self.path).bind(self.workspace)
         self.__dict__.update(project.__dict__)
 
     def _load_items(self):
@@ -89,10 +127,12 @@ class Project(BaseModel):
     ) -> DashboardInfo:
         self.reload()
         return self.dashboard.build_dashboard_info(
-            r
-            for r in self.reports.values()
-            if (timestamp_start is None or r.timestamp >= timestamp_start)
-            and (timestamp_end is None or r.timestamp < timestamp_end)
+            [
+                r
+                for r in self.reports.values()
+                if (timestamp_start is None or r.timestamp >= timestamp_start)
+                and (timestamp_end is None or r.timestamp < timestamp_end)
+            ]
         )
 
 
@@ -101,9 +141,21 @@ class Workspace:
         self.path = path
         self._projects: Dict[uuid.UUID, Project] = self._load_projects()
 
+    @classmethod
+    def create(cls, path: str):
+        os.makedirs(path, exist_ok=True)
+        return Workspace(path=path)
+
+    def add_project(self, name: str, description: Optional[str] = None) -> Project:
+        project = Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[])).bind(
+            self
+        )
+        project.save()
+        return project
+
     def _load_projects(self) -> Dict[uuid.UUID, Project]:
         projects = [
-            Project.load(os.path.join(self.path, p))
+            Project.load(os.path.join(self.path, p)).bind(self)
             for p in os.listdir(self.path)
             if os.path.isdir(os.path.join(self.path, p))
         ]
