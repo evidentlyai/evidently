@@ -456,6 +456,9 @@ class Suite:
         for result in self.context.test_results.values():
             if result.exception is not None:
                 raise result.exception
+        for result in self.context.metric_results.values():
+            if isinstance(result, ErrorResult):
+                raise result.exception
 
     def reset(self):
         self.context = Context(

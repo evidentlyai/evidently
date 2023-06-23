@@ -33,6 +33,12 @@ class ReportFilter(BaseModel):
         )
 
 
+def get_nested(d: dict, path: List[str]):
+    if len(path) == 1:
+        return d[path[0]]
+    return get_nested(d[path[0]], path[1:])
+
+
 class PanelValue(BaseModel):
     metric_id: str
     field_path: str
@@ -43,7 +49,7 @@ class PanelValue(BaseModel):
         for metric in report.as_dict()["metrics"]:
             if metric["metric"] == self.metric_id:
                 # todo: nested path
-                return metric["result"][self.field_path]
+                return get_nested(metric["result"], self.field_path.split("."))
         return None
 
 
@@ -71,14 +77,16 @@ class DashboardPanelPlot(DashboardPanel):
     plot_type: PlotType
 
     def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
-        x, ys = [], [[] for _ in range(len(self.values))]
+        # x, ys = [], [[] for _ in range(len(self.values))]
+        points = []
         for report in reports:
             if not self.filter.filter(report):
                 continue
-            x.append(report.timestamp)
-            for i, value in enumerate(self.values):
-                ys[i].append(value.get(report))
+            points.append((report.timestamp, [value.get(report) for value in self.values]))
 
+        points.sort(key=lambda x: x[0])
+        x = [p[0] for p in points]
+        ys = [[p[1][i] for p in points] for i in range(len(self.values))]
         fig = go.Figure()
         for val, y in zip(self.values, ys):
             plot = self.plot_type_cls(x=x, y=y, name=val.legend, legendgroup=val.legend)

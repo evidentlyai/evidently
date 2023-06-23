@@ -1,0 +1,1 @@
+python -c "from evidently_service.app import main; main()"

@@ -1,5 +1,6 @@
 import datetime
 import json
+import os.path
 import uuid
 from contextlib import asynccontextmanager
 from typing import Annotated
@@ -41,14 +42,15 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-app.mount("/static", StaticFiles(directory="ui/static"), name="static")
+scr_dir = os.path.dirname(__file__)
+app.mount("/static", StaticFiles(directory=os.path.join(scr_dir, "ui/static")), name="static")
 
 
 @app.get("/")
 @app.get("/projects")
 @app.get("/projects/{path:path}")
 async def index(path=None):
-    return FileResponse("ui/index.html")
+    return FileResponse(os.path.join(scr_dir, "ui/index.html"))
 
 
 @app.get("/manifest.json")
