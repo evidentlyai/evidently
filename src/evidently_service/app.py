@@ -79,6 +79,15 @@ async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[Rep
     return [ReportModel.from_report(r) for r in project.reports.values()]
 
 
+@api_router.get("/projects/{project_id}/info")
+async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> ProjectModel:
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="project not found")
+    return ProjectModel.from_project(project)
+
+
 @api_router.get("/projects/{project_id}/test_suites")
 async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[TestSuiteModel]:
     workspace: Workspace = app.state.workspace
@@ -92,17 +101,19 @@ async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List
 async def get_report_graph_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     report_id: Annotated[uuid.UUID, REPORT_ID],
-    graph_id: Annotated[uuid.UUID, REPORT_ID],
+    graph_id: Annotated[str, REPORT_ID],
 ) -> Response:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_item(report_id)
+    report = project.get_additional_graph_info(report_id, graph_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
-    graphs = report.additional_graphs
-    return Response(media_type="application/json", content=json.dumps(graphs.get(str(graph_id)), cls=NumpyEncoder))
+    graph = project.get_additional_graph_info(report_id, graph_id)
+    if graph is None:
+        raise HTTPException(status_code=404, detail="Graph not found")
+    return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
 
 
 @api_router.get("/projects/{project_id}/{report_id}/download")

@@ -4,9 +4,9 @@ import {Button, Grid, Link, Table, TableCell, TableHead, TableRow} from "@materi
 import {Link as RouterLink} from 'react-router-dom';
 import ApiContext from "../lib/contexts/ApiContext";
 import LoadableView from "../lib/components/LoadableVIew";
-import {ReportsHeader} from "./ReportsHeader";
 import {ReportInfo} from "../lib/api/Api";
 import {DownloadButton} from "./DownloadButton";
+import {TextWithCopyIcon} from "./TextWithCopyIcon";
 
 
 const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
@@ -38,7 +38,7 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
             </TableHead>
             {props.reports.map(report => <TableRow>
                 <TableCell>
-                    {report.id}
+                    <TextWithCopyIcon showText={report.id} copyText={report.id} />
                 </TableCell>
                 <TableCell>
                     {report.timestamp.toString()}

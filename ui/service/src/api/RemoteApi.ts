@@ -1,7 +1,7 @@
 import {
     AdditionalGraphInfo,
     Api,
-    DashboardInfo,
+    DashboardInfo, ProjectDetails,
     ProjectInfo,
     ReportInfo,
     TestSuiteInfo,
@@ -84,6 +84,17 @@ export default class RemoteApi implements Api {
         const resp = await fetch(`${this.endpoint}/projects/${projectId}/test_suites`);
         if (resp.ok) {
             return (await resp.json() as TestSuiteInfo[]);
+        }
+        else
+        {
+            throw Error(`${resp.status}, ${resp.statusText}`);
+        }
+    }
+
+    async getProjectInfo(projectId: string): Promise<ProjectDetails> {
+        const resp = await fetch(`${this.endpoint}/projects/${projectId}/info`);
+        if (resp.ok) {
+            return (await resp.json() as ProjectDetails);
         }
         else
         {

@@ -235,6 +235,8 @@ export interface ProjectInfo {
     project_name: string;
 }
 
+export interface ProjectDetails extends ProjectInfo {}
+
 export interface ReportInfo {
     id: string;
     timestamp: Date;
@@ -258,4 +260,6 @@ export interface Api {
     getTestSuites(projectId: string): Promise<TestSuiteInfo[]>
 
     getProjects(): Promise<ProjectInfo[]>
+
+    getProjectInfo(projectId: string): Promise<ProjectDetails>;
 }

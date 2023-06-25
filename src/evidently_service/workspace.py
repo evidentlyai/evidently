@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 import uuid
-from typing import Dict
+from typing import Dict, Tuple
 from typing import List
 from typing import Optional
 from typing import Union
@@ -28,7 +28,24 @@ TEST_SUITES_PATH = "test_suites"
 class ProjectItem:
     def __init__(self, report: Union[Report, TestSuite]):
         self.report = report
-        _, self.dashboard_info, self.additional_graphs = report._build_dashboard_info()
+        self.last_modified_date = None
+        self._dashboard_info = None
+        self._additional_graphs = None
+
+    @property
+    def dashboard_info(self):
+        if self._dashboard_info is None:
+            self._load()
+        return self._dashboard_info
+
+    @property
+    def additional_graphs(self):
+        if self._additional_graphs is None:
+            self._load()
+        return self._additional_graphs
+
+    def _load(self):
+        _, self._dashboard_info, self._additional_graphs = self.report._build_dashboard_info()
 
 
 class Project(BaseModel):
@@ -43,6 +60,7 @@ class Project(BaseModel):
     _reports: Optional[Dict[uuid.UUID, Report]] = None
     _test_suites: Optional[Dict[uuid.UUID, TestSuite]] = None
     _items: Optional[Dict[uuid.UUID, ProjectItem]] = None
+    _cached_graphs: Optional[Dict[Tuple[uuid.UUID, str], dict]] = None
     _workspace: "Workspace"
 
     @property
@@ -120,7 +138,17 @@ class Project(BaseModel):
         item = self.reports.get(report_id) or self.test_suites.get(report_id)
         if item is None:
             return None
+        project_item = self._items.get(item.id)
+        if project_item is None:
+            return None
+        if self._cached_graphs is None:
+            self._cached_graphs = {}
+        for graph_id, graph_data in project_item.additional_graphs.items():
+            self._cached_graphs[(report_id, graph_id)] = graph_data
         return self._items.get(item.id)
+
+    def get_additional_graph_info(self, report_id: uuid.UUID, graph_id: str) -> Optional[dict]:
+        return self._cached_graphs.get((report_id, graph_id))
 
     def build_dashboard_info(
         self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]

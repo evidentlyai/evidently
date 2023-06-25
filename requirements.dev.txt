@@ -12,3 +12,7 @@ pillow==9.5.0
 # Be careful on Black version update: this is the last release that supports running Black on Python 3.6
 black==22.8.0
 isort==5.10.1
+
+# service dependencies
+fastapi
+uvicorn
