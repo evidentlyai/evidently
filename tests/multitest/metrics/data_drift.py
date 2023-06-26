@@ -70,7 +70,12 @@ def column_drift_metric():
 
 @metric
 def column_interaction_plot():
-    return TestMetric("column_interaction_plot", ColumnInteractionPlot("age", "education"), NoopOutcome(), dataset_names=["adult"])
+    return TestMetric(
+        "column_interaction_plot",
+        ColumnInteractionPlot("age", "education"),
+        NoopOutcome(),
+        dataset_names=["adult"],
+    )
 
 
 def embeddings_dataset():
