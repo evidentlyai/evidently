@@ -4,6 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 
+from evidently.core import ColumnType
 from evidently.utils.types import ApproxValue
 
 _TYPES_MAPPING = (
@@ -22,6 +23,7 @@ _TYPES_MAPPING = (
     ((pd.Series, pd.Index, pd.Categorical), lambda obj: obj.tolist()),
     ((pd.DataFrame,), lambda obj: obj.to_dict()),
     ((frozenset,), lambda obj: list(obj)),
+    ((ColumnType,), lambda obj: obj.value),
 )
 
 

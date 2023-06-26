@@ -4,6 +4,7 @@ from sklearn import datasets
 from sklearn.datasets import fetch_20newsgroups
 
 from evidently import ColumnMapping
+from evidently.metrics import ColumnInteractionPlot
 from evidently.metrics.data_drift.column_drift_metric import ColumnDriftMetric
 from evidently.metrics.data_drift.column_value_plot import ColumnValuePlot
 from evidently.metrics.data_drift.data_drift_table import DataDriftTable
@@ -65,6 +66,11 @@ def text_descriptors_drift_metric():
 @metric
 def column_drift_metric():
     return TestMetric("column_drift_metric", ColumnDriftMetric("age"), NoopOutcome(), dataset_names=["adult"])
+
+
+@metric
+def column_interaction_plot():
+    return TestMetric("column_interaction_plot", ColumnInteractionPlot("age", "education"), NoopOutcome(), dataset_names=["adult"])
 
 
 def embeddings_dataset():
