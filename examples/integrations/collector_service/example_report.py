@@ -1,24 +1,27 @@
 import datetime
 import json
 import os.path
-import random
 import time
 
-import numpy as np
 import pandas as pd
 import requests
-from sklearn import datasets
+from config import CONFIG_PATH
+from config import CollectorConfig
+from config import create_config_report
 from requests.exceptions import RequestException
-from evidently.metric_preset import DataDriftPreset
+
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.report import Report
-from config import CONFIG_PATH, CollectorConfig, create_config_report
 from evidently.utils import NumpyEncoder
-from evidently_service.dashboards import DashboardPanelPlot, PanelValue, PlotType, ReportFilter
+from evidently_service.dashboards import DashboardPanelPlot
+from evidently_service.dashboards import PanelValue
+from evidently_service.dashboards import PlotType
+from evidently_service.dashboards import ReportFilter
 from evidently_service.workspace import Workspace
 
 REPORT_CONFIG_PATH = "report.json"
 WORKSACE_PATH = "workspace"
+
 
 def get_data():
     cur = ref = pd.DataFrame([{"values1": 5., "values2": 0.} for _ in range(10)])
@@ -31,6 +34,7 @@ def setup_report(path):
     cur, ref = get_data()
     report.run(reference_data=ref, current_data=cur)
     create_config_report(report, path)
+
 
 def setup_workspace():
     ws = Workspace.create("workspace")
@@ -50,20 +54,23 @@ def setup_workspace():
     conf = CollectorConfig(snapshot_interval=5, report_config_path="report.json", project_id=str(project.id))
     conf.save(CONFIG_PATH)
 
+
 def send_data():
     size = 1
     data = pd.DataFrame([{"values1": 3. + datetime.datetime.now().minute % 5, "values2": 0.} for _ in range(size)])
-    r = requests.post("http://localhost:8001/data", data=json.dumps(data.to_dict(), cls=NumpyEncoder), headers={"ContentType": "application/json"})
+    r = requests.post("http://localhost:8001/data", data=json.dumps(data.to_dict(), cls=NumpyEncoder),
+                      headers={"ContentType": "application/json"})
     r.raise_for_status()
     print("data sent")
 
 
 def start_sending_data():
+    print("Start data loop")
     while True:
         try:
             send_data()
-        except RequestException:
-            pass
+        except RequestException as e:
+            print(f"collector service not available: {e.__class__.__name__}")
         time.sleep(1)
 
 

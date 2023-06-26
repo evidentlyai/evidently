@@ -1,8 +1,9 @@
 import json
-import uuid
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 from evidently.base_metric import Metric
 from evidently.options.base import Options
@@ -10,6 +11,7 @@ from evidently.report import Report
 from evidently.utils import NumpyEncoder
 
 CONFIG_PATH = "config.json"
+
 
 class Config(BaseModel):
     @classmethod
@@ -27,7 +29,6 @@ class CollectorConfig(Config):
     report_config_path: str
     project_id: str
     api_url: str = "http://localhost:8000"
-
 
     @classmethod
     def load_or_default(cls, path: str, default: "CollectorConfig"):

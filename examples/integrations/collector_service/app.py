@@ -2,15 +2,13 @@ from asyncio import Lock
 
 import pandas as pd
 import uvicorn
-from fastapi import Body, FastAPI
-from fastapi import Response, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request
 from fastapi_utils.tasks import repeat_every
 
 from config import CollectorConfig
 from evidently import ColumnMapping
 from evidently.report import Report
-from  example_report import get_data
+from example_report import get_data
 
 app = FastAPI()
 conf = CollectorConfig.load("config.json")
@@ -20,12 +18,14 @@ buffer = []
 
 _, reference = get_data()
 
+
 @app.post("/data")
 async def data(request: Request):
     async with lock:
         buffer.append(await request.json())
     print("Buffer size", len(buffer))
     return {}
+
 
 @app.on_event("startup")
 @repeat_every(seconds=conf.snapshot_interval)
@@ -44,6 +44,7 @@ async def create_snapshot():
         report._inner_suite.raise_for_error()
         report.upload(conf.api_url, conf.project_id)
         buffer.clear()
+
 
 def main():
     uvicorn.run(app, port=8001)
