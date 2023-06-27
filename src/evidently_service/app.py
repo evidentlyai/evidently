@@ -189,21 +189,19 @@ async def add_project(project: Project):
 @api_router.post("/projects/{project_id}/reports")
 async def add_project_report(project_id: Annotated[uuid.UUID, PROJECT_ID], report: _ReportPayload):
     workspace: Workspace = app.state.workspace
-    project = workspace.get_project(project_id)
-    if project is None:
+    if workspace.get_project(project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    project.add_report(report.load())
+    workspace.add_report(project_id, report.load())
 
 
 @api_router.post("/projects/{project_id}/test_suites")
 async def add_project_test_suite(project_id: Annotated[uuid.UUID, PROJECT_ID], test_suite: _TestSuitePayload):
     workspace: Workspace = app.state.workspace
-    project = workspace.get_project(project_id)
-    if project is None:
+    if workspace.get_project(project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    project.add_test_suite(test_suite.load())
+    workspace.add_test_suite(project_id, test_suite.load())
 
 
 app.include_router(api_router)

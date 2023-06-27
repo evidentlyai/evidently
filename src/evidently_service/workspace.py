@@ -1,3 +1,4 @@
+import abc
 import datetime
 import json
 import os
@@ -136,7 +137,33 @@ class Project(BaseModel):
         )
 
 
-class Workspace:
+class WorkspaceBase(abc.ABC):
+    @abc.abstractmethod
+    def create_project(self, name: str, description: Optional[str] = None) -> Project:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_project(self, project: Project) -> Project:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_project(self, project_id: uuid.UUID) -> Project:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def list_projects(self) -> List[Project]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
+        raise NotImplementedError
+
+
+class Workspace(WorkspaceBase):
     def __init__(self, path: str):
         self.path = path
         if not os.path.exists(path):
@@ -175,6 +202,12 @@ class Workspace:
     def list_projects(self) -> List[Project]:
         return list(self._projects.values())
 
+    def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
+        self._projects[project_id].add_report(report)
+
+    def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
+        self._projects[project_id].add_test_suite(test_suite)
+
 
 def upload_item(
     item: Union[Report, TestSuite], workspace_or_url: Union[str, Workspace], project_id: Union[uuid.UUID, str]
@@ -188,9 +221,9 @@ def upload_item(
         workspace.get_project(project_id).add_item(item)
         return
 
-    from evidently_service.client import EvidentlyClient
+    from evidently_service.remote import RemoteWorkspace
 
-    client = EvidentlyClient(workspace_or_url)
+    client = RemoteWorkspace(workspace_or_url)
     if isinstance(item, Report):
         client.add_report(project_id, item)
     else:
