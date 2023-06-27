@@ -1,8 +1,5 @@
-import numpy as np
 import pandas as pd
 
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
 from evidently.metrics.classification_performance.class_balance_metric import ClassificationClassBalance
@@ -17,9 +14,8 @@ from evidently.metrics.classification_performance.probability_distribution_metri
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from evidently.metrics.classification_performance.quality_by_feature_table import ClassificationQualityByFeatureTable
 from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
-from evidently.report import Report
+from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import NoopOutcome
-from tests.multitest.conftest import TestOutcome
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.datasets import TestDataset
 from tests.multitest.metrics.conftest import TestMetric
@@ -70,16 +66,6 @@ def classification_class_balance():
     )
 
 
-class ExpectedValue(TestOutcome):
-    def __init__(self, metric: Metric, result: MetricResult):
-        self.metric = metric
-        self.result = result
-
-    def check(self, report: Report):
-        result = report._inner_suite.context.metric_results[self.metric]
-        np.testing.assert_equal(result, self.result)
-
-
 @metric
 def classification_class_balance_values():
     metric = ClassificationClassBalance()
@@ -95,7 +81,7 @@ def classification_class_balance_values():
                         "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
                     }
                 )
-            ): ExpectedValue(
+            ): AssertExpectedResult(
                 metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(
@@ -116,7 +102,7 @@ def classification_class_balance_values():
                         "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
                     }
                 ),
-            ): ExpectedValue(
+            ): AssertExpectedResult(
                 metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(

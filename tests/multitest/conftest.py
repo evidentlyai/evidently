@@ -9,7 +9,11 @@ from typing import Callable
 from typing import Dict
 from typing import Type
 
+import numpy as np
+
 import evidently
+from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.report import Report
 
 
@@ -38,6 +42,16 @@ class AssertResultFields(TestOutcome):
 
         for key, value in self.values.items():
             assert result[key] == value
+
+
+class AssertExpectedResult(TestOutcome):
+    def __init__(self, metric: Metric, result: MetricResult):
+        self.metric = metric
+        self.result = result
+
+    def check(self, report: Report):
+        result = report._inner_suite.context.metric_results[self.metric]
+        np.testing.assert_equal(result, self.result)
 
 
 class CustomAssert(TestOutcome):
