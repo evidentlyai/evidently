@@ -72,7 +72,9 @@ setup_args = dict(
             "isort==5.10.1",
         ]
     },
-    entry_points={},
+    entry_points={
+        "console_scripts": ["evidently_ui=evidently_service.app:main"]
+    },
 )
 
 if __name__ == "__main__":
