@@ -247,7 +247,5 @@ class BaseResult(BaseModel):
             res = json.dumps(self.get_dict(include_render=True), cls=NumpyEncoder) == json.dumps(
                 other.get_dict(include_render=True), cls=NumpyEncoder
             )
-            if not res:
-                print()
             return res
         return super().__eq__(other)
