@@ -21,14 +21,17 @@ class DatasetTags(Enum):
     REGRESSION = "regression"
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(eq=True)
 class TestDataset:
-    name: str
-    current: Any
-    reference: Any
+    name: str = ""
+    current: Any = None
+    reference: Any = None
 
     tags: List[DatasetTags] = dataclasses.field(default_factory=list)
     column_mapping: Optional[ColumnMapping] = None
+
+    def __hash__(self):
+        return id(self)
 
 
 dataset_fixtures = []
@@ -149,4 +152,4 @@ def reviews():
         text_features=["Review_Text", "Title"],
     )
 
-    return TestDataset("reviews", current=reviews_cur, reference=reviews_ref, column_mapping=column_mapping)
+    return TestDataset(name="reviews", current=reviews_cur, reference=reviews_ref, column_mapping=column_mapping)

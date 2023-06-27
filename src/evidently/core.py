@@ -1,3 +1,4 @@
+import json
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -240,5 +241,13 @@ class BaseResult(BaseModel):
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, BaseResult):
-            return self.get_dict() == other.get_dict()
+            # todo: bad performance
+            from evidently.utils import NumpyEncoder
+
+            res = json.dumps(self.get_dict(include_render=True), cls=NumpyEncoder) == json.dumps(
+                other.get_dict(include_render=True), cls=NumpyEncoder
+            )
+            if not res:
+                print()
+            return res
         return super().__eq__(other)
