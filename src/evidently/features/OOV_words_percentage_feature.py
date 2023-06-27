@@ -31,6 +31,8 @@ class OOVWordsPercentage(GeneratedFeature):
                 return 0
             oov_num = 0
             words_ = re.sub("[^A-Za-z0-9 ]+", "", s).split()  # leave only letters, digits and spaces, split by spaces
+            if len(words_) == 0:
+                return 0
             for word in words_:
                 if word.lower() not in ignore_words and self._lem.lemmatize(word.lower()) not in self._eng_words:
                     oov_num += 1
