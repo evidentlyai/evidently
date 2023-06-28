@@ -30,8 +30,8 @@ WORKSPACE = "workspace"
 
 def create_report(metric, date: datetime.datetime, tag: str):
     data_drift_report = Report(
-        metrics=[metric], metadata={"type": metric.__class__.__name__}, tags=[tag], timestamp=date
-    )
+        metrics=[metric], metadata={"type": metric.__class__.__name__}, tags=[tag], timestamp=date, dataset_id="adult"
+    ).set_batch_size("1")
 
     data_drift_report.run(reference_data=adult_ref, current_data=adult_cur)
     return data_drift_report
