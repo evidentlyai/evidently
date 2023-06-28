@@ -15,8 +15,7 @@ from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
-from evidently.report.report import _ReportPayload
-from evidently.test_suite.test_suite import _TestSuitePayload
+from evidently.suite.base_suite import Snapshot
 from evidently.utils import NumpyEncoder
 from evidently_service.dashboards import DashboardPanel
 from evidently_service.models import DashboardInfoModel
@@ -101,7 +100,7 @@ async def get_report_graph_data(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_item(report_id)
+    report = project.get_snapshot(report_id).value.as_report()
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
     graphs = report.additional_graphs
@@ -186,22 +185,15 @@ async def add_project(project: Project):
     workspace.add_project(project)
 
 
-@api_router.post("/projects/{project_id}/reports")
-async def add_project_report(project_id: Annotated[uuid.UUID, PROJECT_ID], report: _ReportPayload):
+@api_router.post("/projects/{project_id}/snapshots")
+async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot):
     workspace: Workspace = app.state.workspace
     if workspace.get_project(project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    workspace.add_report(project_id, report.load())
+    workspace.add_snapshot(project_id, snapshot)
 
 
-@api_router.post("/projects/{project_id}/test_suites")
-async def add_project_test_suite(project_id: Annotated[uuid.UUID, PROJECT_ID], test_suite: _TestSuitePayload):
-    workspace: Workspace = app.state.workspace
-    if workspace.get_project(project_id) is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    workspace.add_test_suite(project_id, test_suite.load())
 
 
 app.include_router(api_router)

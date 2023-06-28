@@ -2,7 +2,7 @@ import dataclasses
 import datetime
 import uuid
 from collections import defaultdict
-from typing import Dict
+from typing import Dict, Type
 from typing import List
 from typing import Optional
 from typing import Union
@@ -22,7 +22,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
-from evidently.suite.base_suite import ContextPayload
+from evidently.suite.base_suite import ContextPayload, ReportBase, Snapshot, T
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
@@ -31,8 +31,7 @@ from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
 
-class Report(Display):
-    _inner_suite: Suite
+class Report(ReportBase):
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
@@ -201,36 +200,17 @@ class Report(Display):
             },
         )
 
-    def _get_payload(self) -> BaseModel:
-        ctx = self._inner_suite.context
-        suite = ContextPayload.from_context(ctx)
-        return _ReportPayload(
-            id=self.id,
-            suite=suite,
-            metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics],
-            timestamp=self.timestamp,
-            metadata=self.metadata,
-            tags=self.tags,
-        )
+    def _get_snapshot(self) -> Snapshot:
+        snapshot = super()._get_snapshot()
+        snapshot.metrics_ids=[snapshot.suite.metrics.index(m) for m in self._first_level_metrics]
+        return snapshot
 
     @classmethod
-    def _parse_payload(cls, payload: Dict) -> "Report":
-        return parse_obj_as(_ReportPayload, payload).load()
-
-
-class _ReportPayload(BaseModel):
-    id: UUID4
-    suite: ContextPayload
-    metrics_ids: List[int]
-    timestamp: datetime.datetime
-    metadata: Dict[str, str]
-    tags: List[str]
-
-    def load(self):
-        ctx = self.suite.to_context()
-        metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id, metadata=self.metadata, tags=self.tags)
+    def _parse_snapshot(cls, snapshot: Snapshot) -> "Report":
+        ctx = snapshot.suite.to_context()
+        metrics = [ctx.metrics[i] for i in snapshot.metrics_ids]
+        report = Report(metrics=metrics, timestamp=snapshot.timestamp, id=snapshot.id, metadata=snapshot.metadata, tags=snapshot.tags)
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
-
         return report
+

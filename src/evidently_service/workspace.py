@@ -13,9 +13,11 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import parse_obj_as
 
-from evidently.experimental.report_set import load_report_set
+from evidently.experimental.report_set import load_snapshots
 from evidently.model.dashboard import DashboardInfo
+from evidently.renderers.base_renderer import DetailsInfo
 from evidently.report import Report
+from evidently.suite.base_suite import ReportBase, Snapshot
 from evidently.test_suite import TestSuite
 from evidently.utils import NumpyEncoder
 from evidently_service.dashboards import DashboardConfig
@@ -24,12 +26,58 @@ from evidently_service.dashboards import DashboardPanel
 METADATA_PATH = "metadata.json"
 REPORTS_PATH = "reports"
 TEST_SUITES_PATH = "test_suites"
+SNAPSHOTS = "snapshots"
 
 
-class ProjectItem:
-    def __init__(self, report: Union[Report, TestSuite]):
-        self.report = report
-        _, self.dashboard_info, self.additional_graphs = report._build_dashboard_info()
+
+class ProjectSnapshot:
+    project: "Project"
+    id: uuid.UUID
+    # todo: metadata
+
+    # caches
+    _value: Snapshot = None
+    _report: ReportBase = None
+    _dashboard_info: DashboardInfo = None
+    _additional_graphs: Dict[str, DetailsInfo] = None
+
+    def __init__(self, id: uuid.UUID, project: "Project", value: Optional[Snapshot] = None):
+        self.id = id
+        self.project = project
+        if value is not None:
+            self._value = value
+
+
+    @property
+    def value(self):
+        if not hasattr(self, "_value"):
+            self.load()
+        return self._value
+
+    @property
+    def report(self) -> ReportBase:
+        if self._report is None:
+            self._report = self.value.as_report() if self.value.is_report else self.value.as_test_suite()
+        return self._report
+
+    @property
+    def dashboard_info(self):
+        if self._dashboard_info is None:
+            _, self._dashboard_info, self._additional_graphs = self.report._build_dashboard_info()
+        return self._dashboard_info
+
+    @property
+    def additional_graphs(self):
+        if self._additional_graphs is None:
+            _, self._dashboard_info, self._additional_graphs = self.report._build_dashboard_info()
+        return self._additional_graphs
+
+    @property
+    def path(self):
+        return os.path.join(self.project.path, SNAPSHOTS, str(self.id) + ".json")
+
+    def load(self):
+        self._value = Snapshot.load(self.path)
 
 
 class Project(BaseModel):
@@ -41,16 +89,10 @@ class Project(BaseModel):
     description: Optional[str] = None
     dashboard: DashboardConfig
 
-    _reports: Optional[Dict[uuid.UUID, Report]] = None
-    _test_suites: Optional[Dict[uuid.UUID, TestSuite]] = None
-    _items: Optional[Dict[uuid.UUID, ProjectItem]] = None
+
+    _snapshots: Dict[uuid.UUID, ProjectSnapshot] = {}
     _workspace: "Workspace"
 
-    @property
-    def items(self):
-        if not hasattr(self, "_items") or self._items is None:
-            self._items = {}
-        return self._items
 
     @property
     def path(self):
@@ -69,16 +111,11 @@ class Project(BaseModel):
     def add_panel(self, panel: DashboardPanel):
         self.dashboard.panels.append(panel)
 
-    def add_item(self, item: Union[Report, TestSuite]):
-        item_dir = REPORTS_PATH if isinstance(item, Report) else TEST_SUITES_PATH
-        item._save(os.path.join(self.path, item_dir, str(item.id) + ".json"))
-        self.items[item.id] = ProjectItem(item)
+    def add_snapshot(self, snapshot: Snapshot):
+        item = ProjectSnapshot(snapshot.id, self, snapshot)
+        snapshot.save(item.path)
+        self._snapshots[item.id] = item
 
-    def add_report(self, report: Report):
-        self.add_item(report)
-
-    def add_test_suite(self, test_suite: TestSuite):
-        self.add_item(test_suite)
 
     @classmethod
     def load(cls, path: str) -> "Project":
@@ -98,30 +135,25 @@ class Project(BaseModel):
         project = self.load(self.path).bind(self.workspace)
         self.__dict__.update(project.__dict__)
 
-    def _load_items(self):
-        self._items = {
-            r.id: ProjectItem(r)
-            for r in list(load_report_set(os.path.join(self.path, "reports"), cls=Report).values())
-            + list(load_report_set(os.path.join(self.path, "test_suites"), cls=TestSuite).values())
+    def _load_snapshots(self):
+        self._snapshots = {
+            id: ProjectSnapshot(s.id, self, s) for id, s in load_snapshots(os.path.join(self.path, SNAPSHOTS)).items()
         }
 
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
         # if self._items is None:
-        self._load_items()
-        return {key: value.report for key, value in self._items.items() if isinstance(value.report, Report)}
+        self._load_snapshots()
+        return {key: value.value.as_report() for key, value in self._snapshots.items() if value.value.is_report}
 
     @property
     def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
         # if self._items is None:
-        self._load_items()
-        return {key: value.report for key, value in self._items.items() if isinstance(value.report, TestSuite)}
+        self._load_snapshots()
+        return {key: value.value.as_test_suite() for key, value in self._snapshots.items() if not value.value.is_report}
 
-    def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
-        item = self.reports.get(report_id) or self.test_suites.get(report_id)
-        if item is None:
-            return None
-        return self._items.get(item.id)
+    def get_snapshot(self, id: uuid.UUID) -> Optional[ProjectSnapshot]:
+        return self._snapshots.get(id, None)
 
     def build_dashboard_info(
         self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
@@ -135,6 +167,8 @@ class Project(BaseModel):
                 and (timestamp_end is None or r.timestamp < timestamp_end)
             ]
         )
+
+
 
 
 class WorkspaceBase(abc.ABC):
@@ -162,6 +196,9 @@ class WorkspaceBase(abc.ABC):
     def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
+        raise NotImplementedError
 
 class Workspace(WorkspaceBase):
     def __init__(self, path: str):
@@ -202,29 +239,22 @@ class Workspace(WorkspaceBase):
     def list_projects(self) -> List[Project]:
         return list(self._projects.values())
 
-    def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
-        self._projects[project_id].add_report(report)
+    def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
+        self._projects[project_id].add_snapshot(snapshot)
 
-    def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
-        self._projects[project_id].add_test_suite(test_suite)
 
 
 def upload_item(
-    item: Union[Report, TestSuite], workspace_or_url: Union[str, Workspace], project_id: Union[uuid.UUID, str]
+    item: ReportBase, workspace_or_url: Union[str, WorkspaceBase], project_id: Union[uuid.UUID, str]
 ):
-    if isinstance(workspace_or_url, Workspace):
-        workspace_or_url.get_project(project_id).add_item(item)
+    if isinstance(workspace_or_url, WorkspaceBase):
+        workspace_or_url.add_snapshot(project_id, item.to_snapshot())
         return
 
     if os.path.exists(workspace_or_url):
         workspace = Workspace(path=workspace_or_url)
-        workspace.get_project(project_id).add_item(item)
-        return
-
-    from evidently_service.remote import RemoteWorkspace
-
-    client = RemoteWorkspace(workspace_or_url)
-    if isinstance(item, Report):
-        client.add_report(project_id, item)
     else:
-        client.add_test_suite(project_id, item)
+        from evidently_service.remote import RemoteWorkspace
+        workspace = RemoteWorkspace(workspace_or_url)
+
+    workspace.add_snapshot(project_id, item.to_snapshot())
