@@ -55,6 +55,8 @@ setup_args = dict(
         "requests>=2.19.0",
         "PyYAML>=5.1",
         "pydantic>=1.9,<2",
+        "fastapi>=0.98.0",
+        "uvicorn>=0.22.0",
     ],
     extras_require={
         "dev": [
@@ -73,7 +75,7 @@ setup_args = dict(
         ]
     },
     entry_points={
-        "console_scripts": ["evidently_ui=evidently_service.app:main"]
+        "console_scripts": ["evidently=evidently.ui.app:main"]
     },
 )
 
