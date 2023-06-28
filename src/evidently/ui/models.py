@@ -10,7 +10,7 @@ from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
-from evidently_service.workspace import Project
+from evidently.ui.workspace import Project
 
 
 class ProjectModel(BaseModel):

@@ -14,7 +14,7 @@ export default class LocalApi implements Api {
         this.projects = projects ?? [];
     }
 
-    async getProjectDashboard(projectId: string): Promise<DashboardInfo> {
+    async getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo> {
         return {name: "Project Dasboard", widgets: []}
     }
     async getReports(projectId: string): Promise<ReportInfo[]> {

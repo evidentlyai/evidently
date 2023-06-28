@@ -25,19 +25,19 @@ export const TestSuitesHeader = (props: {projectId: string, reportId?: string}) 
 
 const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
     return <>
-        <form>
-            <input
-                id="contained-button-file"
-                style={{display: "none"}}
-                multiple
-                type="file"
-            />
-            <label htmlFor="contained-button-file">
-                <Button variant="contained" color="primary" component="span">
-                    Upload
-                </Button>
-            </label>
-        </form>
+        {/*<form>*/}
+        {/*    <input*/}
+        {/*        id="contained-button-file"*/}
+        {/*        style={{display: "none"}}*/}
+        {/*        multiple*/}
+        {/*        type="file"*/}
+        {/*    />*/}
+        {/*    <label htmlFor="contained-button-file">*/}
+        {/*        <Button variant="contained" color="primary" component="span">*/}
+        {/*            Upload*/}
+        {/*        </Button>*/}
+        {/*    </label>*/}
+        {/*</form>*/}
         <Table>
             <TableHead>
                 <TableCell>

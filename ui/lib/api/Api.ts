@@ -254,7 +254,7 @@ export interface Api {
 
     getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfo>
 
-    getProjectDashboard(projectId: string): Promise<DashboardInfo>
+    getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo>
 
     getReports(projectId: string): Promise<ReportInfo[]>
     getTestSuites(projectId: string): Promise<TestSuiteInfo[]>

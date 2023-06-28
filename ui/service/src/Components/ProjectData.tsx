@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Box, Tab, Tabs, Link, Grid} from "@material-ui/core";
+import {Box, Tab, Tabs, Link, Grid, TextField} from "@material-ui/core";
 import {ReportViewer} from "./ReportViewer";
 import {Link as RouterLink, useParams} from "react-router-dom";
 import {Reports} from "./Reports";
@@ -8,6 +8,7 @@ import {ProjectDashboard} from '../lib/App';
 import {ReportsHeader} from './ReportsHeader';
 import {TextWithCopyIcon} from "./TextWithCopyIcon";
 import {ProjectContext} from "../Contexts/ProjectContext";
+import {useState} from "react";
 
 
 interface TabPanelProps {
@@ -44,8 +45,11 @@ function a11yProps(index: any) {
     };
 }
 
+type ReportDates = { from?: string, to?: string };
+
 export function ProjectData() {
     let {projectId, page, reportId} = useParams();
+    let [reportDates, setReportDates] = useState<ReportDates>({});
     page = page ?? "";
     return <>
         <ProjectContext.Consumer>

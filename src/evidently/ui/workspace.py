@@ -18,8 +18,8 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.utils import NumpyEncoder
-from evidently_service.dashboards import DashboardConfig
-from evidently_service.dashboards import DashboardPanel
+from evidently.ui.dashboards import DashboardConfig
+from evidently.ui.dashboards import DashboardPanel
 
 METADATA_PATH = "metadata.json"
 REPORTS_PATH = "reports"
@@ -204,11 +204,8 @@ class Workspace(WorkspaceBase):
         return Workspace(path=path)
 
     def create_project(self, name: str, description: Optional[str] = None) -> Project:
-        project = Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[])).bind(
-            self
-        )
-        project.save()
-        return project
+        project = Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[]))
+        return self.add_project(project)
 
     def add_project(self, project: Project) -> Project:
         project.bind(self)

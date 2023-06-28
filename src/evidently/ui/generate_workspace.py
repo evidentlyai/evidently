@@ -9,13 +9,13 @@ from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestShareOfDriftedColumns
-from evidently_service.dashboards import CounterAgg
-from evidently_service.dashboards import DashboardPanelCounter
-from evidently_service.dashboards import DashboardPanelPlot
-from evidently_service.dashboards import PanelValue
-from evidently_service.dashboards import PlotType
-from evidently_service.dashboards import ReportFilter
-from evidently_service.workspace import Workspace
+from evidently.ui.dashboards import CounterAgg
+from evidently.ui.dashboards import DashboardPanelCounter
+from evidently.ui.dashboards import DashboardPanelPlot
+from evidently.ui.dashboards import PanelValue
+from evidently.ui.dashboards import PlotType
+from evidently.ui.dashboards import ReportFilter
+from evidently.ui.workspace import Workspace
 
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
 adult = adult_data.frame
@@ -49,9 +49,8 @@ def create_test_suite():
     return data_drift_dataset_tests
 
 
-def create_project(workspace: str):
-    ws = Workspace.create(workspace)
-    project = ws.create_project("project1")
+def create_project(workspace: Workspace):
+    project = workspace.create_project("project1")
     project.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=["drift"]),
@@ -81,23 +80,27 @@ def create_project(workspace: str):
     return project
 
 
-def main():
-    project = create_project("workspace")
+def main(workspace: str):
+    ws = Workspace.create(workspace)
+    project = create_project(ws)
     project.save()
 
     for d in range(1, 10):
         ts = datetime.datetime.combine(datetime.date.today() + datetime.timedelta(days=d), datetime.time())
-        create_report(
+        report = create_report(
             DataDriftPreset(
                 num_stattest="ks", cat_stattest="psi", num_stattest_threshold=0.2, cat_stattest_threshold=0.2
             ),
             ts,
             "drift",
-        ).upload(WORKSPACE, project.id)
-        create_report(DatasetCorrelationsMetric(), ts, "correlation").upload(WORKSPACE, project.id)
+        )
+        ws.add_report(project.id, report)
+        corr_report = create_report(DatasetCorrelationsMetric(), ts, "correlation")
+        ws.add_report(project.id, report)
 
-    create_test_suite().upload(WORKSPACE, project.id)
+    test_suite = create_test_suite()
+    ws.add_test_suite(project.id, test_suite)
 
 
 if __name__ == "__main__":
-    main()
+    main("workspace")

@@ -17,17 +17,18 @@ from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
+import evidently
 from evidently.report.report import _ReportPayload
 from evidently.test_suite.test_suite import _TestSuitePayload
 from evidently.ui.generate_workspace import create_project
 from evidently.utils import NumpyEncoder
-from evidently_service.dashboards import DashboardPanel
-from evidently_service.models import DashboardInfoModel
-from evidently_service.models import ProjectModel
-from evidently_service.models import ReportModel
-from evidently_service.models import TestSuiteModel
-from evidently_service.workspace import Project
-from evidently_service.workspace import Workspace
+from evidently.ui.dashboards import DashboardPanel
+from evidently.ui.models import DashboardInfoModel
+from evidently.ui.models import ProjectModel
+from evidently.ui.models import ReportModel
+from evidently.ui.models import TestSuiteModel
+from evidently.ui.workspace import Project
+from evidently.ui.workspace import Workspace
 
 
 @asynccontextmanager
@@ -230,7 +231,7 @@ def run(args):
 
 
 def generate_workspace(args):
-    create_project(args.workspace)
+    evidently.ui.generate_workspace.main(args.workspace)
 
 
 def main():

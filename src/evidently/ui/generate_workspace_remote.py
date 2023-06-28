@@ -2,10 +2,10 @@ import datetime
 
 from evidently.metric_preset import DataDriftPreset
 from evidently.metrics import DatasetCorrelationsMetric
-from evidently_service.generate_workspace import create_project
-from evidently_service.generate_workspace import create_report
-from evidently_service.generate_workspace import create_test_suite
-from evidently_service.remote import RemoteWorkspace
+from evidently.ui.generate_workspace import create_project
+from evidently.ui.generate_workspace import create_report
+from evidently.ui.generate_workspace import create_test_suite
+from evidently.ui.remote import RemoteWorkspace
 
 WORKSPACE = "http://localhost:8000"
 

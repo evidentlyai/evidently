@@ -11,8 +11,8 @@ import requests
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.utils import NumpyEncoder
-from evidently_service.workspace import Project
-from evidently_service.workspace import WorkspaceBase
+from evidently.ui.workspace import Project
+from evidently.ui.workspace import WorkspaceBase
 
 
 class RemoteWorkspace(WorkspaceBase):
