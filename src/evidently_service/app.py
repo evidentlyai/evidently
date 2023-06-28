@@ -17,12 +17,15 @@ from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
+from evidently.report.report import _ReportPayload
+from evidently.test_suite.test_suite import _TestSuitePayload
 from evidently.utils import NumpyEncoder
 from evidently_service.dashboards import DashboardPanel
 from evidently_service.models import DashboardInfoModel
 from evidently_service.models import ProjectModel
 from evidently_service.models import ReportModel
 from evidently_service.models import TestSuiteModel
+from evidently_service.workspace import Project
 from evidently_service.workspace import Workspace
 
 
@@ -191,6 +194,30 @@ async def project_dashboard(
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
     return Response(media_type="application/json", content=json_str)
+
+
+@api_router.post("/projects")
+async def add_project(project: Project):
+    workspace: Workspace = app.state.workspace
+    workspace.add_project(project)
+
+
+@api_router.post("/projects/{project_id}/reports")
+async def add_project_report(project_id: Annotated[uuid.UUID, PROJECT_ID], report: _ReportPayload):
+    workspace: Workspace = app.state.workspace
+    if workspace.get_project(project_id) is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    workspace.add_report(project_id, report.load())
+
+
+@api_router.post("/projects/{project_id}/test_suites")
+async def add_project_test_suite(project_id: Annotated[uuid.UUID, PROJECT_ID], test_suite: _TestSuitePayload):
+    workspace: Workspace = app.state.workspace
+    if workspace.get_project(project_id) is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    workspace.add_test_suite(project_id, test_suite.load())
 
 
 app.include_router(api_router)
