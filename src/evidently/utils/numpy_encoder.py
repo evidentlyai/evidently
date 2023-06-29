@@ -13,7 +13,7 @@ _TYPES_MAPPING = (
         (np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64, np.uint8, np.uint16, np.uint32, np.uint64),
         int,
     ),
-    ((np.float_, np.float16, np.float32, np.float64), float),
+    ((np.float_, np.float16, np.float32, np.float64), lambda obj: None if obj is np.nan else float(obj)),
     ((np.ndarray,), lambda obj: obj.tolist()),
     ((np.bool_), bool),
     ((pd.Timedelta,), str),

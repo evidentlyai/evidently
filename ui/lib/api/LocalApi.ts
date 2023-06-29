@@ -1,4 +1,13 @@
-import {AdditionalGraphInfo, Api, DashboardInfo, ProjectInfo, ReportInfo, TestSuiteInfo, WidgetInfo} from "./Api";
+import {
+    AdditionalGraphInfo,
+    Api,
+    DashboardInfo,
+    ProjectDetails,
+    ProjectInfo,
+    ReportInfo,
+    TestSuiteInfo,
+    WidgetInfo
+} from "./Api";
 
 export default class LocalApi implements Api {
     private readonly dashboard: DashboardInfo;
@@ -48,6 +57,10 @@ export default class LocalApi implements Api {
     }
 
     getTestSuites(projectId: string): Promise<TestSuiteInfo[]> {
-        return [{id: "test_suite1", timestamp: new Date(Date.now())}];
+        return Promise.resolve([{id: "test_suite1", timestamp: new Date(Date.now())}]);
+    }
+
+    getProjectInfo(projectId: string): Promise<ProjectDetails> {
+        return Promise.resolve({id: "project1", project_name: "Project #1"});
     }
 }

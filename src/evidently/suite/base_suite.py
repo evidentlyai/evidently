@@ -261,6 +261,7 @@ class Display:
         return json.dumps(
             self._get_json_content(include_render=include_render, include=include, exclude=exclude, **kwargs),
             cls=NumpyEncoder,
+            ignore_nan=True,
         )
 
     def save_json(
