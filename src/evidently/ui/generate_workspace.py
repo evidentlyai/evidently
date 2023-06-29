@@ -9,7 +9,7 @@ from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestShareOfDriftedColumns
-from evidently.ui.dashboards import CounterAgg
+from evidently.ui.dashboards import CounterAgg, DashboardConfig
 from evidently.ui.dashboards import DashboardPanelCounter
 from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import PanelValue
@@ -52,7 +52,7 @@ def create_test_suite():
 
 
 def create_project():
-    project = Project(name="project1", description="")
+    project = Project(name="project1", description="", dashboard=DashboardConfig(name="", panels=[]))
     project.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=["drift"]),
