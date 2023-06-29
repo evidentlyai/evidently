@@ -9,7 +9,8 @@ from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestShareOfDriftedColumns
-from evidently.ui.dashboards import CounterAgg, DashboardConfig
+from evidently.ui.dashboards import CounterAgg
+from evidently.ui.dashboards import DashboardConfig
 from evidently.ui.dashboards import DashboardPanelCounter
 from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import PanelValue
