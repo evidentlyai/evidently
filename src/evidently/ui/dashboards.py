@@ -33,6 +33,12 @@ class ReportFilter(BaseModel):
         )
 
 
+def get_nested(d: dict, path: List[str]):
+    if len(path) == 1:
+        return d[path[0]]
+    return get_nested(d[path[0]], path[1:])
+
+
 class PanelValue(BaseModel):
     metric_id: str
     field_path: str
@@ -42,8 +48,7 @@ class PanelValue(BaseModel):
         # todo: make this more efficient
         for metric in report.as_dict()["metrics"]:
             if metric["metric"] == self.metric_id:
-                # todo: nested path
-                return metric["result"][self.field_path]
+                return get_nested(metric["result"], self.field_path.split("."))
         return None
 
 
