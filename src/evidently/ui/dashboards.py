@@ -112,7 +112,7 @@ class DashboardPanelCounter(DashboardPanel):
 
     def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
         if self.agg == CounterAgg.NONE:
-            return counter(counters=[CounterData(self.title, self.text)], size=self.size)
+            return counter(counters=[CounterData(self.title, self.text or "")], size=self.size)
         value = self._get_counter_value(reports)
         ct = CounterData.float(self.title, value, 3) if isinstance(value, float) else CounterData.int(self.title, value)
         return counter(title=self.title, counters=[ct], size=self.size)
@@ -138,7 +138,7 @@ class DashboardConfig(BaseModel):
 class Dashboard(Display):
     def __init__(self, config: DashboardConfig):
         super().__init__()
-        self.reports = []
+        self.reports: List[Report] = []
         self.config = config
 
     def add_report(self, report: Report):

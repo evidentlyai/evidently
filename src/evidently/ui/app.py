@@ -4,7 +4,6 @@ import os
 import pathlib
 import uuid
 from contextlib import asynccontextmanager
-from typing import Annotated
 from typing import List
 from typing import Optional
 
@@ -16,12 +15,11 @@ from fastapi import Path
 from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
+from typing_extensions import Annotated
 
 import evidently
 from evidently.report.report import _ReportPayload
 from evidently.test_suite.test_suite import _TestSuitePayload
-from evidently.ui.generate_workspace import create_project
-from evidently.utils import NumpyEncoder
 from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.models import DashboardInfoModel
 from evidently.ui.models import ProjectModel
@@ -29,6 +27,7 @@ from evidently.ui.models import ReportModel
 from evidently.ui.models import TestSuiteModel
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import Workspace
+from evidently.utils import NumpyEncoder
 
 
 @asynccontextmanager
@@ -90,7 +89,7 @@ async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[Rep
 
 
 @api_router.get("/projects/{project_id}/info")
-async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> ProjectModel:
+async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> ProjectModel:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
@@ -145,6 +144,7 @@ async def get_report_download(
         )
     if report_format == "json":
         return Response(report.report.json(), headers={"content-disposition": f"attachment;filename={report_id}.json"})
+    return Response(f"Unknown format {report_format}", status_code=400)
 
 
 @api_router.get("/projects/{project_id}/{report_id}/data")
@@ -237,6 +237,7 @@ def generate_workspace(args):
 def main():
     import argparse
     import sys
+
     parser = argparse.ArgumentParser(description="evidently service")
     parser.add_argument("--workspace", help="path to workspace", default="workspace", required=False)
     subparsers = parser.add_subparsers()

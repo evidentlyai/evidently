@@ -11,6 +11,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -62,7 +63,9 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
     missing_values: frozenset
     column_name: str
 
-    def __init__(self, column_name: str, missing_values: Optional[list] = None, replace: bool = True) -> None:
+    def __init__(
+        self, column_name: str, missing_values: Optional[list] = None, replace: bool = True, options: AnyOptions = None
+    ) -> None:
         self.column_name = column_name
 
         _missing_values: list
@@ -78,7 +81,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
         self.missing_values = frozenset(_missing_values)
-        super().__init__()
+        super().__init__(options=options)
 
     def _calculate_missing_values_stats(self, column: pd.Series) -> ColumnMissingValues:
         different_missing_values = {value: 0 for value in self.missing_values}
