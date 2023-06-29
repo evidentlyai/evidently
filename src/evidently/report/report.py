@@ -21,6 +21,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
+from evidently.options.base import Options
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Display
@@ -222,8 +223,32 @@ class Report(Display):
             metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics],
             timestamp=self.timestamp,
             metadata=self.metadata,
+            options=self.options,
             tags=self.tags,
         )
+
+    @classmethod
+    def _parse_payload(cls, payload: Dict) -> "Report":
+        return parse_obj_as(_ReportPayload, payload).load()
+
+
+class _ReportPayload(BaseModel):
+    id: UUID4
+    suite: ContextPayload
+    metrics_ids: List[int]
+    timestamp: datetime.datetime
+    metadata: Dict[str, str]
+    tags: List[str]
+    options: Options
+
+    def load(self):
+        ctx = self.suite.to_context()
+        metrics = [ctx.metrics[i] for i in self.metrics_ids]
+        report = Report(metrics=metrics, options=self.options)
+        report._first_level_metrics = metrics
+        report._inner_suite.context = ctx
+
+        return report
 
     @classmethod
     def _parse_payload(cls, payload: Dict) -> "Report":
@@ -244,21 +269,3 @@ class Report(Display):
     def set_dataset_id(self, dataset_id: str):
         self.metadata["dataset_id"] = dataset_id
         return self
-
-
-class _ReportPayload(BaseModel):
-    id: UUID4
-    suite: ContextPayload
-    metrics_ids: List[int]
-    timestamp: datetime.datetime
-    metadata: Dict[str, str]
-    tags: List[str]
-
-    def load(self):
-        ctx = self.suite.to_context()
-        metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics, timestamp=self.timestamp, id=self.id, metadata=self.metadata, tags=self.tags)
-        report._first_level_metrics = metrics
-        report._inner_suite.context = ctx
-
-        return report

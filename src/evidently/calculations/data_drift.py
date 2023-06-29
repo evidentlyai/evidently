@@ -18,7 +18,9 @@ from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Distribution
 from evidently.metric_results import DistributionIncluded
+from evidently.metric_results import ScatterAggField
 from evidently.metric_results import ScatterField
+from evidently.metric_results import raw_agg_properties
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import recognize_column_type_
@@ -50,6 +52,10 @@ class DriftStatsField(MetricResult):
 
 
 class ColumnDataDriftMetrics(ColumnMetricResult):
+    class Config:
+        # todo: change to field_tags: render
+        dict_exclude_fields = {"scatter"}
+
     stattest_name: str
     stattest_threshold: Optional[float]
     drift_score: Numeric
@@ -58,7 +64,8 @@ class ColumnDataDriftMetrics(ColumnMetricResult):
     current: DriftStatsField
     reference: DriftStatsField
 
-    scatter: Optional[ScatterField]
+    scatter: Optional[Union[ScatterField, ScatterAggField]]
+    scatter_raw, scatter_agg = raw_agg_properties("scatter", ScatterField, ScatterAggField, True)
 
 
 @dataclass
@@ -157,7 +164,7 @@ def get_one_column_drift(
     drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
     drift_result = drift_test_function(reference_column, current_column, column_type.value, threshold)
 
-    scatter: Optional[ScatterField] = None
+    scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:
         numeric_columns = dataset_columns.num_feature_names
 
@@ -207,14 +214,23 @@ def get_one_column_drift(
             if prefix is None:
                 x_name = "Index binned"
             else:
-                x_name = f"{datetime_column_name} ({prefix})"
+                if datetime_column_name is not None:
+                    name = datetime_column_name
+                elif curr_data.index.name is not None:
+                    name = curr_data.index.name
+                else:
+                    name = "Index"
+                x_name = f"{name} ({prefix})"
 
         plot_shape = {}
         reference_mean = reference_data[column_name].mean()
         reference_std = reference_data[column_name].std()
         plot_shape["y0"] = reference_mean - reference_std
         plot_shape["y1"] = reference_mean + reference_std
-        scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
+        if agg_data:
+            scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
+        else:
+            scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
     elif column_type == ColumnType.Categorical:
         reference_counts = reference_data[column_name].value_counts(sort=False)

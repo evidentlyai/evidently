@@ -1,6 +1,10 @@
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import overload
+
+import pandas as pd
+from pandas import Interval
 
 from evidently.base_metric import MetricResult
 from evidently.metric_results import ScatterData
@@ -33,20 +37,45 @@ class RegressionScatter(MetricResult):
     overestimation: PredActualScatter
 
 
+class IntervalSeries(MetricResult):
+    class Config:
+        underscore_attrs_are_private = True
+
+    bins: List[float]
+    values: List[float]
+
+    _data: pd.Series
+
+    @property
+    def data(self):
+        if not hasattr(self, "_data"):
+            self._data = pd.Series(
+                self.values, index=[Interval(a, b, closed="right") for a, b in zip(self.bins, self.bins[1:])]
+            )
+        return self._data
+
+    @classmethod
+    def from_data(cls, data: pd.Series):
+        index = list(data.index)
+        interval_series = cls(values=list(data), bins=[i.left for i in index] + [index[-1].right])
+        interval_series._data = data
+        return interval_series
+
+    def __mul__(self, other: float):
+        series = IntervalSeries(bins=self.bins, values=[v * other for v in self.values])
+        if hasattr(self, "_data"):
+            series._data = self._data * other
+        return series
+
+
 class RegressionMetricScatter(MetricResult):
     class Config:
         smart_union = True
 
-    current: ScatterData
-    reference: Optional[ScatterData] = None
+    current: IntervalSeries
+    reference: Optional[IntervalSeries] = None
 
     def __mul__(self, other: float):
-        # todo: will fail if data is not Series
-        if isinstance(self.current, list) or isinstance(self.reference, list):
-            return RegressionMetricScatter(
-                current=[x * other for x in self.current],
-                reference=[x * other for x in self.reference] if self.reference is not None else None,
-            )
         return RegressionMetricScatter(
             current=self.current * other, reference=self.reference * other if self.reference is not None else None
         )

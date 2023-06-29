@@ -5,6 +5,7 @@ import uuid
 import numpy as np
 import pandas as pd
 
+from evidently.core import ColumnType
 from evidently.utils.types import ApproxValue
 
 _TYPES_MAPPING = (
@@ -24,6 +25,7 @@ _TYPES_MAPPING = (
     ((pd.DataFrame,), lambda obj: obj.to_dict()),
     ((frozenset,), lambda obj: list(obj)),
     ((uuid.UUID,), lambda obj: str(obj)),
+    ((ColumnType,), lambda obj: obj.value),
 )
 
 

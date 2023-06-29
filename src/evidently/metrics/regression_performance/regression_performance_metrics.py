@@ -101,6 +101,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         rmse_score_value = mean_squared_error(
             y_true=data.current_data[data.column_mapping.target],
             y_pred=data.current_data[data.column_mapping.prediction],
+            squared=False,
         )
 
         # mae default values
@@ -120,6 +121,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         rmse_default = mean_squared_error(
             y_true=data.current_data[data.column_mapping.target],
             y_pred=[dummy_preds] * data.current_data.shape[0],
+            squared=False,
         )
         # mape default values
         # optimal constant for mape

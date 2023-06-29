@@ -6,6 +6,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_datetime64_any_dtype
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
@@ -180,6 +181,7 @@ def plot_num_feature_in_time(
     datetime_name: str,
     freq: str,
     color_options: ColorOptions,
+    transpose: bool = False,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
@@ -187,8 +189,12 @@ def plot_num_feature_in_time(
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=curr_data.sort_values(datetime_name)[datetime_name],
-            y=curr_data.sort_values(datetime_name)[feature_name],
+            x=curr_data.sort_values(datetime_name)[datetime_name]
+            if not transpose
+            else curr_data.sort_values(datetime_name)[feature_name],
+            y=curr_data.sort_values(datetime_name)[feature_name]
+            if not transpose
+            else curr_data.sort_values(datetime_name)[datetime_name],
             line=dict(color=color_options.get_current_data_color(), shape="spline"),
             name="current",
         )
@@ -196,14 +202,20 @@ def plot_num_feature_in_time(
     if ref_data is not None:
         fig.add_trace(
             go.Scatter(
-                x=ref_data.sort_values(datetime_name)[datetime_name],
-                y=ref_data.sort_values(datetime_name)[feature_name],
+                x=ref_data.sort_values(datetime_name)[datetime_name]
+                if not transpose
+                else ref_data.sort_values(datetime_name)[feature_name],
+                y=ref_data.sort_values(datetime_name)[feature_name]
+                if not transpose
+                else ref_data.sort_values(datetime_name)[datetime_name],
                 line=dict(color=color_options.get_reference_data_color(), shape="spline"),
                 name="reference",
             )
         )
-
-    fig.update_layout(yaxis_title="Mean " + feature_name + " per " + freq)
+    if not transpose:
+        fig.update_layout(yaxis_title="Mean " + feature_name + " per " + freq)
+    else:
+        fig.update_layout(xaxis_title="Mean " + feature_name + " per " + freq)
     feature_in_time_figure = json.loads(fig.to_json())
     return feature_in_time_figure
 
@@ -245,51 +257,67 @@ def plot_cat_feature_in_time(
     datetime_name: str,
     freq: str,
     color_options: ColorOptions,
+    transpose: bool = False,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
     """
     title = "current"
     fig = go.Figure()
+    orientation = "v" if not transpose else "h"
     values = curr_data[feature_name].astype(str).unique()
     if ref_data is not None:
         values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
     for i, val in enumerate(values):
+        x = curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name]
+        y = curr_data.loc[curr_data[feature_name].astype(str) == val, "num"]
         fig.add_trace(
             go.Bar(
-                x=curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name],
-                y=curr_data.loc[curr_data[feature_name].astype(str) == val, "num"],
+                x=x if not transpose else y,
+                y=y if not transpose else x,
                 name=str(val),
                 marker_color=color_options.color_sequence[i],
                 legendgroup=str(val),
+                orientation=orientation,
             )
         )
         if ref_data is not None:
             title = "reference/current"
+            x = ref_data.loc[ref_data[feature_name].astype(str) == val, datetime_name]
+            y = ref_data.loc[ref_data[feature_name].astype(str) == val, "num"]
             fig.add_trace(
                 go.Bar(
-                    x=ref_data.loc[ref_data[feature_name].astype(str) == val, datetime_name],
-                    y=ref_data.loc[ref_data[feature_name].astype(str) == val, "num"],
+                    x=x if not transpose else y,
+                    y=y if not transpose else x,
                     name=str(val),
                     marker_color=color_options.color_sequence[i],
                     # showlegend=False,
                     legendgroup=str(val),
                     opacity=0.6,
+                    orientation=orientation,
                 )
             )
     fig.update_traces(marker_line_width=0.01)
     fig.update_layout(
         barmode="stack",
         bargap=0,
-        yaxis_title="count category values per " + freq,
         title=title,
     )
+    if not transpose:
+        fig.update_layout(yaxis_title="count category values per " + freq)
+    else:
+        fig.update_layout(xaxis_title="count category values per " + freq)
     feature_in_time_figure = json.loads(fig.to_json())
     return feature_in_time_figure
 
 
 def plot_boxes(
-    curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str, color_options: ColorOptions
+    curr_for_plots: dict,
+    ref_for_plots: Optional[dict],
+    yaxis_title: str,
+    xaxis_title: str,
+    color_options: ColorOptions,
+    transpose: bool = False,
 ):
     """
     Accepts current and reference data as dicts with box parameters ("mins", "lowers", "uppers", "means", "maxs")
@@ -302,9 +330,11 @@ def plot_boxes(
         q3=curr_for_plots["uppers"],
         median=curr_for_plots["means"],
         upperfence=curr_for_plots["maxs"],
-        x=curr_for_plots["values"],
+        x=curr_for_plots["values"] if not transpose else None,
+        y=curr_for_plots["values"] if transpose else None,
         name="current",
         marker_color=color_options.get_current_data_color(),
+        orientation="v" if not transpose else "h",
     )
     fig.add_trace(trace)
     if ref_for_plots is not None:
@@ -314,13 +344,19 @@ def plot_boxes(
             q3=ref_for_plots["uppers"],
             median=ref_for_plots["means"],
             upperfence=ref_for_plots["maxs"],
-            x=ref_for_plots["values"],
+            x=ref_for_plots["values"] if not transpose else None,
+            y=ref_for_plots["values"] if transpose else None,
             name="reference",
             marker_color=color_options.get_reference_data_color(),
+            orientation="v" if not transpose else "h",
         )
         fig.add_trace(trace)
         fig.update_layout(boxmode="group")
-    fig.update_layout(yaxis_title=yaxis_title, xaxis_title=xaxis_title, boxmode="group")
+    fig.update_layout(
+        yaxis_title=yaxis_title if not transpose else xaxis_title,
+        xaxis_title=xaxis_title if not transpose else yaxis_title,
+        boxmode="group",
+    )
     fig = json.loads(fig.to_json())
     return fig
 
@@ -371,6 +407,8 @@ def plot_cat_cat_rel(
         cols = 2
         subplot_titles = ["current", "reference"]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    # logging.warning(type(curr))
+    # logging.warning(type(curr[target_name]))
     for i, val in enumerate(curr[target_name].astype(str).unique()):
         trace = go.Bar(
             x=curr.loc[curr[target_name] == val, feature_name],
@@ -777,7 +815,7 @@ def is_possible_contour(m1, m2) -> bool:
         values = np.vstack([m1, m2])
         stats.gaussian_kde(values)
         return True
-    except LinAlgError:
+    except (LinAlgError, ValueError):
         return False
 
 
@@ -940,7 +978,7 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
     }
     datetime_feature = current_date_column
     if reference_date_column is not None:
-        datetime_feature = datetime_feature.append(reference_date_column)
+        datetime_feature = pd.concat([datetime_feature, reference_date_column])
     days = (datetime_feature.max() - datetime_feature.min()).days
     time_points = pd.Series(
         index=["A", "Q", "M", "W", "D", "H"],
@@ -973,6 +1011,12 @@ def prepare_df_for_time_index_plot(
     freq: Optional[str] = None,
     bins: Optional[np.ndarray] = None,
 ) -> Tuple[pd.DataFrame, Optional[str]]:
+    index_name = df.index.name
+    if index_name is None:
+        index_name = "index"
+    if datetime_name is None and is_datetime64_any_dtype(df.index):
+        df = df.copy().reset_index()
+        datetime_name = index_name
     if datetime_name is not None:
         if prefix is None and freq is None:
             prefix, freq = choose_agg_period(df[datetime_name], None)
@@ -982,7 +1026,7 @@ def prepare_df_for_time_index_plot(
         plot_df["per"] = plot_df["per"].dt.to_timestamp()
         return plot_df, prefix
     plot_df = df[column_name].reset_index().sort_values("index")
-    plot_df["per"] = pd.cut(plot_df["index"], OPTIMAL_POINTS if bins is None else bins, labels=False)
+    plot_df["per"] = pd.cut(plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False)
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
 
@@ -1074,9 +1118,9 @@ def plot_agg_line_data(
     xaxis_name: str,
     xaxis_name_ref: Optional[str],
     yaxis_name: str,
+    color_options: ColorOptions,
     return_json: bool = True,
 ):
-    color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
 

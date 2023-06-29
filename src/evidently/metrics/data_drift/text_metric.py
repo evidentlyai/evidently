@@ -5,6 +5,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import text_widget
@@ -19,8 +20,11 @@ class CommentResults(MetricResult):
 
 
 class Comment(Metric[CommentResults]):
-    def __init__(self, text: str):
+    text: str
+
+    def __init__(self, text: str, options: AnyOptions = None):
         self.text = text
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> CommentResults:
         return CommentResults(text=self.text)
