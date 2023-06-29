@@ -95,7 +95,7 @@ def main(workspace: str):
             "drift",
         )
         ws.add_report(project.id, report)
-        corr_report = create_report(DatasetCorrelationsMetric(), ts, "correlation")
+        create_report(DatasetCorrelationsMetric(), ts, "correlation")
         ws.add_report(project.id, report)
 
     test_suite = create_test_suite()

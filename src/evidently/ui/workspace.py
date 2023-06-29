@@ -3,9 +3,10 @@ import datetime
 import json
 import os
 import uuid
-from typing import Dict, Tuple
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 from pydantic import UUID4
@@ -17,9 +18,9 @@ from evidently.experimental.report_set import load_report_set
 from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
-from evidently.utils import NumpyEncoder
 from evidently.ui.dashboards import DashboardConfig
 from evidently.ui.dashboards import DashboardPanel
+from evidently.utils import NumpyEncoder
 
 METADATA_PATH = "metadata.json"
 REPORTS_PATH = "reports"
@@ -127,29 +128,33 @@ class Project(BaseModel):
     def reports(self) -> Dict[uuid.UUID, Report]:
         # if self._items is None:
         self._load_items()
-        return {key: value.report for key, value in self._items.items() if isinstance(value.report, Report)}
+        return {key: value.report for key, value in self.items.items() if isinstance(value.report, Report)}
 
     @property
     def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
         # if self._items is None:
         self._load_items()
-        return {key: value.report for key, value in self._items.items() if isinstance(value.report, TestSuite)}
+        return {key: value.report for key, value in self.items.items() if isinstance(value.report, TestSuite)}
 
     def get_item(self, report_id: uuid.UUID) -> Optional[ProjectItem]:
         item = self.reports.get(report_id) or self.test_suites.get(report_id)
         if item is None:
             return None
-        project_item = self._items.get(item.id)
+        project_item = self.items.get(item.id)
         if project_item is None:
             return None
+        for graph_id, graph_data in project_item.additional_graphs.items():
+            self.cached_graphs[(report_id, graph_id)] = graph_data
+        return self.items.get(item.id)
+
+    @property
+    def cached_graphs(self):
         if self._cached_graphs is None:
             self._cached_graphs = {}
-        for graph_id, graph_data in project_item.additional_graphs.items():
-            self._cached_graphs[(report_id, graph_id)] = graph_data
-        return self._items.get(item.id)
+        return self._cached_graphs
 
     def get_additional_graph_info(self, report_id: uuid.UUID, graph_id: str) -> Optional[dict]:
-        return self._cached_graphs.get((report_id, graph_id))
+        return self.cached_graphs.get((report_id, graph_id))
 
     def build_dashboard_info(
         self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
@@ -175,7 +180,7 @@ class WorkspaceBase(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_project(self, project_id: uuid.UUID) -> Project:
+    def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -221,16 +226,22 @@ class Workspace(WorkspaceBase):
         ]
         return {p.id: p for p in projects}
 
-    def get_project(self, project_id: uuid.UUID) -> Project:
+    def get_project(self, project_id: Union[str, uuid.UUID]) -> Optional[Project]:
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
         return self._projects.get(project_id, None)
 
     def list_projects(self) -> List[Project]:
         return list(self._projects.values())
 
     def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
         self._projects[project_id].add_report(report)
 
     def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
         self._projects[project_id].add_test_suite(test_suite)
 
 
@@ -238,15 +249,21 @@ def upload_item(
     item: Union[Report, TestSuite], workspace_or_url: Union[str, Workspace], project_id: Union[uuid.UUID, str]
 ):
     if isinstance(workspace_or_url, Workspace):
-        workspace_or_url.get_project(project_id).add_item(item)
+        project = workspace_or_url.get_project(project_id)
+        if project is None:
+            raise ValueError(f"Project {project_id} not found")
+        project.add_item(item)
         return
 
     if os.path.exists(workspace_or_url):
         workspace = Workspace(path=workspace_or_url)
-        workspace.get_project(project_id).add_item(item)
+        project = workspace.get_project(project_id)
+        if project is None:
+            raise ValueError(f"Project {project_id} not found")
+        project.add_item(item)
         return
 
-    from evidently_service.remote import RemoteWorkspace
+    from evidently.ui.remote import RemoteWorkspace
 
     client = RemoteWorkspace(workspace_or_url)
     if isinstance(item, Report):
