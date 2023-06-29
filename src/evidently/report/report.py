@@ -231,6 +231,22 @@ class Report(Display):
     def _parse_payload(cls, payload: Dict) -> "Report":
         return parse_obj_as(_ReportPayload, payload).load()
 
+    def set_batch_size(self, batch_size: str):
+        self.metadata["batch_size"] = batch_size
+        return self
+
+    def set_model_id(self, model_id: str):
+        self.metadata["model_id"] = model_id
+        return self
+
+    def set_reference_id(self, reference_id: str):
+        self.metadata["reference_id"] = reference_id
+        return self
+
+    def set_dataset_id(self, dataset_id: str):
+        self.metadata["dataset_id"] = dataset_id
+        return self
+
 
 class _ReportPayload(BaseModel):
     id: UUID4
@@ -244,7 +260,14 @@ class _ReportPayload(BaseModel):
     def load(self):
         ctx = self.suite.to_context()
         metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics, options=self.options)
+        report = Report(
+            metrics=metrics,
+            options=self.options,
+            timestamp=self.timestamp,
+            id=self.id,
+            metadata=self.metadata,
+            tags=self.tags,
+        )
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
 

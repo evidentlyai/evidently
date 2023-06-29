@@ -4,7 +4,7 @@ import numpy as np
 from sklearn import datasets
 
 from evidently.metric_preset import DataDriftPreset
-from evidently.metrics import DatasetCorrelationsMetric
+from evidently.metrics import DatasetCorrelationsMetric, ColumnDriftMetric, ColumnMissingValuesMetric
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfDriftedColumns
@@ -30,7 +30,11 @@ WORKSPACE = "workspace"
 
 def create_report(metric, date: datetime.datetime, tag: str):
     data_drift_report = Report(
-        metrics=[metric], metadata={"type": metric.__class__.__name__}, tags=[tag], timestamp=date, dataset_id="adult"
+        metrics=[metric,
+            ColumnDriftMetric(column_name="age"),
+            ColumnMissingValuesMetric(column_name="education")],
+        options={"render": {"raw_data": True}},
+        metadata={"type": metric.__class__.__name__}, tags=[tag], timestamp=date, dataset_id="adult"
     ).set_batch_size("1")
 
     data_drift_report.run(reference_data=adult_ref, current_data=adult_cur)
@@ -95,8 +99,8 @@ def main(workspace: str):
             "drift",
         )
         ws.add_report(project.id, report)
-        create_report(DatasetCorrelationsMetric(), ts, "correlation")
-        ws.add_report(project.id, report)
+        corr_report = create_report(DatasetCorrelationsMetric(), ts, "correlation")
+        ws.add_report(project.id, corr_report)
 
     test_suite = create_test_suite()
     ws.add_test_suite(project.id, test_suite)

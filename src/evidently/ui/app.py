@@ -21,6 +21,7 @@ import evidently
 from evidently.report.report import _ReportPayload
 from evidently.test_suite.test_suite import _TestSuitePayload
 from evidently.ui.dashboards import DashboardPanel
+from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.ui.models import DashboardInfoModel
 from evidently.ui.models import ProjectModel
 from evidently.ui.models import ReportModel
@@ -231,7 +232,7 @@ def run(args):
 
 
 def generate_workspace(args):
-    evidently.ui.generate_workspace.main(args.workspace)
+    generate_workspace_main(args.workspace)
 
 
 def main():
