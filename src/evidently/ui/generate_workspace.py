@@ -15,6 +15,8 @@ from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
+from evidently.ui.remote import RemoteWorkspace
+from evidently.ui.workspace import Project
 from evidently.ui.workspace import Workspace
 
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
@@ -49,8 +51,8 @@ def create_test_suite():
     return data_drift_dataset_tests
 
 
-def create_project(workspace: Workspace):
-    project = workspace.create_project("project1")
+def create_project():
+    project = Project(name="project1", description="")
     project.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=["drift"]),
@@ -81,9 +83,13 @@ def create_project(workspace: Workspace):
 
 
 def main(workspace: str):
-    ws = Workspace.create(workspace)
-    project = create_project(ws)
-    project.save()
+    if workspace.startswith("http"):
+        ws = RemoteWorkspace(workspace)
+    else:
+        ws = Workspace.create(workspace)
+    project = create_project()
+    # todo: project.save for remote projects
+    ws.add_project(project)
 
     for d in range(1, 10):
         ts = datetime.datetime.combine(datetime.date.today() + datetime.timedelta(days=d), datetime.time())
@@ -104,3 +110,4 @@ def main(workspace: str):
 
 if __name__ == "__main__":
     main("workspace")
+    # main("http://localhost:8000")

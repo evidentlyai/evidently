@@ -6,7 +6,6 @@ import uuid
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 from pydantic import UUID4
@@ -18,17 +17,15 @@ from evidently.experimental.report_set import load_snapshots
 from evidently.model.dashboard import DashboardInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.report import Report
-from evidently.suite.base_suite import ReportBase, Snapshot
+from evidently.suite.base_suite import ReportBase
+from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.ui.dashboards import DashboardConfig
 from evidently.ui.dashboards import DashboardPanel
 from evidently.utils import NumpyEncoder
 
 METADATA_PATH = "metadata.json"
-REPORTS_PATH = "reports"
-TEST_SUITES_PATH = "test_suites"
 SNAPSHOTS = "snapshots"
-
 
 
 class ProjectSnapshot:
@@ -37,10 +34,10 @@ class ProjectSnapshot:
     # todo: metadata
 
     # caches
-    _value: Snapshot = None
-    _report: ReportBase = None
-    _dashboard_info: DashboardInfo = None
-    _additional_graphs: Dict[str, DetailsInfo] = None
+    _value: Optional[Snapshot] = None
+    _report: Optional[ReportBase] = None
+    _dashboard_info: Optional[DashboardInfo] = None
+    _additional_graphs: Optional[Dict[str, DetailsInfo]] = None
 
     def __init__(self, id: uuid.UUID, project: "Project", value: Optional[Snapshot] = None):
         self.id = id
@@ -49,10 +46,9 @@ class ProjectSnapshot:
         if value is not None:
             self._value = value
 
-
     @property
     def value(self):
-        if not hasattr(self, "_value"):
+        if self._value is None:
             self.load()
         return self._value
 
@@ -82,6 +78,7 @@ class ProjectSnapshot:
         self._value = Snapshot.load(self.path)
         _, self._dashboard_info, self._additional_graphs = self.report._build_dashboard_info()
 
+
 class Project(BaseModel):
     class Config:
         underscore_attrs_are_private = True
@@ -91,10 +88,8 @@ class Project(BaseModel):
     description: Optional[str] = None
     dashboard: DashboardConfig
 
-
     _snapshots: Dict[uuid.UUID, ProjectSnapshot] = {}
     _workspace: "Workspace"
-
 
     @property
     def path(self):
@@ -118,7 +113,6 @@ class Project(BaseModel):
         snapshot.save(item.path)
         self._snapshots[item.id] = item
 
-
     @classmethod
     def load(cls, path: str) -> "Project":
         try:
@@ -128,8 +122,7 @@ class Project(BaseModel):
             return Project(name="Unnamed Project", dashboard=DashboardConfig(name="Dashboard", panels=[]))
 
     def save(self):
-        os.makedirs(os.path.join(self.path, REPORTS_PATH), exist_ok=True)
-        os.makedirs(os.path.join(self.path, TEST_SUITES_PATH), exist_ok=True)
+        os.makedirs(os.path.join(self.path, SNAPSHOTS), exist_ok=True)
         with open(os.path.join(self.path, METADATA_PATH), "w") as f:
             return json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
@@ -171,8 +164,6 @@ class Project(BaseModel):
         )
 
 
-
-
 class WorkspaceBase(abc.ABC):
     @abc.abstractmethod
     def create_project(self, name: str, description: Optional[str] = None) -> Project:
@@ -183,24 +174,23 @@ class WorkspaceBase(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_project(self, project_id: uuid.UUID) -> Project:
+    def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
         raise NotImplementedError
 
     @abc.abstractmethod
     def list_projects(self) -> List[Project]:
         raise NotImplementedError
 
-    @abc.abstractmethod
     def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
-        raise NotImplementedError
+        self.add_snapshot(project_id, report.to_snapshot())
 
-    @abc.abstractmethod
     def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
-        raise NotImplementedError
+        self.add_snapshot(project_id, test_suite.to_snapshot())
 
     @abc.abstractmethod
     def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
         raise NotImplementedError
+
 
 class Workspace(WorkspaceBase):
     def __init__(self, path: str):
@@ -217,12 +207,6 @@ class Workspace(WorkspaceBase):
     def create_project(self, name: str, description: Optional[str] = None) -> Project:
         project = Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[]))
         return self.add_project(project)
-
-    def add_project(self, project: Project) -> Project:
-        project.bind(self)
-        project.save()
-        self._projects[project.id] = project
-        return project
 
     def add_project(self, project: Project) -> Project:
         project.bind(self)
@@ -247,21 +231,21 @@ class Workspace(WorkspaceBase):
         return list(self._projects.values())
 
     def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
         self._projects[project_id].add_snapshot(snapshot)
 
 
-
-def upload_item(
-    item: ReportBase, workspace_or_url: Union[str, WorkspaceBase], project_id: Union[uuid.UUID, str]
-):
+def upload_snapshot(item: ReportBase, workspace_or_url: Union[str, WorkspaceBase], project_id: Union[uuid.UUID, str]):
     if isinstance(workspace_or_url, WorkspaceBase):
         workspace_or_url.add_snapshot(project_id, item.to_snapshot())
         return
 
     if os.path.exists(workspace_or_url):
-        workspace = Workspace(path=workspace_or_url)
+        workspace: WorkspaceBase = Workspace(path=workspace_or_url)
     else:
-        from evidently_service.remote import RemoteWorkspace
+        from evidently.ui.remote import RemoteWorkspace
+
         workspace = RemoteWorkspace(workspace_or_url)
 
     workspace.add_snapshot(project_id, item.to_snapshot())

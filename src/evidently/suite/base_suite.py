@@ -15,7 +15,9 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic import BaseModel, UUID4, parse_obj_as
+from pydantic import UUID4
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import ErrorResult
@@ -143,11 +145,7 @@ class ExecutionError(Exception):
     pass
 
 
-T = TypeVar("T", bound="Display")
-
-
 class Display:
-
     @abc.abstractmethod
     def _build_dashboard_info(self):
         raise NotImplementedError()
@@ -234,9 +232,7 @@ class Display:
         **kwargs,
     ) -> dict:
         """Return all data for json representation"""
-        result = {
-            "version": evidently.__version__
-        }
+        result = {"version": evidently.__version__}
         result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude, **kwargs))
         return result
 
@@ -268,8 +264,6 @@ class Display:
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)
-
-
 
 
 class Suite:
@@ -429,6 +423,7 @@ class Suite:
             options=self.context.options,
         )
 
+
 class Snapshot(BaseModel):
     id: UUID4
     timestamp: datetime
@@ -437,7 +432,6 @@ class Snapshot(BaseModel):
     suite: ContextPayload
     metrics_ids: List[int] = []
     test_ids: List[int] = []
-
 
     def save(self, filename):
         with open(filename, "w") as f:
@@ -463,6 +457,9 @@ class Snapshot(BaseModel):
         return TestSuite._parse_snapshot(self)
 
 
+T = TypeVar("T", bound="ReportBase")
+
+
 class ReportBase(Display):
     _inner_suite: Suite
     # collection of all possible common options
@@ -476,8 +473,13 @@ class ReportBase(Display):
         self.options = Options.from_any_options(options)
         self.timestamp = timestamp or datetime.now()
 
-    def _get_json_content(self, include_render: bool = False, include: Dict[str, IncludeOptions] = None,
-                          exclude: Dict[str, IncludeOptions] = None, **kwargs) -> dict:
+    def _get_json_content(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
+    ) -> dict:
         res = super()._get_json_content(include_render, include, exclude, **kwargs)
         res["timestamp"] = str(self.timestamp)
         return res
@@ -502,7 +504,6 @@ class ReportBase(Display):
         """Save state to file (experimental)"""
         self._get_snapshot().save(filename)
 
-
     @classmethod
     def _load(cls: Type[T], filename) -> T:
         """Load state from file (experimental)"""
@@ -510,4 +511,3 @@ class ReportBase(Display):
 
     def to_snapshot(self):
         return self._get_snapshot()
-

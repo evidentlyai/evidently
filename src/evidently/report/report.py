@@ -2,15 +2,12 @@ import dataclasses
 import datetime
 import uuid
 from collections import defaultdict
-from typing import Dict, Type
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
 import pandas as pd
-from pydantic import UUID4
-from pydantic import BaseModel
-from pydantic import parse_obj_as
 
 from evidently import ColumnMapping
 from evidently.base_metric import InputData
@@ -22,8 +19,8 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
-from evidently.suite.base_suite import ContextPayload, ReportBase, Snapshot, T
-from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import ReportBase
+from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils.data_operations import process_columns
@@ -230,15 +227,20 @@ class Report(ReportBase):
 
     def _get_snapshot(self) -> Snapshot:
         snapshot = super()._get_snapshot()
-        snapshot.metrics_ids=[snapshot.suite.metrics.index(m) for m in self._first_level_metrics]
+        snapshot.metrics_ids = [snapshot.suite.metrics.index(m) for m in self._first_level_metrics]
         return snapshot
 
     @classmethod
     def _parse_snapshot(cls, snapshot: Snapshot) -> "Report":
         ctx = snapshot.suite.to_context()
         metrics = [ctx.metrics[i] for i in snapshot.metrics_ids]
-        report = Report(metrics=metrics, timestamp=snapshot.timestamp, id=snapshot.id, metadata=snapshot.metadata, tags=snapshot.tags)
+        report = Report(
+            metrics=metrics,
+            timestamp=snapshot.timestamp,
+            id=snapshot.id,
+            metadata=snapshot.metadata,
+            tags=snapshot.tags,
+        )
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
         return report
-

@@ -8,8 +8,6 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
-from pydantic import BaseModel
-from pydantic import parse_obj_as
 
 from evidently.base_metric import InputData
 from evidently.core import IncludeOptions
@@ -19,8 +17,8 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
-from evidently.suite.base_suite import ContextPayload, ReportBase, Snapshot, T
-from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import ReportBase
+from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
@@ -44,8 +42,8 @@ class TestSuite(ReportBase):
         options: AnyOptions = None,
         timestamp: Optional[datetime] = None,
         id: Optional[uuid.UUID] = None,
-            metadata: Dict[str, str] = None,
-            tags: List[str] = None,
+        metadata: Dict[str, str] = None,
+        tags: List[str] = None,
     ):
         super().__init__(options, timestamp)
         self._inner_suite = Suite(self.options)
@@ -232,9 +230,8 @@ class TestSuite(ReportBase):
     @classmethod
     def _parse_snapshot(cls, snapshot: Snapshot) -> "TestSuite":
         ctx = snapshot.suite.to_context()
-        suite = TestSuite(tests=None, timestamp=snapshot.timestamp, id=snapshot.id, metadata=snapshot.metadata, tags=snapshot.tags)
+        suite = TestSuite(
+            tests=None, timestamp=snapshot.timestamp, id=snapshot.id, metadata=snapshot.metadata, tags=snapshot.tags
+        )
         suite._inner_suite.context = ctx
         return suite
-
-
-

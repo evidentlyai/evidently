@@ -17,10 +17,8 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
-from evidently.suite.base_suite import Snapshot
 import evidently
-from evidently.report.report import _ReportPayload
-from evidently.test_suite.test_suite import _TestSuitePayload
+from evidently.suite.base_suite import Snapshot
 from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.models import DashboardInfoModel
 from evidently.ui.models import ProjectModel
@@ -117,11 +115,10 @@ async def get_report_graph_data(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_snapshot(report_id).value.as_report()
-    report = project.get_additional_graph_info(report_id, graph_id)
+    report = project.get_snapshot(report_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
-    graph = project.get_additional_graph_info(report_id, graph_id)
+    graph = report.additional_graphs.get(graph_id)
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
     return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
@@ -137,7 +134,7 @@ async def get_report_download(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_item(report_id)
+    report = project.get_snapshot(report_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
     if report_format == "html":
@@ -158,7 +155,7 @@ async def get_report_data(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_item(report_id)
+    report = project.get_snapshot(report_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
     info = DashboardInfoModel.from_dashboard_info(report.dashboard_info)

@@ -9,9 +9,9 @@ from urllib.error import HTTPError
 import requests
 
 from evidently.suite.base_suite import Snapshot
-from evidently.utils import NumpyEncoder
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import WorkspaceBase
+from evidently.utils import NumpyEncoder
 
 
 class RemoteWorkspace(WorkspaceBase):
@@ -50,4 +50,3 @@ class RemoteWorkspace(WorkspaceBase):
 
     def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
         return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())
-
