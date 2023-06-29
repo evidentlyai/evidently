@@ -44,6 +44,10 @@ class Report(ReportBase):
         id: uuid.UUID = None,
         metadata: Dict[str, str] = None,
         tags: List[str] = None,
+        model_id: str = None,
+        reference_id: str = None,
+        batch_size: str = None,
+        dataset_id: str = None,
     ):
         super().__init__(options, timestamp)
         # just save all metrics and metric presets
@@ -53,6 +57,14 @@ class Report(ReportBase):
         self.id = id or uuid.uuid4()
         self.metadata = metadata or {}
         self.tags = tags or []
+        if model_id is not None:
+            self.set_model_id(model_id)
+        if batch_size is not None:
+            self.set_batch_size(batch_size)
+        if reference_id is not None:
+            self.set_reference_id(reference_id)
+        if dataset_id is not None:
+            self.set_dataset_id(dataset_id)
 
     def run(
         self,
@@ -199,6 +211,22 @@ class Report(ReportBase):
                 for item in additional_graphs
             },
         )
+
+    def set_batch_size(self, batch_size: str):
+        self.metadata["batch_size"] = batch_size
+        return self
+
+    def set_model_id(self, model_id: str):
+        self.metadata["model_id"] = model_id
+        return self
+
+    def set_reference_id(self, reference_id: str):
+        self.metadata["reference_id"] = reference_id
+        return self
+
+    def set_dataset_id(self, dataset_id: str):
+        self.metadata["dataset_id"] = dataset_id
+        return self
 
     def _get_snapshot(self) -> Snapshot:
         snapshot = super()._get_snapshot()

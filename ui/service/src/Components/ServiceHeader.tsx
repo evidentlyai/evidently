@@ -22,11 +22,12 @@ export function ServiceHeader() {
     return <>
         <AppBar position={"static"} color={"transparent"}>
             <Toolbar>
-                <IconButton edge="start"
-                            className={classes.menuButton}
-                            color="inherit" aria-label="menu">
-                    <MenuIcon/>
-                </IconButton>
+                {/*<IconButton edge="start"*/}
+                {/*            className={classes.menuButton}*/}
+                {/*            hidden={true}*/}
+                {/*            color="inherit" aria-label="menu">*/}
+                {/*    <MenuIcon/>*/}
+                {/*</IconButton>*/}
                 <Typography variant="h6"
                             className={classes.title}
                 >

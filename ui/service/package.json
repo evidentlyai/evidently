@@ -33,7 +33,7 @@
     "copy_dependency": "shx cp -r ../lib ./src",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "copy": "shx cp -r ./build/* ../../src/evidently_service/ui",
+    "copy": "shx cp -r ./build/* ../../src/evidently/ui/ui",
     "full_build": "yarn build && yarn copy",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

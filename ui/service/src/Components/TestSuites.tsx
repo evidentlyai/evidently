@@ -6,6 +6,7 @@ import ApiContext from "../lib/contexts/ApiContext";
 import LoadableView from "../lib/components/LoadableVIew";
 import {ReportInfo} from "../lib/api/Api";
 import {DownloadButton} from "./DownloadButton";
+import {TextWithCopyIcon} from "./TextWithCopyIcon";
 
 export const TestSuitesHeader = (props: {projectId: string, reportId?: string}) => {
     return <>
@@ -24,19 +25,19 @@ export const TestSuitesHeader = (props: {projectId: string, reportId?: string}) 
 
 const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
     return <>
-        <form>
-            <input
-                id="contained-button-file"
-                style={{display: "none"}}
-                multiple
-                type="file"
-            />
-            <label htmlFor="contained-button-file">
-                <Button variant="contained" color="primary" component="span">
-                    Upload
-                </Button>
-            </label>
-        </form>
+        {/*<form>*/}
+        {/*    <input*/}
+        {/*        id="contained-button-file"*/}
+        {/*        style={{display: "none"}}*/}
+        {/*        multiple*/}
+        {/*        type="file"*/}
+        {/*    />*/}
+        {/*    <label htmlFor="contained-button-file">*/}
+        {/*        <Button variant="contained" color="primary" component="span">*/}
+        {/*            Upload*/}
+        {/*        </Button>*/}
+        {/*    </label>*/}
+        {/*</form>*/}
         <Table>
             <TableHead>
                 <TableCell>
@@ -51,7 +52,7 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
             </TableHead>
             {props.reports.map(report => <TableRow>
                 <TableCell>
-                    {report.id}
+                    <TextWithCopyIcon showText={report.id} copyText={report.id} />
                 </TableCell>
                 <TableCell>
                     {report.timestamp.toString()}

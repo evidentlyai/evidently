@@ -55,6 +55,8 @@ setup_args = dict(
         "requests>=2.19.0",
         "PyYAML>=5.1",
         "pydantic>=1.9,<2",
+        "fastapi>=0.98.0",
+        "uvicorn>=0.22.0",
     ],
     extras_require={
         "dev": [
@@ -72,7 +74,9 @@ setup_args = dict(
             "isort==5.10.1",
         ]
     },
-    entry_points={},
+    entry_points={
+        "console_scripts": ["evidently=evidently.ui.app:main"]
+    },
 )
 
 if __name__ == "__main__":

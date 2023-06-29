@@ -16,11 +16,11 @@ export function Report(props: {params: DashboardInfo}) {
     </Grid>
 }
 
-export function ProjectDashboard(props: {projectId: string}) {
+export function ProjectDashboard(props: {projectId: string, from?: string, to?: string}) {
     return <>
         <ApiContext.Consumer>
             {api =>
-                    <LoadableView func={() => api.Api.getProjectDashboard(props.projectId)}>
+                    <LoadableView func={() => api.Api.getProjectDashboard(props.projectId, props.from, props.to)}>
                         {
                             params => <Report params={params} />
                         }

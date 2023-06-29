@@ -1,7 +1,7 @@
 import {
     AdditionalGraphInfo,
     Api,
-    DashboardInfo,
+    DashboardInfo, ProjectDetails,
     ProjectInfo,
     ReportInfo,
     TestSuiteInfo,
@@ -57,8 +57,18 @@ export default class RemoteApi implements Api {
         }
     }
 
-    async getProjectDashboard(projectId: string): Promise<DashboardInfo> {
-        const resp = await fetch(`${this.endpoint}/projects/${projectId}/dashboard`);
+    async getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo> {
+        let query = "";
+        if (from !== undefined) {
+            query = `timestamp_start=${from}`
+        }
+        if (to !== undefined) {
+            query = (query === "" ? `${query}&` : "") + `timestamp_end=${to}`;
+        }
+        if (query != "") {
+            query = "?" + query;
+        }
+        const resp = await fetch(`${this.endpoint}/projects/${projectId}/dashboard${query}`);
         console.log(resp);
         if (resp.ok) {
             return (await resp.json() as DashboardInfo);
@@ -84,6 +94,17 @@ export default class RemoteApi implements Api {
         const resp = await fetch(`${this.endpoint}/projects/${projectId}/test_suites`);
         if (resp.ok) {
             return (await resp.json() as TestSuiteInfo[]);
+        }
+        else
+        {
+            throw Error(`${resp.status}, ${resp.statusText}`);
+        }
+    }
+
+    async getProjectInfo(projectId: string): Promise<ProjectDetails> {
+        const resp = await fetch(`${this.endpoint}/projects/${projectId}/info`);
+        if (resp.ok) {
+            return (await resp.json() as ProjectDetails);
         }
         else
         {
