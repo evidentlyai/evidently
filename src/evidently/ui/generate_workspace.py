@@ -1,10 +1,8 @@
 import datetime
 
-import numpy as np
 from sklearn import datasets
 
-from evidently.metric_preset import DataDriftPreset
-from evidently.metrics import DatasetDriftMetric, DatasetMissingValuesMetric, ColumnDriftMetric, ColumnMissingValuesMetric, ColumnQuantileMetric
+from evidently.metrics import DatasetDriftMetric, DatasetMissingValuesMetric, ColumnDriftMetric, ColumnQuantileMetric
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.test_preset import DataDriftTestPreset
@@ -26,6 +24,7 @@ adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])
 
 WORKSPACE = "workspace"
 
+
 def create_report(i: int, tags=[]):
     data_drift_report = Report(
         metrics=[
@@ -35,16 +34,16 @@ def create_report(i: int, tags=[]):
             ColumnQuantileMetric(column_name="age", quantile=0.5),
             ColumnDriftMetric(column_name="education-num"),
             ColumnQuantileMetric(column_name="education-num", quantile=0.5),
-            ], 
-        metadata={"type": "data_quality"}, 
-        tags=tags, 
-        timestamp=datetime.datetime.now() + datetime.timedelta(days=i), 
+        ],
+        metadata={"type": "data_quality"},
+        tags=tags,
+        timestamp=datetime.datetime.now() + datetime.timedelta(days=i),
     )
 
     data_drift_report.set_batch_size("daily")
     data_drift_report.set_dataset_id("adult")
 
-    data_drift_report.run(reference_data=adult_ref, current_data=adult_cur.iloc[100*i:100*(i+1), :])
+    data_drift_report.run(reference_data=adult_ref, current_data=adult_cur.iloc[100 * i: 100 * (i + 1), :])
     return data_drift_report
 
 
@@ -52,11 +51,11 @@ def create_test_suite(i: int, tags=[]):
     data_drift_test_suite = TestSuite(
         tests=[
             DataDriftTestPreset()
-            ], 
-        timestamp=datetime.datetime.now() + datetime.timedelta(days=i), 
+        ],
+        timestamp=datetime.datetime.now() + datetime.timedelta(days=i),
     )
 
-    data_drift_test_suite.run(reference_data=adult_ref, current_data=adult_cur.iloc[100*i:100*(i+1), :])
+    data_drift_test_suite.run(reference_data=adult_ref, current_data=adult_cur.iloc[100 * i: 100 * (i + 1), :])
     return data_drift_test_suite
 
 
@@ -72,7 +71,7 @@ def create_project(workspace: Workspace):
     project.add_panel(
         DashboardPanelPlot(
             title="Dataset Quality",
-            filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[ ]),
+            filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
             values=[
                 PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Drift Share"),
                 PanelValue(metric_id="DatasetMissingValuesMetric", field_path="current.share_of_missing_values", legend="Missing Values Share"),
@@ -87,7 +86,7 @@ def create_project(workspace: Workspace):
             values=[
                 PanelValue(metric_id="ColumnDriftMetric",
                            metric_args={"column_name.name": "age"},
-                           field_path="drift_score", 
+                           field_path="drift_score",
                            legend="Drift Score"),
             ],
             plot_type=PlotType.LINE,
@@ -99,15 +98,15 @@ def create_project(workspace: Workspace):
             title="Age: quantile=0.5",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
             values=[
-                PanelValue(metric_id="ColumnQuantileMetric", 
-                           metric_args={"column_name.name": "age", "quantile":0.5},
-                           field_path="current.value", 
+                PanelValue(metric_id="ColumnQuantileMetric",
+                           metric_args={"column_name.name": "age", "quantile": 0.5},
+                           field_path="current.value",
                            legend="Quantile"),
             ],
             plot_type=PlotType.LINE,
             size=1
         )
-    ) 
+    )
     project.add_panel(
         DashboardPanelPlot(
             title="Education-num: Wasserstein drift distance",
@@ -115,7 +114,7 @@ def create_project(workspace: Workspace):
             values=[
                 PanelValue(metric_id="ColumnDriftMetric",
                            metric_args={"column_name.name": "education-num"},
-                           field_path="drift_score", 
+                           field_path="drift_score",
                            legend="Drift Score"),
             ],
             plot_type=PlotType.LINE,
@@ -127,15 +126,15 @@ def create_project(workspace: Workspace):
             title="Education-num: quantile=0.5",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
             values=[
-                PanelValue(metric_id="ColumnQuantileMetric", 
-                           metric_args={"column_name.name": "education-num", "quantile":0.5},
-                           field_path="current.value", 
+                PanelValue(metric_id="ColumnQuantileMetric",
+                           metric_args={"column_name.name": "education-num", "quantile": 0.5},
+                           field_path="current.value",
                            legend="Quantile"),
             ],
             plot_type=PlotType.LINE,
             size=1
         )
-    )     
+    )
     return project
 
 
@@ -147,7 +146,7 @@ def main(workspace: str):
     for i in range(0, 19):
         report = create_report(i=i)
         ws.add_report(project.id, report)
-        
+
         test_suite = create_test_suite(i=i)
         ws.add_report(project.id, test_suite)
 
