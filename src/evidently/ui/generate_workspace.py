@@ -86,7 +86,7 @@ def create_project(workspace: Workspace):
                 ),
                 PanelValue(
                     metric_id="DatasetDriftMetric",
-                    metric_args={"num_stattest": "ks"},
+                    metric_args={},
                     field_path="number_of_drifted_columns",
                     legend="Count",
                 ),
