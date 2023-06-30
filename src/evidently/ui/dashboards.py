@@ -85,7 +85,7 @@ class DashboardPanelPlot(DashboardPanel):
         points.sort(key=lambda x: x[0])
         x = [p[0] for p in points]
         ys = [[p[1][i] for p in points] for i in range(len(self.values))]
-        fig = go.Figure()
+        fig = go.Figure(layout={"showlegend": True})
         for val, y in zip(self.values, ys):
             plot = self.plot_type_cls(x=x, y=y, name=val.legend, legendgroup=val.legend)
             fig.add_trace(plot)
