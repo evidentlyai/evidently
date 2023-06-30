@@ -1,6 +1,8 @@
 import abc
+import traceback
 import uuid
 from enum import Enum
+from typing import Any
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -9,6 +11,7 @@ from typing import Optional
 from plotly import graph_objs as go
 from pydantic import BaseModel
 
+from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -39,16 +42,49 @@ def get_nested(d: dict, path: List[str]):
     return get_nested(d[path[0]], path[1:])
 
 
+_not_set = object()
+
+
+def getattr_nested(obj: Any, path: List[str], default=_not_set):
+    item = path[0]
+    if len(path) == 1:
+        if default is _not_set:
+            return getattr(obj, item)
+        return getattr(obj, item, default)
+    if not hasattr(obj, item):
+        if default is _not_set:
+            # raising AttributeError
+            return getattr(obj, item)
+    return getattr_nested(getattr(obj, item), path[1:], default)
+
+
 class PanelValue(BaseModel):
-    metric_id: str
     field_path: str
+    metric_id: Optional[str] = None
+    metric_hash: Optional[int] = None
+    metric_args: Dict[str, Any] = {}
     legend: Optional[str] = None
 
-    def get(self, report: Report):
-        # todo: make this more efficient
-        for metric in report.as_dict()["metrics"]:
-            if metric["metric"] == self.metric_id:
-                return get_nested(metric["result"], self.field_path.split("."))
+    def metric_matched(self, metric: Metric) -> bool:
+        if self.metric_hash is not None and hash(metric) == self.metric_hash:
+            return True
+        if self.metric_id is not None and self.metric_id != metric.get_id():
+            return False
+        for field, value in self.metric_args.items():
+            try:
+                if getattr_nested(metric, field.split(".")) != value:
+                    return False
+            except AttributeError:
+                return False
+        return True
+
+    def get(self, report: Report) -> Any:
+        for metric in report._first_level_metrics:
+            if self.metric_matched(metric):
+                try:
+                    return getattr_nested(metric.get_result(), self.field_path.split("."))
+                except AttributeError:
+                    pass
         return None
 
 
@@ -137,7 +173,14 @@ class DashboardConfig(BaseModel):
     panels: List[DashboardPanel]
 
     def build_dashboard_info(self, reports: Iterable[Report]) -> DashboardInfo:
-        return DashboardInfo(self.name, widgets=[p.build_widget(reports) for p in self.panels])
+        return DashboardInfo(self.name, widgets=[self.build_widget(p, reports) for p in self.panels])
+
+    def build_widget(self, panel: DashboardPanel, reports: Iterable[Report]) -> BaseWidgetInfo:
+        try:
+            return panel.build_widget(reports)
+        except Exception as e:
+            traceback.print_exc()
+            return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
 
 
 class Dashboard(Display):
