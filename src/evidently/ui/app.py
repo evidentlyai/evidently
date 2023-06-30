@@ -17,7 +17,6 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
-import evidently
 from evidently.report.report import _ReportPayload
 from evidently.test_suite.test_suite import _TestSuitePayload
 from evidently.ui.dashboards import DashboardPanel

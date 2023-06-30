@@ -4,7 +4,9 @@ import numpy as np
 from sklearn import datasets
 
 from evidently.metric_preset import DataDriftPreset
-from evidently.metrics import DatasetCorrelationsMetric, ColumnDriftMetric, ColumnMissingValuesMetric
+from evidently.metrics import ColumnDriftMetric
+from evidently.metrics import ColumnMissingValuesMetric
+from evidently.metrics import DatasetCorrelationsMetric
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfDriftedColumns
@@ -30,11 +32,12 @@ WORKSPACE = "workspace"
 
 def create_report(metric, date: datetime.datetime, tag: str):
     data_drift_report = Report(
-        metrics=[metric,
-            ColumnDriftMetric(column_name="age"),
-            ColumnMissingValuesMetric(column_name="education")],
+        metrics=[metric, ColumnDriftMetric(column_name="age"), ColumnMissingValuesMetric(column_name="education")],
         options={"render": {"raw_data": True}},
-        metadata={"type": metric.__class__.__name__}, tags=[tag], timestamp=date, dataset_id="adult"
+        metadata={"type": metric.__class__.__name__},
+        tags=[tag],
+        timestamp=date,
+        dataset_id="adult",
     ).set_batch_size("1")
 
     data_drift_report.run(reference_data=adult_ref, current_data=adult_cur)
@@ -75,8 +78,18 @@ def create_project(workspace: Workspace):
             title="sample_panel",
             filter=ReportFilter(metadata_values={"type": "DataDriftPreset"}, tag_values=["drift"]),
             values=[
-                PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Share"),
-                PanelValue(metric_id="DatasetDriftMetric", field_path="number_of_drifted_columns", legend="Count"),
+                PanelValue(
+                    metric_id="DatasetDriftMetric",
+                    metric_args={"num_stattest": "ks"},
+                    field_path="share_of_drifted_columns",
+                    legend="Share",
+                ),
+                PanelValue(
+                    metric_id="DatasetDriftMetric",
+                    metric_args={"num_stattest": "ks"},
+                    field_path="number_of_drifted_columns",
+                    legend="Count",
+                ),
             ],
             plot_type=PlotType.LINE,
         )
@@ -89,11 +102,22 @@ def main(workspace: str):
     project = create_project(ws)
     project.save()
 
-    for d in range(1, 10):
+    for d in range(1, 3):
         ts = datetime.datetime.combine(datetime.date.today() + datetime.timedelta(days=d), datetime.time())
         report = create_report(
             DataDriftPreset(
                 num_stattest="ks", cat_stattest="psi", num_stattest_threshold=0.2, cat_stattest_threshold=0.2
+            ),
+            ts,
+            "drift",
+        )
+        ws.add_report(project.id, report)
+        report = create_report(
+            DataDriftPreset(
+                num_stattest="cramer_von_mises",
+                cat_stattest="psi",
+                num_stattest_threshold=0.5,
+                cat_stattest_threshold=0.2,
             ),
             ts,
             "drift",
