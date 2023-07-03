@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 
 from evidently.base_metric import ColumnName
@@ -15,7 +17,7 @@ class TextLength(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def text_len(s):
-            if s is None:
+            if s is None or isinstance(s, float ) and math.isnan(s):
                 return 0
             return len(s)
 
