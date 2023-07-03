@@ -4,7 +4,6 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-import sklearn
 from scipy.spatial.distance import chebyshev
 from scipy.spatial.distance import cityblock
 from scipy.spatial.distance import cosine
