@@ -45,7 +45,7 @@ def dataset(f):
 
 @dataset
 def bcancer():
-    bcancer_data = datasets.load_breast_cancer(as_frame="auto")
+    bcancer_data = datasets.load_breast_cancer(as_frame=True)
     bcancer = bcancer_data.frame
 
     bcancer_ref = bcancer.sample(n=300, replace=False)
@@ -73,7 +73,7 @@ def bcancer():
 
 @dataset
 def bcancer_label():
-    bcancer_data = datasets.load_breast_cancer(as_frame="auto")
+    bcancer_data = datasets.load_breast_cancer(as_frame=True)
     bcancer = bcancer_data.frame
 
     bcancer_ref = bcancer.sample(n=300, replace=False)
@@ -102,7 +102,7 @@ def bcancer_label():
 
 @dataset
 def adult():
-    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
+    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame=True)
     adult = adult_data.frame
 
     adult_ref = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
@@ -114,7 +114,7 @@ def adult():
 
 @dataset
 def housing():
-    housing_data = datasets.fetch_california_housing(as_frame="auto")
+    housing_data = datasets.fetch_california_housing(as_frame=True)
     housing = housing_data.frame
 
     housing.rename(columns={"MedHouseVal": "target"}, inplace=True)
@@ -132,7 +132,7 @@ def housing():
 
 @dataset
 def reviews():
-    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
+    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame=True)
     reviews = reviews_data.frame
 
     # In[ ]:

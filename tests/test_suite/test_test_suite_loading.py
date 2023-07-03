@@ -17,7 +17,7 @@ from evidently.test_suite import TestSuite
 
 @pytest.fixture
 def adult():
-    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
+    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame=True)
     adult = adult_data.frame
 
     adult_ref = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
@@ -29,7 +29,7 @@ def adult():
 
 @pytest.fixture
 def housing():
-    housing_data = datasets.fetch_california_housing(as_frame="auto")
+    housing_data = datasets.fetch_california_housing(as_frame=True)
     housing = housing_data.frame
 
     housing.rename(columns={"MedHouseVal": "target"}, inplace=True)
@@ -42,7 +42,7 @@ def housing():
 
 @pytest.fixture
 def iris():
-    iris_data = datasets.load_iris(as_frame="auto")
+    iris_data = datasets.load_iris(as_frame=True)
     iris = iris_data.frame
 
     iris_ref = iris.sample(n=75, replace=False)
@@ -58,7 +58,7 @@ def iris():
 
 @pytest.fixture
 def bcancer_label():
-    bcancer_data = datasets.load_breast_cancer(as_frame="auto")
+    bcancer_data = datasets.load_breast_cancer(as_frame=True)
     bcancer = bcancer_data.frame
 
     bcancer_ref = bcancer.sample(n=300, replace=False)
@@ -78,7 +78,7 @@ def bcancer_label():
 
 @pytest.fixture
 def bcancer():
-    bcancer_data = datasets.load_breast_cancer(as_frame="auto")
+    bcancer_data = datasets.load_breast_cancer(as_frame=True)
     bcancer = bcancer_data.frame
 
     bcancer_ref = bcancer.sample(n=300, replace=False)
