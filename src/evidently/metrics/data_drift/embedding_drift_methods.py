@@ -125,9 +125,10 @@ def model(
         )
         try:
             clf = SGDClassifier(loss="log_loss", random_state=42)
+            clf.fit(X_train, y_train)
         except ValueError:
             clf = SGDClassifier(loss="log", random_state=42)
-        clf.fit(X_train, y_train)
+            clf.fit(X_train, y_train)
         y_pred_proba = clf.predict_proba(X_test)[:, 1]
         roc_auc = roc_auc_score(y_test, y_pred_proba)
         if bootstrap:
