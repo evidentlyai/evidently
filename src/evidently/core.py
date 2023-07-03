@@ -1,4 +1,3 @@
-import json
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -238,14 +237,3 @@ class BaseResult(BaseModel):
 
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame([self.collect_pandas_columns()])
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, BaseResult):
-            # todo: bad performance
-            from evidently.utils import NumpyEncoder
-
-            res = json.dumps(self.get_dict(include_render=True), cls=NumpyEncoder) == json.dumps(
-                other.get_dict(include_render=True), cls=NumpyEncoder
-            )
-            return res
-        return super().__eq__(other)
