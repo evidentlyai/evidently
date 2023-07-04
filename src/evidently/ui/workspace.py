@@ -11,9 +11,9 @@ from typing import Union
 from pydantic import UUID4
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import ValidationError
 from pydantic import parse_obj_as
 
-from evidently.experimental.report_set import load_snapshots
 from evidently.model.dashboard import DashboardInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.report import Report
@@ -130,21 +130,29 @@ class Project(BaseModel):
         project = self.load(self.path).bind(self.workspace)
         self.__dict__.update(project.__dict__)
 
-    def _load_snapshots(self):
-        self._snapshots = {
-            id: ProjectSnapshot(s.id, self, s) for id, s in load_snapshots(os.path.join(self.path, SNAPSHOTS)).items()
-        }
+    def _reload_snapshots(self, skip_errors=True):
+        path = os.path.join(self.path, SNAPSHOTS)
+        for file in os.listdir(path):
+            snapshot_id = uuid.UUID(file[: -len(".json")])
+            if snapshot_id in self._snapshots:
+                continue
+            filepath = os.path.join(path, file)
+            try:
+                suite = Snapshot.load(filepath)
+            except ValidationError:
+                if skip_errors:
+                    continue
+                raise
+            self._snapshots[snapshot_id] = ProjectSnapshot(snapshot_id, self, suite)
 
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
-        # if self._items is None:
-        self._load_snapshots()
+        self._reload_snapshots()
         return {key: value.value.as_report() for key, value in self._snapshots.items() if value.value.is_report}
 
     @property
     def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
-        # if self._items is None:
-        self._load_snapshots()
+        self._reload_snapshots()
         return {key: value.value.as_test_suite() for key, value in self._snapshots.items() if not value.value.is_report}
 
     def get_snapshot(self, id: uuid.UUID) -> Optional[ProjectSnapshot]:
