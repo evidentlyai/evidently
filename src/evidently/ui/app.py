@@ -17,8 +17,7 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
-from evidently.report.report import _ReportPayload
-from evidently.test_suite.test_suite import _TestSuitePayload
+from evidently.suite.base_suite import Snapshot
 from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.ui.models import DashboardInfoModel
@@ -116,10 +115,10 @@ async def get_report_graph_data(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_additional_graph_info(report_id, graph_id)
+    report = project.get_snapshot(report_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
-    graph = project.get_additional_graph_info(report_id, graph_id)
+    graph = report.additional_graphs.get(graph_id)
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
     return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
@@ -135,7 +134,7 @@ async def get_report_download(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_item(report_id)
+    report = project.get_snapshot(report_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
     if report_format == "html":
@@ -156,7 +155,7 @@ async def get_report_data(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_item(report_id)
+    report = project.get_snapshot(report_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
     info = DashboardInfoModel.from_dashboard_info(report.dashboard_info)
@@ -204,22 +203,13 @@ async def add_project(project: Project):
     workspace.add_project(project)
 
 
-@api_router.post("/projects/{project_id}/reports")
-async def add_project_report(project_id: Annotated[uuid.UUID, PROJECT_ID], report: _ReportPayload):
+@api_router.post("/projects/{project_id}/snapshots")
+async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot):
     workspace: Workspace = app.state.workspace
     if workspace.get_project(project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    workspace.add_report(project_id, report.load())
-
-
-@api_router.post("/projects/{project_id}/test_suites")
-async def add_project_test_suite(project_id: Annotated[uuid.UUID, PROJECT_ID], test_suite: _TestSuitePayload):
-    workspace: Workspace = app.state.workspace
-    if workspace.get_project(project_id) is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    workspace.add_test_suite(project_id, test_suite.load())
+    workspace.add_snapshot(project_id, snapshot)
 
 
 app.include_router(api_router)

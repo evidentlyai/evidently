@@ -8,8 +8,7 @@ from urllib.error import HTTPError
 
 import requests
 
-from evidently.report import Report
-from evidently.test_suite import TestSuite
+from evidently.suite.base_suite import Snapshot
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import WorkspaceBase
 from evidently.utils import NumpyEncoder
@@ -40,12 +39,6 @@ class RemoteWorkspace(WorkspaceBase):
     def add_project(self, project: Project):
         return self._request("/api/projects", "POST", body=project.dict())
 
-    def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
-        return self._request(f"/api/projects/{project_id}/reports", "POST", body=report._get_payload().dict())
-
-    def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
-        return self._request(f"/api/projects/{project_id}/test_suites", "POST", body=test_suite._get_payload().dict())
-
     def create_project(self, name: str, description: Optional[str] = None) -> Project:
         raise NotImplementedError
 
@@ -54,3 +47,6 @@ class RemoteWorkspace(WorkspaceBase):
 
     def list_projects(self) -> List[Project]:
         raise NotImplementedError
+
+    def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
+        return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())

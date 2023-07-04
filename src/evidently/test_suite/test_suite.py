@@ -8,8 +8,6 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
-from pydantic import BaseModel
-from pydantic import parse_obj_as
 
 from evidently.base_metric import InputData
 from evidently.core import IncludeOptions
@@ -17,11 +15,10 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
-from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
-from evidently.suite.base_suite import ContextPayload
-from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import ReportBase
+from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
@@ -33,13 +30,11 @@ from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
 
-class TestSuite(Display):
-    _inner_suite: Suite
+class TestSuite(ReportBase):
     _columns_info: DatasetColumns
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
     _tests: List[Test]
-    id: uuid.UUID
 
     def __init__(
         self,
@@ -47,6 +42,8 @@ class TestSuite(Display):
         options: AnyOptions = None,
         timestamp: Optional[datetime] = None,
         id: Optional[uuid.UUID] = None,
+        metadata: Dict[str, str] = None,
+        tags: List[str] = None,
     ):
         super().__init__(options, timestamp)
         self._inner_suite = Suite(self.options)
@@ -54,6 +51,8 @@ class TestSuite(Display):
         self._test_presets = []
         self._test_generators = []
         self._tests = []
+        self.metadata = metadata or {}
+        self.tags = tags or []
         for original_test in tests or []:
             if isinstance(original_test, TestPreset):
                 self._test_presets.append(original_test)
@@ -223,26 +222,21 @@ class TestSuite(Display):
             {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
         )
 
-    def _get_payload(self) -> BaseModel:
-        return _TestSuitePayload(
-            id=self.id,
-            suite=ContextPayload.from_context(self._inner_suite.context),
-            timestamp=self.timestamp,
-            options=self.options,
-        )
+    def _get_snapshot(self) -> Snapshot:
+        snapshot = super()._get_snapshot()
+        snapshot.test_ids = list(range(len(snapshot.suite.tests)))
+        return snapshot
 
     @classmethod
-    def _parse_payload(cls, payload: Dict) -> "TestSuite":
-        return parse_obj_as(_TestSuitePayload, payload).load()
-
-
-class _TestSuitePayload(BaseModel):
-    id: uuid.UUID
-    suite: ContextPayload
-    timestamp: datetime
-    options: Options
-
-    def load(self):
-        suite = TestSuite(tests=None, timestamp=self.timestamp, id=self.id, options=self.options)
-        suite._inner_suite.context = self.suite.to_context()
+    def _parse_snapshot(cls, snapshot: Snapshot) -> "TestSuite":
+        ctx = snapshot.suite.to_context()
+        suite = TestSuite(
+            tests=None,
+            timestamp=snapshot.timestamp,
+            id=snapshot.id,
+            metadata=snapshot.metadata,
+            tags=snapshot.tags,
+            options=snapshot.options,
+        )
+        suite._inner_suite.context = ctx
         return suite
