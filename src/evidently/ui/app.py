@@ -96,6 +96,20 @@ async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> Proj
     return ProjectModel.from_project(project)
 
 
+@api_router.post("/projects/{project_id}/info")
+async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectModel) -> ProjectModel:
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="project not found")
+    project.description = data.description
+    project.name = data.project_name
+    project.date_from = data.date_from
+    project.date_to = data.date_to
+    project.save()
+    return ProjectModel.from_project(project)
+
+
 @api_router.get("/projects/{project_id}/test_suites")
 async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[TestSuiteModel]:
     workspace: Workspace = app.state.workspace

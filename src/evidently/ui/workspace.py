@@ -87,6 +87,8 @@ class Project(BaseModel):
     name: str
     description: Optional[str] = None
     dashboard: DashboardConfig
+    date_from: Optional[datetime.datetime] = None
+    date_to: Optional[datetime.datetime] = None
 
     _snapshots: Dict[uuid.UUID, ProjectSnapshot] = {}
     _workspace: "Workspace"
