@@ -15,7 +15,7 @@ import requests
 pd.options.mode.chained_assignment = None
 
 
-BIKE_DATA_SOURCE_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip"
+BIKE_DATA_SOURCE_URL = "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"
 
 
 def setup_logger() -> None:

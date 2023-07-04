@@ -110,7 +110,7 @@ To run the tests, first convert all the notebooks to a python script, then downl
 
 ```sh
 jupyter nbconvert --to script evidently/examples/*.ipynb --output-dir example_scripts
-curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip -o Bike-Sharing-Dataset.zip &&
+curl https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
              unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
 python example_test.py
 ```

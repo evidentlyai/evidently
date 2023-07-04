@@ -1,14 +1,19 @@
 import abc
+import datetime
+import traceback
 import uuid
 from enum import Enum
+from typing import Any
 from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 from plotly import graph_objs as go
 from pydantic import BaseModel
 
+from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -39,17 +44,51 @@ def get_nested(d: dict, path: List[str]):
     return get_nested(d[path[0]], path[1:])
 
 
+_not_set = object()
+
+
+def getattr_nested(obj: Any, path: List[str], default=_not_set):
+    item = path[0]
+    if len(path) == 1:
+        if default is _not_set:
+            return getattr(obj, item)
+        return getattr(obj, item, default)
+    if not hasattr(obj, item):
+        if default is _not_set:
+            # raising AttributeError
+            return getattr(obj, item)
+    return getattr_nested(getattr(obj, item), path[1:], default)
+
+
 class PanelValue(BaseModel):
-    metric_id: str
     field_path: str
+    metric_id: Optional[str] = None
+    metric_hash: Optional[int] = None
+    metric_args: Dict[str, Any] = {}
     legend: Optional[str] = None
 
-    def get(self, report: Report):
-        # todo: make this more efficient
-        for metric in report.as_dict()["metrics"]:
-            if metric["metric"] == self.metric_id:
-                return get_nested(metric["result"], self.field_path.split("."))
-        return None
+    def metric_matched(self, metric: Metric) -> bool:
+        if self.metric_hash is not None and hash(metric) == self.metric_hash:
+            return True
+        if self.metric_id is not None and self.metric_id != metric.get_id():
+            return False
+        for field, value in self.metric_args.items():
+            try:
+                if getattr_nested(metric, field.split(".")) != value:
+                    return False
+            except AttributeError:
+                return False
+        return True
+
+    def get(self, report: Report) -> Dict[Metric, Any]:
+        results = {}
+        for metric in report._first_level_metrics:
+            if self.metric_matched(metric):
+                try:
+                    results[metric] = getattr_nested(metric.get_result(), self.field_path.split("."))
+                except AttributeError:
+                    pass
+        return results
 
 
 class PlotType(Enum):
@@ -76,19 +115,33 @@ class DashboardPanelPlot(DashboardPanel):
     plot_type: PlotType
 
     def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
-        points = []
+
+        points: List[Dict[Metric, List[Tuple[datetime.datetime, Any]]]] = [{} for _ in range(len(self.values))]
         for report in reports:
             if not self.filter.filter(report):
                 continue
-            points.append((report.timestamp, [value.get(report) for value in self.values]))
+            for i, value in enumerate(self.values):
+                for metric, metric_field_value in value.get(report).items():
+                    if metric not in points[i]:
+                        points[i][metric] = []
+                    points[i][metric].append((report.timestamp, metric_field_value))
 
-        points.sort(key=lambda x: x[0])
-        x = [p[0] for p in points]
-        ys = [[p[1][i] for p in points] for i in range(len(self.values))]
-        fig = go.Figure()
-        for val, y in zip(self.values, ys):
-            plot = self.plot_type_cls(x=x, y=y, name=val.legend, legendgroup=val.legend)
-            fig.add_trace(plot)
+        fig = go.Figure(layout={"showlegend": True})
+        for val, metric_pts in zip(self.values, points):
+            if len(metric_pts) == 0:
+                # no matching metrics, show error?
+                continue
+
+            for metric, pts in metric_pts.items():
+                pts.sort(key=lambda x: x[0])
+                plot = self.plot_type_cls(
+                    x=[p[0] for p in pts],
+                    y=[p[1] for p in pts],
+                    name=val.legend,
+                    legendgroup=val.legend,
+                    hovertemplate=f"%{{x}}, %{{y}}<br>{metric}<br>.{val.field_path}",
+                )
+                fig.add_trace(plot)
         return plotly_figure(title=self.title, figure=fig, size=self.size)
 
     @property
@@ -126,9 +179,9 @@ class DashboardPanelCounter(DashboardPanel):
         if self.value is None:
             raise ValueError("Counters with agg should have value")
         if self.agg == CounterAgg.LAST:
-            return max(((r.timestamp, self.value.get(r)) for r in reports), key=lambda x: x[0])[1]
+            return max(((r.timestamp, v) for r in reports for v in self.value.get(r)), key=lambda x: x[0])[1]
         if self.agg == CounterAgg.SUM:
-            return sum(self.value.get(r) or 0 for r in reports)
+            return sum(v or 0 for r in reports for v in self.value.get(r).values())
         raise ValueError(f"Unknown agg type {self.agg}")
 
 
@@ -137,7 +190,14 @@ class DashboardConfig(BaseModel):
     panels: List[DashboardPanel]
 
     def build_dashboard_info(self, reports: Iterable[Report]) -> DashboardInfo:
-        return DashboardInfo(self.name, widgets=[p.build_widget(reports) for p in self.panels])
+        return DashboardInfo(self.name, widgets=[self.build_widget(p, reports) for p in self.panels])
+
+    def build_widget(self, panel: DashboardPanel, reports: Iterable[Report]) -> BaseWidgetInfo:
+        try:
+            return panel.build_widget(reports)
+        except Exception as e:
+            traceback.print_exc()
+            return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
 
 
 class Dashboard(Display):

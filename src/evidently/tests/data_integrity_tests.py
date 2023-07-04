@@ -987,6 +987,7 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
     name: ClassVar = "RegExp Match"
     _metric: ColumnRegExpMetric
     column_name: str
+    reg_exp: str
 
     def __init__(
         self,
@@ -1002,6 +1003,7 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         self.column_name = column_name
+        self.reg_exp = reg_exp
         super().__init__(
             eq=eq,
             gt=gt,

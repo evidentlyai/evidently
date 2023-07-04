@@ -6,6 +6,7 @@ import numpy as np
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.metric_results import ColumnAggScatterResult
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
@@ -38,7 +39,8 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
         reference_scatter: Optional[Union[dict, ColumnScatter]] = None
-        if self.get_options().render_options.raw_data:
+        raw_data = self.get_options().render_options.raw_data
+        if raw_data:
             current_scatter = {}
             current_scatter["Predicted"] = curr_df[prediction_name]
             current_scatter["Actual"] = curr_df[target_name]
@@ -76,7 +78,10 @@ class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
             x_name = "Index binned"
         else:
             x_name = datetime_column_name + f" ({prefix})"
-        return ColumnScatterResult(
+        cls = ColumnScatterResult
+        if not raw_data:
+            cls = ColumnAggScatterResult
+        return cls(
             current=current_scatter,
             reference=reference_scatter,
             x_name=x_name,
@@ -129,6 +134,7 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
             xaxis_name=x_name,
             xaxis_name_ref=x_name_ref,
             yaxis_name="Value",
+            color_options=self.color_options,
         )
         return [
             header_text(label="Predicted vs Actual in Time"),
@@ -170,6 +176,7 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
             xaxis_name=result.x_name,
             xaxis_name_ref=result.x_name_ref,
             yaxis_name="Value",
+            color_options=self.color_options,
         )
         return [
             header_text(label="Predicted vs Actual in Time"),

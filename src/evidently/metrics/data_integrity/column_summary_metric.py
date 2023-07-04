@@ -108,7 +108,7 @@ class DataByTarget(MetricResult):
         Dict[
             str,
             Union[
-                Dict[str, Union[list, pd.DataFrame, np.ndarray, pd.Categorical]],
+                Dict[str, list],
                 pd.DataFrame,
             ],
         ],
@@ -433,7 +433,10 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             and metric_result.plot_data.data_by_target.data_for_plots is not None
         ):
             ref_data_by_target = None
-            if "reference" in metric_result.plot_data.data_by_target.data_for_plots.keys():
+            if (
+                "reference" in metric_result.plot_data.data_by_target.data_for_plots.keys()
+                and metric_result.plot_data.data_by_target.data_for_plots["reference"] is not None
+            ):
                 ref_data_by_target = metric_result.plot_data.data_by_target.data_for_plots["reference"]
             target_type = metric_result.plot_data.data_by_target.target_type
             target_name = metric_result.plot_data.data_by_target.target_name

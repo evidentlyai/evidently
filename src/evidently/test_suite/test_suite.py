@@ -15,6 +15,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import ReportBase
@@ -231,7 +232,7 @@ class TestSuite(ReportBase):
     def _parse_snapshot(cls, snapshot: Snapshot) -> "TestSuite":
         ctx = snapshot.suite.to_context()
         suite = TestSuite(
-            tests=None, timestamp=snapshot.timestamp, id=snapshot.id, metadata=snapshot.metadata, tags=snapshot.tags
+            tests=None, timestamp=snapshot.timestamp, id=snapshot.id, metadata=snapshot.metadata, tags=snapshot.tags, options=snapshot.options
         )
         suite._inner_suite.context = ctx
         return suite

@@ -11,6 +11,7 @@ from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
@@ -31,9 +32,9 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     column_name: ColumnName
 
-    def __init__(self, column_name: Union[str, ColumnName]) -> None:
+    def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None) -> None:
         self.column_name = ColumnName.from_any(column_name)
-        super().__init__()
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if not data.has_column(self.column_name):

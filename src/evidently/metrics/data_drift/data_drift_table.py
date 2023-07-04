@@ -207,6 +207,7 @@ class DataDriftTableRenderer(MetricRenderer):
                         xaxis_name=data.scatter.x_name,
                         xaxis_name_ref=None,
                         yaxis_name=data.column_name,
+                        color_options=self.color_options,
                         return_json=False,
                     )
                 scatter = plotly_figure(title="", figure=scatter_fig)

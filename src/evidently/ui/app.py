@@ -17,9 +17,9 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
-import evidently
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.dashboards import DashboardPanel
+from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.ui.models import DashboardInfoModel
 from evidently.ui.models import ProjectModel
 from evidently.ui.models import ReportModel
@@ -221,7 +221,7 @@ def run(args):
 
 
 def generate_workspace(args):
-    evidently.ui.generate_workspace.main(args.workspace)
+    generate_workspace_main(args.workspace)
 
 
 def main():

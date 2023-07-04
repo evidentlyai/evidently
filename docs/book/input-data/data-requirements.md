@@ -50,9 +50,9 @@ You can read more about the data schema requirements in the [column mapping sect
 
 ## Data volume and sampling
 
-HTML **reports** may take time to load. This is because they store some of the data inside the HTML to generate the interactive plots. The exact limitation depends on your infrastructure (e.g., memory).
+To minimize the size of **HTML Reports**, the visualizations are aggregated by default. If you want to see plots with raw data, you should pass the [corresponding parameter](../customization/report-data-aggregation.md). If you are generating Reports with raw data, they may take time to load. The exact limitation depends on your infrastructure (e.g., memory).
 
-If the dataset is too large, you might need to downsample it before passing the data to Evidently. For instance, you can apply random sampling or stratified sampling. You can also limit the number of columns (e.g., generate the report only for the most important features).
+If the dataset is too large, and you want to get raw data plots, you might need to downsample the data before passing the data to Evidently. For instance, you can apply random sampling or stratified sampling. You can also limit the number of columns (e.g., generate the report only for the most important features).
 
 **Test suites** contain different visualizations and can handle larger input data volumes.
 
