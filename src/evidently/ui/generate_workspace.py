@@ -16,7 +16,7 @@ from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
 from evidently.ui.remote import RemoteWorkspace
-from evidently.ui.workspace import Workspace
+from evidently.ui.workspace import Workspace, WorkspaceBase
 
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
 adult = adult_data.frame
@@ -59,7 +59,7 @@ def create_test_suite(i: int, tags=[]):
     return data_drift_test_suite
 
 
-def create_project(workspace: Workspace):
+def create_project(workspace: WorkspaceBase):
     project = workspace.create_project("Example Project")
     project.add_panel(
         DashboardPanelCounter(
