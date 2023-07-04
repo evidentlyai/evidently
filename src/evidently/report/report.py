@@ -18,7 +18,6 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
-from evidently.options.base import Options
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
@@ -241,24 +240,8 @@ class Report(ReportBase):
             id=snapshot.id,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
-            options=snapshot.options
+            options=snapshot.options,
         )
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
         return report
-
-    def set_batch_size(self, batch_size: str):
-        self.metadata["batch_size"] = batch_size
-        return self
-
-    def set_model_id(self, model_id: str):
-        self.metadata["model_id"] = model_id
-        return self
-
-    def set_reference_id(self, reference_id: str):
-        self.metadata["reference_id"] = reference_id
-        return self
-
-    def set_dataset_id(self, dataset_id: str):
-        self.metadata["dataset_id"] = dataset_id
-        return self

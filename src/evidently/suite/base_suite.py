@@ -433,6 +433,7 @@ class Snapshot(BaseModel):
     suite: ContextPayload
     metrics_ids: List[int] = []
     test_ids: List[int] = []
+    options: Options
 
     def save(self, filename):
         with open(filename, "w") as f:
@@ -494,6 +495,7 @@ class ReportBase(Display):
             timestamp=self.timestamp,
             metadata=self.metadata,
             tags=self.tags,
+            options=self.options,
         )
 
     @classmethod
