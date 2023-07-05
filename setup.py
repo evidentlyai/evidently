@@ -33,7 +33,9 @@ data_files_spec = [
     ("etc/jupyter/nbconfig/notebook.d", HERE, "evidently.json"),
 ]
 
-cmdclass = create_cmdclass("jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec)
+cmdclass = create_cmdclass(
+    "jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec
+)
 cmdclass["jsdeps"] = combine_commands(
     install_npm(os.path.join(HERE, "ui"), build_cmd="build"),
     ensure_targets(jstargets),
@@ -70,7 +72,12 @@ setup_args = dict(
             "pillow==9.5.0",
             "black==22.8.0",
             "isort==5.10.1",
-        ]
+        ],
+        "spark": [
+            "pyspark==3.3.0",
+            "pyarrow==11.0.0",
+            "pytest-spark==0.6.0",  # it can be moved to "spark-dev" secion if necessary
+        ],
     },
     entry_points={},
 )

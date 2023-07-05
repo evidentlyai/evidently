@@ -98,6 +98,7 @@ class Report(Display):
             else:
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
 
+        # TODO(emily): why is it called twice?
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
         curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
         data = InputData(

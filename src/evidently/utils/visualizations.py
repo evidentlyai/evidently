@@ -497,9 +497,18 @@ def get_distribution_for_numerical_column(
     bins: Optional[Union[list, np.ndarray]] = None,
 ) -> Distribution:
     if bins is None:
-        bins = np.histogram_bin_edges(column, bins="doane")
+        if "spark" in dir(column):
+            # TODO (pyspark): make Spark-efficient solution
+            bins = np.histogram_bin_edges(column.to_numpy(), bins="doane")
+        else:
+            bins = np.histogram_bin_edges(column, bins="doane")
 
-    histogram = np.histogram(column, bins=bins)
+    if "spark" in dir(column):
+        # TODO (pyspark): make Spark-efficient solution
+        histogram = np.histogram(column.to_numpy(), bins=bins)
+    else:
+        histogram = np.histogram(column, bins=bins)
+
     return Distribution(
         x=histogram[1],
         y=histogram[0],
@@ -519,11 +528,21 @@ def get_distribution_for_column(
 
     elif column_type == "num":
         if reference is not None:
-            bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
+            if "spark" in dir(reference):
+                # TODO (pyspark): make Spark-efficient solution
+                # bins = np.histogram_bin_edges(pd.concat([current.dropna().to_pandas(), reference.dropna().to_pandas()]), bins="doane")
+                bins = np.histogram_bin_edges(pd.concat([current.to_pandas().dropna(), reference.to_pandas().dropna()]), bins="doane")
+            else:
+                bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
+
             reference_distribution = get_distribution_for_numerical_column(reference, bins)
 
         else:
-            bins = np.histogram_bin_edges(current.dropna(), bins="doane")
+            if "spark" in dir(current):
+                # TODO (pyspark): make Spark-efficient solution
+                bins = np.histogram_bin_edges(current.dropna().to_numpy(), bins="doane")
+            else:
+                bins = np.histogram_bin_edges(current.dropna(), bins="doane")
 
         current_distribution = get_distribution_for_numerical_column(current, bins)
 

@@ -9,9 +9,24 @@ from evidently import ColumnMapping
 from evidently.metrics import ColumnQuantileMetric
 from evidently.report import Report
 
+from tests.utils.spark import convert_pandas_to_spark_df_if_necessary, fixup_json_if_necessary
+
 
 def test_data_quality_quantile_metric_success() -> None:
     test_dataset = pd.DataFrame({"numerical_feature": [0, 2, 2, 2, 0]})
+    data_mapping = ColumnMapping()
+    metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
+    report = Report(metrics=[metric])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
+    assert result is not None
+    assert result.quantile == 0.5
+    assert result.current.value == 2
+
+
+def test_data_quality_quantile_metric_spark_success(spark_session) -> None:
+    spark_df = spark_session.createDataFrame([[0], [2], [2], [2], [0]], "numerical_feature: int")
+    test_dataset = spark_df.pandas_api()
     data_mapping = ColumnMapping()
     metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
     report = Report(metrics=[metric])
@@ -62,8 +77,12 @@ def test_data_quality_quantile_metric_value_errors(
     reference_dataset: Optional[pd.DataFrame],
     metric: ColumnQuantileMetric,
     error_message: str,
+    pandas_or_spark_session,
 ) -> None:
     data_mapping = ColumnMapping()
+
+    current_dataset = convert_pandas_to_spark_df_if_necessary(current_dataset, pandas_or_spark_session)
+    reference_dataset = convert_pandas_to_spark_df_if_necessary(reference_dataset, pandas_or_spark_session)
 
     with pytest.raises(ValueError) as error:
         report = Report(metrics=[metric])
@@ -74,7 +93,7 @@ def test_data_quality_quantile_metric_value_errors(
 
 
 @pytest.mark.parametrize(
-    "current, reference, column_mapping, metric, expected_json",
+    "current, reference, column_mapping, metric, expected_json, spark_fixup_json",
     (
         (
             pd.DataFrame({"numerical_feature": [0, 4, 1, 2, np.NaN]}),
@@ -87,6 +106,12 @@ def test_data_quality_quantile_metric_value_errors(
                 "current": {"value": 1.5},
                 "quantile": 0.5,
                 "reference": {"value": 2.0},
+            },
+            {
+                # spark quantile computation uses interpolation "approx"
+                # which is more inline with "higher" option for pandas DF
+                # while pandas DF uses "linear" interpolation by default
+                "current": {"value": 2.0},
             },
         ),
         (
@@ -108,6 +133,7 @@ def test_data_quality_quantile_metric_value_errors(
                 "quantile": 0.5,
                 "reference": None,
             },
+            {},
         ),
         (
             pd.DataFrame(
@@ -135,6 +161,12 @@ def test_data_quality_quantile_metric_value_errors(
                 "quantile": 0.5,
                 "reference": {"value": 2.0},
             },
+            {
+                # spark quantile computation uses interpolation "approx"
+                # which is more inline with "higher" option for pandas DF
+                # while pandas DF uses "linear" interpolation by default
+                "current": {"value": 3.0},
+            },
         ),
     ),
 )
@@ -144,7 +176,13 @@ def test_column_quantile_metric_with_report(
     column_mapping: ColumnMapping,
     metric: ColumnQuantileMetric,
     expected_json: dict,
+    spark_fixup_json: dict,
+    pandas_or_spark_session,
 ) -> None:
+    current = convert_pandas_to_spark_df_if_necessary(current, pandas_or_spark_session)
+    reference = convert_pandas_to_spark_df_if_necessary(reference, pandas_or_spark_session)
+    expected_json = fixup_json_if_necessary(expected_json, spark_fixup_json, pandas_or_spark_session)
+
     report = Report(metrics=[metric])
     report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
     assert report.show()
