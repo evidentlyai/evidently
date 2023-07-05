@@ -62,14 +62,14 @@ def create_test_suite(i: int, tags=[]):
 
 def create_project(workspace: WorkspaceBase):
     project = workspace.create_project("Example Project")
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             agg=CounterAgg.NONE,
             title="Census Income Dataset (Adult)",
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Dataset Quality",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -84,7 +84,7 @@ def create_project(workspace: WorkspaceBase):
             plot_type=PlotType.LINE,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Age: Wasserstein drift distance",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -100,7 +100,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Age: quantile=0.5",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -116,7 +116,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Education-num: Wasserstein drift distance",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -132,7 +132,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Education-num: quantile=0.5",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -148,6 +148,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
+    project.save()
     return project
 
 

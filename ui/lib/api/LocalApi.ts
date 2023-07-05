@@ -61,6 +61,6 @@ export default class LocalApi implements Api {
     }
 
     getProjectInfo(projectId: string): Promise<ProjectDetails> {
-        return Promise.resolve({id: "project1", project_name: "Project #1"});
+        return Promise.resolve({id: "project1", name: "Project #1"});
     }
 }

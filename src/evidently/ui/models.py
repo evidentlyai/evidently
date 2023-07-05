@@ -3,7 +3,6 @@ import datetime
 import uuid
 from typing import Any
 from typing import List
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -11,19 +10,6 @@ from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.test_suite import TestSuite
-from evidently.ui.workspace import Project
-
-
-class ProjectModel(BaseModel):
-    id: uuid.UUID
-    project_name: str
-    description: str
-    date_from: Optional[datetime.datetime]
-    date_to: Optional[datetime.datetime]
-
-    @classmethod
-    def from_project(cls, p: Project):
-        return cls(id=p.id, project_name=p.name, date_from=p.date_from, date_to=p.date_to, description=p.description)
 
 
 class MetricModel(BaseModel):
