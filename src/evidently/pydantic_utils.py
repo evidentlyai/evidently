@@ -3,6 +3,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Set
 from typing import Type
@@ -128,3 +129,36 @@ class ExcludeNoneMixin(BaseModel):
     def dict(self, *args, **kwargs) -> "DictStrAny":
         kwargs["exclude_none"] = True
         return super().dict(*args, **kwargs)
+
+
+class FieldPath:
+    def __init__(self, path: List[str], cls: Type):
+        self._path = path
+        self._cls = cls
+
+    def list_fields(self) -> List[str]:
+        if issubclass(self._cls, BaseModel):
+            return [".".join(self._path + [f]) for f in self._cls.__fields__]
+        return []
+
+    def __getattr__(self, item) -> "FieldPath":
+        if not issubclass(self._cls, BaseModel):
+            # todo: dict support
+            raise AttributeError(f"{self._cls} does not have fields")
+        if item not in self._cls.__fields__:
+            raise AttributeError(f"{self._cls} type does not have '{item}' field")
+        return FieldPath(self._path + [item], self._cls.__fields__[item].type_)
+
+    def list_nested_fields(self) -> List[str]:
+        if not issubclass(self._cls, BaseModel):
+            return [repr(self)]
+        res = []
+        for name, field in self._cls.__fields__.items():
+            res.extend(FieldPath(self._path + [name], field.type_).list_nested_fields())
+        return res
+
+    def __repr__(self):
+        return self.get_path()
+
+    def get_path(self):
+        return ".".join(self._path)

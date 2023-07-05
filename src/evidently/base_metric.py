@@ -7,6 +7,7 @@ from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 from typing import Union
 
@@ -21,6 +22,7 @@ from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.utils.data_preprocessing import DataDefinition
@@ -32,6 +34,10 @@ if TYPE_CHECKING:
 class MetricResult(PolymorphicModel, BaseResult):  # type: ignore[misc] # pydantic Config
     class Config:
         field_tags = {"type": {IncludeTags.TypeField}}
+
+    @classmethod
+    def fields(cls) -> FieldPath:
+        return FieldPath([], cls)
 
 
 class ErrorResult:
@@ -217,6 +223,14 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult]):
         if self._context is not None:
             options = self._context.options.override(options)
         return options
+
+    @classmethod
+    def result_type(cls) -> Type[MetricResult]:
+        return cls.__orig_bases__[0].__args__[0]  # type: ignore[attr-defined]
+
+    @classmethod
+    def result_fields(cls):
+        return cls.result_type().fields()
 
 
 class ColumnMetricResult(MetricResult):

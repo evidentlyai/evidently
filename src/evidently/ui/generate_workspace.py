@@ -77,7 +77,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Drift Share"),
                 PanelValue(
                     metric_id="DatasetMissingValuesMetric",
-                    field_path="current.share_of_missing_values",
+                    field_path=DatasetMissingValuesMetric.result_fields().current.share_of_missing_values.get_path(),
                     legend="Missing Values Share",
                 ),
             ],
@@ -92,7 +92,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnDriftMetric",
                     metric_args={"column_name.name": "age"},
-                    field_path="drift_score",
+                    field_path=ColumnDriftMetric.result_fields().drift_score.get_path(),
                     legend="Drift Score",
                 ),
             ],
@@ -108,7 +108,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnQuantileMetric",
                     metric_args={"column_name.name": "age", "quantile": 0.5},
-                    field_path="current.value",
+                    field_path=ColumnQuantileMetric.result_fields().current.value.get_path(),
                     legend="Quantile",
                 ),
             ],
@@ -124,7 +124,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnDriftMetric",
                     metric_args={"column_name.name": "education-num"},
-                    field_path="drift_score",
+                    field_path=ColumnDriftMetric.result_fields().drift_score.get_path(),
                     legend="Drift Score",
                 ),
             ],
@@ -140,7 +140,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnQuantileMetric",
                     metric_args={"column_name.name": "education-num", "quantile": 0.5},
-                    field_path="current.value",
+                    field_path=ColumnQuantileMetric.result_fields().current.value.get_path(),
                     legend="Quantile",
                 ),
             ],
@@ -148,6 +148,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
+    project.save()
     return project
 
 
