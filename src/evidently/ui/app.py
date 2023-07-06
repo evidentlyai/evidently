@@ -93,7 +93,7 @@ async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[Rep
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
     reports = [ReportModel.from_report(r) for r in project.reports.values()]
-    event_logger.send_event(SERVICE_INTERFACE, "list_reports", project_count=len(reports))
+    event_logger.send_event(SERVICE_INTERFACE, "list_reports", reports_count=len(reports))
     return reports
 
 
