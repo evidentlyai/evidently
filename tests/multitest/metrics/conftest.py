@@ -110,7 +110,16 @@ def generate_metric_dataset_outcome():
 def pytest_generate_tests(metafunc: Metafunc):
     if metafunc.definition.name != "test_metric":
         return
-    parameters = [
-        ([m, d, o], f"{m.name}-{d.name}-{o.__class__.__name__}") for m, d, o in generate_metric_dataset_outcome()
-    ]
-    metafunc.parametrize("tmetric,tdataset,outcome", [p[0] for p in parameters], ids=[p[1] for p in parameters])
+
+    metafunc.parametrize("tmetric,tdataset,toutcome", list(generate_metric_dataset_outcome()))  # , ids=[p[1] for p in parameters])
+
+
+def pytest_make_parametrize_id(config, val, argname):
+    if argname == "tmetric":
+        return val.name
+
+    if argname == "tdataset":
+        return val.name
+
+    if argname == "toutcome":
+        return val.__class__.__name__

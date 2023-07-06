@@ -13,14 +13,18 @@ from tests.multitest.metrics.conftest import TestMetric
 from tests.multitest.metrics.conftest import generate_dataset_outcome
 from tests.multitest.metrics.conftest import load_test_metrics
 from tests.multitest.metrics.conftest import metric_fixtures
+from tests.utils.spark import convert_pandas_to_spark_df_if_necessary
 
 
 @pytest.mark.parametrize("raw_data", [True, False], ids=["raw_data", "agg_data"])
-def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome, raw_data, tmp_path):
+def test_metric(pandas_or_spark_session, tmetric: TestMetric, tdataset: TestDataset, toutcome: TestOutcome, raw_data, tmp_path):
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
-    if isinstance(outcome, Error):
-        with pytest.raises(outcome.exception_type):
+    tdataset.current = convert_pandas_to_spark_df_if_necessary(tdataset.current, pandas_or_spark_session)
+    tdataset.reference = convert_pandas_to_spark_df_if_necessary(tdataset.reference, pandas_or_spark_session)
+
+    if isinstance(toutcome, Error):
+        with pytest.raises(toutcome.exception_type):
             report.run(
                 reference_data=tdataset.reference, current_data=tdataset.current, column_mapping=tdataset.column_mapping
             )
@@ -33,7 +37,7 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     assert report.show()
     assert report.json()
 
-    outcome.check(report)
+    toutcome.check(report)
 
     path = str(tmp_path / "report.json")
     report._save(path)
