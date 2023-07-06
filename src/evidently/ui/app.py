@@ -118,7 +118,7 @@ async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data
     project.date_from = data.date_from
     project.date_to = data.date_to
     project.save()
-    event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
+    event_logger.send_event(SERVICE_INTERFACE, "update_project_info")
     return ProjectModel.from_project(project)
 
 
@@ -128,7 +128,7 @@ async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
-    event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
+    event_logger.send_event(SERVICE_INTERFACE, "list_test_suites")
     return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
 
 
@@ -148,7 +148,7 @@ async def get_report_graph_data(
     graph = report.additional_graphs.get(graph_id)
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
-    event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
+    event_logger.send_event(SERVICE_INTERFACE, "get_report_graph_data")
     return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
 
 
@@ -191,7 +191,9 @@ async def get_report_data(
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
-    event_logger.send_event(SERVICE_INTERFACE, "get_report_data")
+    event_logger.send_event(
+        SERVICE_INTERFACE, "get_report_data", metrics=[m.get_id() for m in report.value.suite.metrics]
+    )
     return Response(media_type="application/json", content=json_str)
 
 

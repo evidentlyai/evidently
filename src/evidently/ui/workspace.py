@@ -47,10 +47,10 @@ class ProjectSnapshot:
             self._value = value
 
     @property
-    def value(self):
+    def value(self) -> Snapshot:
         if self._value is None:
             self.load()
-        return self._value
+        return self._value  # type: ignore[return-value]
 
     @property
     def report(self) -> ReportBase:
