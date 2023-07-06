@@ -9,15 +9,18 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 from plotly import graph_objs as go
 from pydantic import BaseModel
+from pydantic import validator
 
 from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EnumValueMixin
+from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
@@ -61,11 +64,23 @@ def getattr_nested(obj: Any, path: List[str], default=_not_set):
 
 
 class PanelValue(BaseModel):
-    field_path: str
+    field_path: Union[str, FieldPath]
     metric_id: Optional[str] = None
     metric_hash: Optional[int] = None
     metric_args: Dict[str, Any] = {}
     legend: Optional[str] = None
+
+    @property
+    def field_path_str(self):
+        if isinstance(self.field_path, FieldPath):
+            return self.field_path.get_path()
+        return self.field_path
+
+    @validator("field_path")
+    def validate_field_path(cls, value):
+        if isinstance(value, FieldPath):
+            value = value.get_path()
+        return value
 
     def metric_matched(self, metric: Metric) -> bool:
         if self.metric_hash is not None and hash(metric) == self.metric_hash:
@@ -85,7 +100,7 @@ class PanelValue(BaseModel):
         for metric in report._first_level_metrics:
             if self.metric_matched(metric):
                 try:
-                    results[metric] = getattr_nested(metric.get_result(), self.field_path.split("."))
+                    results[metric] = getattr_nested(metric.get_result(), self.field_path_str.split("."))
                 except AttributeError:
                     pass
         return results
@@ -198,6 +213,9 @@ class DashboardConfig(BaseModel):
         except Exception as e:
             traceback.print_exc()
             return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
+
+    def add_panel(self, panel: DashboardPanel):
+        self.panels.append(panel)
 
 
 class Dashboard(Display):

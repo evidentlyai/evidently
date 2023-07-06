@@ -6,6 +6,7 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import List
 from typing import Optional
+from typing import Sequence
 
 import uvicorn
 from fastapi import APIRouter
@@ -22,10 +23,10 @@ from evidently.telemetry import event_logger
 from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.ui.models import DashboardInfoModel
-from evidently.ui.models import ProjectModel
 from evidently.ui.models import ReportModel
 from evidently.ui.models import TestSuiteModel
 from evidently.ui.workspace import Project
+from evidently.ui.workspace import ProjectBase
 from evidently.ui.workspace import Workspace
 from evidently.utils import NumpyEncoder
 
@@ -79,9 +80,9 @@ async def root():
 
 
 @api_router.get("/projects")
-async def list_projects() -> List[ProjectModel]:
+async def list_projects() -> Sequence[ProjectBase]:
     workspace: Workspace = app.state.workspace
-    projects = [ProjectModel.from_project(p) for p in workspace.list_projects()]
+    projects = workspace.list_projects()
     event_logger.send_event(SERVICE_INTERFACE, "list_projects", project_count=len(projects))
     return projects
 
@@ -98,28 +99,35 @@ async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[Rep
 
 
 @api_router.get("/projects/{project_id}/info")
-async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> ProjectModel:
+async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> ProjectBase:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
     event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
-    return ProjectModel.from_project(project)
+    return project
+
+
+@api_router.get("/projects/search/{project_name}")
+async def search_projects(project_name: Annotated[str, "Name of the project to search"]) -> List[Project]:
+    workspace: Workspace = app.state.workspace
+    event_logger.send_event(SERVICE_INTERFACE, "search_projects")
+    return workspace.search_project(project_name=project_name)
 
 
 @api_router.post("/projects/{project_id}/info")
-async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectModel) -> ProjectModel:
+async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectBase) -> ProjectBase:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
     project.description = data.description
-    project.name = data.project_name
+    project.name = data.name
     project.date_from = data.date_from
     project.date_to = data.date_to
     project.save()
     event_logger.send_event(SERVICE_INTERFACE, "update_project_info")
-    return ProjectModel.from_project(project)
+    return project
 
 
 @api_router.get("/projects/{project_id}/test_suites")
@@ -231,10 +239,11 @@ async def project_dashboard(
 
 
 @api_router.post("/projects")
-async def add_project(project: Project):
+async def add_project(project: Project) -> ProjectBase:
     workspace: Workspace = app.state.workspace
-    workspace.add_project(project)
+    p = workspace.add_project(project)
     event_logger.send_event(SERVICE_INTERFACE, "add_project")
+    return p
 
 
 @api_router.post("/projects/{project_id}/snapshots")

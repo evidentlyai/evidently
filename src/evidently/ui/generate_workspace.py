@@ -62,14 +62,14 @@ def create_test_suite(i: int, tags=[]):
 
 def create_project(workspace: WorkspaceBase):
     project = workspace.create_project("Example Project")
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             agg=CounterAgg.NONE,
             title="Census Income Dataset (Adult)",
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Dataset Quality",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -77,14 +77,14 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Drift Share"),
                 PanelValue(
                     metric_id="DatasetMissingValuesMetric",
-                    field_path="current.share_of_missing_values",
+                    field_path=DatasetMissingValuesMetric.fields.current.share_of_missing_values,
                     legend="Missing Values Share",
                 ),
             ],
             plot_type=PlotType.LINE,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Age: Wasserstein drift distance",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -92,7 +92,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnDriftMetric",
                     metric_args={"column_name.name": "age"},
-                    field_path="drift_score",
+                    field_path=ColumnDriftMetric.fields.drift_score,
                     legend="Drift Score",
                 ),
             ],
@@ -100,7 +100,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Age: quantile=0.5",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -108,7 +108,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnQuantileMetric",
                     metric_args={"column_name.name": "age", "quantile": 0.5},
-                    field_path="current.value",
+                    field_path=ColumnQuantileMetric.fields.current.value,
                     legend="Quantile",
                 ),
             ],
@@ -116,7 +116,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Education-num: Wasserstein drift distance",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -124,7 +124,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnDriftMetric",
                     metric_args={"column_name.name": "education-num"},
-                    field_path="drift_score",
+                    field_path=ColumnDriftMetric.fields.drift_score,
                     legend="Drift Score",
                 ),
             ],
@@ -132,7 +132,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
-    project.add_panel(
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Education-num: quantile=0.5",
             filter=ReportFilter(metadata_values={"type": "data_quality"}, tag_values=[]),
@@ -140,7 +140,7 @@ def create_project(workspace: WorkspaceBase):
                 PanelValue(
                     metric_id="ColumnQuantileMetric",
                     metric_args={"column_name.name": "education-num", "quantile": 0.5},
-                    field_path="current.value",
+                    field_path=ColumnQuantileMetric.fields.current.value,
                     legend="Quantile",
                 ),
             ],
@@ -148,6 +148,7 @@ def create_project(workspace: WorkspaceBase):
             size=1,
         )
     )
+    project.save()
     return project
 
 

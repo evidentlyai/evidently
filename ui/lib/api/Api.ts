@@ -232,7 +232,7 @@ export interface SectionInfo {
 
 export interface ProjectInfo {
     id: string;
-    project_name: string;
+    name: string;
 }
 
 export interface ProjectDetails extends ProjectInfo {}

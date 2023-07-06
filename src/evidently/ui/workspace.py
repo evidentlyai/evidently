@@ -4,8 +4,10 @@ import json
 import os
 import uuid
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 from pydantic import UUID4
@@ -21,7 +23,6 @@ from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.ui.dashboards import DashboardConfig
-from evidently.ui.dashboards import DashboardPanel
 from evidently.utils import NumpyEncoder
 
 METADATA_PATH = "metadata.json"
@@ -79,7 +80,10 @@ class ProjectSnapshot:
         _, self._dashboard_info, self._additional_graphs = self.report._build_dashboard_info()
 
 
-class Project(BaseModel):
+WST = TypeVar("WST", bound="WorkspaceBase")
+
+
+class ProjectBase(BaseModel, Generic[WST]):
     class Config:
         underscore_attrs_are_private = True
 
@@ -90,25 +94,28 @@ class Project(BaseModel):
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
 
-    _snapshots: Dict[uuid.UUID, ProjectSnapshot] = {}
-    _workspace: "Workspace"
+    _workspace: "WST"
 
     @property
-    def path(self):
-        return os.path.join(self.workspace.path, str(self.id))
-
-    @property
-    def workspace(self) -> "Workspace":
+    def workspace(self) -> "WST":
         if not hasattr(self, "_workspace"):
             raise ValueError("Project is not binded to workspace")
         return self._workspace
 
-    def bind(self, workspace: "Workspace"):
+    def bind(self, workspace: "WST"):
         self._workspace = workspace
         return self
 
-    def add_panel(self, panel: DashboardPanel):
-        self.dashboard.panels.append(panel)
+    def save(self):
+        raise NotImplementedError
+
+
+class Project(ProjectBase["Workspace"]):
+    _snapshots: Dict[uuid.UUID, ProjectSnapshot] = {}
+
+    @property
+    def path(self):
+        return os.path.join(self.workspace.path, str(self.id))
 
     def add_snapshot(self, snapshot: Snapshot):
         item = ProjectSnapshot(snapshot.id, self, snapshot)
@@ -158,6 +165,7 @@ class Project(BaseModel):
         return {key: value.value.as_test_suite() for key, value in self._snapshots.items() if not value.value.is_report}
 
     def get_snapshot(self, id: uuid.UUID) -> Optional[ProjectSnapshot]:
+        self._reload_snapshots()
         return self._snapshots.get(id, None)
 
     def build_dashboard_info(
@@ -174,21 +182,24 @@ class Project(BaseModel):
         )
 
 
-class WorkspaceBase(abc.ABC):
+PT = TypeVar("PT", bound=ProjectBase)
+
+
+class WorkspaceBase(abc.ABC, Generic[PT]):
     @abc.abstractmethod
-    def create_project(self, name: str, description: Optional[str] = None) -> Project:
+    def create_project(self, name: str, description: Optional[str] = None) -> PT:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_project(self, project: Project) -> Project:
+    def add_project(self, project: ProjectBase) -> PT:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
+    def get_project(self, project_id: uuid.UUID) -> Optional[PT]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def list_projects(self) -> List[Project]:
+    def list_projects(self) -> List[PT]:
         raise NotImplementedError
 
     def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
@@ -201,8 +212,12 @@ class WorkspaceBase(abc.ABC):
     def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def search_project(self, project_name: str) -> List[PT]:
+        raise NotImplementedError
 
-class Workspace(WorkspaceBase):
+
+class Workspace(WorkspaceBase[Project]):
     def __init__(self, path: str):
         self.path = path
         if not os.path.exists(path):
@@ -218,9 +233,14 @@ class Workspace(WorkspaceBase):
         project = Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[]))
         return self.add_project(project)
 
-    def add_project(self, project: Project) -> Project:
+    def add_project(self, project: ProjectBase) -> Project:
+        if not isinstance(project, Project):
+            project = Project(**project.dict())
         project.bind(self)
-        project.save()
+        project_id = str(project.id)
+        os.makedirs(os.path.join(self.path, project_id, SNAPSHOTS), exist_ok=True)
+        with open(os.path.join(self.path, project_id, METADATA_PATH), "w") as f:
+            json.dump(project.dict(), f, indent=2, cls=NumpyEncoder)
         self._projects[project.id] = project
         return project
 
@@ -244,6 +264,9 @@ class Workspace(WorkspaceBase):
         if isinstance(project_id, str):
             project_id = uuid.UUID(project_id)
         self._projects[project_id].add_snapshot(snapshot)
+
+    def search_project(self, project_name: str) -> List[Project]:
+        return [p for p in self._projects.values() if p.name == project_name]
 
 
 def upload_snapshot(item: ReportBase, workspace_or_url: Union[str, WorkspaceBase], project_id: Union[uuid.UUID, str]):
