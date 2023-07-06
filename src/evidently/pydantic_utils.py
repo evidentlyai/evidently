@@ -3,6 +3,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
+from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Set
@@ -19,6 +20,22 @@ if TYPE_CHECKING:
     from pydantic.main import Model
     from pydantic.typing import DictStrAny
 T = TypeVar("T")
+
+
+def pydantic_type_validator(type_: Type[Any]):
+    def decorator(f):
+        from pydantic.validators import _VALIDATORS
+
+        for cls, validators in _VALIDATORS:
+            if cls is type_:
+                validators.append(f)
+                return
+
+        _VALIDATORS.append(
+            (type_, [f]),
+        )
+
+    return decorator
 
 
 class FrozenBaseMeta(ModelMetaclass):
@@ -162,3 +179,11 @@ class FieldPath:
 
     def get_path(self):
         return ".".join(self._path)
+
+    def __dir__(self) -> Iterable[str]:
+        return self.list_fields()
+
+
+@pydantic_type_validator(FieldPath)
+def series_validator(value):
+    return value.get_path()
