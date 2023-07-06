@@ -18,6 +18,7 @@ from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
 from evidently.suite.base_suite import Snapshot
+from evidently.telemetry import event_logger
 from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.ui.models import DashboardInfoModel
@@ -28,6 +29,8 @@ from evidently.ui.workspace import Project
 from evidently.ui.workspace import Workspace
 from evidently.utils import NumpyEncoder
 
+SERVICE_INTERFACE = "service_backend"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,6 +38,8 @@ async def lifespan(app: FastAPI):
     Initialise the Client and add it to app.state
     """
     app.state.workspace = Workspace(app.state.workspace_path)
+
+    event_logger.send_event(SERVICE_INTERFACE, "startup")
     yield
     """ Run on shutdown
         Close the connection
@@ -53,6 +58,7 @@ app.mount("/static", StaticFiles(directory=static_path), name="static")
 @app.get("/projects")
 @app.get("/projects/{path:path}")
 async def index(path=None):
+    event_logger.send_event(SERVICE_INTERFACE, "index")
     return FileResponse(os.path.join(ui_path, "index.html"))
 
 
@@ -75,7 +81,9 @@ async def root():
 @api_router.get("/projects")
 async def list_projects() -> List[ProjectModel]:
     workspace: Workspace = app.state.workspace
-    return [ProjectModel.from_project(p) for p in workspace.list_projects()]
+    projects = [ProjectModel.from_project(p) for p in workspace.list_projects()]
+    event_logger.send_event(SERVICE_INTERFACE, "list_projects", project_count=len(projects))
+    return projects
 
 
 @api_router.get("/projects/{project_id}/reports")
@@ -84,7 +92,9 @@ async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[Rep
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
-    return [ReportModel.from_report(r) for r in project.reports.values()]
+    reports = [ReportModel.from_report(r) for r in project.reports.values()]
+    event_logger.send_event(SERVICE_INTERFACE, "list_reports", project_count=len(reports))
+    return reports
 
 
 @api_router.get("/projects/{project_id}/info")
@@ -93,6 +103,7 @@ async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> Proj
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
+    event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
     return ProjectModel.from_project(project)
 
 
@@ -107,6 +118,7 @@ async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data
     project.date_from = data.date_from
     project.date_to = data.date_to
     project.save()
+    event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
     return ProjectModel.from_project(project)
 
 
@@ -116,6 +128,7 @@ async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
+    event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
     return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
 
 
@@ -135,6 +148,7 @@ async def get_report_graph_data(
     graph = report.additional_graphs.get(graph_id)
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
+    event_logger.send_event(SERVICE_INTERFACE, "get_project_info")
     return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
 
 
@@ -157,6 +171,7 @@ async def get_report_download(
         )
     if report_format == "json":
         return Response(report.report.json(), headers={"content-disposition": f"attachment;filename={report_id}.json"})
+    event_logger.send_event(SERVICE_INTERFACE, "get_report_download")
     return Response(f"Unknown format {report_format}", status_code=400)
 
 
@@ -176,6 +191,7 @@ async def get_report_data(
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
+    event_logger.send_event(SERVICE_INTERFACE, "get_report_data")
     return Response(media_type="application/json", content=json_str)
 
 
@@ -187,7 +203,7 @@ async def list_project_dashboard_panels(
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-
+    event_logger.send_event(SERVICE_INTERFACE, "list_project_dashboard_panels")
     return list(project.dashboard.panels)
 
 
@@ -208,6 +224,7 @@ async def project_dashboard(
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
+    event_logger.send_event(SERVICE_INTERFACE, "project_dashboard")
     return Response(media_type="application/json", content=json_str)
 
 
@@ -215,6 +232,7 @@ async def project_dashboard(
 async def add_project(project: Project):
     workspace: Workspace = app.state.workspace
     workspace.add_project(project)
+    event_logger.send_event(SERVICE_INTERFACE, "add_project")
 
 
 @api_router.post("/projects/{project_id}/snapshots")
@@ -224,6 +242,7 @@ async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: S
         raise HTTPException(status_code=404, detail="Project not found")
 
     workspace.add_snapshot(project_id, snapshot)
+    event_logger.send_event(SERVICE_INTERFACE, "add_snapshot")
 
 
 app.include_router(api_router)
