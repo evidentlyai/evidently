@@ -214,6 +214,9 @@ class DashboardConfig(BaseModel):
             traceback.print_exc()
             return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
 
+    def add_panel(self, panel: DashboardPanel):
+        self.panels.append(panel)
+
 
 class Dashboard(Display):
     def __init__(self, config: DashboardConfig):

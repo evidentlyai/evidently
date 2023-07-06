@@ -2,7 +2,7 @@
 // This version adds support for NaN, -Infinity and Infinity.
 
 
-class JsonParser {
+export class JsonParser {
     at = 0
     ch = ""
     text = ""
