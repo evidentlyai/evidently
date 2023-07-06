@@ -155,7 +155,7 @@ class FieldPath:
 
     def list_fields(self) -> List[str]:
         if issubclass(self._cls, BaseModel):
-            return [".".join(self._path + [f]) for f in self._cls.__fields__]
+            return list(self._cls.__fields__)
         return []
 
     def __getattr__(self, item) -> "FieldPath":
@@ -181,7 +181,10 @@ class FieldPath:
         return ".".join(self._path)
 
     def __dir__(self) -> Iterable[str]:
-        return self.list_fields()
+        res: List[str] = []
+        res.extend(super().__dir__())
+        res.extend(self.list_fields())
+        return res
 
 
 @pydantic_type_validator(FieldPath)
