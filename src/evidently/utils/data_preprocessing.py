@@ -16,8 +16,6 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.column_mapping import TargetNames
 from evidently.pipeline.column_mapping import TaskType
 
-raise Exception("kek")
-
 
 @dataclasses.dataclass
 class _InputData:
