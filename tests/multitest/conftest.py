@@ -10,7 +10,10 @@ from typing import Dict
 from typing import Type
 
 import evidently
+from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.report import Report
+from tests.conftest import smart_assert_equal
 
 
 class TestOutcome:
@@ -38,6 +41,16 @@ class AssertResultFields(TestOutcome):
 
         for key, value in self.values.items():
             assert result[key] == value
+
+
+class AssertExpectedResult(TestOutcome):
+    def __init__(self, metric: Metric, result: MetricResult):
+        self.metric = metric
+        self.result = result
+
+    def check(self, report: Report):
+        result = report._inner_suite.context.metric_results[self.metric]
+        smart_assert_equal(result, self.result)
 
 
 class CustomAssert(TestOutcome):

@@ -23,7 +23,7 @@ OutcomeKey = Tuple[OutcomeKeyType, ...]
 class TestMetric:
     name: str
     metric: Metric
-    outcomes: Union[TestOutcome, Dict[Union[str, OutcomeKey], TestOutcome]]
+    outcomes: Union[TestOutcome, Dict[Union[str, OutcomeKey, TestDataset], TestOutcome]]
 
     include_tags: List[DatasetTags] = dataclasses.field(default_factory=list)
     """Only run on datasets with all tags"""
@@ -82,18 +82,23 @@ def metric(f):
 
 
 def generate_dataset_outcome(m: TestMetric):
+    if isinstance(m.outcomes, dict) and any(isinstance(k, TestDataset) for k in m.outcomes):
+        if not all(isinstance(k, TestDataset) for k in m.outcomes):
+            raise ValueError(f"All keys should be TestDataset if one is in {m.name}")
+        yield from ((m, i, d, o) for i, (d, o) in enumerate(m.outcomes.items()))
+        return
     if m.datasets is not None:
-        yield from ((m, d, m.get_outcome(d)) for d in m.datasets)
+        yield from ((m, i, d, m.get_outcome(d)) for i, d in enumerate(m.datasets))
         return
     if m.dataset_names is not None:
-        yield from ((m, d, m.get_outcome(d)) for d in dataset_fixtures if d.name in m.dataset_names)
+        yield from ((m, i, d, m.get_outcome(d)) for i, d in enumerate(dataset_fixtures) if d.name in m.dataset_names)
         return
 
-    for d in dataset_fixtures:
+    for i, d in enumerate(dataset_fixtures):
         is_included = m.include_tags == [] or all(t in d.tags for t in m.include_tags)
         is_excluded = any(t in m.exclude_tags for t in d.tags)
         if is_included and not is_excluded:
-            yield m, d, m.get_outcome(d)
+            yield m, i, d, m.get_outcome(d)
 
 
 def load_test_metrics():
@@ -101,9 +106,18 @@ def load_test_metrics():
         import_module(f"tests.multitest.metrics.{module}")
 
 
+# for debugging
+metric_type_filter = []
+metric_name_filter = []
+
+
 def generate_metric_dataset_outcome():
     load_test_metrics()
     for m in metric_fixtures:
+        if metric_type_filter and not any(isinstance(m.metric, t) for t in metric_type_filter):
+            continue
+        if metric_name_filter and not any(m.name == n for n in metric_name_filter):
+            continue
         yield from generate_dataset_outcome(m)
 
 
@@ -111,6 +125,7 @@ def pytest_generate_tests(metafunc: Metafunc):
     if metafunc.definition.name != "test_metric":
         return
     parameters = [
-        ([m, d, o], f"{m.name}-{d.name}-{o.__class__.__name__}") for m, d, o in generate_metric_dataset_outcome()
+        ([m, d, o], f"{m.name}-{d.name or i}-{o.__class__.__name__}")
+        for m, i, d, o in generate_metric_dataset_outcome()
     ]
     metafunc.parametrize("tmetric,tdataset,outcome", [p[0] for p in parameters], ids=[p[1] for p in parameters])

@@ -123,8 +123,12 @@ def model(
         X_train, X_test, y_train, y_test = train_test_split(
             data.drop("target", axis=1), data["target"], test_size=0.5, random_state=42, shuffle=True
         )
-        clf = SGDClassifier(loss="log", random_state=42)
-        clf.fit(X_train, y_train)
+        try:
+            clf = SGDClassifier(loss="log_loss", random_state=42)
+            clf.fit(X_train, y_train)
+        except ValueError:
+            clf = SGDClassifier(loss="log", random_state=42)
+            clf.fit(X_train, y_train)
         y_pred_proba = clf.predict_proba(X_test)[:, 1]
         roc_auc = roc_auc_score(y_test, y_pred_proba)
         if bootstrap:
