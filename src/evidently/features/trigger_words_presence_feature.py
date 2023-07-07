@@ -1,6 +1,7 @@
 import re
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
@@ -24,7 +25,7 @@ class TriggerWordsPresent(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def listed_words_present(s, words_list=(), lemmatize=True):
-            if s is None:
+            if s is None or (isinstance(s, float) and np.isnan(s)):
                 return 0
             words = re.sub("[^A-Za-z0-9 ]+", "", s).split()
             for word_ in words:
