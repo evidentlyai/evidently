@@ -19,7 +19,7 @@ class Sentiment(GeneratedFeature):
         sid = SentimentIntensityAnalyzer()
 
         def sentiment_f(s, sid=sid):
-            if s is None or s == np.nan:
+            if s is None or np.isnan(s):
                 return 0
             return sid.polarity_scores(s)["compound"]
 

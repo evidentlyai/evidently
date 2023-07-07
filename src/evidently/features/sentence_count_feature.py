@@ -18,7 +18,7 @@ class SentenceCount(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def sentence_count_f(s):
-            if s is None or s == np.nan:
+            if s is None or np.isnan(s):
                 return 0
             number = len(re.split(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s", s))
             return max(1, number)
