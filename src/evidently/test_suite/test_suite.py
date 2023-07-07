@@ -17,6 +17,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
+from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
@@ -28,6 +29,9 @@ from evidently.tests.base_test import TestStatus
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
+
+TEST_GENERATORS = "test_generators"
+TEST_PRESETS = "test_presets"
 
 
 class TestSuite(ReportBase):
@@ -42,7 +46,7 @@ class TestSuite(ReportBase):
         options: AnyOptions = None,
         timestamp: Optional[datetime] = None,
         id: Optional[uuid.UUID] = None,
-        metadata: Dict[str, str] = None,
+        metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
     ):
         super().__init__(options, timestamp)
@@ -56,10 +60,15 @@ class TestSuite(ReportBase):
         for original_test in tests or []:
             if isinstance(original_test, TestPreset):
                 self._test_presets.append(original_test)
-
+                if TEST_PRESETS not in self.metadata:
+                    self.metadata[TEST_PRESETS] = []
+                self.metadata[TEST_PRESETS].append(original_test.__class__.__name__)  # type: ignore[union-attr]
             elif isinstance(original_test, BaseGenerator):
                 self._test_generators.append(original_test)
 
+                if TEST_GENERATORS not in self.metadata:
+                    self.metadata[TEST_GENERATORS] = []
+                self.metadata[TEST_GENERATORS].append(original_test.__class__.__name__)  # type: ignore[union-attr]
             else:
                 self._tests.append(original_test)
 

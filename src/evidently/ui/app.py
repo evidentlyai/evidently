@@ -18,8 +18,13 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
+from evidently.report.report import METRIC_GENERATORS
+from evidently.report.report import METRIC_PRESETS
 from evidently.suite.base_suite import Snapshot
+from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
+from evidently.test_suite.test_suite import TEST_GENERATORS
+from evidently.test_suite.test_suite import TEST_PRESETS
 from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.ui.models import DashboardInfoModel
@@ -40,6 +45,10 @@ async def lifespan(app: FastAPI):
     """
     app.state.workspace = Workspace(app.state.workspace_path)
 
+    if event_logger.is_enabled():
+        print(f"Anonimous usage reporting is enabled. To disable it, set env variable {DO_NOT_TRACK_ENV} to any value")
+    else:
+        print("Anonimous usage reporting is disabled")
     event_logger.send_event(SERVICE_INTERFACE, "startup")
     yield
     """ Run on shutdown
@@ -200,7 +209,14 @@ async def get_report_data(
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
     event_logger.send_event(
-        SERVICE_INTERFACE, "get_report_data", metrics=[m.get_id() for m in report.value.suite.metrics]
+        SERVICE_INTERFACE,
+        "get_report_data",
+        metrics=[m.get_id() for m in report.value.first_level_metrics()],
+        metric_presets=report.value.metadata.get(METRIC_PRESETS, []),
+        metric_generators=report.value.metadata.get(METRIC_GENERATORS, []),
+        tests=[t.get_id() for t in report.value.first_level_tests()],
+        test_presets=report.value.metadata.get(TEST_PRESETS, []),
+        test_generators=report.value.metadata.get(TEST_GENERATORS, []),
     )
     return Response(media_type="application/json", content=json_str)
 

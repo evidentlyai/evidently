@@ -2,6 +2,7 @@ import datetime
 
 from sklearn import datasets
 
+from evidently.metric_preset import DataDriftPreset
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import DatasetDriftMetric
@@ -37,6 +38,7 @@ def create_report(i: int, tags=[]):
             ColumnQuantileMetric(column_name="age", quantile=0.5),
             ColumnDriftMetric(column_name="education-num"),
             ColumnQuantileMetric(column_name="education-num", quantile=0.5),
+            DataDriftPreset(),
         ],
         metadata={"type": "data_quality"},
         tags=tags,

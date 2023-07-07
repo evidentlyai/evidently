@@ -44,9 +44,14 @@ def find_or_create_user_id():
 
 
 iterative_telemetry.find_or_create_user_id = find_or_create_user_id
-
+DO_NOT_TRACK_ENV = "DO_NOT_TRACK"
+DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", None)
 event_logger = IterativeTelemetryLogger(
-    "evidently", evidently.__version__, url="http://35.232.253.5:8000/api/v1/s2s/event?ip_policy=strict", token=TOKEN
+    "evidently",
+    evidently.__version__,
+    url="http://35.232.253.5:8000/api/v1/s2s/event?ip_policy=strict",
+    token=TOKEN,
+    enabled=DO_NOT_TRACK is None,
 )
 
 
