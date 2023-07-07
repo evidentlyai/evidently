@@ -242,7 +242,7 @@ def run(host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace"):
 
 
 def main():
-    run("workspace")
+    run()
 
 
 if __name__ == "__main__":
