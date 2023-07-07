@@ -26,6 +26,7 @@ adult_ref = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"]
 adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
 
 WORKSPACE = "workspace"
+DEMO_PROJECT_NAME = "Demo Project"
 
 
 def create_report(i: int, tags=[]):
@@ -61,7 +62,7 @@ def create_test_suite(i: int, tags=[]):
 
 
 def create_project(workspace: WorkspaceBase):
-    project = workspace.create_project("Example Project")
+    project = workspace.create_project(DEMO_PROJECT_NAME)
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
@@ -152,7 +153,7 @@ def create_project(workspace: WorkspaceBase):
     return project
 
 
-def main(workspace: str):
+def create_demo_project(workspace: str):
     if workspace.startswith("http"):
         ws = RemoteWorkspace(workspace)
     else:
@@ -168,5 +169,5 @@ def main(workspace: str):
 
 
 if __name__ == "__main__":
-    main("workspace")
+    create_demo_project("workspace")
     # main("http://localhost:8000")

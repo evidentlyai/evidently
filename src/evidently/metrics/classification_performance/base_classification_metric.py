@@ -7,7 +7,6 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.base_metric import Metric
 from evidently.base_metric import TResult
 from evidently.calculations.classification_performance import get_prediction_data
@@ -15,6 +14,7 @@ from evidently.calculations.classification_performance import k_probability_thre
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import PredictionData
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_operations import process_columns
 
 

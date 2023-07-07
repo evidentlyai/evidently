@@ -4,12 +4,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.descriptors import TextLength
 from evidently.metric_results import Distribution
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
 from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 

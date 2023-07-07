@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metrics import ClassificationConfusionMatrix
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 
