@@ -1,5 +1,6 @@
 import re
 
+import numpy as np
 import pandas as pd
 
 from evidently.base_metric import ColumnName
@@ -17,7 +18,7 @@ class SentenceCount(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def sentence_count_f(s):
-            if s is None:
+            if s is None or s == np.nan:
                 return 0
             number = len(re.split(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s", s))
             return max(1, number)

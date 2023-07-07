@@ -3,6 +3,7 @@ from typing import Optional
 from typing import Set
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -27,7 +28,7 @@ class OOVWordsPercentage(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def oov_share(s, ignore_words=()):
-            if s is None:
+            if s is None or s == np.nan:
                 return 0
             oov_num = 0
             words_ = re.sub("[^A-Za-z0-9 ]+", "", s).split()  # leave only letters, digits and spaces, split by spaces

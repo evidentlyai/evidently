@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
@@ -18,7 +19,7 @@ class Sentiment(GeneratedFeature):
         sid = SentimentIntensityAnalyzer()
 
         def sentiment_f(s, sid=sid):
-            if s is None:
+            if s is None or s == np.nan:
                 return 0
             return sid.polarity_scores(s)["compound"]
 
