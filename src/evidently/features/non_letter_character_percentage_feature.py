@@ -18,7 +18,7 @@ class NonLetterCharacterPercentage(GeneratedFeature):
 
         # counts share of characters that are not letters or spaces
         def non_letter_share(s):
-            if s is None or np.isnan(s):
+            if s is None or (isinstance(s, float) and np.isnan(s)):
                 return 0
             non_letters_num = 0
             for ch in s:

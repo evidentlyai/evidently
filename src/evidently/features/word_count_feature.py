@@ -18,7 +18,7 @@ class WordCount(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def word_count_f(s):
-            if s is None or np.isnan(s):
+            if s is None or (isinstance(s, float) and np.isnan(s)):
                 return 0
             return len(re.sub(r"[^a-zA-Z ]+", "", s).split())
 
