@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Grid, Link, Table, TableCell, TableHead, TableRow} from "@material-ui/core";
+import {Button, Grid, Link, Table, TableBody, TableCell, TableHead, TableRow} from "@material-ui/core";
 
 import {Link as RouterLink} from 'react-router-dom';
 import ApiContext from "../lib/contexts/ApiContext";
@@ -7,6 +7,7 @@ import LoadableView from "../lib/components/LoadableVIew";
 import {ReportInfo} from "../lib/api/Api";
 import {DownloadButton} from "./DownloadButton";
 import {TextWithCopyIcon} from "./TextWithCopyIcon";
+import {formatDate} from "../Utils/Datetime";
 
 
 const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
@@ -26,29 +27,33 @@ const ReportList = (props: { projectId: string, reports: ReportInfo[] }) => {
         {/*</form>*/}
         <Table>
             <TableHead>
-                <TableCell>
-                    Report ID
-                </TableCell>
-                <TableCell>
-                    Timestamp
-                </TableCell>
-                <TableCell>
-                    Actions
-                </TableCell>
+                <TableRow>
+                    <TableCell>
+                        Report ID
+                    </TableCell>
+                    <TableCell>
+                        Timestamp
+                    </TableCell>
+                    <TableCell>
+                        Actions
+                    </TableCell>
+                </TableRow>
             </TableHead>
-            {props.reports.map(report => <TableRow>
+            <TableBody>
+            {props.reports.map(report => <TableRow id={report.id}>
                 <TableCell>
-                    <TextWithCopyIcon showText={report.id} copyText={report.id} />
+                    <TextWithCopyIcon showText={report.id} copyText={report.id}/>
                 </TableCell>
                 <TableCell>
-                    {report.timestamp.toString()}
+                    {formatDate(new Date(Date.parse(report.timestamp)))}
                 </TableCell>
                 <TableCell>
                     <Link component={RouterLink}
                           to={`/projects/${props.projectId}/reports/${report.id}`}><Button>View</Button></Link>
-                    <DownloadButton downloadLink={`/api/projects/${props.projectId}/${report.id}/download`} />
+                    <DownloadButton downloadLink={`/api/projects/${props.projectId}/${report.id}/download`}/>
                 </TableCell>
             </TableRow>)}
+            </TableBody>
         </Table>
     </>
 }

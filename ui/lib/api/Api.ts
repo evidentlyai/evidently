@@ -233,18 +233,20 @@ export interface SectionInfo {
 export interface ProjectInfo {
     id: string;
     name: string;
+    date_from?: string;
+    date_to?: string;
 }
 
 export interface ProjectDetails extends ProjectInfo {}
 
 export interface ReportInfo {
     id: string;
-    timestamp: Date;
+    timestamp: string;
 }
 
 export interface TestSuiteInfo {
     id: string;
-    timestamp: Date;
+    timestamp: string;
 }
 
 export interface Api {
