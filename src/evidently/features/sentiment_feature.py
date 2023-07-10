@@ -27,7 +27,3 @@ class Sentiment(GeneratedFeature):
 
     def feature_name(self) -> ColumnName:
         return additional_feature(self, self.column_name, f"Sentiment for {self.column_name}")
-
-
-def sentiment(column_name: str) -> ColumnName:
-    return additional_feature(Sentiment(column_name), f"{column_name}", f"Sentiment for {column_name}")

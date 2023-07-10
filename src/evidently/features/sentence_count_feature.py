@@ -27,7 +27,3 @@ class SentenceCount(GeneratedFeature):
 
     def feature_name(self) -> ColumnName:
         return additional_feature(self, self.column_name, f"Sentence Count for {self.column_name}")
-
-
-def sentence_count(column_name: str) -> ColumnName:
-    return additional_feature(SentenceCount(column_name), f"{column_name}", f"Sentence Count for {column_name}")
