@@ -1,0 +1,23 @@
+# config file version
+apiVersion: 1
+
+# list of datasources that should be deleted from the database
+deleteDatasources:
+  - name: "monitoring database"
+    orgId: 1
+
+# list of datasources to insert/update depending
+# what's available in the database
+datasources:
+  - name: "monitoring database"
+    type: postgres
+    uid: "monitoringdbuid"
+    url: monitoring-db:5432
+    user: admin
+    isDefault: true
+    secureJsonData:
+      password: "admin"
+    jsonData:
+      database: "monitoring_db"
+      sslmode: 'disable' # disable/require/verify-ca/verify-full
+      postgresVersion: 1500 # 903=9.3, 904=9.4, 905=9.5, 906=9.6, 1000=10
