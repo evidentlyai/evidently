@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metrics import RegressionErrorBiasTable
 from evidently.options.agg_data import RenderOptions
 from evidently.options.base import Options
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 

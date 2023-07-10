@@ -3,7 +3,6 @@ from pytest import approx
 from sklearn import datasets
 from sklearn.datasets import fetch_20newsgroups
 
-from evidently import ColumnMapping
 from evidently.metrics import ColumnInteractionPlot
 from evidently.metrics.data_drift.column_drift_metric import ColumnDriftMetric
 from evidently.metrics.data_drift.column_value_plot import ColumnValuePlot
@@ -14,6 +13,7 @@ from evidently.metrics.data_drift.target_by_features_table import TargetByFeatur
 from evidently.metrics.data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
 from evidently.metrics.data_drift.text_domain_classifier_drift_metric import TextDomainClassifierDriftMetric
 from evidently.metrics.data_drift.text_metric import Comment
+from evidently.pipeline.column_mapping import ColumnMapping
 from tests.multitest.conftest import AssertResultFields
 from tests.multitest.conftest import NoopOutcome
 from tests.multitest.datasets import DatasetTags

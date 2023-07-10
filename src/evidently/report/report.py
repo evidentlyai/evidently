@@ -9,7 +9,6 @@ from typing import Union
 
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
@@ -18,6 +17,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase

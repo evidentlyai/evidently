@@ -4,10 +4,10 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metric_results import Distribution
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetric
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetricResult
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 

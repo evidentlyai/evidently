@@ -8,7 +8,7 @@ import numpy as np
 from sklearn import datasets
 from sklearn import ensemble
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 
 
 class DatasetTags(Enum):

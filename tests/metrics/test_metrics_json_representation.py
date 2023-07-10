@@ -2,8 +2,8 @@ import json
 
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.metrics import ColumnQuantileMetric
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 
