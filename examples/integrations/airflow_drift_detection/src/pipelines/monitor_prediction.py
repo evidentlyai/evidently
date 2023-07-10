@@ -9,10 +9,16 @@ from evidently import ColumnMapping
 from evidently.metrics import ColumnDriftMetric
 from evidently.report import Report
 
-from config import (MONITORING_DB_URI, PREDICTION_DRIFT_REPORTS_DIR,
-                    PREDICTIONS_DIR, REFERENCE_DIR)
+from config import (
+    MONITORING_DB_URI,
+    PREDICTION_DRIFT_REPORTS_DIR,
+    PREDICTIONS_DIR,
+    REFERENCE_DIR,
+)
 from src.monitoring.prediction_drift import (
-    commit_prediction_drift_metrics_to_db, parse_prediction_drift_report)
+    commit_prediction_drift_metrics_to_db,
+    parse_prediction_drift_report,
+)
 from src.utils.utils import get_batch_interval
 
 logging.basicConfig(level=logging.DEBUG)
@@ -83,9 +89,7 @@ def monitor_prediction(
         )
 
         logging.info("Save HTML report if Prediction Drift detected")
-        path = Path(
-            f"{PREDICTION_DRIFT_REPORTS_DIR}/{ts.to_datetime_string()}.html"
-        )
+        path = Path(f"{PREDICTION_DRIFT_REPORTS_DIR}/{ts.to_datetime_string()}.html")
         if drift_report_metrics["drift_detected"] is True:
             prediction_drift_report.save_html(path)
 

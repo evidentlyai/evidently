@@ -4,9 +4,7 @@ import pandas as pd
 import pendulum
 
 
-def get_batch_interval(
-    ts: pendulum.DateTime, interval: int
-) -> Tuple[Text, Text]:
+def get_batch_interval(ts: pendulum.DateTime, interval: int) -> Tuple[Text, Text]:
     """Get data batch for an interval.
 
     Args:
@@ -61,9 +59,7 @@ def prepare_scoring_data(data: pd.DataFrame) -> pd.DataFrame:
     """
 
     # Define the target variable, numerical features, and categorical features
-    num_features = [
-        "passenger_count", "trip_distance", "fare_amount", "total_amount"
-    ]
+    num_features = ["passenger_count", "trip_distance", "fare_amount", "total_amount"]
     cat_features = ["PULocationID", "DOLocationID"]
     data = data.loc[:, num_features + cat_features]
 

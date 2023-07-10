@@ -11,9 +11,7 @@ def train() -> None:
 
     # Define the target variable, numerical features, and categorical features
     target = "duration_min"
-    num_features = [
-        "passenger_count", "trip_distance", "fare_amount", "total_amount"
-    ]
+    num_features = ["passenger_count", "trip_distance", "fare_amount", "total_amount"]
     cat_features = ["PULocationID", "DOLocationID"]
 
     print("Load train data")

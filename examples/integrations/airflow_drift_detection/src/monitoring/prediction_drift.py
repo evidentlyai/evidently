@@ -8,9 +8,7 @@ from src.utils.models import PredictionDriftTable
 from src.utils.type_conv import numpy_to_standard_types
 
 
-def parse_prediction_drift_report(
-    prediction_drift_report: Report
-) -> Tuple[Dict, Dict]:
+def parse_prediction_drift_report(prediction_drift_report: Report) -> Tuple[Dict, Dict]:
     """Parse data drift report and return metrics results.
     Extracting Evidently metrics:
         - DatasetDriftMetric

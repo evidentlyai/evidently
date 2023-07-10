@@ -62,8 +62,7 @@ def parse_data_drift_report(data_drift_report: Dict) -> Tuple[Dict, Dict]:
     """
 
     metrics: Dict = {
-        metric["metric"]: metric["result"]
-        for metric in data_drift_report["metrics"]
+        metric["metric"]: metric["result"] for metric in data_drift_report["metrics"]
     }
 
     dataset_result: Dict = metrics["DatasetDriftMetric"]
@@ -78,10 +77,7 @@ def parse_data_drift_report(data_drift_report: Dict) -> Tuple[Dict, Dict]:
 
 
 def commit_data_metrics_to_db(
-    data_quality_report: Dict,
-    data_drift_report: Dict,
-    timestamp: float,
-    db_uri: Text
+    data_quality_report: Dict, data_drift_report: Dict, timestamp: float, db_uri: Text
 ) -> None:
     """Commit data metrics to database.
 
@@ -94,17 +90,11 @@ def commit_data_metrics_to_db(
     engine = create_engine(db_uri)
     session = open_sqa_session(engine)
 
-    dataset_summary_metric_result: Dict = parse_data_quality_report(
-        data_quality_report
-    )
-    drift_report_results: Dict = parse_data_drift_report(
-        data_drift_report
-    )
+    dataset_summary_metric_result: Dict = parse_data_quality_report(data_quality_report)
+    drift_report_results: Dict = parse_data_drift_report(data_drift_report)
 
     data_quality = DataQualityTable(
-        **dataset_summary_metric_result,
-        **drift_report_results,
-        timestamp=timestamp
+        **dataset_summary_metric_result, **drift_report_results, timestamp=timestamp
     )
 
     add_or_update_by_ts(session=session, record=data_quality)

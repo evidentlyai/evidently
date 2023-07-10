@@ -9,8 +9,13 @@ from evidently.metric_preset import DataDriftPreset
 from evidently.metrics import DatasetSummaryMetric
 from evidently.report import Report
 
-from config import (COLUMN_MAPPING, DATA_DRIFT_REPORTS_DIR, FEATURES_DIR,
-                    MONITORING_DB_URI, REFERENCE_DIR)
+from config import (
+    COLUMN_MAPPING,
+    DATA_DRIFT_REPORTS_DIR,
+    FEATURES_DIR,
+    MONITORING_DB_URI,
+    REFERENCE_DIR,
+)
 from src.monitoring.data_quality import commit_data_metrics_to_db
 from src.monitoring.utils import detect_data_drift
 from src.utils.utils import extract_batch_data, get_batch_interval
@@ -34,16 +39,12 @@ def prepare_current_data(start_time: Text, end_time: Text) -> pd.DataFrame:
     # Get current data (features)
     data_path = Path(f"{FEATURES_DIR}/green_tripdata_2021-02.parquet")
     data = pd.read_parquet(data_path)
-    current_data = extract_batch_data(
-        data,
-        start_time=start_time,
-        end_time=end_time
-    )
+    current_data = extract_batch_data(data, start_time=start_time, end_time=end_time)
 
     # Fill missing values
-    current_data = (current_data
-                    .fillna(current_data.median(numeric_only=True))
-                    .fillna(-1))
+    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(
+        -1
+    )
     return current_data
 
 

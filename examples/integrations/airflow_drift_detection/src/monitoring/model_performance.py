@@ -91,13 +91,8 @@ def commit_model_metrics_to_db(
     add_or_update_by_ts(session, model_performance)
 
     # Save Target Drift metrics
-    target_drift_metric_result: Dict = parse_target_drift_report(
-        target_drift_report
-    )
-    target_drift = TargetDriftTable(
-        **target_drift_metric_result,
-        timestamp=timestamp
-    )
+    target_drift_metric_result: Dict = parse_target_drift_report(target_drift_report)
+    target_drift = TargetDriftTable(**target_drift_metric_result, timestamp=timestamp)
     add_or_update_by_ts(session, target_drift)
 
     session.commit()

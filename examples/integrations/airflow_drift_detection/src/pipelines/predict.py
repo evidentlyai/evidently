@@ -8,8 +8,7 @@ import pandas as pd
 import pendulum
 
 from config import FEATURES_DIR, PREDICTIONS_DIR
-from src.utils.utils import (extract_batch_data, get_batch_interval,
-                             prepare_scoring_data)
+from src.utils.utils import extract_batch_data, get_batch_interval, prepare_scoring_data
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger("PREDICT")

@@ -35,9 +35,7 @@ def download_data(destination: Text):
 
         with open(save_path, "wb") as handle:
             total_size = int(resp.headers.get("Content-Length", 0))
-            progress_bar = tqdm(
-                total=total_size, desc=file, unit="B", unit_scale=True
-            )
+            progress_bar = tqdm(total=total_size, desc=file, unit="B", unit_scale=True)
 
             for data in resp.iter_content(chunk_size=8192):
                 handle.write(data)
