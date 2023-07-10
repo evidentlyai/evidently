@@ -122,20 +122,19 @@ python src/scripts/create_db.py
 
 To use the [FileSensor](https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/file.html) to detect files required by DAGs, you need to have connection defined to use it (pass connection id via `fs_conn_id`). Default connection is `fs_default`
 
-```bash 
+*Note: Execute the following commands within the `airflow-webserver` container!*
 
-# Enter container of airflow-webserver
-docker exec -ti airflow-webserver /bin/bash
-              
+```bash 
 # Add a `fs_default` connection 
 airflow connections add fs_default --conn-type fs
-
 ``` 
 
 
 ### 4 - Download data & train model
 
 This is a preparation step. This examples requires some data and a trained model.
+
+*Note: Execute the following commands within the `airflow-webserver` container!*
 
 ```bash 
 cd $PROJECT_DIR/
