@@ -2,13 +2,15 @@ import os
 from pathlib import Path
 
 import pendulum
+from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.sensors.external_task import ExternalTaskSensor
 from airflow.sensors.filesystem import FileSensor
+from config import BATCH_INTERVAL
+from config import END_DATE_TIME
+from config import MODELS_DIR
+from config import START_DATE_TIME
 from dateutil.relativedelta import relativedelta
-
-from airflow import DAG
-from config import BATCH_INTERVAL, END_DATE_TIME, MODELS_DIR, START_DATE_TIME
 
 dag = DAG(
     dag_id="monitor_model",

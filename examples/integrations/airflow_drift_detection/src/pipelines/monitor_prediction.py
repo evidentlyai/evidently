@@ -5,21 +5,17 @@ from typing import Dict
 
 import pandas as pd
 import pendulum
+from config import MONITORING_DB_URI
+from config import PREDICTION_DRIFT_REPORTS_DIR
+from config import PREDICTIONS_DIR
+from config import REFERENCE_DIR
+from src.monitoring.prediction_drift import commit_prediction_drift_metrics_to_db
+from src.monitoring.prediction_drift import parse_prediction_drift_report
+from src.utils.utils import get_batch_interval
+
 from evidently import ColumnMapping
 from evidently.metrics import ColumnDriftMetric
 from evidently.report import Report
-
-from config import (
-    MONITORING_DB_URI,
-    PREDICTION_DRIFT_REPORTS_DIR,
-    PREDICTIONS_DIR,
-    REFERENCE_DIR,
-)
-from src.monitoring.prediction_drift import (
-    commit_prediction_drift_metrics_to_db,
-    parse_prediction_drift_report,
-)
-from src.utils.utils import get_batch_interval
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger("MONITOR_PREDICTION")

@@ -1,9 +1,9 @@
 import joblib
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
-
 from config import FEATURES_DIR
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_percentage_error
 
 
 def train() -> None:

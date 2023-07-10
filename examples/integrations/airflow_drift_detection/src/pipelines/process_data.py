@@ -1,8 +1,9 @@
 import uuid
 
 import pandas as pd
-
-from config import DATA_FILES, DATA_RAW_DIR, FEATURES_DIR
+from config import DATA_FILES
+from config import DATA_RAW_DIR
+from config import FEATURES_DIR
 
 
 def process() -> None:

@@ -1,24 +1,25 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Dict, List, Text
+from typing import Dict
+from typing import List
+from typing import Text
 
 import pandas as pd
 import pendulum
+from config import COLUMN_MAPPING
+from config import DATA_DRIFT_REPORTS_DIR
+from config import FEATURES_DIR
+from config import MONITORING_DB_URI
+from config import REFERENCE_DIR
+from src.monitoring.data_quality import commit_data_metrics_to_db
+from src.monitoring.utils import detect_data_drift
+from src.utils.utils import extract_batch_data
+from src.utils.utils import get_batch_interval
+
 from evidently.metric_preset import DataDriftPreset
 from evidently.metrics import DatasetSummaryMetric
 from evidently.report import Report
-
-from config import (
-    COLUMN_MAPPING,
-    DATA_DRIFT_REPORTS_DIR,
-    FEATURES_DIR,
-    MONITORING_DB_URI,
-    REFERENCE_DIR,
-)
-from src.monitoring.data_quality import commit_data_metrics_to_db
-from src.monitoring.utils import detect_data_drift
-from src.utils.utils import extract_batch_data, get_batch_interval
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger("MONITOR_DATA_QUALITY")

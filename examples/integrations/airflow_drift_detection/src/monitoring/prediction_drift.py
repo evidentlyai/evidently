@@ -1,11 +1,14 @@
-from typing import Dict, Text, Tuple
+from typing import Dict
+from typing import Text
+from typing import Tuple
 
-from evidently.report import Report
 from sqlalchemy import create_engine
-
-from src.utils.db_utils import add_or_update_by_ts, open_sqa_session
+from src.utils.db_utils import add_or_update_by_ts
+from src.utils.db_utils import open_sqa_session
 from src.utils.models import PredictionDriftTable
 from src.utils.type_conv import numpy_to_standard_types
+
+from evidently.report import Report
 
 
 def parse_prediction_drift_report(prediction_drift_report: Report) -> Tuple[Dict, Dict]:

@@ -1,24 +1,24 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import List, Text
+from typing import List
+from typing import Text
 
 import pandas as pd
 import pendulum
-from evidently.metrics import ColumnDriftMetric, RegressionQualityMetric
-from evidently.report import Report
-
-from config import (
-    COLUMN_MAPPING,
-    MONITORING_DB_URI,
-    PREDICTIONS_DIR,
-    REFERENCE_DIR,
-    TARGET_DRIFT_REPORTS_DIR,
-)
+from config import COLUMN_MAPPING
+from config import MONITORING_DB_URI
+from config import PREDICTIONS_DIR
+from config import REFERENCE_DIR
+from config import TARGET_DRIFT_REPORTS_DIR
 from src.monitoring.model_performance import commit_model_metrics_to_db
 from src.monitoring.utils import detect_target_drift
 from src.pipelines.monitor_data import prepare_current_data
 from src.utils.utils import get_batch_interval
+
+from evidently.metrics import ColumnDriftMetric
+from evidently.metrics import RegressionQualityMetric
+from evidently.report import Report
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger("MONITOR_MODEL")

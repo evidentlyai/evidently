@@ -1,6 +1,5 @@
-from sqlalchemy import create_engine
-
 from config import MONITORING_DB_URI
+from sqlalchemy import create_engine
 from src.utils.models import Base
 
 if __name__ == "__main__":

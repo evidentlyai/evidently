@@ -2,8 +2,8 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
-
-from config import FEATURES_DIR, REFERENCE_DIR
+from config import FEATURES_DIR
+from config import REFERENCE_DIR
 from src.utils.utils import prepare_scoring_data
 
 

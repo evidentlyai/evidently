@@ -1,4 +1,8 @@
-from sqlalchemy import Boolean, Column, Float, Integer, String
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import Float
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()

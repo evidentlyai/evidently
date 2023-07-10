@@ -1,8 +1,11 @@
-from typing import Dict, List, Text, Tuple
+from typing import Dict
+from typing import List
+from typing import Text
+from typing import Tuple
 
 from sqlalchemy import create_engine
-
-from src.utils.db_utils import add_or_update_by_ts, open_sqa_session
+from src.utils.db_utils import add_or_update_by_ts
+from src.utils.db_utils import open_sqa_session
 from src.utils.models import DataQualityTable
 from src.utils.type_conv import numpy_to_standard_types
 

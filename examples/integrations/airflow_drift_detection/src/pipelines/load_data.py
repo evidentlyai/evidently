@@ -2,9 +2,10 @@ import os
 from typing import Text
 
 import requests
+from config import DATA_FILES
+from config import DATA_RAW_DIR
+from config import DATA_SOURCE_URL
 from tqdm import tqdm
-
-from config import DATA_FILES, DATA_RAW_DIR, DATA_SOURCE_URL
 
 
 def download_data(destination: Text):
