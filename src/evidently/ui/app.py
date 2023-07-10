@@ -32,7 +32,6 @@ from evidently.ui.models import TestSuiteModel
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import ProjectBase
 from evidently.ui.workspace import Workspace
-from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.utils import NumpyEncoder
 
 SERVICE_INTERFACE = "service_backend"

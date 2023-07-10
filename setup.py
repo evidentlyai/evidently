@@ -58,7 +58,8 @@ setup_args = dict(
         "fastapi>=0.98.0",
         "uvicorn>=0.22.0",
         "typer>=0.9",
-        "rich>=13"
+        "rich>=13",
+        "iterative-telemetry>=0.0.8"
     ],
     extras_require={
         "dev": [
