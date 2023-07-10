@@ -19,6 +19,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
@@ -26,6 +27,9 @@ from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
+
+METRIC_GENERATORS = "metric_generators"
+METRIC_PRESETS = "metric_presets"
 
 
 class Report(ReportBase):
@@ -39,7 +43,7 @@ class Report(ReportBase):
         options: AnyOptions = None,
         timestamp: Optional[datetime.datetime] = None,
         id: uuid.UUID = None,
-        metadata: Dict[str, str] = None,
+        metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
         model_id: str = None,
         reference_id: str = None,
@@ -96,7 +100,9 @@ class Report(ReportBase):
                     else:
                         # if generated item is not a metric, raise an error
                         raise ValueError(f"Incorrect metric type in generator {item}")
-
+                if METRIC_GENERATORS not in self.metadata:
+                    self.metadata[METRIC_GENERATORS] = []
+                self.metadata[METRIC_GENERATORS].append(item.__class__.__name__)  # type: ignore[union-attr]
             elif isinstance(item, MetricPreset):
                 metrics = []
 
@@ -110,6 +116,10 @@ class Report(ReportBase):
                 for metric in metrics:
                     self._first_level_metrics.append(metric)
                     self._inner_suite.add_metric(metric)
+
+                if METRIC_PRESETS not in self.metadata:
+                    self.metadata[METRIC_PRESETS] = []
+                self.metadata[METRIC_PRESETS].append(item.__class__.__name__)  # type: ignore[union-attr]
 
             elif isinstance(item, Metric):
                 self._first_level_metrics.append(item)

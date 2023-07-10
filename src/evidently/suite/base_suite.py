@@ -425,10 +425,13 @@ class Suite:
         )
 
 
+MetadataValueType = Union[str, Dict[str, str], List[str]]
+
+
 class Snapshot(BaseModel):
     id: UUID4
     timestamp: datetime
-    metadata: Dict[str, str]
+    metadata: Dict[str, MetadataValueType]
     tags: List[str]
     suite: ContextPayload
     metrics_ids: List[int] = []
@@ -458,6 +461,12 @@ class Snapshot(BaseModel):
 
         return TestSuite._parse_snapshot(self)
 
+    def first_level_metrics(self) -> List[Metric]:
+        return [self.suite.metrics[i] for i in self.metrics_ids]
+
+    def first_level_tests(self) -> List[Test]:
+        return [self.suite.tests[i] for i in self.test_ids]
+
 
 T = TypeVar("T", bound="ReportBase")
 
@@ -468,7 +477,7 @@ class ReportBase(Display):
     options: Options
     id: uuid.UUID
     timestamp: datetime
-    metadata: Dict[str, str] = {}
+    metadata: Dict[str, MetadataValueType] = {}
     tags: List[str] = []
 
     def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None):

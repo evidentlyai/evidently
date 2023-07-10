@@ -72,6 +72,7 @@ setup_args = dict(
             "pillow==9.5.0",
             "black==22.8.0",
             "isort==5.10.1",
+            "iterative_telemetry==0.0.8"
         ]
     },
     entry_points={
