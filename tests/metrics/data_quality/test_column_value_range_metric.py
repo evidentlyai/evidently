@@ -11,6 +11,7 @@ from evidently.metrics.data_quality.column_value_range_metric import ColumnValue
 from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
+from tests.conftest import smart_assert_equal
 
 
 @pytest.mark.parametrize(
@@ -30,7 +31,7 @@ from evidently.report import Report
                     share_in_range=0,
                     share_not_in_range=0,
                     number_of_values=0,
-                    distribution=Distribution(x=[], y=[]),
+                    distribution=Distribution(x=np.array([0.0, 1.0]), y=np.array([0])),
                 ),
                 reference=None,
             ),
@@ -49,7 +50,21 @@ from evidently.report import Report
                     share_in_range=0.75,
                     share_not_in_range=0.25,
                     number_of_values=4,
-                    distribution=Distribution(x=[], y=[]),
+                    distribution=Distribution(
+                        x=np.array(
+                            [
+                                -3.2,
+                                0.11428571428571388,
+                                3.428571428571428,
+                                6.742857142857143,
+                                10.057142857142857,
+                                13.37142857142857,
+                                16.685714285714287,
+                                20.0,
+                            ]
+                        ),
+                        y=np.array([1, 3, 0, 0, 0, 0, 0]),
+                    ),
                 ),
                 reference=ValuesInRangeStat(
                     number_in_range=4,
@@ -57,7 +72,21 @@ from evidently.report import Report
                     share_in_range=1,
                     share_not_in_range=0,
                     number_of_values=4,
-                    distribution=Distribution(x=[], y=[]),
+                    distribution=Distribution(
+                        x=np.array(
+                            [
+                                -3.2,
+                                0.11428571428571388,
+                                3.428571428571428,
+                                6.742857142857143,
+                                10.057142857142857,
+                                13.37142857142857,
+                                16.685714285714287,
+                                20.0,
+                            ]
+                        ),
+                        y=np.array([1, 2, 0, 0, 0, 0, 1]),
+                    ),
                 ),
             ),
         ),
@@ -72,7 +101,8 @@ def test_data_quality_values_in_range_metric_success(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     result = metric.get_result()
-    assert result == expected_result
+
+    smart_assert_equal(result, expected_result)
 
 
 @pytest.mark.parametrize(
