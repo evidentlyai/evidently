@@ -79,6 +79,8 @@ export function ProjectData() {
                     <Tab label="Comparisons" {...a11yProps(3)} disabled={true}/>
                 </Tabs>
                 <TabPanel value={pageIndex} index={pages.findIndex(p => p === "dashboard" || p === "")}>
+                    <Grid container justifyContent={"flex-end"}>
+                        <Grid item>
                     <TextField
                         id="from-datetime"
                         label="From"
@@ -92,6 +94,7 @@ export function ProjectData() {
                         InputLabelProps={{
                             shrink: true,
                         }}
+                        style={{paddingRight: "20px"}}
                     />
                     <TextField
                         id="to-datetime"
@@ -107,6 +110,8 @@ export function ProjectData() {
                             shrink: true,
                         }}
                     />
+                            </Grid>
+                    </Grid>
                     <ProjectDashboard projectId={projectId!} from={reportDates.from} to={reportDates.to}/>
                 </TabPanel>
                 <TabPanel value={pageIndex} index={pages.findIndex(p => p === "reports")}>
