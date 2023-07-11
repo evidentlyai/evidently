@@ -15,6 +15,8 @@ import "./index.css";
 import {ServiceMainPage} from "./Components/ServiceMainPage";
 import {ProjectData} from "./Components/ProjectData";
 import {ProjectList} from "./Components/ProjectList";
+import LoadableView from "./lib/components/LoadableVIew";
+import {ServiceHeader} from "./Components/ServiceHeader";
 
 
 const api = new RemoteApi("/api");
@@ -24,6 +26,7 @@ const HomePage = () => {
     let {projectId, dashboardId} = useParams();
     return <ThemeProvider theme={theme}>
         <ApiContext.Provider value={{Api: api}}>
+            <ServiceHeader api={api}/>
             <ServiceMainPage projectId={projectId} reportId={dashboardId}>
                 <Outlet />
             </ServiceMainPage>

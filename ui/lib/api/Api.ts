@@ -249,6 +249,10 @@ export interface TestSuiteInfo {
     timestamp: string;
 }
 
+export interface VersionInfo {
+    version: string;
+}
+
 export interface Api {
     getAdditionalGraphData(projectId: string, dashboardId: string, graphId: string): Promise<AdditionalGraphInfo>
 
@@ -264,4 +268,5 @@ export interface Api {
     getProjects(): Promise<ProjectInfo[]>
 
     getProjectInfo(projectId: string): Promise<ProjectDetails>;
+    getVersion(): Promise<VersionInfo>;
 }

@@ -18,6 +18,7 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
+import evidently
 from evidently.report.report import METRIC_GENERATORS
 from evidently.report.report import METRIC_PRESETS
 from evidently.suite.base_suite import Snapshot
@@ -85,6 +86,11 @@ REPORT_ID = Path(title="id of the report")
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+@api_router.get("/version")
+async def version():
+    return {"version": evidently.__version__}
 
 
 @api_router.get("/projects")

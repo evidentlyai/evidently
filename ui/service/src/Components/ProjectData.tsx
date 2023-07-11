@@ -68,7 +68,7 @@ export function ProjectData() {
                                           style={{fontSize: "0.75rem", color: "#aaaaaa"}}/>
                     </Grid>
                 </Grid>
-                <Tabs value={pageIndex} aria-label="simple tabs example">
+                <Tabs value={pageIndex} aria-label="simple tabs example" indicatorColor={"primary"}>
                     <Link component={RouterLink} to={`/projects/${projectId}`}><Tab
                         label="Dashboard" {...a11yProps(0)}
                         value={"dashboard"}/></Link>
