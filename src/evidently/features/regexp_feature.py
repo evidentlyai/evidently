@@ -15,7 +15,7 @@ class RegExp(GeneratedFeature):
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        result = data[self.column_name].astype(str).str.fullmatch(self.reg_exp, regex=True).astype(int)
+        result = data[self.column_name].astype(str).str.fullmatch(self.reg_exp).astype(int)
         return pd.DataFrame(dict([(self.column_name + "_" + self.reg_exp, result)]))
 
     def feature_name(self):
