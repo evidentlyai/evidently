@@ -46,7 +46,7 @@ def _pandas_or_spark_session(request):
     try:
         from pyspark.sql import SparkSession
     except ImportError:
-        yield
+        raise Exception("pyspark is not configured and we should not be here")
     else:
         session = SparkSession.builder \
             .config(conf=SparkConfigBuilder().get()) \

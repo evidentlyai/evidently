@@ -1,3 +1,4 @@
+from copy import deepcopy
 import re
 
 import numpy
@@ -20,6 +21,7 @@ from tests.utils.spark import convert_pandas_to_spark_df_if_necessary
 def test_metric(pandas_or_spark_session, tmetric: TestMetric, tdataset: TestDataset, toutcome: TestOutcome, raw_data, tmp_path):
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
+    tdataset = deepcopy(tdataset)
     tdataset.current = convert_pandas_to_spark_df_if_necessary(tdataset.current, pandas_or_spark_session)
     tdataset.reference = convert_pandas_to_spark_df_if_necessary(tdataset.reference, pandas_or_spark_session)
 

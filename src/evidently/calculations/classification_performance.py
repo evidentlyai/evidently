@@ -204,6 +204,15 @@ def get_prediction_data(
         and data[prediction].dtype == dtype("float")
     ):
         predictions = (data[prediction] >= threshold).astype(dtype("int64"))
+        # TODO (pyspark): make Spark-efficient solution
+        # if "spark" in dir(data):
+        #     prediction_probas = pd.DataFrame.from_dict(
+        #         {
+        #             1: data[prediction].to_numpy(),
+        #             0: data[prediction].apply(lambda x: 1.0 - x).to_numpy(),
+        #         }
+        #     )
+        # else:
         prediction_probas = pd.DataFrame.from_dict(
             {
                 1: data[prediction],
