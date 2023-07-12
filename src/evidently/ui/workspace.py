@@ -18,12 +18,14 @@ from pydantic import parse_obj_as
 
 from evidently.model.dashboard import DashboardInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.notebook_utils import determine_template
 from evidently.report import Report
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.ui.dashboards import DashboardConfig
 from evidently.utils import NumpyEncoder
+from evidently.utils.dashboard import TemplateParams
 
 METADATA_PATH = "metadata.json"
 SNAPSHOTS = "snapshots"
@@ -180,6 +182,25 @@ class Project(ProjectBase["Workspace"]):
                 and (timestamp_end is None or r.timestamp < timestamp_end)
             ]
         )
+
+    def show_dashboard(
+        self,
+        timestamp_start: Optional[datetime.datetime] = None,
+        timestamp_end: Optional[datetime.datetime] = None
+    ):
+        dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
+        template_params = TemplateParams(
+            dashboard_id="pd_" + str(uuid.uuid4()).replace("-", ""),
+            dashboard_info=dashboard_info,
+            additional_graphs={},
+        )
+        # pylint: disable=import-outside-toplevel
+        try:
+            from IPython.display import HTML
+
+            return HTML(determine_template("inline")(params=template_params))
+        except ImportError as err:
+            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
 
 PT = TypeVar("PT", bound=ProjectBase)
