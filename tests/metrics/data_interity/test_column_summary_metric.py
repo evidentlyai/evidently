@@ -3,11 +3,11 @@ import json
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics.data_integrity.column_summary_metric import CategoricalCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
 from evidently.metrics.data_integrity.column_summary_metric import DataQualityPlot
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 

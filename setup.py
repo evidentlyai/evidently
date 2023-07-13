@@ -24,6 +24,9 @@ package_data_spec = {
     "evidently": [
         "nbextension/static/*.*js*",
         "nbextension/static/*.*woff2*",
+        "ui/ui/*",
+        "ui/ui/static/css/*",
+        "ui/ui/static/js/*",
     ]
 }
 
@@ -57,6 +60,9 @@ setup_args = dict(
         "pydantic>=1.9,<2",
         "fastapi>=0.98.0",
         "uvicorn>=0.22.0",
+        "typer>=0.9",
+        "rich>=13",
+        "iterative-telemetry>=0.0.8"
     ],
     extras_require={
         "dev": [
@@ -76,7 +82,7 @@ setup_args = dict(
         ]
     },
     entry_points={
-        "console_scripts": ["evidently=evidently.ui.app:main"]
+        "console_scripts": ["evidently=evidently.cli:app"]
     },
 )
 

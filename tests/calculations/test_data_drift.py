@@ -5,10 +5,10 @@ from typing import Union
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.calculations.data_drift import ensure_prediction_column_is_string
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.options import DataDriftOptions
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_operations import process_columns
 
 

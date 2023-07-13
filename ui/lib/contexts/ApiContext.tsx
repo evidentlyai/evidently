@@ -8,7 +8,8 @@ import {
     ProjectInfo,
     ReportInfo,
     TestSuiteInfo,
-    WidgetInfo
+    WidgetInfo,
+    VersionInfo
 } from "../api/Api";
 
 interface ApiContextState {
@@ -46,6 +47,10 @@ class NotImplementedApi implements Api {
 
     getTestSuites(projectId: string): Promise<TestSuiteInfo[]> {
         return Promise.resolve([]);
+    }
+
+    getVersion(): Promise<VersionInfo> {
+        return Promise.resolve({version: "0.0.0"});
     }
 
 }

@@ -11,10 +11,10 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently import ColumnMapping
-from evidently import TaskType
 from evidently.core import ColumnType
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.column_mapping import TargetNames
+from evidently.pipeline.column_mapping import TaskType
 
 
 @dataclasses.dataclass

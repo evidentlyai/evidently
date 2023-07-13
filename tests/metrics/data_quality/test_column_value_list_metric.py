@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metrics import ColumnValueListMetric
 from evidently.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
 from evidently.metrics.data_quality.column_value_list_metric import ValueListStat
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 

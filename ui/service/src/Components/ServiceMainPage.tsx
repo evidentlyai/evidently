@@ -19,7 +19,6 @@ export interface ServiceMainPageProps {
 export function ServiceMainPage(props: ServiceMainPageProps) {
     let {children, projectId} = props;
     return <>
-        <ServiceHeader/>
         <Paper style={{marginTop: "20px", marginLeft: "10px", marginRight: "10px", padding: "10px"}}>
             {projectId === undefined ? <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -43,7 +42,7 @@ export function ServiceMainPage(props: ServiceMainPageProps) {
                                     </Link>
                                     {projectId ?
                                         <Link component={RouterLink} color="inherit" to={`/projects/${project.id}`}>
-                                            {project.project_name}
+                                            {project.name}
                                         </Link> : null}
                                 </Breadcrumbs>
                             </Grid>

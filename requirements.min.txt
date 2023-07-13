@@ -9,3 +9,6 @@ scipy==1.5.4
 requests==2.19.0
 pydantic==1.9
 umap-learn==0.5.3
+typer==0.9
+rich==13
+iterative-telemetry==0.0.8

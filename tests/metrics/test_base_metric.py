@@ -4,7 +4,6 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
 from evidently.base_metric import InputData
@@ -14,6 +13,7 @@ from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.base_metric import generate_column_metrics
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 from evidently.utils.data_preprocessing import DataDefinition
 

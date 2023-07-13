@@ -8,7 +8,7 @@ import numpy as np
 from sklearn import datasets
 from sklearn import ensemble
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 
 
 class DatasetTags(Enum):
@@ -21,14 +21,17 @@ class DatasetTags(Enum):
     REGRESSION = "regression"
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(eq=True)
 class TestDataset:
-    name: str
-    current: Any
-    reference: Any
+    name: str = ""
+    current: Any = None
+    reference: Any = None
 
     tags: List[DatasetTags] = dataclasses.field(default_factory=list)
     column_mapping: Optional[ColumnMapping] = None
+
+    def __hash__(self):
+        return id(self)
 
 
 dataset_fixtures = []
@@ -42,7 +45,7 @@ def dataset(f):
 
 @dataset
 def bcancer():
-    bcancer_data = datasets.load_breast_cancer(as_frame="auto")
+    bcancer_data = datasets.load_breast_cancer(as_frame=True)
     bcancer = bcancer_data.frame
 
     bcancer_ref = bcancer.sample(n=300, replace=False)
@@ -70,7 +73,7 @@ def bcancer():
 
 @dataset
 def bcancer_label():
-    bcancer_data = datasets.load_breast_cancer(as_frame="auto")
+    bcancer_data = datasets.load_breast_cancer(as_frame=True)
     bcancer = bcancer_data.frame
 
     bcancer_ref = bcancer.sample(n=300, replace=False)
@@ -99,7 +102,7 @@ def bcancer_label():
 
 @dataset
 def adult():
-    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
+    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame=True)
     adult = adult_data.frame
 
     adult_ref = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
@@ -111,7 +114,7 @@ def adult():
 
 @dataset
 def housing():
-    housing_data = datasets.fetch_california_housing(as_frame="auto")
+    housing_data = datasets.fetch_california_housing(as_frame=True)
     housing = housing_data.frame
 
     housing.rename(columns={"MedHouseVal": "target"}, inplace=True)
@@ -129,7 +132,7 @@ def housing():
 
 @dataset
 def reviews():
-    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
+    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame=True)
     reviews = reviews_data.frame
 
     # In[ ]:
@@ -149,4 +152,4 @@ def reviews():
         text_features=["Review_Text", "Title"],
     )
 
-    return TestDataset("reviews", current=reviews_cur, reference=reviews_ref, column_mapping=column_mapping)
+    return TestDataset(name="reviews", current=reviews_cur, reference=reviews_ref, column_mapping=column_mapping)

@@ -7,7 +7,6 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -21,6 +20,7 @@ from evidently.calculations.data_quality import get_rows_count
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import ExcludeNoneMixin
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer

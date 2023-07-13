@@ -20,13 +20,15 @@ from typing_extensions import Annotated
 
 from evidently.report.report import METRIC_GENERATORS
 from evidently.report.report import METRIC_PRESETS
+import evidently
+from evidently.report.report import METRIC_GENERATORS
+from evidently.report.report import METRIC_PRESETS
 from evidently.suite.base_suite import Snapshot
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
 from evidently.test_suite.test_suite import TEST_GENERATORS
 from evidently.test_suite.test_suite import TEST_PRESETS
 from evidently.ui.dashboards import DashboardPanel
-from evidently.ui.generate_workspace import main as generate_workspace_main
 from evidently.ui.models import DashboardInfoModel
 from evidently.ui.models import ReportModel
 from evidently.ui.models import TestSuiteModel
@@ -86,6 +88,11 @@ REPORT_ID = Path(title="id of the report")
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+@api_router.get("/version")
+async def version():
+    return {"version": evidently.__version__}
 
 
 @api_router.get("/projects")
@@ -276,33 +283,13 @@ async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: S
 app.include_router(api_router)
 
 
-def run(args):
-    app.state.workspace_path = args.workspace
-    uvicorn.run(app, host=args.host, port=args.port)
-
-
-def generate_workspace(args):
-    generate_workspace_main(args.workspace)
+def run(host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace"):
+    app.state.workspace_path = workspace
+    uvicorn.run(app, host=host, port=port)
 
 
 def main():
-    import argparse
-    import sys
-
-    parser = argparse.ArgumentParser(description="evidently service")
-    parser.add_argument("--workspace", help="path to workspace", default="workspace", required=False)
-    subparsers = parser.add_subparsers()
-    ui_parser = subparsers.add_parser("ui")
-    ui_parser.add_argument("--port", help="port to start on", type=int, default=8000, required=False)
-    ui_parser.add_argument("--host", help="host to start on", default="127.0.0.1", required=False)
-    ui_parser.add_argument("--workspace", help="path to workspace", default="workspace", required=False)
-    ui_parser.set_defaults(func=run)
-    generator_parser = subparsers.add_parser("generate_workspace")
-    generator_parser.set_defaults(func=generate_workspace)
-    generator_parser.add_argument("--workspace", help="path to workspace", default="workspace", required=False)
-
-    parsed = parser.parse_args(sys.argv[1:])
-    parsed.func(parsed)
+    run()
 
 
 if __name__ == "__main__":

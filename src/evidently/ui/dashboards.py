@@ -15,7 +15,7 @@ from plotly import graph_objs as go
 from pydantic import BaseModel
 from pydantic import validator
 
-from evidently.base_metric import Metric
+from evidently.base_metric import Metric, ColumnName
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -149,12 +149,19 @@ class DashboardPanelPlot(DashboardPanel):
 
             for metric, pts in metric_pts.items():
                 pts.sort(key=lambda x: x[0])
+                params = []
+                for name, value in metric.dict().items():
+                    if name in ["type"]:
+                        continue
+                    if value is None:
+                        continue
+                    params.append(f"{name}: {value}")
                 plot = self.plot_type_cls(
                     x=[p[0] for p in pts],
                     y=[p[1] for p in pts],
                     name=val.legend,
                     legendgroup=val.legend,
-                    hovertemplate=f"%{{x}}, %{{y}}<br>{metric}<br>.{val.field_path}",
+                    hovertemplate=f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{'<br>'.join(params)}<br>.{val.field_path}",
                 )
                 fig.add_trace(plot)
         return plotly_figure(title=self.title, figure=fig, size=self.size)

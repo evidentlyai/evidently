@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues

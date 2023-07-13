@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metrics import DatasetCorrelationsMetric
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 
