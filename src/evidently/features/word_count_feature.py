@@ -26,7 +26,3 @@ class WordCount(GeneratedFeature):
 
     def feature_name(self) -> ColumnName:
         return additional_feature(self, self.column_name, f"Word Count for {self.column_name}")
-
-
-def word_count(column_name: str) -> ColumnName:
-    return additional_feature(WordCount(column_name), f"{column_name}", f"Word Count for {column_name}")
