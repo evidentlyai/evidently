@@ -18,8 +18,6 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
 
-from evidently.report.report import METRIC_GENERATORS
-from evidently.report.report import METRIC_PRESETS
 import evidently
 from evidently.report.report import METRIC_GENERATORS
 from evidently.report.report import METRIC_PRESETS
