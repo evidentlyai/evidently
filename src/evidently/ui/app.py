@@ -197,31 +197,32 @@ async def get_report_download(
     return Response(f"Unknown format {report_format}", status_code=400)
 
 
-@api_router.get("/projects/{project_id}/{report_id}/data")
-async def get_report_data(
+@api_router.get("/projects/{project_id}/{snapshot_id}/data")
+async def get_snapshot_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
-    report_id: Annotated[uuid.UUID, REPORT_ID],
+    snapshot_id: Annotated[uuid.UUID, REPORT_ID],
 ) -> Response:  # DashboardInfoModel:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_snapshot(report_id)
-    if report is None:
-        raise HTTPException(status_code=404, detail="Report not found")
-    info = DashboardInfoModel.from_dashboard_info(report.dashboard_info)
+    snapshot = project.get_snapshot(snapshot_id)
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
+    info = DashboardInfoModel.from_dashboard_info(snapshot.dashboard_info)
     # todo: add numpy encoder to fastapi
     # return info
     json_str = json.dumps(info.dict(), cls=NumpyEncoder).encode("utf-8")
     event_logger.send_event(
         SERVICE_INTERFACE,
-        "get_report_data",
-        metrics=[m.get_id() for m in report.value.first_level_metrics()],
-        metric_presets=report.value.metadata.get(METRIC_PRESETS, []),
-        metric_generators=report.value.metadata.get(METRIC_GENERATORS, []),
-        tests=[t.get_id() for t in report.value.first_level_tests()],
-        test_presets=report.value.metadata.get(TEST_PRESETS, []),
-        test_generators=report.value.metadata.get(TEST_GENERATORS, []),
+        "get_snapshot_data",
+        snapshot_type="report" if snapshot.value.is_report else "test_suite",
+        metrics=[m.get_id() for m in snapshot.value.first_level_metrics()],
+        metric_presets=snapshot.value.metadata.get(METRIC_PRESETS, []),
+        metric_generators=snapshot.value.metadata.get(METRIC_GENERATORS, []),
+        tests=[t.get_id() for t in snapshot.value.first_level_tests()],
+        test_presets=snapshot.value.metadata.get(TEST_PRESETS, []),
+        test_generators=snapshot.value.metadata.get(TEST_GENERATORS, []),
     )
     return Response(media_type="application/json", content=json_str)
 
