@@ -19,11 +19,12 @@ class OOVWordsPercentage(GeneratedFeature):
     _lem: WordNetLemmatizer
     _eng_words: Set
 
-    def __init__(self, column_name: str, ignore_words=()):
+    def __init__(self, column_name: str, ignore_words=(), display_name: Optional[str] = None):
         self._lem = WordNetLemmatizer()
         self._eng_words = set(words.words())
         self.column_name = column_name
         self.ignore_words = ignore_words
+        self.display_name = display_name
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
@@ -51,7 +52,7 @@ class OOVWordsPercentage(GeneratedFeature):
         )
 
     def feature_name(self):
-        return additional_feature(self, self.column_name, f"OOV Words % for {self.column_name}")
+        return additional_feature(self, self.column_name, self.display_name or f"OOV Words % for {self.column_name}")
 
     def get_parameters(self) -> Optional[tuple]:
         return self.column_name, self.ignore_words
