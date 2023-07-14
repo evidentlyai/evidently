@@ -92,7 +92,7 @@ class Context:
     execution_graph: Optional[ExecutionGraph]
     metrics: list
     tests: list
-    metric_results: Dict[Metric, MetricResult]
+    metric_results: Dict[Metric, Union[MetricResult, ErrorResult]]
     test_results: Dict[Test, TestResult]
     state: State
     renderers: RenderersDefinitions
@@ -101,7 +101,7 @@ class Context:
 
 class ContextPayload(BaseModel):
     metrics: List[Metric]
-    metric_results: List[MetricResult]
+    metric_results: List[Union[MetricResult, ErrorResult]]
     tests: List[Test]
     test_results: List[TestResult]
     options: Options = Options()
@@ -385,14 +385,14 @@ class Suite:
         if self.context.execution_graph is not None:
             execution_graph: ExecutionGraph = self.context.execution_graph
 
-            calculations = {}
+            calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
             for metric, calculation in execution_graph.get_metric_execution_iterator():
                 if calculation not in calculations:
                     logging.debug(f"Executing {type(calculation)}...")
                     try:
                         calculations[calculation] = calculation.calculate(data)
                     except BaseException as ex:
-                        calculations[calculation] = ErrorResult(ex)
+                        calculations[calculation] = ErrorResult(exception=ex)
                 else:
                     logging.debug(f"Using cached result for {type(calculation)}")
                 self.context.metric_results[metric] = calculations[calculation]
@@ -429,6 +429,9 @@ class Suite:
         self.context.state = States.Tested
 
     def raise_for_error(self):
+        for result in self.context.metric_results.values():
+            if isinstance(result, ErrorResult):
+                raise result.exception
         for result in self.context.test_results.values():
             if result.exception is not None:
                 raise result.exception
