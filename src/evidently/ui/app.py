@@ -10,7 +10,9 @@ from typing import Sequence
 
 import uvicorn
 from fastapi import APIRouter
+from fastapi import Depends
 from fastapi import FastAPI
+from fastapi import Header
 from fastapi import HTTPException
 from fastapi import Path
 from starlette.responses import FileResponse
@@ -36,6 +38,19 @@ from evidently.ui.workspace import Workspace
 from evidently.utils import NumpyEncoder
 
 SERVICE_INTERFACE = "service_backend"
+
+SECRET = os.environ.get("EVIDENTLY_SECRET", None)
+
+
+async def authenticated(evidently_secret: Annotated[Optional[str], Header()] = None):
+    if SECRET is None or evidently_secret == SECRET:
+        return True
+    return False
+
+
+def check_auth(authenticated):
+    if not authenticated:
+        raise HTTPException(403, "Not allowed")
 
 
 @asynccontextmanager
@@ -130,7 +145,10 @@ async def search_projects(project_name: Annotated[str, "Name of the project to s
 
 
 @api_router.post("/projects/{project_id}/info")
-async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectBase) -> ProjectBase:
+async def update_project_info(
+    auth: Annotated[bool, Depends(authenticated)], project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectBase
+) -> ProjectBase:
+    check_auth(auth)
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
@@ -261,7 +279,8 @@ async def project_dashboard(
 
 
 @api_router.post("/projects")
-async def add_project(project: Project) -> ProjectBase:
+async def add_project(auth: Annotated[bool, Depends(authenticated)], project: Project) -> ProjectBase:
+    check_auth(auth)
     workspace: Workspace = app.state.workspace
     p = workspace.add_project(project)
     event_logger.send_event(SERVICE_INTERFACE, "add_project")
@@ -269,7 +288,10 @@ async def add_project(project: Project) -> ProjectBase:
 
 
 @api_router.post("/projects/{project_id}/snapshots")
-async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot):
+async def add_snapshot(
+    auth: Annotated[bool, Depends(authenticated)], project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot
+):
+    check_auth(auth)
     workspace: Workspace = app.state.workspace
     if workspace.get_project(project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -281,7 +303,10 @@ async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: S
 app.include_router(api_router)
 
 
-def run(host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace"):
+def run(host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace", secret: str = None):
+    if secret is not None:
+        global SECRET
+        SECRET = secret
     app.state.workspace_path = workspace
     uvicorn.run(app, host=host, port=port)
 

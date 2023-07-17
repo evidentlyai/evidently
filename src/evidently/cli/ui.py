@@ -1,3 +1,5 @@
+from typing import Optional
+
 import typer
 from typer import Option
 
@@ -10,6 +12,7 @@ def ui(
     port: int = Option(8000, help="Service port"),
     workspace: str = Option("workspace", help="Path to workspace"),
     demo_project: bool = Option(False, "--demo-project", is_flag=True, help="Generate demo project"),
+    secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
     """Start Evidenlty UI service"""
     from evidently.ui.app import run
@@ -23,4 +26,4 @@ def ui(
         if not has_demo_project:
             typer.echo("Generating demo project...")
             create_demo_project(workspace)
-    run(host, port, workspace)
+    run(host, port, workspace, secret)

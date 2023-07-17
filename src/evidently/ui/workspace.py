@@ -184,9 +184,7 @@ class Project(ProjectBase["Workspace"]):
         )
 
     def show_dashboard(
-        self,
-        timestamp_start: Optional[datetime.datetime] = None,
-        timestamp_end: Optional[datetime.datetime] = None
+        self, timestamp_start: Optional[datetime.datetime] = None, timestamp_end: Optional[datetime.datetime] = None
     ):
         dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
         template_params = TemplateParams(
