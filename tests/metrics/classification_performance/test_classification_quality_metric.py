@@ -6,25 +6,6 @@ from evidently.metrics import ClassificationQualityMetric
 from evidently.report import Report
 
 
-def test_classification_quality():
-    current = pd.DataFrame(
-        data=dict(
-            target=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
-            prediction=["a", "b", "c", "a", "b", "c", "a", "b", "c"],
-        ),
-    )
-
-    metric = ClassificationQualityMetric()
-    report = Report(metrics=[metric])
-    report.run(reference_data=None, current_data=current, column_mapping=ColumnMapping())
-
-    results = metric.get_result()
-    assert np.isclose(results.current.accuracy, 0.333333)
-    assert np.isclose(results.current.f1, 0.333333)
-    assert np.isclose(results.current.precision, 0.333333)
-    assert np.isclose(results.current.recall, 0.333333)
-
-
 def test_classification_quality_binary():
     current = pd.DataFrame(
         data=dict(

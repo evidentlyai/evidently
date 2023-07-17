@@ -1,5 +1,7 @@
 import pandas as pd
 
+from evidently import ColumnMapping
+from evidently.metric_results import DatasetClassificationQuality
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
 from evidently.metrics.classification_performance.class_balance_metric import ClassificationClassBalance
@@ -7,6 +9,7 @@ from evidently.metrics.classification_performance.class_balance_metric import Cl
 from evidently.metrics.classification_performance.class_separation_metric import ClassificationClassSeparationPlot
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
 from evidently.metrics.classification_performance.pr_curve_metric import ClassificationPRCurve
 from evidently.metrics.classification_performance.pr_table_metric import ClassificationPRTable
@@ -14,8 +17,11 @@ from evidently.metrics.classification_performance.probability_distribution_metri
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from evidently.metrics.classification_performance.quality_by_feature_table import ClassificationQualityByFeatureTable
 from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
+from evidently.tests.utils import approx_result
+from evidently.utils.types import NumericApprox
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import NoopOutcome
+from tests.multitest.conftest import make_approx_type
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.datasets import TestDataset
 from tests.multitest.metrics.conftest import TestMetric
@@ -136,6 +142,37 @@ def classification_roc_curve():
 def classification_quality_metric():
     return TestMetric(
         "classification_quality_metric", ClassificationQualityMetric(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
+    )
+
+
+@metric
+def classification_quality_values():
+    current = pd.DataFrame(
+        data=dict(
+            target=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+            prediction=["a", "b", "c", "a", "b", "c", "a", "b", "c"],
+        ),
+    )
+
+    DatasetClassificationQuality.__fields__["accuracy"].type_ = NumericApprox
+    metric = ClassificationQualityMetric()
+    return TestMetric(
+        "classification_quality_values",
+        metric,
+        outcomes={
+            TestDataset(current=current, column_mapping=ColumnMapping()): AssertExpectedResult(
+                metric,
+                ClassificationQualityMetricResult(
+                    current=make_approx_type(DatasetClassificationQuality)(
+                        accuracy=approx_result(0.3333333),
+                        precision=approx_result(0.3333333),
+                        f1=approx_result(0.3333333),
+                        recall=approx_result(0.3333333),
+                    ),
+                    target_name="target",
+                ),
+            )
+        },
     )
 
 

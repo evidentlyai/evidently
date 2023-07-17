@@ -8,11 +8,17 @@ from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import Type
+from typing import TypeVar
+from typing import Union
+
+from pydantic import BaseModel
 
 import evidently
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.pydantic_utils import PolymorphicModel
 from evidently.report import Report
+from evidently.utils.types import ApproxValue
 from tests.conftest import smart_assert_equal
 
 
@@ -85,3 +91,26 @@ def find_all_subclasses(
                     classes.add(value)
 
     return classes
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+def make_approx_type(cls: Type[T]) -> Type[T]:
+    class ApproxFields(cls):
+        __annotations__ = {
+            k: Union[ApproxValue, f.type_]
+            if not isinstance(f.type_, type) or not issubclass(f.type_, BaseModel)
+            else make_approx_type(f.type_)
+            for k, f in cls.__fields__.items()
+        }
+        locals().update({k: f.default for k, f in cls.__fields__.items()})
+
+        def __eq__(self, other):
+            return super().__eq__(other)
+
+    if issubclass(cls, PolymorphicModel):
+        ApproxFields.__fields__["type"].default = cls.__fields__["type"].default
+
+    ApproxFields.__name__ = f"Approx{cls.__name__}"
+    return ApproxFields
