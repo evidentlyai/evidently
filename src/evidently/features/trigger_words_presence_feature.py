@@ -1,5 +1,6 @@
 import re
-from typing import Tuple, Optional
+from typing import Optional
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
