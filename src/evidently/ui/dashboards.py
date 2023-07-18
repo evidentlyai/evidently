@@ -15,7 +15,7 @@ from plotly import graph_objs as go
 from pydantic import BaseModel
 from pydantic import validator
 
-from evidently.base_metric import Metric, ColumnName
+from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo

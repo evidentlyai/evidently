@@ -80,7 +80,8 @@ async def manifest():
 api_router = APIRouter(prefix="/api")
 
 PROJECT_ID = Path(title="id of the project")
-REPORT_ID = Path(title="id of the report")
+SNAPSHOT_ID = Path(title="id of the snapshot")
+GRAPH_ID = Path(title="id of snapshot graph")
 
 
 @api_router.get("/")
@@ -154,53 +155,55 @@ async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List
     return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
 
 
-@api_router.get("/projects/{project_id}/{report_id}/graphs_data/{graph_id}")
-async def get_report_graph_data(
+@api_router.get("/projects/{project_id}/{snapshot_id}/graphs_data/{graph_id}")
+async def get_snapshot_graph_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
-    report_id: Annotated[uuid.UUID, REPORT_ID],
-    graph_id: Annotated[str, REPORT_ID],
+    snapshot_id: Annotated[uuid.UUID, SNAPSHOT_ID],
+    graph_id: Annotated[str, GRAPH_ID],
 ) -> Response:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_snapshot(report_id)
-    if report is None:
-        raise HTTPException(status_code=404, detail="Report not found")
-    graph = report.additional_graphs.get(graph_id)
+    snapshot = project.get_snapshot(snapshot_id)
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
+    graph = snapshot.additional_graphs.get(graph_id)
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
-    event_logger.send_event(SERVICE_INTERFACE, "get_report_graph_data")
+    event_logger.send_event(SERVICE_INTERFACE, "get_snapshot_graph_data")
     return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
 
 
-@api_router.get("/projects/{project_id}/{report_id}/download")
-async def get_report_download(
+@api_router.get("/projects/{project_id}/{snapshot_id}/download")
+async def get_snapshot_download(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
-    report_id: Annotated[uuid.UUID, REPORT_ID],
+    snapshot_id: Annotated[uuid.UUID, SNAPSHOT_ID],
     report_format: str = "html",
 ) -> Response:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    report = project.get_snapshot(report_id)
-    if report is None:
-        raise HTTPException(status_code=404, detail="Report not found")
+    snapshot = project.get_snapshot(snapshot_id)
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
     if report_format == "html":
         return Response(
-            report.report.get_html(), headers={"content-disposition": f"attachment;filename={report_id}.html"}
+            snapshot.report.get_html(), headers={"content-disposition": f"attachment;filename={snapshot_id}.html"}
         )
     if report_format == "json":
-        return Response(report.report.json(), headers={"content-disposition": f"attachment;filename={report_id}.json"})
-    event_logger.send_event(SERVICE_INTERFACE, "get_report_download")
+        return Response(
+            snapshot.report.json(), headers={"content-disposition": f"attachment;filename={snapshot_id}.json"}
+        )
+    event_logger.send_event(SERVICE_INTERFACE, "get_snapshot_download")
     return Response(f"Unknown format {report_format}", status_code=400)
 
 
 @api_router.get("/projects/{project_id}/{snapshot_id}/data")
 async def get_snapshot_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
-    snapshot_id: Annotated[uuid.UUID, REPORT_ID],
+    snapshot_id: Annotated[uuid.UUID, SNAPSHOT_ID],
 ) -> Response:  # DashboardInfoModel:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
