@@ -22,4 +22,5 @@ class TriggerWordsPresence(FeatureDescriptor):
             column_name,
             self.words_list,
             self.lemmatize,
+            self.display_name,
         ).feature_name()
