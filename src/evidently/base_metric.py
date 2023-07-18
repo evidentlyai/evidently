@@ -12,6 +12,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import Field
 from pydantic.main import ModelMetaclass
 
 from evidently.core import BaseResult
@@ -44,11 +45,8 @@ class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetacla
         field_tags = {"type": {IncludeTags.TypeField}}
 
 
-class ErrorResult:
-    exception: BaseException
-
-    def __init__(self, exception: BaseException):
-        self.exception = exception
+class ErrorResult(BaseResult):
+    exception: Optional[BaseException] = Field(None, exclude=True)  # todo: fix serialization of exceptions
 
 
 class DatasetType(Enum):

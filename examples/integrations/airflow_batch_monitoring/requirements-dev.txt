@@ -1,0 +1,8 @@
+# keep in sync with setup.py extra_require block.
+flake8==4.0.1
+mypy==1.4.1
+pytest==6.2.5
+types-PyYAML==6.0.1
+types-requests==2.26.0
+types-dataclasses==0.6
+black==22.8.0

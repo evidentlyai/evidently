@@ -24,7 +24,3 @@ class TextLength(GeneratedFeature):
 
     def feature_name(self) -> ColumnName:
         return additional_feature(self, self.column_name, f"Text Length for {self.column_name}")
-
-
-def text_length(column_name: str) -> ColumnName:
-    return additional_feature(TextLength(column_name), f"{column_name}", f"Text Length for {column_name}")
