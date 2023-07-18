@@ -1,5 +1,3 @@
-from typing import Optional
-
 from evidently.features import regexp_feature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
