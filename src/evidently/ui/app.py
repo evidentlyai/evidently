@@ -42,12 +42,6 @@ SERVICE_INTERFACE = "service_backend"
 SECRET = os.environ.get("EVIDENTLY_SECRET", None)
 
 
-async def authenticated(evidently_secret: Annotated[Optional[str], Header()] = None):
-    if SECRET is None or evidently_secret == SECRET:
-        return True
-    raise HTTPException(403, "Not allowed")
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Run at startup
@@ -90,6 +84,13 @@ async def manifest():
 api_router = APIRouter(prefix="/api")
 
 api_read_router = APIRouter()
+
+
+async def authenticated(evidently_secret: Annotated[Optional[str], Header()] = None):
+    if SECRET is not None and evidently_secret != SECRET:
+        raise HTTPException(403, "Not allowed")
+
+
 api_write_router = APIRouter(dependencies=[Depends(authenticated)])
 
 
