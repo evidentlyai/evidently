@@ -256,7 +256,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
                 counts_of_values["reference"] = reference_counts.head(10)
 
         return ColumnSummaryResult(
-            column_name=self.column_name.name,
+            column_name=self.column_name.display_name,
             column_type=column_type.value,
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,
@@ -357,6 +357,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
+        column_name_escaped = str(column_name).lower().replace(" ", "_")
         agg_data = not obj.get_options().render_options.raw_data
         # main plot
         bins_for_hist: Histogram = metric_result.plot_data.bins_for_hist
@@ -420,14 +421,14 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 )
             additional_graphs.append(
                 AdditionalGraphInfo(
-                    column_name + "_in_time",
+                    column_name_escaped + "_in_time",
                     {
                         "data": feature_in_time_figure["data"],
                         "layout": feature_in_time_figure["layout"],
                     },
                 )
             )
-            parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
+            parts.append({"title": column_name + " in time", "id": column_name_escaped + "_in_time"})
         if (
             metric_result.plot_data.data_by_target is not None
             and metric_result.plot_data.data_by_target.data_for_plots is not None
@@ -485,14 +486,14 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
 
             additional_graphs.append(
                 AdditionalGraphInfo(
-                    column_name + "_by_target",
+                    column_name_escaped + "_by_target",
                     {
                         "data": feature_by_target_figure["data"],
                         "layout": feature_by_target_figure["layout"],
                     },
                 )
             )
-            parts.append({"title": column_name + " by target", "id": column_name + "_by_target"})
+            parts.append({"title": column_name + " by target", "id": column_name_escaped + "_by_target"})
         if column_type == "text":
             wi = BaseWidgetInfo(
                 type="rich_data",
