@@ -45,12 +45,7 @@ SECRET = os.environ.get("EVIDENTLY_SECRET", None)
 async def authenticated(evidently_secret: Annotated[Optional[str], Header()] = None):
     if SECRET is None or evidently_secret == SECRET:
         return True
-    return False
-
-
-def check_auth(authenticated):
-    if not authenticated:
-        raise HTTPException(403, "Not allowed")
+    raise HTTPException(403, "Not allowed")
 
 
 @asynccontextmanager
@@ -94,21 +89,25 @@ async def manifest():
 
 api_router = APIRouter(prefix="/api")
 
+api_read_router = APIRouter()
+api_write_router = APIRouter(dependencies=[Depends(authenticated)])
+
+
 PROJECT_ID = Path(title="id of the project")
 REPORT_ID = Path(title="id of the report")
 
 
-@api_router.get("/")
+@api_read_router.get("/")
 async def root():
     return {"message": "Hello World"}
 
 
-@api_router.get("/version")
+@api_read_router.get("/version")
 async def version():
     return {"version": evidently.__version__}
 
 
-@api_router.get("/projects")
+@api_read_router.get("/projects")
 async def list_projects() -> Sequence[ProjectBase]:
     workspace: Workspace = app.state.workspace
     projects = workspace.list_projects()
@@ -116,7 +115,7 @@ async def list_projects() -> Sequence[ProjectBase]:
     return projects
 
 
-@api_router.get("/projects/{project_id}/reports")
+@api_read_router.get("/projects/{project_id}/reports")
 async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[ReportModel]:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
@@ -127,7 +126,7 @@ async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[Rep
     return reports
 
 
-@api_router.get("/projects/{project_id}/info")
+@api_read_router.get("/projects/{project_id}/info")
 async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> ProjectBase:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
@@ -137,18 +136,15 @@ async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> Proj
     return project
 
 
-@api_router.get("/projects/search/{project_name}")
+@api_read_router.get("/projects/search/{project_name}")
 async def search_projects(project_name: Annotated[str, "Name of the project to search"]) -> List[Project]:
     workspace: Workspace = app.state.workspace
     event_logger.send_event(SERVICE_INTERFACE, "search_projects")
     return workspace.search_project(project_name=project_name)
 
 
-@api_router.post("/projects/{project_id}/info")
-async def update_project_info(
-    auth: Annotated[bool, Depends(authenticated)], project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectBase
-) -> ProjectBase:
-    check_auth(auth)
+@api_write_router.post("/projects/{project_id}/info")
+async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectBase) -> ProjectBase:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
@@ -162,7 +158,7 @@ async def update_project_info(
     return project
 
 
-@api_router.get("/projects/{project_id}/test_suites")
+@api_read_router.get("/projects/{project_id}/test_suites")
 async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[TestSuiteModel]:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
@@ -172,7 +168,7 @@ async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List
     return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
 
 
-@api_router.get("/projects/{project_id}/{report_id}/graphs_data/{graph_id}")
+@api_read_router.get("/projects/{project_id}/{report_id}/graphs_data/{graph_id}")
 async def get_report_graph_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     report_id: Annotated[uuid.UUID, REPORT_ID],
@@ -192,7 +188,7 @@ async def get_report_graph_data(
     return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
 
 
-@api_router.get("/projects/{project_id}/{report_id}/download")
+@api_read_router.get("/projects/{project_id}/{report_id}/download")
 async def get_report_download(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     report_id: Annotated[uuid.UUID, REPORT_ID],
@@ -215,7 +211,7 @@ async def get_report_download(
     return Response(f"Unknown format {report_format}", status_code=400)
 
 
-@api_router.get("/projects/{project_id}/{snapshot_id}/data")
+@api_read_router.get("/projects/{project_id}/{snapshot_id}/data")
 async def get_snapshot_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     snapshot_id: Annotated[uuid.UUID, REPORT_ID],
@@ -245,7 +241,7 @@ async def get_snapshot_data(
     return Response(media_type="application/json", content=json_str)
 
 
-@api_router.get("/projects/{project_id}/dashboard/panels")
+@api_read_router.get("/projects/{project_id}/dashboard/panels")
 async def list_project_dashboard_panels(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
 ) -> List[DashboardPanel]:
@@ -257,7 +253,7 @@ async def list_project_dashboard_panels(
     return list(project.dashboard.panels)
 
 
-@api_router.get("/projects/{project_id}/dashboard")
+@api_read_router.get("/projects/{project_id}/dashboard")
 async def project_dashboard(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     timestamp_start: Optional[datetime.datetime] = None,
@@ -278,20 +274,16 @@ async def project_dashboard(
     return Response(media_type="application/json", content=json_str)
 
 
-@api_router.post("/projects")
-async def add_project(auth: Annotated[bool, Depends(authenticated)], project: Project) -> ProjectBase:
-    check_auth(auth)
+@api_write_router.post("/projects")
+async def add_project(project: Project) -> ProjectBase:
     workspace: Workspace = app.state.workspace
     p = workspace.add_project(project)
     event_logger.send_event(SERVICE_INTERFACE, "add_project")
     return p
 
 
-@api_router.post("/projects/{project_id}/snapshots")
-async def add_snapshot(
-    auth: Annotated[bool, Depends(authenticated)], project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot
-):
-    check_auth(auth)
+@api_read_router.post("/projects/{project_id}/snapshots")
+async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot):
     workspace: Workspace = app.state.workspace
     if workspace.get_project(project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -300,6 +292,8 @@ async def add_snapshot(
     event_logger.send_event(SERVICE_INTERFACE, "add_snapshot")
 
 
+api_router.include_router(api_read_router)
+api_router.include_router(api_write_router)
 app.include_router(api_router)
 
 
