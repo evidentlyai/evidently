@@ -25,7 +25,7 @@ class RegExp(GeneratedFeature):
         return additional_feature(
             self,
             self.column_name + "_" + self.reg_exp,
-            self.display_name or f"RegExp '{self.reg_exp}' Match for column {self.column_name}"
+            self.display_name or f"RegExp '{self.reg_exp}' Match for column {self.column_name}",
         )
 
     def get_parameters(self):
