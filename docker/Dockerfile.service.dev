@@ -12,16 +12,16 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 LABEL maintainer="mike0sv@evidentlyai.com"
 
 
+RUN apt-get update && \
+    apt-get install -y \
+        build-essential \
+        make \
+        gcc
 
 WORKDIR /src
 COPY setup.py .
 COPY setupbase.py .
 COPY src ./src
-RUN apt-get update && \
-    apt-get install -y \
-        build-essential \
-        make \
-        gcc \
 
 RUN pip install . \
     && rm -rf /src
