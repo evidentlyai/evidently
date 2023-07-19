@@ -156,13 +156,22 @@ class DashboardPanelPlot(DashboardPanel):
                     if value is None:
                         continue
                     params.append(f"{name}: {value}")
-                plot = self.plot_type_cls(
-                    x=[p[0] for p in pts],
-                    y=[p[1] for p in pts],
-                    name=val.legend,
-                    legendgroup=val.legend,
-                    hovertemplate=f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{'<br>'.join(params)}<br>.{val.field_path}",
-                )
+                hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{'<br>'.join(params)}<br>.{val.field_path}"
+                if self.plot_type == PlotType.HISTOGRAM:
+                    plot = go.Histogram(
+                        x=[p[1] for p in pts],
+                        name=val.legend,
+                        legendgroup=val.legend,
+                        hovertemplate=hover,
+                    )
+                else:
+                    plot = self.plot_type_cls(
+                        x=[p[0] for p in pts],
+                        y=[p[1] for p in pts],
+                        name=val.legend,
+                        legendgroup=val.legend,
+                        hovertemplate=hover,
+                    )
                 fig.add_trace(plot)
         return plotly_figure(title=self.title, figure=fig, size=self.size)
 
@@ -174,8 +183,6 @@ class DashboardPanelPlot(DashboardPanel):
             return go.Bar
         if self.plot_type == PlotType.LINE:
             return go.Line
-        if self.plot_type == PlotType.HISTOGRAM:
-            return go.Histogram
         raise ValueError(f"Unsupported plot type {self.plot_type}")
 
 
