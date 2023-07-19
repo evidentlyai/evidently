@@ -194,7 +194,10 @@ class DashboardPanelCounter(DashboardPanel):
         if self.agg == CounterAgg.NONE:
             return counter(counters=[CounterData(self.title, self.text or "")], size=self.size)
         value = self._get_counter_value(reports)
-        ct = CounterData.float(self.text, value, 3) if isinstance(value, float) else CounterData.int(self.text, value)
+        if isinstance(value, float):
+            ct = CounterData.float(self.text or "", value, 3)
+        else:
+            ct = CounterData.int(self.text or "", value)
         return counter(title=self.title, counters=[ct], size=self.size)
 
     def _get_counter_value(self, reports: Iterable[Report]):
