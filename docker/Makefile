@@ -7,7 +7,7 @@ build: docker_build output
 release: docker_build docker_push output
 
 # Image and binary can be overidden with env vars.
-DOCKER_IMAGE ?= evidentlyai/evidently-service
+DOCKER_IMAGE ?= evidently/evidently-service
 SOURCES_DIR ?= ../
 
 # Get the latest commit.
