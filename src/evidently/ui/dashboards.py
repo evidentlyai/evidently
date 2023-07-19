@@ -156,7 +156,8 @@ class DashboardPanelPlot(DashboardPanel):
                     if value is None:
                         continue
                     params.append(f"{name}: {value}")
-                hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{'<br>'.join(params)}<br>.{val.field_path}"
+                params_join = "<br>".join(params)
+                hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>.{val.field_path}"
                 if self.plot_type == PlotType.HISTOGRAM:
                     plot = go.Histogram(
                         x=[p[1] for p in pts],
