@@ -13,6 +13,7 @@ if typing.TYPE_CHECKING:
 
 
 class GeneratedFeature(EvidentlyBaseModel):
+    display_name: Optional[str] = None
     """
     Class for computation of additional features.
     """
@@ -56,6 +57,8 @@ class GeneratedFeature(EvidentlyBaseModel):
 
 
 class FeatureDescriptor(EvidentlyBaseModel):
+    display_name: Optional[str] = None
+
     @abc.abstractmethod
     def for_column(self, column_name: str):
         raise NotImplementedError()
