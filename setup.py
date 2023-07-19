@@ -75,6 +75,7 @@ setup_args = dict(
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
             "types-dataclasses==0.6",
+            "types-python-dateutil==2.8.19",
             "pillow==9.5.0",
             "black==22.8.0",
             "isort==5.10.1",
