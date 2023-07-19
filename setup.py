@@ -62,7 +62,7 @@ setup_args = dict(
         "uvicorn>=0.22.0",
         "typer>=0.9",
         "rich>=13",
-        "iterative-telemetry>=0.0.8"
+        "iterative-telemetry==0.0.5"  # todo: until we support 3.7
     ],
     extras_require={
         "dev": [

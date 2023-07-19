@@ -1,5 +1,6 @@
 from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage
 from .oov_words_percentage_descriptor import OOV
+from .regexp_descriptor import RegExp
 from .sentence_count_descriptor import SentenceCount
 from .sentiment_descriptor import Sentiment
 from .text_length_descriptor import TextLength
@@ -14,4 +15,5 @@ __all__ = [
     "WordCount",
     "SentenceCount",
     "Sentiment",
+    "RegExp",
 ]
