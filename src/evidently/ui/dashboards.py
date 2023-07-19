@@ -201,7 +201,7 @@ class DashboardPanelCounter(DashboardPanel):
         if self.value is None:
             raise ValueError("Counters with agg should have value")
         if self.agg == CounterAgg.LAST:
-            return max(((r.timestamp, v) for r in reports for v in self.value.get(r)), key=lambda x: x[0])[1]
+            return max(((r.timestamp, v) for r in reports for v in self.value.get(r).values()), key=lambda x: x[0])[1]
         if self.agg == CounterAgg.SUM:
             return sum(v or 0 for r in reports for v in self.value.get(r).values())
         raise ValueError(f"Unknown agg type {self.agg}")
