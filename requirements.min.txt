@@ -11,4 +11,4 @@ pydantic==1.9
 umap-learn==0.5.3
 typer==0.9
 rich==13
-iterative-telemetry==0.0.8
+iterative-telemetry==0.0.5
