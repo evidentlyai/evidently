@@ -1,7 +1,7 @@
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.features.text_length_feature import TextLength
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
 
 

@@ -1,8 +1,8 @@
 import nltk
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.features.trigger_words_presence_feature import TriggerWordsPresent
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
 
 nltk.download("words")

@@ -15,6 +15,8 @@ from pydantic.fields import SHAPE_SET
 from pydantic.fields import SHAPE_TUPLE
 from pydantic.fields import ModelField
 
+from evidently.pydantic_utils import pydantic_type_validator
+
 if TYPE_CHECKING:
     from pydantic.typing import MappingIntStrAny, AbstractSetIntStr
 
@@ -66,22 +68,6 @@ class AllDict(dict):
 class IncludeTags(Enum):
     Render = "render"
     TypeField = "type_field"
-
-
-def pydantic_type_validator(type_: Type[Any]):
-    def decorator(f):
-        from pydantic.validators import _VALIDATORS
-
-        for cls, validators in _VALIDATORS:
-            if cls is type_:
-                validators.append(f)
-                return
-
-        _VALIDATORS.append(
-            (type_, [f]),
-        )
-
-    return decorator
 
 
 @pydantic_type_validator(pd.Series)

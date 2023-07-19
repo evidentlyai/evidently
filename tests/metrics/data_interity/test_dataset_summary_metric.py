@@ -4,11 +4,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummary
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
 from evidently.metrics.data_integrity.dataset_summary_metric import NumpyDtype
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 from tests.conftest import smart_assert_equal
 
