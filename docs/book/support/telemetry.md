@@ -2,7 +2,7 @@
 
 Telemetry refers to the collection of usage data. We collect some data to understand how many users we have and how they interact with Evidently. This helps us improve the tool and prioritize implementing the new features.
 
-Below we describe what is collected and how to opt out.
+Below we describe what is collected, how to opt out and why we'd appreciate if you keep the telemetry on.
 
 # **What data is collected?**
 
