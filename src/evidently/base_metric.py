@@ -46,7 +46,10 @@ class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetacla
 
 
 class ErrorResult(BaseResult):
-    _exception: Optional[BaseException] = Field(None, exclude=True)  # todo: fix serialization of exceptions
+    class Config:
+        underscore_attrs_are_private = True
+
+    _exception: Optional[BaseException] = None  # todo: fix serialization of exceptions
 
     def __init__(self, exception: Optional[BaseException]):
         super().__init__()
