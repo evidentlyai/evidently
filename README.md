@@ -49,7 +49,7 @@ You can get an **HTML report** (best for exploratory analysis and debugging), **
 
 You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.  
 
-You can track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embbedding drift.
+You can track 100+ metrics available in Evidently, from number nulls to text sentiment and embbedding drift.
 
 # :woman_technologist: Install Evidently
 
