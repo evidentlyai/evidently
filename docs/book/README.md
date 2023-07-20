@@ -9,17 +9,17 @@ Quickly check it out (1 min):
 ["Hello world" example](get-started/hello-world.md). 
 {% endcontent-ref %}
 
-Get Started with Reports and Test Suites (15 minutes). Learn how to run ad hoc checks and test your pipelines:
+Get Started with Reports and Test Suites (15 minutes). Run ad hoc checks and test your pipelines:
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-More [examples](examples/examples.md) 
-
-Get Started with ML Monitoring (15 minutes). Learn how to self-host a dashboard to track metrics over time:
-{% content-ref url="get-started/tutorial.md" %}
+Get Started with ML Monitoring (15 minutes). Launch a dashboard to track metrics over time:
+{% content-ref url="get-started/tutorial-monitoring.md" %}
 [Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
+
+You can explore mode code [examples](examples/examples.md). 
 
 # How it works 
 
@@ -27,13 +27,13 @@ Evidently helps evaluate and test data and ML model quality throughout the model
 
 Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and real-time monitoring.
 
-Evidently has a simple, declarative API and a library of metrics, tests, and visualizations to choose from.
+Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
 
 # 1. Tests suites: batch model checks 
 
 Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. You can set test parameters manually or let Evidently learn the expectations from the reference. Tests verify a condition and return an explicit **pass** or **fail** result. 
  
-You can create a **Test Suite** from 50+ tests or run one of the **Presets**: for example, to test Data Stability or Regression Performance.
+You can create a **Test Suite** from 50+ tests or run one of the **Presets**. For example, to test Data Stability or Regression Performance.
 
 Tests are best for automated batch checks.
  
@@ -43,7 +43,7 @@ Tests are best for automated batch checks.
  
 **How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML, JSON, or Python dictionary.
  
-**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, new labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report to debug.  
+**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report.  
 
 **Read more**:
 * [Overview: what is a test and a test suite](introduction/core-concepts.md) 
