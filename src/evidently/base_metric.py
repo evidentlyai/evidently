@@ -12,7 +12,6 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic import Field
 from pydantic.main import ModelMetaclass
 
 from evidently.core import BaseResult
