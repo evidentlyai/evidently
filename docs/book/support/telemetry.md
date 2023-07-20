@@ -15,7 +15,7 @@ We only collect **anonymous** usage data. We DO NOT collect personal data.
 We only collect **data about service usage**. Our telemetry is intentionally limited in scope. We DO NOT collect any sensitive information or data about the datasets you process. We DO NOT have access to the dataset schema, parameters, variable names, or anything related to the contents of the data or your code. 
 
 We collect the following types of data:
-* **Environment data**. Anonymized basic information about the environment in which you run Evidently (Python version, operating system, etc.) 
+* **Environment data**. Basic information about the environment in which you run Evidently (Python version, operating system, etc.) 
 * **Service usage data**. Actions performed in the service to understand which features are being used.
 
 ## Environment data
