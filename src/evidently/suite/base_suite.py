@@ -3,6 +3,7 @@ import copy
 import dataclasses
 import json
 import logging
+import uuid
 from datetime import datetime
 from typing import Dict
 from typing import Iterator
@@ -14,7 +15,9 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import UUID4
 from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import ErrorResult
@@ -142,16 +145,7 @@ class ExecutionError(Exception):
     pass
 
 
-T = TypeVar("T", bound="Display")
-
-
 class Display:
-    # collection of all possible common options
-    options: Options
-
-    def __init__(self, options: AnyOptions = None):
-        self.options = Options.from_any_options(options)
-
     @abc.abstractmethod
     def _build_dashboard_info(self):
         raise NotImplementedError()
@@ -179,6 +173,15 @@ class Display:
             return HTML(self._render(determine_template(mode), template_params))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
+
+    def get_html(self):
+        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
+        template_params = TemplateParams(
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs,
+        )
+        return self._render(determine_template("inline"), template_params)
 
     def save_html(self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
@@ -229,10 +232,7 @@ class Display:
         **kwargs,
     ) -> dict:
         """Return all data for json representation"""
-        result = {
-            "version": evidently.__version__,
-            "timestamp": str(datetime.now()),
-        }
+        result = {"version": evidently.__version__}
         result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude, **kwargs))
         return result
 
@@ -246,6 +246,7 @@ class Display:
         return json.dumps(
             self._get_json_content(include_render=include_render, include=include, exclude=exclude, **kwargs),
             cls=NumpyEncoder,
+            allow_nan=True,
         )
 
     def save_json(
@@ -264,28 +265,6 @@ class Display:
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)
-
-    @abc.abstractmethod
-    def _get_payload(self) -> BaseModel:
-        raise NotImplementedError
-
-    @classmethod
-    @abc.abstractmethod
-    def _parse_payload(cls: Type[T], payload: Dict) -> T:
-        raise NotImplementedError
-
-    def _save(self, filename):
-        """Save state to file (experimental)"""
-        payload = self._get_payload()
-
-        with open(filename, "w") as f:
-            json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
-
-    @classmethod
-    def _load(cls: Type[T], filename) -> T:
-        """Load state from file (experimental)"""
-        with open(filename, "r") as f:
-            return cls._parse_payload(json.load(f))
 
 
 class Suite:
@@ -447,3 +426,103 @@ class Suite:
             renderers=DEFAULT_RENDERERS,
             options=self.context.options,
         )
+
+
+MetadataValueType = Union[str, Dict[str, str], List[str]]
+
+
+class Snapshot(BaseModel):
+    id: UUID4
+    timestamp: datetime
+    metadata: Dict[str, MetadataValueType]
+    tags: List[str]
+    suite: ContextPayload
+    metrics_ids: List[int] = []
+    test_ids: List[int] = []
+    options: Options
+
+    def save(self, filename):
+        with open(filename, "w") as f:
+            json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
+
+    @classmethod
+    def load(cls, filename):
+        with open(filename, "r") as f:
+            return parse_obj_as(Snapshot, json.load(f))
+
+    @property
+    def is_report(self):
+        return len(self.metrics_ids) > 0
+
+    def as_report(self):
+        from evidently.report import Report
+
+        return Report._parse_snapshot(self)
+
+    def as_test_suite(self):
+        from evidently.test_suite import TestSuite
+
+        return TestSuite._parse_snapshot(self)
+
+    def first_level_metrics(self) -> List[Metric]:
+        return [self.suite.metrics[i] for i in self.metrics_ids]
+
+    def first_level_tests(self) -> List[Test]:
+        return [self.suite.tests[i] for i in self.test_ids]
+
+
+T = TypeVar("T", bound="ReportBase")
+
+
+class ReportBase(Display):
+    _inner_suite: Suite
+    # collection of all possible common options
+    options: Options
+    id: uuid.UUID
+    timestamp: datetime
+    metadata: Dict[str, MetadataValueType] = {}
+    tags: List[str] = []
+
+    def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None):
+        self.options = Options.from_any_options(options)
+        self.timestamp = timestamp or datetime.now()
+
+    def _get_json_content(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
+    ) -> dict:
+        res = super()._get_json_content(include_render, include, exclude, **kwargs)
+        res["timestamp"] = str(self.timestamp)
+        return res
+
+    def _get_snapshot(self) -> Snapshot:
+        ctx = self._inner_suite.context
+        suite = ContextPayload.from_context(ctx)
+        return Snapshot(
+            id=self.id,
+            suite=suite,
+            timestamp=self.timestamp,
+            metadata=self.metadata,
+            tags=self.tags,
+            options=self.options,
+        )
+
+    @classmethod
+    @abc.abstractmethod
+    def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
+        raise NotImplementedError
+
+    def _save(self, filename):
+        """Save state to file (experimental)"""
+        self._get_snapshot().save(filename)
+
+    @classmethod
+    def _load(cls: Type[T], filename) -> T:
+        """Load state from file (experimental)"""
+        return cls._parse_snapshot(Snapshot.load(filename))
+
+    def to_snapshot(self):
+        return self._get_snapshot()

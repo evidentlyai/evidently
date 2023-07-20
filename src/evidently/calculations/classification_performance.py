@@ -14,13 +14,13 @@ from pandas.core.dtypes.common import is_object_dtype
 from pandas.core.dtypes.common import is_string_dtype
 from sklearn import metrics
 
-from evidently import ColumnMapping
 from evidently.metric_results import Boxes
 from evidently.metric_results import ConfusionMatrix
 from evidently.metric_results import DatasetClassificationQuality
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import PredictionData
 from evidently.metric_results import RatesPlotData
+from evidently.pipeline.column_mapping import ColumnMapping
 
 if TYPE_CHECKING:
     pass

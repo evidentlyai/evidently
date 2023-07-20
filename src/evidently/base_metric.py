@@ -7,11 +7,13 @@ from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 from typing import Union
 
 import pandas as pd
 from pydantic import Field
+from pydantic.main import ModelMetaclass
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType
@@ -22,6 +24,8 @@ from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import FieldPath
+from evidently.pydantic_utils import FrozenBaseMeta
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.utils.data_preprocessing import DataDefinition
@@ -30,7 +34,13 @@ if TYPE_CHECKING:
     from evidently.suite.base_suite import Context
 
 
-class MetricResult(PolymorphicModel, BaseResult):  # type: ignore[misc] # pydantic Config
+class WithFieldsPathMetaclass(ModelMetaclass):
+    @property
+    def fields(cls) -> FieldPath:
+        return FieldPath([], cls)
+
+
+class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetaclass):  # type: ignore[misc] # pydantic Config
     class Config:
         field_tags = {"type": {IncludeTags.TypeField}}
 
@@ -151,7 +161,16 @@ class InputData:
 TResult = TypeVar("TResult", bound=MetricResult)
 
 
-class Metric(WithTestAndMetricDependencies, Generic[TResult]):
+class WithResultFieldPathMetaclass(FrozenBaseMeta):
+    def result_type(cls) -> Type[MetricResult]:
+        return cls.__orig_bases__[0].__args__[0]  # type: ignore[attr-defined]
+
+    @property
+    def fields(cls) -> FieldPath:
+        return FieldPath([], cls.result_type())
+
+
+class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
     _context: Optional["Context"] = None
 
     # TODO: if we want metric-specific options
