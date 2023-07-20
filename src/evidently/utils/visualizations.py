@@ -881,7 +881,7 @@ def plot_contour(curr_contour: ContourData, ref_contour: Optional[ContourData], 
         cols = 1
         subplot_titles = [""]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    z1, y1, x1 = curr_contour
+    z1, y1, x1 = curr_contour[0], curr_contour[1], curr_contour[2]
     trace = go.Contour(
         z=z1,
         x=x1,
@@ -896,7 +896,7 @@ def plot_contour(curr_contour: ContourData, ref_contour: Optional[ContourData], 
     fig.update_xaxes(title_text=xtitle, row=1, col=1)
 
     if ref_contour is not None:
-        z2, y2, x2 = ref_contour
+        z2, y2, x2 = ref_contour[0], ref_contour[1], ref_contour[2]
         trace = go.Contour(
             z=z2,
             x=x2,
