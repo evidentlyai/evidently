@@ -109,8 +109,10 @@ unset DO_NOT_TRACK
 }
 ```
 </details>
-  
-Action: index
+
+<details>
+
+<summary>Action:index</summary>
 
 ```
 {
@@ -136,8 +138,11 @@ Action: index
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
-Action: list_projects
+<details>
+
+<summary>Action: list_projects</summary>
 ```
 {
   "_timestamp": "2023-07-07T14:08:44.687956Z",
@@ -164,8 +169,11 @@ Action: list_projects
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
-Action: get_project_info
+<details>
+
+<summary>Action: get_project_info</summary>
 ```
 ​​{
   "_timestamp": "2023-07-07T14:10:54.474555Z",
@@ -190,8 +198,12 @@ Action: get_project_info
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
-Action: project_dashboard
+<details>
+
+<summary>Action: project_dashboard</summary>
+
 ```
 {
   "_timestamp": "2023-07-07T14:08:46.260846Z",
@@ -216,8 +228,12 @@ Action: project_dashboard
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
-Action: add_project
+<details>
+
+<summary>Action: add_project</summary>
+
 ```
 {
   "_timestamp": "2023-07-18T13:15:16.138786Z",
@@ -242,8 +258,12 @@ Action: add_project
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
-Action: list_reports
+<details>
+
+<summary>Action: list_reports</summary>
+
 ```
 {
   "_timestamp": "2023-07-07T14:08:51.369513Z",
@@ -270,8 +290,12 @@ Action: list_reports
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
-Action: list_test_suites
+<details>
+
+<summary>Action: list_test_suites</summary>
+
 ```
 {
   "_timestamp": "2023-07-07T14:08:46.902323Z",
@@ -296,8 +320,11 @@ Action: list_test_suites
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
-Action: get_snapshot_data
+<details>
+
+<summary>Action: get_snapshot_data</summary>
 ```
 {
   "_timestamp": "2023-07-18T12:53:01.609245Z",
@@ -337,6 +364,7 @@ Action: get_snapshot_data
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
+</details>
 
 ### **Should I opt out?**
 
