@@ -22,8 +22,9 @@ class RemoteProject(ProjectBase["RemoteWorkspace"]):
 
 
 class RemoteWorkspace(WorkspaceBase[RemoteProject]):
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, secret: str = None):
         self.base_url = base_url
+        self.secret = secret
         self.verify()
 
     def verify(self):
@@ -41,7 +42,7 @@ class RemoteWorkspace(WorkspaceBase[RemoteProject]):
         response_model=None,
     ):
         # todo: better encoding
-        headers = {}
+        headers = {"evidently_secret": self.secret}
         data = None
         if body is not None:
             headers["Content-Type"] = "application/json"
