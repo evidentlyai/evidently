@@ -1,6 +1,4 @@
-# Get Started Tutorial
-
-In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift**. You will run batch checks on a toy dataset and generate visual reports and test suites.
+In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift**. You will run batch checks on a toy dataset and generate visual Reports and Test Suites.
 
 We recommend going through it once to understand the basic functionality. You can then explore more advanced workflows, like adjusting test parameters, adding custom metrics or integrating the tool in the prediction pipelines.
 
@@ -343,8 +341,10 @@ To understand the contents of each Preset, head to the [Preset overview](../pres
 To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). 
 
 If you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlflow.md) and [Airflow](../integrations/evidently-and-airflow.md).
+
+* **Learn how to get a Monitoring Dashboard**
  
-If you have a real-time ML service and want to collect data and model metrics on top of the live data stream, you can explore the [integration with Grafana and Prometheus](../integrations/evidently-and-grafana.md). 
+If you want to track the results of different checks over time, you can self-host an ML monitoring dashboard. Go throgh this [tutorial](tutorial-monitoring.MD).
 
 Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
