@@ -112,7 +112,7 @@ unset DO_NOT_TRACK
 
 <details>
 
-<summary>Action:index</summary>
+<summary>Action: index</summary>
 
 ```
 {
