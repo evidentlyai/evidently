@@ -80,7 +80,9 @@ unset DO_NOT_TRACK
 
 ## Event log examples
 
-Action: startup
+<details>
+
+<summary>Action: startup</summary>
 
 ```
 {
@@ -106,7 +108,8 @@ Action: startup
   "user_id": "16d5bb6f-0400-4e2c-90f3-c3b31c95a1d3"
 }
 ```
-
+</details>
+  
 Action: index
 
 ```
