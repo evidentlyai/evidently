@@ -108,7 +108,7 @@ def load_test_metrics():
 
 # for debugging
 metric_type_filter = []
-metric_name_filter = ["classification_quality_values"]
+metric_name_filter = []
 
 
 def generate_metric_dataset_outcome():

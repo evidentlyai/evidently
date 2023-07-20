@@ -18,7 +18,6 @@ from evidently.metrics.classification_performance.quality_by_class_metric import
 from evidently.metrics.classification_performance.quality_by_feature_table import ClassificationQualityByFeatureTable
 from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
 from evidently.tests.utils import approx_result
-from evidently.utils.types import NumericApprox
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import NoopOutcome
 from tests.multitest.conftest import make_approx_type
@@ -154,7 +153,13 @@ def classification_quality_values():
         ),
     )
 
-    DatasetClassificationQuality.__fields__["accuracy"].type_ = NumericApprox
+    current_binary = pd.DataFrame(
+        data=dict(
+            target=[1, 1, 1, 1, 0, 0, 0, 0, 1],
+            prediction=[0.7, 0.8, 0.9, 0.4, 0.1, 0.2, 0.1, 0.3, 0.8],
+        ),
+    )
+
     metric = ClassificationQualityMetric()
     return TestMetric(
         "classification_quality_values",
@@ -171,7 +176,25 @@ def classification_quality_values():
                     ),
                     target_name="target",
                 ),
-            )
+            ),
+            TestDataset("binary", current=current_binary, column_mapping=ColumnMapping()): AssertExpectedResult(
+                metric,
+                ClassificationQualityMetricResult(
+                    current=make_approx_type(DatasetClassificationQuality, ignore_not_set=True)(
+                        accuracy=approx_result(8 / 9),
+                        f1=approx_result(0.888888888888889),
+                        precision=approx_result(4 / 4),
+                        recall=approx_result(4 / 5),
+                        roc_auc=approx_result(1.0),
+                        log_loss=approx_result(0.29057253),
+                        tpr=0.8,
+                        tnr=1.0,
+                        fpr=0.0,
+                        fnr=0.2,
+                    ),
+                    target_name="target",
+                ),
+            ),
         },
     )
 

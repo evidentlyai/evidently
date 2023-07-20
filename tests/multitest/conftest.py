@@ -96,7 +96,7 @@ def find_all_subclasses(
 T = TypeVar("T", bound=BaseModel)
 
 
-def make_approx_type(cls: Type[T]) -> Type[T]:
+def make_approx_type(cls: Type[T], ignore_not_set: bool = False) -> Type[T]:
     class ApproxFields(cls):
         __annotations__ = {
             k: Union[ApproxValue, f.type_]
@@ -107,6 +107,10 @@ def make_approx_type(cls: Type[T]) -> Type[T]:
         locals().update({k: f.default for k, f in cls.__fields__.items()})
 
         def __eq__(self, other):
+            if ignore_not_set:
+                d = {k: v for k, v in self.dict().items() if v is not None}
+                d2 = {k: v for k, v in other.dict().items() if k in d}
+                return d == d2
             return super().__eq__(other)
 
     if issubclass(cls, PolymorphicModel):
