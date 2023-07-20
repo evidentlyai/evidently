@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
@@ -322,6 +323,48 @@ def classification_prob_distribution():
         ClassificationProbDistribution(),
         NoopOutcome(),
         [DatasetTags.CLASSIFICATION],
+    )
+
+
+@metric
+def classification_prob_distribution_values():
+
+    return TestMetric(
+        "classification_prob_distribution_values",
+        ClassificationProbDistribution(),
+        outcomes={
+            TestDataset(
+                current=pd.DataFrame(
+                    data={
+                        "target": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+                        "a": [0.8, 0.7, 0.3, 0.1, 0.2, 0.2, 0.1, 0.2, 0.7],
+                        "b": [0.1, 0.2, 0.7, 0.9, 0.8, 0.3, 0.1, 0.4, 0.8],
+                        "c": [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.8, 0.9],
+                    },
+                ),
+                reference=None,
+                column_mapping=ColumnMapping(prediction=["a", "b", "c"]),
+            ): NoopOutcome(),
+            TestDataset(
+                current=pd.DataFrame(
+                    data={
+                        "my_target": ["a", np.NaN, "a", "b", "b", "c"],
+                        "a": [0.8, 0.7, 0.3, 0.1, 0.2, 0.2],
+                        "b": [0.1, 0.2, 0.7, np.NaN, 0.8, 0.3],
+                        "c": [0.1, 0.1, 0.1, 0.1, 0.1, np.NaN],
+                    },
+                ),
+                reference=pd.DataFrame(
+                    data={
+                        "my_target": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+                        "a": [0.8, 0.7, 0.3, 0.1, 0.2, 0.2, 0.1, 0.2, 0.7],
+                        "b": [0.1, 0.2, 0.7, 0.9, 0.8, 0.3, 0.1, 0.4, 0.8],
+                        "c": [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.8, 0.9],
+                    },
+                ),
+                column_mapping=ColumnMapping(target="my_target", prediction=["a", "b", "c"]),
+            ): NoopOutcome(),
+        },
     )
 
 
