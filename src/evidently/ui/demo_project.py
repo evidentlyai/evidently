@@ -110,6 +110,7 @@ def create_test_suite(i: int, tags=[]):
 
 def create_project(workspace: WorkspaceBase):
     project = workspace.create_project(DEMO_PROJECT_NAME)
+    project.description = "A toy demo project using Bike Demand forecasting dataset"
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
