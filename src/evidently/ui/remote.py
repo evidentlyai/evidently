@@ -67,10 +67,10 @@ class RemoteWorkspace(WorkspaceBase[RemoteProject]):
         return self._request("/api/projects", "POST", body=project.dict(), response_model=RemoteProject).bind(self)
 
     def get_project(self, project_id: uuid.UUID) -> RemoteProject:
-        raise NotImplementedError
+        return self._request(f"/api/projects/{project_id}", "GET", response_model=RemoteProject)
 
     def list_projects(self) -> List[RemoteProject]:
-        raise NotImplementedError
+        return self._request("/api/projects", "GET", response_model=List[RemoteProject])
 
     def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
         return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())
