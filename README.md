@@ -91,7 +91,6 @@ conda install -c conda-forge evidently
 ### Option 1: Test Suites
 > This is a simple Hello World example. You can explore a complete tutorial to [Get Started with Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
 
-## Jupyter Notebook
 Prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. 
 
 After installing the tool, import the Evidently **Test Suite** and required presets. We'll use a simple toy dataset:
