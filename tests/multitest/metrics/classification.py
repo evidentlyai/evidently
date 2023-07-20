@@ -1,6 +1,7 @@
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.metric_results import ConfusionMatrix
 from evidently.metric_results import DatasetClassificationQuality
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
@@ -11,6 +12,7 @@ from evidently.metrics.classification_performance.classification_dummy_metric im
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
+from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrixResult
 from evidently.metrics.classification_performance.pr_curve_metric import ClassificationPRCurve
 from evidently.metrics.classification_performance.pr_table_metric import ClassificationPRTable
 from evidently.metrics.classification_performance.probability_distribution_metric import ClassificationProbDistribution
@@ -124,6 +126,66 @@ def classification_class_balance_values():
 def classification_confusion_matrix():
     return TestMetric(
         "classification_confusion_matrix", ClassificationConfusionMatrix(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
+    )
+
+
+@metric
+def classification_confusion_matrix_values():
+    metric = ClassificationConfusionMatrix()
+
+    return TestMetric(
+        "classification_confusion_matrix_values",
+        metric,
+        outcomes={
+            TestDataset(
+                current=pd.DataFrame(
+                    data=dict(
+                        target=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+                        prediction=["a", "b", "c", "a", "b", "c", "a", "b", "c"],
+                    )
+                ),
+            ): AssertExpectedResult(
+                metric,
+                ClassificationConfusionMatrixResult(
+                    current_matrix=ConfusionMatrix(
+                        labels=["a", "b", "c"],
+                        values=[[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+                    )
+                ),
+            ),
+            TestDataset(
+                current=pd.DataFrame(
+                    data=dict(
+                        target=["a", "a", "a", "a", "a", "b", "b", "b", "b"],
+                        prediction=["a", "b", "b", "a", "b", "a", "a", "b", "b"],
+                    )
+                ),
+            ): AssertExpectedResult(
+                metric,
+                ClassificationConfusionMatrixResult(
+                    current_matrix=ConfusionMatrix(
+                        labels=["a", "b"],
+                        values=[[2, 3], [2, 2]],
+                    )
+                ),
+            ),
+            TestDataset(
+                current=pd.DataFrame(
+                    data=dict(
+                        target=["c", "c", "c", "b", "b", "b", "a", "a", "a"],
+                        prediction=["a", "b", "c", "a", "b", "c", "a", "b", "c"],
+                    )
+                ),
+            ): AssertExpectedResult(
+                metric,
+                ClassificationConfusionMatrixResult(
+                    current_matrix=ConfusionMatrix(
+                        labels=["a", "b", "c"],
+                        values=[[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+                    )
+                ),
+            ),
+        },
     )
 
 
