@@ -42,7 +42,7 @@ class RemoteWorkspace(WorkspaceBase[RemoteProject]):
         response_model=None,
     ):
         # todo: better encoding
-        headers = {"evidently_secret": self.secret}
+        headers = {"evidently-secret": self.secret}
         data = None
         if body is not None:
             headers["Content-Type"] = "application/json"

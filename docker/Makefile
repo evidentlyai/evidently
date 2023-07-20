@@ -14,7 +14,7 @@ SOURCES_DIR ?= ../
 GIT_COMMIT = $(strip $(shell git rev-parse --short HEAD))
 
 # Get the version number from the code
-CODE_VERSION = $(strip $(shell python -c "from evidently import __version__; print(__version__)"))
+CODE_VERSION = $(strip $(shell cat ../src/evidently/_version.py | grep "version_info = " | grep -Po "\d+" |  tr '\n' . | cut -c 1-5))
 
 # Find out if the working directory is clean
 GIT_NOT_CLEAN_CHECK = $(shell git status --porcelain)
@@ -55,7 +55,7 @@ build_dev:
 
 docker_build:
 	# Build Docker image
-	docker build -f Dockerfile.service \
+	docker build -f Dockerfile.service --platform linux/amd64 \
   --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
   --build-arg VERSION=$(CODE_VERSION) \
   --build-arg VCS_URL=`git config --get remote.origin.url` \
