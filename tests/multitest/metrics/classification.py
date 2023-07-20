@@ -60,6 +60,28 @@ def classification_p_r_curve():
 
 
 @metric
+def classification_p_r_curve_values():
+    m = ClassificationPRCurve()
+    return TestMetric(
+        "classification_p_r_curve_values",
+        m,
+        outcomes={
+            TestDataset(
+                current=pd.DataFrame(
+                    data=dict(
+                        target=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+                        a=[0.8, 0.7, 0.3, 0.1, 0.2, 0.2, 0.1, 0.2, 0.7],
+                        b=[0.1, 0.2, 0.7, 0.9, 0.8, 0.3, 0.1, 0.4, 0.8],
+                        c=[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.8, 0.9],
+                    ),
+                ),
+                column_mapping=ColumnMapping(prediction=["a", "b", "c"]),
+            ): NoopOutcome()  # todo: check results
+        },
+    )
+
+
+@metric
 def classification_quality_by_class():
     return TestMetric(
         "classification_quality_by_class", ClassificationQualityByClass(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
