@@ -247,3 +247,75 @@ create_demo_project("workspace")
 ```
 
 If you made any edits to this script, save them. 
+
+## 2. (Optional). Delete workspace
+
+If this is not the first run of the script, and you reuse the same project – run the command to delete a previously generated workspace:
+
+```
+cd src/evidently/ui/
+rm -r workspace
+```
+
+## 3. Run the script
+
+Run the command to generate a new example project as defined in the script above.
+
+```
+python get_started_monitoring.py
+```
+
+## 4. Run the Evidently UI service
+
+Finally, launch the user interface that will include the defined project. 
+
+**4.1**. If you only want to include your project, run:
+
+```
+evidently ui 
+```
+
+**4.2**. If you want to see both your new project and a standard demo project, run:
+
+```
+evidently ui –-demo-project
+```
+
+**Note**: If you already launched a demo project previously, it will remain in the workspace. There is no need to add it the second time.
+
+**4.3**. If you want to have your project in the specified workspace and have the UI service running at the specific port:
+
+```
+evidently ui --workspace ./workspace --port 8080
+```
+
+**4.4**. If you want to see both your project and demo project in the specified workspace and run the UI service at the specific port:
+
+``` 
+evidently ui --workspace ./workspace --port 8080 –-demo-project
+```
+
+**Note**. Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md)). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.
+
+## 5. View the new project 
+
+Access Evidently UI service in your browser to see the dashboards for the new project. Go to the `localhost:8000`, or a specified port if you set a different one. 
+
+# What’s next?
+If you want to enable monitoring for an existing ML project, you must collect the data from your production pipelines or services, or run monitoring jobs over production logs stored in a data warehouse. The exact integration scenario depends on the model deployment type and infrastructure.  
+
+Here is one possible approach. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
+
+IMG
+
+You can browse sample [integrations](../integrations). We’ll add more example integrations in the future.  
+
+# Join our Community!
+
+We run a [Discord community](https://discord.gg/xZjKRaNp8b) to connect with our users and chat about ML in production topics. In case you have feedback or need help, just ask in Discord or open a GitHub issue.
+
+Evidently is in active development, so expect things to change and evolve. Subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) to stay updated about the latest functionality. 
+
+And if you want to support a project, give us a star on [GitHub](https://github.com/evidentlyai/evidently)!
+
+
