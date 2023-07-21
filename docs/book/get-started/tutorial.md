@@ -336,17 +336,17 @@ Both **Tests** and **Reports** have multiple Presets available. Some, like Data 
 
 To understand the contents of each Preset, head to the [Preset overview](../presets/all-presets.md). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../examples/examples.md) section. 
 
-* **Explore available integrations**
-
-To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). 
-
-If you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlflow.md) and [Airflow](../integrations/evidently-and-airflow.md).
-
 * **Learn how to get a Monitoring Dashboard**
  
 If you want to track the results of different checks over time, you can self-host an ML monitoring dashboard. Go throgh this [tutorial](tutorial-monitoring.MD).
 
 Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
+
+* **Explore available integrations**
+
+To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). 
+
+If you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlflow.md) and [Airflow](../integrations/evidently-and-airflow.md).
 
 ## Join our Community!
 
