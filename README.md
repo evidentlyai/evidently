@@ -49,7 +49,7 @@ You can get an **HTML report** (best for exploratory analysis and debugging), **
 
 You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.  
 
-You can track 100+ metrics available in Evidently, from number nulls to text sentiment and embbedding drift.
+You can track 100+ metrics available in Evidently, from number nulls to text sentiment and embedding drift.
 
 # :woman_technologist: Install Evidently
 
@@ -58,7 +58,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 ```sh
 pip install evidently
 ```
-Evidently is also available in Anaconda distribution platform. To install Evidently using conda installer, run:
+Evidently is also available on Anaconda distribution platform. To install Evidently using conda installer, run:
 ```sh
 conda install -c conda-forge evidently
 ```
@@ -91,7 +91,7 @@ conda install -c conda-forge evidently
 ### Option 1: Test Suites
 > This is a simple Hello World example. You can explore a complete tutorial to [Get Started with Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
 
-Prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. 
+Prepare your data as two pandas `DataFrames`. The first is your reference data, and the second is current production data. The structure of both datasets should be identical. You need input features only to run some evaluations (e.g., Data Drift). In other cases (e.g., Target Drift, Classification Performance), you need Target and/or Prediction. 
 
 After installing the tool, import the Evidently **Test Suite** and required presets. We'll use a simple toy dataset:
 
@@ -173,7 +173,7 @@ virtualenv venv
 source venv/bin/activate
 ```
 
-After installing Evidently (`pip install evidently`), run the Evidently UI with demo project:
+After installing Evidently (`pip install evidently`), run the Evidently UI with the demo project:
 ```
 evidently ui --demo-project
 ```
@@ -205,7 +205,7 @@ There are more example in the [Community Examples](https://github.com/evidentlya
 Explore the [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) folder to see how to integrate Evidently in your prediction pipelines and use it with other tools. 
 
 ## How to
-Explore the [How To](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) folder to see how use specific features in Evidently, such as run Reports for text data and NLP models.
+Explore the [How To](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) folder to see how to use specific features in Evidently, such as run Reports for text data and NLP models.
 
 # :phone: User Newsletter 
 To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 
