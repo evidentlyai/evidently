@@ -1,20 +1,20 @@
 Evidently is an open-source Python library for data scientists and ML engineers. 
 
-It helps evaluate, test, and monitor the performance of ML models from validation to production. It works with tabular, text data and embeddings.
+It helps evaluate, test, and monitor data and ML models from validation to production. It works with tabular, text data and embeddings.
 
 # Quick Start
 
-Quickly check it out (1 min):
+Have only 1 minute? Check out this example:
 {% content-ref url="get-started/hello-world.md" %}
 ["Hello world" example](get-started/hello-world.md). 
 {% endcontent-ref %}
 
-Get Started with Reports and Test Suites (15 minutes). Run ad hoc checks and test your pipelines:
+New to Evidently? This tutorial shows how to run ad hoc data and model checks. (15 min).
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Get Started with ML Monitoring (15 minutes). Launch a dashboard to track metrics over time:
+Want a dashboard to track metrics over time? (2 min to launch a demo, 15 to complete).
 {% content-ref url="get-started/tutorial-monitoring.md" %}
 [Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
@@ -25,13 +25,13 @@ You can explore mode code [examples](examples/examples.md).
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and real-time monitoring.
+Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and continous monitoring.
 
 Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
 
 # 1. Tests suites: batch model checks 
 
-Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. You can set test parameters manually or let Evidently learn the expectations from the reference. Tests verify a condition and return an explicit **pass** or **fail** result. 
+Tests perform structured data and ML model quality checks. You can set test parameters manually or let Evidently learn the expectations from the reference dataset. Tests verify a condition and return an explicit **pass** or **fail** result. 
  
 You can create a **Test Suite** from 50+ tests or run one of the **Presets**. For example, to test Data Stability or Regression Performance.
 
@@ -43,7 +43,7 @@ Tests are best for automated batch checks.
  
 **How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML, JSON, or Python dictionary.
  
-**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report.  
+**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, labels, or generate predictions. You can build a conditional workflow based on the results, e.g., to trigger an alert, retrain, or get a report.  
 
 **Read more**:
 * [Overview: what is a test and a test suite](introduction/core-concepts.md) 
@@ -66,9 +66,9 @@ Reports are best for exploratory analysis, debugging, and documentation.
  
 **Primary use case**: debugging and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
  
-**Secondary use cases**: 
-* **Performance logging**. You can integrate a model/data evaluation step in the ML pipeline, get outputs as JSON, and log it for further analysis. For example, you can later visualize it using other BI tools.
-* **Reporting and documentation**. You can generate visual HTML reports to document your model performance.   
+**Secondary use cases**:
+* **Reporting and documentation**. You can generate visual HTML reports and ML model cards.
+* **Performance logging**. You can integrate an evaluation step in the data/ML pipeline, get outputs as JSON, and log it for further analysis or to visualize using BI tools.
 
 **Read more**:
 * [Overview: what is a report and a metric](introduction/core-concepts.md) 
