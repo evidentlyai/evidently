@@ -69,7 +69,7 @@ Set it to any value, for instance:
 export DO_NOT_TRACK=1
 ```
 
-After doing that and starting the service, you will see the message: “Anonymous usage reporting is disabled”
+After doing that and starting the service, you will see the message: “Anonymous usage reporting is disabled.”
 
 ![telemetry](../.gitbook/assets/disable_telemetry-min.png)
 
