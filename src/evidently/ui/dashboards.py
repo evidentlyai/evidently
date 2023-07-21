@@ -31,7 +31,6 @@ from evidently.report import Report
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import T
 
-
 COLOR_DISCRETE_SEQUENCE = (
     "#ed0400",
     "#0a5f38",
@@ -42,7 +41,7 @@ COLOR_DISCRETE_SEQUENCE = (
     "#a00498",
     "#017b92",
     "#ffad01",
-    "#464196"
+    "#464196",
 )
 
 pio.templates[pio.templates.default].layout.colorway = COLOR_DISCRETE_SEQUENCE
