@@ -284,7 +284,7 @@ evidently ui –-demo-project
 
 **Note**: If you already launched a demo project previously, it will remain in the workspace. There is no need to add it the second time.
 
-![ML monitoring workflwo](../.gitbook/assets/monitoring/view_projects-min.png)
+![](../.gitbook/assets/monitoring/view_projects-min.png)
 
 **4.3**. If you want to have your project in the specified workspace and have the UI service running at the specific port:
 
@@ -309,7 +309,7 @@ If you want to enable monitoring for an existing ML project, you must collect th
 
 Here is one possible approach. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
 
-![ML monitoring workflwo](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
+![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
 You can browse sample [integrations](../integrations). We’ll add more example integrations in the future.  
 
