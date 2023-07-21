@@ -55,7 +55,7 @@ evidently ui --demo-project
 
 To view the Evidently interface, go to URL http://localhost:8000 in your web browser.
 
-![ML monitoring](../.gitbook/assets/main/evidently_ml_monitoring_main-min.png)
+![ML monitoring](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 You will see a pre-built project that shows the toy model quality over 20 days. You can switch between tabs and view individual Reports and Test Suites. Each Report or Test Suite contains the information logged for a daily period. The monitoring dashboard parses the data from these Reports and shows how metrics change over time.
 
