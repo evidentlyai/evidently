@@ -164,7 +164,7 @@ To get the output as JSON:
 data_drift_report.json()
 ```
 ### Option 3: ML monitoring dashboard
-> This will launch a demo project with the Evidently UI service. You can find a complete tutorial to [Get Started with Monitoring](https://docs.evidentlyai.com/get-started/tutorial-monitoring) in the docs.
+> This will launch the Evidently UI with a demo project. You can find a complete [ML Monitoring Quickstart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) in the docs.
 
 Recommended step: create a virtual environment and activate it.
 ```
