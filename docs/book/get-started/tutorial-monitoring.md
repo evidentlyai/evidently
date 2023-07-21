@@ -176,7 +176,7 @@ def create_report(i: int):
 * You can pass additional parameters to the individual Tests and Metrics.
 
 {% hint style="info" %}
-**Evaluating model quality.** For simplicity, the example works with a raw dataset. There is no model! You cannot compute model quality metrics for this dataset – you need to include prediction and target columns. You might also need to use [column Mapping](../input-data/column-mapping.md) to map your inputs.
+**Evaluating model quality.** For simplicity, the example works with a raw dataset. There is no model! You cannot compute model quality metrics for this dataset – you need to include prediction and target columns. You might also need to use [column mapping](../input-data/column-mapping.md) to map your inputs.
 {% endhint %}
 
 ### 1.4. Add panels to the project
