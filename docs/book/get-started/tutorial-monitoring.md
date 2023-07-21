@@ -306,7 +306,7 @@ If you want to enable monitoring for an existing ML project, you must collect th
 
 Here is one possible approach. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
 
-IMG
+![ML monitoring workflwo](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
 You can browse sample [integrations](../integrations). We’ll add more example integrations in the future.  
 
