@@ -27,7 +27,7 @@ Evidently has a modular approach with 3 components on top of the shared `metrics
 
 Tests perform structured data and ML model quality checks. They verify a condition and return an explicit **pass** or **fail** result. 
 
-You can create a custom Test Suite from 50+ tests or run a preset (for example, **Data Drift** or **Regression Performance**). You can get results as a **JSON**, Python dictionary, exportable HTML, as a **visual report** inside Jupyter notebook, or as Evidently JSON `snapshot`. 
+You can create a custom Test Suite from 50+ tests or run a preset (for example, **Data Drift** or **Regression Performance**). You can get results as a **JSON**, Python dictionary, exportable HTML, **visual report** inside Jupyter notebook, or as Evidently JSON `snapshot`. 
 
 Tests are best for automated checks. You can integrate them as a pipeline step using tools like Airlfow. 
 
