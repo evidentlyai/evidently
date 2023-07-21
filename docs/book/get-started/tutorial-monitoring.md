@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
 If you made any edits to this script, save them. 
 
-## 2. (Optional). Delete workspace
+## 2. (Optional) Delete workspace
 
 If this is not the first run of the script, and you reuse the same project – run the command to delete a previously generated workspace:
 
