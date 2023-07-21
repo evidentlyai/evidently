@@ -202,10 +202,10 @@ Evidently Tests| [link](https://github.com/evidentlyai/evidently/blob/main/examp
 There are more example in the [Community Examples](https://github.com/evidentlyai/community-examples) repository.
 
 ## Integrations
-Explore the [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) folder to see how to integrate Evidently in your prediction pipelines and use it with other tools. 
+Explore [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) to see how to integrate Evidently in the prediction pipelines and with other tools. 
 
 ## How to
-Explore the [How To](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) folder to see how to use specific features in Evidently, such as run Reports for text data and NLP models.
+Explore the [How Tos](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to see how to use specific features in Evidently, such as run Reports for text data and NLP models.
 
 # :phone: User Newsletter 
 To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 
