@@ -172,8 +172,8 @@ def create_report(i: int):
 
 **What you can change:**
 * The complete script uses both Test Suite and Report for logging. It is not required to use both – this depends on your preference. 
-* You can select other Metrics or Tests to define the contents of your monitoring. Consider using other checks for data quality, integrity, or data drift. You can select individual metrics or pre-built presets. See the full list of [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md) in the docs. 
-* You can pass additional parameters to the individual tests and metrics.
+* You can select other Metrics or Tests to define the contents of your monitoring. Consider using other checks for data quality, integrity, or data drift. You can select individual metrics or pre-built presets. See the full list of [All Metrics](../reference/all-metrics.md) and [All Tests](../reference/all-tests.md) and their parameters. 
+* You can pass additional parameters to the individual Tests and Metrics.
 
 {% hint style="info" %}
 **Evaluating model quality.** For simplicity, the example works with a raw dataset. There is no model! You cannot compute model quality metrics for this dataset – you need to include prediction and target columns. You might also need to use [column Mapping](../input-data/column-mapping.md) to map your inputs.
