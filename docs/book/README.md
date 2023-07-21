@@ -25,7 +25,7 @@ You can explore mode code [examples](examples/examples.md).
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and continous monitoring.
+Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and continuous monitoring.
 
 Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
 
@@ -81,7 +81,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
 
 You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.
 
-You can visualize any and track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embbedding drift.
+You can visualize any and track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embedding drift.
 
 ![ML monitoring](.gitbook/assets/main/evidently_ml_monitoring_main-min.png)
 
@@ -89,7 +89,7 @@ You can visualize any and track 100+ metrics available in Evidently, from number
 
 **Output**: a self-hostable dashboard available as a web app.
   
-**Primary use case: continious monitoring**. When you need a live dashboard to see all your models and metrics over time. 
+**Primary use case: continuous monitoring**. When you need a live dashboard to see all your models and metrics over time. 
  
 **Read more**:
 * [Get Started](get-started/tutorial-monitoring.md)
