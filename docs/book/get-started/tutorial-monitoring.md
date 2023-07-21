@@ -142,7 +142,7 @@ Workspace defines the folder where Evidently will log data to. It will be create
 
 ### 1.3. Define metrics to log
 
-To capture data and model metrics, we use Evidently Reports and Test Suites. You need to define a Report and/or a Test Suite object and list the metrics or tests to include. You can pass optional parameters – such as set a drift detection method instead of a default choice. 
+To capture data and model metrics, we use Evidently Reports and Test Suites. You need to define a Report and/or a Test Suite object and list the metrics or tests to include. You can pass optional parameters – such as set a drift detection method instead of the [default](../reference/data-drift-algorithm.md) choice. 
 
 {% hint style="info" %}
 **Test Suites and Reports.** We use the same syntax to log the data as when running Evidently Reports and Tests Suites ad hoc, for example, in a Jupyter notebook. Go through the [Quickstart](tutorial.md) if you need a refresher.  
