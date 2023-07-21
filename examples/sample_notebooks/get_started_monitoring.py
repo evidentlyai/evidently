@@ -148,10 +148,7 @@ def create_project(workspace: WorkspaceBase):
 
 
 def create_demo_project(workspace: str):
-    if workspace.startswith("http"):
-        ws = RemoteWorkspace(workspace)
-    else:
-        ws = Workspace.create(workspace)
+    ws = Workspace.create(workspace)
     project = create_project(ws)
 
     for i in range(0, 5):
@@ -163,5 +160,4 @@ def create_demo_project(workspace: str):
 
 
 if __name__ == "__main__":
-    create_demo_project("workspace")
-    # main("http://localhost:8000")
+    create_demo_project(WORKSPACE)
