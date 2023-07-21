@@ -243,7 +243,8 @@ def create_demo_project(workspace: str):
         test_suite = create_test_suite(i=i)
         ws.add_test_suite(project.id, test_suite)
 
-create_demo_project("workspace")
+if __name__ == "__main__":
+    create_demo_project("workspace")
 ```
 
 If you made any edits to this script, save them. 
