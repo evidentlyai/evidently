@@ -25,7 +25,7 @@ Evidently has a modular approach with 3 components on top of the shared `metrics
 
 ![Tests example](docs/images/evidently_tests_main-min.png)
 
-Tests perform structured data and ML model checks. They verify a condition and return an explicit **pass** or **fail** result. 
+Tests perform structured data and ML model checks. They verify a condition and return an explicit **pass** or **fail**. 
 
 You can create a custom Test Suite from 50+ tests or run a preset (for example, **Data Drift** or **Regression Performance**). You can get results as a **JSON**, Python dictionary, exportable HTML, **visual report** inside Jupyter notebook, or as Evidently JSON `snapshot`. 
 
