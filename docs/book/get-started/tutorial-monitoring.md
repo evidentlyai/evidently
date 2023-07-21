@@ -284,6 +284,8 @@ evidently ui –-demo-project
 
 **Note**: If you already launched a demo project previously, it will remain in the workspace. There is no need to add it the second time.
 
+![ML monitoring workflwo](../.gitbook/assets/monitoring/view_projects.png)
+
 **4.3**. If you want to have your project in the specified workspace and have the UI service running at the specific port:
 
 ```
