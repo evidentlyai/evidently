@@ -304,6 +304,8 @@ evidently ui --workspace ./workspace --port 8080 –-demo-project
 
 Access Evidently UI service in your browser to see the dashboards for the new project. Go to the `localhost:8000`, or a specified port if you set a different one. 
 
+![](../.gitbook/assets/monitoring/ml_monitoring_adult_example.png)
+
 # What’s next?
 If you want to enable monitoring for an existing ML project, you must collect the data from your production pipelines or services, or run monitoring jobs over production logs stored in a data warehouse. The exact integration scenario depends on the model deployment type and infrastructure.  
 
