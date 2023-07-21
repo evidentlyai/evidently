@@ -25,7 +25,7 @@ You can explore mode code [examples](examples/examples.md).
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and continuous monitoring.
+Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and a **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  ad hoc analysis to automated pipeline testing and continuous monitoring.
 
 Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
 
