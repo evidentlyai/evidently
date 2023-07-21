@@ -83,7 +83,7 @@ You can self-host an ML monitoring dashboard to visualize metrics and test resul
 
 You can visualize any and track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embedding drift.
 
-![](.gitbook/assets/main/evidently_ml_monitoring_main-min.png)
+![](.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 **Input**: Evidently `snapshots`, logged to an object storage. 
 
