@@ -89,7 +89,7 @@ conda install -c conda-forge evidently
 # :arrow_forward: Getting started
 
 ### Option 1: Test Suites
-> This is a simple Hello World example. You can explore a complete tutorial to [Get Started with Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
+> This is a simple Hello World example. Head to docs for a complete [Quickstart for Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
 
 Prepare your data as two pandas `DataFrames`. The first is your reference data, and the second is current production data. The structure of both datasets should be identical. You need input features only to run some evaluations (e.g., Data Drift). In other cases (e.g., Target Drift, Classification Performance), you need Target and/or Prediction. 
 
@@ -164,7 +164,7 @@ To get the output as JSON:
 data_drift_report.json()
 ```
 ### Option 3: ML monitoring dashboard
-> This will launch the Evidently UI with a demo project. You can find a complete [ML Monitoring Quickstart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) in the docs.
+> This will launch a demo project in the Evidently UI. Head to docs for a complete [ML Monitoring Quickstart](https://docs.evidentlyai.com/get-started/tutorial-monitoring).
 
 Recommended step: create a virtual environment and activate it.
 ```
