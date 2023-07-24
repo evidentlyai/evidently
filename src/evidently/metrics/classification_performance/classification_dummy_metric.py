@@ -1,6 +1,5 @@
 from typing import List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -46,7 +45,7 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+        k: Optional[int] = None,
         options: AnyOptions = None,
     ):
         self.probas_threshold = probas_threshold

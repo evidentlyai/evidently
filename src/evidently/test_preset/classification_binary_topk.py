@@ -1,5 +1,4 @@
 from typing import Optional
-from typing import Union
 
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
@@ -34,7 +33,7 @@ class BinaryClassificationTopKTestPreset(TestPreset):
 
     def __init__(
         self,
-        k: Union[float, int],
+        k: int,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):

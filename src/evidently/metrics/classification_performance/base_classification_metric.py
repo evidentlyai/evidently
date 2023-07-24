@@ -2,7 +2,6 @@ from abc import ABC
 from typing import Generic
 from typing import Optional
 from typing import Tuple
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -35,9 +34,9 @@ def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.Dat
 
 class ThresholdClassificationMetric(Metric, Generic[TResult], ABC):
     probas_threshold: Optional[float]
-    k: Optional[Union[float, int]]
+    k: Optional[int]
 
-    def __init__(self, probas_threshold: Optional[float], k: Optional[Union[float, int]], options: AnyOptions = None):
+    def __init__(self, probas_threshold: Optional[float], k: Optional[int], options: AnyOptions = None):
         if probas_threshold is not None and k is not None:
             raise ValueError(
                 f"{self.__class__.__name__}: should provide only stattest_threshold or top_k argument, not both."
