@@ -22,7 +22,6 @@
   * [Evidently and Airflow](integrations/evidently-and-airflow.md)
   * [Evidently and MLflow](integrations/evidently-and-mlflow.md)
   * [Evidently and Metaflow](integrations/evidently-and-metaflow.md)
-  * [Evidently and Grafana](integrations/evidently-and-grafana.md)
 
 ## User Guide
 * [Installation](installation/install-evidently.md)
