@@ -176,33 +176,33 @@ def column_drift_metric_values():
                 )
             },
         ),
-        # TestMetric(
-        #     "column_drift_metric_values",
-        #     ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
-        #     outcomes={
-        #         TestDataset(
-        #             current=pd.DataFrame({"col": [1, 2, 3]}),
-        #             reference=pd.DataFrame({"col": [3, 2, 2]}),
-        #         ): AssertExpectedResult(
-        #             make_approx_type(ColumnDataDriftMetrics, ignore_not_set=True)(
-        #                 column_name="col",
-        #                 column_type="cat",
-        #                 drift_detected=True,
-        #                 drift_score=approx_result(2.93, absolute=0.01),
-        #                 stattest_name="test stattest",
-        #                 stattest_threshold=0.1,
-        #                 current=DriftStatsField(
-        #                     distribution=Distribution(x=[1, 2, 3], y=[1, 1, 1]),
-        #                     small_distribution=DistributionIncluded(x=[1, 2, 3], y=[1, 1, 1]),
-        #                 ),
-        #                 reference=DriftStatsField(
-        #                     distribution=Distribution(x=[2, 3], y=[2, 1]),
-        #                     small_distribution=DistributionIncluded(x=[1, 2, 3], y=[0, 2, 1]),
-        #                 ),
-        #             )
-        #         )
-        #     },
-        # ),
+        TestMetric(
+            "column_drift_metric_values",
+            ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
+            outcomes={
+                TestDataset(
+                    current=pd.DataFrame({"col": [1, 2, 3]}),
+                    reference=pd.DataFrame({"col": [3, 2, 2]}),
+                ): AssertExpectedResult(
+                    make_approx_type(ColumnDataDriftMetrics, ignore_not_set=True)(
+                        column_name="col",
+                        column_type="cat",
+                        drift_detected=True,
+                        drift_score=approx_result(2.93, absolute=0.01),
+                        stattest_name="test stattest",
+                        stattest_threshold=0.1,
+                        current=DriftStatsField(
+                            distribution=Distribution(x=[1, 2, 3], y=[1, 1, 1]),
+                            small_distribution=DistributionIncluded(x=[1, 2, 3], y=[1, 1, 1]),
+                        ),
+                        reference=DriftStatsField(
+                            distribution=Distribution(x=[2, 3], y=[2, 1]),
+                            small_distribution=DistributionIncluded(x=[1, 2, 3], y=[0, 2, 1]),
+                        ),
+                    )
+                )
+            },
+        ),
     ]
 
 

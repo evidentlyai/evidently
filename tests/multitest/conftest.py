@@ -108,6 +108,7 @@ T = TypeVar("T", bound=BaseModel)
 
 def make_approx_type(cls: Type[T], ignore_not_set: bool = False) -> Type[T]:
     class ApproxFields(cls):
+        __ignore_not_set__ = ignore_not_set
         __annotations__ = {
             k: Union[ApproxValue, f.type_]
             if not isinstance(f.type_, type) or not issubclass(f.type_, BaseModel)

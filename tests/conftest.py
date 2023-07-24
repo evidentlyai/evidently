@@ -18,7 +18,10 @@ def smart_assert_equal(actual, expected):
             )
         )
     ):
+        ignore_not_set = hasattr(expected, "__ignore_not_set__") and expected.__ignore_not_set__
         for field in actual.__fields__.values():
+            if ignore_not_set and getattr(expected, field.name) is None:
+                continue
             smart_assert_equal(getattr(actual, field.name), getattr(expected, field.name))
         return
     if isinstance(actual, pd.Series):

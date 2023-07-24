@@ -7,6 +7,8 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic.utils import import_string
 
 from evidently.calculations import stattests
 
@@ -20,13 +22,40 @@ class StatTestResult:
     actual_threshold: float
 
 
-@dataclasses.dataclass
-class StatTest:
+class StatTest(BaseModel):
+    class Config:
+        underscore_attrs_are_private = True
+
     name: str
     display_name: str
-    func: StatTestFuncType
+    func_path: str
     allowed_feature_types: List[str]
     default_threshold: float = 0.05
+
+    _func: Optional[StatTestFuncType] = None
+
+    def __init__(
+        self,
+        name: str,
+        display_name: str,
+        func: Union[str, StatTestFuncType] = None,
+        allowed_feature_types: List[str] = None,
+        default_threshold: float = 0.05,
+        func_path: Optional[str] = None,
+    ):
+        if isinstance(func, str):
+            func_path = func
+        elif callable(func):
+            func_path = f"{func.__module__}.{func.__name__}"
+        super().__init__(
+            name=name,
+            display_name=display_name,
+            allowed_feature_types=allowed_feature_types or [],
+            default_threshold=default_threshold,
+            func_path=func_path,
+        )
+        if callable(func):
+            self._func = func
 
     def __call__(
         self, reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: Optional[float]
@@ -35,6 +64,12 @@ class StatTest:
         p = self.func(reference_data, current_data, feature_type, actual_threshold)
         drift_score, drifted = p
         return StatTestResult(drift_score=drift_score, drifted=drifted, actual_threshold=actual_threshold)
+
+    @property
+    def func(self) -> StatTestFuncType:
+        if self._func is None:
+            self._func = import_string(self.func_path)
+        return self._func
 
     def __hash__(self):
         # hash by name, so stattests with same name would be the same.
