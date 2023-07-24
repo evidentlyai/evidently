@@ -69,7 +69,7 @@ Set it to any value, for instance:
 export DO_NOT_TRACK=1
 ```
 
-After doing that and starting the service, you will see the message: “Anonymous usage reporting is disabled”
+After doing that and starting the service, you will see the message: “Anonymous usage reporting is disabled.”
 
 ![telemetry](../.gitbook/assets/disable_telemetry-min.png)
 
@@ -366,7 +366,7 @@ unset DO_NOT_TRACK
 ```
 </details>
 
-### **Should I opt out?**
+# **Should I opt out?**
 
 Being open-source, we have no visibility into the tool usage unless someone actively reaches out to us or opens a GitHub issue.
 

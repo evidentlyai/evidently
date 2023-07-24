@@ -55,7 +55,7 @@ evidently ui --demo-project
 
 To view the Evidently interface, go to URL http://localhost:8000 in your web browser.
 
-![ML monitoring](../.gitbook/assets/main/evidently_ml_monitoring_main-min.png)
+![ML monitoring](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 You will see a pre-built project that shows the toy model quality over 20 days. You can switch between tabs and view individual Reports and Test Suites. Each Report or Test Suite contains the information logged for a daily period. The monitoring dashboard parses the data from these Reports and shows how metrics change over time.
 
@@ -176,7 +176,7 @@ def create_report(i: int):
 * You can pass additional parameters to the individual Tests and Metrics.
 
 {% hint style="info" %}
-**Evaluating model quality.** For simplicity, the example works with a raw dataset. There is no model! You cannot compute model quality metrics for this dataset – you need to include prediction and target columns. You might also need to use [column Mapping](../input-data/column-mapping.md) to map your inputs.
+**Evaluating model quality.** For simplicity, the example works with a raw dataset. There is no model! You cannot compute model quality metrics on this data – you need to add prediction and target columns. You might also need to use [column mapping](../input-data/column-mapping.md) to map your inputs.
 {% endhint %}
 
 ### 1.4. Add panels to the project
@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
 If you made any edits to this script, save them. 
 
-## 2. (Optional). Delete workspace
+## 2. (Optional) Delete workspace
 
 If this is not the first run of the script, and you reuse the same project – run the command to delete a previously generated workspace:
 
@@ -284,7 +284,7 @@ evidently ui –-demo-project
 
 **Note**: If you already launched a demo project previously, it will remain in the workspace. There is no need to add it the second time.
 
-![ML monitoring workflwo](../.gitbook/assets/monitoring/view_projects-min.png)
+![](../.gitbook/assets/monitoring/view_projects-min.png)
 
 **4.3**. If you want to have your project in the specified workspace and have the UI service running at the specific port:
 
@@ -298,18 +298,20 @@ evidently ui --workspace ./workspace --port 8080
 evidently ui --workspace ./workspace --port 8080 –-demo-project
 ```
 
-**Note**. Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md)). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.
+**Note**: Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md)). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.
 
 ## 5. View the new project 
 
 Access Evidently UI service in your browser to see the dashboards for the new project. Go to the `localhost:8000`, or a specified port if you set a different one. 
+
+![](../.gitbook/assets/monitoring/ml_monitoring_adult_example.png)
 
 # What’s next?
 If you want to enable monitoring for an existing ML project, you must collect the data from your production pipelines or services, or run monitoring jobs over production logs stored in a data warehouse. The exact integration scenario depends on the model deployment type and infrastructure.  
 
 Here is one possible approach. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
 
-![ML monitoring workflwo](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
+![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
 You can browse sample [integrations](../integrations). We’ll add more example integrations in the future.  
 

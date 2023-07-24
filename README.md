@@ -45,7 +45,7 @@ You can get an **HTML report** (best for exploratory analysis and debugging), **
 
 > This functionality is available from v0.4.0. 
 
-![Dashboard example](docs/images/evidently_ml_monitoring_main-min.png)
+![Dashboard example](docs/images/evidently_ml_monitoring_main.png)
 
 You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.  
 
@@ -89,7 +89,7 @@ conda install -c conda-forge evidently
 # :arrow_forward: Getting started
 
 ### Option 1: Test Suites
-> This is a simple Hello World example. You can explore a complete tutorial to [Get Started with Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
+> This is a simple Hello World example. Head to docs for a complete [Quickstart for Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
 
 Prepare your data as two pandas `DataFrames`. The first is your reference data, and the second is current production data. The structure of both datasets should be identical. You need input features only to run some evaluations (e.g., Data Drift). In other cases (e.g., Target Drift, Classification Performance), you need Target and/or Prediction. 
 
@@ -164,7 +164,7 @@ To get the output as JSON:
 data_drift_report.json()
 ```
 ### Option 3: ML monitoring dashboard
-> This will launch a demo project with the Evidently UI service. You can find a complete tutorial to [Get Started with Monitoring](https://docs.evidentlyai.com/get-started/tutorial-monitoring) in the docs.
+> This will launch a demo project in the Evidently UI. Head to docs for a complete [ML Monitoring Quickstart](https://docs.evidentlyai.com/get-started/tutorial-monitoring).
 
 Recommended step: create a virtual environment and activate it.
 ```
@@ -202,10 +202,10 @@ Evidently Tests| [link](https://github.com/evidentlyai/evidently/blob/main/examp
 There are more example in the [Community Examples](https://github.com/evidentlyai/community-examples) repository.
 
 ## Integrations
-Explore the [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) folder to see how to integrate Evidently in your prediction pipelines and use it with other tools. 
+Explore [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) to see how to integrate Evidently in the prediction pipelines and with other tools. 
 
-## How to
-Explore the [How To](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) folder to see how to use specific features in Evidently, such as run Reports for text data and NLP models.
+## How-to guides
+Explore the [How-to guides](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to understand specific features in Evidently, such as working with text data. 
 
 # :phone: User Newsletter 
 To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 

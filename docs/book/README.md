@@ -37,7 +37,7 @@ You can create a **Test Suite** from 50+ tests or run one of the **Presets**. Fo
 
 Tests are best for automated batch checks.
  
-![Example of an Evidently test](.gitbook/assets/main/evidently_tests_main-min.png)
+![](.gitbook/assets/main/evidently_tests_main-min.png)
 
 **Input**: one or two datasets as pandas.DataFrames or csv.
  
@@ -58,7 +58,7 @@ You can create a custom **Report** from individual metrics or run one of the **P
  
 Reports are best for exploratory analysis, debugging, and documentation.
 
-![Evidently reports](.gitbook/assets/main/evidently_reports_main-min.png)
+![](.gitbook/assets/main/evidently_reports_main-min.png)
 
 **Input**: one or two datasets as pandas.DataFrames or csv. 
  
@@ -83,7 +83,7 @@ You can self-host an ML monitoring dashboard to visualize metrics and test resul
 
 You can visualize any and track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embedding drift.
 
-![ML monitoring](.gitbook/assets/main/evidently_ml_monitoring_main-min.png)
+![](.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 **Input**: Evidently `snapshots`, logged to an object storage. 
 
