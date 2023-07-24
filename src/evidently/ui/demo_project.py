@@ -4,6 +4,7 @@ import zipfile
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from typing import Union
 
 import pandas as pd
 import requests
@@ -110,6 +111,7 @@ def create_test_suite(i: int, tags=[]):
 
 def create_project(workspace: WorkspaceBase):
     project = workspace.create_project(DEMO_PROJECT_NAME)
+    project.description = "A toy demo project using Bike Demand forecasting dataset"
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
@@ -235,11 +237,14 @@ def create_project(workspace: WorkspaceBase):
     return project
 
 
-def create_demo_project(workspace: str):
-    if workspace.startswith("http"):
-        ws = RemoteWorkspace(workspace)
+def create_demo_project(workspace: Union[str, WorkspaceBase]):
+    if isinstance(workspace, WorkspaceBase):
+        ws = workspace
     else:
-        ws = Workspace.create(workspace)
+        if workspace.startswith("http"):
+            ws = RemoteWorkspace(workspace)
+        else:
+            ws = Workspace.create(workspace)
     project = create_project(ws)
 
     for i in range(0, 28):

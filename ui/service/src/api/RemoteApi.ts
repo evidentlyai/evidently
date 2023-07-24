@@ -47,7 +47,6 @@ export default class RemoteApi implements Api {
 
     async getProjects(): Promise<ProjectInfo[]> {
         const resp = await fetch(`${this.endpoint}/projects`);
-        console.log(resp);
         if (resp.ok) {
             let projects = new JsonParser().parse(await resp.text()) as ProjectInfo[];
             console.log(projects);

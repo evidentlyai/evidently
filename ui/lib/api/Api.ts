@@ -233,6 +233,7 @@ export interface SectionInfo {
 export interface ProjectInfo {
     id: string;
     name: string;
+    description?: string;
     date_from?: string;
     date_to?: string;
 }

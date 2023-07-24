@@ -11,6 +11,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import plotly.io as pio
 from plotly import graph_objs as go
 from pydantic import BaseModel
 from pydantic import validator
@@ -29,6 +30,21 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.report import Report
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import T
+
+COLOR_DISCRETE_SEQUENCE = (
+    "#ed0400",
+    "#0a5f38",
+    "#6c3461",
+    "#71aa34",
+    "#6b8ba4",
+    "#60460f",
+    "#a00498",
+    "#017b92",
+    "#ffad01",
+    "#464196",
+)
+
+pio.templates[pio.templates.default].layout.colorway = COLOR_DISCRETE_SEQUENCE
 
 
 class ReportFilter(BaseModel):

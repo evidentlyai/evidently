@@ -22,7 +22,7 @@ export const ProjectList = (props: {}) => {
                                             <Typography variant={"h6"}>{proj.name}</Typography></Link>
                                     </Grid>
                                     <Grid item>
-                                        Some description
+                                        {proj.description}
                                     </Grid>
                                 </Paper>)
                         }}
