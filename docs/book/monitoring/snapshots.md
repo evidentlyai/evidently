@@ -10,7 +10,9 @@ You can refer to an example How-to-notebook showing how to save and load JSON sn
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_calculate_embeddings_drift.ipynb" %}
 
-# What is snapshot
+# Save and load snapshots 
+
+## What is snapshot
 
 A `snapshot` is a compressed representation of the Evidently Report or Test Suite. You can use these “snapshots” to log data and model performance.
 
@@ -37,4 +39,4 @@ restored_report
 
 To enable Evidently Monitoring, you need to store these `snapshots` for different periods in a folder corresponding to the `workspace` and `project` name.
 
-# Save and load snapshots 
+
