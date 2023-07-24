@@ -71,15 +71,19 @@ def calculate_confusion_by_classes(
     return confusion_by_classes
 
 
-def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float]) -> float:
+def k_probability_threshold(
+    prediction_probas: pd.DataFrame, k: Optional[int] = None, prob_threshold: Optional[float] = None
+) -> float:
     probas = prediction_probas.iloc[:, 0].sort_values(ascending=False)
-    if isinstance(k, float):
-        if k < 0.0 or k > 1.0:
-            raise ValueError(f"K should be in range [0.0, 1.0] but was {k}")
-        return probas.iloc[max(int(np.ceil(k * prediction_probas.shape[0])) - 1, 0)]
-    if isinstance(k, int):
-        return probas.iloc[min(k, prediction_probas.shape[0] - 1)]
-    raise ValueError(f"K has unexpected type {type(k)}")
+    if prob_threshold is not None:
+        if prob_threshold < 0.0 or prob_threshold > 1.0:
+            raise ValueError(f"prob_threshold should be in range [0.0, 1.0] but was {k}")
+        return probas.iloc[max(int(np.ceil(prob_threshold * prediction_probas.shape[0])) - 1, 0)]
+    if k is None:
+        raise ValueError("Either k or prob_threshold should be not None")
+    if k <= 0:
+        raise ValueError("K should be > 0")
+    return probas.iloc[min(k, prediction_probas.shape[0] - 1)]
 
 
 def get_prediction_data(

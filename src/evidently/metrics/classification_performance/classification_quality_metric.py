@@ -1,6 +1,5 @@
 from typing import List
 from typing import Optional
-from typing import Union
 
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
@@ -30,7 +29,7 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+        k: Optional[int] = None,
         options: AnyOptions = None,
     ):
         self._confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
