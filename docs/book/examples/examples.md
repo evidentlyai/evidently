@@ -15,7 +15,7 @@ Evidently Metrics| [link](https://github.com/evidentlyai/evidently/blob/main/exa
 
 # Tutorials
 
-To better understand the use cases (such as model evaluation and monitoring), refer to the **detailed tutorials** accompanied by the blog posts.
+To better understand the use cases, refer to the **detailed tutorials** accompanied by the blog posts.
 
 Title | Code example | Blog post 
 --- | --- | --- 
