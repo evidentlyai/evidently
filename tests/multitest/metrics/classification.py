@@ -134,12 +134,12 @@ def classification_class_balance_values():
                     }
                 )
             ): AssertExpectedResult(
-                metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(
                         current=HistogramData.from_df(pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]}))
                     )
                 ),
+                metric=metric,
             ),
             TestDataset(
                 reference=pd.DataFrame(
@@ -155,13 +155,13 @@ def classification_class_balance_values():
                     }
                 ),
             ): AssertExpectedResult(
-                metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(
                         current=HistogramData.from_df(pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})),
                         reference=HistogramData.from_df(pd.DataFrame({"x": ["c", "b", "a"], "count": [4, 3, 2]})),
                     )
                 ),
+                metric=metric,
             ),
         },
     )
@@ -190,13 +190,13 @@ def classification_confusion_matrix_values():
                     )
                 ),
             ): AssertExpectedResult(
-                metric,
                 ClassificationConfusionMatrixResult(
                     current_matrix=ConfusionMatrix(
                         labels=["a", "b", "c"],
                         values=[[1, 1, 1], [1, 1, 1], [1, 1, 1]],
                     )
                 ),
+                metric,
             ),
             TestDataset(
                 current=pd.DataFrame(
@@ -206,13 +206,13 @@ def classification_confusion_matrix_values():
                     )
                 ),
             ): AssertExpectedResult(
-                metric,
                 ClassificationConfusionMatrixResult(
                     current_matrix=ConfusionMatrix(
                         labels=["a", "b"],
                         values=[[2, 3], [2, 2]],
                     )
                 ),
+                metric,
             ),
             TestDataset(
                 current=pd.DataFrame(
@@ -222,13 +222,13 @@ def classification_confusion_matrix_values():
                     )
                 ),
             ): AssertExpectedResult(
-                metric,
                 ClassificationConfusionMatrixResult(
                     current_matrix=ConfusionMatrix(
                         labels=["a", "b", "c"],
                         values=[[1, 1, 1], [1, 1, 1], [1, 1, 1]],
                     )
                 ),
+                metric,
             ),
         },
     )
@@ -294,7 +294,6 @@ def classification_quality_values():
         metric,
         outcomes={
             TestDataset(current=current, column_mapping=ColumnMapping()): AssertExpectedResult(
-                metric,
                 ClassificationQualityMetricResult(
                     current=make_approx_type(DatasetClassificationQuality)(
                         accuracy=approx_result(0.3333333),
@@ -304,9 +303,9 @@ def classification_quality_values():
                     ),
                     target_name="target",
                 ),
+                metric,
             ),
             TestDataset("binary", current=current_binary, column_mapping=ColumnMapping()): AssertExpectedResult(
-                metric,
                 ClassificationQualityMetricResult(
                     current=make_approx_type(DatasetClassificationQuality, ignore_not_set=True)(
                         accuracy=approx_result(8 / 9),
@@ -322,6 +321,7 @@ def classification_quality_values():
                     ),
                     target_name="target",
                 ),
+                metric,
             ),
         },
     )

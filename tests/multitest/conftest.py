@@ -7,6 +7,7 @@ from inspect import isabstract
 from typing import Any
 from typing import Callable
 from typing import Dict
+from typing import Optional
 from typing import Type
 from typing import TypeVar
 from typing import Union
@@ -50,12 +51,21 @@ class AssertResultFields(TestOutcome):
 
 
 class AssertExpectedResult(TestOutcome):
-    def __init__(self, metric: Metric, result: MetricResult):
+    def __init__(self, result: MetricResult, metric: Optional[Metric] = None):
         self.metric = metric
         self.result = result
 
     def check(self, report: Report):
-        result = report._inner_suite.context.metric_results[self.metric]
+        if self.metric is None:
+            metrics = list(report._inner_suite.context.metric_results.keys())
+            if len(metrics) != 1:
+                raise ValueError(
+                    f"Metric is not specified for AssertExpectedResult and context does not contain exactly 1 metric: {metrics}"
+                )
+            metric = metrics[0]
+        else:
+            metric = self.metric
+        result = report._inner_suite.context.metric_results[metric]
         smart_assert_equal(result, self.result)
 
 
