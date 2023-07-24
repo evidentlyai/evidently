@@ -8,7 +8,6 @@ Below are a few specific examples of how to integrate Evidently in the predictio
 
 Title | link to tutorial
 --- | ---
-
 Batch ML monitoring with Airflow | [Evidently + Airflow](airflow_drift_detection/)
 Log Evidently metrics in MLflow UI | [Evidently + MLflow](mlflow_logging/)
 Monitoring dashboard with Evidently and Streamlit | [Evidently + Streamlit](streamlit_dashboard/)
