@@ -2,6 +2,8 @@
 
 This example shows how to get real-time Grafana dashboards for monitoring data and model metrics with Evidently. 
 
+**Note**: this example uses old Evidently API and is not currently supported.
+
 ## What's inside
 
 We use two toy datasets and treat them as model application logs. Then, we configure Evidently `Monitors` to read the data from the logs at a certain interval (to simulate production service where data appears sequentially). Evidently calculates the metrics for Data Drift, Regression Performance and Classification Performance and sends them to Prometheus. The metrics are displayed on a pre-built Grafana dashboard.
@@ -157,4 +159,4 @@ Then, take the following steps in the newly created directory:
 
 3.2 (option 2) If you do have a live service, then you should update the ```app.py``` script to make it use your service instead of the toy example. Update the ```iterate()``` method from ```@app.route('/iterate', methods=["POST"])``` to send the data from your service to the monitoring.
 
-**Note**: the monitoring functionality is in active development and subject to API change. If you integrate Evidently Monitoring in your production pipeline, we suggest explicitly specifying the Evidently package version. Feel free to ping us on [Discord](https://discord.com/invite/xZjKRaNp8b) if you face any issues, and we'll help to figure them out.
+**Note**: the monitoring functionality uses old Evidently API. If you integrate Evidently Monitoring in your production pipeline, we suggest explicitly specifying the Evidently package version. 
