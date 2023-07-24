@@ -86,6 +86,9 @@ def pydantic_type_validator(type_: Type[Any]):
 
 @pydantic_type_validator(pd.Series)
 def series_validator(value):
+    if "spark" in dir(value):
+        outcome = pd.Series(value.to_numpy())
+        return outcome
     return pd.Series(value)
 
 
