@@ -24,8 +24,8 @@ Compare two ML models before deployment (classification example) | [Jupyter note
 Evaluate and visualize historical data drift | [Jupyter notebook](../../../examples/integrations/mlflow_logging/historical_drift_visualization.ipynb) | [How to detect, evaluate and visualize historical drifts in the data.](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) 
 Monitor NLP models in production | [Colab](https://colab.research.google.com/drive/15ON-Ub_1QUYkDbdLpyt-XyEx34MD28E1) | [Monitoring NLP models in production: a tutorial on detecting drift in text data](https://www.evidentlyai.com/blog/tutorial-detecting-drift-in-text-data) 
 Monitor NLP models in production | [Colab](https://colab.research.google.com/drive/15ON-Ub_1QUYkDbdLpyt-XyEx34MD28E1) | [Monitoring NLP models in production: a tutorial on detecting drift in text data](https://www.evidentlyai.com/blog/tutorial-detecting-drift-in-text-data) 
-How to create ML model cards |[Jupyter notebook](https://github.com/evidentlyai/community-examples/tree/main/tutorials/How_to_create_an_ML_model_card.ipynb) | [Tutorial](https://www.evidentlyai.com/blog/ml-model-card-tutorial) | Evidently team | `reports`, `data_quality`, `model_quality`, `classification`
-How to use descriptors to monitor text data | [Jupyter notebook](https://github.com/evidentlyai/community-examples/tree/main/tutorials/How_to_add_a_custom_text_descriptor.ipynb) - with model training | [Tutorial](https://www.evidentlyai.com/blog/unstructured-data-monitoring)|  Evidently team | `reports`, `test_suites`, `text_data`, `nlp`, `data_drift`, `text_descriptors`
+How to create ML model cards |[Jupyter notebook](https://github.com/evidentlyai/community-examples/tree/main/tutorials/How_to_create_an_ML_model_card.ipynb) | [Tutorial](https://www.evidentlyai.com/blog/ml-model-card-tutorial) 
+How to use descriptors to monitor text data | [Jupyter notebook](https://github.com/evidentlyai/community-examples/tree/main/tutorials/How_to_add_a_custom_text_descriptor.ipynb) | [Tutorial](https://www.evidentlyai.com/blog/unstructured-data-monitoring)|  
 
 
 ## Integrations
