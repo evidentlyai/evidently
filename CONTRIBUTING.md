@@ -17,7 +17,7 @@ Here is the general workflow:
 * Clone the repository 
 * Make the changes and commit them 
 * Push the branch to your local fork
-* Make sure that all the tests are passing sucessfully 
+* Make sure that all the tests are passing successfully 
 * Submit a Pull Request with described changes 
 
 ### Additional information
@@ -34,7 +34,7 @@ git clone https://github.com/evidentlyai/evidently.git
 
 ## 2. (Optional, but recommended!) Create virtual environment with python 3.7
 Note: Since evidently v0.2.2 python 3.7 is the earliest version we support. 
-Although you probably use one of the most recent python version, it is important to make sure that your changes do not cause any issues in older python versions. This is why we sugget you test them under the oldest supported python version.
+Although you probably use one of the most recent python version, it is important to make sure that your changes do not cause any issues in older python versions. This is why we suggest you to test them under the oldest supported python version.
 
 #### MacOS / Linux
 ```sh
