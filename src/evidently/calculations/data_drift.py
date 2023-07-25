@@ -431,7 +431,9 @@ def get_drift_for_columns(
         )
         columns = _get_all_columns_for_drift(dataset_columns)
 
-    drift_share_threshold = drift_share_threshold or data_drift_options.drift_share
+    drift_share_threshold = (
+        drift_share_threshold if drift_share_threshold is not None else data_drift_options.drift_share
+    )
 
     # calculate result
     drift_by_columns = {}
