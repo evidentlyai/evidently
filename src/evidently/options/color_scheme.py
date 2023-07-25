@@ -30,8 +30,8 @@ class ColorOptions(Option):
     - underestimation_color - color for underestimation line in regression
     - overestimation_color - color for overestimation line in regression
     - majority_color - color for majority line in regression
-    - lines - color for vertical lines
-    - heatmap_colors - colors for heatmap
+    - vertical_lines - color for vertical lines
+    - heatmap - colors for heatmap
     """
 
     primary_color: str = RED

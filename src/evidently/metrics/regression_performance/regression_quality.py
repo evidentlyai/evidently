@@ -184,7 +184,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             ["r2_score", "rmse", "mean_abs_error", "mean_abs_perc_error"],
             [
                 r2_score,
-                mean_squared_error,
+                lambda x, y: mean_squared_error(x, y, squared=False),
                 mean_absolute_error,
                 mean_absolute_percentage_error,
             ],

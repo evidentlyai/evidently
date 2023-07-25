@@ -1,6 +1,6 @@
 import pandas as pd
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite
 

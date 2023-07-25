@@ -82,7 +82,7 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
         if self.get_options().render_options.raw_data:
             agg_data = False
         if x_type == ColumnType.Numerical and y_type == ColumnType.Numerical:
-            result = get_data_for_num_num_plot(
+            raw_plot, agg_plot = get_data_for_num_num_plot(
                 agg_data,
                 self.x_column,
                 self.y_column,
@@ -91,18 +91,18 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
                 x_ref if x_ref is not None else None,
                 y_ref if y_ref is not None else None,
             )
-            if isinstance(result["current"], dict):
+            if raw_plot is not None:
                 return ColumnInteractionPlotResults(
                     x_type=x_type,
                     y_type=y_type,
-                    current_scatter=result["current"],
-                    reference_scatter=result.get("reference"),
+                    current_scatter=raw_plot["current"],
+                    reference_scatter=raw_plot.get("reference"),
                 )
             return ColumnInteractionPlotResults(
                 x_type=x_type,
                 y_type=y_type,
-                current_contour=result["current"],
-                reference_contour=result.get("reference"),
+                current_contour=agg_plot["current"],
+                reference_contour=agg_plot.get("reference"),
             )
         if x_type == ColumnType.Categorical and y_type == ColumnType.Categorical:
             result = get_data_for_cat_cat_plot(

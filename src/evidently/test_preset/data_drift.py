@@ -5,10 +5,10 @@ from typing import Optional
 
 import numpy as np
 
-from evidently import TaskType
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
+from evidently.pipeline.column_mapping import TaskType
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestColumnDrift

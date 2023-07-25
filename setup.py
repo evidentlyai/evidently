@@ -24,6 +24,9 @@ package_data_spec = {
     "evidently": [
         "nbextension/static/*.*js*",
         "nbextension/static/*.*woff2*",
+        "ui/ui/*",
+        "ui/ui/static/css/*",
+        "ui/ui/static/js/*",
     ]
 }
 
@@ -56,7 +59,12 @@ setup_args = dict(
         "scipy>=1.5.4",
         "requests>=2.19.0",
         "PyYAML>=5.1",
-        "pydantic>=1.9,<2",
+        "pydantic>=1.10,<2",
+        "fastapi>=0.98.0",
+        "uvicorn>=0.22.0",
+        "typer>=0.9",
+        "rich>=13",
+        "iterative-telemetry==0.0.5"  # todo: until we support 3.7
     ],
     extras_require={
         "dev": [
@@ -69,6 +77,7 @@ setup_args = dict(
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
             "types-dataclasses==0.6",
+            "types-python-dateutil==2.8.19",
             "pillow==9.5.0",
             "black==22.8.0",
             "isort==5.10.1",
@@ -79,7 +88,9 @@ setup_args = dict(
             "pytest-spark==0.6.0",  # it can be moved to "spark-dev" secion if necessary
         ],
     },
-    entry_points={},
+    entry_points={
+        "console_scripts": ["evidently=evidently.cli:app"]
+    },
 )
 
 if __name__ == "__main__":

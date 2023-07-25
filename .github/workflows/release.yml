@@ -1,0 +1,71 @@
+name: Publish on PyPI and Docker Hub
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  linter:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+          architecture: 'x64'
+          cache: 'pip'
+      # Runs a single command using the runners shell
+      - name: Install dependencies
+        run: pip install -r requirements.min.txt && pip install -r requirements.dev.txt
+      # run black separately for source and tests folders (prevent generated examples folder checking)
+      # temporary specify line length and python version explicitly for black
+      # it cannot find the settings in setup.cfg
+      - name: Run Black
+        run: black --check --diff -l 120 -t py37 src
+      - name: Run Black for Tests
+        run: black --check --diff -l 120 -t py37 tests
+      # run isort separately for source and tests folders (prevent generated examples folder checking)
+      - name: Run iSort
+        run: isort --check src
+      - name: Run iSort for Tests
+        run: isort --check tests
+      # run flake8 separately for source and tests folders
+      - name: Run Flake8
+        run: flake8 src
+      - name: Run Flake8 for Tests
+        run: flake8 tests
+      - name: Run Mypy
+        run: mypy
+
+  publish_to_pypi:
+    name: Build and publish Python distributions to PyPI and TestPyPI
+    runs-on: [ ubuntu-latest ]
+    needs: [ linter ]
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: install reqs
+        run: pip install twine wheel
+      - name: build
+        run: python setup.py bdist bdist_wheel
+      - name: upload
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+  build_and_pub_docker:
+    runs-on: [ ubuntu-latest ]
+    needs: [ linter ]
+    steps:
+      - name: Login to docker.io
+        run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - uses: actions/checkout@master
+      - name: Build and release image
+        run: cd docker && make release

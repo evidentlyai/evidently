@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import uuid
 from collections import defaultdict
 from typing import Dict
@@ -7,10 +8,7 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
-from pydantic import BaseModel
-from pydantic import parse_obj_as
 
-from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
@@ -19,29 +17,55 @@ from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
-from evidently.options.base import Options
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DetailsInfo
-from evidently.suite.base_suite import ContextPayload
-from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import MetadataValueType
+from evidently.suite.base_suite import ReportBase
+from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
+METRIC_GENERATORS = "metric_generators"
+METRIC_PRESETS = "metric_presets"
 
-class Report(Display):
-    _inner_suite: Suite
+
+class Report(ReportBase):
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: AnyOptions = None):
-        super().__init__(options)
+    def __init__(
+        self,
+        metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
+        options: AnyOptions = None,
+        timestamp: Optional[datetime.datetime] = None,
+        id: uuid.UUID = None,
+        metadata: Dict[str, MetadataValueType] = None,
+        tags: List[str] = None,
+        model_id: str = None,
+        reference_id: str = None,
+        batch_size: str = None,
+        dataset_id: str = None,
+    ):
+        super().__init__(options, timestamp)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
+        self.id = id or uuid.uuid4()
+        self.metadata = metadata or {}
+        self.tags = tags or []
+        if model_id is not None:
+            self.set_model_id(model_id)
+        if batch_size is not None:
+            self.set_batch_size(batch_size)
+        if reference_id is not None:
+            self.set_reference_id(reference_id)
+        if dataset_id is not None:
+            self.set_dataset_id(dataset_id)
 
     def run(
         self,
@@ -76,7 +100,9 @@ class Report(Display):
                     else:
                         # if generated item is not a metric, raise an error
                         raise ValueError(f"Incorrect metric type in generator {item}")
-
+                if METRIC_GENERATORS not in self.metadata:
+                    self.metadata[METRIC_GENERATORS] = []
+                self.metadata[METRIC_GENERATORS].append(item.__class__.__name__)  # type: ignore[union-attr]
             elif isinstance(item, MetricPreset):
                 metrics = []
 
@@ -90,6 +116,10 @@ class Report(Display):
                 for metric in metrics:
                     self._first_level_metrics.append(metric)
                     self._inner_suite.add_metric(metric)
+
+                if METRIC_PRESETS not in self.metadata:
+                    self.metadata[METRIC_PRESETS] = []
+                self.metadata[METRIC_PRESETS].append(item.__class__.__name__)  # type: ignore[union-attr]
 
             elif isinstance(item, Metric):
                 self._first_level_metrics.append(item)
@@ -190,28 +220,39 @@ class Report(Display):
             },
         )
 
-    def _get_payload(self) -> BaseModel:
-        ctx = self._inner_suite.context
-        suite = ContextPayload.from_context(ctx)
-        return _ReportPayload(
-            suite=suite, metrics_ids=[suite.metrics.index(m) for m in self._first_level_metrics], options=self.options
-        )
+    def set_batch_size(self, batch_size: str):
+        self.metadata["batch_size"] = batch_size
+        return self
+
+    def set_model_id(self, model_id: str):
+        self.metadata["model_id"] = model_id
+        return self
+
+    def set_reference_id(self, reference_id: str):
+        self.metadata["reference_id"] = reference_id
+        return self
+
+    def set_dataset_id(self, dataset_id: str):
+        self.metadata["dataset_id"] = dataset_id
+        return self
+
+    def _get_snapshot(self) -> Snapshot:
+        snapshot = super()._get_snapshot()
+        snapshot.metrics_ids = [snapshot.suite.metrics.index(m) for m in self._first_level_metrics]
+        return snapshot
 
     @classmethod
-    def _parse_payload(cls, payload: Dict) -> "Report":
-        return parse_obj_as(_ReportPayload, payload).load()
-
-
-class _ReportPayload(BaseModel):
-    suite: ContextPayload
-    metrics_ids: List[int]
-    options: Options
-
-    def load(self):
-        ctx = self.suite.to_context()
-        metrics = [ctx.metrics[i] for i in self.metrics_ids]
-        report = Report(metrics=metrics, options=self.options)
+    def _parse_snapshot(cls, snapshot: Snapshot) -> "Report":
+        ctx = snapshot.suite.to_context()
+        metrics = [ctx.metrics[i] for i in snapshot.metrics_ids]
+        report = Report(
+            metrics=metrics,
+            timestamp=snapshot.timestamp,
+            id=snapshot.id,
+            metadata=snapshot.metadata,
+            tags=snapshot.tags,
+            options=snapshot.options,
+        )
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
-
         return report

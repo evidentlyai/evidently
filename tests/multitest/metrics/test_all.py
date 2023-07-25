@@ -1,11 +1,11 @@
 from copy import deepcopy
 import re
 
-import numpy
 import pytest
 
 from evidently.base_metric import Metric
 from evidently.report import Report
+from tests.conftest import smart_assert_equal
 from tests.multitest.conftest import Error
 from tests.multitest.conftest import TestOutcome
 from tests.multitest.conftest import find_all_subclasses
@@ -45,7 +45,7 @@ def test_metric(pandas_or_spark_session, tmetric: TestMetric, tdataset: TestData
     report._save(path)
     report2 = Report._load(path)
 
-    numpy.testing.assert_equal(report2.as_dict(), report.as_dict())  # has nans
+    smart_assert_equal(report2.as_dict(), report.as_dict())  # has nans
     report2.show()
     report2.save_html(str(tmp_path / "report.html"))
 

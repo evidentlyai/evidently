@@ -421,13 +421,13 @@ def plot_data(
             ref_df = pd.DataFrame({column_name: reference_data, target_name: target_reference})
         if column_type == ColumnType.Categorical and target_type == ColumnType.Numerical:
             data_by_target = {
-                "data_for_plots": prepare_box_data(curr_df, ref_df, column_name, target_name),
+                "box_data": prepare_box_data(curr_df, ref_df, column_name, target_name),
                 "target_name": target_name,
                 "target_type": target_type.value,
             }
         if column_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
             data_by_target = {
-                "data_for_plots": prepare_box_data(curr_df, ref_df, target_name, column_name),
+                "box_data": prepare_box_data(curr_df, ref_df, target_name, column_name),
                 "target_name": target_name,
                 "target_type": target_type.value,
             }
@@ -436,7 +436,7 @@ def plot_data(
                 target_ref = target_reference.loc[reference_data.index]
             else:
                 target_ref = None
-            result = get_data_for_num_num_plot(
+            raw_plot, agg_plot = get_data_for_num_num_plot(
                 agg_data,
                 column_name,
                 target_name,
@@ -446,7 +446,8 @@ def plot_data(
                 target_ref,
             )
             data_by_target = {
-                "data_for_plots": result,
+                "scatter_data": raw_plot,
+                "contour_data": agg_plot,
                 "target_name": target_name,
                 "target_type": target_type.value,
             }
@@ -456,7 +457,7 @@ def plot_data(
                 column_name, target_name, current_data, target_current, reference_data, target_reference
             )
             data_by_target = {
-                "data_for_plots": result,
+                "count_data": result,
                 "target_name": target_name,
                 "target_type": target_type.value,
             }

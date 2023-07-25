@@ -1,6 +1,8 @@
 import re
+from typing import Optional
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
@@ -15,16 +17,17 @@ class TriggerWordsPresent(GeneratedFeature):
     lemmatize: bool = True
     _lem: WordNetLemmatizer
 
-    def __init__(self, column_name: str, words_list=(), lemmatize=True):
+    def __init__(self, column_name: str, words_list=(), lemmatize=True, display_name: Optional[str] = None):
         self._lem = WordNetLemmatizer()
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize
+        self.display_name = display_name
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def listed_words_present(s, words_list=(), lemmatize=True):
-            if s is None:
+            if s is None or (isinstance(s, float) and np.isnan(s)):
                 return 0
             words = re.sub("[^A-Za-z0-9 ]+", "", s).split()
             for word_ in words:
@@ -56,7 +59,7 @@ class TriggerWordsPresent(GeneratedFeature):
         return self.column_name, tuple(self.words_list), self.lemmatize
 
     def feature_name(self):
-        return additional_feature(self, self._feature_column_name(), self._feature_display_name())
+        return additional_feature(self, self._feature_column_name(), self.display_name or self._feature_display_name())
 
     def _feature_column_name(self):
         return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatize)
