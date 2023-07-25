@@ -29,7 +29,7 @@ Tests perform structured data and ML model checks. They verify a condition and r
 
 You can create a custom Test Suite from 50+ tests or run a preset (for example, **Data Drift** or **Regression Performance**). You can get results as a **JSON**, Python dictionary, exportable HTML, **visual report** inside Jupyter notebook, or as Evidently JSON `snapshot`. 
 
-Tests are best for automated checks. You can integrate them as a pipeline step using tools like Airlfow. 
+Tests are best for automated checks. You can integrate them as a pipeline step using tools like Airflow. 
 
 ## 2. Reports: interactive visualizations
 
@@ -39,7 +39,7 @@ Tests are best for automated checks. You can integrate them as a pipeline step u
 
 Reports calculate various data and ML **metrics** and render rich **visualizations**. You can create a custom Report or run a preset to evaluate a specific aspect of the model or data performance. For example, a [**Data Quality**](https://docs.evidentlyai.com/presets/data-quality) or [**Classification Performance**](https://docs.evidentlyai.com/presets/class-performance) report.
 
-You can get an **HTML report** (best for exploratory analysis and debugging), **JSON** or Python dictionary output (best for logging, documention or to integrate with BI tools), or as Evidently JSON `snapshot`.
+You can get an **HTML report** (best for exploratory analysis and debugging), **JSON** or Python dictionary output (best for logging, documentation or to integrate with BI tools), or as Evidently JSON `snapshot`.
 
 ## 3. ML monitoring dashboard
 
@@ -185,8 +185,8 @@ We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
 
 # :books: Documentation
 For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with the tutorials:
-* [Get Started with Reports and Test Suitesl](https://docs.evidentlyai.com/get-started/tutorial)
-* [Get Started with ML monitoringl](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
+* [Get Started with Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial)
+* [Get Started with ML monitoring](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
 
 # :card_index_dividers: Examples
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
