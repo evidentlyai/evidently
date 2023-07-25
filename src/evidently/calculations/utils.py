@@ -102,12 +102,12 @@ def get_data_for_num_num_plot(
                 col1_name: col1_ref.tolist(),
                 col2_name: col2_ref.tolist(),
             }
-        return result
+        return result, None
 
     result = {"current": get_gaussian_kde(col2_curr, col1_curr)}
     if col1_ref is not None and col2_ref is not None:
         result["reference"] = get_gaussian_kde(col2_ref, col1_ref)
-    return result
+    return None, result
 
 
 def prepare_box_data(

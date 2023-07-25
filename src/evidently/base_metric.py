@@ -258,7 +258,7 @@ class ColumnMetricResult(MetricResult):
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 
-class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
+class ColumnMetric(Metric[ColumnTResult], Generic[ColumnTResult], abc.ABC):
     column_name: ColumnName
 
     def __init__(self, column_name: Union[ColumnName, str], options: AnyOptions = None):
