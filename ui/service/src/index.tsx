@@ -38,10 +38,14 @@ const HomePage = () => {
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <HomePage/>,
+        element: <HomePage />,
         children: [
             {
                 path: "",
+                element: <ProjectList />
+            },
+            {
+                path: "projects",
                 element: <ProjectList />
             },
             {

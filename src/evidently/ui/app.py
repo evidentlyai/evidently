@@ -15,6 +15,7 @@ from fastapi import FastAPI
 from fastapi import Header
 from fastapi import HTTPException
 from fastapi import Path
+from fastapi import Request
 from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
@@ -68,17 +69,22 @@ static_path = os.path.join(ui_path, "static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 
-@app.get("/")
-@app.get("/projects")
-@app.get("/projects/{path:path}")
+@app.get("/", include_in_schema=False)
+@app.get("/projects", include_in_schema=False)
+@app.get("/projects/{path:path}", include_in_schema=False)
 async def index(path=None):
     event_logger.send_event(SERVICE_INTERFACE, "index")
     return FileResponse(os.path.join(ui_path, "index.html"))
 
 
-@app.get("/manifest.json")
-async def manifest():
-    return FileResponse(os.path.join(ui_path, "manifest.json"))
+@app.get("/manifest.json", include_in_schema=False)
+@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon-16x16.png", include_in_schema=False)
+@app.get("/favicon-32x32.png", include_in_schema=False)
+async def manifest(request: Request):
+    path = request.url.path[1:]
+    if path in ("manifest.json", "favicon.ico", "favicon-16x16.png", "favicon-32x32.png"):
+        return FileResponse(os.path.join(ui_path, path))
 
 
 api_router = APIRouter(prefix="/api")

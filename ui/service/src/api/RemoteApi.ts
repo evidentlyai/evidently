@@ -60,10 +60,10 @@ export default class RemoteApi implements Api {
 
     async getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo> {
         let query = "";
-        if (from !== undefined) {
+        if (from !== undefined && from !== "") {
             query = `timestamp_start=${from}`
         }
-        if (to !== undefined) {
+        if (to !== undefined && to !== "") {
             query = (query === "" ? `${query}&` : "") + `timestamp_end=${to}`;
         }
         if (query != "") {

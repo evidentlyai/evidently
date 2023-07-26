@@ -46,10 +46,6 @@ export function ServiceMainPage(props: ServiceMainPageProps) {
                                         </Link> : null}
                                 </Breadcrumbs>
                             </Grid>
-                            {/*<Grid item xs={12}>*/}
-                            {/*    <ProjectHeader projectName={"Project #1"}*/}
-                            {/*                   description={"This Project does not have any description yet. But we hope you still remember what is this all about"}/>*/}
-                            {/*</Grid>*/}
                             <Grid item xs={12}>
                                 <ProjectContext.Provider value={project}>
                                     {children}
