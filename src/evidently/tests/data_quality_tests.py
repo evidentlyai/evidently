@@ -1081,7 +1081,15 @@ class TestRangeValuesRenderer(TestRenderer):
             else None,
             color_options=self.color_options,
         )
-        fig = plot_check(fig, obj.condition, color_options=self.color_options)
+        plot_condition = TestValueCondition(gt=obj.left, lt=obj.right)
+        fig = plot_check(fig, plot_condition, color_options=self.color_options)
+        newnames = {"gt": "left", "lt": "right", "current": "current", "reference": "reference"}
+        fig.for_each_trace(
+            lambda t: t.update(
+                name=newnames[t.name],
+                legendgroup=newnames[t.name],
+            )
+        )
         info.with_details(f"{obj.name} for {column_name.display_name}", plotly_figure(title="", figure=fig))
         return info
 
