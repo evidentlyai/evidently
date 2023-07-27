@@ -8,8 +8,8 @@ import pytest
 from evidently.metrics import ColumnQuantileMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
-
-from tests.utils.spark import convert_pandas_to_spark_df_if_necessary, fixup_json_if_necessary
+from tests.utils.spark import convert_pandas_to_spark_df_if_necessary
+from tests.utils.spark import fixup_json_if_necessary
 
 
 def test_data_quality_quantile_metric_success() -> None:

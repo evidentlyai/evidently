@@ -1,6 +1,3 @@
-from evidently.utils.spark import fixup_pandas_df_for_big_data
-
-
 def convert_pandas_to_spark_df_if_necessary(dataset, maybe_spark_session):
     if maybe_spark_session is None:
         return dataset
@@ -10,6 +7,7 @@ def convert_pandas_to_spark_df_if_necessary(dataset, maybe_spark_session):
 
     # let's try Pandas API on Spark default functionality
     import pyspark.pandas as ps
+
     pandas_spark_current_df = ps.from_pandas(dataset)
 
     # pytest tests/metrics/data_quality/test_column_quantile_metric.py -v

@@ -29,6 +29,7 @@ from scipy.stats import ks_2samp
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.utils.spark_compat import spark_warn
 
 
 def _ks_stat_test(
@@ -44,7 +45,10 @@ def _ks_stat_test(
         p_value: two-tailed p-value
         test_result: whether the drift is detected
     """
-    p_value = ks_2samp(reference_data, current_data)[1]
+    spark_warn(
+        reference_data, current_data, message="ks stattest is not implemented for spark and will collect data to driver"
+    )
+    p_value = ks_2samp(reference_data.to_numpy(), current_data.to_numpy())[1]
     return p_value, p_value <= threshold
 
 

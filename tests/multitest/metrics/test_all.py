@@ -1,5 +1,5 @@
-from copy import deepcopy
 import re
+from copy import deepcopy
 
 import pytest
 
@@ -18,7 +18,9 @@ from tests.utils.spark import convert_pandas_to_spark_df_if_necessary
 
 
 @pytest.mark.parametrize("raw_data", [True, False], ids=["raw_data", "agg_data"])
-def test_metric(pandas_or_spark_session, tmetric: TestMetric, tdataset: TestDataset, toutcome: TestOutcome, raw_data, tmp_path):
+def test_metric(
+    pandas_or_spark_session, tmetric: TestMetric, tdataset: TestDataset, toutcome: TestOutcome, raw_data, tmp_path
+):
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
     tdataset = deepcopy(tdataset)

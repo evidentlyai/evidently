@@ -33,13 +33,13 @@ from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
 
 
-def proportions_diff_z_stat_ind(ref: pd.DataFrame, curr: pd.DataFrame):
+def proportions_diff_z_stat_ind(ref: pd.Series, curr: pd.Series):
     # pylint: disable=invalid-name
     n1 = len(ref)
     n2 = len(curr)
 
-    p1 = float(sum(ref)) / n1
-    p2 = float(sum(curr)) / n2
+    p1 = float(ref.sum()) / n1
+    p2 = float(curr.sum()) / n2
     P = float(p1 * n1 + p2 * n2) / (n1 + n2)
 
     return (p1 - p2) / np.sqrt(P * (1 - P) * (1.0 / n1 + 1.0 / n2))

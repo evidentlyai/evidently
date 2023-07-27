@@ -9,6 +9,7 @@ from typing import Union
 import pandas as pd
 
 from evidently.calculations import stattests
+from evidently.utils.spark_compat import concat
 
 StatTestFuncType = Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]
 
@@ -53,7 +54,7 @@ def register_stattest(stat_test: StatTest):
 
 
 def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> StatTest:
-    n_values = pd.concat([reference_data, current_data]).nunique()
+    n_values = concat([reference_data, current_data]).nunique()
     if feature_type == "text":
         if reference_data.shape[0] > 1000:
             return stattests.abs_text_content_drift_stat_test
@@ -68,7 +69,7 @@ def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, fe
             return stattests.chi_stat_test if n_values > 2 else stattests.z_stat_test
     elif reference_data.shape[0] > 1000:
         if feature_type == "num":
-            n_values = pd.concat([reference_data, current_data]).nunique()
+            n_values = concat([reference_data, current_data]).nunique()
             if n_values <= 5:
                 return stattests.jensenshannon_stat_test
             elif n_values > 5:

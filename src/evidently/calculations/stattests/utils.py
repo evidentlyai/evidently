@@ -6,7 +6,7 @@ import pandas as pd
 
 def get_unique_not_nan_values_list_from_series(current_data: pd.Series, reference_data: pd.Series) -> list:
     """Get unique values from current and reference series, drop NaNs"""
-    return list(set(reference_data.dropna().unique()) | set(current_data.dropna().unique()))
+    return list(set(reference_data.dropna().unique().to_numpy()) | set(current_data.dropna().unique().to_numpy()))
 
 
 def get_binned_data(

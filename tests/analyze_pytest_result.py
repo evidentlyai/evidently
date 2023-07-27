@@ -3,7 +3,6 @@ import json
 import sys
 from collections import defaultdict
 
-
 COLOR_RED = "\033[91m"
 COLOR_GREEN = "\033[92m"
 COLOR_END = "\033[0m"

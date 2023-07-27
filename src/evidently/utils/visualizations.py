@@ -531,7 +531,9 @@ def get_distribution_for_column(
             if "spark" in dir(reference):
                 # TODO (pyspark): make Spark-efficient solution
                 # bins = np.histogram_bin_edges(pd.concat([current.dropna().to_pandas(), reference.dropna().to_pandas()]), bins="doane")
-                bins = np.histogram_bin_edges(pd.concat([current.to_pandas().dropna(), reference.to_pandas().dropna()]), bins="doane")
+                bins = np.histogram_bin_edges(
+                    pd.concat([current.to_pandas().dropna(), reference.to_pandas().dropna()]), bins="doane"
+                )
             else:
                 bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
 

@@ -32,6 +32,7 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
+from evidently.utils.spark_compat import histogram
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
@@ -110,7 +111,7 @@ def get_one_column_drift(
         current_nbinsx = options.get_nbinsx(column.name)
         current_small_distribution = [
             t.tolist()
-            for t in np.histogram(
+            for t in histogram(
                 current_column[np.isfinite(current_column)],
                 bins=current_nbinsx,
                 density=True,
@@ -118,7 +119,7 @@ def get_one_column_drift(
         ]
         reference_small_distribution = [
             t.tolist()
-            for t in np.histogram(
+            for t in histogram(
                 reference_column[np.isfinite(reference_column)],
                 bins=current_nbinsx,
                 density=True,

@@ -24,16 +24,16 @@ Example:
 """
 from typing import Tuple
 
-import numpy as np
-import pandas as pd
 from scipy import stats
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.utils.spark_compat import Series
+from evidently.utils.spark_compat import spark_warn
 
 
 def _wasserstein_distance_norm(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: Series, current_data: Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the first Wasserstein distance between two arrays normed by std of reference data
     Args:
@@ -45,8 +45,13 @@ def _wasserstein_distance_norm(
         wasserstein_distance_norm: normed Wasserstein distance
         test_result: whether the drift is detected
     """
-    norm = max(np.std(reference_data), 0.001)
-    wd_norm_value = stats.wasserstein_distance(reference_data, current_data) / norm
+    spark_warn(
+        reference_data,
+        current_data,
+        message="Wasserstein distance is not implemented for spark and will collect data to driver",
+    )
+    norm = max(reference_data.std(), 0.001)  # type: ignore[type-var]
+    wd_norm_value = stats.wasserstein_distance(reference_data.to_numpy(), current_data.to_numpy()) / norm
     return wd_norm_value, wd_norm_value >= threshold
 
 

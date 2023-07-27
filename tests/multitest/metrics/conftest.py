@@ -108,7 +108,7 @@ def load_test_metrics():
 
 # for debugging
 metric_type_filter = []
-metric_name_filter = []
+metric_name_filter = ["data_drift_table"]
 
 
 def generate_metric_dataset_outcome():

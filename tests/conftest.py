@@ -1,19 +1,18 @@
-import pytest
 import numpy as np
 import pandas as pd
+import pytest
 from pydantic import BaseModel
-
 from pytest_spark.config import SparkConfigBuilder
 from pytest_spark.util import reduce_logging
 
-
-IS_PYSPARK_AVAILABLE = True
-try:
-    from pyspark.sql import SparkSession  # pylint: disable=import-error,F401
-except ImportError:
-    IS_PYSPARK_AVAILABLE = False
+from evidently.utils.spark_compat import IS_PYSPARK_AVAILABLE
 
 PANDAS_OR_SPARK_PARAMS = ["pandas", "spark"] if IS_PYSPARK_AVAILABLE else ["pandas"]
+
+SPARK_ONLY = True
+
+if SPARK_ONLY:
+    PANDAS_OR_SPARK_PARAMS.remove("pandas")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -23,6 +22,7 @@ def pytest_collection_modifyitems(config, items):
             # TODO: validate that it covers both spark_session and pandas_or_spark_session (indirectly)
             if "spark_session" in item.fixturenames:
                 item.add_marker(skip_spark)
+
 
 # with regard to https://docs.pytest.org/en/stable/deprecations.html#calling-fixtures-directly
 # it is necessary to copy some code from pytest_spark library
@@ -51,9 +51,7 @@ def _pandas_or_spark_session(request):
     except ImportError:
         raise Exception("pyspark is not configured and we should not be here")
     else:
-        session = SparkSession.builder \
-            .config(conf=SparkConfigBuilder().get()) \
-            .getOrCreate()
+        session = SparkSession.builder.config(conf=SparkConfigBuilder().get()).getOrCreate()
 
         yield session
         session.stop()

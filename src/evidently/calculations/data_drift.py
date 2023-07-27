@@ -24,6 +24,7 @@ from evidently.metric_results import raw_agg_properties
 from evidently.options import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import recognize_column_type_
+from evidently.utils.spark_compat import concat
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
@@ -107,7 +108,7 @@ def get_one_column_drift(
         column_type = ColumnType(column_type)
     if column_type is None:
         column_type = recognize_column_type_(
-            dataset=pd.concat([reference_data, current_data]), column_name=column_name, columns=dataset_columns
+            dataset=concat([reference_data, current_data]), column_name=column_name, columns=dataset_columns
         )
 
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
@@ -235,12 +236,14 @@ def get_one_column_drift(
     elif column_type == ColumnType.Categorical:
         reference_counts = reference_data[column_name].value_counts(sort=False)
         current_counts = current_data[column_name].value_counts(sort=False)
-        keys = set(reference_counts.keys()).union(set(current_counts.keys()))
+        reference_keys = reference_counts.keys().to_numpy()
+        current_keys = current_counts.keys().to_numpy()
+        keys = set(reference_keys).union(set(current_keys))
 
         for key in keys:
-            if key not in reference_counts:
+            if key not in reference_keys:
                 reference_counts.loc[key] = 0
-            if key not in current_counts:
+            if key not in current_keys:
                 current_counts.loc[key] = 0
 
         reference_small_distribution = list(

@@ -1,5 +1,3 @@
-from typing import Optional
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -32,9 +30,9 @@ def test_spark_dataset_conversion_raise_no_error(pandas_df: pd.DataFrame, spark_
 
 
 def test_spark_quantile(spark_session):
-    # pandas uses linear approx: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.quantile.html
+    # pandas uses linear approx: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.quantile.html
     # spark uses approx (sample), but when accuracy is high it is comparable to pandas "highest"
-    # https://spark.apache.org/docs/latest/api/python/reference/pyspark.pandas/api/pyspark.pandas.DataFrame.quantile.html
+    # https://spark.apache.org/docs/latest/api/python/reference/pyspark.pandas/api/pyspark.pandas.DataFrame.quantile.html
     pandas_df = pd.DataFrame({"numerical_feature": [0, 4, 1, 2, np.NaN]})
     quantile = 0.5
 
@@ -64,12 +62,7 @@ def test_quantile(pandas_or_spark_session):
     assert 1.5 == pytest.approx(calculated_quantile)
 
 
-@pytest.mark.parametrize(
-    "current",
-    (
-        pd.DataFrame({"numerical_feature": [0, 4, 1, 2, np.NaN]}),
-    )
-)
+@pytest.mark.parametrize("current", (pd.DataFrame({"numerical_feature": [0, 4, 1, 2, np.NaN]}),))
 def test_quantile_with_parametrize(current: pd.DataFrame, pandas_or_spark_session):
     current = convert_pandas_to_spark_df_if_necessary(current, pandas_or_spark_session)
     quantile = 0.5
@@ -104,7 +97,6 @@ def test_spark_quantile_with_report_breakdown(pandas_or_spark_session):
     from evidently import ColumnMapping
     from evidently.base_metric import InputData
     from evidently.metrics import ColumnQuantileMetric
-    from evidently.report import Report
     from evidently.utils.data_preprocessing import create_data_definition
 
     current = pd.DataFrame({"numerical_feature": [0, 4, 1, 2, np.NaN]})
@@ -116,7 +108,7 @@ def test_spark_quantile_with_report_breakdown(pandas_or_spark_session):
 
     metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
 
-    # report = Report(metrics=[metric])
+    # report = Report(metrics=[metric])
 
     data_definition = create_data_definition(reference, current, column_mapping)
     data = InputData(reference, current, None, None, column_mapping, data_definition)
@@ -128,14 +120,14 @@ def test_spark_quantile_with_report_breakdown(pandas_or_spark_session):
 
     # second level deep
     # from evidently.suite.base_suite import Suite
-    # _inner_suite = Suite(None)
+    # _inner_suite = Suite(None)
     # _inner_suite.add_metric(metric)
-    # _inner_suite.run_calculate(data)
+    # _inner_suite.run_calculate(data)
 
     # third level deep
-    # metric_result = metric.calculate(data)
-    # assert 1.5 == pytest.approx(metric_result.current.value)
+    # metric_result = metric.calculate(data)
+    # assert 1.5 == pytest.approx(metric_result.current.value)
 
-    column_type, current_column, reference_column = data.get_data(metric.column)
+    column_type, current_column, reference_column = data.get_data(metric.column_name)
     current_quantile = current_column.quantile(metric.quantile)
     assert 1.5 == pytest.approx(current_quantile)
