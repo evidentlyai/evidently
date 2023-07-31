@@ -200,17 +200,21 @@ In this example, you pass the complete field path inside the Metric
 
 ### How to find the field path?
 
+**Option 1**. Use autocomplete.
+
 You can use the autocomplete in Python to see available fields inside a specific Metric. They appear as you start typing the `.fields.` path for a specific Metric.
 
 ![](../.gitbook/assets/monitoring/metric_fields_autocomplete-min.png)
 
-**Note**: some types of values (e.g. mean, sum, max, min) will not be visible using this method. This is because they match the names of the standard Python fields.
+Note: some types of values (e.g. mean, sum, max, min) will not be visible using this method. This is because they match the names of the standard Python fields.
+
+**Option 2**. Explore the contents of the snapshot, Metric or Test and find the relevant keys. 
 
 To look at all available measurements, you can also:
 * Open an existing `snapshot` file and explore its contents.
 * Generate a Report or a Test Suite, include the selected Metric or Test, and get the output as a Python dictionary. You can then explore the keys that contain the metric field names. 
 
-Once you identify the specific name of the field you would like to add to a panel, you can pass it as the `field_path` to the `PanelValue` parameter:
+Once you identify the specific name of the field you would like to add to a panel, you can pass it as the `field_path` to the `PanelValue` parameter.
 
 **Note**: in one of the next releases, we plan to add the ability to create panels from the visual interface and pre-built tabs with a fixed dashboard design. This will minimize the need to define the path to the metric values manually. If you need any help right now - ask in [Discord](https://discord.com/invite/xZjKRaNp8b)! 
 
