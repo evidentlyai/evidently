@@ -96,14 +96,14 @@ data_drift_report = Report(
 	DatasetSummaryMetric().
 	],
 	timestamp=datetime.now(),
-	)
+)
 ```
 
 If you do not pass a timestamp, Evidently will assign the `datetime.now()` timestamp with the Report/Test Suite computation time based on the user time zone.
 
 **Note**: even if the dataset you use to generate the snapshot contains a DateTime column, Evidently will not use it automatically. You can manually specify, for example, that the snapshot timestamp should match the last value of the DateTime column in the dataset you pass.
 
-**Example**: if you want to assign the last available date from the DateTime index as a timestamp for your snapshot:
+**Example**. If you want to assign the last available date from the DateTime index as a timestamp for your snapshot:
 
 ```python
 data_drift_report = Report(
@@ -126,7 +126,7 @@ Here are some example use cases when you might want to use tags:
 * To tag groups of snapshots that use different reference datasets (for example, as you compare distribution drift week-by-week and month-by-month)
 * To tag training dataset, etc.
 
-**Example 1**. You can pass a set of custom tags as a list. 
+**Example 1**. You can pass a set of custom tags as a list: 
 
 ```python
 data_drift_report = Report(
