@@ -101,10 +101,10 @@ This is a base class for `DashboardPanelPlot` and `DashboardPanelCounter`. The p
 
 ```python
 project.dashboard.add_panel(
-        DashboardPanelCounter(
-            filter=ReportFilter(metadata_values={}, tag_values=[]),
-            agg=CounterAgg.NONE,
-            title="Bike Rental Demand Forecast",
+    DashboardPanelCounter(
+        filter=ReportFilter(metadata_values={}, tag_values=[]),
+        agg=CounterAgg.NONE,
+        title="Bike Rental Demand Forecast",
         )
     )
 ```
@@ -113,18 +113,18 @@ project.dashboard.add_panel(
 
 ```python
 project.dashboard.add_panel(
-        DashboardPanelCounter(
-            title="Model Calls",
-            filter=ReportFilter(metadata_values={}, tag_values=[]),
-            value=PanelValue(
-                metric_id="DatasetSummaryMetric",
-                field_path=DatasetSummaryMetric.fields.current.number_of_rows,
-                legend="count",
-            ),
-            text="count",
-            agg=CounterAgg.SUM,
-            size=1,
-        )
+    DashboardPanelCounter(
+        title="Model Calls",
+        filter=ReportFilter(metadata_values={}, tag_values=[]),
+        value=PanelValue(
+            metric_id="DatasetSummaryMetric",
+            field_path=DatasetSummaryMetric.fields.current.number_of_rows,
+            legend="count",
+        ),
+        text="count",
+        agg=CounterAgg.SUM,
+        size=1,
+    )
 )
 ```
 
@@ -137,34 +137,34 @@ project.dashboard.add_panel(
 ## Class DashboardPanelPlot
 `DashboardPanelPlot` allows you to create scatter, bar, line, and histogram plots.
 
-**Example 1**. To plot MAPE over time in a line plot.
+**Example**. To plot MAPE over time in a line plot.
 
 ```python
 project.dashboard.add_panel(
-     DashboardPanelPlot(
-         title="MAPE",
-         filter=ReportFilter(metadata_values={}, tag_values=[]),
-         values=[
-         PanelValue(
-               metric_id="RegressionQualityMetric",
-               field_path=metrics.RegressionQualityMetric.fields.current.mean_abs_perc_error,
-               legend="MAPE",
-         ),
-     ],
-     plot_type=PlotType.LINE,
-     size=1,
-   )
+    DashboardPanelPlot(
+        title="MAPE",
+        filter=ReportFilter(metadata_values={}, tag_values=[]),
+        values=[
+        PanelValue(
+            metric_id="RegressionQualityMetric",
+            field_path=metrics.RegressionQualityMetric.fields.current.mean_abs_perc_error,
+            legend="MAPE",
+        ),
+    ],
+    plot_type=PlotType.LINE,
+    size=1,
+    )
 )
 ```
 
 | Parameter | Description |
 |---|---|
-| `values: List[PanelValue]` | You must pass at least one value (**MetricResult&&). You can also pass multiple values as a list. They will appear together: for example, as separate lines on a Line plot, bars on a Bar Chart, or points on a Scatter Plot. If you use a Histogram, the values will be aggregated.<br><br>*See the section below on Panel Values for more examples.* |
+| `values: List[PanelValue]` | You must pass at least one value (**MetricResult**). You can also pass multiple values as a list. They will appear together: for example, as separate lines on a Line plot, bars on a Bar Chart, or points on a Scatter Plot. If you use a Histogram, the values will be aggregated.<br><br>*See the section below on Panel Values for more examples.* |
 | `plot_type: PlotType`<br><br>**Available:** `SCATTER`, `BAR`, `LINE`, `HISTOGRAM` | Specifies the plot type. |
 
 # Panel value 
 
-To add a numerical measurement to your panel, you must define the `PanelValue`. For example, you display the number of drifting features, the share of empty columns, mean error, etc. 
+To add a numerical measurement to your panel, you must pass the `PanelValue`. For example, you can choose to display the number of drifting features, the share of empty columns, mean error, etc. 
 
 To define which exact value to show on a specific panel, you must specify the following:
 * A `metric_id` that corresponds to the Evidently Metric logged in a `snapshot`.
@@ -175,13 +175,26 @@ You can also pass the optional `legend` that will be visible on the plot.
 **Example 1**. To include the `share_of_drifted_columns` MetricResult, available inside the `DatasetDriftMetric()`: 
 
 ```python
-PanelValue(
-                metric_id="DatasetDriftMetric",
-                field_path="share_of_drifted_columns",
-                legend="share",
+value=PanelValue(
+    metric_id="DatasetDriftMetric",
+    field_path="share_of_drifted_columns",
+    legend="share",
 )
 ```
+    
 In this example, you pass the exact name of the field.
+
+**Example 2**. To include the `current.share_of_missing_values` available inside the `DatasetMissingValueMetric()`:  
+
+```python
+value=PanelValue(
+    metric_id="DatasetMissingValuesMetric",
+    field_path=DatasetMissingValuesMetric.fields.current.share_of_missing_values,
+    legend="Missing Values Share",
+)
+```
+
+In this example, you pass the complete field path inside the Metric
 
 **Note**: you must always reference a `metric_id`, even if you used a `Preset`. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset [here](../reference/all-metrics.md).
 
@@ -197,7 +210,7 @@ To look at all available measurements, you can also:
 * Open an existing `snapshot` file and explore its contents.
 * Generate a Report or a Test Suite, include the selected Metric or Test, and get the output as a Python dictionary. You can then explore the keys that contain the metric field names. 
 
-Once you identify the specific name of the field you would like to add to a panel, you can pass it to the `value` parameter.
+Once you identify the specific name of the field you would like to add to a panel, you can pass it as the `field_path` to the `PanelValue` parameter:
 
 **Note**: in one of the next releases, we plan to add the ability to create panels from the visual interface and pre-built tabs with a fixed dashboard design. This will minimize the need to define the path to the metric values manually. If you need any help right now - ask in [Discord](https://discord.com/invite/xZjKRaNp8b)! 
 
