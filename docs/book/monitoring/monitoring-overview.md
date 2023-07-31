@@ -6,11 +6,11 @@ description: A high-level description of the Evidently ML monitoring.
 
 To deploy an ML monitoring system, you need 3 components:
 
-1. **Logging**. You must use the Evidently Python library to capture JSON snapshots. Each snapshot summarizes data or ML model quality for a specific period. You can instrument your production ML pipelines, collect data from ML services, or write logs ad hoc. The logging functionality is powered by Evidently Reports and Test Suites (which you can also use separately). You control what exactly you log.
+1. **Logging**. You must use the Evidently Python library to capture JSON `snapshots`. Each `snapshot` summarizes data or ML model quality for a specific period. You can instrument your production ML pipelines, collect data from ML services, or write logs ad hoc. The logging functionality is powered by Evidently `Reports` and `Test Suites` (which you can also use separately). You control what exactly you log.
 
-2. **Snapshot storage**. You must store JSON snapshots in a directory accessible by UI service. 
+2. **Snapshot storage**. You must store JSON `snapshots` in a directory accessible by UI service. 
 
-3. **Monitoring dashboard**. To view metrics and test results over time, you must launch an Evidently Monitoring service. It will parse the contents of the snapshots and allow visualizing the logged metrics or test results in the UI. You can choose which values to visualize and how.
+3. **Monitoring dashboard**. To view metrics and test results over time, you must launch an Evidently Monitoring service. It will parse the contents of the `snapshots` and allow visualizing the logged metrics or test results in the UI. You can choose which values to visualize and how.
 
 # What you can monitor
 
@@ -24,7 +24,7 @@ You can pick from 100+ in-built metrics and tests, including:
 * Custom user-defined metrics
 
 # Example scenario
-Say, you have a batch model and score new data once per day. Every time you generate the predictions, you can capture a snapshot with the input dataset summary, data quality metrics, and prediction drift checks. 
+Say, you have a batch model and score new data once per day. Every time you generate the predictions, you can capture a `snapshot` with the input dataset summary, data quality metrics, and prediction drift checks. 
 
 Once you get the labels that arrive with a delay, you can compute the true model performance and log a snapshot with model quality metrics to update the performance dashboard.
 
