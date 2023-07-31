@@ -14,7 +14,7 @@
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
 </p>
 
-<p align="center"> :new: Evidently ML Monitoring UI > [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) </p>
+:new: *Self-host an ML Monitoring interface. [QuickStart Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring).* 
 
 # :bar_chart: What is Evidently?
 
