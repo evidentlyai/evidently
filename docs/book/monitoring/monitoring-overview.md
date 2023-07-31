@@ -37,5 +37,5 @@ To start, we recommend going through the [ML Monitoring Quickstart](https://docs
 This user guide focuses on each component in-depth:
 * [Add workspace and project](workspace_project.md)
 * [Log snapshots](snapshots.md)
-* [Add dashboard panels](add_panels.md)
+* [Add dashboard panels](design_dashboard.md)
 * [Monitoring UI](monitoring_ui.md) 
