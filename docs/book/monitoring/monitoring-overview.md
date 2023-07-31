@@ -30,7 +30,7 @@ Once you get the labels that arrive with a delay, you can compute the true model
 
 ![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
-## User guide 
+# User guide 
 
 To start, we recommend going through the [ML Monitoring Quickstart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) tutorial. It shows a simple end-to-end example.
 
