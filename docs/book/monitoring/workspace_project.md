@@ -57,3 +57,17 @@ You can pass the following parameters to a project:
 | `dashboard: DashboardConfig` | Configuration of the project dashboard. It describes the monitoring panels which will appear on the dashboard.<br><br>**Note**: Explore [this Add Dashboard](add_dashboard.md) section for details. There is no need to explicitly pass `DashboardConfig` as a parameter if you use the `.dashboard.add_panel` method. |
 | `date_from: Optional[datetime.datetime] = None` | Start DateTime of the monitoring dashboard. By default, Evidently will show all available periods based on the snapshot timestamps. <br><br>You can set a specific date or a relative DateTime. For example, to refer to the last 30 days:<br>`from datetime import datetime, timedelta`<br>`datetime.now() + timedelta(-30)`<br>When you view the dashboard, the data will be visible from this start date. You can switch to other dates in the interface. |
 | `date_to: Optional[datetime.datetime] = None` | End datetime of the monitoring dashboard. <br>Works the same as above. |
+
+## Save project
+
+To save changes made to a project, you must use the method `save()`. 
+
+For instance, after you create a project, add a name and description, and define monitoring panels, you must save the project to record the changes in the workspace. 
+
+```python
+project.save()
+```
+
+{% hint style="info" %}
+**Designing monitoring panels.** To understand how to design monitoring panels, head to this [section](add_panels.md) in the docs.
+{% endhint %}
