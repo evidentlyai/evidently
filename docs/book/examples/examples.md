@@ -15,7 +15,7 @@ Evidently Metrics| [link](https://github.com/evidentlyai/evidently/blob/main/exa
 
 # Tutorials
 
-To better understand the use cases (such as model evaluation and monitoring), refer to the **detailed tutorials** accompanied by the blog posts.
+To better understand the use cases, refer to the **detailed tutorials** accompanied by the blog posts.
 
 Title | Code example | Blog post 
 --- | --- | --- 
@@ -23,6 +23,8 @@ Understand ML model decay in production (regression example) | [Jupyter notebook
 Compare two ML models before deployment (classification example) | [Jupyter notebook](../../../examples/data_stories/ibm_hr_attrition_model_validation.ipynb) | [What Is Your Model Hiding? A Tutorial on Evaluating ML Models.](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) 
 Evaluate and visualize historical data drift | [Jupyter notebook](../../../examples/integrations/mlflow_logging/historical_drift_visualization.ipynb) | [How to detect, evaluate and visualize historical drifts in the data.](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) 
 Monitor NLP models in production | [Colab](https://colab.research.google.com/drive/15ON-Ub_1QUYkDbdLpyt-XyEx34MD28E1) | [Monitoring NLP models in production: a tutorial on detecting drift in text data](https://www.evidentlyai.com/blog/tutorial-detecting-drift-in-text-data) 
+Create ML model cards |[Jupyter notebook](https://github.com/evidentlyai/community-examples/tree/main/tutorials/How_to_create_an_ML_model_card.ipynb) | [A simple way to create ML Model Cards in Python](https://www.evidentlyai.com/blog/ml-model-card-tutorial) 
+Use descriptors to monitor text data | [Jupyter notebook](https://github.com/evidentlyai/community-examples/tree/main/tutorials/How_to_add_a_custom_text_descriptor.ipynb) | [Monitoring unstructured data for LLM and NLP with text descriptors](https://www.evidentlyai.com/blog/unstructured-data-monitoring)|  
 
 
 ## Integrations

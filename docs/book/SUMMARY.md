@@ -22,7 +22,6 @@
   * [Evidently and Airflow](integrations/evidently-and-airflow.md)
   * [Evidently and MLflow](integrations/evidently-and-mlflow.md)
   * [Evidently and Metaflow](integrations/evidently-and-metaflow.md)
-  * [Evidently and Grafana](integrations/evidently-and-grafana.md)
 
 ## User Guide
 * [Installation](installation/install-evidently.md)
@@ -36,6 +35,12 @@
   * [Pre-built test suites](tests-and-reports/run-tests.md)
   * [Create a custom test suite](tests-and-reports/custom-test-suite.md)
   * [Generate multiple test or metrics](tests-and-reports/test-metric-generator.md)
+* [Monitoring](monitoring/README.md)
+  * [Monitoring overview](monitoring/monitoring_overview.md)
+  * [Add workspace and project](monitoring/workspace_project.md)
+  * [Log snapshots](monitoring/snapshots.md)
+  * [Add dashboard panels](monitoring/design_dashboard.md)
+  * [Monitoring UI](monitoring/monitoring_ui.md)
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)

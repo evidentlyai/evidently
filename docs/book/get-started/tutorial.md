@@ -1,6 +1,6 @@
 In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift**. You will run batch checks on a toy dataset and generate visual Reports and Test Suites.
 
-We recommend going through it once to understand the basic functionality. You can then explore more advanced workflows, like adjusting test parameters, adding custom metrics or integrating the tool in the prediction pipelines.
+The API is the same for other Reports and Test Suites - including Classification, Regression, Data Quality or Text Overview. After going through this Tutorial you will be ready to use all Evidently evaluations. We recommend going through it once to understand the basic functionality. You can then explore more advanced workflows, like adjusting test parameters, adding custom metrics or hosting an ML monitoring dashboard to track the model quality over time.
 
 To complete the tutorial, you need basic knowledge of Python. You should be able to complete it in **about 15 minutes**.
 

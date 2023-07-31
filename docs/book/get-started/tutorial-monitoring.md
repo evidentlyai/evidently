@@ -298,7 +298,7 @@ evidently ui --workspace ./workspace --port 8080
 evidently ui --workspace ./workspace --port 8080 –-demo-project
 ```
 
-**Note**: Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md)). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.
+**Note**: Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.
 
 ## 5. View the new project 
 

@@ -8,6 +8,10 @@ This example shows steps to integrate Evidently into your production pipeline us
 
 ![Gradfana dashboard](static/preview.png "Dashboard preview")
 
+**Note**: we tested this example on macOS/Linux.
+
+You can also read the blog [Tutorial](https://www.evidentlyai.com/blog/batch-ml-monitoring-architecture).
+
 --------
 Project Organization
 ------------

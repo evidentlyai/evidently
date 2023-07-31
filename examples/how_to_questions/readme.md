@@ -17,6 +17,8 @@ How to customize JSON output for Tests and Metrics? | [link](how_to_customize_js
 How to use column mapping? | [link](how_to_use_column_mapping.ipynb)
 How to get non-aggregated visuals in Reports? | [link](how_to_use_aggregated_data_option.ipynb)
 How to add text comments to Reports? | [link](how_to_add_a_text_comment_to_the_report.ipynb) 
+How to add a custom Metric or Test? | [link](how_to_make_custom_metric_and_test.ipynb) 
+How to specify color options? | [link](how_to_customize_color_scheme.ipynb) 
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
 

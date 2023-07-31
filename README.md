@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://docs.evidentlyai.com">Docs</a>
   |
-  <a href="https://discord.gg/xZjKRaNp8b">Discord Community</a>
+  <a href="https://discord.gg/xZjKRaNp8b">Discord</a>
   |
   <a href="https://www.evidentlyai.com/user-newsletter">User Newsletter</a>
   | 
@@ -14,6 +14,9 @@
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
 </p>
 
+# :new: New release
+
+**Evidently 0.4.0**. Self-host an ML Monitoring interface -> [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) 
 
 # :bar_chart: What is Evidently?
 
