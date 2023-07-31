@@ -14,9 +14,11 @@
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
 </p>
 
-# :bar_chart: What is Evidently?
+# :new: New release
 
-:new: `Self-host an ML Monitoring interface` -> [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) 
+**Evidently 0.4.0**. Self-host an ML Monitoring interface -> [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) 
+
+# :bar_chart: What is Evidently?
 
 Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test, and monitor ML models from validation to production. It works with tabular, text data and embeddings. 
 
