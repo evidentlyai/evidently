@@ -21,6 +21,8 @@ Evidently is an open-source Python library for data scientists and ML engineers.
 
 Evidently has a modular approach with 3 components on top of the shared `metrics` functionality. 
 
+> NEW: Check out the new Evidently ML monitoring interface > [Get started Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
+
 ## 1. Tests: batch model checks
 
 ![Tests example](docs/images/evidently_tests_main-min.png)
