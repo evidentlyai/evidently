@@ -71,8 +71,6 @@ After creating a Report or a Test Suite, you must use the `save()` method to cre
 data_drift_checks._save("data_drift_snapshot.json")
 ```
 
-Note: This save function is different from using json() or save_json(“file.json”) for Evidently Reports or Test Suite. The usual JSON export returns a structured output with limited information. You cannot convert this JSON back to an HTML. A snapshot contains more data: you can use it to restore an HTML (or other formats) without accessing the initial raw data.
-
 {% hint style="info" %}
 **Snapshots vs. JSON export.** This `save()` function is different from using `json()` or `save_json("file.json")` function for Evidently Reports or Test Suites. The usual JSON export returns a structured output with limited information. You cannot convert this JSON back to an HTML. A `snapshot` contains more data: you can use it to restore an HTML (or other formats) without accessing the initial raw data.
 {% endhint %}
@@ -93,11 +91,11 @@ This way, you load the snapshot file and restore the visual Report or Test Suite
 We recommend adding a `timestamp` to the Report or Test Suite that you log as snapshots. Each snapshot has one timestamp.
 
 ```python
-data_drift_report = Report (
+data_drift_report = Report(
 	metrics=[
-DatasetSummaryMetric().
-],
-timestamp=datetime.now(),
+	DatasetSummaryMetric().
+	],
+	timestamp=datetime.now(),
 	)
 ```
 
@@ -108,12 +106,12 @@ If you do not pass a timestamp, Evidently will assign the `datetime.now()` times
 **Example**: if you want to assign the last available date from the DateTime index as a timestamp for your snapshot:
 
 ```python
-data_drift_report = Report (
+data_drift_report = Report(
 	metrics=[
-DatasetSummaryMetric().
-],
-timestamp=raw_data.iloc[-1:].index,
-	)
+	DatasetSummaryMetric().
+	],
+	timestamp=raw_data.iloc[-1:].index,
+)
 ```
 
 Since you can assign arbitrary timestamps, you can log snapshots asynchronously or with a delay (for example, when you receive ground truth).
@@ -131,40 +129,40 @@ Here are some example use cases when you might want to use tags:
 **Example 1**. You can pass a set of custom tags as a list. 
 
 ```python
-data_drift_report = Report (
+data_drift_report = Report(
 	metrics=[
-DatasetSummaryMetric().
-],
-tags=[groupA, shadow],
-	)
+	DatasetSummaryMetric().
+	],
+	tags=[groupA, shadow],
+)
 ```
 
 **Example 2**. You can also pass metadata as a Python dictionary in key:value pairs:
 
 ```python
-data_drift_report = Report (
+data_drift_report = Report(
 	metrics=[
-DatasetSummaryMetric().
-],
-metadata = {
-  "deployment": "shadow",
-  "status": "production",
-}
-	)
+	DatasetSummaryMetric(),
+	],
+	metadata = {
+	"deployment": "shadow",
+	"status": "production",
+	}
+)
 ```
 
 **Example 3**. You can also use in-built metadata fields `model_id`, `reference_id`, `batch_size`, `dataset_id`:
 
 ```python
-data_drift_report = Report (
+data_drift_report = Report(
 	metrics=[
-DatasetSummaryMetric().
-],
-model_id=model_id,
-reference_id=reference_id,
-batch_size=batch_size,
-dataset_id=dataset_id,
-	)
+	DatasetSummaryMetric(),
+	],
+	model_id=model_id,
+	reference_id=reference_id,
+	batch_size=batch_size,
+	dataset_id=dataset_id,
+)
 ```
 
 All `tags` and `metadata` fields are optional and added for convenience. 
