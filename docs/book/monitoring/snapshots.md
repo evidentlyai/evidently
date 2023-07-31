@@ -35,7 +35,7 @@ To generate a snapshot, you must first create an Evidently Test Suite or a Repor
 * Pass the `current` and optional `reference` dataset. 
 * Pass optional `column_mapping`.
 
-For example, you can pass the `current` data batch and generate a `snapshot` with descriptive statistics of the dataset.
+**Example 1**. You can pass the `current` data batch and generate a `snapshot` with descriptive statistics of the dataset:
 
 ```python
 data_summary_report = Report(metrics=[
@@ -50,7 +50,7 @@ data_summary_report.run(reference_data=None, current_data=batch1)
 
 **Reference dataset.** Some metrics, like data drift, require `reference` data. For example, to compare this week's data distribution to the previous, you must pass the reference dataset for the past week. You can also choose to pass the `reference` to derive test conditions automatically. For example, to compare the column types to the column types in the reference dataset.
 
-Here is how you create a Test Suite, passing both `current` and `reference` datasets:
+**Example 2**. Here is how you create a Test Suite, passing both `current` and `reference` datasets:
 
 ```python
 data_drift_checks = TestSuite(metrics=[
