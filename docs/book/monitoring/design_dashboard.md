@@ -206,7 +206,7 @@ You can use the autocomplete in Python to see available fields inside a specific
 
 ![](../.gitbook/assets/monitoring/metric_fields_autocomplete-min.png)
 
-Note: some types of values (e.g. mean, sum, max, min) will not be visible using this method. This is because they match the names of the standard Python fields.
+**Note**: some types of values (e.g. mean, sum, max, min) will not be visible using this method. This is because they match the names of the standard Python fields.
 
 **Option 2**. Explore the contents of the snapshot, Metric or Test and find the relevant keys. 
 
