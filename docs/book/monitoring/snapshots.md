@@ -169,7 +169,7 @@ dataset_id=dataset_id,
 
 All `tags` and `metadata` fields are optional and added for convenience. 
 
-You can add `tags` when you create the Report or a Test Suite. You can also add them later to an existing Report or Test Suite:
+**Example 4**. You can also add `tags` later to an existing Report or Test Suite:
 
 ```python
 data_summary_report.tags=["training_data"]
