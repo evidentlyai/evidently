@@ -127,11 +127,77 @@ project.dashboard.add_panel(
         )
 )
 ```
+
 | Parameter | Description |
 |---|---|
-| value: Optional[PanelValue] = None | Value (MetricResult) to show in the Counter.<br>You can create a simple text panel if you do not pass the Value. <br>See the section below on Panel Values. |
-| text: Optional[str] = None | Supporting text to be shown on the Counter. |
-| agg: CounterAgg<br>Available: SUM, LAST, NONE | Data aggregation options:<br>SUM - sums the values from different snapshots over time<br>LAST - shows the last available value<br>NONE - to be used for text panels  |
+| `value: Optional[PanelValue] = None` | The value (**MetricResult**) to show in the Counter.<br><br>You can create a simple text panel if you do not pass the Value. <br><br>*See the section below on Panel Values for more examples.* |
+| `text: Optional[str] = None` | Supporting text to be shown on the Counter. |
+| `agg: CounterAgg`<br><br>**Available:**<br> `SUM`, `LAST`, `NONE` | Data aggregation options:<br>`SUM` - sums the values from different snapshots over time<br>`LAST` - shows the last available value<br>`NONE` - to be used for text panels  |
 
+## Class DashboardPanelPlot
+`DashboardPanelPlot` allows you to create scatter, bar, line, and histogram plots.
+
+**Example 1**. To plot MAPE over time in a line plot.
+
+```python
+project.dashboard.add_panel(
+     DashboardPanelPlot(
+         title="MAPE",
+         filter=ReportFilter(metadata_values={}, tag_values=[]),
+         values=[
+         PanelValue(
+               metric_id="RegressionQualityMetric",
+               field_path=metrics.RegressionQualityMetric.fields.current.mean_abs_perc_error,
+               legend="MAPE",
+         ),
+     ],
+     plot_type=PlotType.LINE,
+     size=1,
+   )
+)
+```
+
+| Parameter | Description |
+|---|---|
+| `values: List[PanelValue]` | You must pass at least one value (**MetricResult&&). You can also pass multiple values as a list. They will appear together: for example, as separate lines on a Line plot, bars on a Bar Chart, or points on a Scatter Plot. If you use a Histogram, the values will be aggregated.<br><br>*See the section below on Panel Values for more examples.* |
+| `plot_type: PlotType`<br><br>**Available:** `SCATTER`, `BAR`, `LINE`, `HISTOGRAM` | Specifies the plot type. |
+
+# Panel value 
+
+To add a numerical measurement to your panel, you must define the `PanelValue`. For example, you display the number of drifting features, the share of empty columns, mean error, etc. 
+
+To define which exact value to show on a specific panel, you must specify the following:
+* A `metric_id` that corresponds to the Evidently Metric logged in a `snapshot`.
+* A `field_path` that corresponds to the specific **MetricResult** (numerical measurement) computed as part of this Metric. You can pass either a complete field path or a `"field_name"`.
+
+You can also pass the optional `legend` that will be visible on the plot.
+
+**Example 1**. To include the `share_of_drifted_columns` MetricResult, available inside the `DatasetDriftMetric()`: 
+
+```python
+PanelValue(
+                metric_id="DatasetDriftMetric",
+                field_path="share_of_drifted_columns",
+                legend="share",
+)
+```
+In this example, you pass the exact name of the field.
+
+**Note**: you must always reference a `metric_id`, even if you used a `Preset`. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset [here](../reference/all-metrics.md).
+
+### How to find the field path?
+
+You can use the autocomplete in Python to see available fields inside a specific Metric. They appear as you start typing the `.fields.` path for a specific Metric.
 
 ![](../.gitbook/assets/monitoring/metric_fields_autocomplete-min.png)
+
+**Note**: some types of values (e.g. mean, sum, max, min) will not be visible using this method. This is because they match the names of the standard Python fields.
+
+To look at all available measurements, you can also:
+* Open an existing `snapshot` file and explore its contents.
+* Generate a Report or a Test Suite, include the selected Metric or Test, and get the output as a Python dictionary. You can then explore the keys that contain the metric field names. 
+
+Once you identify the specific name of the field you would like to add to a panel, you can pass it to the `value` parameter.
+
+**Note**: in one of the next releases, we plan to add the ability to create panels from the visual interface and pre-built tabs with a fixed dashboard design. This will minimize the need to define the path to the metric values manually. If you need any help right now - ask in [Discord](https://discord.com/invite/xZjKRaNp8b)! 
+
