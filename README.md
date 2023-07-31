@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://docs.evidentlyai.com">Docs</a>
   |
-  <a href="https://discord.gg/xZjKRaNp8b">Discord Community</a>
+  <a href="https://discord.gg/xZjKRaNp8b">Discord</a>
   |
   <a href="https://www.evidentlyai.com/user-newsletter">User Newsletter</a>
   | 
