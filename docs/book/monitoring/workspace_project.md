@@ -71,3 +71,62 @@ project.save()
 {% hint style="info" %}
 **Designing monitoring panels.** To understand how to design monitoring panels, head to this [section](add_panels.md) in the docs.
 {% endhint %}
+
+## Log snapshots
+
+Once you create a project within a workspace, you can add Reports, Test Suites, or `snapshots` to a project. 
+
+Here is how you add a Report and Test Suite to an earlier created project.
+
+```python
+my_workspace.add_report(my_project.id, my_report)
+my_workspace.add_test_suite(my_project.id, my_test_suite)
+```
+
+When you add a Report or a Test Suite to a project, Evidently will automatically save a `snapshot`. There is no need to generate a snapshot explicitly.  
+
+If you already generated a snapshot, you can add it as well: 
+```python
+my_workspace.add_snapshot(my_project.id, snapshot.load("data_drift_snapshot.json")) 
+```
+# Workspace API Reference 
+
+All available methods in the class Workspace:
+
+```python
+create_project(self, name: str, description: Optional[str] = None) 
+add_project(self, project: ProjectBase) 
+add_report(project.id, report)
+add_test_suite(project.id, test_suite)
+add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot)
+get_project(self, project_id: Union[str, uuid.UUID])
+list_projects(self) 
+search_project(self, project_name: str)
+```
+
+# Remote Workspace
+You can also use a remote `workspace`. In this scenario, you can generate the `snapshots` locally and (using the `add_snapshot`, `add_test_suite`, `add_report` commands) send it to the remote server where you run the Monitoring UI. You can use the remote workspace API to create and manage projects. 
+
+To create a remote workspace (UI should be running at this address): 
+
+```python
+workspace = RemoteWorkspace("http://localhost:8000")
+```
+
+You can pass the following parameters:
+
+| Parameter | Description |
+|---|---|
+| `self.base_url = base_url` | URL for the remote UI service. |
+| `self.secret = secret` | String with secret, None by default. Use it if access to the URL is protected by a password. |
+
+The rest of the functionality and methods are the same.
+
+## Code example
+
+Refer to the service example: 
+{% content-ref url="[../get-started/tutorial-monitoring.md](https://github.com/evidentlyai/evidently/tree/main/examples/service)" %}
+[Docker example](https://github.com/evidentlyai/evidently/tree/main/examples/service). 
+{% endcontent-ref %}
+
+
