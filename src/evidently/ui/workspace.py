@@ -124,6 +124,12 @@ class Project(ProjectBase["Workspace"]):
         snapshot.save(item.path)
         self._snapshots[item.id] = item
 
+    def delete_snapshot(self, snapshot_id: Union[str, uuid.UUID]):
+        if isinstance(snapshot_id, str):
+            snapshot_id = uuid.UUID(snapshot_id)
+        if snapshot_id in self._snapshots:
+            del self._snapshots[snapshot_id]
+
     @classmethod
     def load(cls, path: str) -> "Project":
         try:
@@ -147,14 +153,18 @@ class Project(ProjectBase["Workspace"]):
             snapshot_id = uuid.UUID(file[: -len(".json")])
             if snapshot_id in self._snapshots:
                 continue
-            filepath = os.path.join(path, file)
-            try:
-                suite = Snapshot.load(filepath)
-            except ValidationError:
-                if skip_errors:
-                    continue
-                raise
+            self.reload_snapshot(snapshot_id, skip_errors)
+
+    def reload_snapshot(self, snapshot_id: Union[str, uuid.UUID], skip_errors=True):
+        if isinstance(snapshot_id, str):
+            snapshot_id = uuid.UUID(snapshot_id)
+        path = os.path.join(self.path, SNAPSHOTS, str(snapshot_id) + ".json")
+        try:
+            suite = Snapshot.load(path)
             self._snapshots[snapshot_id] = ProjectSnapshot(snapshot_id, self, suite)
+        except ValidationError:
+            if not skip_errors:
+                raise
 
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
@@ -286,6 +296,17 @@ class Workspace(WorkspaceBase[Project]):
 
     def search_project(self, project_name: str) -> List[Project]:
         return [p for p in self._projects.values() if p.name == project_name]
+
+    def reload_project(self, project_id: Union[str, uuid.UUID]):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
+        project = Project.load(os.path.join(self.path, str(project_id))).bind(self)
+        self._projects[project.id] = project
+
+    def delete_project(self, project_id: Union[str, uuid.UUID]):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
+        del self._projects[project_id]
 
 
 def upload_snapshot(item: ReportBase, workspace_or_url: Union[str, WorkspaceBase], project_id: Union[uuid.UUID, str]):

@@ -20,6 +20,7 @@ from starlette.responses import FileResponse
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 from typing_extensions import Annotated
+from watchdog.observers import Observer
 
 import evidently
 from evidently.report.report import METRIC_GENERATORS
@@ -33,6 +34,7 @@ from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.models import DashboardInfoModel
 from evidently.ui.models import ReportModel
 from evidently.ui.models import TestSuiteModel
+from evidently.ui.watcher import WorkspaceDirHandler
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import ProjectBase
 from evidently.ui.workspace import Workspace
@@ -48,7 +50,11 @@ async def lifespan(app: FastAPI):
     """Run at startup
     Initialise the Client and add it to app.state
     """
-    app.state.workspace = Workspace(app.state.workspace_path)
+    workspace = Workspace(app.state.workspace_path)
+    app.state.workspace = workspace
+    observer = Observer()
+    observer.schedule(WorkspaceDirHandler(workspace), workspace.path, recursive=True)
+    observer.start()
 
     if event_logger.is_enabled():
         print(f"Anonimous usage reporting is enabled. To disable it, set env variable {DO_NOT_TRACK_ENV} to any value")
