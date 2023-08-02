@@ -298,6 +298,13 @@ async def add_project(project: Project) -> ProjectBase:
     return p
 
 
+@api_write_router.delete("/projects/{project_id}")
+def delete_project(project_id: Annotated[uuid.UUID, PROJECT_ID]):
+    workspace: Workspace = app.state.workspace
+    workspace.delete_project(project_id)
+    event_logger.send_event(SERVICE_INTERFACE, "delete_project")
+
+
 @api_read_router.post("/projects/{project_id}/snapshots")
 async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot):
     workspace: Workspace = app.state.workspace
@@ -306,6 +313,13 @@ async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: S
 
     workspace.add_snapshot(project_id, snapshot)
     event_logger.send_event(SERVICE_INTERFACE, "add_snapshot")
+
+
+@api_write_router.delete("/projects/{project_id}/{snapshot_id}")
+def delete_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot_id: Annotated[uuid.UUID, SNAPSHOT_ID]):
+    workspace: Workspace = app.state.workspace
+    workspace.delete_snapshot(project_id, snapshot_id)
+    event_logger.send_event(SERVICE_INTERFACE, "delete_snapshot")
 
 
 api_router.include_router(api_read_router)
