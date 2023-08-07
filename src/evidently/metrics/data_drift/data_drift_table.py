@@ -22,10 +22,11 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_scatter_for_data_drift
+from evidently.metric_results import HistogramData
+from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class DataDriftTableResults(MetricResult):
@@ -156,12 +157,6 @@ class DataDriftTableRenderer(MetricRenderer):
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
 
-            # tabs = [
-            #     TabData(title="Carent Dataset: characteristic WORDS", widget=current_table_words),
-            #     TabData(title="Reference Dataset: characteristic WORDS", widget=reference_table_words),
-            #     TabData(title="Carent Dataset: characteristic EXAMPLES", widget=current_table_examples),
-            #     TabData(title="Reference Dataset: characteristic EXAMPLES", widget=reference_table_examples),
-            # ]
             return RichTableDataRow(
                 details=details,
                 fields={
@@ -212,10 +207,16 @@ class DataDriftTableRenderer(MetricRenderer):
                     )
                 scatter = plotly_figure(title="", figure=scatter_fig)
                 details.with_part("DATA DRIFT", info=scatter)
-            fig = get_distribution_plot_figure(
-                current_distribution=data.current.distribution,
-                reference_distribution=data.reference.distribution,
+            fig = plot_distr_with_perc_button(
+                hist_curr=HistogramData.from_distribution(data.current.distribution),
+                hist_ref=HistogramData.from_distribution(data.reference.distribution),
+                xaxis_name="",
+                yaxis_name="Count",
+                yaxis_name_perc="Percent",
+                same_color=False,
                 color_options=self.color_options,
+                subplots=False,
+                to_json=False,
             )
             distribution = plotly_figure(title="", figure=fig)
             details.with_part("DATA DISTRIBUTION", info=distribution)

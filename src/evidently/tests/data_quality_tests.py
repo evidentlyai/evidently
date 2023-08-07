@@ -29,8 +29,6 @@ from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import CheckValueParameters
 from evidently.tests.base_test import ColumnCheckValueParameters
@@ -44,13 +42,13 @@ from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.base_test import ValueSource
 from evidently.tests.utils import approx
-from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_correlations
-from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import plot_value_counts_tables
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import plot_distr_with_cond_perc_button
+from evidently.metric_results import HistogramData
 
 DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
 GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
@@ -541,15 +539,30 @@ class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
 @default_renderer(wrap_type=TestColumnValueMedian)
 class TestColumnValueFeatureRenderer(TestRenderer):
     def render_html(self, obj: BaseFeatureDataQualityMetricsTest) -> TestHtmlInfo:
-        column_name, fig, info, metric_result = self._feature_render_html(obj)
-        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
+        metric_result: ColumnSummaryResult = obj.metric.get_result()
+        column_name, info, curr_distr, ref_distr = self._feature_render_html(obj)
         current_characteristics = metric_result.current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
-
         value = obj.get_stat(current_characteristics)
+        value_name: Optional[str] = None
         if value is not None:
-            fig = plot_metric_value(fig, float(value), f"current {column_name} {obj.name.lower()}")
+            value = float(value)
+            value_name = f"current {column_name} {obj.name.lower()}"
+
+        fig = plot_distr_with_cond_perc_button(
+            hist_curr=curr_distr,
+            hist_ref=ref_distr,
+            xaxis_name="",
+            yaxis_name="count",
+            yaxis_name_perc="percent",
+            color_options=self.color_options,
+            to_json=False,
+            condition=obj.get_condition(),
+            value=value,
+            value_name=value_name,
+        )
+        
         info.with_details(f"{obj.name} {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -562,8 +575,9 @@ class TestColumnValueFeatureRenderer(TestRenderer):
             raise ValueError(f"{column_name} should be numerical or bool")
         curr_distr = bins_for_hist.current
         ref_distr = bins_for_hist.reference
-        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
-        return column_name, fig, info, metric_result
+        # fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+        # return column_name, fig, info, metric_result
+        return column_name, info, curr_distr, ref_distr
 
 
 class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
@@ -595,7 +609,17 @@ class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
 @default_renderer(wrap_type=TestColumnValueStd)
 class TestColumnValueStdRenderer(TestColumnValueFeatureRenderer):
     def render_html(self, obj: BaseFeatureDataQualityMetricsTest) -> TestHtmlInfo:
-        column_name, fig, info, _ = self._feature_render_html(obj)
+        column_name, info, curr_distr, ref_distr = self._feature_render_html(obj)
+        fig = plot_distr_with_cond_perc_button(
+            hist_curr=curr_distr,
+            hist_ref=ref_distr,
+            xaxis_name="",
+            yaxis_name="count",
+            yaxis_name_perc="percent",
+            color_options=self.color_options,
+            to_json=False,
+            condition=None,
+        )
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -883,14 +907,22 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         curr_distr = metric_result.plot_data.bins_for_hist.current
         ref_distr = metric_result.plot_data.bins_for_hist.reference
 
-        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
-        fig = plot_check(fig, ref_condition, color_options=self.color_options)
         if not isinstance(metric_result.current_characteristics, NumericCharacteristics):
             raise ValueError(f"{obj.column_name} should be numerical or bool")
         mean_value = metric_result.current_characteristics.mean
 
-        if mean_value is not None:
-            fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
+        fig = plot_distr_with_cond_perc_button(
+            hist_curr=curr_distr,
+            hist_ref=ref_distr,
+            xaxis_name="",
+            yaxis_name="count",
+            yaxis_name_perc="percent",
+            color_options=self.color_options,
+            to_json=False,
+            condition=ref_condition,
+            value=mean_value,
+            value_name=f"current {column_name} mean value",
+        )
 
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
@@ -962,16 +994,24 @@ class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
-        condition_ = TestValueCondition(gt=metric_result.left, lt=metric_result.right)
+        ref_distr = metric_result.reference.distribution
+        hist_ref = None
+        if ref_distr is not None:
+            hist_ref = HistogramData.from_distribution(metric_result.reference.distribution)
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current.distribution,
-            reference_distribution=metric_result.reference.distribution
-            if metric_result.reference is not None
-            else None,
+        fig = plot_distr_with_cond_perc_button(
+            hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
+            hist_ref=hist_ref,
+            xaxis_name="",
+            yaxis_name="count",
+            yaxis_name_perc="percent",
             color_options=self.color_options,
+            to_json=False,
+            condition=None,
+            lt=metric_result.right,
+            gt=metric_result.left,
+            dict_rename={'gt': "left", "lt": "right"},
         )
-        fig = plot_check(fig, condition_, color_options=self.color_options)
         info.with_details(
             f"Value Range {column_name.display_name}",
             plotly_figure(title="", figure=fig),
@@ -1074,22 +1114,25 @@ class TestRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current.distribution,
-            reference_distribution=metric_result.reference.distribution
-            if metric_result.reference is not None
-            else None,
+        ref_distr = metric_result.reference.distribution
+        hist_ref = None
+        if ref_distr is not None:
+            hist_ref = HistogramData.from_distribution(metric_result.reference.distribution)
+        info = super().render_html(obj)
+        fig = plot_distr_with_cond_perc_button(
+            hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
+            hist_ref=hist_ref,
+            xaxis_name="",
+            yaxis_name="count",
+            yaxis_name_perc="percent",
             color_options=self.color_options,
+            to_json=False,
+            condition=None,
+            lt=metric_result.right,
+            gt=metric_result.left,
+            dict_rename={'gt': "left", "lt": "right"},
         )
-        plot_condition = TestValueCondition(gt=obj.left, lt=obj.right)
-        fig = plot_check(fig, plot_condition, color_options=self.color_options)
-        newnames = {"gt": "left", "lt": "right", "current": "current", "reference": "reference"}
-        fig.for_each_trace(
-            lambda t: t.update(
-                name=newnames[t.name],
-                legendgroup=newnames[t.name],
-            )
-        )
+        
         info.with_details(f"{obj.name} for {column_name.display_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -1332,18 +1375,21 @@ class TestColumnQuantileRenderer(TestRenderer):
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
-        fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current.distribution,
-            reference_distribution=metric_result.reference.distribution
-            if metric_result.reference is not None
-            else None,
+        ref_distr = metric_result.reference.distribution
+        hist_ref = None
+        if ref_distr is not None:
+            hist_ref = HistogramData.from_distribution(metric_result.reference.distribution)
+        fig = plot_distr_with_cond_perc_button(
+            hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
+            hist_ref=hist_ref,
+            xaxis_name="",
+            yaxis_name="count",
+            yaxis_name_perc="percent",
             color_options=self.color_options,
-        )
-        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        fig = plot_metric_value(
-            fig,
-            obj.metric.get_result().current.value,
-            f"current {column_name} {metric_result.quantile} quantile",
+            to_json=False,
+            condition=obj.get_condition(),
+            value=obj.metric.get_result().current.value,
+            value_name="current quantile",
         )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
