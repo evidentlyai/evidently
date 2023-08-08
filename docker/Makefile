@@ -14,7 +14,7 @@ SOURCES_DIR ?= ../
 GIT_COMMIT = $(strip $(shell git rev-parse --short HEAD))
 
 # Get the version number from the code
-CODE_VERSION = $(strip $(shell cat ../src/evidently/_version.py | grep "version_info = " | grep -Po "\d+" |  tr '\n' . | cut -c 1-5))
+CODE_VERSION = $(strip $(shell python -c "from evidently import __version__; print(__version__)" || cat ../src/evidently/_version.py | grep "version_info = " | grep -Po "\d+" |  tr '\n' . | cut -c 1-5))
 
 # Find out if the working directory is clean
 GIT_NOT_CLEAN_CHECK = $(shell git status --porcelain)
@@ -32,7 +32,7 @@ $(error You need to create a VERSION file to build a release)
 endif
 
 # See what commit is tagged to match the version
-VERSION_COMMIT = $(strip $(shell git rev-list v$(CODE_VERSION) -n 1 | cut -c1-7))
+VERSION_COMMIT = $(strip $(shell git rev-list v$(CODE_VERSION) -n 1 | cut -c1-8))
 ifneq ($(VERSION_COMMIT), $(GIT_COMMIT))
 $(error echo You are trying to push a build based on commit $(GIT_COMMIT) but the tagged release version is $(VERSION_COMMIT))
 endif

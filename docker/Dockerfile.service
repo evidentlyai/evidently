@@ -29,4 +29,4 @@ RUN apt-get update && \
     && rm -rf /src
 
 WORKDIR /app
-CMD evidently ui
+ENTRYPOINT ["evidently", "ui"]
