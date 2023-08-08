@@ -11,6 +11,7 @@ from pydantic import parse_obj_as
 
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.dashboards import DashboardConfig
+from evidently.ui.workspace import STR_UUID
 from evidently.ui.workspace import ProjectBase
 from evidently.ui.workspace import WorkspaceBase
 from evidently.utils import NumpyEncoder
@@ -69,11 +70,17 @@ class RemoteWorkspace(WorkspaceBase[RemoteProject]):
     def get_project(self, project_id: uuid.UUID) -> RemoteProject:
         return self._request(f"/api/projects/{project_id}", "GET", response_model=RemoteProject)
 
+    def delete_project(self, project_id: STR_UUID):
+        return self._request(f"/api/projects/{project_id}", "DELETE")
+
     def list_projects(self) -> List[RemoteProject]:
         return self._request("/api/projects", "GET", response_model=List[RemoteProject])
 
     def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
         return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())
+
+    def delete_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        return self._request(f"/api/projects/{project_id}/{snapshot_id}", "DELETE")
 
     def search_project(self, project_name: str) -> List[RemoteProject]:
         return [
