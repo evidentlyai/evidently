@@ -8,6 +8,7 @@ from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
+from evidently.metric_results import HistogramData
 from evidently.metrics.data_drift.base import WithDriftOptions
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
@@ -24,9 +25,8 @@ from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_agg_line_data
-from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.metric_results import HistogramData
 from evidently.utils.visualizations import plot_distr_with_perc_button
+from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 class DataDriftTableResults(MetricResult):

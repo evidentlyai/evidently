@@ -19,6 +19,7 @@ from evidently.calculations.data_drift import get_distribution_for_column
 from evidently.calculations.data_drift import get_stattest
 from evidently.calculations.data_drift import get_text_data_for_plots
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_results import HistogramData
 from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
@@ -32,10 +33,9 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
-from evidently.utils.visualizations import plot_distr_with_perc_button
-from evidently.metric_results import HistogramData
 
 
 def get_one_column_drift(

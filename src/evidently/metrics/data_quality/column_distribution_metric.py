@@ -10,6 +10,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
+from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -19,7 +20,6 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
-from evidently.metric_results import HistogramData
 
 
 class ColumnDistributionMetricResult(MetricResult):

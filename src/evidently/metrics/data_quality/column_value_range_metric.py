@@ -27,7 +27,6 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
-from evidently.metric_results import HistogramData
 
 
 class ValuesInRangeStat(MetricResult):
@@ -180,7 +179,7 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
 
         else:
             reference_histogram = None
-            
+
         figure = plot_distr_with_cond_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
             hist_ref=reference_histogram,

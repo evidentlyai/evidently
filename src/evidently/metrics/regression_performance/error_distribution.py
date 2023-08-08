@@ -81,7 +81,7 @@ class RegressionErrorDistributionRenderer(MetricRenderer):
             same_color=True,
             color_options=self.color_options,
         )
-        
+
         return [
             header_text(label="Error Distribution"),
             BaseWidgetInfo(

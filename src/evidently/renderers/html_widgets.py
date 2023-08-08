@@ -22,7 +22,6 @@ from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
-from evidently.utils.types import Numeric
 
 
 class WidgetSize(Enum):

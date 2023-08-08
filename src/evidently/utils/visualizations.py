@@ -1,9 +1,9 @@
 import json
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
-from typing import TYPE_CHECKING
 from typing import Union
 
 import numpy as np
@@ -22,6 +22,7 @@ from evidently.metric_results import Label
 from evidently.metric_results import ScatterData
 from evidently.options.color_scheme import ColorOptions
 from evidently.utils.types import ApproxValue
+
 if TYPE_CHECKING:
     from evidently.tests.base_test import TestValueCondition
 
@@ -63,46 +64,31 @@ def plot_distr(
     return fig
 
 
-def collect_updatemenus(name1: str, name2: str, y_name_1: str, y_name_2: str, visible: List[str]):
-    button1 = dict(
-        method='update',
-        args=[{"visible": visible}, {'yaxis': {'title': y_name_1}}],
-        label=name1
-    )
+def collect_updatemenus(name1: str, name2: str, y_name_1: str, y_name_2: str, visible: List[bool]):
+    button1 = dict(method="update", args=[{"visible": visible}, {"yaxis": {"title": y_name_1}}], label=name1)
     button2 = dict(
-        method='update',
-        args=[{"visible": [not x for x in visible]}, {'yaxis': {'title': y_name_2}}],
-        label=name2
+        method="update", args=[{"visible": [not x for x in visible]}, {"yaxis": {"title": y_name_2}}], label=name2
     )
-    updatemenus =[
-        dict(
-            type='buttons',
-            direction="right",
-            buttons=[button1, button2],
-            x=1.05,
-            y=1.2,
-            yanchor="top"
-        )
-    ]
+    updatemenus = [dict(type="buttons", direction="right", buttons=[button1, button2], x=1.05, y=1.2, yanchor="top")]
     return updatemenus
 
 
 def add_traces_with_perc(fig, hist_data, x, y, marker_color, name):
     trace_1 = go.Bar(
-                x=hist_data.x,
-                y=hist_data.count,
-                visible=True,
-                marker_color=marker_color,
-                name=name,
-            )
+        x=hist_data.x,
+        y=hist_data.count,
+        visible=True,
+        marker_color=marker_color,
+        name=name,
+    )
 
     trace_2 = go.Bar(
-                x=hist_data.x,
-                y=(hist_data.count / hist_data.count.sum()) * 100,
-                visible=False,
-                marker_color=marker_color,
-                name=name,
-            )
+        x=hist_data.x,
+        y=(hist_data.count / hist_data.count.sum()) * 100,
+        visible=False,
+        marker_color=marker_color,
+        name=name,
+    )
 
     fig.add_trace(trace_1, x, y)
     fig.add_trace(trace_2, x, y)
@@ -115,7 +101,7 @@ def plot_distr_with_perc_button(
     hist_ref: Optional[HistogramData] = None,
     xaxis_name: str = "",
     yaxis_name: str = "",
-    yaxis_name_perc: Optional[str] = None,
+    yaxis_name_perc: str = "",
     same_color: bool = False,
     color_options: ColorOptions,
     subplots: bool = True,
@@ -137,16 +123,16 @@ def plot_distr_with_perc_button(
         cols = 2
         subplot_titles = ["current", "reference"]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    
+
     fig = add_traces_with_perc(fig, hist_curr, 1, 1, curr_color, "current")
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     if hist_ref is not None:
         fig = add_traces_with_perc(fig, hist_ref, 1, int(is_subplots) + 1, ref_color, "reference")
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
         visible += [True, False]
-    
+
     fig.update_layout(yaxis_title=yaxis_name)
-    
+
     updatemenus = collect_updatemenus("abs", "perc", yaxis_name, yaxis_name_perc, visible)
     fig.update_layout(updatemenus=updatemenus)
     if is_subplots:
@@ -162,7 +148,7 @@ def plot_distr_with_cond_perc_button(
     hist_ref: Optional[HistogramData] = None,
     xaxis_name: str = "",
     yaxis_name: str = "",
-    yaxis_name_perc: Optional[str] = None,
+    yaxis_name_perc: str = "",
     color_options: ColorOptions,
     to_json: bool = True,
     condition: Optional["TestValueCondition"],
@@ -235,14 +221,14 @@ def plot_distr_with_cond_perc_button(
                 opacity=0.25,
                 line_width=0,
             )
-        
+
     if gt is not None:
         left_line = gt
-        left_line_name = dict_rename.get('gt', 'gt')
+        left_line_name = dict_rename.get("gt", "gt")
         lines.append((left_line, left_line_name))
     if lt is not None:
         right_line = lt
-        right_line_name = dict_rename.get('lt', 'lt')
+        right_line_name = dict_rename.get("lt", "lt")
         lines.append((right_line, right_line_name))
     if value is not None and value_name is not None:
         lines.append((value, value_name))
@@ -251,7 +237,6 @@ def plot_distr_with_cond_perc_button(
     max_y = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[visible]])
     not_visible = [not x for x in visible]
     max_y_perc = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[not_visible]])
-    logging.warning(lines)
 
     if len(lines) > 0:
         for line, name in lines:
@@ -265,7 +250,7 @@ def plot_distr_with_cond_perc_button(
                     name=name,
                 ),
                 1,
-                1
+                1,
             )
             fig.add_trace(
                 go.Scatter(
@@ -277,23 +262,22 @@ def plot_distr_with_cond_perc_button(
                     name=name,
                 ),
                 1,
-                1
+                1,
             )
             visible += [True, False]
 
     if fill and left_line and right_line:
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
-    
-   
+
     fig.update_xaxes(title_text=xaxis_name)
     fig.update_layout(yaxis_title=yaxis_name)
-    
+
     updatemenus = collect_updatemenus("abs", "perc", yaxis_name, yaxis_name_perc, visible)
     fig.update_layout(updatemenus=updatemenus)
     if to_json:
         fig = json.loads(fig.to_json())
     return fig
-    
+
 
 def plot_distr_with_log_button(
     curr_data: HistogramData,
@@ -607,8 +591,6 @@ def plot_cat_cat_rel(
         subplot_titles = ["current", "reference"]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     visible = []
-    # logging.warning(type(curr))
-    # logging.warning(type(curr[target_name]))
     for i, val in enumerate(curr[target_name].astype(str).unique()):
         trace = go.Bar(
             x=curr.loc[curr[target_name] == val, feature_name],

@@ -13,6 +13,7 @@ from evidently.base_metric import ColumnName
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
+from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.metrics import EmbeddingsDriftMetric
@@ -39,7 +40,6 @@ from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_contour_single
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
-from evidently.metric_results import HistogramData
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
@@ -518,15 +518,15 @@ class TestColumnDriftRenderer(TestRenderer):
             if result.current.distribution is None:
                 raise ValueError("Expected data is missing")
             fig = plot_distr_with_cond_perc_button(
-            hist_curr=HistogramData.from_distribution(result.current.distribution),
-            hist_ref=HistogramData.from_distribution(result.reference.distribution),
-            xaxis_name="",
-            yaxis_name="count",
-            yaxis_name_perc="percent",
-            color_options=self.color_options,
-            to_json=False,
-            condition=None,
-        )
+                hist_curr=HistogramData.from_distribution(result.current.distribution),
+                hist_ref=HistogramData.from_distribution(result.reference.distribution),
+                xaxis_name="",
+                yaxis_name="count",
+                yaxis_name_perc="percent",
+                color_options=self.color_options,
+                to_json=False,
+                condition=None,
+            )
             info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info
 

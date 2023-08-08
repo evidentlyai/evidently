@@ -23,7 +23,6 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
-from evidently.metric_results import HistogramData
 
 
 class QuantileStats(MetricResult):
@@ -135,7 +134,7 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
 
         else:
             reference_quantile = None
-        
+
         figure = plot_distr_with_cond_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
             hist_ref=reference_histogram_data,

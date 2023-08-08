@@ -11,6 +11,7 @@ import pandas as pd
 from evidently.base_metric import ColumnName
 from evidently.calculations.data_quality import get_corr_method
 from evidently.metric_results import DatasetColumns
+from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
@@ -48,7 +49,6 @@ from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
-from evidently.metric_results import HistogramData
 
 DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
 GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
@@ -562,7 +562,7 @@ class TestColumnValueFeatureRenderer(TestRenderer):
             value=value,
             value_name=value_name,
         )
-        
+
         info.with_details(f"{obj.name} {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -994,9 +994,9 @@ class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
-        ref_distr = metric_result.reference.distribution
+        ref_data = metric_result.reference
         hist_ref = None
-        if ref_distr is not None:
+        if ref_data is not None:
             hist_ref = HistogramData.from_distribution(metric_result.reference.distribution)
         info = super().render_html(obj)
         fig = plot_distr_with_cond_perc_button(
@@ -1010,7 +1010,7 @@ class TestValueRangeRenderer(TestRenderer):
             condition=None,
             lt=metric_result.right,
             gt=metric_result.left,
-            dict_rename={'gt': "left", "lt": "right"},
+            dict_rename={"gt": "left", "lt": "right"},
         )
         info.with_details(
             f"Value Range {column_name.display_name}",
@@ -1114,9 +1114,9 @@ class TestRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        ref_distr = metric_result.reference.distribution
+        ref_data = metric_result.reference
         hist_ref = None
-        if ref_distr is not None:
+        if ref_data is not None:
             hist_ref = HistogramData.from_distribution(metric_result.reference.distribution)
         info = super().render_html(obj)
         fig = plot_distr_with_cond_perc_button(
@@ -1130,9 +1130,9 @@ class TestRangeValuesRenderer(TestRenderer):
             condition=None,
             lt=metric_result.right,
             gt=metric_result.left,
-            dict_rename={'gt': "left", "lt": "right"},
+            dict_rename={"gt": "left", "lt": "right"},
         )
-        
+
         info.with_details(f"{obj.name} for {column_name.display_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -1374,10 +1374,9 @@ class TestColumnQuantileRenderer(TestRenderer):
     def render_html(self, obj: TestColumnQuantile) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        column_name = metric_result.column_name
-        ref_distr = metric_result.reference.distribution
+        ref_data = metric_result.reference
         hist_ref = None
-        if ref_distr is not None:
+        if ref_data is not None:
             hist_ref = HistogramData.from_distribution(metric_result.reference.distribution)
         fig = plot_distr_with_cond_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
