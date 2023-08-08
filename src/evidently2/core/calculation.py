@@ -1,5 +1,8 @@
 import abc
-from typing import Any, Generic, Optional, TypeVar
+from typing import Any
+from typing import Generic
+from typing import Optional
+from typing import TypeVar
 
 import pandas as pd
 
@@ -11,15 +14,18 @@ from evidently.utils.data_preprocessing import DataDefinition
 class CalculationResult(EvidentlyBaseModel):
     pass
 
+
 CI = TypeVar("CI")
 CR = TypeVar("CR")
 
 DataType = pd.DataFrame
 
+
 class _CalculationBase(EvidentlyBaseModel):
     @abc.abstractmethod
     def get_result(self):
         raise NotImplementedError
+
 
 class Calculation(_CalculationBase, Generic[CI, CR]):
     input_data: "_CalculationBase"
@@ -40,6 +46,7 @@ class InputValue(_CalculationBase):
 
     def get_result(self):
         return self.data
+
 
 class InputData:
     def __init__(self, current_data, reference_data, data_definition: DataDefinition):

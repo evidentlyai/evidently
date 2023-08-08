@@ -8,22 +8,36 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chisquare
 
-from evidently2.core.calculation import CI, InputValue
+from evidently2.core.calculation import CI
 from evidently2.core.calculation import CR
 from evidently2.core.calculation import Calculation
 from evidently2.core.calculation import InputColumnData
 from evidently2.core.calculation import InputData
+from evidently2.core.calculation import InputValue
 from evidently2.core.calculation import _CalculationBase
+from evidently2.core.metric import ColumnMetricResultCalculation
 from evidently2.core.metric import Metric
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
 from evidently.core import ColumnType
+from evidently.metric_results import Distribution
 from evidently.options import DataDriftOptions
 from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ColumnDriftResult(ColumnMetricResult):
+    stattest_name: str
+    stattest_threshold: Optional[float]
+    drift_score: float
+    drift_detected: bool
+
+    current_small_distribution: Distribution
+    reference_small_distribution: Optional[Distribution]
+
+
+# todo: generate dynamically?
+class ColumnDriftResultCalculation(ColumnMetricResultCalculation[ColumnDriftResult]):
     stattest_name: str
     stattest_threshold: Optional[float]
     drift_score: Calculation
@@ -40,7 +54,7 @@ class ColumnDriftMetric(Metric[ColumnDriftResult]):
     stattest: Optional[str]
     stattest_threshold: Optional[float]
 
-    def calculate(self, data: InputData) -> ColumnDriftResult:
+    def calculate(self, data: InputData) -> ColumnDriftResultCalculation:
         try:
             current_feature_data = data.get_current_column(self.column_name)
         except ColumnNotFound as ex:
@@ -60,7 +74,7 @@ class ColumnDriftMetric(Metric[ColumnDriftResult]):
             column=self.column_name,
             column_type=column_type,
             options=options,
-            data_definition=data.data_definition
+            data_definition=data.data_definition,
         )
 
         return drift_result
@@ -95,7 +109,7 @@ class StatTest:
     default_threshold: float = 0.05
 
     def __call__(
-            self, reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: Optional[float]
+        self, reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: Optional[float]
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
         p = self.func(reference_data, current_data, feature_type, actual_threshold)
@@ -131,8 +145,10 @@ class UnionList(Calculation):
 
 def get_unique_not_nan_values_list_from_series(current_data: Calculation, reference_data: Calculation) -> Calculation:
     """Get unique values from current and reference series, drop NaNs"""
-    return UnionList(input_data=CreateSet(input_data=Unique(input_data=DropNA(input_data=current_data))),
-                     second=CreateSet(input_data=Unique(input_data=DropNA(input_data=reference_data))))
+    return UnionList(
+        input_data=CreateSet(input_data=Unique(input_data=DropNA(input_data=current_data))),
+        second=CreateSet(input_data=Unique(input_data=DropNA(input_data=reference_data))),
+    )
     # return list(set(reference_data.dropna().unique()) | set(current_data.dropna().unique()))
 
 
@@ -174,7 +190,7 @@ class ChiSquare(Calculation):
     def calculate(self, data: CI) -> CR:
         exp = self.exp.get_result()
         keys = set(data.keys()) | set(exp.keys())
-        return chisquare([data.get(k, 0) for k in keys], [ exp.get(k, 0) for k in keys])[1]
+        return chisquare([data.get(k, 0) for k in keys], [exp.get(k, 0) for k in keys])[1]
 
 
 class LessThen(Calculation):
@@ -185,7 +201,7 @@ class LessThen(Calculation):
 
 
 def _chi_stat_test(
-        reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: float
+    reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: float
 ) -> Tuple[Calculation, Calculation]:
     # keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     # k_norm = current_data.shape[0] / reference_data.shape[0]
@@ -225,29 +241,28 @@ def _get_default_stattest(reference_data: pd.Series, feature_type: str) -> StatT
     raise ValueError(f"Unexpected feature_type {feature_type}")
 
 
-def get_stattest(
-        reference_data: Calculation, feature_type: str, stattest_func: Optional[str]
-) -> StatTest:
+def get_stattest(reference_data: Calculation, feature_type: str, stattest_func: Optional[str]) -> StatTest:
     if stattest_func is None:
         return _get_default_stattest(reference_data.get_result(), feature_type)
 
 
-class Histogram(Calculation[pd.Series, Tuple[np.ndarray, np.ndarray]]):
+class Histogram(Calculation[pd.Series, Distribution]):
     bins: int
     density: bool
 
     def __init__(self, input_data: _CalculationBase, bins: int, density: bool):
         super().__init__(input_data=input_data, bins=bins, density=density)
 
-    def calculate(self, data: pd.Series) -> Tuple[list, list]:
-        return tuple([
+    def calculate(self, data: pd.Series) -> Distribution:
+        y, x = [
             t.tolist()
             for t in np.histogram(
                 data,
                 bins=self.bins,
                 density=self.density,
             )
-        ])
+        ]
+        return Distribution(x=x, y=y)
 
 
 class Mask(Calculation[pd.Series, pd.Series]):
@@ -269,14 +284,14 @@ class IsFinite(Calculation[pd.Series, pd.Series]):
 
 
 def get_one_column_drift(
-        *,
-        current_feature_data: InputColumnData,
-        reference_feature_data: InputColumnData,
-        column: ColumnName,
-        options: DataDriftOptions,
-        data_definition: DataDefinition,
-        column_type: ColumnType,
-) -> ColumnDriftResult:
+    *,
+    current_feature_data: InputColumnData,
+    reference_feature_data: InputColumnData,
+    column: ColumnName,
+    options: DataDriftOptions,
+    data_definition: DataDefinition,
+    column_type: ColumnType,
+) -> ColumnDriftResultCalculation:
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column}' with type {column_type}")
 
@@ -298,7 +313,9 @@ def get_one_column_drift(
     reference_column = reference_feature_data
 
     # clean and check the column in reference dataset
-    reference_column = CleanColumn(input_data=reference_column)  # reference_column.replace([-np.inf, np.inf], np.nan).dropna()
+    reference_column = CleanColumn(
+        input_data=reference_column
+    )  # reference_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if reference_column.empty:
         raise ValueError(
@@ -306,7 +323,9 @@ def get_one_column_drift(
         )
 
     # clean and check the column in current dataset
-    current_column = CleanColumn(input_data=current_column)  # current_column.replace([-np.inf, np.inf], np.nan).dropna()
+    current_column = CleanColumn(
+        input_data=current_column
+    )  # current_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if current_column.empty:
         raise ValueError(f"An empty column '{column.name}' was provided for drift calculation in the current dataset.")
@@ -327,17 +346,22 @@ def get_one_column_drift(
     if column_type == ColumnType.Numerical:
         current_nbinsx = options.get_nbinsx(column.name)
 
-        current_small_distribution = Histogram(Mask(current_column, IsFinite(current_column)), bins=current_nbinsx, density=True)
-        reference_small_distribution = Histogram(Mask(reference_column, IsFinite(reference_column)), bins=current_nbinsx, density=True)
+        current_small_distribution = Histogram(
+            Mask(current_column, IsFinite(current_column)), bins=current_nbinsx, density=True
+        )
+        reference_small_distribution = Histogram(
+            Mask(reference_column, IsFinite(reference_column)), bins=current_nbinsx, density=True
+        )
 
-    metrics = ColumnDriftResult(column_name=column.name,
-                                column_type=column_type.name,
+    metrics = ColumnDriftResultCalculation(
+        column_name=column.name,
+        column_type=column_type.name,
         stattest_name=drift_test_function.display_name,
-                                stattest_threshold=drift_result.actual_threshold,
-                                drift_score=drift_result.drift_score,
-                                drift_detected=drift_result.drifted,
-                                current_small_distribution=current_small_distribution,
-                                reference_small_distribution=reference_small_distribution
-                                )
+        stattest_threshold=drift_result.actual_threshold,
+        drift_score=drift_result.drift_score,
+        drift_detected=drift_result.drifted,
+        current_small_distribution=current_small_distribution,
+        reference_small_distribution=reference_small_distribution,
+    )
 
     return metrics
