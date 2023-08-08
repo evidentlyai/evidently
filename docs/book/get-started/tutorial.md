@@ -146,7 +146,7 @@ report
 It will display the HTML report directly in the notebook. 
 
 {% hint style="info" %}
-**Note**: If you are using other notebook environments, e.g., Databricks, Kaggle and Deepnote notebooks, or Jypyter notebook on Windows, you should add an argument to display the report inline: report.show(mode='inline'). Consult [this section](../integrations/notebook-environments.md) for help.
+**Note**: If you are using other notebook environments, e.g., Databricks, Kaggle and Deepnote notebooks, or Jupyter notebook on Windows, you should add an argument to display the report inline: report.show(mode='inline'). Consult [this section](../integrations/notebook-environments.md) for help.
 {% endhint %}
 
 First, you can see the Data Drift summary.
@@ -338,7 +338,7 @@ To understand the contents of each Preset, head to the [Preset overview](../pres
 
 * **Learn how to get a Monitoring Dashboard**
  
-If you want to track the results of different checks over time, you can self-host an ML monitoring dashboard. Go throgh this [tutorial](tutorial-monitoring.MD).
+If you want to track the results of different checks over time, you can self-host an ML monitoring dashboard. Go through this [tutorial](tutorial-monitoring.MD).
 
 Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
