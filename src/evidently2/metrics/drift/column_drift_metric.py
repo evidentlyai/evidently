@@ -11,9 +11,10 @@ from scipy.stats import chisquare
 from evidently2.core.calculation import CI
 from evidently2.core.calculation import CR
 from evidently2.core.calculation import Calculation
+from evidently2.core.calculation import Constant
 from evidently2.core.calculation import InputColumnData
 from evidently2.core.calculation import InputData
-from evidently2.core.calculation import InputValue
+from evidently2.core.calculation import NoInputError
 from evidently2.core.calculation import _CalculationBase
 from evidently2.core.metric import ColumnMetricResultCalculation
 from evidently2.core.metric import Metric
@@ -87,7 +88,10 @@ class CleanColumn(Calculation[pd.Series, pd.Series]):
     @property
     def empty(self):
         # todo: can we do this lazy?
-        return self.get_result().empty
+        try:
+            return self.get_result().empty
+        except NoInputError:
+            return False
 
 
 @dataclasses.dataclass
@@ -211,7 +215,7 @@ def _chi_stat_test(
     f_exp = MultDict(input_data=ref_feature_dict, mul=k_norm)
     p_value = ChiSquare(input_data=current_feature_dict, exp=f_exp)
     # return p_value, p_value < threshold
-    return p_value, LessThen(input_data=p_value, second=InputValue(data=threshold))
+    return p_value, LessThen(input_data=p_value, second=Constant(value=threshold))
 
 
 chi_stat_test = StatTest(
