@@ -11,3 +11,4 @@ pydantic==1.10
 typer==0.9
 rich==13
 iterative-telemetry==0.0.5
+watchdog==3.0.0

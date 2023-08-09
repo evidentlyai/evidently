@@ -80,7 +80,7 @@ Open and explore the `get_started_monitoring.py`.
 This script does the following:
 * Imports the required components
 * Imports a toy dataset 
-* Defines the metrics to log using Evidenty Reports and Test Suites 
+* Defines the metrics to log using Evidently Reports and Test Suites 
 * Computes the metrics iterating over toy data 
 * Creates a new Evidently workspace and project
 * Creates several panels to visualize the metrics  

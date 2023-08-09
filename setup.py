@@ -59,6 +59,7 @@ setup_args = dict(
         "pydantic>=1.10,<2",
         "fastapi>=0.98.0",
         "uvicorn>=0.22.0",
+        "watchdog>=3",
         "typer>=0.9",
         "rich>=13",
         "iterative-telemetry==0.0.5"  # todo: until we support 3.7

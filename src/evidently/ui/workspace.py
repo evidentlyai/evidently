@@ -2,6 +2,7 @@ import abc
 import datetime
 import json
 import os
+import shutil
 import uuid
 from typing import Dict
 from typing import Generic
@@ -124,6 +125,15 @@ class Project(ProjectBase["Workspace"]):
         snapshot.save(item.path)
         self._snapshots[item.id] = item
 
+    def delete_snapshot(self, snapshot_id: Union[str, uuid.UUID]):
+        if isinstance(snapshot_id, str):
+            snapshot_id = uuid.UUID(snapshot_id)
+        if snapshot_id in self._snapshots:
+            del self._snapshots[snapshot_id]
+        path = os.path.join(self.path, SNAPSHOTS, f"{snapshot_id}.json")
+        if os.path.exists(path):
+            os.unlink(path)
+
     @classmethod
     def load(cls, path: str) -> "Project":
         try:
@@ -147,14 +157,18 @@ class Project(ProjectBase["Workspace"]):
             snapshot_id = uuid.UUID(file[: -len(".json")])
             if snapshot_id in self._snapshots:
                 continue
-            filepath = os.path.join(path, file)
-            try:
-                suite = Snapshot.load(filepath)
-            except ValidationError:
-                if skip_errors:
-                    continue
-                raise
+            self.reload_snapshot(snapshot_id, skip_errors)
+
+    def reload_snapshot(self, snapshot_id: Union[str, uuid.UUID], skip_errors=True):
+        if isinstance(snapshot_id, str):
+            snapshot_id = uuid.UUID(snapshot_id)
+        path = os.path.join(self.path, SNAPSHOTS, str(snapshot_id) + ".json")
+        try:
+            suite = Snapshot.load(path)
             self._snapshots[snapshot_id] = ProjectSnapshot(snapshot_id, self, suite)
+        except ValidationError:
+            if not skip_errors:
+                raise
 
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
@@ -203,6 +217,8 @@ class Project(ProjectBase["Workspace"]):
 
 PT = TypeVar("PT", bound=ProjectBase)
 
+STR_UUID = Union[str, uuid.UUID]
+
 
 class WorkspaceBase(abc.ABC, Generic[PT]):
     @abc.abstractmethod
@@ -218,17 +234,25 @@ class WorkspaceBase(abc.ABC, Generic[PT]):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def delete_project(self, project_id: STR_UUID):
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def list_projects(self) -> List[PT]:
         raise NotImplementedError
 
-    def add_report(self, project_id: Union[str, uuid.UUID], report: Report):
+    def add_report(self, project_id: STR_UUID, report: Report):
         self.add_snapshot(project_id, report.to_snapshot())
 
-    def add_test_suite(self, project_id: Union[str, uuid.UUID], test_suite: TestSuite):
+    def add_test_suite(self, project_id: STR_UUID, test_suite: TestSuite):
         self.add_snapshot(project_id, test_suite.to_snapshot())
 
     @abc.abstractmethod
-    def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
+    def add_snapshot(self, project_id: STR_UUID, snapshot: Snapshot):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def delete_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -271,7 +295,7 @@ class Workspace(WorkspaceBase[Project]):
         ]
         return {p.id: p for p in projects}
 
-    def get_project(self, project_id: Union[str, uuid.UUID]) -> Optional[Project]:
+    def get_project(self, project_id: STR_UUID) -> Optional[Project]:
         if isinstance(project_id, str):
             project_id = uuid.UUID(project_id)
         return self._projects.get(project_id, None)
@@ -279,13 +303,33 @@ class Workspace(WorkspaceBase[Project]):
     def list_projects(self) -> List[Project]:
         return list(self._projects.values())
 
-    def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
+    def add_snapshot(self, project_id: STR_UUID, snapshot: Snapshot):
         if isinstance(project_id, str):
             project_id = uuid.UUID(project_id)
         self._projects[project_id].add_snapshot(snapshot)
 
+    def delete_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
+        self._projects[project_id].delete_snapshot(snapshot_id)
+
     def search_project(self, project_name: str) -> List[Project]:
         return [p for p in self._projects.values() if p.name == project_name]
+
+    def reload_project(self, project_id: STR_UUID):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
+        project = Project.load(os.path.join(self.path, str(project_id))).bind(self)
+        self._projects[project.id] = project
+
+    def delete_project(self, project_id: STR_UUID):
+        if isinstance(project_id, str):
+            project_id = uuid.UUID(project_id)
+        if project_id in self._projects:
+            del self._projects[project_id]
+        path = os.path.join(self.path, str(project_id))
+        if os.path.exists(path):
+            shutil.rmtree(path)
 
 
 def upload_snapshot(item: ReportBase, workspace_or_url: Union[str, WorkspaceBase], project_id: Union[uuid.UUID, str]):
