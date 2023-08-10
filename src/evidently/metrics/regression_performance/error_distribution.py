@@ -13,7 +13,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import make_hist_for_num_plot
-from evidently.utils.visualizations import plot_distr_subplots
+from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class RegressionErrorDistributionResults(MetricResult):
@@ -72,14 +72,16 @@ class RegressionErrorDistributionRenderer(MetricRenderer):
         if result.reference_bins is not None:
             reference_bins = result.reference_bins
 
-        fig = plot_distr_subplots(
+        fig = plot_distr_with_perc_button(
             hist_curr=current_bins,
             hist_ref=reference_bins,
             xaxis_name="Error (Predicted - Actual)",
-            yaxis_name="Percentage",
+            yaxis_name="Number Of Objects",
+            yaxis_name_perc="Percent",
             same_color=True,
             color_options=self.color_options,
         )
+
         return [
             header_text(label="Error Distribution"),
             BaseWidgetInfo(

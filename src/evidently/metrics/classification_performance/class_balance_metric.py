@@ -13,7 +13,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import make_hist_for_cat_plot
-from evidently.utils.visualizations import plot_distr_subplots
+from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class ClassificationClassBalanceResult(MetricResult):
@@ -57,14 +57,16 @@ class ClassificationClassBalanceRenderer(MetricRenderer):
         current_plot_data = metric_result.plot_data.current
         reference_plot_data = metric_result.plot_data.reference
 
-        fig = plot_distr_subplots(
+        fig = plot_distr_with_perc_button(
             hist_curr=current_plot_data,
             hist_ref=reference_plot_data,
             xaxis_name="Class",
             yaxis_name="Number Of Objects",
+            yaxis_name_perc="Percent",
             same_color=True,
             color_options=self.color_options,
         )
+
         return [
             header_text(label="Class Representation"),
             BaseWidgetInfo(

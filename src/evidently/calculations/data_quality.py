@@ -453,8 +453,9 @@ def plot_data(
             }
 
         if column_type == ColumnType.Categorical and target_type == ColumnType.Categorical:
+            target_current_, target_reference_ = relabel_data(target_current, target_reference, merge_small_categories)
             result = get_data_for_cat_cat_plot(
-                column_name, target_name, current_data, target_current, reference_data, target_reference
+                column_name, target_name, current_data, target_current_, reference_data, target_reference_
             )
             data_by_target = {
                 "count_data": result,

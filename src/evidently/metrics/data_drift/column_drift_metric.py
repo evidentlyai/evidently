@@ -19,6 +19,7 @@ from evidently.calculations.data_drift import get_distribution_for_column
 from evidently.calculations.data_drift import get_stattest
 from evidently.calculations.data_drift import get_text_data_for_plots
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_results import HistogramData
 from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
@@ -31,8 +32,8 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
@@ -378,12 +379,17 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
         if result.current.distribution is not None and result.reference.distribution is not None:
-            distr_fig = get_distribution_plot_figure(
-                current_distribution=result.current.distribution,
-                reference_distribution=result.reference.distribution,
+            distr_fig = plot_distr_with_perc_button(
+                hist_curr=HistogramData.from_distribution(result.current.distribution),
+                hist_ref=HistogramData.from_distribution(result.reference.distribution),
+                xaxis_name="",
+                yaxis_name="Count",
+                yaxis_name_perc="Percent",
+                same_color=False,
                 color_options=self.color_options,
+                subplots=False,
+                to_json=False,
             )
-            # figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
             tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
 
         if (

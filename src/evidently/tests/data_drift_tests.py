@@ -13,6 +13,7 @@ from evidently.base_metric import ColumnName
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
+from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.metrics import EmbeddingsDriftMetric
@@ -24,7 +25,6 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import ConditionTestParameters
 from evidently.tests.base_test import ExcludeNoneMixin
@@ -39,6 +39,7 @@ from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_contour_single
+from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
@@ -516,10 +517,15 @@ class TestColumnDriftRenderer(TestRenderer):
         else:
             if result.current.distribution is None:
                 raise ValueError("Expected data is missing")
-            fig = get_distribution_plot_figure(
-                current_distribution=result.current.distribution,
-                reference_distribution=result.reference.distribution,
+            fig = plot_distr_with_cond_perc_button(
+                hist_curr=HistogramData.from_distribution(result.current.distribution),
+                hist_ref=HistogramData.from_distribution(result.reference.distribution),
+                xaxis_name="",
+                yaxis_name="count",
+                yaxis_name_perc="percent",
                 color_options=self.color_options,
+                to_json=False,
+                condition=None,
             )
             info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info
