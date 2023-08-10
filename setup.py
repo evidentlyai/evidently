@@ -53,7 +53,6 @@ setup_args = dict(
         "pandas>=1.3.5",
         "numpy>=1.19.5",
         "nltk>=3.6.7",
-        "umap-learn>=0.5.3",
         "scipy>=1.5.4",
         "requests>=2.19.0",
         "PyYAML>=5.1",
