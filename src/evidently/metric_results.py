@@ -21,6 +21,9 @@ from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
 
+List.__getitem__.__closure__[0].cell_contents.cache_clear()  # type: ignore[attr-defined]
+LabelList = List[Label]
+
 
 class _LabelKeyType(int):
     pass
@@ -86,7 +89,7 @@ class PredictionData(MetricResult):
         dict_include = False
 
     predictions: pd.Series
-    labels: List[Label]
+    labels: LabelList
     prediction_probas: Optional[pd.DataFrame]
 
     @validator("prediction_probas")
