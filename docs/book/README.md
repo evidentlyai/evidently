@@ -21,6 +21,8 @@ Want a dashboard to track metrics over time? (2 min to launch a demo, 15 to comp
 
 You can explore mode code [examples](examples/examples.md). 
 
+Don't want to self-host? Sign up for the [Evidently Cloud Waitlist](https://www.evidentlyai.com/product/cloud)!
+
 # How it works 
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
