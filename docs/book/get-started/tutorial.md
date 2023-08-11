@@ -1,8 +1,8 @@
 In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift** on tabular data. You will run batch checks on a toy dataset and generate visual Reports and Test Suites.
 
-The API is the same for other evaluation types - including evaluating classification or regression model quality or text data. After going through this tutorial, you will be ready to use all Evidently evaluations. 
-
 We recommend going through this tutorial once to understand the basic functionality. You can then explore more advanced workflows, like adjusting test parameters, adding custom metrics or hosting an ML monitoring dashboard to track the model or data quality over time.
+
+After going through this tutorial, you will be ready to use all Evidently evaluations, including checks for model quality or text data.  
 
 To complete the tutorial, you need basic knowledge of Python. You should be able to complete it in **about 15 minutes**.
 
@@ -66,7 +66,7 @@ To install Evidently in Jupyter notebook on Windows, run:
 $ pip install evidently
 ```
 
-**Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you will need to use a different visualization method (see instructions in step 4). This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
+**Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you will need to use a different visualization method (see instructions in step 4). If you face issues, you can get the output as a separate HTML file and view it in a browser.
 
 ## 2. Import Evidently
 
