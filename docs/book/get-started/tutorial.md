@@ -169,7 +169,7 @@ The data drift report compares the distributions of each feature in the two data
 **Aggregated visuals in plots.** Starting from v 0.3.2, all visuals in the Evidently Reports are aggregated by default. This helps decrease the load time and report size for larger datasets. If you work with smaller datasets or samples, you can pass an [option to generate plots with raw data](../customization/report-data-aggregation.md). You can choose whether you want it on not based on the size of your dataset.
 {% endhint %}
 
-## 5. Customize the report
+## 5. Customize the Report
 
 Evidently Reports are very configurable. You can define which Metrics to include and how to calculate them. 
 
@@ -216,10 +216,10 @@ report
 ```
 
 {% hint style="info" %}
-**Available metrics and presets**. You can refer to the All Metrics [reference table](../reference/all-metrics.md) to browse available Metrics and Presets or use one of the example notebooks in the [Examples](../examples/examples.md) section.
+**Available Metrics and Presets**. You can refer to the All Metrics [reference table](../reference/all-metrics.md) to browse available Metrics and Presets or use one of the example notebooks in the [Examples](../examples/examples.md) section.
 {% endhint %}
 
-## 6. Define the report output format
+## 6. Define the Report output format
 
 You can render the visualizations in the notebook as shown above. There are also alternative options. 
 
@@ -238,6 +238,12 @@ You can also save HTML or JSON externally and specify a path and file name:
 
 ```python
 report.save_html("file.html")
+```
+
+You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard.
+
+```python
+report._save("snapshot.json")
 ```
 
 ## 7. Run data stability tests
@@ -276,7 +282,7 @@ You will get a summary with the test results:
 <details>
 <summary>How does it work?</summary>
  
-Evidently automatically generates the test conditions based on the provided reference dataset. They are based on heuristics. For example, the test for column types fails if the column types do not match the reference. The test for the number of columns with missing values fails if the number is higher than in reference. The test for the share of drifting features fails if over 50% are drifting. If you want to override these defaults, you can [pass custom conditions](../tests-and-reports/custom-test-suite.md).
+Evidently automatically generates the test conditions based on the provided reference dataset. They are based on heuristics. For example, the test for column types fails if the column types do not match the reference. The test for the number of columns with missing values fails if the number is higher than in reference. The test for the share of drifting features fails if over 50% are drifting. You can easily [pass custom conditions](../tests-and-reports/custom-test-suite.md) to set your own expectations.
  
 </details>
 
@@ -313,7 +319,7 @@ suite.run(reference_data=reference, current_data=current)
 suite
 ```
 {% hint style="info" %}
-**Available tests and presets**. You can refer to the All tests [reference table](../reference/all-tests.md) to browse available Tests and Presets. To see interactive examples, refer to the notebooks in the [examples](../examples/examples.md) section.
+**Available Tests and Presets**. You can refer to the All Tests [reference table](../reference/all-tests.md) to browse available Tests and Presets. To see interactive examples, refer to the notebooks in the [examples](../examples/examples.md) section.
 {% endhint %}
 
 You can also export the output in other formats.
@@ -324,37 +330,42 @@ To integrate Evidently checks in the prediction pipeline, you can get the output
 suite.as_dict()
 ```
 
-You can extract necessary information from the JSON or Python dictionary output and design a conditional workflow around it. For example, if tests fail, you can trigger an alert, retrain the model or generate the report. 
+You can extract necessary information from the JSON or Python dictionary output and design a conditional workflow around it. For example, if tests fail, you can trigger an alert, retrain the model or generate the Report. 
 
-## 8. What else is there?
+You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the test results over time the Evidently ML monitoring dashboard.
 
-* **Go through the steps in more detail**
+```python
+suite._save("snapshot.json")
+```
 
-To understand the described flow in more detail, refer to the **User Guide** section of the docs. A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/custom-test-suite.md).  
+## 8. What should I do next?
 
-* **Explore available presets**
+* **Explore available evaluations**
 
-Both **Tests** and **Reports** have multiple Presets available. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run Presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
+In this tutorial, you explored some of the data quality and data drift checks on tabular data. Evidently also support evaluations on text data and model quality checks. 
 
-To understand the contents of each Preset, head to the [Preset overview](../presets/all-presets.md). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../examples/examples.md) section. 
+The easiest way to understand what else is there is to look at **Presets**. Both Tests and Reports have multiple Presets. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run Presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
+
+To understand the contents of each Preset, head to the [Preset overview](../presets/all-presets.md). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../examples/examples.md) section. You can also design custom Reports and Test Suites from individual Metrics and Tests. 
 
 * **Learn how to get a Monitoring Dashboard**
  
-If you want to track the results of different checks over time, you can self-host an ML monitoring dashboard. Go through this [tutorial](tutorial-monitoring.MD).
-
-Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
+If you want to track the results of different checks over time, you can self-host an ML monitoring dashboard. Go through this [Quick Start tutorial](tutorial-monitoring.MD).
 
 * **Explore available integrations**
 
-To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). 
+To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). For example, if you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlflow.md) and [Airflow](../integrations/evidently-and-airflow.md).
 
-If you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlflow.md) and [Airflow](../integrations/evidently-and-airflow.md).
+* **Go through the steps in more detail**
+
+To understand working with Reports and Test Suites in more detail, refer to the **User Guide** section of the docs. A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/custom-test-suite.md).  
 
 ## Join our Community!
+
+Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
 We run a [Discord community](https://discord.gg/xZjKRaNp8b) to connect with our users and chat about ML in production topics. 
 
 In case you have feedback or need help, just ask in Discord or open a GitHub issue. 
 
 And if you want to support a project, give us a star on [GitHub](https://github.com/evidentlyai/evidently)!
-
