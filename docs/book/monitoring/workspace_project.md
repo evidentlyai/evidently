@@ -99,7 +99,9 @@ cd src/evidently/ui/
 rm -r workspace
 ```
 
-**Note**: this command will also delete the snapshots stored in the folder. Use this command if you want to delete an empty workspace from the interface or a test project.
+Use this command to delete an empty workspace from the interface or a test project. 
+
+**Note**: this command will delete the snapshots stored in the folder. To maintain access to the generated snapshots, you must store them elsewhere.
 
 # Workspace API Reference 
 
