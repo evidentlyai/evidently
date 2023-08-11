@@ -22,7 +22,7 @@ A **Metric** can be, literally, a single metric (for example, `DatasetMissingVal
 
 Each **Metric** has a visual render. Some visualizations simply return the values:  
 
-![RegressionQualityMetric](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
+![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
 
 Others have rich visualizations. Here is an example of a dataset-level Metric that evaluates the error of a regression model:
 
