@@ -89,6 +89,18 @@ If you already generated a snapshot, you can add it as well:
 ```python
 my_workspace.add_snapshot(my_project.id, snapshot.load("data_drift_snapshot.json")) 
 ```
+
+## [DANGER] Delete workspace
+
+If you want to delete an existing workspace, run the command from the Terminal:
+
+```
+cd src/evidently/ui/
+rm -r workspace
+```
+
+**Note**: this command will also delete the snapshots stored in the folder. Use this command if you want to delete an empty workspace from the interface or a test project.
+
 # Workspace API Reference 
 
 All available methods in the class Workspace:
