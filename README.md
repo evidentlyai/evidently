@@ -13,7 +13,7 @@
   | 
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
   | 
-  <a href="https://twitter.com/EvidentlyAI">https://www.evidentlyai.com/product/cloud</a>
+  <a href="https://www.evidentlyai.com/product/cloud">Evidently Cloud</a>
 </p>
 
 # :new: New release
