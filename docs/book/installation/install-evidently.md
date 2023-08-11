@@ -14,7 +14,7 @@ To install `evidently` using **conda installer**, run:
 conda install -c conda-forge evidently
 ```
 
-To display dashboards **in a Jupyter notebook**, `evidently` uses `jupyter nbextension`. To enable it, run the **two following commands** in the terminal from the Evidently directory after installing `evidently`. 
+To display visualization **in a Jupyter notebook**, `evidently` uses `jupyter nbextension`. To enable it, run the **two following commands** in the terminal from the Evidently directory after installing `evidently`. 
 
 To install `jupyter nbextension`, run:
 
@@ -31,7 +31,7 @@ $ jupyter nbextension enable evidently --py --sys-prefix
 That's it! A single run after the installation is enough. 
 
 {% hint style="info" %}
-**Note**: if you **do not install nbextension**, you can still use Evidently. You can get the outputs as JSON, Python dictionary, or generate standalone HTML files to view in the browser.
+**Note**: you only require **nbextension** if you want to get visualization in Jupyter notebook. If you do not install it, you can still use Evidently. You can use Evidently Monitoring UI, or generate Reports and Test Suites as JSON, Python dictionary, or standalone HTML files to view in the browser.
 {% endhint %}
 
 {% hint style="info" %}
