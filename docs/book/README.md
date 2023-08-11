@@ -25,13 +25,13 @@ You can explore mode code [examples](examples/examples.md).
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and a **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  ad hoc analysis to automated pipeline testing and continuous monitoring.
+Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and a **Monitoring Dashboard**. They cover different usage scenarios: from ad hoc analysis to automated pipeline testing and continuous monitoring.
 
 Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
 
 # 1. Tests suites: batch model checks 
 
-Tests perform structured data and ML model quality checks. You can set test parameters manually or let Evidently learn the expectations from the reference dataset. Tests verify a condition and return an explicit **pass** or **fail** result. 
+Tests perform structured data and ML model quality checks. You can set the conditions manually or let Evidently generate them based on the reference dataset. Tests will return an explicit **pass** or **fail** result. 
  
 You can create a **Test Suite** from 50+ tests or run one of the **Presets**. For example, to test Data Stability or Regression Performance.
 
@@ -64,7 +64,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
  
 **How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML file, JSON, or Python dictionary.
  
-**Primary use case**: debugging and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
+**Primary use case**: analysis and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
  
 **Secondary use cases**:
 * **Reporting and documentation**. You can generate visual HTML reports and ML model cards.
