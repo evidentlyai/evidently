@@ -175,7 +175,7 @@ For example, you can run the tests when you:
 
 You can then build a conditional workflow based on the result of the tests: for example, generate a visual report for debugging, trigger model retraining, or send an alert. You can also visualize the test results over time in the Evidently Monitoring UI.
 
-![](../.gitbook/assets/monitoring/test_suite_lifecycle-min.png)
+![](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 **During model development**: you can also use tests during model development and validation. For example, you can run tests to evaluate the data quality of the new feature set or to compare test performance to training.
 
