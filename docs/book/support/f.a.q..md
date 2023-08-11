@@ -8,11 +8,11 @@ Open an issue on [GitHub](https://github.com/evidentlyai/evidently), or ask in o
 
 ### **Can you add {insert a plot type} to one of your Reports or Test Suites?**
 
-We probably can! However, we might choose not to since we try to have a good-enough and maintainable set of Metrics and Tests. That is a delicate balance!
+We probably can! However, we might choose not to since we try to have a good enough and maintainable set of Metrics and Tests. That is a delicate balance!
 
-If you want to change the Report or Test Suite composition, you can add custom metric on your own. Explore the [Customization section](../customization) for more details.
+If you want to change the Report or Test Suite composition, you can add custom metrics. Explore the [Customization section](../customization) for more details.
 
-### **Can I export the report to display it elsewhere / integrate it into the prediction pipeline?**
+### **Can I export the results of Tests or Reports to display elsewhere / integrate into the prediction pipeline?**
 
 You can self-host an Evidently ML Monitoring dashboard to track the model performance over time. Explore the [Monitoring](../monitoring/monitoring_overview.md) section for details. You can also export the report summary as a JSON or Python dictionary and integrate it with external tools. Refer to the [Integration section](../integrations) to see examples.
 
