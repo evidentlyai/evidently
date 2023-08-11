@@ -12,6 +12,8 @@
   <a href="https://evidentlyai.com/blog">Blog</a>
   | 
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
+  | 
+  <a href="https://twitter.com/EvidentlyAI">https://www.evidentlyai.com/product/cloud</a>
 </p>
 
 # :new: New release
