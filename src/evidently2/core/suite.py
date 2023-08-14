@@ -35,7 +35,7 @@ class Report(EvidentlyBaseModel):
         column_mapping: Optional[ColumnMapping],
     ):
         cur_data, ref_data = (current_data, reference_data) if current_data is not None else (reference_data, None)
-        data_definition = create_data_definition(ref_data, cur_data, column_mapping)
+        data_definition = create_data_definition(ref_data, cur_data, column_mapping or ColumnMapping())
         data = InputData(current_data=current_data, reference_data=reference_data, data_definition=data_definition)
         return data
 

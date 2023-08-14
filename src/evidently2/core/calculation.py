@@ -95,6 +95,18 @@ class Constant(_Input):
         return self.value
 
 
+def create_calculation_from_callable(func: callable):
+    class CallableCalculation(Calculation):
+        instance: Any = None
+
+        def calculate(self, data: CI) -> CR:
+            if self.instance is not None:
+                return func(self.instance, data)
+            return func(data)
+
+    return CallableCalculation
+
+
 class NoInputError(Exception):
     pass
 

@@ -7,7 +7,9 @@ from evidently2.core.calculation import Context
 from evidently2.core.calculation import InputValue
 from evidently2.core.calculation import get_all_calculations
 from evidently2.core.calculation import partial_calculations
+from evidently2.core.compat import InputData2
 from evidently.base_metric import ColumnName
+from evidently.base_metric import MetricResult
 from evidently.utils.data_preprocessing import create_data_definition
 
 
@@ -80,6 +82,7 @@ def new():
     from evidently2.core.suite import Report
 
     report = Report(metrics=[metric])
+    report.run(cur, ref, column_mapping)
     profile = report.create_reference_profile(ref, column_mapping)
 
     report2 = profile.run(cur)
@@ -118,6 +121,27 @@ def new():
     # print("skip", skipping)
     # print("not skip", not_skipping)
     # pprint(get_all_calculations(result.drift_score))
+
+    from evidently2.core.metric import Metric
+
+    class CustomOldMetricResult(MetricResult):
+        value: float
+
+    from evidently2.core.compat import Metric2
+
+    class CustomOldMetric(Metric2):
+        column_name: ColumnName
+
+        def calculate2(self, input_data: InputData2):
+            current = input_data.get_current_column(self.column_name)
+            reference = input_data.get_reference_column(self.column_name)
+            return CustomOldMetricResult(value=sum(current) + sum(reference))
+
+    report2 = Report(metrics=[CustomOldMetric(column_name=ColumnName.from_any("a"))])
+
+    report2.run(cur, ref)
+    report2.create_reference_profile(ref)
+    print(report2.as_dict())
 
 
 if __name__ == "__main__":
