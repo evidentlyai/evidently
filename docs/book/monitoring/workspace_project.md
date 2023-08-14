@@ -89,6 +89,20 @@ If you already generated a snapshot, you can add it as well:
 ```python
 my_workspace.add_snapshot(my_project.id, snapshot.load("data_drift_snapshot.json")) 
 ```
+
+## [DANGER] Delete workspace
+
+If you want to delete an existing workspace, run the command from the Terminal:
+
+```
+cd src/evidently/ui/
+rm -r workspace
+```
+
+Use this command to delete an empty workspace from the interface or a test project. 
+
+**Note**: this command will delete the snapshots stored in the folder. To maintain access to the generated snapshots, you must store them elsewhere.
+
 # Workspace API Reference 
 
 All available methods in the class Workspace:
@@ -125,8 +139,7 @@ The rest of the functionality and methods are the same.
 ## Code example
 
 Refer to the service example: 
-{% content-ref url="[../get-started/tutorial-monitoring.md](https://github.com/evidentlyai/evidently/tree/main/examples/service)" %}
+{% content-ref url="https://github.com/evidentlyai/evidently/tree/main/examples/service" %}
 [Docker example](https://github.com/evidentlyai/evidently/tree/main/examples/service). 
 {% endcontent-ref %}
-
 

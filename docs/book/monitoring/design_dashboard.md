@@ -202,7 +202,7 @@ In this example, you pass the complete field path inside the Metric
 
 **Option 1**. Use autocomplete.
 
-You can use the autocomplete in Python to see available fields inside a specific Metric. They appear as you start typing the `.fields.` path for a specific Metric.
+You can use autocomplete in interactive Python environments (like Jupyter notebook or Colab) to see available fields inside a specific Metric. They appear as you start typing the `.fields.` path for a specific Metric.
 
 ![](../.gitbook/assets/monitoring/metric_fields_autocomplete-min.png)
 

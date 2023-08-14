@@ -307,6 +307,13 @@ Access Evidently UI service in your browser to see the dashboards for the new pr
 ![](../.gitbook/assets/monitoring/ml_monitoring_adult_example.png)
 
 # What’s next?
+
+* **Go through the steps in more detail**
+
+If you want to go through the steps in more details, refer to the complete [Monitoring User Guide](../monitoring/monitoring_overview.md) section in the docs. A good next step is to explore how to design [monitoring panels](../monitoring/design_dashboard.md).  
+
+* **Build the workflow**
+
 If you want to enable monitoring for an existing ML project, you must collect the data from your production pipelines or services, or run monitoring jobs over production logs stored in a data warehouse. The exact integration scenario depends on the model deployment type and infrastructure.  
 
 Here is one possible approach. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
@@ -322,5 +329,3 @@ We run a [Discord community](https://discord.gg/xZjKRaNp8b) to connect with our 
 Evidently is in active development, so expect things to change and evolve. Subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) to stay updated about the latest functionality. 
 
 And if you want to support a project, give us a star on [GitHub](https://github.com/evidentlyai/evidently)!
-
-

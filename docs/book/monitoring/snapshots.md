@@ -110,7 +110,7 @@ data_drift_report = Report(
 	metrics=[
 	DatasetSummaryMetric().
 	],
-	timestamp=raw_data.iloc[-1:].index,
+	timestamp=dataset.iloc[-1:].index,
 )
 ```
 

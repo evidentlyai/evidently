@@ -12,6 +12,8 @@
   <a href="https://evidentlyai.com/blog">Blog</a>
   | 
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
+  | 
+  <a href="https://www.evidentlyai.com/product/cloud">Evidently Cloud</a>
 </p>
 
 # :new: New release
@@ -52,7 +54,7 @@ You can get an **HTML report** (best for exploratory analysis and debugging), **
 
 You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.  
 
-You can track 100+ metrics available in Evidently, from number nulls to text sentiment and embedding drift.
+You can track 100+ metrics available in Evidently, from the number of nulls to text sentiment and embedding drift.
 
 # :woman_technologist: Install Evidently
 
@@ -192,15 +194,17 @@ For more information, refer to a complete <a href="https://docs.evidentlyai.com"
 * [Get Started with ML monitoring](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
 
 # :card_index_dividers: Examples
-Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
-Report | Jupyter notebook | Colab notebook | Contents
+Simple examples on toy datasets to quickly explore what Evidently can do out of the box.
+
+Title | Code example | Tutorial | Contents
 --- | --- | --- | ---
-Getting Started Tutorial| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/getting_started_tutorial.ipynb)|[link](https://colab.research.google.com/drive/1j0Wh4LM0mgMuDY7LQciLaUV4G1khB-zb)|Data Stability and custom Test Suites, Data Drift and Target Drift Reports
-Evidently Metric Presets| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Data Drift, Target Drift, Data Quality, Regression, Classification Reports
-Evidently Metrics| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | All individual Metrics
-Evidently Test Presets| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | NoTargetPerformance, Data Stability, Data Quality, Data Drift Regression, Multi-class Classification, Binary Classification, Binary Classification top-K test suites
-Evidently Tests| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl)| All individual Tests
+QuickStart Tutorial: ML Monitoring| [Example](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/get_started_monitoring.py)| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring) | Pre-built ML monitoring dashboard.
+QuickStart Tutorial: Tests and Reports| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/getting_started_tutorial.ipynb)<br>[Colab](https://colab.research.google.com/drive/1j0Wh4LM0mgMuDY7LQciLaUV4G1khB-zb)| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial) | Data Stability and custom Test Suites, Data Drift and Target Drift Reports
+Evidently Metric Presets| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metric_presets.ipynb) <br>[Colab](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | - | Data Drift, Target Drift, Data Quality, Regression, Classification Reports
+Evidently Metrics| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metrics.ipynb) <br>[Colab](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | - | All individual Metrics
+Evidently Test Presets| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_test_presets.ipynb) <br>[Colab](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | - |NoTargetPerformance, Data Stability, Data Quality, Data Drift Regression, Multi-class Classification, Binary Classification, Binary Classification top-K test suites
+Evidently Tests| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_tests.ipynb) <br>[Colab](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl)| - |All individual Tests
 
 There are more example in the [Community Examples](https://github.com/evidentlyai/community-examples) repository.
 

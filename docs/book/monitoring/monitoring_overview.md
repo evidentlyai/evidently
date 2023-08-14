@@ -38,4 +38,9 @@ This user guide focuses on each component in-depth:
 * [Add workspace and project](workspace_project.md)
 * [Log snapshots](snapshots.md)
 * [Design dashboard](design_dashboard.md)
-* [Monitoring UI](monitoring_ui.md) 
+* [Monitoring UI](monitoring_ui.md)
+
+# Cloud ML Monitoring
+
+Don't want to self-host? Sign up for the [Evidently Cloud Waitlist](https://www.evidentlyai.com/product/cloud)!
+
