@@ -1,4 +1,3 @@
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -10,6 +9,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
 from evidently.metrics import EmbeddingsDriftMetric
+from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.utils.data_drift_utils import add_emb_drift_to_reports
 
 
@@ -24,7 +24,7 @@ class DataDriftPreset(MetricPreset):
 
     columns: Optional[List[str]]
     embeddings: Optional[List[str]]
-    embeddings_drift_method: Optional[Dict[str, Callable]]
+    embeddings_drift_method: Optional[Dict[str, DriftMethod]]
     drift_share: float
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
@@ -41,7 +41,7 @@ class DataDriftPreset(MetricPreset):
         self,
         columns: Optional[List[str]] = None,
         embeddings: Optional[List[str]] = None,
-        embeddings_drift_method: Optional[Dict[str, Callable]] = None,
+        embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None,
         drift_share: float = 0.5,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
