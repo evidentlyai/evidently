@@ -46,8 +46,8 @@ def new():
 
     metric = ColumnDriftMetric(column_name=ColumnName.from_any("a"))
 
-    ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 2}])
-    cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 0}])
+    ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 4}])
+    cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 3}])
     from evidently2.core.calculation import InputData
 
     data = InputData(
@@ -143,7 +143,62 @@ def new():
     report2.create_reference_profile(ref)
     print(report2.as_dict())
 
+def clean_spark():
+    from pyspark.sql import SparkSession, DataFrame
+    from pyspark.sql.functions import min, max, floor, col, when
+
+    session = SparkSession.builder.getOrCreate()
+    ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 4}])
+    cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 3}])
+
+    ref = session.createDataFrame(ref)
+    cur = session.createDataFrame(cur)
+
+    def pyspark_hist(df, column_name, nbinsx):
+
+
+        col_range = df.select(min(df[column_name]).alias("min"), max(df[column_name]).alias("max")).first()
+        min_val, max_val = col_range["min"], col_range["max"]
+        step = (max_val - min_val) / nbinsx
+        hist = df.select(column_name, floor((col(column_name) - min_val) / step).alias("bucket")).select(column_name, when(col("bucket") >= nbinsx, nbinsx - 1).otherwise(col("bucket")).alias("bucket")).groupby("bucket").count()
+        # todo: fill empty buckets
+        return [v["count"] for v in hist.collect()], [min_val + step * i for i in range(nbinsx + 1)]
+
+    def chi_square_drift(cur: DataFrame, ref: DataFrame, column_name: str):
+        from pyspark.ml.stat import ChiSquareTest
+
+        cur_vc = cur.groupby(column_name).count()
+        cur_count = cur.count()
+        ref_count  = ref.count()
+        k_norm = cur_count / ref_count
+        ref_vc = ref.groupby(column_name).count().withColumn("count", col("count") * k_norm)
+
+        all_keys = ref.select(column_name).distinct().join(cur.select(column_name).distinct()).distinct()
+
+        cs = ChiSquareTest()
+
+    print(pyspark_hist(ref, "a", 2))
+
+
+# def new_spark():
+#     from evidently2.metrics.drift.column_drift_metric import ColumnDriftMetric
+#     from evidently.options import DataDriftOptions
+#
+#     DataDriftOptions.__fields__["nbinsx"].default = 2
+#
+#     metric = ColumnDriftMetric(column_name=ColumnName.from_any("a"))
+#
+#     ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 2}])
+#     cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 0}])
+#     from evidently2.core.calculation import InputData
+#
+#     data = InputData(
+#         current_data=cur,
+#         reference_data=ref,
+#         data_definition=create_data_definition(ref, cur, ColumnMapping(numerical_features=["a"])),
+#     )
 
 if __name__ == "__main__":
     # old_evidently()
     new()
+    clean_spark()

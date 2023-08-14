@@ -63,6 +63,7 @@ class Calculation(_CalculationBase, Generic[CI, CR]):
             return ctx.results[self]
 
 
+
 class _Input(_CalculationBase):
     pass
 
