@@ -36,7 +36,9 @@ data_files_spec = [
     ("etc/jupyter/nbconfig/notebook.d", HERE, "evidently.json"),
 ]
 
-cmdclass = create_cmdclass("jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec)
+cmdclass = create_cmdclass(
+    "jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec
+)
 cmdclass["jsdeps"] = combine_commands(
     install_npm(os.path.join(HERE, "ui"), build_cmd="build"),
     ensure_targets(jstargets),
@@ -62,7 +64,7 @@ setup_args = dict(
         "watchdog>=3",
         "typer>=0.9",
         "rich>=13",
-        "iterative-telemetry==0.0.5"  # todo: until we support 3.7
+        "iterative-telemetry>=0.0.5",
     ],
     extras_require={
         "dev": [
@@ -81,9 +83,7 @@ setup_args = dict(
             "isort==5.10.1",
         ]
     },
-    entry_points={
-        "console_scripts": ["evidently=evidently.cli:app"]
-    },
+    entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )
 
 if __name__ == "__main__":
