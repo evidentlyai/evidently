@@ -15,6 +15,8 @@ from typing import TypeVar
 import pandas as pd
 from pydantic import BaseModel
 
+from evidently2.core.spark import SparkDataFrame
+from evidently2.core.spark import is_spark_data
 from evidently.base_metric import ColumnName
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
@@ -56,12 +58,19 @@ class Calculation(_CalculationBase, Generic[CI, CR]):
     def calculate(self, data: CI) -> CR:
         raise NotImplementedError
 
+    def calculate_spark(self, data: SparkDataFrame):
+        raise NotImplementedError(f"No spark implementation for {self.__class__.__name__}")
+
+    def calculate_pd_or_spark(self, data):
+        if is_spark_data(data):
+            return self.calculate_spark(data)
+        return self.calculate(data)
+
     def get_result(self):
         with Context.current() as ctx:
             if self not in ctx.results:
-                ctx.results[self] = self.calculate(self.input_data.get_result())
+                ctx.results[self] = self.calculate_pd_or_spark(self.input_data.get_result())
             return ctx.results[self]
-
 
 
 class _Input(_CalculationBase):
@@ -139,6 +148,11 @@ class InputColumnData(Calculation):
 
     def calculate(self, data: CI) -> CR:
         return data[self.column]
+
+    def calculate_spark(self, data):
+        from pyspark.sql.functions import col
+
+        return data.select(col(self.column).alias("column"))
 
 
 def get_all_calculations(obj: BaseModel, result=None) -> Dict[Calculation, Set[Calculation]]:

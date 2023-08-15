@@ -18,6 +18,9 @@ from evidently2.core.calculation import NoInputError
 from evidently2.core.calculation import _CalculationBase
 from evidently2.core.metric import ColumnMetricResultCalculation
 from evidently2.core.metric import Metric
+from evidently2.core.spark import SparkDataFrame
+from evidently2.core.spark import is_spark_data
+from evidently2.core.spark import single_column
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
@@ -81,15 +84,30 @@ class ColumnDriftMetric(Metric[ColumnDriftResult]):
         return drift_result
 
 
+class DropInf(Calculation):
+    def calculate(self, data: CI) -> CR:
+        return data[np.isfinite(data)]
+
+    def calculate_spark(self, data: SparkDataFrame):
+        return data.filter(~single_column(data).isin([np.inf, -np.inf]))
+
+
 class CleanColumn(Calculation[pd.Series, pd.Series]):
     def calculate(self, data: pd.Series) -> pd.Series:
         return data.replace([-np.inf, np.inf], np.nan).dropna()
+
+    # def calculate_spark(self, data):
+    def calculate_spark(self, data: SparkDataFrame):
+        return data.replace([np.inf, -np.inf], None).dropna()
 
     @property
     def empty(self):
         # todo: can we do this lazy?
         try:
-            return self.get_result().empty
+            result = self.get_result()
+            if is_spark_data(result):
+                return result.rdd.isEmpty()
+            return result.empty
         except NoInputError:
             return False
 
@@ -160,6 +178,9 @@ class Size(Calculation):
     def calculate(self, data: CI) -> CR:
         return data.shape[0]
 
+    def calculate_spark(self, data: SparkDataFrame):
+        return data.count()
+
 
 class Div(Calculation):
     second: Calculation
@@ -167,16 +188,28 @@ class Div(Calculation):
     def calculate(self, data: CI) -> CR:
         return data / self.second.get_result()
 
+    # def calculate_spark(self, data: SparkDataFrame):
+    #     return data / self.second.get_result()
+
 
 class ValueCounts(Calculation):
     def calculate(self, data: CI) -> CR:
         return data.value_counts()
+
+    def calculate_spark(self, data: SparkDataFrame):
+        # materialize
+        column = single_column(data)
+        result = data.groupby(column.alias("_")).count().collect()
+        return {r["_"]: r["count"] for r in result}
 
 
 class Mul(Calculation):
     second: Calculation
 
     def calculate(self, data: CI) -> CR:
+        return data * self.second.get_result()
+
+    def calculate_spark(self, data: SparkDataFrame):
         return data * self.second.get_result()
 
 
@@ -187,11 +220,20 @@ class MultDict(Calculation):
         m = self.mul.get_result()
         return {k: v * m for k, v in data.items()}
 
+    # def calculate_spark(self, data: SparkDataFrame):
+    #     m = self.mul.get_result()
+    #     return {k: v * m for k, v in data.items()}
+
 
 class ChiSquare(Calculation):
     exp: Calculation
 
     def calculate(self, data: CI) -> CR:
+        exp = self.exp.get_result()
+        keys = set(data.keys()) | set(exp.keys())
+        return chisquare([data.get(k, 0) for k in keys], [exp.get(k, 0) for k in keys])[1]
+
+    def calculate_spark(self, data: SparkDataFrame):
         exp = self.exp.get_result()
         keys = set(data.keys()) | set(exp.keys())
         return chisquare([data.get(k, 0) for k in keys], [exp.get(k, 0) for k in keys])[1]
@@ -225,18 +267,29 @@ chi_stat_test = StatTest(
 z_stat_test = wasserstein_stat_test = ks_stat_test = jensenshannon_stat_test = chi_stat_test
 
 
-def _get_default_stattest(reference_data: pd.Series, feature_type: str) -> StatTest:
+class NUnique(Calculation):
+    def calculate(self, data: CI) -> CR:
+        return data.nunique()
+
+    def calculate_spark(self, data: SparkDataFrame):
+        from pyspark.sql.functions import count_distinct
+
+        return data.select(count_distinct(single_column(data)).alias("nunique")).first()["nunique"]
+
+
+def _get_default_stattest(reference_data: Calculation, feature_type: str) -> StatTest:
     if feature_type != "num":
         raise NotImplementedError
 
     # todo: we can make this lazy too
-    n_values = reference_data.nunique()
-    if reference_data.shape[0] <= 1000:
+    n_values = NUnique(input_data=reference_data).get_result()
+    size = Size(input_data=reference_data).get_result()
+    if size <= 1000:
         if n_values <= 5:
             return chi_stat_test if n_values > 2 else z_stat_test
         elif n_values > 5:
             return ks_stat_test
-    elif reference_data.shape[0] > 1000:
+    elif size > 1000:
         if n_values <= 5:
             return jensenshannon_stat_test
         elif n_values > 5:
@@ -247,7 +300,7 @@ def _get_default_stattest(reference_data: pd.Series, feature_type: str) -> StatT
 
 def get_stattest(reference_data: Calculation, feature_type: str, stattest_func: Optional[str]) -> StatTest:
     if stattest_func is None:
-        return _get_default_stattest(reference_data.get_result(), feature_type)
+        return _get_default_stattest(reference_data, feature_type)
 
 
 class Histogram(Calculation[pd.Series, Distribution]):
@@ -266,6 +319,37 @@ class Histogram(Calculation[pd.Series, Distribution]):
                 density=self.density,
             )
         ]
+        return Distribution(x=x, y=y)
+
+    def calculate_spark(self, data: SparkDataFrame):
+        from pyspark.sql import SparkSession
+        from pyspark.sql.functions import col
+        from pyspark.sql.functions import floor
+        from pyspark.sql.functions import max
+        from pyspark.sql.functions import min
+        from pyspark.sql.functions import when
+
+        column = single_column(data)
+        col_range = data.select(min(column).alias("min"), max(column).alias("max")).first()
+        min_val, max_val = col_range["min"], col_range["max"]
+        step = (max_val - min_val) / self.bins
+        hist = (
+            data.select(column, floor((column - min_val) / step).alias("bucket"))
+            .select(column, when(col("bucket") >= self.bins, self.bins - 1).otherwise(col("bucket")).alias("bucket"))
+            .groupby("bucket")
+            .count()
+        )
+
+        spark = SparkSession.getActiveSession()
+        df_buckets = spark.sql(f"select id+1 as bucket from range({self.bins})")
+        hist = (
+            hist.join(df_buckets, "bucket", "right_outer")
+            .selectExpr("bucket", "nvl(count, 0) as count")
+            .orderBy("bucket")
+        )
+
+        y = [v["count"] for v in hist.select("count").collect()]
+        x = [min_val + step * i for i in range(self.bins + 1)]
         return Distribution(x=x, y=y)
 
 
@@ -350,11 +434,9 @@ def get_one_column_drift(
     if column_type == ColumnType.Numerical:
         current_nbinsx = options.get_nbinsx(column.name)
 
-        current_small_distribution = Histogram(
-            Mask(current_column, IsFinite(current_column)), bins=current_nbinsx, density=True
-        )
+        current_small_distribution = Histogram(DropInf(input_data=current_column), bins=current_nbinsx, density=True)
         reference_small_distribution = Histogram(
-            Mask(reference_column, IsFinite(reference_column)), bins=current_nbinsx, density=True
+            DropInf(input_data=reference_column), bins=current_nbinsx, density=True
         )
 
     metrics = ColumnDriftResultCalculation(

@@ -8,9 +8,13 @@ from evidently2.core.calculation import InputValue
 from evidently2.core.calculation import get_all_calculations
 from evidently2.core.calculation import partial_calculations
 from evidently2.core.compat import InputData2
+from evidently2.core.spark import create_data_definition_spark
 from evidently.base_metric import ColumnName
 from evidently.base_metric import MetricResult
 from evidently.utils.data_preprocessing import create_data_definition
+
+ref_pd = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 2}])
+cur_pd = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 0}])
 
 
 def old_evidently():
@@ -21,8 +25,8 @@ def old_evidently():
     DataDriftOptions.__fields__["nbinsx"].default = 2
     report = Report(metrics=[ColumnDriftMetric("a")])
 
-    ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 2}])
-    cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 0}])
+    ref = ref_pd
+    cur = cur_pd
     report.run(reference_data=ref, current_data=cur, column_mapping=ColumnMapping(numerical_features=["a"]))
 
     pprint(report.as_dict()["metrics"][0]["result"])
@@ -46,8 +50,8 @@ def new():
 
     metric = ColumnDriftMetric(column_name=ColumnName.from_any("a"))
 
-    ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 4}])
-    cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 3}])
+    ref = ref_pd
+    cur = cur_pd
     from evidently2.core.calculation import InputData
 
     data = InputData(
@@ -143,62 +147,94 @@ def new():
     report2.create_reference_profile(ref)
     print(report2.as_dict())
 
+
 def clean_spark():
-    from pyspark.sql import SparkSession, DataFrame
-    from pyspark.sql.functions import min, max, floor, col, when
+    from pyspark.sql import DataFrame
+    from pyspark.sql import SparkSession
+    from pyspark.sql.functions import col
+    from pyspark.sql.functions import floor
+    from pyspark.sql.functions import max
+    from pyspark.sql.functions import min
+    from pyspark.sql.functions import when
 
     session = SparkSession.builder.getOrCreate()
-    ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 4}])
-    cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 3}])
+    ref = ref_pd
+    cur = cur_pd
 
     ref = session.createDataFrame(ref)
     cur = session.createDataFrame(cur)
 
     def pyspark_hist(df, column_name, nbinsx):
 
-
         col_range = df.select(min(df[column_name]).alias("min"), max(df[column_name]).alias("max")).first()
         min_val, max_val = col_range["min"], col_range["max"]
         step = (max_val - min_val) / nbinsx
-        hist = df.select(column_name, floor((col(column_name) - min_val) / step).alias("bucket")).select(column_name, when(col("bucket") >= nbinsx, nbinsx - 1).otherwise(col("bucket")).alias("bucket")).groupby("bucket").count()
+        hist = (
+            df.select(column_name, floor((col(column_name) - min_val) / step).alias("bucket"))
+            .select(column_name, when(col("bucket") >= nbinsx, nbinsx - 1).otherwise(col("bucket")).alias("bucket"))
+            .groupby("bucket")
+            .count()
+        )
         # todo: fill empty buckets
         return [v["count"] for v in hist.collect()], [min_val + step * i for i in range(nbinsx + 1)]
 
     def chi_square_drift(cur: DataFrame, ref: DataFrame, column_name: str):
-        from pyspark.ml.stat import ChiSquareTest
+        from scipy.stats import chisquare
 
         cur_vc = cur.groupby(column_name).count()
         cur_count = cur.count()
-        ref_count  = ref.count()
+        ref_count = ref.count()
         k_norm = cur_count / ref_count
         ref_vc = ref.groupby(column_name).count().withColumn("count", col("count") * k_norm)
 
-        all_keys = ref.select(column_name).distinct().join(cur.select(column_name).distinct()).distinct()
+        # all_keys = ref.select(column_name).distinct().join(cur.select(column_name).distinct()).distinct()
 
-        cs = ChiSquareTest()
+        ref_d = {r[column_name]: r["count"] for r in ref_vc.collect()}
+        cur_d = {r[column_name]: r["count"] for r in cur_vc.collect()}
+        keys = set(cur_d.keys()) | set(ref_d.keys())
+        return chisquare([cur_d.get(k, 0) for k in keys], [ref_d.get(k, 0) for k in keys])[1]
 
     print(pyspark_hist(ref, "a", 2))
+    print(chi_square_drift(cur, ref, "a"))
 
 
-# def new_spark():
-#     from evidently2.metrics.drift.column_drift_metric import ColumnDriftMetric
-#     from evidently.options import DataDriftOptions
-#
-#     DataDriftOptions.__fields__["nbinsx"].default = 2
-#
-#     metric = ColumnDriftMetric(column_name=ColumnName.from_any("a"))
-#
-#     ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 2}])
-#     cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 0}])
-#     from evidently2.core.calculation import InputData
-#
-#     data = InputData(
-#         current_data=cur,
-#         reference_data=ref,
-#         data_definition=create_data_definition(ref, cur, ColumnMapping(numerical_features=["a"])),
-#     )
+def new_spark():
+    from evidently2.metrics.drift.column_drift_metric import ColumnDriftMetric
+    from evidently.options import DataDriftOptions
+
+    DataDriftOptions.__fields__["nbinsx"].default = 2
+
+    metric = ColumnDriftMetric(column_name=ColumnName.from_any("a"))
+
+    from pyspark.sql import DataFrame
+    from pyspark.sql import SparkSession
+    from pyspark.sql.functions import col
+    from pyspark.sql.functions import floor
+    from pyspark.sql.functions import max
+    from pyspark.sql.functions import min
+    from pyspark.sql.functions import when
+
+    session = SparkSession.builder.getOrCreate()
+    ref = ref_pd
+    cur = cur_pd
+
+    ref = session.createDataFrame(ref)
+    cur = session.createDataFrame(cur)
+    from evidently2.core.calculation import InputData
+
+    data = InputData(
+        current_data=cur,
+        reference_data=ref,
+        data_definition=create_data_definition_spark(ref, cur, ColumnMapping(numerical_features=["a"])),
+    )
+
+    with Context.new():
+        result = metric.calculate(data)
+        pprint(result.get_result().dict())
+
 
 if __name__ == "__main__":
     # old_evidently()
     new()
-    clean_spark()
+    # clean_spark()
+    new_spark()
