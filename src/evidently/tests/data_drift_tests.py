@@ -1,5 +1,4 @@
 from abc import ABC
-from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import List
@@ -18,6 +17,7 @@ from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.metrics import EmbeddingsDriftMetric
 from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
+from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -534,11 +534,15 @@ class TestColumnDriftRenderer(TestRenderer):
 class TestEmbeddingsDrift(Test):
     name: ClassVar = "Drift for embeddings"
     group: ClassVar = DATA_DRIFT_GROUP.id
+    embeddings_name: str
+    drift_method: Optional[DriftMethod]
     _metric: EmbeddingsDriftMetric
 
-    def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None):
+    def __init__(self, embeddings_name: str, drift_method: Optional[DriftMethod] = None):
+        self.embeddings_name = embeddings_name
+        self.drift_method = drift_method
         super().__init__()
-        self._metric = EmbeddingsDriftMetric(embeddings_name=embeddings_name, drift_method=drift_method)
+        self._metric = EmbeddingsDriftMetric(embeddings_name=self.embeddings_name, drift_method=self.drift_method)
 
     @property
     def metric(self):
