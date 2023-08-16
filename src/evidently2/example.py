@@ -222,15 +222,27 @@ def new_spark():
     cur = session.createDataFrame(cur)
     from evidently2.core.calculation import InputData
 
+    column_mapping = ColumnMapping(numerical_features=["a"])
     data = InputData(
         current_data=cur,
         reference_data=ref,
-        data_definition=create_data_definition_spark(ref, cur, ColumnMapping(numerical_features=["a"])),
+        data_definition=create_data_definition_spark(ref, cur, column_mapping),
     )
 
-    with Context.new():
-        result = metric.calculate(data)
-        pprint(result.get_result().dict())
+    # with Context.new():
+    #     result = metric.calculate(data)
+    #     pprint(result.get_result().dict())
+
+    from evidently2.core.suite import Report
+
+    report = Report(metrics=[metric])
+    report.run(cur, ref, column_mapping)
+    profile = report.create_reference_profile(ref, column_mapping)
+
+    pprint(profile.dict())
+    report2 = profile.run(cur)
+
+    pprint(report2.as_dict())
 
 
 if __name__ == "__main__":
