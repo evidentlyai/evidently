@@ -62,7 +62,7 @@ setup_args = dict(
         "watchdog>=3",
         "typer>=0.9",
         "rich>=13",
-        "iterative-telemetry==0.0.5"  # todo: until we support 3.7
+        "iterative-telemetry>=0.0.5"
     ],
     extras_require={
         "dev": [
