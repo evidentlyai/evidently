@@ -245,8 +245,36 @@ def new_spark():
     pprint(report2.as_dict())
 
 
+def groupby():
+    from evidently2.core.suite import Report
+    from evidently2.metrics.drift.column_drift_metric import ColumnDriftMetric
+    from evidently.options import DataDriftOptions
+
+    DataDriftOptions.__fields__["nbinsx"].default = 2
+
+    metric = ColumnDriftMetric(column_name=ColumnName.from_any("a"))
+
+    ref = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 2}])
+    cur = pd.DataFrame([{"a": 0}, {"a": 0}, {"a": 0}])
+    cur["b"] = ref["b"] = "a"
+    ref = pd.concat([ref, ref.replace("a", "b")])
+    cur = pd.concat([cur, cur.replace("a", "b")])
+    print(ref.info())
+    column_mapping = ColumnMapping(numerical_features=["a"])
+
+    report = Report(metrics=[metric])
+    report.run(cur, ref, column_mapping)
+    pprint(report.as_dict())
+    # profile = report.create_reference_profile(ref, column_mapping)
+
+    # pprint(profile.dict())
+    # report2 = profile.run(cur)
+    #
+    # pprint(report2.as_dict())
+
 if __name__ == "__main__":
     # old_evidently()
-    new()
+    # new()
     # clean_spark()
-    new_spark()
+    # new_spark()
+    groupby()
