@@ -387,7 +387,10 @@ class Suite:
         for test in self.context.execution_graph.get_test_execution_iterator():
             try:
                 logging.debug(f"Executing {type(test)}...")
-                test_results[test] = test.check()
+                test_result = test.check()
+                if not test.is_critical and test_result.status == TestStatus.FAIL:
+                    test_result.status = TestStatus.WARNING
+                test_results[test] = test_result
             except BaseException as ex:
                 test_results[test] = TestResult(
                     name=test.name,

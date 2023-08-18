@@ -60,6 +60,7 @@ class BaseIntegrityValueTest(ConditionFromReferenceMixin[DatasetSummary], ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             eq=eq,
@@ -70,6 +71,7 @@ class BaseIntegrityValueTest(ConditionFromReferenceMixin[DatasetSummary], ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = DatasetSummaryMetric()
 
@@ -143,6 +145,7 @@ class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMi
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             eq=eq,
@@ -153,6 +156,7 @@ class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMi
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
@@ -465,6 +469,7 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.column_name = column_name
         super().__init__(
@@ -476,6 +481,7 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
@@ -585,7 +591,8 @@ class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 class TestAllColumnsShareOfMissingValues(BaseGenerator):
     columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[List[str]] = None):
+    def __init__(self, columns: Optional[List[str]] = None, is_critical: bool = True):
+        self.is_critical = is_critical
         self.columns = columns
 
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfMissingValues]:
@@ -595,7 +602,7 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
         else:
             columns = self.columns
 
-        return [TestColumnShareOfMissingValues(column_name=name) for name in columns]
+        return [TestColumnShareOfMissingValues(column_name=name, is_critical=self.is_critical) for name in columns]
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
@@ -750,6 +757,7 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             eq=eq,
@@ -760,6 +768,7 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self.column_name = ColumnName.from_any(column_name)
         self._data_integrity_metric = ColumnSummaryMetric(column_name=column_name)
@@ -775,9 +784,9 @@ class BaseIntegrityOneColumnTest(Test, ABC):
     _metric: ColumnSummaryMetric
     column_name: ColumnName
 
-    def __init__(self, column_name: Union[str, ColumnName]):
+    def __init__(self, column_name: Union[str, ColumnName], is_critical: bool = True):
         self.column_name = ColumnName.from_any(column_name)
-        super().__init__()
+        super().__init__(is_critical=is_critical)
         self._metric = ColumnSummaryMetric(self.column_name)
 
     @property
@@ -892,10 +901,10 @@ class TestColumnsType(Test):
     columns_type: Optional[dict]
     _metric: DatasetSummaryMetric
 
-    def __init__(self, columns_type: Optional[dict] = None):
+    def __init__(self, columns_type: Optional[dict] = None, is_critical: bool = True):
         self.columns_type = columns_type
         self._metric = DatasetSummaryMetric()
-        super().__init__()
+        super().__init__(is_critical=is_critical)
 
     @property
     def metric(self):
@@ -1001,6 +1010,7 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.column_name = column_name
         self.reg_exp = reg_exp
@@ -1013,6 +1023,7 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
 

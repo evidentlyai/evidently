@@ -39,6 +39,7 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             eq=eq,
@@ -49,6 +50,7 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = RegressionQualityMetric()
         self._dummy_metric = RegressionDummyMetric()
