@@ -12,6 +12,7 @@ from evidently.base_metric import ColumnName
 from evidently.calculations.data_quality import get_corr_method
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
+from evidently.metrics import ColumnCategoryMetric
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
@@ -25,6 +26,7 @@ from evidently.metrics.data_integrity.column_summary_metric import ColumnSummary
 from evidently.metrics.data_integrity.column_summary_metric import DatetimeCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
+from evidently.metrics.data_quality.column_category_metric import CategoryStat
 from evidently.metrics.data_quality.dataset_correlations_metric import DatasetCorrelation
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
@@ -1403,14 +1405,145 @@ class TestListValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
+        curr_df = pd.concat(
+            [
+                pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"]),
+                pd.DataFrame(metric_result.current.values_not_in_list.items(), columns=["x", "count"]),
+            ]
+        )
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
+            ref_df = pd.concat(
+                [
+                    pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"]),
+                    pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"]),
+                ]
+            )
 
         else:
             ref_df = None
 
         additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, obj.alias)
         info.details = additional_plots
+        return info
+
+
+class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
+    alias: ClassVar[str]
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    _metric: ColumnCategoryMetric
+    column_name: str
+    category: Union[str, int, float]
+
+    def __init__(
+        self,
+        column_name: str,
+        category: Union[str, int, float],
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+    ):
+        self.column_name = column_name
+        self.category = category
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
+        self._metric = ColumnCategoryMetric(column_name=column_name, category=category)
+
+    @property
+    def metric(self):
+        return self._metric
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name}
+
+    def get_condition_from_reference(self, reference: Optional[CategoryStat]) -> Union[int, float]:
+        raise NotImplementedError()
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference
+        reference_value = self.get_condition_from_reference(reference)
+        if reference is not None:
+            return TestValueCondition(eq=approx(reference_value, 0.1), source=ValueSource.REFERENCE)
+
+        return TestValueCondition(gt=0)
+
+
+class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
+    name: ClassVar = "Share of category"
+    alias: ClassVar = "share_category"
+
+    def get_condition_from_reference(self, reference: Optional[CategoryStat]) -> float:
+        if reference is not None:
+            return reference.category_ratio
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current.category_ratio
+
+    def get_description(self, value: Numeric) -> str:
+        metric_result = self.metric.get_result()
+        return (
+            f"The share of category '{metric_result.category}' in the column **{self.column_name}** is {value:.3g} "
+            f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
+            f"The test threshold is {self.get_condition()}."
+        )
+
+    def get_parameters(self) -> CheckValueParameters:
+        return ValueListParameters(condition=self.get_condition(), value=self._value, category=self.category)
+
+
+class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
+    name: ClassVar = "Count of category"
+    alias: ClassVar = "count_category"
+
+    def get_condition_from_reference(self, reference: Optional[CategoryStat]) -> int:
+        if reference is not None:
+            return reference.category_num
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current.category_num
+
+    def get_description(self, value: Numeric) -> str:
+        metric_result = self.metric.get_result()
+        return (
+            f"The number of category '{metric_result.category}' in the column **{self.column_name}** is {value:.3g} "
+            f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
+            f"The test threshold is {self.get_condition()}."
+        )
+
+    def get_parameters(self) -> CheckValueParameters:
+        return ValueListParameters(condition=self.get_condition(), value=self._value, category=self.category)
+
+
+@default_renderer(wrap_type=TestCategoryCount)
+@default_renderer(wrap_type=TestCategoryShare)
+class TestCategoryRenderer(TestRenderer):
+    def render_html(self, obj: Union[TestCategoryCount, TestCategoryShare]) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        column_name = obj.column_name
+        counts_data = obj.metric.get_result().counts_of_values
+        if counts_data is not None:
+            curr_df = counts_data["current"]
+            ref_df = None
+            if "reference" in counts_data.keys():
+                ref_df = counts_data["reference"]
+            info.details = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "num_of_category")
+
         return info

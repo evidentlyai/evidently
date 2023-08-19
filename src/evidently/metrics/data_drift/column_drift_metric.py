@@ -149,7 +149,7 @@ def get_one_column_drift(
                 column.name,
                 datetime_name,
             )
-            current_scatter["current"] = df
+            current_scatter["current (mean)"] = df
             if prefix is None:
                 x_name = "Index binned"
             else:
@@ -372,9 +372,10 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     std=(result.scatter.plot_shape["y0"] - result.scatter.plot_shape["y1"]) / 2,
                     xaxis_name=result.scatter.x_name,
                     xaxis_name_ref=None,
-                    yaxis_name=result.column_name,
+                    yaxis_name=f"{result.column_name} (mean +/- std)",
                     color_options=self.color_options,
                     return_json=False,
+                    line_name="reference (mean)",
                 )
             tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
