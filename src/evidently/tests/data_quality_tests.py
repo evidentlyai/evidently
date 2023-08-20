@@ -1432,12 +1432,12 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
     alias: ClassVar[str]
     group: ClassVar = DATA_QUALITY_GROUP.id
     _metric: ColumnCategoryMetric
-    column_name: str
+    column_name: Union[str, ColumnName]
     category: Union[str, int, float]
 
     def __init__(
         self,
-        column_name: str,
+        column_name: Union[str, ColumnName],
         category: Union[str, int, float],
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -1448,7 +1448,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        self.column_name = column_name
+        self.column_name = ColumnName.from_any(column_name)
         self.category = category
         super().__init__(
             eq=eq,
@@ -1467,7 +1467,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
         return self._metric
 
     def groups(self) -> Dict[str, str]:
-        return {GroupingTypes.ByFeature.id: self.column_name}
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
 
     def get_condition_from_reference(self, reference: Optional[CategoryStat]) -> Union[int, float]:
         raise NotImplementedError()
@@ -1499,7 +1499,7 @@ class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
     def get_description(self, value: Numeric) -> str:
         metric_result = self.metric.get_result()
         return (
-            f"The share of category '{metric_result.category}' in the column **{self.column_name}** is {value:.3g} "
+            f"The share of category '{metric_result.category}' in the column **{self.column_name.display_name}** is {value:.3g} "
             f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
             f"The test threshold is {self.get_condition()}."
         )
@@ -1523,7 +1523,7 @@ class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
     def get_description(self, value: Numeric) -> str:
         metric_result = self.metric.get_result()
         return (
-            f"The number of category '{metric_result.category}' in the column **{self.column_name}** is {value:.3g} "
+            f"The number of category '{metric_result.category}' in the column **{self.column_name.display_name}** is {value:.3g} "
             f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
             f"The test threshold is {self.get_condition()}."
         )
@@ -1537,7 +1537,7 @@ class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
 class TestCategoryRenderer(TestRenderer):
     def render_html(self, obj: Union[TestCategoryCount, TestCategoryShare]) -> TestHtmlInfo:
         info = super().render_html(obj)
-        column_name = obj.column_name
+        column_name = obj.column_name.display_name
         counts_data = obj.metric.get_result().counts_of_values
         if counts_data is not None:
             curr_df = counts_data["current"]

@@ -5,6 +5,7 @@ from typing import Union
 
 import pandas as pd
 
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -34,45 +35,45 @@ class ColumnCategoryMetricResult(MetricResult):
 class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     """Calculates count and shares of values in the predefined values list"""
 
-    column_name: str
+    column_name: Union[str, ColumnName]
     category: Union[int, float, str]
 
-    def __init__(self, column_name: str, category: Union[int, float, str], options: AnyOptions = None) -> None:
-        self.column_name = column_name
+    def __init__(self, column_name: Union[str, ColumnName], category: Union[int, float, str], options: AnyOptions = None) -> None:
+        self.column_name = ColumnName.from_any(column_name)
         self.category = category
         super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnCategoryMetricResult:
-        if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' is not in current data.")
-
-        if data.reference_data is not None and self.column_name not in data.reference_data:
-            raise ValueError(f"Column '{self.column_name}' is not in reference data.")
+        if not data.has_column(self.column_name):
+            raise ValueError(f"Column '{self.column_name.display_name}' was not found in data.")
+        
+        current_column = data.get_current_column(self.column_name)
+        reference_column = data.get_reference_column(self.column_name)
 
         counts_of_values = None
         counts_of_values = {}
-        current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
+        current_counts = current_column.value_counts(dropna=False).reset_index()
         current_counts.columns = ["x", "count"]
         counts_of_values["current"] = current_counts.head(10)
-        if data.reference_data is not None:
-            reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
+        if reference_column is not None:
+            reference_counts = reference_column.value_counts(dropna=False).reset_index()
             reference_counts.columns = ["x", "count"]
             counts_of_values["reference"] = reference_counts.head(10)
 
         reference: Optional[CategoryStat] = None
-        if data.reference_data is not None:
+        if reference_column is not None:
             reference = CategoryStat(
-                all_num=data.reference_data.shape[0],
-                category_num=(data.reference_data[self.column_name] == self.category).sum(),
-                category_ratio=(data.reference_data[self.column_name] == self.category).mean(),
+                all_num=len(reference_column),
+                category_num=(reference_column == self.category).sum(),
+                category_ratio=(reference_column == self.category).mean(),
             )
         return ColumnCategoryMetricResult(
-            column_name=self.column_name,
+            column_name=self.column_name.display_name,
             category=self.category,
             current=CategoryStat(
-                all_num=data.current_data.shape[0],
-                category_num=(data.current_data[self.column_name] == self.category).sum(),
-                category_ratio=(data.current_data[self.column_name] == self.category).mean(),
+                all_num=current_column.shape[0],
+                category_num=(current_column == self.category).sum(),
+                category_ratio=(current_column == self.category).mean(),
             ),
             reference=reference,
             counts_of_values=counts_of_values,
