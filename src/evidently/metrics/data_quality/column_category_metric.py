@@ -25,7 +25,7 @@ class CategoryStat(MetricResult):
 
 class ColumnCategoryMetricResult(MetricResult):
     column_name: str
-    category: Union[str, int, float]
+    category: Union[int, float, str]
     current: CategoryStat
     reference: Optional[CategoryStat] = None
     counts_of_values: Optional[Dict[str, pd.DataFrame]]
@@ -35,9 +35,9 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     """Calculates count and shares of values in the predefined values list"""
 
     column_name: str
-    category: Union[str, int, float]
+    category: Union[int, float, str]
 
-    def __init__(self, column_name: str, category: Union[str, int, float], options: AnyOptions = None) -> None:
+    def __init__(self, column_name: str, category: Union[int, float, str], options: AnyOptions = None) -> None:
         self.column_name = column_name
         self.category = category
         super().__init__(options=options)
