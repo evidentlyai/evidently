@@ -515,12 +515,12 @@ class ReportBase(Display):
     def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
         raise NotImplementedError
 
-    def _save(self, filename):
+    def save(self, filename):
         """Save state to file (experimental)"""
         self._get_snapshot().save(filename)
 
     @classmethod
-    def _load(cls: Type[T], filename) -> T:
+    def load(cls: Type[T], filename) -> T:
         """Load state from file (experimental)"""
         return cls._parse_snapshot(Snapshot.load(filename))
 
