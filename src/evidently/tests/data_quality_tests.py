@@ -28,6 +28,8 @@ from evidently.metrics.data_integrity.column_summary_metric import NumericCharac
 from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
 from evidently.metrics.data_quality.column_category_metric import CategoryStat
 from evidently.metrics.data_quality.dataset_correlations_metric import DatasetCorrelation
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -1432,7 +1434,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
     alias: ClassVar[str]
     group: ClassVar = DATA_QUALITY_GROUP.id
     _metric: ColumnCategoryMetric
-    column_name: Union[str, ColumnName]
+    column_name: ColumnName
     category: Union[str, int, float]
 
     def __init__(
@@ -1535,15 +1537,70 @@ class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
 @default_renderer(wrap_type=TestCategoryCount)
 @default_renderer(wrap_type=TestCategoryShare)
 class TestCategoryRenderer(TestRenderer):
+    @staticmethod
+    def _get_number_and_percents(s: pd.Series, num: int) -> pd.DataFrame:
+        """Get a string with missing values numbers and percents from info for results table"""
+        return s.astype(str) + " (" + (s / num * 100).round(2).astype(str) + "%)"
+
+    def get_value_counts_table_with_percents(
+        self,
+        info: TestHtmlInfo,
+        curr_df: pd.DataFrame,
+        ref_df: Optional[pd.DataFrame],
+        n_curr: int,
+        n_ref: Optional[int],
+        name: str,
+    ) -> TestHtmlInfo:
+
+        curr_df = curr_df.copy()
+        replace = [("current value counts", n_curr)]
+        if ref_df is not None and n_ref is not None:
+            ref_df = ref_df.copy()
+            replace.append(("reference value counts", n_ref))
+            df = curr_df.merge(ref_df, on="x", how="outer")
+            df.columns = ["value", "current value counts", "reference value counts"]
+            df[["current value counts", "reference value counts"]] = df[
+                ["current value counts", "reference value counts"]
+            ].fillna(0.0)
+            df.sort_values(["current value counts", "reference value counts"], ascending=False, inplace=True)
+
+        else:
+            df = curr_df
+            df.columns = ["value", "current value counts"]
+            df.sort_values("current value counts", ascending=False, inplace=True)
+        for col, n in replace:
+            df[col] = self._get_number_and_percents(df[col].fillna(0), n)
+
+        info.details = [
+            DetailsInfo(
+                id=name,
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    type="table",
+                    params={
+                        "header": list(df.columns),
+                        "data": df.values,
+                    },
+                    size=2,
+                ),
+            )
+        ]
+        return info
+
     def render_html(self, obj: Union[TestCategoryCount, TestCategoryShare]) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name.display_name
         counts_data = obj.metric.get_result().counts_of_values
-        if counts_data is not None:
-            curr_df = counts_data["current"]
-            ref_df = None
-            if "reference" in counts_data.keys():
-                ref_df = counts_data["reference"]
-            info.details = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "num_of_category")
-
-        return info
+        curr_df = counts_data["current"]
+        ref_df = None
+        if "reference" in counts_data.keys():
+            ref_df = counts_data["reference"]
+        n_curr = obj.metric.get_result().current.all_num
+        ref = obj.metric.get_result().reference
+        n_ref = None
+        if ref is not None:
+            n_ref = ref.all_num
+        return self.get_value_counts_table_with_percents(
+            info, curr_df, ref_df, n_curr, n_ref, f"cat_counts_{column_name}"
+        )

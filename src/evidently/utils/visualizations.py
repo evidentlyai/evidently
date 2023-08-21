@@ -1231,7 +1231,8 @@ def prepare_df_for_time_index_plot(
 def get_traces(df, color, error_band_opacity, name, showlegend):
     error_band_trace = go.Scatter(
         x=list(df["per"]) + list(df["per"][::-1]),  # x, then x reversed
-        y=list(df["mean"] + df["std"].fillna(0)) + list(df["mean"] - df["std"].fillna(0))[::-1],  # upper, then lower reversed
+        y=list(df["mean"] + df["std"].fillna(0))
+        + list(df["mean"] - df["std"].fillna(0))[::-1],  # upper, then lower reversed
         fill="toself",
         fillcolor=color,
         opacity=error_band_opacity,

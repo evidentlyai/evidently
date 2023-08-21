@@ -29,16 +29,18 @@ class ColumnCategoryMetricResult(MetricResult):
     category: Union[int, float, str]
     current: CategoryStat
     reference: Optional[CategoryStat] = None
-    counts_of_values: Optional[Dict[str, pd.DataFrame]]
+    counts_of_values: Dict[str, pd.DataFrame]
 
 
 class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     """Calculates count and shares of values in the predefined values list"""
 
-    column_name: Union[str, ColumnName]
+    column_name: ColumnName
     category: Union[int, float, str]
 
-    def __init__(self, column_name: Union[str, ColumnName], category: Union[int, float, str], options: AnyOptions = None) -> None:
+    def __init__(
+        self, column_name: Union[str, ColumnName], category: Union[int, float, str], options: AnyOptions = None
+    ) -> None:
         self.column_name = ColumnName.from_any(column_name)
         self.category = category
         super().__init__(options=options)
@@ -46,7 +48,7 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     def calculate(self, data: InputData) -> ColumnCategoryMetricResult:
         if not data.has_column(self.column_name):
             raise ValueError(f"Column '{self.column_name.display_name}' was not found in data.")
-        
+
         current_column = data.get_current_column(self.column_name)
         reference_column = data.get_reference_column(self.column_name)
 
