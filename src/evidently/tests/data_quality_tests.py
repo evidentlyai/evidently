@@ -1468,6 +1468,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.column_name = ColumnName.from_any(column_name)
         self.category = category
@@ -1480,6 +1481,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = ColumnCategoryMetric(column_name=column_name, category=category)
 
