@@ -57,10 +57,12 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
         current_counts = current_column.value_counts(dropna=False).reset_index()
         current_counts.columns = ["x", "count"]
         counts_of_values["current"] = current_counts.head(10)
+        counts_of_values["current"].index = counts_of_values["current"].index.astype("str")
         if reference_column is not None:
             reference_counts = reference_column.value_counts(dropna=False).reset_index()
             reference_counts.columns = ["x", "count"]
             counts_of_values["reference"] = reference_counts.head(10)
+            counts_of_values["reference"].index = counts_of_values["reference"].index.astype("str")
 
         reference: Optional[CategoryStat] = None
         if reference_column is not None:
