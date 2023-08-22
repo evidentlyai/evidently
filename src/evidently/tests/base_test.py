@@ -148,7 +148,7 @@ class Test(WithTestAndMetricDependencies):
 
     name: ClassVar[str]
     group: ClassVar[str]
-    is_critical: bool
+    is_critical: bool = True
     _context: Optional["Context"] = None
 
     @abc.abstractmethod
