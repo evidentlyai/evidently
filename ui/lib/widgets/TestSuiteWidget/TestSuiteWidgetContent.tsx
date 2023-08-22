@@ -96,7 +96,7 @@ const DefaultGroups: TestGroupTypeData[] = [
         id: "status", title: "By test status", values: [
             {id: "success", title: "Passed tests", sortIndex: 3, description: "", severity: "success"},
             {id: "fail", title: "Failed tests", sortIndex: 1, description: "", severity: "fail"},
-            {id: "warning", title: "Passed tests with warnings", sortIndex: 2, description: "", severity: "warning"},
+            {id: "warning", title: "Failed non-critical tests", sortIndex: 2, description: "", severity: "warning"},
             {id: "error", title: "Tests with execution errors", sortIndex: 2, description: "", severity: "error"},
         ]
     },

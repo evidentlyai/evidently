@@ -71,6 +71,7 @@ class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacte
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             eq=eq,
@@ -82,6 +83,7 @@ class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacte
             not_eq=not_eq,
             not_in=not_in,
             column_name=ColumnName.from_any(column_name),
+            is_critical=is_critical,
         )
         self._metric = ColumnSummaryMetric(column_name)
 
@@ -91,9 +93,9 @@ class TestConflictTarget(Test):
     name: ClassVar = "Test number of conflicts in target"
     _metric: ConflictTargetMetric
 
-    def __init__(self):
+    def __init__(self, is_critical: bool = True):
         self._metric = ConflictTargetMetric()
-        super().__init__()
+        super().__init__(is_critical=is_critical)
 
     @property
     def metric(self):
@@ -122,9 +124,9 @@ class TestConflictPrediction(Test):
     name: ClassVar = "Test number of conflicts in prediction"
     _metric: ConflictPredictionMetric
 
-    def __init__(self):
+    def __init__(self, is_critical: bool = True):
         self._metric = ConflictPredictionMetric()
-        super().__init__()
+        super().__init__(is_critical=is_critical)
 
     @property
     def metric(self):
@@ -164,6 +166,7 @@ class BaseDataQualityCorrelationsMetricsValueTest(ConditionFromReferenceMixin[Da
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.method = method
         super().__init__(
@@ -175,6 +178,7 @@ class BaseDataQualityCorrelationsMetricsValueTest(ConditionFromReferenceMixin[Da
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = DatasetCorrelationsMetric()
 
@@ -331,6 +335,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.corr_diff = corr_diff
         super().__init__(
@@ -343,6 +348,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
@@ -404,6 +410,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             column_name=column_name,
@@ -415,6 +422,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
 
     def groups(self) -> Dict[str, str]:
@@ -789,7 +797,8 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
 
     columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[List[str]] = None):
+    def __init__(self, columns: Optional[List[str]] = None, is_critical: bool = True):
+        self.is_critical = is_critical
         self.columns = columns
 
     def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
@@ -799,7 +808,7 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
         else:
             columns = self.columns
 
-        return [TestMostCommonValueShare(column_name=name) for name in columns]
+        return [TestMostCommonValueShare(column_name=name, is_critical=self.is_critical) for name in columns]
 
 
 class MeanInNSigmasParameter(TestParameters):
@@ -818,11 +827,11 @@ class TestMeanInNSigmas(Test):
     column_name: ColumnName
     n_sigmas: int
 
-    def __init__(self, column_name: Union[str, ColumnName], n_sigmas: int = 2):
+    def __init__(self, column_name: Union[str, ColumnName], n_sigmas: int = 2, is_critical: bool = True):
         self.column_name = ColumnName.from_any(column_name)
         self.n_sigmas = n_sigmas
         self._metric = ColumnSummaryMetric(column_name)
-        super().__init__()
+        super().__init__(is_critical=is_critical)
 
     @property
     def metric(self):
@@ -933,7 +942,8 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 
     columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[List[str]] = None):
+    def __init__(self, columns: Optional[List[str]] = None, is_critical: bool = True):
+        self.is_critical = is_critical
         self.columns = columns
 
     def generate(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
@@ -943,7 +953,7 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
         else:
             columns = [column for column in self.columns if column in columns_info.num_feature_names]
 
-        return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns]
+        return [TestMeanInNSigmas(column_name=name, n_sigmas=2, is_critical=self.is_critical) for name in columns]
 
 
 class TestValueRange(Test):
@@ -959,11 +969,12 @@ class TestValueRange(Test):
         column_name: Union[str, ColumnName],
         left: Optional[float] = None,
         right: Optional[float] = None,
+        is_critical: bool = True,
     ):
         self.column_name = ColumnName.from_any(column_name)
         self.left = left
         self.right = right
-        super().__init__()
+        super().__init__(is_critical=is_critical)
         self._metric = ColumnValueRangeMetric(column_name=self.column_name, left=left, right=right)
 
     @property
@@ -1039,6 +1050,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.column_name = ColumnName.from_any(column_name)
         self.left = left
@@ -1054,6 +1066,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
 
     def groups(self) -> Dict[str, str]:
@@ -1142,7 +1155,8 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 
     columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[List[str]] = None):
+    def __init__(self, columns: Optional[List[str]] = None, is_critical: bool = True):
+        self.is_critical = is_critical
         self.columns = columns
 
     def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
@@ -1152,7 +1166,7 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
         else:
             columns = [column for column in self.columns if column in columns_info.num_feature_names]
 
-        return [TestShareOfOutRangeValues(column_name=name) for name in columns]
+        return [TestShareOfOutRangeValues(column_name=name, is_critical=self.is_critical) for name in columns]
 
 
 class ColumnValueListParameters(TestParameters):
@@ -1169,11 +1183,11 @@ class TestValueList(Test):
     column_name: str
     values: Optional[list]
 
-    def __init__(self, column_name: str, values: Optional[list] = None):
+    def __init__(self, column_name: str, values: Optional[list] = None, is_critical: bool = True):
         self.column_name = column_name
         self.values = values
         self._metric = ColumnValueListMetric(column_name=column_name, values=values)
-        super().__init__()
+        super().__init__(is_critical=is_critical)
 
     @property
     def metric(self):
@@ -1221,6 +1235,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.column_name = column_name
         self.values = values
@@ -1233,6 +1248,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = ColumnValueListMetric(column_name=column_name, values=values)
 
@@ -1294,7 +1310,8 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 
     columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[List[str]] = None):
+    def __init__(self, columns: Optional[List[str]] = None, is_critical: bool = True):
+        self.is_critical = is_critical
         self.columns = columns
 
     def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
@@ -1304,7 +1321,7 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
         else:
             columns = [column for column in self.columns if column in columns_info.cat_feature_names]
 
-        return [TestShareOfOutListValues(column_name=name) for name in columns]
+        return [TestShareOfOutListValues(column_name=name, is_critical=self.is_critical) for name in columns]
 
 
 class TestColumnQuantile(BaseCheckValueTest):
@@ -1326,6 +1343,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self.column_name = ColumnName.from_any(column_name)
         self.quantile = quantile
@@ -1338,6 +1356,7 @@ class TestColumnQuantile(BaseCheckValueTest):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
 
