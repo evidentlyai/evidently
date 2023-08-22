@@ -37,6 +37,31 @@ Data structure requirements depend on the type of analysis. Here are example req
 **We recommend specifying column mapping manually**. Evidently applies different heuristics and rules to map the input data automatically. To avoid errors, it is always best to set column mapping manually. For example, numerical columns with only 3 different values in the reference data might be incorrectly parsed as categorical features.
 {% endhint %}
 
+# Code example
+
+Notebook example on specifying column mapping:
+
+{% embed url="https://github.com/elenasamuylova/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
+
+Once you create a column mapping object, you can pass it to the Report or Test Suite. For example:
+
+```python
+column_mapping = ColumnMapping()
+
+column_mapping.target = 'target'
+column_mapping.prediction = 'prediction'
+column_mapping.numerical_features = numerical_features
+column_mapping.categorical_features = categorical_features
+
+regression_performance_report = Report(metrics=[
+    RegressionPreset(),
+])
+
+regression_performance_report.run(reference_data=ref, current_data=cur,column_mapping=column_mapping)
+
+regression_performance_report
+```
+
 # Primary mapping options
 
 You can create a `ColumnMapping` object to map your column names and feature types. 

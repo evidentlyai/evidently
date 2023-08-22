@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useState} from 'react';
 import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 
 import {AdditionalGraphInfo, Api, DashboardInfo} from "./api/Api";
@@ -16,13 +16,14 @@ export function Report(props: {params: DashboardInfo}) {
     </Grid>
 }
 
-export function ProjectDashboard(props: {projectId: string}) {
+export const ProjectDashboard = (props: {projectId: string, from?: string, to?: string}) => {
+    let callback =  (api: Api) => api.getProjectDashboard(props.projectId, props.from, props.to);
     return <>
         <ApiContext.Consumer>
             {api =>
-                    <LoadableView func={() => api.Api.getProjectDashboard(props.projectId)}>
+                    <LoadableView func={() => callback(api.Api)}>
                         {
-                            params => <Report params={params} />
+                            params =><><Report params={params} /></>
                         }
                     </LoadableView>
             }

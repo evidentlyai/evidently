@@ -105,7 +105,7 @@ data_stability.json()
 To export JSON as a separate file: 
 
 ```python
-data_stability.save_json(“file.json”)
+data_stability.save_json("file.json")
 ```
 
 **Python dictionary**. You can get the Test Suite output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.

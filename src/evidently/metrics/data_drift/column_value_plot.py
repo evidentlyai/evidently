@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -10,8 +11,11 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.metric_results import ColumnAggScatter
 from evidently.metric_results import ColumnScatter
+from evidently.metric_results import ColumnScatterOrAgg
 from evidently.metric_results import column_scatter_from_df
+from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -27,15 +31,17 @@ from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 class ColumnValuePlotResults(MetricResult):
     class Config:
-        smart_union = True
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
 
     column_name: str
     datetime_column_name: Optional[str]
-    current: ColumnScatter
-    reference: ColumnScatter
+    current: Union[ColumnScatterOrAgg]
+    current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, False)
+
+    reference: Union[ColumnScatterOrAgg]
+    reference_raw, reference_agg = raw_agg_properties("reference", ColumnScatter, ColumnAggScatter, False)
     prefix: Optional[str] = None
 
 
@@ -118,7 +124,8 @@ class ColumnValuePlotRenderer(MetricRenderer):
     def render_raw(self, current_scatter, reference_scatter, column_name, datetime_column_name):
         # todo: better typing
         column = reference_scatter[column_name]
-        assert isinstance(column, pd.Series)
+        if not isinstance(column, pd.Series):
+            column = pd.Series(column)
         mean_ref = column.mean()
         std_ref = column.std()
         y0 = mean_ref - std_ref
@@ -219,6 +226,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
             xaxis_name=xaxis_name,
             xaxis_name_ref=None,
             yaxis_name=column_name + " value",
+            color_options=self.color_options,
         )
 
         return [

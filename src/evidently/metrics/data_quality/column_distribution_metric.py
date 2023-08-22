@@ -10,14 +10,16 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
+from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class ColumnDistributionMetricResult(MetricResult):
@@ -31,9 +33,9 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     column_name: ColumnName
 
-    def __init__(self, column_name: Union[str, ColumnName]) -> None:
+    def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None) -> None:
         self.column_name = ColumnName.from_any(column_name)
-        super().__init__()
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if not data.has_column(self.column_name):
@@ -64,10 +66,16 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 class ColumnDistributionMetricRenderer(MetricRenderer):
     def render_html(self, obj: ColumnDistributionMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        distr_fig = get_distribution_plot_figure(
-            current_distribution=metric_result.current,
-            reference_distribution=metric_result.reference,
+        distr_fig = plot_distr_with_perc_button(
+            hist_curr=HistogramData.from_distribution(metric_result.current),
+            hist_ref=HistogramData.from_distribution(metric_result.reference),
+            xaxis_name="",
+            yaxis_name="Count",
+            yaxis_name_perc="Percent",
+            same_color=False,
             color_options=self.color_options,
+            subplots=False,
+            to_json=False,
         )
 
         result = [

@@ -1,57 +1,25 @@
 import datetime
 import os
 import uuid
-from collections import defaultdict
 from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Type
-from typing import TypeVar
 
 from pydantic import ValidationError
 
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
-from evidently.report import Report
-from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import Snapshot
 
 
-def load_metric_report_set(
+def load_snapshots(
     path: str,
-    date_from: Optional[datetime.datetime] = None,
-    date_to: Optional[datetime.datetime] = None,
-    metrics: Optional[List[Metric]] = None,
-) -> Dict[Metric, Dict[datetime.datetime, MetricResult]]:
-    reports = load_report_set(path, Report, date_from, date_to)
-    result: Dict[Metric, Dict[datetime.datetime, MetricResult]] = defaultdict(dict)
-    if metrics is None:
-        for _, report in reports.items():
-            for metric in report._first_level_metrics:
-                result[metric][report.timestamp] = metric.get_result()
-        return result
-    for metric in metrics:
-        for _, report in reports.items():
-            if metric in report._first_level_metrics:
-                metric.set_context(report._inner_suite.context)
-                result[metric][report.timestamp] = metric.get_result()
-    return result
-
-
-T = TypeVar("T", bound=Display)
-
-
-def load_report_set(
-    path: str,
-    cls: Type[T],
     date_from: Optional[datetime.datetime] = None,
     date_to: Optional[datetime.datetime] = None,
     skip_errors: bool = False,
-) -> Dict[uuid.UUID, T]:
+) -> Dict[uuid.UUID, Snapshot]:
     result = {}
     for file in os.listdir(path):
         filepath = os.path.join(path, file)
         try:
-            suite = cls._load(filepath)
+            suite = Snapshot.load(filepath)
         except ValidationError:
             if skip_errors:
                 continue

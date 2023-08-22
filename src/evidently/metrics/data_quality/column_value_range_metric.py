@@ -20,13 +20,13 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import get_histogram_figure_with_range
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
 
 class ValuesInRangeStat(MetricResult):
@@ -180,19 +180,18 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
         else:
             reference_histogram = None
 
-        figure = get_histogram_figure_with_range(
-            primary_hist=HistogramData.from_distribution(
-                metric_result.current.distribution,
-                name="current",
-            ),
-            secondary_hist=reference_histogram,
+        figure = plot_distr_with_cond_perc_button(
+            hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
+            hist_ref=reference_histogram,
+            xaxis_name="",
+            yaxis_name="Count",
+            yaxis_name_perc="Percent",
             color_options=self.color_options,
-            left=metric_result.left,
-            right=metric_result.right,
-        )
-        figure.update_layout(
-            yaxis_title="count",
-            xaxis_title=metric_result.column_name,
+            to_json=False,
+            condition=None,
+            lt=metric_result.left,
+            gt=metric_result.right,
+            dict_rename={"lt": "left", "gt": "right"},
         )
 
         tabs: List[TabData] = [

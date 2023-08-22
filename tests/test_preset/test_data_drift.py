@@ -1,6 +1,6 @@
 import pandas as pd
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite
 
@@ -38,5 +38,6 @@ def test_data_drift_preset():
     data_quality_suite.run(
         current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=column_mapping
     )
+    data_quality_suite._inner_suite.raise_for_error()
     assert data_quality_suite
     assert len(data_quality_suite.as_dict()["tests"]) == 7

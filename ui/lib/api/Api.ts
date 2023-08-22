@@ -232,17 +232,26 @@ export interface SectionInfo {
 
 export interface ProjectInfo {
     id: string;
-    project_name: string;
+    name: string;
+    description?: string;
+    date_from?: string;
+    date_to?: string;
 }
+
+export interface ProjectDetails extends ProjectInfo {}
 
 export interface ReportInfo {
     id: string;
-    timestamp: Date;
+    timestamp: string;
 }
 
 export interface TestSuiteInfo {
     id: string;
-    timestamp: Date;
+    timestamp: string;
+}
+
+export interface VersionInfo {
+    version: string;
 }
 
 export interface Api {
@@ -252,10 +261,13 @@ export interface Api {
 
     getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfo>
 
-    getProjectDashboard(projectId: string): Promise<DashboardInfo>
+    getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo>
 
     getReports(projectId: string): Promise<ReportInfo[]>
     getTestSuites(projectId: string): Promise<TestSuiteInfo[]>
 
     getProjects(): Promise<ProjectInfo[]>
+
+    getProjectInfo(projectId: string): Promise<ProjectDetails>;
+    getVersion(): Promise<VersionInfo>;
 }

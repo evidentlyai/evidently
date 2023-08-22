@@ -5,7 +5,6 @@ import json
 import logging
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -16,7 +15,9 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import UUID4
 from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import ErrorResult
@@ -45,9 +46,6 @@ from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
 from evidently.utils.data_preprocessing import DataDefinition
-
-if TYPE_CHECKING:
-    from evidently_service.workspace import Workspace
 
 
 @dataclasses.dataclass
@@ -97,7 +95,7 @@ class Context:
     execution_graph: Optional[ExecutionGraph]
     metrics: list
     tests: list
-    metric_results: Dict[Metric, MetricResult]
+    metric_results: Dict[Metric, Union[MetricResult, ErrorResult]]
     test_results: Dict[Test, TestResult]
     state: State
     renderers: RenderersDefinitions
@@ -106,7 +104,7 @@ class Context:
 
 class ContextPayload(BaseModel):
     metrics: List[Metric]
-    metric_results: List[MetricResult]
+    metric_results: List[Union[MetricResult, ErrorResult]]
     tests: List[Test]
     test_results: List[TestResult]
     options: Options = Options()
@@ -147,21 +145,7 @@ class ExecutionError(Exception):
     pass
 
 
-T = TypeVar("T", bound="Display")
-
-
 class Display:
-    # collection of all possible common options
-    options: Options
-    id: uuid.UUID
-    timestamp: datetime
-    metadata: Dict[str, str] = {}
-    tags: List[str] = []
-
-    def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None):
-        self.options = Options.from_any_options(options)
-        self.timestamp = timestamp or datetime.now()
-
     @abc.abstractmethod
     def _build_dashboard_info(self):
         raise NotImplementedError()
@@ -248,10 +232,7 @@ class Display:
         **kwargs,
     ) -> dict:
         """Return all data for json representation"""
-        result = {
-            "version": evidently.__version__,
-            "timestamp": str(self.timestamp),
-        }
+        result = {"version": evidently.__version__}
         result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude, **kwargs))
         return result
 
@@ -265,6 +246,7 @@ class Display:
         return json.dumps(
             self._get_json_content(include_render=include_render, include=include, exclude=exclude, **kwargs),
             cls=NumpyEncoder,
+            allow_nan=True,
         )
 
     def save_json(
@@ -283,33 +265,6 @@ class Display:
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)
-
-    @abc.abstractmethod
-    def _get_payload(self) -> BaseModel:
-        raise NotImplementedError
-
-    @classmethod
-    @abc.abstractmethod
-    def _parse_payload(cls: Type[T], payload: Dict) -> T:
-        raise NotImplementedError
-
-    def _save(self, filename):
-        """Save state to file (experimental)"""
-        payload = self._get_payload()
-
-        with open(filename, "w") as f:
-            json.dump(payload.dict(), f, indent=2, cls=NumpyEncoder)
-
-    def upload(self, workspace_or_url: Union[str, "Workspace"], project_id: Union[uuid.UUID, str]):
-        from evidently_service.workspace import upload_item
-
-        upload_item(self, workspace_or_url, project_id)  # type: ignore[arg-type]
-
-    @classmethod
-    def _load(cls: Type[T], filename) -> T:
-        """Load state from file (experimental)"""
-        with open(filename, "r") as f:
-            return cls._parse_payload(json.load(f))
 
 
 class Suite:
@@ -409,14 +364,14 @@ class Suite:
         if self.context.execution_graph is not None:
             execution_graph: ExecutionGraph = self.context.execution_graph
 
-            calculations = {}
+            calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
             for metric, calculation in execution_graph.get_metric_execution_iterator():
                 if calculation not in calculations:
                     logging.debug(f"Executing {type(calculation)}...")
                     try:
                         calculations[calculation] = calculation.calculate(data)
                     except BaseException as ex:
-                        calculations[calculation] = ErrorResult(ex)
+                        calculations[calculation] = ErrorResult(exception=ex)
                 else:
                     logging.debug(f"Using cached result for {type(calculation)}")
                 self.context.metric_results[metric] = calculations[calculation]
@@ -453,11 +408,11 @@ class Suite:
         self.context.state = States.Tested
 
     def raise_for_error(self):
-        for result in self.context.test_results.values():
-            if result.exception is not None:
-                raise result.exception
         for result in self.context.metric_results.values():
             if isinstance(result, ErrorResult):
+                raise result.exception
+        for result in self.context.test_results.values():
+            if result.exception is not None:
                 raise result.exception
 
     def reset(self):
@@ -471,3 +426,103 @@ class Suite:
             renderers=DEFAULT_RENDERERS,
             options=self.context.options,
         )
+
+
+MetadataValueType = Union[str, Dict[str, str], List[str]]
+
+
+class Snapshot(BaseModel):
+    id: UUID4
+    timestamp: datetime
+    metadata: Dict[str, MetadataValueType]
+    tags: List[str]
+    suite: ContextPayload
+    metrics_ids: List[int] = []
+    test_ids: List[int] = []
+    options: Options
+
+    def save(self, filename):
+        with open(filename, "w") as f:
+            json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
+
+    @classmethod
+    def load(cls, filename):
+        with open(filename, "r") as f:
+            return parse_obj_as(Snapshot, json.load(f))
+
+    @property
+    def is_report(self):
+        return len(self.metrics_ids) > 0
+
+    def as_report(self):
+        from evidently.report import Report
+
+        return Report._parse_snapshot(self)
+
+    def as_test_suite(self):
+        from evidently.test_suite import TestSuite
+
+        return TestSuite._parse_snapshot(self)
+
+    def first_level_metrics(self) -> List[Metric]:
+        return [self.suite.metrics[i] for i in self.metrics_ids]
+
+    def first_level_tests(self) -> List[Test]:
+        return [self.suite.tests[i] for i in self.test_ids]
+
+
+T = TypeVar("T", bound="ReportBase")
+
+
+class ReportBase(Display):
+    _inner_suite: Suite
+    # collection of all possible common options
+    options: Options
+    id: uuid.UUID
+    timestamp: datetime
+    metadata: Dict[str, MetadataValueType] = {}
+    tags: List[str] = []
+
+    def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None):
+        self.options = Options.from_any_options(options)
+        self.timestamp = timestamp or datetime.now()
+
+    def _get_json_content(
+        self,
+        include_render: bool = False,
+        include: Dict[str, IncludeOptions] = None,
+        exclude: Dict[str, IncludeOptions] = None,
+        **kwargs,
+    ) -> dict:
+        res = super()._get_json_content(include_render, include, exclude, **kwargs)
+        res["timestamp"] = str(self.timestamp)
+        return res
+
+    def _get_snapshot(self) -> Snapshot:
+        ctx = self._inner_suite.context
+        suite = ContextPayload.from_context(ctx)
+        return Snapshot(
+            id=self.id,
+            suite=suite,
+            timestamp=self.timestamp,
+            metadata=self.metadata,
+            tags=self.tags,
+            options=self.options,
+        )
+
+    @classmethod
+    @abc.abstractmethod
+    def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
+        raise NotImplementedError
+
+    def _save(self, filename):
+        """Save state to file (experimental)"""
+        self._get_snapshot().save(filename)
+
+    @classmethod
+    def _load(cls: Type[T], filename) -> T:
+        """Load state from file (experimental)"""
+        return cls._parse_snapshot(Snapshot.load(filename))
+
+    def to_snapshot(self):
+        return self._get_snapshot()

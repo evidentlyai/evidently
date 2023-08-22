@@ -1,3 +1,5 @@
+Looking for old Evidently Dashboards? Read the [migration guide](../support/migration.md).
+
 # MAC OS and Linux
 
 `Evidently` is available as a PyPI package. To install it using the **pip package manager**, run:
@@ -12,7 +14,7 @@ To install `evidently` using **conda installer**, run:
 conda install -c conda-forge evidently
 ```
 
-To display dashboards **in a Jupyter notebook**, `evidently` uses `jupyter nbextension`. To enable it, run the **two following commands** in the terminal from the Evidently directory after installing `evidently`. 
+To display visualization **in a Jupyter notebook**, `evidently` uses `jupyter nbextension`. To enable it, run the **two following commands** in the terminal from the Evidently directory after installing `evidently`. 
 
 To install `jupyter nbextension`, run:
 
@@ -29,7 +31,7 @@ $ jupyter nbextension enable evidently --py --sys-prefix
 That's it! A single run after the installation is enough. 
 
 {% hint style="info" %}
-**Note**: if you **do not install nbextension**, you can still use Evidently. You can get the outputs as JSON, Python dictionary, or generate standalone HTML files to view in the browser.
+**Note**: you only require **nbextension** if you want to get visualization in Jupyter notebook. If you do not install it, you can still use Evidently. You can use Evidently Monitoring UI, or generate Reports and Test Suites as JSON, Python dictionary, or standalone HTML files to view in the browser.
 {% endhint %}
 
 {% hint style="info" %}
@@ -84,5 +86,5 @@ conda install -c conda-forge evidently
 **Note**: Nbextension does not work on Windows. `Evidently` uses an alternative way to display visuals.
 
 {% hint style="info" %}
-**Visualizations on Windows**. When displaying Evidently Reports and Test Suites in Jupyter notebook, you will need to **explicitly specify the inline show method**. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
+**Visualizations on Windows**. When displaying Evidently Reports and Test Suites in Jupyter notebook, you will need to **explicitly specify the inline show method**. Consult [this section](../integrations/notebook-environments.md) for help. If you face issues, you can get the output as a separate HTML file and view it in a browser.
 {% endhint %}

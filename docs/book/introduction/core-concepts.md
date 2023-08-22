@@ -4,11 +4,13 @@ This is an explanatory page to describe the key features and concepts at Evident
 
 Evidently helps evaluate, test and monitor ML models in production. 
 
-A **Metric** is a core component of Evidently. You can combine multiple **Metrics** in a **Report**. Reports are best for visual analysis and debugging of your models and data.
+* A **Metric** is a core component of Evidently. You can combine multiple **Metrics** in a **Report**. Reports are best for visual analysis and debugging of your models and data.
 
-A **Test** is a metric with a condition. Each test returns a pass or fail result. You can combine multiple **Tests** in a **Test Suite**. Test Suites are best for automated model checks as part of an ML pipeline.
+* A **Test** is a metric with a condition. Each test returns a pass or fail result. You can combine multiple **Tests** in a **Test Suite**. Test Suites are best for automated model checks as part of an ML pipeline.
 
 For both Tests and Metrics, Evidently has **Presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
+
+* A **Snapshot** is a JSON version of the **Report** or a **Test Suite** which contains measurements and test results for a specific period. You can log them over time and run an Evidently Monitoring Dashboard for continuous monitoring.
 
 # Metrics and Reports
 
@@ -30,9 +32,7 @@ Here is an example of a column-level Metric that evaluates the value range of ce
 
 ![ColumnValueRangeMetric](../.gitbook/assets/reports/metric_example_value_range-min.png)
 
-Metric output is available as an interactive HTML report, JSON, or Python dictionary. The JSON “version” returns any new calculated values and, optionally, some other useful information such as histogram bins. 
-
-Evidently contains 35+ **Metrics** related to data quality, integrity, drift and model performance. You can also implement a custom one.
+Evidently contains 35+ **Metrics** (with 100+ different measurements) related to data quality, integrity, drift and model performance. You can also implement a custom one.
 
 ## What is a Report?
 
@@ -42,7 +42,7 @@ A **Report** is a combination of different Metrics that evaluate data or ML mode
 
 ![Data Drift report example](../.gitbook/assets/reports/report_example_data_drift-min.png)
 
-You can also generate the Report as a text summary: as a JSON or as a Python dictionary. 
+The Report output is also available as JSON or Python dictionary. This "text" version returns any new calculated values and, optionally, some other useful information such as histogram bins. You can also define what to include. Example: 
 
 ```python
 {'timestamp': '2022-10-26 17:46:47.214403',
@@ -62,7 +62,16 @@ You can also generate the Report as a text summary: as a JSON or as a Python dic
      'drift_detected': True,
      'threshold': 0.1}}}}}
 ```
-Most Reports can be calculated for a single dataset. If you pass two datasets, they will show a side-by-side comparison.
+
+You can also export the Report output as an Evidently `snapshot`. This is a more complete JSON that allows recreating the original HTML Report. Use this option if you want to enable logging and continuous monitoring of the model or data performance.
+
+You can read more about Monitoring here:
+
+{% content-ref url="../monitoring/monitoring_overview.md" %}
+[Monitoring Overview](monitoring_overview.md)
+{% endcontent-ref %}
+
+You can calculate most Reports for a single dataset. If you pass two datasets, they will show a side-by-side comparison.
 
 You can generate a Report by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
 
@@ -86,17 +95,17 @@ You can use Reports at different stages of the ML lifecycle: from exploratory da
 
 **Debugging and exploration**. Reports are best for visual analysis of the data or model performance. For example, during model quality evaluation on the training set, when debugging the model quality decay, or comparing two models. 
 
-**Metric logging**. You can also add a model or data evaluation step in the ML pipeline, get outputs as JSON, and log it to a database. For example, you can later visualize it using other BI tools.
+**Metric logging**. You can also add a model or data evaluation step in the ML pipeline, get outputs as a JSON or an Evidently `snapshot` and log it to later visualize and track model and data performance over time. 
 
-**Reporting and documentation**. You can also use Evidently reports to share results with the team and stakeholders or log them as documentation. For example, you can record the results of the model performance after training.
+**Reporting and documentation**. You can also use Evidently reports to share results with the team and stakeholders or log them as documentation. For example, you can record the model performance results after training.
 
 # Tests and Test Suites
 
 ## What is a Test?
 
-Tests help perform structured data and ML model performance checks. They explicitly define the expectations from your data and model.
+Tests help perform structured data and ML model performance checks. They explicitly verify expectations about your data and model.
 
-A **Test** is a metric with a condition. It calculates a value and compares it against the defined threshold. 
+A **Test** is a Metric with a condition. It calculates a value and compares it against the defined threshold. 
 
 If the condition is satisfied, the test returns a **success**. 
 
@@ -116,11 +125,9 @@ If the condition is not satisfied, the Test returns a **fail**:
 
 If the Test execution fails, it will return an error. 
 
-Evidently contains 70+ individual tests that cover different aspects of model and data quality. 
+Evidently contains 70+ individual Tests that cover different aspects of model and data quality. 
 
-You can set test conditions on your own or pass the reference dataset to auto-generate test conditions. You can also run most of the tests using defaults even if you do not pass a reference dataset: the tests will use heuristics and dummy models.
-
-Test output is available as an interactive HTML report, JSON, or Python dictionary.
+You can set test conditions on your own or pass the reference dataset to auto-generate test conditions. You can also run most of the Tests using defaults even if you do not pass a reference dataset: the tests will use heuristics and dummy models.
 
 ## What is a Test Suite?
 
@@ -133,6 +140,8 @@ You can list multiple Tests and execute them together in a **Test Suite**. You w
 If you include a lot of Tests, you can navigate the output by groups: 
 
 ![No target performance test suite example](../.gitbook/assets/tests/test_suite_navigation-min.png)
+
+Test output is available as an interactive HTML report, JSON, Python dictionary, or evidently `snapshots` for logging and monitoring.
 
 You can create your Test Suite from individual Tests or use one of the existing **Presets**. 
 
@@ -164,7 +173,9 @@ For example, you can run the tests when you:
 
 ![Model lifecycle](../.gitbook/assets/tests/test_suite_lifecycle-min.png)
 
-You can then build a conditional workflow based on the result of the tests: for example, generate a visual report for debugging, trigger model retraining, or send an alert.
+You can then build a conditional workflow based on the result of the tests: for example, generate a visual report for debugging, trigger model retraining, or send an alert. You can also visualize the test results over time in the Evidently Monitoring UI.
+
+![](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 **During model development**: you can also use tests during model development and validation. For example, you can run tests to evaluate the data quality of the new feature set or to compare test performance to training.
 

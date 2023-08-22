@@ -98,7 +98,7 @@ drift_report.json()
 To export JSON as a separate file: 
 
 ```python
-drift_report.save_json(“file.json”)
+drift_report.save_json("file.json")
 ```
 
 **Python dictionary**. You can get the output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.

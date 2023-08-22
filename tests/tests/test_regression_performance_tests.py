@@ -267,9 +267,9 @@ def test_rmse_score_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "The RMSE is 0.25. The test threshold is eq=0.25 ± 0.025.",
+        "description": "The RMSE is 0.5. The test threshold is eq=0.5 ± 0.05.",
         "group": "regression",
         "name": "Root Mean Square Error (RMSE)",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}}, "value": 0.25},
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.5}}, "value": 0.5},
         "status": "SUCCESS",
     }

@@ -6,11 +6,11 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently import ColumnMapping
 from evidently.metric_results import ColumnCorrelations
 from evidently.metric_results import DistributionIncluded
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 

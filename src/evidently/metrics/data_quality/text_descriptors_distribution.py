@@ -12,6 +12,7 @@ from evidently.descriptors import TextLength
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_results import Distribution
+from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -19,11 +20,11 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class TextDescriptorsDistributionResult(MetricResult):
@@ -116,11 +117,22 @@ class TextDescriptorsDistributionRenderer(MetricRenderer):
             reference = None
             if metric_result.reference is not None:
                 reference = metric_result.reference[col]
-            distr_fig = get_distribution_plot_figure(
-                current_distribution=metric_result.current[col],
-                reference_distribution=reference,
+            distr_fig = plot_distr_with_perc_button(
+                hist_curr=HistogramData.from_distribution(metric_result.current[col]),
+                hist_ref=HistogramData.from_distribution(reference),
+                xaxis_name="",
+                yaxis_name="Count",
+                yaxis_name_perc="Percent",
+                same_color=False,
                 color_options=self.color_options,
+                subplots=False,
+                to_json=False,
             )
+            # distr_fig = get_distribution_plot_figure(
+            #     current_distribution=metric_result.current[col],
+            #     reference_distribution=reference,
+            #     color_options=self.color_options,
+            # )
             result.append(plotly_figure(title=col, figure=distr_fig, size=WidgetSize.FULL))
 
         return result

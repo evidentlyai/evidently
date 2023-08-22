@@ -1,9 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 
 import logo from '../logo.png';
 import {AppBar, Button, IconButton, Link, makeStyles, Toolbar, Typography} from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
 import {GitHub} from "@material-ui/icons";
+import {Api} from "../lib/api/Api";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -17,20 +17,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export function ServiceHeader() {
+export function ServiceHeader(props: {api: Api}) {
     const classes = useStyles();
+    let [version, setVersion] = useState<string>("...");
+    if (version === "...") {
+        props.api.getVersion().then(v => setVersion(v.version));
+    }
     return <>
         <AppBar position={"static"} color={"transparent"}>
             <Toolbar>
-                <IconButton edge="start"
-                            className={classes.menuButton}
-                            color="inherit" aria-label="menu">
-                    <MenuIcon/>
-                </IconButton>
                 <Typography variant="h6"
                             className={classes.title}
                 >
-                    <img src={logo} height={"55px"} /> <span style={{verticalAlign:"super", fontSize: "0.75rem"}}>0.4.2</span>
+                    <img src={logo} height={"55px"} /> <span style={{verticalAlign:"super", fontSize: "0.75rem"}}>{version}</span>
                 </Typography>
                 <Link href={"https://github.com/evidentlyai/evidently"}>
                     <IconButton>

@@ -97,6 +97,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         rmse_score_value = mean_squared_error(
             y_true=data.current_data[target_name],
             y_pred=data.current_data[prediction_name],
+            squared=False,
         )
 
         # mae default values
@@ -111,11 +112,13 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             rmse_ref = mean_squared_error(
                 y_true=data.reference_data[target_name],
                 y_pred=data.reference_data[prediction_name],
+                squared=False,
             )
         dummy_preds = data.current_data[target_name].mean()
         rmse_default = mean_squared_error(
             y_true=data.current_data[target_name],
             y_pred=[dummy_preds] * data.current_data.shape[0],
+            squared=False,
         )
         # mape default values
         # optimal constant for mape
@@ -181,7 +184,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             ["r2_score", "rmse", "mean_abs_error", "mean_abs_perc_error"],
             [
                 r2_score,
-                mean_squared_error,
+                lambda x, y: mean_squared_error(x, y, squared=False),
                 mean_absolute_error,
                 mean_absolute_percentage_error,
             ],

@@ -1,4 +1,5 @@
 import json
+import warnings
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -104,17 +105,10 @@ class DataByTarget(MetricResult):
     class Config:
         smart_union = True
 
-    data_for_plots: Union[
-        Dict[
-            str,
-            Union[
-                Dict[str, Union[list, pd.DataFrame, np.ndarray, pd.Categorical]],
-                pd.DataFrame,
-            ],
-        ],
-        None,
-        Dict[str, ContourData],
-    ]
+    box_data: Optional[Dict[str, dict]]
+    scatter_data: Optional[Dict[str, Dict[str, list]]]
+    contour_data: Optional[Dict[str, ContourData]]
+    count_data: Optional[Dict[str, pd.DataFrame]]
     target_name: str
     target_type: str
 
@@ -256,7 +250,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
                 counts_of_values["reference"] = reference_counts.head(10)
 
         return ColumnSummaryResult(
-            column_name=self.column_name.name,
+            column_name=self.column_name.display_name,
             column_type=column_type.value,
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,
@@ -357,9 +351,9 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
-        agg_data = not obj.get_options().render_options.raw_data
+        column_name_escaped = str(column_name).lower().replace(" ", "_")
         # main plot
-        bins_for_hist: Histogram = metric_result.plot_data.bins_for_hist
+        bins_for_hist: Optional[Histogram] = metric_result.plot_data.bins_for_hist
         if bins_for_hist is not None:
             hist_curr = bins_for_hist.current
             hist_ref = None
@@ -420,76 +414,80 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 )
             additional_graphs.append(
                 AdditionalGraphInfo(
-                    column_name + "_in_time",
+                    column_name_escaped + "_in_time",
                     {
                         "data": feature_in_time_figure["data"],
                         "layout": feature_in_time_figure["layout"],
                     },
                 )
             )
-            parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
-        if (
-            metric_result.plot_data.data_by_target is not None
-            and metric_result.plot_data.data_by_target.data_for_plots is not None
-        ):
-            ref_data_by_target = None
-            if "reference" in metric_result.plot_data.data_by_target.data_for_plots.keys():
-                ref_data_by_target = metric_result.plot_data.data_by_target.data_for_plots["reference"]
+            parts.append({"title": column_name + " in time", "id": column_name_escaped + "_in_time"})
+        if metric_result.plot_data.data_by_target is not None:
             target_type = metric_result.plot_data.data_by_target.target_type
             target_name = metric_result.plot_data.data_by_target.target_name
-
+            feature_by_target_figure = None
             if column_type == "num" and target_type == "cat":
-                feature_by_target_figure = plot_boxes(
-                    metric_result.plot_data.data_by_target.data_for_plots["current"],
-                    ref_data_by_target,
-                    column_name,
-                    target_name,
-                    self.color_options,
-                )
+                if metric_result.plot_data.data_by_target.box_data is None:
+                    warnings.warn(f"No box data for {column_name} x {target_name} in {self.__class__.__name__}")
+                else:
+                    feature_by_target_figure = plot_boxes(
+                        metric_result.plot_data.data_by_target.box_data["current"],
+                        metric_result.plot_data.data_by_target.box_data.get("reference"),
+                        column_name,
+                        target_name,
+                        self.color_options,
+                    )
             if column_type == "cat" and target_type == "num":
-                feature_by_target_figure = plot_boxes(
-                    metric_result.plot_data.data_by_target.data_for_plots["current"],
-                    ref_data_by_target,
-                    target_name,
-                    column_name,
-                    self.color_options,
-                )
+                if metric_result.plot_data.data_by_target.box_data is None:
+                    warnings.warn(f"No box data for {column_name} x {target_name} in {self.__class__.__name__}")
+                else:
+                    feature_by_target_figure = plot_boxes(
+                        metric_result.plot_data.data_by_target.box_data["current"],
+                        metric_result.plot_data.data_by_target.box_data.get("reference"),
+                        target_name,
+                        column_name,
+                        self.color_options,
+                    )
             if column_type == "num" and target_type == "num":
-                if not agg_data or isinstance(metric_result.plot_data.data_by_target.data_for_plots["current"], dict):
+                if metric_result.plot_data.data_by_target.scatter_data is not None:
                     feature_by_target_figure = plot_num_num_rel(
-                        metric_result.plot_data.data_by_target.data_for_plots["current"],
-                        ref_data_by_target,
+                        metric_result.plot_data.data_by_target.scatter_data["current"],
+                        metric_result.plot_data.data_by_target.scatter_data.get("reference"),
                         target_name,
                         column_name,
                         color_options=self.color_options,
                     )
-                else:
+                elif metric_result.plot_data.data_by_target.contour_data is not None:
                     feature_by_target_figure = plot_contour(
-                        metric_result.plot_data.data_by_target.data_for_plots["current"],
-                        ref_data_by_target,
+                        metric_result.plot_data.data_by_target.contour_data["current"],
+                        metric_result.plot_data.data_by_target.contour_data.get("reference"),
                         column_name,
                         target_name,
                     )
                     feature_by_target_figure = json.loads(feature_by_target_figure.to_json())
             if column_type == "cat" and target_type == "cat":
-                feature_by_target_figure = plot_cat_cat_rel(
-                    metric_result.plot_data.data_by_target.data_for_plots["current"],
-                    ref_data_by_target,
-                    target_name,
-                    column_name,
-                    color_options=self.color_options,
-                )
+                if metric_result.plot_data.data_by_target.count_data is not None:
+                    feature_by_target_figure = plot_cat_cat_rel(
+                        metric_result.plot_data.data_by_target.count_data["current"],
+                        metric_result.plot_data.data_by_target.count_data.get("reference"),
+                        target_name,
+                        column_name,
+                        color_options=self.color_options,
+                    )
 
-            additional_graphs.append(
-                AdditionalGraphInfo(
-                    column_name + "_by_target",
-                    {
-                        "data": feature_by_target_figure["data"],
-                        "layout": feature_by_target_figure["layout"],
-                    },
+            if feature_by_target_figure is not None:
+                additional_graphs.append(
+                    AdditionalGraphInfo(
+                        column_name_escaped + "_by_target",
+                        {
+                            "data": feature_by_target_figure["data"],
+                            "layout": feature_by_target_figure["layout"],
+                        },
+                    )
                 )
-            )
-            parts.append({"title": column_name + " by target", "id": column_name + "_by_target"})
+                parts.append({"title": column_name + " by target", "id": column_name_escaped + "_by_target"})
+            else:
+                warnings.warn(f"No feature by target figure for {column_name} in {self.__class__.__name__}")
         if column_type == "text":
             wi = BaseWidgetInfo(
                 type="rich_data",

@@ -73,6 +73,7 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
         rmse_default = mean_squared_error(
             y_true=data.current_data[target_name],
             y_pred=[dummy_preds] * data.current_data.shape[0],
+            squared=False,
         )
         # mape default values
         # optimal constant for mape
@@ -114,6 +115,7 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
             rmse_by_ref = mean_squared_error(
                 y_true=data.current_data[target_name],
                 y_pred=[dummy_preds] * data.current_data.shape[0],
+                squared=False,
             )
             # mape default values
             # optimal constant for mape

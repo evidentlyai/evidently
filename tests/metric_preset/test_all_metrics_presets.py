@@ -13,6 +13,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 
+@pytest.mark.parametrize("raw_data", [False, True])
 @pytest.mark.parametrize(
     "preset",
     (
@@ -22,7 +23,7 @@ from evidently.report import Report
         RegressionPreset(),
     ),
 )
-def test_metric_presets(preset: MetricPreset, tmp_path):
+def test_metric_presets(preset: MetricPreset, tmp_path, raw_data):
     current_data = pd.DataFrame(
         {
             "category_feature": ["t", "e", "t"],
@@ -40,7 +41,7 @@ def test_metric_presets(preset: MetricPreset, tmp_path):
         }
     )
     data_mapping = ColumnMapping()
-    report = Report(metrics=[preset], options=Options(render=RenderOptions(raw_data=True)))
+    report = Report(metrics=[preset], options=Options(render=RenderOptions(raw_data=raw_data)))
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
     report._inner_suite.raise_for_error()
     assert report.show()

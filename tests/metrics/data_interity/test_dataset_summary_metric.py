@@ -4,12 +4,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently import ColumnMapping
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummary
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
 from evidently.metrics.data_integrity.dataset_summary_metric import NumpyDtype
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
+from tests.conftest import smart_assert_equal
 
 
 @pytest.mark.parametrize(
@@ -74,7 +75,7 @@ from evidently.report import Report
                     number_of_empty_rows=0,
                     number_of_empty_columns=0,
                     number_of_duplicated_rows=0,
-                    columns_type_data={"target": NumpyDtype(dtype="O"), "prediction": NumpyDtype(dtype="O")},
+                    columns_type_data={"target": NumpyDtype(dtype="object"), "prediction": NumpyDtype(dtype="object")},
                     nans_by_columns={"target": 0, "prediction": 0},
                     number_uniques_by_columns={"target": 3, "prediction": 3},
                 ),
@@ -115,7 +116,7 @@ def test_dataset_summary_metric_success(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
     result = metric.get_result()
-    assert result == expected_result
+    smart_assert_equal(result, expected_result)
 
 
 @pytest.mark.parametrize(

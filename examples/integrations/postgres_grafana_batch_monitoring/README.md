@@ -2,11 +2,15 @@
 This example shows steps to integrate Evidently into your production pipeline using Prefect, PostgreSQL, and Grafana.
 
 - Run production ML pipelines for inference and monitoring with [Prefect](https://www.prefect.io/). 
-- Generate data quality and model monitoring reports with EvidenltyAI
+- Generate data quality and model monitoring reports with EvidentlyAI
 - Save monitoring metrics to [PostgreSQL](https://www.postgresql.org/) database 
 - Visualize ML monitoring dashboards in [Grafana](https://grafana.com/) 
 
 ![Gradfana dashboard](static/preview.png "Dashboard preview")
+
+**Note**: we tested this example on macOS/Linux.
+
+You can also read the blog [Tutorial](https://www.evidentlyai.com/blog/batch-ml-monitoring-architecture).
 
 --------
 Project Organization
@@ -175,7 +179,7 @@ docker compose down
 <details>
 <summary>Notes</summary>
 
-- To clear cluster one needs to remove `Docker` volumes containing monitoring (`Postegres`) and `Grafana` databases 
+- To clear cluster one needs to remove `Docker` volumes containing monitoring (`Postgres`) and `Grafana` databases 
 - It may be useful to run this tutorial from scratch
 - Run the command:
   

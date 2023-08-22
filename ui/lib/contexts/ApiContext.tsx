@@ -1,6 +1,16 @@
 import React from "react";
 
-import {AdditionalGraphInfo, Api, DashboardInfo, ProjectInfo, ReportInfo, WidgetInfo} from "../api/Api";
+import {
+    AdditionalGraphInfo,
+    Api,
+    DashboardInfo,
+    ProjectDetails,
+    ProjectInfo,
+    ReportInfo,
+    TestSuiteInfo,
+    WidgetInfo,
+    VersionInfo
+} from "../api/Api";
 
 interface ApiContextState {
     Api: Api;
@@ -29,6 +39,18 @@ class NotImplementedApi implements Api {
 
     getReports(projectId: string): Promise<ReportInfo[]> {
         return Promise.reject("not implemented");
+    }
+
+    getProjectInfo(projectId: string): Promise<ProjectDetails> {
+        return Promise.reject("not implemented");
+    }
+
+    getTestSuites(projectId: string): Promise<TestSuiteInfo[]> {
+        return Promise.resolve([]);
+    }
+
+    getVersion(): Promise<VersionInfo> {
+        return Promise.resolve({version: "0.0.0"});
     }
 
 }

@@ -19,6 +19,8 @@ from evidently.calculations.data_drift import get_distribution_for_column
 from evidently.calculations.data_drift import get_stattest
 from evidently.calculations.data_drift import get_text_data_for_plots
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_results import HistogramData
+from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options.base import AnyOptions
@@ -30,8 +32,8 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
@@ -104,7 +106,7 @@ def get_one_column_drift(
     drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
     drift_result = drift_test_function(reference_column, current_column, column_type.value, threshold)
 
-    scatter: Optional[ScatterField] = None
+    scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:
         current_nbinsx = options.get_nbinsx(column.name)
         current_small_distribution = [
@@ -158,7 +160,10 @@ def get_one_column_drift(
         reference_std = reference_column.std()
         plot_shape["y0"] = reference_mean - reference_std
         plot_shape["y1"] = reference_mean + reference_std
-        scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
+        if agg_data:
+            scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
+        else:
+            scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
     elif column_type == ColumnType.Categorical:
         reference_counts = reference_column.value_counts(sort=False)
@@ -368,17 +373,23 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     xaxis_name=result.scatter.x_name,
                     xaxis_name_ref=None,
                     yaxis_name=result.column_name,
+                    color_options=self.color_options,
                     return_json=False,
                 )
             tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
         if result.current.distribution is not None and result.reference.distribution is not None:
-            distr_fig = get_distribution_plot_figure(
-                current_distribution=result.current.distribution,
-                reference_distribution=result.reference.distribution,
+            distr_fig = plot_distr_with_perc_button(
+                hist_curr=HistogramData.from_distribution(result.current.distribution),
+                hist_ref=HistogramData.from_distribution(result.reference.distribution),
+                xaxis_name="",
+                yaxis_name="Count",
+                yaxis_name_perc="Percent",
+                same_color=False,
                 color_options=self.color_options,
+                subplots=False,
+                to_json=False,
             )
-            # figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
             tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
 
         if (

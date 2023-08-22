@@ -1,62 +1,58 @@
 Evidently is an open-source Python library for data scientists and ML engineers. 
 
-It helps evaluate, test, and monitor the performance of ML models from validation to production.
+It helps evaluate, test, and monitor data and ML models from validation to production. It works with tabular, text data and embeddings.
 
 # Quick Start
 
-Quickly check it out (1 min):
+Have only 1 minute? Check out this example:
 {% content-ref url="get-started/hello-world.md" %}
 ["Hello world" example](get-started/hello-world.md). 
 {% endcontent-ref %}
 
-Understand the basic functionality (15 minutes):
+New to Evidently? This tutorial shows how to run ad hoc data and model checks. (15 min).
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Explore code examples:
-{% content-ref url="examples/examples.md" %}
-[Example](examples/examples.md). 
+Want a dashboard to track metrics over time? (2 min to launch a demo, 15 to complete).
+{% content-ref url="get-started/tutorial-monitoring.md" %}
+[Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
+
+You can explore mode code [examples](examples/examples.md). 
+
+Don't want to self-host? Sign up for the [Evidently Cloud Waitlist](https://www.evidentlyai.com/product/cloud)!
 
 # How it works 
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has three components: **Reports**, **Tests**, and **Monitors** (in development). These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and real-time monitoring.
+Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and a **Monitoring Dashboard**. They cover different usage scenarios: from ad hoc analysis to automated pipeline testing and continuous monitoring.
 
-You need to provide the data, choose what to evaluate, and the output format. Evidently has a simple, declarative API and a library of metrics, tests, and visualizations to choose from.
-
-You can integrate Evidently into various ML stacks as a monitoring or evaluation component.
-
-Evidently currently works with tabular and text data. 
+Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
 
 # 1. Tests suites: batch model checks 
 
-Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. You can set test parameters manually or let Evidently learn the expectations from the reference. Tests verify a condition and return an explicit **pass** or **fail** result. 
+Tests perform structured data and ML model quality checks. You can set the conditions manually or let Evidently generate them based on the reference dataset. Tests will return an explicit **pass** or **fail** result. 
  
-You can create a **Test Suite** from 50+ individual tests or run one of the **Presets** that combine relevant tests. For example, to test Data Stability or Regression Performance.
+You can create a **Test Suite** from 50+ tests or run one of the **Presets**. For example, to test Data Stability or Regression Performance.
 
 Tests are best for automated batch checks.
  
-![Example of an Evidently test](.gitbook/assets/main/evidently_tests_main-min.png)
+![](.gitbook/assets/main/evidently_tests_main-min.png)
 
-**Required input**: one or two datasets as pandas.DataFrames or csv.
+**Input**: one or two datasets as pandas.DataFrames or csv.
  
-**How you get the output**: as an HTML inside Jupyter notebook or Colab, as an exportable HTML file, as a JSON, or as a Python dictionary.
+**How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML, JSON, or Python dictionary.
  
-**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, new labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report to debug.  
+**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, labels, or generate predictions. You can build a conditional workflow based on the results, e.g., to trigger an alert, retrain, or get a report.  
 
 **Read more**:
 * [Overview: what is a test and a test suite](introduction/core-concepts.md) 
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
 * [Reference: available tests and presets](reference/all-tests.md) 
 
-# 2. Reports: interactive dashboards
-
-{% hint style="info" %}
-We added a new Report object starting from **v0.1.57.dev0**. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. 
-{% endhint %}
+# 2. Reports: interactive visualizations
 
 Reports calculate various metrics and provide rich interactive visualizations. 
  
@@ -64,41 +60,41 @@ You can create a custom **Report** from individual metrics or run one of the **P
  
 Reports are best for exploratory analysis, debugging, and documentation.
 
-![Evidently reports](.gitbook/assets/main/evidently_reports_main-min.png)
+![](.gitbook/assets/main/evidently_reports_main-min.png)
 
-**Required input**: one or two datasets as pandas.DataFrames or csv. Due to rich embedded visualizations, it is recommended to take a smaller sample. 
+**Input**: one or two datasets as pandas.DataFrames or csv. 
  
-**How you get the output**: as an HTML inside Jupyter notebook or Colab, as an exportable HTML file, as JSON, or as a Python dictionary.
+**How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML file, JSON, or Python dictionary.
  
-**Primary use case**: debugging and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
+**Primary use case**: analysis and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
  
-**Secondary use cases**: 
-* **Performance logging**. You can integrate a model/data evaluation step in the ML pipeline, get outputs as JSON, and log it for further analysis. For example, you can later visualize it using other BI tools.
-* **Reporting and documentation**. You can generate visual HTML reports to document your model performance.   
+**Secondary use cases**:
+* **Reporting and documentation**. You can generate visual HTML reports and ML model cards.
+* **Performance logging**. You can integrate an evaluation step in the data/ML pipeline, get outputs as JSON, and log it for further analysis or to visualize using BI tools.
 
 **Read more**:
 * [Overview: what is a report and a metric](introduction/core-concepts.md) 
 * [User guide: how to run reports](tests-and-reports/get-reports.md) 
 * [Reference: available metrics and metric presets](reference/all-metrics.md) 
 
-# 3. Monitors: real-time ML monitoring
+# 3. ML monitoring dashboard
 
-*Note: this functionality is in early development and subject to an API change*. 
+*Available starting from v0.4.0*. 
 
-Evidently also has `Monitors` that collect data and model metrics from a deployed ML service. 
+You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.
 
-In this scenario, Evidently is deployed as a monitoring service. You can use configuration to define the monitoring logic. Evidently calculates the metrics over the streaming data and emits them in Prometheus format. There are pre-built Grafana dashboards to visualize them.
+You can visualize any and track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embedding drift.
 
-![Evidently and Grafana](.gitbook/assets/main/evidently_monitoring_main.png)
+![](.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
-**Required input**: POST live data from the ML service. 
+**Input**: Evidently `snapshots`, logged to an object storage. 
 
-**How you get the output**: data and quality metrics in the Prometheus format.
- 
-**Primary use case: online monitoring**. When you need a live dashboard that is updated close to real-time. 
+**Output**: a self-hostable dashboard available as a web app.
+  
+**Primary use case: continuous monitoring**. When you need a live dashboard to see all your models and metrics over time. 
  
 **Read more**:
-* [Example integration with Prometheus and Grafana](integrations/evidently-and-grafana.md)
+* [Get Started](get-started/tutorial-monitoring.md)
 
 # Community and support 
 

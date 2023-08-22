@@ -113,7 +113,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+        k: Optional[int] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -484,13 +484,13 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
     _conf_matrix: ClassificationConfusionMatrix
     label: Label
     probas_threshold: Optional[float] = None
-    k: Optional[Union[float, int]] = None
+    k: Optional[int] = None
 
     def __init__(
         self,
         label: Label,
         probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+        k: Optional[int] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,

@@ -1,14 +1,14 @@
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
 
 import numpy as np
 
-from evidently import TaskType
 from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
+from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
+from evidently.pipeline.column_mapping import TaskType
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
@@ -43,7 +43,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
 
     columns: Optional[List[str]]
     embeddings: Optional[List[str]]
-    embeddings_drift_method: Optional[Dict[str, Callable]]
+    embeddings_drift_method: Optional[Dict[str, DriftMethod]]
     drift_share: Optional[float]
     stattest: Optional[PossibleStatTestType] = None
     cat_stattest: Optional[PossibleStatTestType] = None
@@ -60,7 +60,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self,
         columns: Optional[List[str]] = None,
         embeddings: Optional[List[str]] = None,
-        embeddings_drift_method: Optional[Dict[str, Callable]] = None,
+        embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None,
         drift_share: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,

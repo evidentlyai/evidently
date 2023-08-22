@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 from typing import Sequence
 
-from evidently import TaskType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculations.data_drift import ensure_prediction_column_is_string
@@ -14,6 +13,7 @@ from evidently.metrics import ColumnCorrelationsMetric
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import ColumnValuePlot
 from evidently.metrics import TargetByFeaturesTable
+from evidently.pipeline.column_mapping import TaskType
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 
 

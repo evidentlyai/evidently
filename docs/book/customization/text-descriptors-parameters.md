@@ -20,17 +20,29 @@ Using descriptors with text-specific Metrics and Tests:
 
 | Descriptor | Description |  
 |---|---|
-| `TextLength()` | Calculates the length of text.  |  
-| `OOV()` | Calculates the share of out-of-vocabulary words. |  
-| `NonLetterCharacterPercentage()` | Calculates the share of non-letter characters. |  
+| `TextLength()` | (Default). Calculates the length of text in symbols.  |  
+| `SentenceCount()` | Calculates the number of sentences.  | 
+| `WordCount()` | Calculates the number of words.  |  
+| `Sentiment()` | Evaluates the text sentiment, on a scale from -1 (negative) to 1 (positive). |  
+| `OOV()` | Default). Calculates the share of out-of-vocabulary words. |  
+| `NonLetterCharacterPercentage()` | Default). Calculates the share of non-letter characters. |  
 | `TriggerWordsPresence(words_list=['dress', 'gown'])` | Checks for the presence of any of the specified words, as determined by the user. (Boolean).  |  
+
+**Note**: you must import specific `nltk` components to use all available descriptors:
+
+```python
+nltk.download('words')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+nltk.download('vader_lexicon')
+```
 
 # Descriptors in text-specific metrics
 
 Several Metrics and Presets are specifically created to generate Descriptors from raw text data. For example, `TextDescriptorsDriftMetric()` or `TextDescriptorsCorrelationMetric()`. 
 
 ## Default
-To generate the Report, select the relevant Metrics or Presets and pass the column name to apply them to. You should also specify the text column in the column mapping.
+To generate the Report using Descriptors, select the relevant Metrics or Presets and apply them to a text column. You must specify the text column in the column mapping.
 
 **Example 1**. To combine several text-related Metrics in a single Report:
 
@@ -51,12 +63,12 @@ text_overview_report = Report(metrics=[
 ```
 
 In these cases, the defaults will apply:
-* 3 default Descriptors will be calculated. This excludes `TiggerWordsPresence()`, since this Descriptor requires specifying the list of words.
+* 3 default Descriptors will be calculated.
 * If data drift is evaluated, the default drift detection methods will apply. The defaults are the same as for tabular drift detection.
 * If correlations are calculated, they will include all numerical columns in the dataset and all text Descriptors. 
 
 ## Descriptors parameters 
-If you want to customize the text-related Metrics or use `TriggerWordsPresence()` Descriptor, you should use the `descriptors` parameter. Pass it to the chosen Metric or Preset. 
+To customize the text-related Metrics or use non-default descriptors (e.g., `TriggerWordsPresence()` that requires specifying the list of words), you should use the `descriptors` parameter. Pass it to the chosen Metric or Preset. 
 
 **Example 1**. Here is how you specify which Descriptors to include in a specific Metric, the titles for the corresponding Descriptor columns (they will appear in visualizations), and the list of trigger words to track:    
 
@@ -84,6 +96,21 @@ text_overview_report = Report(metrics=[
         "Review Text Non Letter %" : NonLetterCharacterPercentage(),
         "Review Text Length" : TextLength(),
         "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown']),
+        "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
+    })
+])
+```
+
+## "Lemmatize" parameter
+
+The `TriggerWordsPresence()` Descriptor has `lemmatize` parameter. The default is `True`. When you specify the Trigger Words, it will also search for the variant and inflected forms of this word.
+
+You can override the default and set it as `False.` In this case, it will only search for exact matches.
+
+```python
+report = Report(metrics=[
+    TextDescriptorsDriftMetric("Review_Text", descriptors={
+        "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown'], lemmatize='False'),
         "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
     })
 ])
@@ -145,9 +172,8 @@ classification_report = Report(metrics=[
         "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown']),
         "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
     }})
-```python
+```
 
 In this case, you will generate the Classification Quality By Feature Metric, which will plot the model performance against virtual features like “whether the reviews contained the word blouse or shirt”). 
 
 **Note**: For dataset-level metrics, you currently cannot exclude Descriptors. All default Descriptors will be included. 
-

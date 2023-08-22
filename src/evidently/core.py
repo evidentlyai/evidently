@@ -15,6 +15,8 @@ from pydantic.fields import SHAPE_SET
 from pydantic.fields import SHAPE_TUPLE
 from pydantic.fields import ModelField
 
+from evidently.pydantic_utils import pydantic_type_validator
+
 if TYPE_CHECKING:
     from pydantic.typing import MappingIntStrAny, AbstractSetIntStr
 
@@ -68,22 +70,6 @@ class IncludeTags(Enum):
     TypeField = "type_field"
 
 
-def pydantic_type_validator(type_: Type[Any]):
-    def decorator(f):
-        from pydantic.validators import _VALIDATORS
-
-        for cls, validators in _VALIDATORS:
-            if cls is type_:
-                validators.append(f)
-                return
-
-        _VALIDATORS.append(
-            (type_, [f]),
-        )
-
-    return decorator
-
-
 @pydantic_type_validator(pd.Series)
 def series_validator(value):
     return pd.Series(value)
@@ -94,9 +80,19 @@ def dataframe_validator(value):
     return pd.DataFrame(value)
 
 
+# @pydantic_type_validator(pd.Index)
+# def index_validator(value):
+#     return pd.Index(value)
+
+
 @pydantic_type_validator(np.float_)
 def np_inf_valudator(value):
     return np.float(value)
+
+
+@pydantic_type_validator(np.ndarray)
+def np_array_valudator(value):
+    return np.array(value)
 
 
 class BaseResult(BaseModel):
@@ -227,8 +223,3 @@ class BaseResult(BaseModel):
 
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame([self.collect_pandas_columns()])
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, BaseResult):
-            return self.get_dict() == other.get_dict()
-        return super().__eq__(other)

@@ -19,10 +19,10 @@ export const ProjectList = (props: {}) => {
                                 return params.map(proj => <Paper style={{margin: "5px", padding: "10px"}}>
                                     <Grid item>
                                         <Link component={RouterLink} to={`/projects/${proj.id}`}>
-                                            <Typography variant={"h6"}>{proj.project_name}</Typography></Link>
+                                            <Typography variant={"h6"}>{proj.name}</Typography></Link>
                                     </Grid>
                                     <Grid item>
-                                        Some description
+                                        {proj.description}
                                     </Grid>
                                 </Paper>)
                         }}

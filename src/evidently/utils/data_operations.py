@@ -4,10 +4,10 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.core import ColumnType
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
+from evidently.pipeline.column_mapping import ColumnMapping
 
 
 def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:

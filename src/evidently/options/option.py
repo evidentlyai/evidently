@@ -1,5 +1,5 @@
-from pydantic import BaseModel
+from evidently.pydantic_utils import FrozenBaseModel
 
 
-class Option(BaseModel):
+class Option(FrozenBaseModel):
     pass

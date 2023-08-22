@@ -1,0 +1,65 @@
+version: "3.9"
+
+services:
+
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: fastapi/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+    image: fastapi_app:latest
+    container_name: fastapi_app
+    restart: always
+    volumes:
+      - ./:/home/evidently-fastapi
+    environment:
+      - MONITORING_DB_HOST=monitoring-db
+    ports:
+      - 5000:5000
+    networks:
+      - monitoring
+
+  monitoring-db:
+    image: postgres:15.2-alpine
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "monitoring_db"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    container_name: monitoring-db-postgres
+    ports:
+    - 5432:5432
+    networks:
+      - monitoring
+    volumes:
+      - monitoring_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d monitoring_db -U admin" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  streamlit_app:
+    build:
+      context: streamlit_app
+      dockerfile: Dockerfile
+    image: streamlit_app:latest
+    container_name: streamlit_app
+    restart: always
+    volumes:
+      - ./:/home/evidently-fastapi
+    environment:
+      - FASTAPI_APP_HOST=fastapi_app
+    ports:
+      - 8501:8501
+    networks:
+      - monitoring
+
+volumes:
+    monitoring_db_data: {}
+
+
+networks:
+  monitoring:
+    name: monitoring

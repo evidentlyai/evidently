@@ -6,6 +6,7 @@ import numpy as np
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.metric_results import ColumnAggScatterResult
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
@@ -46,7 +47,8 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
             )
             ref_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
         reference_scatter: Optional[Union[ColumnScatter, dict]] = None
-        if self.get_options().render_options.raw_data:
+        raw_data = self.get_options().render_options.raw_data
+        if raw_data:
             current_scatter = {}
             current_scatter["Absolute Percentage Error"] = curr_df["Absolute Percentage Error"]
             if datetime_column_name is not None:
@@ -84,7 +86,11 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
             x_name = "Index binned"
         else:
             x_name = datetime_column_name + f" ({prefix})"
-        return ColumnScatterResult(
+        cls = ColumnScatterResult
+        if not raw_data:
+            cls = ColumnAggScatterResult
+
+        return cls(
             current=current_scatter,
             reference=reference_scatter,
             x_name=x_name,
@@ -131,6 +137,7 @@ class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
                 xaxis_name=result.x_name,
                 xaxis_name_ref=result.x_name_ref,
                 yaxis_name="Percent",
+                color_options=self.color_options,
             )
         return [
             header_text(label="Absolute Percentage Error"),

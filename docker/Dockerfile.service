@@ -1,0 +1,32 @@
+FROM python:3.10-slim
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="Evidently AI Service" \
+      org.label-schema.url="https://github.com/evidentlyai/evidently" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/evidentlyai/evidently" \
+      org.label-schema.version=$VERSION \
+      org.label-schema.schema-version="1.0"
+LABEL maintainer="mike0sv@evidentlyai.com"
+
+
+
+WORKDIR /src
+COPY setup.py .
+COPY setupbase.py .
+COPY src ./src
+RUN apt-get update && \
+    apt-get install -y \
+        build-essential \
+        make \
+        gcc \
+    && pip install . \
+    && apt-get remove -y --purge make gcc build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /src
+
+WORKDIR /app
+ENTRYPOINT ["evidently", "ui"]
