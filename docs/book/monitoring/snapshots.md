@@ -68,7 +68,7 @@ data_drift_checks.run(reference_data=reference_batch, current_data=batch1)
 After creating a Report or a Test Suite, you must use the `save()` method to create a `snapshot`. Specify the path where to save it:
 
 ```python
-data_drift_checks._save("data_drift_snapshot.json")
+data_drift_checks.save("data_drift_snapshot.json")
 ```
 
 {% hint style="info" %}
@@ -78,7 +78,7 @@ data_drift_checks._save("data_drift_snapshot.json")
 To load the snapshot back, you can use the `load()` function.
 
 ```python
-restored_report = Report._load("data_drift_snapshot.json")
+restored_report = Report.load("data_drift_snapshot.json")
 restored_report
 ```
 

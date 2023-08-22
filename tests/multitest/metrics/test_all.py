@@ -36,8 +36,8 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     outcome.check(report)
 
     path = str(tmp_path / "report.json")
-    report._save(path)
-    report2 = Report._load(path)
+    report.save(path)
+    report2 = Report.load(path)
 
     smart_assert_equal(report2.as_dict(), report.as_dict())  # has nans
     report2.show()

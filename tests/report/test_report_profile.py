@@ -28,9 +28,9 @@ def test_report_loading(data):
 
     report.run(reference_data=ref, current_data=curr)
 
-    report._save("profile.json")
+    report.save("profile.json")
 
-    report2 = Report._load("profile.json")
+    report2 = Report.load("profile.json")
 
     assert report2.as_dict() == report.as_dict()
 
@@ -42,8 +42,8 @@ def test_suite_loading(data):
 
     ts.run(reference_data=ref, current_data=curr)
     ts._inner_suite.raise_for_error()
-    ts._save("profile.json")
+    ts.save("profile.json")
 
-    ts2 = TestSuite._load("profile.json")
+    ts2 = TestSuite.load("profile.json")
 
     assert ts2.as_dict() == ts.as_dict()
