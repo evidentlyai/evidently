@@ -323,12 +323,14 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(
-                column_name=name,
-                stattest=stattest,
-                stattest_threshold=threshold,
-                is_critical=self.is_critical,
-            ))
+            results.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
         for name in columns_info.num_feature_names:
             if self.columns and name not in self.columns:
                 continue
@@ -346,12 +348,14 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(
-                column_name=name,
-                stattest=stattest,
-                stattest_threshold=threshold,
-                is_critical = self.is_critical,
-            ))
+            results.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
         for name in columns_info.text_feature_names:
             if self.columns and name not in self.columns:
                 continue
@@ -369,12 +373,14 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(
-                column_name=name,
-                stattest=stattest,
-                stattest_threshold=threshold,
-                is_critical=self.is_critical,
-            ))
+            results.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
         return results
 
 

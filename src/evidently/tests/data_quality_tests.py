@@ -827,7 +827,7 @@ class TestMeanInNSigmas(Test):
     column_name: ColumnName
     n_sigmas: int
 
-    def __init__(self, column_name: Union[str, ColumnName], n_sigmas: int = 2, is_critical: bool = True,):
+    def __init__(self, column_name: Union[str, ColumnName], n_sigmas: int = 2, is_critical: bool = True):
         self.column_name = ColumnName.from_any(column_name)
         self.n_sigmas = n_sigmas
         self._metric = ColumnSummaryMetric(column_name)
