@@ -104,6 +104,7 @@ def bcancer_label():
 def adult():
     adult_data = datasets.fetch_openml(name="adult", version=2, as_frame=True)
     adult = adult_data.frame
+    adult.education = adult.education.astype(object)
 
     adult_ref = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
     adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]

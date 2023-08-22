@@ -12,6 +12,7 @@ from evidently.base_metric import ColumnName
 from evidently.calculations.data_quality import get_corr_method
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
+from evidently.metrics import ColumnCategoryMetric
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
@@ -25,7 +26,10 @@ from evidently.metrics.data_integrity.column_summary_metric import ColumnSummary
 from evidently.metrics.data_integrity.column_summary_metric import DatetimeCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
+from evidently.metrics.data_quality.column_category_metric import CategoryStat
 from evidently.metrics.data_quality.dataset_correlations_metric import DatasetCorrelation
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -1422,10 +1426,20 @@ class TestListValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
+        curr_df = pd.concat(
+            [
+                pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"]),
+                pd.DataFrame(metric_result.current.values_not_in_list.items(), columns=["x", "count"]),
+            ]
+        )
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
+            ref_df = pd.concat(
+                [
+                    pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"]),
+                    pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"]),
+                ]
+            )
 
         else:
             ref_df = None
@@ -1433,3 +1447,179 @@ class TestListValuesRenderer(TestRenderer):
         additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, obj.alias)
         info.details = additional_plots
         return info
+
+
+class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
+    alias: ClassVar[str]
+    group: ClassVar = DATA_QUALITY_GROUP.id
+    _metric: ColumnCategoryMetric
+    column_name: ColumnName
+    category: Union[str, int, float]
+
+    def __init__(
+        self,
+        column_name: Union[str, ColumnName],
+        category: Union[str, int, float],
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+    ):
+        self.column_name = ColumnName.from_any(column_name)
+        self.category = category
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
+        self._metric = ColumnCategoryMetric(column_name=column_name, category=category)
+
+    @property
+    def metric(self):
+        return self._metric
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
+
+    def get_condition_from_reference(self, reference: Optional[CategoryStat]) -> Union[int, float]:
+        raise NotImplementedError()
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference
+        reference_value = self.get_condition_from_reference(reference)
+        if reference is not None:
+            return TestValueCondition(eq=approx(reference_value, 0.1), source=ValueSource.REFERENCE)
+
+        return TestValueCondition(gt=0)
+
+
+class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
+    name: ClassVar = "Share of category"
+    alias: ClassVar = "share_category"
+
+    def get_condition_from_reference(self, reference: Optional[CategoryStat]) -> float:
+        if reference is not None:
+            return reference.category_ratio
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current.category_ratio
+
+    def get_description(self, value: Numeric) -> str:
+        metric_result = self.metric.get_result()
+        return (
+            f"The share of category '{metric_result.category}' in the column **{self.column_name.display_name}** is {value:.3g} "
+            f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
+            f"The test threshold is {self.get_condition()}."
+        )
+
+    def get_parameters(self) -> CheckValueParameters:
+        return ValueListParameters(condition=self.get_condition(), value=self._value, category=self.category)
+
+
+class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
+    name: ClassVar = "Count of category"
+    alias: ClassVar = "count_category"
+
+    def get_condition_from_reference(self, reference: Optional[CategoryStat]) -> int:
+        if reference is not None:
+            return reference.category_num
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current.category_num
+
+    def get_description(self, value: Numeric) -> str:
+        metric_result = self.metric.get_result()
+        return (
+            f"The number of category '{metric_result.category}' in the column **{self.column_name.display_name}** is {value:.3g} "
+            f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
+            f"The test threshold is {self.get_condition()}."
+        )
+
+    def get_parameters(self) -> CheckValueParameters:
+        return ValueListParameters(condition=self.get_condition(), value=self._value, category=self.category)
+
+
+@default_renderer(wrap_type=TestCategoryCount)
+@default_renderer(wrap_type=TestCategoryShare)
+class TestCategoryRenderer(TestRenderer):
+    @staticmethod
+    def _get_number_and_percents(s: pd.Series, num: int) -> pd.DataFrame:
+        """Get a string with missing values numbers and percents from info for results table"""
+        return s.astype(str) + " (" + (s / num * 100).round(2).astype(str) + "%)"
+
+    def get_value_counts_table_with_percents(
+        self,
+        info: TestHtmlInfo,
+        curr_df: pd.DataFrame,
+        ref_df: Optional[pd.DataFrame],
+        n_curr: int,
+        n_ref: Optional[int],
+        name: str,
+    ) -> TestHtmlInfo:
+
+        curr_df = curr_df.copy()
+        replace = [("current value counts", n_curr)]
+        if ref_df is not None and n_ref is not None:
+            ref_df = ref_df.copy()
+            replace.append(("reference value counts", n_ref))
+            df = curr_df.merge(ref_df, on="x", how="outer")
+            df.columns = ["value", "current value counts", "reference value counts"]
+            df[["current value counts", "reference value counts"]] = df[
+                ["current value counts", "reference value counts"]
+            ].fillna(0.0)
+            df.sort_values(["current value counts", "reference value counts"], ascending=False, inplace=True)
+
+        else:
+            df = curr_df
+            df.columns = ["value", "current value counts"]
+            df.sort_values("current value counts", ascending=False, inplace=True)
+        for col, n in replace:
+            df[col] = self._get_number_and_percents(df[col].fillna(0), n)
+
+        info.details = [
+            DetailsInfo(
+                id=name,
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    type="table",
+                    params={
+                        "header": list(df.columns),
+                        "data": df.values,
+                    },
+                    size=2,
+                ),
+            )
+        ]
+        return info
+
+    def render_html(self, obj: Union[TestCategoryCount, TestCategoryShare]) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        column_name = obj.column_name.display_name
+        counts_data = obj.metric.get_result().counts_of_values
+        curr_df = counts_data["current"]
+        ref_df = None
+        if "reference" in counts_data.keys():
+            ref_df = counts_data["reference"]
+        n_curr = obj.metric.get_result().current.all_num
+        ref = obj.metric.get_result().reference
+        n_ref = None
+        if ref is not None:
+            n_ref = ref.all_num
+        return self.get_value_counts_table_with_percents(
+            info, curr_df, ref_df, n_curr, n_ref, f"cat_counts_{column_name}"
+        )

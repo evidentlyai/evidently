@@ -173,9 +173,10 @@ class DataDriftTableRenderer(MetricRenderer):
                     std=(data.scatter.plot_shape["y0"] - data.scatter.plot_shape["y1"]) / 2,
                     xaxis_name=data.scatter.x_name,
                     xaxis_name_ref=None,
-                    yaxis_name=data.column_name,
+                    yaxis_name=f"{data.column_name} (mean +/- std)",
                     color_options=self.color_options,
                     return_json=False,
+                    line_name="reference (mean)",
                 )
             scatter = plotly_figure(title="", figure=scatter_fig)
             details.with_part("DATA DRIFT", info=scatter)

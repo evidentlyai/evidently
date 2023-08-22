@@ -930,6 +930,22 @@ def plot_scatter_for_data_drift(
     curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: ColorOptions
 ):
     fig = go.Figure()
+
+    x0 = np.max(curr_x)
+    x1 = np.min(curr_x)
+
+    fig.add_trace(
+        go.Scatter(
+            x=[x1, x0, x0, x1],
+            y=[y0, y0, y1, y1],
+            fill="toself",
+            fillcolor=color_options.fill_color,
+            opacity=0.5,
+            name="reference (+/- 1std)",
+            line=dict(color=color_options.fill_color, width=0, dash="solid"),
+            marker=dict(size=0),
+        )
+    )
     fig.add_trace(
         go.Scattergl(
             x=curr_x,
@@ -940,16 +956,13 @@ def plot_scatter_for_data_drift(
         )
     )
 
-    x0 = np.max(curr_x)
-
     fig.add_trace(
-        go.Scattergl(
-            x=[x0, x0],
-            y=[y0, y1],
-            mode="markers",
-            name="Current",
-            marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
-            showlegend=False,
+        go.Scatter(
+            x=curr_x,
+            y=[(y0 + y1) / 2] * len(curr_x),
+            mode="lines",
+            marker_color=color_options.zero_line_color,
+            name="reference (mean)",
         )
     )
 
@@ -958,34 +971,6 @@ def plot_scatter_for_data_drift(
         yaxis_title=y_name,
         showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        shapes=[
-            dict(
-                type="rect",
-                # x-reference is assigned to the x-values
-                xref="paper",
-                # y-reference is assigned to the plot paper [0,1]
-                yref="y",
-                x0=0,
-                y0=y0,
-                x1=1,
-                y1=y1,
-                fillcolor=color_options.fill_color,
-                opacity=0.5,
-                layer="below",
-                line_width=0,
-            ),
-            dict(
-                type="line",
-                name="Reference",
-                xref="paper",
-                yref="y",
-                x0=0,  # min(testset_agg_by_date.index),
-                y0=(y0 + y1) / 2,
-                x1=1,  # max(testset_agg_by_date.index),
-                y1=(y0 + y1) / 2,
-                line=dict(color=color_options.zero_line_color, width=3),
-            ),
-        ],
     )
     return fig
 
@@ -1246,7 +1231,8 @@ def prepare_df_for_time_index_plot(
 def get_traces(df, color, error_band_opacity, name, showlegend):
     error_band_trace = go.Scatter(
         x=list(df["per"]) + list(df["per"][::-1]),  # x, then x reversed
-        y=list(df["mean"] + df["std"]) + list(df["mean"] - df["std"])[::-1],  # upper, then lower reversed
+        y=list(df["mean"] + df["std"].fillna(0))
+        + list(df["mean"] - df["std"].fillna(0))[::-1],  # upper, then lower reversed
         fill="toself",
         fillcolor=color,
         opacity=error_band_opacity,
@@ -1266,8 +1252,26 @@ def get_traces(df, color, error_band_opacity, name, showlegend):
     return error_band_trace, line_trace
 
 
+def rect_trace(line, std, min_value, max_value, color):
+    return go.Scatter(
+        x=[min_value, max_value, max_value, min_value],
+        y=[line + std, line + std, line - std, line - std],
+        fill="toself",
+        fillcolor=color,
+        opacity=0.5,
+        name="reference (+/- 1std)",
+        line=dict(color=color, width=0, dash="solid"),
+        marker=dict(size=0),
+    )
+
+
 def collect_traces(
-    data: Dict, line: Optional[float], std: Optional[float], color_options: ColorOptions, showlegend: bool
+    data: Dict,
+    line: Optional[float],
+    std: Optional[float],
+    color_options: ColorOptions,
+    showlegend: bool,
+    line_name: Optional[str] = None,
 ):
     name = list(data.keys())[0]
     traces = []
@@ -1277,15 +1281,20 @@ def collect_traces(
             y=[line] * len(data[name]["per"]),
             mode="lines",
             marker_color=color_options.zero_line_color,
-            showlegend=False,
+            name=line_name,
+            showlegend=True if line_name is not None else False,
         )
         traces.append(green_line_trace)
+    if std is not None and line is not None:
+        trace_rect = rect_trace(line, std, data[name]["per"].min(), data[name]["per"].max(), color_options.fill_color)
+        traces.append(trace_rect)
     if len(data.keys()) == 1:
         error_band_trace, line_trace = get_traces(
             data[name], color_options.get_current_data_color(), 0.2, name, showlegend
         )
         traces += [error_band_trace, line_trace]
         return traces
+
     if {"Predicted", "Actual"} == set(data.keys()):
         error_band_trace_pred, line_trace_pred = get_traces(
             data["Predicted"],
@@ -1319,6 +1328,7 @@ def collect_traces(
         showlegend,
     )
     traces += [error_band_trace_act, error_band_trace_pred, line_trace_act, line_trace_pred]
+
     return traces
 
 
@@ -1332,6 +1342,7 @@ def plot_agg_line_data(
     yaxis_name: str,
     color_options: ColorOptions,
     return_json: bool = True,
+    line_name: Optional[str] = None,
 ):
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -1341,7 +1352,7 @@ def plot_agg_line_data(
         subplot_titles = ["current", "reference"]
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    curr_traces = collect_traces(curr_data, line, std, color_options, True)
+    curr_traces = collect_traces(curr_data, line, std, color_options, True, line_name)
     for trace in curr_traces:
         fig.add_trace(trace, 1, 1)
     if ref_data is not None:
@@ -1351,15 +1362,6 @@ def plot_agg_line_data(
         fig.update_xaxes(title_text=xaxis_name_ref, row=1, col=2)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     fig.update_layout(yaxis_title=yaxis_name)
-    if std is not None and line is not None:
-        fig.add_hrect(
-            y0=line - std,
-            y1=line + std,
-            fillcolor=color_options.fill_color,
-            opacity=0.5,
-            layer="below",
-            line_width=0,
-        )
 
     if return_json:
         return json.loads(fig.to_json())

@@ -5,7 +5,6 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
-from pandas.api.types import is_numeric_dtype
 from plotly.subplots import make_subplots
 
 from evidently.metric_results import Boxes
@@ -119,51 +118,29 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
     if values is not None:
         curr_df = curr_df[curr_df["count"] != 0]
         curr_vals_inside_lst = curr_df[curr_df.x.isin(values)].sort_values("count", ascending=False)
+        data = np.array(["", ""])
         if curr_vals_inside_lst.shape[0] > 0:
-            additional_plots.append(
-                DetailsInfo(
-                    title="Values inside the list (top 10)",
-                    info=table_data(
-                        column_names=["value", "count"],
-                        data=curr_vals_inside_lst[:10].values,
-                    ),
-                )
-            )
-        curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values("count", ascending=False)
-        if curr_vals_outside_lst.shape[0] > 0:
-            additional_plots.append(
-                DetailsInfo(
-                    title="Values outside the list (top 10)",
-                    info=table_data(
-                        column_names=["value", "count"],
-                        data=curr_vals_outside_lst[:10].values,
-                    ),
-                )
-            )
-    elif ref_df is not None:
-        curr_df = curr_df[curr_df["count"] != 0]
-        ref_df = ref_df[ref_df["count"] != 0]
-
-        if is_numeric_dtype(curr_df.x):
-            new_values = np.setdiff1d(curr_df.x.values, ref_df.x.values)
-            missed_values = np.setdiff1d(ref_df.x.values, curr_df.x.values)
-        else:
-            curr_df["x"] = curr_df["x"].astype(str)
-            ref_df["x"] = ref_df["x"].astype(str)
-            new_values = np.setdiff1d(curr_df.x.values, ref_df.x.values)
-            missed_values = np.setdiff1d(ref_df.x.values, curr_df.x.values)
-        new_values_data = curr_df[curr_df.x.isin(new_values)].sort_values("count", ascending=False)
-        missed_values_data = ref_df[ref_df.x.isin(missed_values)].sort_values("count", ascending=False)
+            data = curr_vals_inside_lst[:10].values
         additional_plots.append(
             DetailsInfo(
-                title="New values (top 10)",
-                info=table_data(column_names=["value", "count"], data=new_values_data[:10].values),
+                title="Values inside the list (top 10)",
+                info=table_data(
+                    column_names=["value", "count"],
+                    data=data,
+                ),
             )
         )
+        curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values("count", ascending=False)
+        data = np.array(["", ""])
+        if curr_vals_outside_lst.shape[0] > 0:
+            data = curr_vals_outside_lst[:10].values
         additional_plots.append(
             DetailsInfo(
-                title="Missing values (top 10)",
-                info=table_data(column_names=["value", "count"], data=missed_values_data[:10].values),
+                title="Values outside the list (top 10)",
+                info=table_data(
+                    column_names=["value", "count"],
+                    data=curr_vals_outside_lst[:10].values,
+                ),
             )
         )
 

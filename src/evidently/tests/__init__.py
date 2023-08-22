@@ -46,6 +46,8 @@ from .data_integrity_tests import TestShareOfMissingValues
 from .data_integrity_tests import TestShareOfRowsWithMissingValues
 from .data_quality_tests import TestAllColumnsMostCommonValueShare
 from .data_quality_tests import TestCatColumnsOutOfListValues
+from .data_quality_tests import TestCategoryCount
+from .data_quality_tests import TestCategoryShare
 from .data_quality_tests import TestColumnQuantile
 from .data_quality_tests import TestColumnValueMax
 from .data_quality_tests import TestColumnValueMean
@@ -93,6 +95,8 @@ __all__ = [
     "TestTNR",
     "TestTPR",
     "TestAllFeaturesValueDrift",
+    "TestCategoryCount",
+    "TestCategoryShare",
     "TestColumnDrift",
     "TestCustomFeaturesValueDrift",
     "TestEmbeddingsDrift",
