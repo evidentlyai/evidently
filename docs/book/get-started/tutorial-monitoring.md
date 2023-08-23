@@ -228,7 +228,7 @@ project.save()
 
 ### 1.6. Create the workspace and project
 
-Finally, create the project, workspace, and generate the JSON `snapshots`. `Snapshot` is a rich JSON object that contains summaries of the captured data and model metrics. You must store the snapshots in a directory under the corresponding workspace name. This way, Evidently UI will be able to parse the metrics and visualize them on the monitoring panels.
+Finally, create the project, workspace, and generate the JSON `snapshots`. `Snapshot` is a JSON "version" of the `Report` or `Test Suite` that was defined earlier. It contains summaries of the captured data and model metrics. You must store the snapshots in a directory under the corresponding workspace name. This way, Evidently UI will be able to parse the metrics and visualize them on the monitoring panels.
 
 When you execute the script, Evidently will log the snapshots with the selected metrics to the defined workspace folder, as if you captured data for 5 days. It will also create the dashboard panels.
 
