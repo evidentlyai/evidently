@@ -189,3 +189,18 @@ lte=approx(5, relative=0.1)
 ```python
 eq=approx(5, relative=0.1)
 ```
+
+# 4. Set test criticality
+
+By default, all Tests will return a `Fail` if the Test condition is not fulfilled. If you want to get a `Warning` instead, use the `is_critical` parameter and set it to `False`. Example: 
+
+```python
+data_integrity_column_tests = TestSuite(tests=[
+    TestColumnAllConstantValues(column_name='education', is_critical=False),
+    TestColumnAllUniqueValues(column_name='education', is_critical=False),
+])
+```
+
+Notebook example on setting Test criticality:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_specify_test_criticality.ipynb" %} 
