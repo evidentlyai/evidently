@@ -218,18 +218,19 @@ As a `metric_id`, you pass the name of the Evidently Metric that was logged as p
 * You can define the aggregation function or select to show the last metric value.
 * You can add panels of different types following the examples in the script.
 
-### 1.5. Save snapshots
+### 1.5. Save panels
 
-To create logs parsable by the Evidently UI, you must save the Report or Test Suite output as a `snapshot`. This is a rich JSON object that contains summaries of the captured data and model metrics. You must store the snapshots in the object storage under the corresponding workspace name.
+To save changes made to a project, you must use the method save().
 
 ```python
 project.save()
-return project
 ```
 
 ### 1.6. Create the workspace and project
 
-Finally, create the project and workspace. When you execute the script, Evidently will log the snapshots with the selected metrics to the defined workspace folder, as if you captured data for 5 days. It will also create the dashboard panels.
+Finally, create the project, workspace, and generate the JSON `snapshots`. `Snapshot` is a rich JSON object that contains summaries of the captured data and model metrics. You must store the snapshots in a directory under the corresponding workspace name. This way, Evidently UI will be able to parse the metrics and visualize them on the monitoring panels.
+
+When you execute the script, Evidently will log the snapshots with the selected metrics to the defined workspace folder, as if you captured data for 5 days. It will also create the dashboard panels.
 
 ```python
 def create_demo_project(workspace: str):
