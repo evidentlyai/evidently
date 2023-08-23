@@ -1,26 +1,25 @@
 import datetime
-import json
 import os.path
 import time
 
 import pandas as pd
-import requests
-from config import CONFIG_PATH
+from config import IntervalTrigger, ReportConfig
 from config import CollectorConfig
-from config import create_config_report
 from requests.exceptions import RequestException
 
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.report import Report
-from evidently.utils import NumpyEncoder
-from evidently_service.dashboards import DashboardPanelPlot
-from evidently_service.dashboards import PanelValue
-from evidently_service.dashboards import PlotType
-from evidently_service.dashboards import ReportFilter
-from evidently_service.workspace import Workspace
+from evidently.ui.dashboards import DashboardPanelPlot, PanelValue, PlotType, ReportFilter
+from evidently.ui.workspace import Workspace
+from client import CollectorClient
 
-REPORT_CONFIG_PATH = "report.json"
+COLLECTOR_ID = "default"
+
+PROJECT_NAME = "My Cool Project"
+
 WORKSACE_PATH = "workspace"
+
+client = CollectorClient()
 
 
 def get_data():
@@ -28,18 +27,18 @@ def get_data():
     return cur, ref
 
 
-def setup_report(path):
+def setup_report():
     report = Report(metrics=[ColumnValueRangeMetric("values1", left=5)], tags=["quality"])
 
     cur, ref = get_data()
     report.run(reference_data=ref, current_data=cur)
-    create_config_report(report, path)
+    return ReportConfig.from_report(report)
 
 
 def setup_workspace():
-    ws = Workspace.create("workspace")
-    project = ws.create_project("My Cool Project")
-    project.add_panel(
+    ws = Workspace.create(WORKSACE_PATH)
+    project = ws.create_project(PROJECT_NAME)
+    project.dashboard.add_panel(
         DashboardPanelPlot(
             title="sample_panel",
             filter=ReportFilter(metadata_values={}, tag_values=["quality"]),
@@ -51,17 +50,24 @@ def setup_workspace():
         )
     )
     project.save()
-    conf = CollectorConfig(snapshot_interval=5, report_config_path="report.json", project_id=str(project.id))
-    conf.save(CONFIG_PATH)
+
+
+def setup_config():
+    ws = Workspace.create(WORKSACE_PATH)
+    project = ws.search_project(PROJECT_NAME)[0]
+    conf = CollectorConfig(trigger=IntervalTrigger(interval=5),report_config=setup_report(), project_id=str(project.id))
+
+    client.create_collector(COLLECTOR_ID, conf)
+    _, ref = get_data()
+    client.set_reference(COLLECTOR_ID, ref)
 
 
 def send_data():
     size = 1
     data = pd.DataFrame([{"values1": 3. + datetime.datetime.now().minute % 5, "values2": 0.} for _ in range(size)])
-    r = requests.post("http://localhost:8001/data", data=json.dumps(data.to_dict(), cls=NumpyEncoder),
-                      headers={"ContentType": "application/json"})
-    r.raise_for_status()
-    print("data sent")
+
+    client.send_data(COLLECTOR_ID, data)
+    print("sent")
 
 
 def start_sending_data():
@@ -75,11 +81,10 @@ def start_sending_data():
 
 
 def main():
-    if not os.path.exists(REPORT_CONFIG_PATH):
-        setup_report(REPORT_CONFIG_PATH)
-
     if not os.path.exists(WORKSACE_PATH):
         setup_workspace()
+
+    setup_config()
 
     start_sending_data()
 
