@@ -196,20 +196,20 @@ Here is an example of adding a counter metric. The complete script includes seve
 ```python
     project.dashboard.add_panel(
         DashboardPanelCounter(
-            title="Model Calls",
+            title="Share of Drifted Features",
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             value=PanelValue(
-                metric_id="DatasetMissingValuesMetric",
-                field_path=DatasetMissingValuesMetric.fields.current.number_of_rows,
-                legend="count",
+                metric_id="DatasetDriftMetric",
+                field_path="share_of_drifted_columns",
+                legend="share",
             ),
-            text="count",
-            agg=CounterAgg.SUM,
+            text="share",
+            agg=CounterAgg.LAST,
             size=1,
         )
     )
 ```
-
+    
 As a `metric_id`, you pass the name of the Evidently Metric that was logged as part of the Report. As a `field_path`, you select the metric result computed as part of this Metric. Since Evidently Metrics contain multiple data points, you must specify which to show on a dashboard. You can display multiple metrics on a single panel. 
 
 **What you can change**:
@@ -320,7 +320,7 @@ Here is one possible approach. You can implement it using a workflow manager lik
 
 ![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
-You can browse sample [integrations](../integrations). We’ll add more example integrations in the future.  
+You can browse sample [integrations](../integrations/evidently-integrations.md). We’ll add more example integrations in the future.  
 
 # Join our Community!
 
