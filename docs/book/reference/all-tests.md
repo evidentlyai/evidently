@@ -34,7 +34,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 # Test Presets
 
-Default conditions for each Test in the Preset match the Test's defaults. You can see them in the tables below.
+Default conditions for each Test in the Preset match the Test's defaults. You can see them in the tables below. The listed Preset parameters apply to the relevant individual Tests inside the Preset.
 
 | Preset name and Description | Parameters |
 |---|---|
@@ -80,6 +80,8 @@ TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=Tr
 | **TestColumnAllConstantValues**(column_name='name') | Column-level. <br><br> Tests if all the values in a given column are constant.|**Required**: <ul><li>`column_name`</li></ul>**Optional**:<br> N/A<br><br>**Test conditions**: <br> N/A| Expects non-constant.<br><br>The test fails if all values in a given column are constant.|
 | **TestColumnAllUniqueValues**(column_name='name') | Column-level. <br><br> Tests if all the values in a given column are unique.| **Required**: <ul><li>`column_name`</li></ul>**Optional**:<br> N/A<br><br>**Test conditions**:<br> N/A | Expects all unique (e.g., IDs).<br><br>The test fails if at least one value in a given column is not unique.|
 | **TestColumnRegExp**(column_name='name, reg_exp='^[0..9]') | Column-level. <br><br> Tests the number of values in a column that do not match a defined regular expression, against reference or a defined condition. |**Required**: <ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional**:<br>N/A<br><br>**Test conditions**:<ul><li>*standard parameters* </li></ul>| **With reference**: the test fails if the share of values that match a regular expression is over 10% higher or lower than in the reference.<br><br>**No reference**: the test fails if at least one of the values does not match a regular expression. |
+| **TestCategoryShare**(column_name='education', category='Some-college', lt=0.5)) | Column-level. <br><br> Tests if the number of objects belonging to a defined category (or having a defined numerical value) is within the threshold.|**Required**: <ul><li>`column_name`</li><li>`category`</li></ul>**Optional**:<br> N/A<br><br> **Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects the category to be present.<br><br>The test fails if the category is not present.|
+| **TestCategoryCount**(column_name='education', category='Some-college', lt=0.5)) | Column-level. <br><br>  Tests if the share of objects belonging to a defined category (or having a defined numerical value) is within the threshold.|**Required**: <ul><li>`column_name`</li><li>`category`</li></ul>**Optional**:<br> N/A<br><br> **Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects the category to be present.<br><br>The test fails if the category is not present.|
 
 # Data Quality
 
