@@ -20,7 +20,7 @@ PROJECT_NAME = "My Cool Project"
 
 WORKSACE_PATH = "workspace"
 
-client = CollectorClient()
+client = CollectorClient("http://localhost:8001")
 
 
 def get_data():

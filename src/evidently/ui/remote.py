@@ -1,20 +1,15 @@
-import json
-import urllib.parse
 import uuid
 from typing import List
 from typing import Optional
 from typing import Union
 from urllib.error import HTTPError
 
-import requests
-from pydantic import parse_obj_as
-
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.dashboards import DashboardConfig
+from evidently.ui.utils import RemoteClientBase
 from evidently.ui.workspace import STR_UUID
 from evidently.ui.workspace import ProjectBase
 from evidently.ui.workspace import WorkspaceBase
-from evidently.utils import NumpyEncoder
 
 
 class RemoteProject(ProjectBase["RemoteWorkspace"]):
@@ -22,10 +17,9 @@ class RemoteProject(ProjectBase["RemoteWorkspace"]):
         self.workspace.add_project(self)
 
 
-class RemoteWorkspace(WorkspaceBase[RemoteProject]):
+class RemoteWorkspace(RemoteClientBase, WorkspaceBase[RemoteProject]):
     def __init__(self, base_url: str, secret: str = None):
-        self.base_url = base_url
-        self.secret = secret
+        super().__init__(base_url, secret)
         self.verify()
 
     def verify(self):
@@ -33,30 +27,6 @@ class RemoteWorkspace(WorkspaceBase[RemoteProject]):
             self._request("/api", "GET").raise_for_status()
         except HTTPError as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
-
-    def _request(
-        self,
-        path: str,
-        method: str,
-        query_params: Optional[dict] = None,
-        body: Optional[dict] = None,
-        response_model=None,
-    ):
-        # todo: better encoding
-        headers = {"evidently-secret": self.secret}
-        data = None
-        if body is not None:
-            headers["Content-Type"] = "application/json"
-
-            data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
-
-        response = requests.request(
-            method, urllib.parse.urljoin(self.base_url, path), params=query_params, data=data, headers=headers
-        )
-        response.raise_for_status()
-        if response_model is not None:
-            return parse_obj_as(response_model, response.json())
-        return response
 
     def create_project(self, name: str, description: Optional[str] = None) -> RemoteProject:
         project: ProjectBase = ProjectBase(
