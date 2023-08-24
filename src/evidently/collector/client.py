@@ -1,18 +1,19 @@
 import json
+import urllib.parse
 from typing import Optional
 
 import pandas as pd
 import requests
-import urllib.parse
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
+from evidently.collector.config import CollectorConfig
 from evidently.utils import NumpyEncoder
-from examples.integrations.collector_service.config import CollectorConfig
 
 
 class CollectorClient(BaseModel):
     # todo: unify with RemoteWorkspace
-    base_url: str = "http://localhost:8081"
+    base_url: str = "http://localhost:8001"
     secret: Optional[str] = None
 
     def _request(

@@ -1,22 +1,26 @@
 import abc
 import json
 import time
-from typing import Any, Dict, Optional
+from typing import Any
+from typing import Dict
 from typing import List
+from typing import Optional
 
 import pandas as pd
 from pydantic import BaseModel
 from pydantic import parse_obj_as
 
 from evidently.base_metric import Metric
+from evidently.collector.storage import CollectorStorage
+from evidently.collector.storage import InMemoryStorage
 from evidently.options.base import Options
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.report import Report
+from evidently.suite.base_suite import MetadataValueType
 from evidently.ui.remote import RemoteWorkspace
 from evidently.utils import NumpyEncoder
-from storage import CollectorStorage, InMemoryStorage
 
-CONFIG_PATH = "config.json"
+CONFIG_PATH = "collector_config.json"
 
 
 class Config(BaseModel):
@@ -29,10 +33,12 @@ class Config(BaseModel):
         with open(path, "w") as f:
             json.dump(self.dict(), f, cls=NumpyEncoder, indent=2)
 
+
 class CollectorTrigger(PolymorphicModel):
     @abc.abstractmethod
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
         raise NotImplementedError
+
 
 class IntervalTrigger(CollectorTrigger):
     interval: float
@@ -45,23 +51,24 @@ class IntervalTrigger(CollectorTrigger):
             return True
         return False
 
+
 class ReportConfig(Config):
     metrics: List[Metric]
     options: Options
-    metadata: Dict[str, str]
+    metadata: Dict[str, MetadataValueType]
     tags: List[str]
 
     @classmethod
     def from_report(cls, report: Report):
-        return ReportConfig(metrics=report._first_level_metrics,
-                     options=report.options,
-                     metadata=report.metadata,
-                     tags=report.tags)
+        return ReportConfig(
+            metrics=report._first_level_metrics, options=report.options, metadata=report.metadata, tags=report.tags
+        )
 
 
 class CollectorConfig(Config):
     class Config:
         underscore_attrs_are_private = True
+
     id: str = ""
     trigger: CollectorTrigger
     report_config: ReportConfig
@@ -73,8 +80,7 @@ class CollectorConfig(Config):
     cache_reference: bool = True
 
     _reference: Any = None
-    _workspace: RemoteWorkspace = None
-
+    _workspace: Optional[RemoteWorkspace] = None
 
     @property
     def workspace(self) -> RemoteWorkspace:
@@ -97,8 +103,6 @@ class CollectorConfig(Config):
         return self._reference
 
 
-
-
 class CollectorServiceConfig(Config):
     check_interval: float = 1
     collectors: Dict[str, CollectorConfig] = {}
@@ -112,6 +116,3 @@ class CollectorServiceConfig(Config):
             default = CollectorServiceConfig()
             default.save(path)
             return default
-
-
-

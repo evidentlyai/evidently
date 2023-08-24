@@ -3,15 +3,16 @@ import os.path
 import time
 
 import pandas as pd
-from config import IntervalTrigger, ReportConfig
-from config import CollectorConfig
+
 from requests.exceptions import RequestException
 
+from evidently.collector.client import CollectorClient
+from evidently.collector.config import CollectorConfig, IntervalTrigger, ReportConfig
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.report import Report
 from evidently.ui.dashboards import DashboardPanelPlot, PanelValue, PlotType, ReportFilter
 from evidently.ui.workspace import Workspace
-from client import CollectorClient
+
 
 COLLECTOR_ID = "default"
 

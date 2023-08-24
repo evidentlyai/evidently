@@ -12,7 +12,6 @@ import uvicorn
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import FastAPI
-from fastapi import Header
 from fastapi import HTTPException
 from fastapi import Path
 from fastapi import Request
@@ -34,6 +33,8 @@ from evidently.ui.dashboards import DashboardPanel
 from evidently.ui.models import DashboardInfoModel
 from evidently.ui.models import ReportModel
 from evidently.ui.models import TestSuiteModel
+from evidently.ui.utils import authenticated
+from evidently.ui.utils import set_secret
 from evidently.ui.watcher import WorkspaceDirHandler
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import ProjectBase
@@ -41,8 +42,6 @@ from evidently.ui.workspace import Workspace
 from evidently.utils import NumpyEncoder
 
 SERVICE_INTERFACE = "service_backend"
-
-SECRET = os.environ.get("EVIDENTLY_SECRET", None)
 
 
 @asynccontextmanager
@@ -96,11 +95,6 @@ async def manifest(request: Request):
 api_router = APIRouter(prefix="/api")
 
 api_read_router = APIRouter()
-
-
-async def authenticated(evidently_secret: Annotated[Optional[str], Header()] = None):
-    if SECRET is not None and evidently_secret != SECRET:
-        raise HTTPException(403, "Not allowed")
 
 
 api_write_router = APIRouter(dependencies=[Depends(authenticated)])
@@ -329,8 +323,7 @@ app.include_router(api_router)
 
 def run(host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace", secret: str = None):
     if secret is not None:
-        global SECRET
-        SECRET = secret
+        set_secret(secret)
     app.state.workspace_path = workspace
     uvicorn.run(app, host=host, port=port)
 
