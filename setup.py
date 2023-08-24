@@ -58,6 +58,7 @@ setup_args = dict(
         "PyYAML>=5.1",
         "pydantic>=1.10,<2",
         "fastapi>=0.98.0",
+        "fastapi-utils>=0.2.1",
         "uvicorn>=0.22.0",
         "watchdog>=3",
         "typer>=0.9",

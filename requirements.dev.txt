@@ -16,4 +16,5 @@ isort==5.10.1
 
 # service dependencies
 fastapi
+fastapi-utils
 uvicorn
