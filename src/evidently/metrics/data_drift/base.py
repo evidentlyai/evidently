@@ -29,7 +29,7 @@ class WithDriftOptionsFields(BaseModel):
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
 
 
-class WithDriftOptions(Metric[T], Generic[T], WithDriftOptionsFields, abc.ABC):
+class WithDriftOptions(WithDriftOptionsFields, Metric[T], Generic[T],  abc.ABC):
     _drift_options: DataDriftOptions
 
     @property
