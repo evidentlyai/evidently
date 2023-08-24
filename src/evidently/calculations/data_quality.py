@@ -377,7 +377,10 @@ def plot_data(
             reference = ref_data
             reference.columns = ["x", "count"]
         curr_data.columns = ["x", "count"]
-        data_hist = Histogram(current=HistogramData.from_df(curr_data), reference=HistogramData.from_df(reference))
+        data_hist = Histogram(
+            current=HistogramData.from_df(curr_data),
+            reference=HistogramData.from_df(reference) if reference is not None else None,
+        )
     elif column_type == ColumnType.Text:
         data_hist = None
     else:
