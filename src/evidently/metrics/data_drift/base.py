@@ -4,6 +4,8 @@ from typing import Generic
 from typing import Optional
 from typing import TypeVar
 
+from pydantic import BaseModel
+
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.stattests import PossibleStatTestType
@@ -12,8 +14,7 @@ from evidently.options import DataDriftOptions
 T = TypeVar("T", bound=MetricResult)
 
 
-class WithDriftOptions(Metric[T], Generic[T], abc.ABC):
-    _drift_options: DataDriftOptions
+class WithDriftOptionsFields(BaseModel):
     # todo: fields here are not consistent with DriftOptions, so no common base model
     stattest: Optional[PossibleStatTestType] = None
     cat_stattest: Optional[PossibleStatTestType] = None
@@ -26,6 +27,10 @@ class WithDriftOptions(Metric[T], Generic[T], abc.ABC):
     num_stattest_threshold: Optional[float] = None
     text_stattest_threshold: Optional[float] = None
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
+
+
+class WithDriftOptions(Metric[T], Generic[T], WithDriftOptionsFields, abc.ABC):
+    _drift_options: DataDriftOptions
 
     @property
     def drift_options(self):

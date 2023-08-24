@@ -132,6 +132,8 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMissingValues], ABC):
     group: ClassVar = DATA_INTEGRITY_GROUP.id
     _metric: DatasetMissingValuesMetric
+    missing_values: Optional[list] = None
+    replace: bool = True
 
     def __init__(
         self,
@@ -147,6 +149,8 @@ class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMi
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         is_critical: bool = True,
     ):
+        self.missing_values = missing_values
+        self.replace = replace
         super().__init__(
             eq=eq,
             gt=gt,
@@ -158,7 +162,7 @@ class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMi
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
+        self._metric = DatasetMissingValuesMetric(missing_values=self.missing_values, replace=self.replace)
 
 
 class BaseTestMissingValuesRenderer(TestRenderer):
@@ -455,6 +459,8 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
     group: ClassVar = DATA_INTEGRITY_GROUP.id
     _metric: DatasetMissingValuesMetric
     column_name: str
+    missing_values: Optional[List] = None
+    replace: bool = True
 
     def __init__(
         self,
@@ -472,6 +478,8 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
         is_critical: bool = True,
     ):
         self.column_name = column_name
+        self.missing_values = missing_values
+        self.replace = replace
         super().__init__(
             eq=eq,
             gt=gt,
@@ -483,7 +491,7 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
+        self._metric = DatasetMissingValuesMetric(missing_values=self.missing_values, replace=self.replace)
 
 
 class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesTest):
@@ -1025,7 +1033,7 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
+        self._metric = ColumnRegExpMetric(column_name=self.column_name, reg_exp=self.reg_exp)
 
     @property
     def metric(self):
