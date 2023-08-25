@@ -11,7 +11,8 @@ DOCKER_IMAGE ?= evidently/evidently-service
 SOURCES_DIR ?= ../
 
 # Get the latest commit.
-GIT_COMMIT = $(strip $(shell git rev-parse --short HEAD))
+GIT_COMMIT = $(strip $(shell git rev-parse HEAD))
+GIT_COMMIT_SHORT = $(strip $(shell git rev-parse --short HEAD))
 
 # Get the version number from the code
 CODE_VERSION = $(strip $(shell python -c "from evidently import __version__; print(__version__)" || cat ../src/evidently/_version.py | grep "version_info = " | grep -Po "\d+" |  tr '\n' . | cut -c 1-5))
@@ -32,7 +33,7 @@ $(error You need to create a VERSION file to build a release)
 endif
 
 # See what commit is tagged to match the version
-VERSION_COMMIT = $(strip $(shell git rev-list v$(CODE_VERSION) -n 1 | cut -c1-8))
+VERSION_COMMIT = $(strip $(shell git rev-list v$(CODE_VERSION) -n 1))
 ifneq ($(VERSION_COMMIT), $(GIT_COMMIT))
 $(error echo You are trying to push a build based on commit $(GIT_COMMIT) but the tagged release version is $(VERSION_COMMIT))
 endif
@@ -44,7 +45,7 @@ endif
 
 else
 # Add the commit ref for development builds. Mark as dirty if the working directory isn't clean
-DOCKER_TAG = $(CODE_VERSION)-$(GIT_COMMIT)$(DOCKER_TAG_SUFFIX)
+DOCKER_TAG = $(CODE_VERSION)-$(GIT_COMMIT_SHORT)$(DOCKER_TAG_SUFFIX)
 endif
 
 build_dev:
@@ -59,7 +60,7 @@ docker_build:
   --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
   --build-arg VERSION=$(CODE_VERSION) \
   --build-arg VCS_URL=`git config --get remote.origin.url` \
-  --build-arg VCS_REF=$(GIT_COMMIT) \
+  --build-arg VCS_REF=$(GIT_COMMIT_SHORT) \
 	-t $(DOCKER_IMAGE):$(DOCKER_TAG) ${SOURCES_DIR}
 
 docker_push:
