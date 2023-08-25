@@ -59,6 +59,26 @@ from evidently.report import Report
                 datetime="datetime",
             ),
         ),
+        (
+            pd.DataFrame(
+                {
+                    "myid": "some_id",
+                    "my_target": [1, 2, 3],
+                    "prediction": [1, 2, 3],
+                    "feature1": [1, 2, 3],
+                    "feature2": ["a", "b", "c"],
+                    "datetime": pd.date_range("2020-01-01", periods=3),
+                }
+            ),
+            None,
+            DataQualityPreset(),
+            ColumnMapping(
+                target="my_target",
+                id="myid",
+                prediction="prediction",
+                datetime="datetime",
+            ),
+        ),
     ),
 )
 def test_data_quality_preset(
