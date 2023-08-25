@@ -28,6 +28,12 @@ This section explains how to generate and work with individual `snapshots`.
 
 To simplify organizing multiple `snapshots` relating to a specific model over time, you should first create a `workspace`, as explained in the previous [section of the docs](workspace_project.md).
 
+## Code example
+
+This notebook shows how to save and load individual JSON snapshots:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_snapshots.ipynb" %}
+
 ## Create a Report or Test Suite
 
 To generate a snapshot, you must first create an Evidently Test Suite or a Report object. Follow the usual Test Suite and Report API:
