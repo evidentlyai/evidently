@@ -16,6 +16,7 @@ from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.metrics import EmbeddingsDriftMetric
+from evidently.metrics.data_drift.base import WithDriftOptionsFields
 from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.model.widget import BaseWidgetInfo
@@ -91,9 +92,10 @@ class ColumnsDriftParameters(ConditionTestParameters):
         )
 
 
-class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
+class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
     group: ClassVar = DATA_DRIFT_GROUP.id
     _metric: DataDriftTable
+    columns: Optional[List[str]]
 
     def __init__(
         self,
@@ -128,8 +130,6 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
             is_critical=is_critical,
-        )
-        self._metric = DataDriftTable(
             columns=columns,
             stattest=stattest,
             cat_stattest=cat_stattest,
@@ -141,6 +141,19 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             num_stattest_threshold=num_stattest_threshold,
             text_stattest_threshold=text_stattest_threshold,
             per_column_stattest_threshold=per_column_stattest_threshold,
+        )
+        self._metric = DataDriftTable(
+            columns=self.columns,
+            stattest=self.stattest,
+            cat_stattest=self.cat_stattest,
+            num_stattest=self.num_stattest,
+            text_stattest=self.text_stattest,
+            per_column_stattest=self.per_column_stattest,
+            stattest_threshold=self.stattest_threshold,
+            cat_stattest_threshold=self.cat_stattest_threshold,
+            num_stattest_threshold=self.num_stattest_threshold,
+            text_stattest_threshold=self.text_stattest_threshold,
+            per_column_stattest_threshold=self.per_column_stattest_threshold,
         )
 
     @property
@@ -220,12 +233,12 @@ class TestColumnDrift(Test):
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
 
-        self._metric = ColumnDriftMetric(
-            column_name=column_name,
-            stattest=stattest,
-            stattest_threshold=stattest_threshold,
-        )
         super().__init__(is_critical=is_critical)
+        self._metric = ColumnDriftMetric(
+            column_name=self.column_name,
+            stattest=self.stattest,
+            stattest_threshold=self.stattest_threshold,
+        )
 
     @property
     def metric(self):

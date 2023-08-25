@@ -89,7 +89,7 @@ class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacte
             column_name=ColumnName.from_any(column_name),
             is_critical=is_critical,
         )
-        self._metric = ColumnSummaryMetric(column_name)
+        self._metric = ColumnSummaryMetric(self.column_name)
 
 
 class TestConflictTarget(Test):
@@ -834,8 +834,8 @@ class TestMeanInNSigmas(Test):
     def __init__(self, column_name: Union[str, ColumnName], n_sigmas: int = 2, is_critical: bool = True):
         self.column_name = ColumnName.from_any(column_name)
         self.n_sigmas = n_sigmas
-        self._metric = ColumnSummaryMetric(column_name)
         super().__init__(is_critical=is_critical)
+        self._metric = ColumnSummaryMetric(self.column_name)
 
     @property
     def metric(self):
@@ -979,7 +979,7 @@ class TestValueRange(Test):
         self.left = left
         self.right = right
         super().__init__(is_critical=is_critical)
-        self._metric = ColumnValueRangeMetric(column_name=self.column_name, left=left, right=right)
+        self._metric = ColumnValueRangeMetric(column_name=self.column_name, left=self.left, right=self.right)
 
     @property
     def metric(self):
@@ -1059,7 +1059,6 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         self.column_name = ColumnName.from_any(column_name)
         self.left = left
         self.right = right
-        self._metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
         super().__init__(
             eq=eq,
@@ -1072,6 +1071,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             not_in=not_in,
             is_critical=is_critical,
         )
+        self._metric = ColumnValueRangeMetric(column_name=self.column_name, left=self.left, right=self.right)
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name.display_name}
@@ -1190,8 +1190,8 @@ class TestValueList(Test):
     def __init__(self, column_name: str, values: Optional[list] = None, is_critical: bool = True):
         self.column_name = column_name
         self.values = values
-        self._metric = ColumnValueListMetric(column_name=column_name, values=values)
         super().__init__(is_critical=is_critical)
+        self._metric = ColumnValueListMetric(column_name=self.column_name, values=values)
 
     @property
     def metric(self):
@@ -1254,7 +1254,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ColumnValueListMetric(column_name=column_name, values=values)
+        self._metric = ColumnValueListMetric(column_name=self.column_name, values=self.values)
 
     @property
     def metric(self):
@@ -1362,7 +1362,7 @@ class TestColumnQuantile(BaseCheckValueTest):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
+        self._metric = ColumnQuantileMetric(column_name=self.column_name, quantile=self.quantile)
 
     @property
     def metric(self):
@@ -1483,7 +1483,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ColumnCategoryMetric(column_name=column_name, category=category)
+        self._metric = ColumnCategoryMetric(column_name=self.column_name, category=self.category)
 
     @property
     def metric(self):
