@@ -5,6 +5,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 from pydantic import BaseModel
@@ -17,6 +18,8 @@ from evidently.options.base import Options
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
+from evidently.test_suite import TestSuite
+from evidently.tests.base_test import Test
 from evidently.ui.remote import RemoteWorkspace
 from evidently.utils import NumpyEncoder
 
@@ -54,6 +57,7 @@ class IntervalTrigger(CollectorTrigger):
 
 class ReportConfig(Config):
     metrics: List[Metric]
+    tests: List[Test]
     options: Options
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
@@ -61,7 +65,36 @@ class ReportConfig(Config):
     @classmethod
     def from_report(cls, report: Report):
         return ReportConfig(
-            metrics=report._first_level_metrics, options=report.options, metadata=report.metadata, tags=report.tags
+            metrics=report._first_level_metrics,
+            tests=[],
+            options=report.options,
+            metadata=report.metadata,
+            tags=report.tags,
+        )
+
+    @classmethod
+    def from_test_suite(cls, test_suite: TestSuite):
+        return ReportConfig(
+            tests=test_suite._inner_suite.context.tests,
+            metrics=[],
+            options=test_suite.options,
+            metadata=test_suite.metadata,
+            tags=test_suite.tags,
+        )
+
+    def to_report_base(self) -> Union[TestSuite, Report]:
+        if len(self.tests) > 0:
+            return TestSuite(
+                tests=self.tests,  # type: ignore[arg-type]
+                options=self.options,
+                metadata=self.metadata,
+                tags=self.tags,
+            )
+        return Report(
+            metrics=self.metrics,  # type: ignore[arg-type]
+            options=self.options,
+            metadata=self.metadata,
+            tags=self.tags,
         )
 
 

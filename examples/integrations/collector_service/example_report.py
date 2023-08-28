@@ -10,11 +10,14 @@ from evidently.collector.client import CollectorClient
 from evidently.collector.config import CollectorConfig, IntervalTrigger, ReportConfig
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.report import Report
+from evidently.test_suite import TestSuite
+from evidently.tests import TestNumberOfOutRangeValues
 from evidently.ui.dashboards import DashboardPanelPlot, PanelValue, PlotType, ReportFilter
 from evidently.ui.workspace import Workspace
 
 
 COLLECTOR_ID = "default"
+COLLECTOR_TEST_ID = "default_test"
 
 PROJECT_NAME = "My Cool Project"
 
@@ -34,6 +37,13 @@ def setup_report():
     cur, ref = get_data()
     report.run(reference_data=ref, current_data=cur)
     return ReportConfig.from_report(report)
+
+def setup_test_suite():
+    report = TestSuite(tests=[TestNumberOfOutRangeValues("values1", left=5)], tags=["quality"])
+
+    cur, ref = get_data()
+    report.run(reference_data=ref, current_data=cur)
+    return ReportConfig.from_test_suite(report)
 
 
 def setup_workspace():
@@ -56,11 +66,15 @@ def setup_workspace():
 def setup_config():
     ws = Workspace.create(WORKSACE_PATH)
     project = ws.search_project(PROJECT_NAME)[0]
-    conf = CollectorConfig(trigger=IntervalTrigger(interval=5),report_config=setup_report(), project_id=str(project.id))
-
+    conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_report(), project_id=str(project.id))
     client.create_collector(COLLECTOR_ID, conf)
+
+    test_conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_test_suite(), project_id=str(project.id))
+    client.create_collector(COLLECTOR_TEST_ID, test_conf)
+
     _, ref = get_data()
     client.set_reference(COLLECTOR_ID, ref)
+    client.set_reference(COLLECTOR_TEST_ID, ref)
 
 
 def send_data():
@@ -68,6 +82,7 @@ def send_data():
     data = pd.DataFrame([{"values1": 3. + datetime.datetime.now().minute % 5, "values2": 0.} for _ in range(size)])
 
     client.send_data(COLLECTOR_ID, data)
+    client.send_data(COLLECTOR_TEST_ID, data)
     print("sent")
 
 

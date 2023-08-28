@@ -17,7 +17,6 @@ from evidently.collector.config import CONFIG_PATH
 from evidently.collector.config import CollectorConfig
 from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.storage import LogEvent
-from evidently.report import Report
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
 from evidently.ui.utils import authenticated
@@ -113,12 +112,7 @@ async def create_snapshot(collector: CollectorConfig):
             return
         current.index = current.index.astype(int)
         report_conf = collector.report_config
-        report = Report(
-            metrics=report_conf.metrics,  # type: ignore[arg-type]
-            options=report_conf.options,
-            metadata=report_conf.metadata,
-            tags=report_conf.tags,
-        )
+        report = report_conf.to_report_base()
         try:
             report.run(reference_data=collector.reference, current_data=current, column_mapping=ColumnMapping())
             report._inner_suite.raise_for_error()
@@ -128,7 +122,7 @@ async def create_snapshot(collector: CollectorConfig):
             )
             return
         try:
-            collector.workspace.add_report(collector.project_id, report)
+            collector.workspace.add_snapshot(collector.project_id, report.to_snapshot())
         except Exception as e:
             app.state.storage.log(
                 collector.id, LogEvent(ok=False, error=f"Error saving snapshot: {e.__class__.__name__}: {e.args}")
