@@ -66,17 +66,21 @@ def get_nested(d: dict, path: List[str]):
 _not_set = object()
 
 
+def _getattr_or_getitem(obj: Any, item: str, default=_not_set):
+    if isinstance(obj, dict):
+        if default is _not_set:
+            return obj[item]
+        return obj.get(item, default)
+    if default is _not_set:
+        return getattr(obj, item)
+    return getattr(obj, item, default)
+
+
 def getattr_nested(obj: Any, path: List[str], default=_not_set):
     item = path[0]
     if len(path) == 1:
-        if default is _not_set:
-            return getattr(obj, item)
-        return getattr(obj, item, default)
-    if not hasattr(obj, item):
-        if default is _not_set:
-            # raising AttributeError
-            return getattr(obj, item)
-    return getattr_nested(getattr(obj, item), path[1:], default)
+        return _getattr_or_getitem(obj, item, default)
+    return getattr_nested(_getattr_or_getitem(obj, item, default), path[1:], default)
 
 
 class PanelValue(BaseModel):
