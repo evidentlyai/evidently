@@ -12,7 +12,7 @@ def collector(
     config_path: str = Option(None, help="Path to config file"),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
-    """Start Evidenlty collector service"""
+    """Start Evidently collector service"""
     from evidently.collector.app import run
     from evidently.collector.config import CONFIG_PATH
 

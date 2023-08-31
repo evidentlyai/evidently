@@ -63,7 +63,8 @@ setup_args = dict(
         "watchdog>=3",
         "typer>=0.9",
         "rich>=13",
-        "iterative-telemetry>=0.0.5"
+        "iterative-telemetry>=0.0.5",
+        "pyarrow>=11"
     ],
     extras_require={
         "dev": [

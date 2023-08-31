@@ -14,7 +14,7 @@ def ui(
     demo_project: bool = Option(False, "--demo-project", is_flag=True, help="Generate demo project"),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
-    """Start Evidenlty UI service"""
+    """Start Evidently UI service"""
     from evidently.ui.app import run
     from evidently.ui.demo_project import DEMO_PROJECT_NAME
     from evidently.ui.demo_project import create_demo_project
