@@ -97,7 +97,7 @@ def start_sending_data():
 
 
 def main():
-    if not os.path.exists(WORKSACE_PATH):
+    if not os.path.exists(WORKSACE_PATH) or len(Workspace.create(WORKSACE_PATH).search_project(PROJECT_NAME)) == 0:
         setup_workspace()
 
     setup_config()
