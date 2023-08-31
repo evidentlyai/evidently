@@ -13,6 +13,7 @@ from sklearn import ensemble
 
 from evidently import ColumnMapping
 from evidently import metrics
+from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite
@@ -29,46 +30,52 @@ from evidently.ui.workspace import WorkspaceBase
 warnings.filterwarnings("ignore")
 warnings.simplefilter("ignore")
 
-content = requests.get("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip").content
-with zipfile.ZipFile(io.BytesIO(content)) as arc:
-    raw_data = pd.read_csv(
-        arc.open("hour.csv"),
-        header=0,
-        sep=",",
-        parse_dates=["dteday"],
-        index_col="dteday",
-    )
-
-    raw_data.index = raw_data.apply(
-        lambda row: datetime.combine(row.name, time(hour=int(row["hr"]))) + relativedelta(years=11),
-        axis=1,
-    )
-
-reference = raw_data.loc["2023-01-01 00:00:00":"2023-01-28 23:00:00"]
-current = raw_data.loc["2023-01-29 00:00:00":"2023-02-28 23:00:00"]
-
-target = "cnt"
-prediction = "prediction"
-numerical_features = ["temp", "atemp", "hum", "windspeed", "hr", "weekday"]
-categorical_features = ["season", "holiday", "workingday"]
-
-column_mapping = ColumnMapping()
-column_mapping.target = target
-column_mapping.prediction = prediction
-column_mapping.numerical_features = numerical_features
-column_mapping.categorical_features = categorical_features
-
-regressor = ensemble.RandomForestRegressor(random_state=0, n_estimators=50)
-regressor.fit(reference[numerical_features + categorical_features], reference[target])
-
-reference["prediction"] = regressor.predict(reference[numerical_features + categorical_features])
-current["prediction"] = regressor.predict(current[numerical_features + categorical_features])
 
 WORKSPACE = "workspace"
 DEMO_PROJECT_NAME = "Demo Project"
 
 
-def create_report(i: int, tags=[]):
+def create_data():
+    content = requests.get("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip").content
+    with zipfile.ZipFile(io.BytesIO(content)) as arc:
+        raw_data = pd.read_csv(
+            arc.open("hour.csv"),
+            header=0,
+            sep=",",
+            parse_dates=["dteday"],
+            index_col="dteday",
+        )
+
+        raw_data.index = raw_data.apply(
+            lambda row: datetime.combine(row.name, time(hour=int(row["hr"]))) + relativedelta(years=11),
+            axis=1,
+        )
+
+    reference = raw_data.loc["2023-01-01 00:00:00":"2023-01-28 23:00:00"]
+    current = raw_data.loc["2023-01-29 00:00:00":"2023-02-28 23:00:00"]
+
+    target = "cnt"
+    prediction = "prediction"
+    numerical_features = ["temp", "atemp", "hum", "windspeed", "hr", "weekday"]
+    categorical_features = ["season", "holiday", "workingday"]
+
+    column_mapping = ColumnMapping()
+    column_mapping.target = target
+    column_mapping.prediction = prediction
+    column_mapping.numerical_features = numerical_features
+    column_mapping.categorical_features = categorical_features
+
+    regressor = ensemble.RandomForestRegressor(random_state=0, n_estimators=50)
+    regressor.fit(reference[numerical_features + categorical_features], reference[target])
+
+    reference["prediction"] = regressor.predict(reference[numerical_features + categorical_features])
+    current["prediction"] = regressor.predict(current[numerical_features + categorical_features])
+
+    return current, reference, column_mapping
+
+
+def create_report(i: int, data):
+    current, reference, column_mapping = data
     data_drift_report = Report(
         metrics=[
             metrics.RegressionQualityMetric(),
@@ -95,7 +102,8 @@ def create_report(i: int, tags=[]):
     return data_drift_report
 
 
-def create_test_suite(i: int, tags=[]):
+def create_test_suite(i: int, data):
+    current, reference, column_mapping = data
     data_drift_test_suite = TestSuite(
         tests=[DataDriftTestPreset()],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
@@ -130,7 +138,7 @@ def create_project(workspace: WorkspaceBase):
             ),
             text="count",
             agg=CounterAgg.SUM,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -144,7 +152,7 @@ def create_project(workspace: WorkspaceBase):
             ),
             text="share",
             agg=CounterAgg.LAST,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -166,7 +174,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=2,
+            size=WidgetSize.FULL,
         )
     )
     project.dashboard.add_panel(
@@ -181,7 +189,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -196,7 +204,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -230,7 +238,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=2,
+            size=WidgetSize.FULL,
         )
     )
     project.save()
@@ -246,12 +254,13 @@ def create_demo_project(workspace: Union[str, WorkspaceBase]):
         else:
             ws = Workspace.create(workspace)
     project = create_project(ws)
+    data = create_data()
 
     for i in range(0, 28):
-        report = create_report(i=i)
+        report = create_report(i=i, data=data)
         ws.add_report(project.id, report)
 
-        test_suite = create_test_suite(i=i)
+        test_suite = create_test_suite(i=i, data=data)
         ws.add_test_suite(project.id, test_suite)
 
 
