@@ -12,6 +12,7 @@ from typing import TypeVar
 from typing import Union
 
 from pydantic import Field
+from pydantic.fields import SHAPE_DICT
 from pydantic.main import BaseModel
 from pydantic.main import ModelMetaclass
 from pydantic.utils import import_string
@@ -149,9 +150,10 @@ class ExcludeNoneMixin(BaseModel):
 
 
 class FieldPath:
-    def __init__(self, path: List[str], cls: Type):
+    def __init__(self, path: List[str], cls: Type, is_mapping: bool = False):
         self._path = path
         self._cls = cls
+        self._is_mapping = is_mapping
 
     def list_fields(self) -> List[str]:
         if issubclass(self._cls, BaseModel):
@@ -159,18 +161,22 @@ class FieldPath:
         return []
 
     def __getattr__(self, item) -> "FieldPath":
+        if self._is_mapping:
+            return FieldPath(self._path + [item], self._cls)
         if not issubclass(self._cls, BaseModel):
-            # todo: dict support
             raise AttributeError(f"{self._cls} does not have fields")
         if item not in self._cls.__fields__:
             raise AttributeError(f"{self._cls} type does not have '{item}' field")
-        return FieldPath(self._path + [item], self._cls.__fields__[item].type_)
+        field = self._cls.__fields__[item]
+        return FieldPath(self._path + [item], field.type_, is_mapping=field.shape == SHAPE_DICT)
 
     def list_nested_fields(self) -> List[str]:
         if not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
         for name, field in self._cls.__fields__.items():
+            if field.shape == SHAPE_DICT:
+                name = f"{name}.*"
             res.extend(FieldPath(self._path + [name], field.type_).list_nested_fields())
         return res
 

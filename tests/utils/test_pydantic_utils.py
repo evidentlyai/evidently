@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 
 from evidently.base_metric import MetricResult
@@ -19,3 +21,16 @@ def test_field_path():
 
     with pytest.raises(AttributeError):
         MockMetricResult.fields.field3.list_fields()
+
+
+class MockMetricResultWithDict(MetricResult):
+    d: Dict[str, MockMetricResultField]
+
+
+def test_field_path_with_dict():
+    assert MockMetricResultWithDict.fields.list_fields() == ["type", "d"]
+    assert MockMetricResultWithDict.fields.list_nested_fields() == ["type", "d.*.type", "d.*.nested_field"]
+
+    assert MockMetricResultWithDict.fields.d.lol.list_fields() == ["type", "nested_field"]
+
+    assert str(MockMetricResultWithDict.fields.d.lol.nested_field) == "d.lol.nested_field"
