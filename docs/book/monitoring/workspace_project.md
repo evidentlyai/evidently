@@ -139,7 +139,5 @@ The rest of the functionality and methods are the same.
 ## Code example
 
 Refer to the service example: 
-{% content-ref url="https://github.com/evidentlyai/evidently/tree/main/examples/service" %}
-[Docker example](https://github.com/evidentlyai/evidently/tree/main/examples/service). 
-{% endcontent-ref %}
+{% embed url="https://github.com/evidentlyai/evidently/tree/main/examples/service" %}
 

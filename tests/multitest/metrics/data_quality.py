@@ -1,3 +1,4 @@
+from evidently.metrics.data_quality.column_category_metric import ColumnCategoryMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetric
 from evidently.metrics.data_quality.column_quantile_metric import ColumnQuantileMetric
@@ -107,6 +108,16 @@ def column_quantile_metric():
     return TestMetric(
         "column_quantile_metric",
         ColumnQuantileMetric(column_name="education-num", quantile=0.75),
+        NoopOutcome(),
+        dataset_names=["adult"],
+    )
+
+
+@metric
+def column_category_metric():
+    return TestMetric(
+        "column_category_metric",
+        ColumnCategoryMetric(column_name="education", category="Some-college"),
         NoopOutcome(),
         dataset_names=["adult"],
     )

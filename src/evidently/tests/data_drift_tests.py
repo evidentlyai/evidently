@@ -16,6 +16,7 @@ from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.metrics import EmbeddingsDriftMetric
+from evidently.metrics.data_drift.base import WithDriftOptionsFields
 from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.model.widget import BaseWidgetInfo
@@ -91,9 +92,10 @@ class ColumnsDriftParameters(ConditionTestParameters):
         )
 
 
-class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
+class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
     group: ClassVar = DATA_DRIFT_GROUP.id
     _metric: DataDriftTable
+    columns: Optional[List[str]]
 
     def __init__(
         self,
@@ -116,6 +118,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         num_stattest_threshold: Optional[float] = None,
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             eq=eq,
@@ -126,8 +129,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
-        )
-        self._metric = DataDriftTable(
+            is_critical=is_critical,
             columns=columns,
             stattest=stattest,
             cat_stattest=cat_stattest,
@@ -139,6 +141,19 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             num_stattest_threshold=num_stattest_threshold,
             text_stattest_threshold=text_stattest_threshold,
             per_column_stattest_threshold=per_column_stattest_threshold,
+        )
+        self._metric = DataDriftTable(
+            columns=self.columns,
+            stattest=self.stattest,
+            cat_stattest=self.cat_stattest,
+            num_stattest=self.num_stattest,
+            text_stattest=self.text_stattest,
+            per_column_stattest=self.per_column_stattest,
+            stattest_threshold=self.stattest_threshold,
+            cat_stattest_threshold=self.cat_stattest_threshold,
+            num_stattest_threshold=self.num_stattest_threshold,
+            text_stattest_threshold=self.text_stattest_threshold,
+            per_column_stattest_threshold=self.per_column_stattest_threshold,
         )
 
     @property
@@ -212,17 +227,18 @@ class TestColumnDrift(Test):
         column_name: Union[str, ColumnName],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
+        is_critical: bool = True,
     ):
         self.column_name = ColumnName.from_any(column_name)
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
 
+        super().__init__(is_critical=is_critical)
         self._metric = ColumnDriftMetric(
-            column_name=column_name,
-            stattest=stattest,
-            stattest_threshold=stattest_threshold,
+            column_name=self.column_name,
+            stattest=self.stattest,
+            stattest_threshold=self.stattest_threshold,
         )
-        super().__init__()
 
     @property
     def metric(self):
@@ -286,7 +302,9 @@ class TestAllFeaturesValueDrift(BaseGenerator):
         num_stattest_threshold: Optional[float] = None,
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        is_critical: bool = True,
     ):
+        self.is_critical = is_critical
         self.columns = columns
         self.stattest = stattest
         self.cat_stattest = cat_stattest
@@ -318,7 +336,14 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+            results.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
         for name in columns_info.num_feature_names:
             if self.columns and name not in self.columns:
                 continue
@@ -336,7 +361,14 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+            results.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
         for name in columns_info.text_feature_names:
             if self.columns and name not in self.columns:
                 continue
@@ -354,7 +386,14 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+            results.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
         return results
 
 
@@ -386,7 +425,9 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
         num_stattest_threshold: Optional[float] = None,
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        is_critical: bool = True,
     ):
+        self.is_critical = is_critical
         self.features = features
         self.stattest = stattest
         self.cat_stattest = cat_stattest
@@ -427,6 +468,7 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
                     column_name=name,
                     stattest=stattest,
                     stattest_threshold=threshold,
+                    is_critical=self.is_critical,
                 )
             )
         return result
@@ -538,10 +580,10 @@ class TestEmbeddingsDrift(Test):
     drift_method: Optional[DriftMethod]
     _metric: EmbeddingsDriftMetric
 
-    def __init__(self, embeddings_name: str, drift_method: Optional[DriftMethod] = None):
+    def __init__(self, embeddings_name: str, drift_method: Optional[DriftMethod] = None, is_critical: bool = True):
         self.embeddings_name = embeddings_name
         self.drift_method = drift_method
-        super().__init__()
+        super().__init__(is_critical=is_critical)
         self._metric = EmbeddingsDriftMetric(embeddings_name=self.embeddings_name, drift_method=self.drift_method)
 
     @property

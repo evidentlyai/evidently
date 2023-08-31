@@ -28,6 +28,12 @@ This section explains how to generate and work with individual `snapshots`.
 
 To simplify organizing multiple `snapshots` relating to a specific model over time, you should first create a `workspace`, as explained in the previous [section of the docs](workspace_project.md).
 
+## Code example
+
+This notebook shows how to save and load individual JSON snapshots:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_snapshots.ipynb" %}
+
 ## Create a Report or Test Suite
 
 To generate a snapshot, you must first create an Evidently Test Suite or a Report object. Follow the usual Test Suite and Report API:
@@ -68,7 +74,7 @@ data_drift_checks.run(reference_data=reference_batch, current_data=batch1)
 After creating a Report or a Test Suite, you must use the `save()` method to create a `snapshot`. Specify the path where to save it:
 
 ```python
-data_drift_checks._save("data_drift_snapshot.json")
+data_drift_checks.save("data_drift_snapshot.json")
 ```
 
 {% hint style="info" %}
@@ -78,7 +84,7 @@ data_drift_checks._save("data_drift_snapshot.json")
 To load the snapshot back, you can use the `load()` function.
 
 ```python
-restored_report = Report._load("data_drift_snapshot.json")
+restored_report = Report.load("data_drift_snapshot.json")
 restored_report
 ```
 

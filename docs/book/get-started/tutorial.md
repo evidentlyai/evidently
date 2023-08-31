@@ -243,7 +243,7 @@ report.save_html("file.html")
 You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard.
 
 ```python
-report._save("snapshot.json")
+report.save("snapshot.json")
 ```
 
 ## 7. Run data stability tests
@@ -335,7 +335,7 @@ You can extract necessary information from the JSON or Python dictionary output 
 You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the test results over time the Evidently ML monitoring dashboard.
 
 ```python
-suite._save("snapshot.json")
+suite.save("snapshot.json")
 ```
 
 ## 8. What should I do next?

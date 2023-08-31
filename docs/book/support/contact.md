@@ -6,23 +6,25 @@ Join our [Discord community](https://discord.gg/xZjKRaNp8b) to chat and connect.
 
 ## GitHub
 
-Open an issue on [GitHub](https://github.com/evidentlyai/evidently) to report bugs and ask questions.&#x20;
+Open an issue on [GitHub](https://github.com/evidentlyai/evidently) to report bugs and ask questions.
 
-## Blog&#x20;
+## Blog
 
 Read our [blog](https://evidentlyai.com/blog) for tutorials and content.
 
-## Newsletter&#x20;
+## Newsletter
 
-[Sign up](https://evidentlyai.com/sign-up) for our monthly newsletter to get product news and highlights.
+[Sign up](https://www.evidentlyai.com/user-newsletter) for our user newsletter to get oepn-source product updates.
 
-## Twitter&#x20;
+## Twitter
 
 Follow and connect with us on [Twitter](https://twitter.com/EvidentlyAI).
 
 ## Email
 
 __[_hello@evidentlyai.com_](mailto:hello@evidentlyai.com)__
+
+Note: we do not provide open-source support via email. If you need help, please ask in the Discord community or open an issue on GitHub.
 
 __
 

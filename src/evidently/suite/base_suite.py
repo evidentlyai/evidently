@@ -387,7 +387,10 @@ class Suite:
         for test in self.context.execution_graph.get_test_execution_iterator():
             try:
                 logging.debug(f"Executing {type(test)}...")
-                test_results[test] = test.check()
+                test_result = test.check()
+                if not test.is_critical and test_result.status == TestStatus.FAIL:
+                    test_result.status = TestStatus.WARNING
+                test_results[test] = test_result
             except BaseException as ex:
                 test_results[test] = TestResult(
                     name=test.name,
@@ -515,12 +518,12 @@ class ReportBase(Display):
     def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
         raise NotImplementedError
 
-    def _save(self, filename):
+    def save(self, filename):
         """Save state to file (experimental)"""
         self._get_snapshot().save(filename)
 
     @classmethod
-    def _load(cls: Type[T], filename) -> T:
+    def load(cls: Type[T], filename) -> T:
         """Load state from file (experimental)"""
         return cls._parse_snapshot(Snapshot.load(filename))
 

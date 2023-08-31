@@ -14,4 +14,12 @@ def smart_assert_equal(actual, expected):
     if isinstance(actual, pd.DataFrame):
         pd.testing.assert_frame_equal(actual, expected)
         return
+    if isinstance(actual, list) and isinstance(expected, list):
+        for idx in range(len(actual)):
+            smart_assert_equal(actual[idx], expected[idx])
+        return
+    if isinstance(actual, dict) and isinstance(expected, dict):
+        for key in set(actual.keys()) | set(expected.keys()):
+            smart_assert_equal(actual.get(key), expected.get(key))
+        return
     np.testing.assert_equal(actual, expected)
