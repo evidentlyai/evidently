@@ -50,6 +50,7 @@ def create_data():
             lambda row: datetime.combine(row.name, time(hour=int(row["hr"]))) + relativedelta(years=11),
             axis=1,
         )
+        raw_data.sort_index(inplace=True)
 
     reference = raw_data.loc["2023-01-01 00:00:00":"2023-01-28 23:00:00"]
     current = raw_data.loc["2023-01-29 00:00:00":"2023-02-28 23:00:00"]
