@@ -36,6 +36,8 @@ The collector service can simultaneously run multiple “collectors” that comp
 
 ## `CollectorConfig` Object
 
+You can configure the following parameters:
+
 | Parameter       | Type             | Description                                                                                      |
 |-----------------|------------------|--------------------------------------------------------------------------------------------------|
 | `trigger`         | `CollectorTrigger`| Defines when to create a new snapshot from the current batch.                                 |
