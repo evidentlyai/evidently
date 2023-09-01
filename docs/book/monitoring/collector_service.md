@@ -16,7 +16,7 @@ You can also pass the path to the optional reference dataset.
 
 If you receive delayed ground truth, you can also later compute and log the model quality to the same project. You can run it as a separate process or batch monitoring job. 
 
-![](../.gitbook/assets/monitoring/monitoring_collector_delayed_labels_min.png.png)
+![](../.gitbook/assets/monitoring/monitoring_collector_delayed_labels_min.png)
 
 # Code example
 
