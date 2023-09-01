@@ -152,7 +152,10 @@ curl -d '{"column1": {"0": 7.0, "1": 5.0}, "column2": {"0": "a", "1": "b"}}' -H 
 This is how it looks in the Terminal. 
 
 Sending data:
+![](../.gitbook/assets/monitoring/collector_send-min.png)
 
+The data is receieved by the collector service:
+![](../.gitbook/assets/monitoring/collector_data-min.png)
 
 
 
