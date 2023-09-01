@@ -112,7 +112,7 @@ config = CollectorConfig(
     )
 ```
 
-## Update references via API
+## Update reference via API
 
 To specify the path to the reference dataset: 
 
