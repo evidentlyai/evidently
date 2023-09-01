@@ -48,7 +48,7 @@ You can configure the following parameters:
 | `api_secret`      | Optional[str]     | Evidently UI Service secrets.                                                                 |
 | `project_id`      | str               | ID of the project to save snapshots to.                                                       |
 
-You can create a `ReportConfig` object from Report or TestSuite objects. You must run them first so that all metrics and tests are collected (including when you use Presets or Test/Metric generators).
+You can create a `ReportConfig` object from Report or TestSuite objects. You must run them first so that all Metrics and Tests are collected (including when you use Presets or Test/Metric generators).
 
 ```python
 report = Report(...) 
