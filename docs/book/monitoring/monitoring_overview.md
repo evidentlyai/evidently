@@ -30,7 +30,7 @@ Once you get the labels that arrive with a delay, you can compute the true model
 
 ![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
-For near real-time monitoring, you can run the Evidently collector service, and POST data from the ML service. Evidently will compute metrics over batches of data based on the defined configuration. 
+For near real-time monitoring, you can run the Evidently collector service and POST data from your ML service. Evidently will compute metrics over batches of data based on the defined configuration. 
 
 ![](../.gitbook/assets/monitoring/monitoring_collector_min.png)
 
