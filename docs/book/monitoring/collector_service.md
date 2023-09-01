@@ -131,7 +131,9 @@ events: pd.DataFrame = ...
 client.send_data("main", events)
 ```
 
-Send data with `curl`:
+## Send events via curl
+
+To send data with `curl`:
 
 ```bash
 curl 
