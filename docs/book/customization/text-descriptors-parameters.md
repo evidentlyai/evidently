@@ -27,6 +27,7 @@ Using descriptors with text-specific Metrics and Tests:
 | `OOV()` | Default). Calculates the share of out-of-vocabulary words. |  
 | `NonLetterCharacterPercentage()` | Default). Calculates the share of non-letter characters. |  
 | `TriggerWordsPresence(words_list=['dress', 'gown'])` | Checks for the presence of any of the specified words, as determined by the user. (Boolean).  |  
+| `RegExp(reg_exp=r'.*\?.*', display_name="Questions")`| Checks for match with a defined regular expression. (Boolean).  |  
 
 **Note**: you must import specific `nltk` components to use all available descriptors:
 
@@ -177,3 +178,22 @@ classification_report = Report(metrics=[
 In this case, you will generate the Classification Quality By Feature Metric, which will plot the model performance against virtual features like “whether the reviews contained the word blouse or shirt”). 
 
 **Note**: For dataset-level metrics, you currently cannot exclude Descriptors. All default Descriptors will be included. 
+
+
+## Display name parameter
+
+You can also specify a custom display name for the Metrics. This is useful when you have a lengthy Regular Expression or list of Trigger Words when the default title of the metric can become very long.
+
+```python
+table_column_metrics_report = Report(metrics=[
+    ColumnSummaryMetric(column_name = RegExp(reg_exp=r'.*\?.*', display_name="Questions").for_column("Review_Text")),
+    ColumnDriftMetric(column_name = SentenceCount(display_name="SentenceCount").for_column("Review_Text")),
+    ColumnCorrelationsMetric(column_name = WordCount(display_name="WordCount").for_column("Review_Text")),
+    ColumnDistributionMetric(column_name = Sentiment(display_name="Sentiment").for_column("Review_Text")),
+    ColumnValueRangeMetric(column_name = TextLength(display_name="TextLength").for_column("Review_Text"), left=0, right=20)
+])
+
+table_column_metrics_report.run(reference_data=reviews_ref, current_data=reviews_cur, column_mapping=column_mapping)
+table_column_metrics_report
+```
+
