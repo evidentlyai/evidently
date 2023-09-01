@@ -6,7 +6,7 @@ description: Deployment scenario for near real-time monitoring.
 
 In this scenario, you deploy an **Evidently Collector** service for near real-time monitoring. 
 
-Evidently Collector is a service that allows you to collect online events into batches, create Reports` or Test Suites over batches of data, and save them as `snapshots` into the `workspace`.
+Evidently Collector is a service that allows you to collect online events into batches, create Reports or Test Suites over batches of data, and save them as `snapshots` into the `workspace`.
 
 You will need to POST the predictions from the ML service to the Evidently Collector service. You can POST data on every prediction or batch them. The Evidently collector service will perform asynchronous computation of monitoring snapshots based on the provided config. 
 
