@@ -90,6 +90,8 @@ For numerical features, you can also explore the values mapped in a plot.
 
 ![](../.gitbook/assets/reports/metric_data_drift_table_expand_2-min.png)
 
+Note: by default, the visualization is aggregated. In this case, the index is binned into 150 bins, and the y-axis shows the mean value. You can enable the [raw data option](../customization/report-data-aggregation.md) to see the individual data points.
+
 ## Metrics output
 
 You can get the report output as a JSON or a Python dictionary:
