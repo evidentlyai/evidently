@@ -14,7 +14,7 @@ Read our [blog](https://evidentlyai.com/blog) for tutorials and content.
 
 ## Newsletter
 
-[Sign up](https://www.evidentlyai.com/user-newsletter) for our user newsletter to get oepn-source product updates.
+[Sign up](https://www.evidentlyai.com/user-newsletter) for our user newsletter to get open-source product updates.
 
 ## Twitter
 

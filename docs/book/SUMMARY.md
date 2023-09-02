@@ -41,6 +41,7 @@
   * [Log snapshots](monitoring/snapshots.md)
   * [Add dashboard panels](monitoring/design_dashboard.md)
   * [Monitoring UI](monitoring/monitoring_ui.md)
+  * [Collector service (Alpha)](monitoring/collector_service.md) 
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)

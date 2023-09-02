@@ -15,7 +15,7 @@ To deploy an ML monitoring system, you need 3 components:
 # What you can monitor
 
 You can pick from 100+ in-built metrics and tests, including:
-* The number of model calls.
+* The number of predictions made.
 * Descriptive statistics of the dataset (feature ranges, column types, etc.)
 * Data quality and integrity metrics for dataset and individual columns (nulls, range violations, new categorical values, etc.)
 * Data and prediction drift checks for tabular, text data and embeddings (statistical tests, distance metrics).
@@ -30,6 +30,10 @@ Once you get the labels that arrive with a delay, you can compute the true model
 
 ![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
+For near real-time monitoring, you can run the **Evidently collector service** and POST data from your ML service. Evidently will compute metrics over batches of data based on the defined configuration. 
+
+![](../.gitbook/assets/monitoring/monitoring_collector_min.png)
+
 # User guide 
 
 To start, we recommend going through the [ML Monitoring Quickstart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) tutorial. It shows a simple end-to-end example.
@@ -39,6 +43,7 @@ This user guide focuses on each component in-depth:
 * [Log snapshots](snapshots.md)
 * [Design dashboard](design_dashboard.md)
 * [Monitoring UI](monitoring_ui.md)
+* [Collector service](collector_service.md)
 
 # Cloud ML Monitoring
 
