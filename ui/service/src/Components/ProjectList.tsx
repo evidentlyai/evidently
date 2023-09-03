@@ -16,8 +16,7 @@ import {
   Link,
   Paper,
   TextField,
-  Typography,
-  Zoom
+  Typography
 } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import { useHover } from '../hooks/useHover'
@@ -34,7 +33,13 @@ const editProjectInfoSchema = z.object({
   description: z.string().optional()
 })
 
-const EditProjectInfoForm = ({ project }: { project: ProjectInfo }) => {
+const EditProjectInfoForm = ({
+  project,
+  disabled
+}: {
+  project: ProjectInfo
+  disabled: boolean
+}) => {
   const {
     setFocus,
     register,
@@ -46,9 +51,6 @@ const EditProjectInfoForm = ({ project }: { project: ProjectInfo }) => {
 
   // for form submitting
   const submit = useSubmit()
-
-  const navigation = useNavigation()
-  const isStateMutating = navigation.state !== 'idle'
 
   // focus on the firs input
   useEffect(() => setFocus('name'), [setFocus])
@@ -66,7 +68,7 @@ const EditProjectInfoForm = ({ project }: { project: ProjectInfo }) => {
             { method: 'put', replace: true }
           )
         )}
-        style={{ opacity: isStateMutating ? 0.5 : 1 }}
+        style={{ opacity: disabled ? 0.5 : 1 }}
       >
         {/* hidden input here for projectId */}
         <input {...register('id')} hidden defaultValue={project.id} />
@@ -79,7 +81,7 @@ const EditProjectInfoForm = ({ project }: { project: ProjectInfo }) => {
             style: { color: 'red', fontSize: '20px', fontWeight: '500' }
           }}
           defaultValue={project.name}
-          disabled={isStateMutating}
+          disabled={disabled}
         ></TextField>
         {/* description */}
         <TextField
@@ -87,7 +89,7 @@ const EditProjectInfoForm = ({ project }: { project: ProjectInfo }) => {
           //   description is optional for now
           //   error={Boolean(errors.description)}
           //   helperText={errors.description?.message}
-          disabled={isStateMutating}
+          disabled={disabled}
           fullWidth
           multiline
           defaultValue={project.description}
@@ -96,7 +98,7 @@ const EditProjectInfoForm = ({ project }: { project: ProjectInfo }) => {
         <Box sx={{ display: 'flex', justifyContent: 'right' }}>
           <Button
             disabled={
-              isStateMutating ||
+              disabled ||
               // we didn't touch any fields
               Object.keys(dirtyFields).length === 0 ||
               // error here
@@ -162,7 +164,7 @@ const Project = ({ project }: projectProps) => {
       </Fade>
 
       {isEditMode ? (
-        <EditProjectInfoForm project={project} />
+        <EditProjectInfoForm project={project} disabled={isDisabled} />
       ) : (
         <ProjectInfoCard project={project} />
       )}
