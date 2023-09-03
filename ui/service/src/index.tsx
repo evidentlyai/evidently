@@ -16,6 +16,7 @@ import {ProjectData} from "./Components/ProjectData";
 import {ProjectList, action as projectListAction, loader as projectListLoader } from "./Components/ProjectList";
 import {ServiceHeader} from "./Components/ServiceHeader";
 import { Typography } from '@material-ui/core';
+import { NavigationProgress } from './Components/NavigationProgress';
 
 
 const api = new RemoteApi("/api");
@@ -26,6 +27,7 @@ const HomePage = () => {
     return <ThemeProvider theme={theme}>
         <ApiContext.Provider value={{Api: api}}>
             <ServiceHeader api={api}/>
+            <NavigationProgress />
             <ServiceMainPage projectId={projectId} reportId={dashboardId}>
                 <Outlet />
             </ServiceMainPage>
