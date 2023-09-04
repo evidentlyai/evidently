@@ -30,7 +30,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 const editProjectInfoSchema = z.object({
   id: z.string(),
   name: z.string().min(3),
-  description: z.string().optional()
+  description: z.string()
 })
 
 const EditProjectInfoForm = ({
@@ -59,13 +59,15 @@ const EditProjectInfoForm = ({
     <>
       <Form
         onSubmit={handleSubmit(({ name, description }) =>
-          // here we inject the new name and description
-          // to project object, when it goes to the action
+          // here we inject the new `name` and `description`
+          // to project object, then it goes to the action
           submit(
             {
-              stringData: JSON.stringify({ ...project, name, description })
+              ...project,
+              name,
+              description
             },
-            { method: 'put', replace: true }
+            { method: 'put', replace: true, encType: 'application/json' }
           )
         )}
         style={{ opacity: disabled ? 0.5 : 1 }}
@@ -86,9 +88,8 @@ const EditProjectInfoForm = ({
         {/* description */}
         <TextField
           {...register('description')}
-          //   description is optional for now
-          //   error={Boolean(errors.description)}
-          //   helperText={errors.description?.message}
+          error={Boolean(errors.description)}
+          helperText={errors.description?.message}
           disabled={disabled}
           fullWidth
           multiline
@@ -173,15 +174,19 @@ const Project = ({ project }: projectProps) => {
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData()
-  const stringData = formData.get('stringData')
-  return api.editProjectInfo(JSON.parse(String(stringData)))
+  // for safety
+  if (request.headers.get('Content-type') !== 'application/json') {
+    throw new Response('Unsupported Media Type', { status: 415 })
+  }
+
+  const json = await request.json()
+  return api.editProjectInfo(json)
 }
 
 export const loader = async () => api.getProjects()
 
 export const ProjectList = () => {
-  // take projects from loader
+  // take projects from loader above
   const projects = useLoaderData() as ProjectInfo[]
 
   return (
