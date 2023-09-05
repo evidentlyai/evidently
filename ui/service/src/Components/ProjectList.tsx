@@ -46,7 +46,12 @@ const EditProjectInfoForm = ({
     handleSubmit,
     formState: { errors, dirtyFields }
   } = useForm<z.infer<typeof editProjectInfoSchema>>({
-    resolver: zodResolver(editProjectInfoSchema)
+    resolver: zodResolver(editProjectInfoSchema),
+    defaultValues: {
+      name: project.name,
+      description: project.description,
+      id: project.id
+    }
   })
 
   // for form submitting
@@ -72,8 +77,8 @@ const EditProjectInfoForm = ({
         )}
         style={{ opacity: disabled ? 0.5 : 1 }}
       >
-        {/* hidden input here for projectId */}
-        <input {...register('id')} hidden defaultValue={project.id} />
+        {/* hidden input here for project id */}
+        <input {...register('id')} hidden />
         {/* name */}
         <TextField
           {...register('name')}
@@ -82,7 +87,6 @@ const EditProjectInfoForm = ({
           InputProps={{
             style: { color: 'red', fontSize: '20px', fontWeight: '500' }
           }}
-          defaultValue={project.name}
           disabled={disabled}
         ></TextField>
         {/* description */}
@@ -93,7 +97,6 @@ const EditProjectInfoForm = ({
           disabled={disabled}
           fullWidth
           multiline
-          defaultValue={project.description}
         ></TextField>
         {/* Submit button */}
         <Box sx={{ display: 'flex', justifyContent: 'right' }}>
