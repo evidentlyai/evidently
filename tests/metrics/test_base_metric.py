@@ -182,7 +182,7 @@ def test_additional_features(metric, result):
         ),
     ],
 )
-def test_additional_features(metrics, result):
+def test_additional_features_multi_metrics(metrics, result):
     test_data = pd.DataFrame(
         dict(
             col1=[1.0, 2.0, 3.0],
