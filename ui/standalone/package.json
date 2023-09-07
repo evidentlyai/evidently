@@ -47,7 +47,7 @@
     "webpack-cli": "^4.8.0"
   },
   "scripts": {
-    "copy_dependency": "shx cp -r ../lib ./src",
+    "copy-dependency": "shx cp -r ../lib ./src",
     "build": "npx webpack --mode production",
     "watch": "npx webpack --watch --mode development"
   },
