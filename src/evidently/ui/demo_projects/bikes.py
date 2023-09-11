@@ -1,10 +1,8 @@
 import io
-import warnings
 import zipfile
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-from typing import Union
 
 import pandas as pd
 import requests
@@ -23,16 +21,8 @@ from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
-from evidently.ui.remote import RemoteWorkspace
-from evidently.ui.workspace import Workspace
+from evidently.ui.demo_projects import DemoProject
 from evidently.ui.workspace import WorkspaceBase
-
-warnings.filterwarnings("ignore")
-warnings.simplefilter("ignore")
-
-
-WORKSPACE = "workspace"
-DEMO_PROJECT_NAME = "Demo project - Bikes"
 
 
 def create_data():
@@ -118,8 +108,8 @@ def create_test_suite(i: int, data):
     return data_drift_test_suite
 
 
-def create_project(workspace: WorkspaceBase):
-    project = workspace.create_project(DEMO_PROJECT_NAME)
+def create_project(workspace: WorkspaceBase, name: str):
+    project = workspace.create_project(name)
     project.description = "A toy demo project using Bike Demand forecasting dataset"
     project.dashboard.add_panel(
         DashboardPanelCounter(
@@ -246,25 +236,15 @@ def create_project(workspace: WorkspaceBase):
     return project
 
 
-def create_demo_project(workspace: Union[str, WorkspaceBase]):
-    if isinstance(workspace, WorkspaceBase):
-        ws = workspace
-    else:
-        if workspace.startswith("http"):
-            ws = RemoteWorkspace(workspace)
-        else:
-            ws = Workspace.create(workspace)
-    project = create_project(ws)
-    data = create_data()
-
-    for i in range(0, 28):
-        report = create_report(i=i, data=data)
-        ws.add_report(project.id, report)
-
-        test_suite = create_test_suite(i=i, data=data)
-        ws.add_test_suite(project.id, test_suite)
-
+bikes_demo_project = DemoProject(
+    name="Demo project - Bikes",
+    create_data=create_data,
+    create_report=create_report,
+    create_project=create_project,
+    create_test_suite=create_test_suite,
+    count=28,
+)
 
 if __name__ == "__main__":
     # create_demo_project("http://localhost:8080")
-    create_demo_project(WORKSPACE)
+    bikes_demo_project.create("workspace")

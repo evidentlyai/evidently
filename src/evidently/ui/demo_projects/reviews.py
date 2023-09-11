@@ -1,7 +1,5 @@
-import warnings
 from datetime import datetime
 from datetime import timedelta
-from typing import Union
 
 import numpy as np
 from sklearn import datasets
@@ -9,6 +7,7 @@ from sklearn import datasets
 from evidently import ColumnMapping
 from evidently import descriptors
 from evidently import metrics
+from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.ui.dashboards import CounterAgg
 from evidently.ui.dashboards import DashboardPanelCounter
@@ -16,16 +15,8 @@ from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
-from evidently.ui.remote import RemoteWorkspace
-from evidently.ui.workspace import Workspace
+from evidently.ui.demo_projects import DemoProject
 from evidently.ui.workspace import WorkspaceBase
-
-warnings.filterwarnings("ignore")
-warnings.simplefilter("ignore")
-
-
-WORKSPACE = "workspace"
-DEMO_PROJECT_NAME = "Demo project - Reviews"
 
 
 def create_data():
@@ -123,8 +114,8 @@ def create_report(i: int, data):
     return text_report
 
 
-def create_project(workspace: WorkspaceBase):
-    project = workspace.create_project(DEMO_PROJECT_NAME)
+def create_project(workspace: WorkspaceBase, name: str):
+    project = workspace.create_project(name)
     project.description = "A toy demo project using E-commerce Reviews dataset. Text and tabular data, classification."
     # title
     project.dashboard.add_panel(
@@ -146,7 +137,7 @@ def create_project(workspace: WorkspaceBase):
             ),
             text="count",
             agg=CounterAgg.SUM,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -160,7 +151,7 @@ def create_project(workspace: WorkspaceBase):
             ),
             text="share",
             agg=CounterAgg.LAST,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # Precision
@@ -176,7 +167,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=2,
+            size=WidgetSize.FULL,
         )
     )
     # target and prediction drift
@@ -199,7 +190,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # features drift
@@ -220,7 +211,7 @@ def create_project(workspace: WorkspaceBase):
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             values=values,
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # numerical
@@ -240,7 +231,7 @@ def create_project(workspace: WorkspaceBase):
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             values=values,
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # categorical
@@ -260,7 +251,7 @@ def create_project(workspace: WorkspaceBase):
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             values=values,
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # Text quality
@@ -277,7 +268,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -297,7 +288,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -312,7 +303,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # Average review sentiment
@@ -331,7 +322,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # Reviews that mention competitors
@@ -355,7 +346,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # Reviews that mention url
@@ -376,7 +367,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     # Rating ratio
@@ -393,7 +384,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
     project.dashboard.add_panel(
@@ -409,7 +400,7 @@ def create_project(workspace: WorkspaceBase):
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=1,
+            size=WidgetSize.HALF,
         )
     )
 
@@ -417,22 +408,15 @@ def create_project(workspace: WorkspaceBase):
     return project
 
 
-def create_demo_project(workspace: Union[str, WorkspaceBase]):
-    if isinstance(workspace, WorkspaceBase):
-        ws = workspace
-    else:
-        if workspace.startswith("http"):
-            ws = RemoteWorkspace(workspace)
-        else:
-            ws = Workspace.create(workspace)
-    project = create_project(ws)
-    data = create_data()
-
-    for i in range(0, 19):
-        report = create_report(i=i, data=data)
-        ws.add_report(project.id, report)
-
+reviews_demo_project = DemoProject(
+    name="Demo project - Reviews",
+    create_data=create_data,
+    create_report=create_report,
+    create_project=create_project,
+    create_test_suite=None,
+    count=19,
+)
 
 if __name__ == "__main__":
     # create_demo_project("http://localhost:8080")
-    create_demo_project(WORKSPACE)
+    reviews_demo_project.create("workspace")
