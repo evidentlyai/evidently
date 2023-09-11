@@ -274,7 +274,7 @@ def groupby():
 
 if __name__ == "__main__":
     # old_evidently()
-    # new()
+    new()
     # clean_spark()
     # new_spark()
-    groupby()
+    # groupby()
