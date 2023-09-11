@@ -32,7 +32,7 @@ warnings.simplefilter("ignore")
 
 
 WORKSPACE = "workspace"
-DEMO_PROJECT_NAME = "Demo Project"
+DEMO_PROJECT_NAME = "Demo project - Bikes"
 
 
 def create_data():
