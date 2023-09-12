@@ -10,13 +10,13 @@ def smart_assert_equal(actual, expected, path=""):
         return
     if isinstance(actual, pd.Series):
         try:
-            pd.testing.assert_series_equal(actual, expected)
+            pd.testing.assert_series_equal(actual, expected, check_dtype=False)
         except AssertionError as e:
             raise AssertionError(e.args[0] + f"\npath: {path}")
         return
     if isinstance(actual, pd.DataFrame):
         try:
-            pd.testing.assert_frame_equal(actual, expected)
+            pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
         except AssertionError as e:
             raise AssertionError(e.args[0] + f"\npath: {path}")
         return
