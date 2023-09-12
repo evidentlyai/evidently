@@ -259,8 +259,9 @@ class MMDDriftMethod(DriftMethod):
         y = current_emb
         m = len(x)
         n = len(y)
+
         pair_dists = pairwise_distances(
-            x.sample(min(m, int(1000 * n / m)), random_state=0),
+            x.sample(min(m, 1000), random_state=0),
             y.sample(min(n, 1000), random_state=0),
             metric="euclidean",
             n_jobs=-1,
@@ -274,8 +275,8 @@ class MMDDriftMethod(DriftMethod):
             sigma2_x = np.median(pair_dists_bstrp) ** 2
             gamma_x = 1.0 / sigma2_x
             K = pairwise_kernels(x, metric="rbf", gamma=gamma_x)
-            x_size = int(m * m / (m + n))
-            y_size = int(m * n / (m + n))
+            x_size = max(int(m * m / (m + n)), 1)
+            y_size = max(int(m * n / (m + n)), 1)
             bstrp_res = []
             for i in range(N_BOOTSTRAP):
                 np.random.seed(i)
