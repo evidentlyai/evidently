@@ -108,7 +108,7 @@ def load_test_metrics():
 
 # for debugging
 metric_type_filter = []
-metric_name_filter = ["column_summary_metric_period"]
+metric_name_filter = []
 
 
 def generate_metric_dataset_outcome():
