@@ -30,8 +30,8 @@ class OOVWordsPercentage(GeneratedFeature):
         if not hasattr(self, "_lem"):
             import nltk
 
-            nltk.download("wordnet")
-            nltk.download("words")
+            nltk.download("wordnet", quiet=True)
+            nltk.download("words", quiet=True)
             self._lem = WordNetLemmatizer()
 
         def oov_share(s, ignore_words=()):

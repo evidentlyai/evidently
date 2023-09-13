@@ -29,7 +29,7 @@ class TriggerWordsPresent(GeneratedFeature):
         if not hasattr(self, "_lem"):
             import nltk
 
-            nltk.download("wordnet")
+            nltk.download("wordnet", quiet=True)
             self._lem = WordNetLemmatizer()
 
         def listed_words_present(s, words_list=(), lemmatize=True):
