@@ -326,11 +326,13 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
     name: ClassVar = "Change in Correlation"
     _metric: DatasetCorrelationsMetric
     corr_diff: float
+    column_name: Optional[ColumnName]
 
     def __init__(
         self,
         corr_diff: float = 0.25,
         method: str = "pearson",
+        column_name: Optional[Union[str, ColumnName]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -342,6 +344,8 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         is_critical: bool = True,
     ):
         self.corr_diff = corr_diff
+        if column_name is not None:
+            self.column_name = ColumnName.from_any(column_name)
         super().__init__(
             method=method,
             eq=eq,
@@ -374,8 +378,15 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
             raise ValueError("method should be set")
         current_correlations = metric_result.current.correlation[self.method]
         reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[self.method]
+        if self.column_name is None:
+            diff = reference_correlations - current_correlations
+            return (diff.abs() > self.corr_diff).sum().sum() / 2
+
+        current_correlations = current_correlations[self.column_name.display_name]
+        if reference_correlations is not None:
+            reference_correlations = reference_correlations[self.column_name.display_name]
         diff = reference_correlations - current_correlations
-        return (diff.abs() > self.corr_diff).sum().sum() / 2
+        return (diff.abs() > self.corr_diff).sum()
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
