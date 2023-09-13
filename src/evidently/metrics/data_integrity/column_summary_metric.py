@@ -266,7 +266,7 @@ def plot_data(
                 target_ref,
             )
             data_by_target = DataByTarget(
-                scatter_data=raw_plot, count_data=agg_plot, target_name=target_name, target_type=target_type.value
+                scatter_data=raw_plot, contour_data=agg_plot, target_name=target_name, target_type=target_type.value
             )
 
         if column_type == ColumnType.Categorical and target_type == ColumnType.Categorical:
