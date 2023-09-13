@@ -26,6 +26,7 @@ _TYPES_MAPPING = (
     ((frozenset,), lambda obj: list(obj)),
     ((uuid.UUID,), lambda obj: str(obj)),
     ((ColumnType,), lambda obj: obj.value),
+    ((pd.Period,), lambda obj: str(obj)),
 )
 
 

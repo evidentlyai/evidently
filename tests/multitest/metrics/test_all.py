@@ -20,7 +20,7 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
     if isinstance(outcome, Error):
-        with pytest.raises(outcome.exception_type):
+        with pytest.raises(outcome.exception_type, match=outcome.match):
             report.run(
                 reference_data=tdataset.reference, current_data=tdataset.current, column_mapping=tdataset.column_mapping
             )

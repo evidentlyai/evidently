@@ -2,7 +2,6 @@
 
 import dataclasses
 from typing import Callable
-from typing import Collection
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -13,24 +12,14 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
 
-from evidently.calculations.utils import choose_agg_period
-from evidently.calculations.utils import get_data_for_cat_cat_plot
-from evidently.calculations.utils import get_data_for_num_num_plot
-from evidently.calculations.utils import prepare_box_data
-from evidently.calculations.utils import prepare_data_for_date_cat
-from evidently.calculations.utils import prepare_data_for_date_num
 from evidently.calculations.utils import relabel_data
 from evidently.core import ColumnType
 from evidently.metric_results import ColumnCorrelations
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Distribution
 from evidently.metric_results import DistributionIncluded
-from evidently.metric_results import Histogram
-from evidently.metric_results import HistogramData
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
-from evidently.utils.visualizations import make_hist_for_cat_plot
-from evidently.utils.visualizations import make_hist_for_num_plot
 
 MAX_CATEGORIES = 5
 
@@ -287,28 +276,6 @@ def calculate_data_quality_stats(
     return result
 
 
-def _split_periods(curr_data: pd.DataFrame, ref_data: pd.DataFrame, feature_name: str):
-    max_ref_date = ref_data[feature_name].max()
-    min_curr_date = curr_data[feature_name].min()
-
-    if (
-        curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"].iloc[0]
-        > ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"].iloc[0]
-    ):
-        curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"] = (
-            curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
-            + ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
-        )
-        ref_data = ref_data[ref_data[feature_name] != max_ref_date]
-    else:
-        ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"] = (
-            ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
-            + curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
-        )
-        curr_data = curr_data[curr_data[feature_name] != min_curr_date]
-    return curr_data, ref_data
-
-
 def prepare_data_for_plots(
     current_data: pd.Series,
     reference_data: Optional[pd.Series],
@@ -322,151 +289,6 @@ def prepare_data_for_plots(
         if reference_data is not None:
             reference_data = reference_data.copy()
     return current_data, reference_data
-
-
-Data = Tuple[str, ColumnType, pd.Series, Optional[pd.Series]]
-
-
-def plot_data(
-    data: Data,
-    datetime_data: Optional[Data],
-    target_data: Optional[Data],
-    agg_data: bool,
-    merge_small_categories: Optional[int] = MAX_CATEGORIES,
-) -> Tuple[Optional[Histogram], Optional[Dict[str, Collection[str]]], Optional[Dict[str, Collection[str]]]]:
-    """
-    Args:
-        data: Column data includes column name current and reference data (if present)
-        datetime_data: Datetime data if present
-        target_data: Target data if present
-        merge_small_categories: Maximum of labels in categorical data what should be shown
-    Returns:
-        Histogram data or None
-        TODO: add reason why should be returned None
-    """
-    column_name, column_type, current_data, reference_data = data
-    if column_type == ColumnType.Categorical:
-        current_data, reference_data = relabel_data(current_data, reference_data, merge_small_categories)
-    else:
-        current_data = current_data.copy()
-        if reference_data is not None:
-            reference_data = reference_data.copy()
-    current_data.dropna(inplace=True)
-    if reference_data is not None:
-        reference_data.dropna(inplace=True)
-
-    data_hist = None
-    if column_type == ColumnType.Numerical:
-        data_hist = make_hist_for_num_plot(current_data, reference_data, calculate_log=True)
-    elif column_type == ColumnType.Categorical:
-        data_hist = make_hist_for_cat_plot(current_data, reference_data, dropna=True)
-    elif column_type == ColumnType.Datetime:
-        prefix, freq = choose_agg_period(current_data, reference_data)
-        curr_data = current_data.dt.to_period(freq=freq).value_counts().reset_index()
-        curr_data.columns = ["x", "number_of_items"]
-        curr_data["x"] = curr_data["x"].dt.to_timestamp()
-        reference = None
-        if reference_data is not None:
-            ref_data = reference_data.dt.to_period(freq=freq).value_counts().reset_index()
-            ref_data.columns = ["x", "number_of_items"]
-            ref_data["x"] = ref_data["x"].dt.to_timestamp()
-            max_ref_date = ref_data["x"].max()
-            min_curr_date = curr_data["x"].min()
-            if max_ref_date == min_curr_date:
-                curr_data, ref_data = _split_periods(curr_data, ref_data, "x")
-            reference = ref_data
-            reference.columns = ["x", "count"]
-        curr_data.columns = ["x", "count"]
-        data_hist = Histogram(
-            current=HistogramData.from_df(curr_data),
-            reference=HistogramData.from_df(reference) if reference is not None else None,
-        )
-    elif column_type == ColumnType.Text:
-        data_hist = None
-    else:
-        raise ValueError(f"Unsupported column type {column_type}")
-
-    data_in_time = None
-    if datetime_data is not None:
-        datetime_name, _, datetime_current, datetime_reference = datetime_data
-        if column_type == ColumnType.Numerical:
-            df_for_time_plot_curr, df_for_time_plot_ref, prefix = prepare_data_for_date_num(
-                datetime_current, datetime_reference, datetime_name, column_name, current_data, reference_data
-            )
-            data_in_time = {
-                "data_for_plots": {
-                    "current": df_for_time_plot_curr,
-                    "reference": df_for_time_plot_ref,
-                },
-                "freq": prefix,
-                "datetime_name": datetime_name,
-            }
-
-        if column_type == ColumnType.Categorical:
-            df_for_time_plot_curr, df_for_time_plot_ref, prefix = prepare_data_for_date_cat(
-                datetime_current, datetime_reference, datetime_name, column_name, current_data, reference_data
-            )
-            data_in_time = {
-                "data_for_plots": {
-                    "current": df_for_time_plot_curr,
-                    "reference": df_for_time_plot_ref,
-                },
-                "freq": prefix,
-                "datetime_name": datetime_name,
-            }
-
-    data_by_target = None
-    if target_data is not None:
-        target_name, target_type, target_current, target_reference = target_data
-        curr_df = pd.DataFrame({column_name: current_data, target_name: target_current})
-        ref_df = None
-        if target_reference is not None and reference_data is not None:
-            ref_df = pd.DataFrame({column_name: reference_data, target_name: target_reference})
-        if column_type == ColumnType.Categorical and target_type == ColumnType.Numerical:
-            data_by_target = {
-                "box_data": prepare_box_data(curr_df, ref_df, column_name, target_name),
-                "target_name": target_name,
-                "target_type": target_type.value,
-            }
-        if column_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
-            data_by_target = {
-                "box_data": prepare_box_data(curr_df, ref_df, target_name, column_name),
-                "target_name": target_name,
-                "target_type": target_type.value,
-            }
-        if column_type == ColumnType.Numerical and target_type == ColumnType.Numerical:
-            if target_reference is not None and reference_data is not None:
-                target_ref = target_reference.loc[reference_data.index]
-            else:
-                target_ref = None
-            raw_plot, agg_plot = get_data_for_num_num_plot(
-                agg_data,
-                column_name,
-                target_name,
-                current_data,
-                target_current.loc[current_data.index],
-                reference_data,
-                target_ref,
-            )
-            data_by_target = {
-                "scatter_data": raw_plot,
-                "contour_data": agg_plot,
-                "target_name": target_name,
-                "target_type": target_type.value,
-            }
-
-        if column_type == ColumnType.Categorical and target_type == ColumnType.Categorical:
-            target_current_, target_reference_ = relabel_data(target_current, target_reference, merge_small_categories)
-            result = get_data_for_cat_cat_plot(
-                column_name, target_name, current_data, target_current_, reference_data, target_reference_
-            )
-            data_by_target = {
-                "count_data": result,
-                "target_name": target_name,
-                "target_type": target_type.value,
-            }
-
-    return data_hist, data_in_time, data_by_target
 
 
 def _select_features_for_corr(dataset: pd.DataFrame, data_definition: DataDefinition) -> tuple:
