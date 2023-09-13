@@ -30,11 +30,12 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "copy_dependency": "shx cp -r ../lib ./src",
+    "copy-dependency": "shx cp -r ../lib ./src",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "copy": "shx cp -r ./build/* ../../src/evidently/ui/ui",
-    "full_build": "yarn build && yarn copy",
+    "clean-assets": "shx rm -rf ../../src/evidently/ui/ui/*",
+    "copy-assets": "shx cp -r ./build/* ../../src/evidently/ui/ui",
+    "full-build": "yarn build && yarn clean-assets && yarn copy-assets",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

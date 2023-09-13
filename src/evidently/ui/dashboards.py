@@ -21,6 +21,7 @@ from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EnumValueMixin
+from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.renderers.html_widgets import CounterData
@@ -87,7 +88,7 @@ class PanelValue(BaseModel):
     field_path: Union[str, FieldPath]
     metric_id: Optional[str] = None
     metric_hash: Optional[int] = None
-    metric_args: Dict[str, Any] = {}
+    metric_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
     legend: Optional[str] = None
 
     @property

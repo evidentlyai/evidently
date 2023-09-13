@@ -8,7 +8,7 @@ nltk==3.6.7
 scipy==1.5.4
 requests==2.19.0
 pydantic==1.10
-typer==0.9
+typer==0.3
 rich==13
 iterative-telemetry==0.0.5
 watchdog==3.0.0
