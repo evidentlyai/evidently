@@ -123,4 +123,22 @@ export default class RemoteApi implements Api {
             throw Error(`${resp.status}, ${resp.statusText}`);
         }
     }
+
+    async editProjectInfo(project: ProjectDetails) {
+      const response = await fetch(`${this.endpoint}/projects/${project.id}/info`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(project)
+      })
+  
+      if (!response.ok) {
+        throw response
+      }
+  
+      return response
+    }
 }
+
+export const api = new RemoteApi('/api')

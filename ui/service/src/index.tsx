@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
@@ -14,9 +13,10 @@ import {
 import "./index.css";
 import {ServiceMainPage} from "./Components/ServiceMainPage";
 import {ProjectData} from "./Components/ProjectData";
-import {ProjectList} from "./Components/ProjectList";
-import LoadableView from "./lib/components/LoadableVIew";
+import {ProjectList, action as projectListAction, loader as projectListLoader } from "./Components/ProjectList";
 import {ServiceHeader} from "./Components/ServiceHeader";
+import { Typography } from '@material-ui/core';
+import { NavigationProgress } from './Components/NavigationProgress';
 
 
 const api = new RemoteApi("/api");
@@ -27,6 +27,7 @@ const HomePage = () => {
     return <ThemeProvider theme={theme}>
         <ApiContext.Provider value={{Api: api}}>
             <ServiceHeader api={api}/>
+            <NavigationProgress />
             <ServiceMainPage projectId={projectId} reportId={dashboardId}>
                 <Outlet />
             </ServiceMainPage>
@@ -41,12 +42,11 @@ const router = createBrowserRouter([
         element: <HomePage />,
         children: [
             {
-                path: "",
-                element: <ProjectList />
-            },
-            {
-                path: "projects",
-                element: <ProjectList />
+                index: true,
+                element: <ProjectList />,
+                loader: projectListLoader,
+                action: projectListAction,
+                errorElement: <Typography variant='h4'> Something went wrong...</Typography>,
             },
             {
                 path: "projects/:projectId",
