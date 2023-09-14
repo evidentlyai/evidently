@@ -18,7 +18,7 @@ class TriggerWordsPresent(GeneratedFeature):
     _lem: WordNetLemmatizer
 
     def __init__(self, column_name: str, words_list=(), lemmatize=True, display_name: Optional[str] = None):
-        self._lem = WordNetLemmatizer()
+
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize
@@ -26,6 +26,12 @@ class TriggerWordsPresent(GeneratedFeature):
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        if not hasattr(self, "_lem"):
+            import nltk
+
+            nltk.download("wordnet", quiet=True)
+            self._lem = WordNetLemmatizer()
+
         def listed_words_present(s, words_list=(), lemmatize=True):
             if s is None or (isinstance(s, float) and np.isnan(s)):
                 return 0
