@@ -24,7 +24,7 @@ def ui(
     from evidently.ui.demo_projects import DEMO_PROJECTS
     from evidently.ui.workspace import Workspace
 
-    demos = demo_projects.split(",")
+    demos = demo_projects.split(",") if demo_projects else []
     if "all" in demos:
         demos = list(DEMO_PROJECTS.keys())
     missing = [dp for dp in demos if dp not in DEMO_PROJECTS]
