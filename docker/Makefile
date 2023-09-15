@@ -3,8 +3,10 @@ default: build
 # Build Docker image
 build: docker_build output
 
+buildx: docker_buildx_push output
+
 # Build and push Docker image
-release: docker_build docker_push output
+release: docker_buildx_release output
 
 # Image and binary can be overidden with env vars.
 DOCKER_IMAGE ?= evidently/evidently-service
@@ -62,6 +64,24 @@ docker_build:
   --build-arg VCS_URL=`git config --get remote.origin.url` \
   --build-arg VCS_REF=$(GIT_COMMIT_SHORT) \
 	-t $(DOCKER_IMAGE):$(DOCKER_TAG) ${SOURCES_DIR}
+
+docker_buildx_push:
+	# Build Docker image
+	docker buildx build -f Dockerfile.service --platform linux/amd64,linux/aarch64 \
+  --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+  --build-arg VERSION=$(CODE_VERSION) \
+  --build-arg VCS_URL=`git config --get remote.origin.url` \
+  --build-arg VCS_REF=$(GIT_COMMIT_SHORT) \
+	-t $(DOCKER_IMAGE):$(DOCKER_TAG) --push ${SOURCES_DIR}
+
+docker_buildx_release:
+	# Build Docker image
+	docker buildx build -f Dockerfile.service --platform linux/amd64,linux/aarch64 \
+  --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+  --build-arg VERSION=$(CODE_VERSION) \
+  --build-arg VCS_URL=`git config --get remote.origin.url` \
+  --build-arg VCS_REF=$(GIT_COMMIT_SHORT) \
+	-t $(DOCKER_IMAGE):$(DOCKER_TAG) -t $(DOCKER_IMAGE):latest --push ${SOURCES_DIR}
 
 docker_push:
 	# Tag image as latest
