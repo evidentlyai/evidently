@@ -15,6 +15,8 @@ jobs:
       - name: Login to docker.io
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
       - uses: actions/checkout@master
+      - name: setup builder
+        run: docker buildx create --name mybuilder --bootstrap --use
       - name: Build and release latest image
         if: ${{ inputs.latest }}
         run: cd docker && make release
