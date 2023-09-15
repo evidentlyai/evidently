@@ -20,7 +20,6 @@ class OOVWordsPercentage(GeneratedFeature):
     _eng_words: Set
 
     def __init__(self, column_name: str, ignore_words=(), display_name: Optional[str] = None):
-        self._eng_words = set(words.words())
         self.column_name = column_name
         self.ignore_words = ignore_words
         self.display_name = display_name
@@ -33,6 +32,7 @@ class OOVWordsPercentage(GeneratedFeature):
             nltk.download("wordnet", quiet=True)
             nltk.download("words", quiet=True)
             self._lem = WordNetLemmatizer()
+            self._eng_words = set(words.words())
 
         def oov_share(s, ignore_words=()):
             if s is None or (isinstance(s, float) and np.isnan(s)):
