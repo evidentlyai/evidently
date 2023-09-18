@@ -29,10 +29,11 @@ from scipy.stats import energy_distance
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def _energy_dist(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Run the energy_distance test of two samples.
     Args:
@@ -48,7 +49,11 @@ def _energy_dist(
 
 
 energy_dist_test = StatTest(
-    name="ed", display_name="Energy-distance", func=_energy_dist, allowed_feature_types=["num"], default_threshold=0.1
+    name="ed",
+    display_name="Energy-distance",
+    func=_energy_dist,
+    allowed_feature_types=[ColumnType.Numerical],
+    default_threshold=0.1,
 )
 
 register_stattest(energy_dist_test)

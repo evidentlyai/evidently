@@ -31,6 +31,7 @@ from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
 from evidently.calculations.stattests.utils import permutation_test
+from evidently.core import ColumnType
 
 
 def _total_variation_distance(reference_data, current_data):
@@ -53,7 +54,7 @@ def _total_variation_distance(reference_data, current_data):
 def _tvd_stattest(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
     """Compute the Total variation distance (TVD) between two arrays
@@ -83,7 +84,7 @@ tvd_test = StatTest(
     name="TVD",
     display_name="Total-Variation-Distance",
     func=_tvd_stattest,
-    allowed_feature_types=["cat"],
+    allowed_feature_types=[ColumnType.Categorical],
     default_threshold=0.1,
 )
 

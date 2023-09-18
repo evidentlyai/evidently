@@ -31,12 +31,13 @@ from scipy.spatial import distance
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_binned_data
+from evidently.core import ColumnType
 
 
 def _jensenshannon(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
     n_bins: int = 30,
     base: Optional[float] = None,
@@ -62,7 +63,7 @@ jensenshannon_stat_test = StatTest(
     name="jensenshannon",
     display_name="Jensen-Shannon distance",
     func=_jensenshannon,
-    allowed_feature_types=["cat", "num"],
+    allowed_feature_types=[ColumnType.Categorical, ColumnType.Numerical],
     default_threshold=0.1,
 )
 

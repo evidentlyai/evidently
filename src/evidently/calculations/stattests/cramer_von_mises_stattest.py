@@ -34,6 +34,7 @@ from scipy.stats import rankdata
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 class CramerVonMisesResult:
@@ -194,7 +195,7 @@ def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonM
 def _cramer_von_mises(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
     """Run the two-sample Cramer-Von-mises test of two samples.
@@ -215,7 +216,7 @@ cramer_von_mises = StatTest(
     name="cramer_von_mises",
     display_name="Cramer-von Mises",
     func=_cramer_von_mises,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
