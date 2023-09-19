@@ -246,6 +246,11 @@ You can also save the output as an Evidently JSON `snapshot`. This will allow yo
 report.save("snapshot.json")
 ```
 
+{% hint style="info" %}
+**Building a live ML monitoring dashboard**. To better understand how the ML monitoring dashboard works, we recommend going through the [ML Monitoring Quickstart](tutorial-monitoring.md) after completing this tutorial.
+{% endhint %}
+
+
 ## 7. Run data stability tests
 
 Reports help visually explore the data or model quality or share results with the team. However, it is less convenient if you want to run your checks automatically and only react to meaningful issues.
