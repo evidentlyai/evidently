@@ -115,6 +115,16 @@ To get the dictionary:
 data_stability.as_dict()
 ```
 
+**Evidently snapshot**. You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard.
+
+```python
+data_stability.save("snapshot.json")
+```
+
+{% hint style="info" %}
+**Building a live ML monitoring dashboard**. To better understand how the ML monitoring dashboard works, we recommend going through the [ML Monitoring Quickstart](../get-started/tutorial-monitoring.md) after completing this tutorial.
+{% endhint %}
+
 # Preset parameters
 
 You can customize some of the Presets using parameters. For example, you can pass a different data drift detection method:
