@@ -317,9 +317,13 @@ If you want to go through the steps in more details, refer to the complete [Moni
 
 If you want to enable monitoring for an existing ML project, you must collect the data from your production pipelines or services, or run monitoring jobs over production logs stored in a data warehouse. The exact integration scenario depends on the model deployment type and infrastructure.  
 
-Here is one possible approach. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
+Here is a possible approach for batch monitoring. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
 
 ![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
+
+Alternatively, if you have a live ML service, you can run an [Evidently collector service](../monitoring/collector_service.md) and send the predictions for near real-time monitoring. 
+
+![](../.gitbook/assets/monitoring/monitoring_collector_min.png)
 
 You can browse sample [integrations](../integrations/evidently-integrations.md). We’ll add more example integrations in the future.  
 
