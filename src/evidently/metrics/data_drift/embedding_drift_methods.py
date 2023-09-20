@@ -17,6 +17,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 
 from evidently.calculations.stattests import get_stattest
+from evidently.core import ColumnType
 from evidently.pydantic_utils import EvidentlyBaseModel
 
 DISTANCE_DICT = {
@@ -182,13 +183,15 @@ class RatioDriftMethod(DriftMethod):
     def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         if self.pca_components:
             reference_emb, current_emb = get_pca_df(reference_emb, current_emb, self.pca_components)
-        stattest_func = get_stattest(reference_emb.iloc[:, 0], current_emb.iloc[:, 0], "num", self.component_stattest)
+        stattest_func = get_stattest(
+            reference_emb.iloc[:, 0], current_emb.iloc[:, 0], ColumnType.Numerical, self.component_stattest
+        )
         n_drifted = 0
         for i in range(reference_emb.shape[1]):
             drift_result = stattest_func(
                 reference_emb.iloc[:, i],
                 current_emb.iloc[:, i],
-                feature_type="num",
+                feature_type=ColumnType.Numerical,
                 threshold=self.component_stattest_threshold,
             )
             if drift_result.drifted:

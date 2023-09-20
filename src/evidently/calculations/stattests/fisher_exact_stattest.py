@@ -31,11 +31,12 @@ from scipy.stats import fisher_exact
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
+from ...core import ColumnType
 from .utils import generate_fisher2x2_contingency_table
 
 
 def _fisher_exact_stattest(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Calculate the p-value of Fisher's exact test between two arrays
     Args:
@@ -73,7 +74,7 @@ fisher_exact_test = StatTest(
     name="fisher_exact",
     display_name="Fisher's Exact test",
     func=_fisher_exact_stattest,
-    allowed_feature_types=["cat"],
+    allowed_feature_types=[ColumnType.Categorical],
     default_threshold=0.1,
 )
 

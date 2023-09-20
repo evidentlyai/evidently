@@ -29,12 +29,13 @@ from scipy.stats import mannwhitneyu
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def _mannwhitneyu_rank(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
     """Perform the Mann-Whitney U-rank test between two arrays
@@ -55,7 +56,7 @@ mann_whitney_u_stat_test = StatTest(
     name="mannw",
     display_name="Mann-Whitney U-rank test",
     func=_mannwhitneyu_rank,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.05,
 )
 

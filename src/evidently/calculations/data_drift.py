@@ -161,8 +161,8 @@ def get_one_column_drift(
         if not pd.api.types.is_numeric_dtype(current_column):
             raise ValueError(f"Column '{column_name}' in current dataset should contain numerical values only.")
 
-    drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
-    drift_result = drift_test_function(reference_column, current_column, column_type.value, threshold)
+    drift_test_function = get_stattest(reference_column, current_column, column_type, stattest)
+    drift_result = drift_test_function(reference_column, current_column, column_type, threshold)
 
     scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:

@@ -30,10 +30,11 @@ from scipy.stats import power_divergence
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
+from evidently.core import ColumnType
 
 
 def _g_stat_test(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the G test between two arrays
     Args:
@@ -61,7 +62,7 @@ g_test = StatTest(
     name="g_test",
     display_name="g_test",
     func=_g_stat_test,
-    allowed_feature_types=["cat"],
+    allowed_feature_types=[ColumnType.Categorical],
     default_threshold=0.1,
 )
 

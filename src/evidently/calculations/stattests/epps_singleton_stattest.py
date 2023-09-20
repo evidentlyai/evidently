@@ -32,12 +32,13 @@ from scipy.stats import iqr
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def _epps_singleton(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
     """Run the Epps-Singleton (ES) test of two samples.
@@ -63,7 +64,7 @@ epps_singleton_test = StatTest(
     name="es",
     display_name="Epps-Singleton",
     func=_epps_singleton,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.05,
 )
 

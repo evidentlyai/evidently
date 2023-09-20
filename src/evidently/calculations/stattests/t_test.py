@@ -29,10 +29,11 @@ from scipy.stats import ttest_ind
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def _t_test2samp(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the two-sample t test between reference and current
     Args:
@@ -52,7 +53,7 @@ t_test = StatTest(
     name="t_test",
     display_name="t_test",
     func=_t_test2samp,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
 )
 
 register_stattest(t_test)
