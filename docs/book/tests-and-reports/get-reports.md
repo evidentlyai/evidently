@@ -109,6 +109,16 @@ To get the dictionary:
 drift_report.as_dict()
 ```
 
+**Evidently snapshot**. You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard.
+
+```python
+drift_report.save("snapshot.json")
+```
+
+{% hint style="info" %}
+**Building a live ML monitoring dashboard**. To better understand how the ML monitoring dashboard works, we recommend going through the [ML Monitoring Quickstart](../get-started/tutorial-monitoring.md) after completing this tutorial.
+{% endhint %}
+
 # Preset parameters 
 
 You can customize some of the Presets using parameters. For example, you can calculate the quality metrics for a binary probabilistic classification model with a custom decision threshold:
