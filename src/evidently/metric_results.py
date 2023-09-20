@@ -10,8 +10,8 @@ from typing import overload
 
 import numpy as np
 import pandas as pd
-from pydantic import parse_obj_as
-from pydantic import validator
+from pydantic.v1 import parse_obj_as
+from pydantic.v1 import validator
 from typing_extensions import Literal
 
 from evidently.base_metric import MetricResult

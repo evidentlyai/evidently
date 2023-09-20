@@ -13,8 +13,8 @@ from typing import Union
 
 import plotly.io as pio
 from plotly import graph_objs as go
-from pydantic import BaseModel
-from pydantic import validator
+from pydantic.v1 import BaseModel
+from pydantic.v1 import validator
 
 from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
