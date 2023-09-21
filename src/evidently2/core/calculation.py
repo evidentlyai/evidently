@@ -36,6 +36,7 @@ CR = TypeVar("CR")
 DataType = pd.DataFrame
 
 _engines : List[Type["CalculationEngine"]] = []
+
 class CalculationEngine:
     implementations: ClassVar[Dict[Type["_CalculationBase"], Type["CalculationImplementation"]]] = {}
 

@@ -4,23 +4,30 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-import numpy as np
-import pandas as pd
 from scipy.stats import chisquare
 
+from evidently2.calculations.basic import CleanColumn
+from evidently2.calculations.basic import CreateSet
+from evidently2.calculations.basic import Div
+from evidently2.calculations.basic import DropInf
+from evidently2.calculations.basic import DropNA
+from evidently2.calculations.basic import Histogram
+from evidently2.calculations.basic import LessThen
+from evidently2.calculations.basic import MultDict
+from evidently2.calculations.basic import NUnique
+from evidently2.calculations.basic import Size
+from evidently2.calculations.basic import UnionList
+from evidently2.calculations.basic import Unique
+from evidently2.calculations.basic import ValueCounts
 from evidently2.core.calculation import CI
 from evidently2.core.calculation import CR
 from evidently2.core.calculation import Calculation
 from evidently2.core.calculation import Constant
 from evidently2.core.calculation import InputColumnData
 from evidently2.core.calculation import InputData
-from evidently2.core.calculation import NoInputError
-from evidently2.core.calculation import _CalculationBase
 from evidently2.core.metric import ColumnMetricResultCalculation
 from evidently2.core.metric import Metric
 from evidently2.core.spark import SparkDataFrame
-from evidently2.core.spark import is_spark_data
-from evidently2.core.spark import single_column
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
@@ -84,34 +91,6 @@ class ColumnDriftMetric(Metric[ColumnDriftResult]):
         return drift_result
 
 
-class DropInf(Calculation):
-    def calculate(self, data: CI) -> CR:
-        return data[np.isfinite(data)]
-
-    def calculate_spark(self, data: SparkDataFrame):
-        return data.filter(~single_column(data).isin([np.inf, -np.inf]))
-
-
-class CleanColumn(Calculation[pd.Series, pd.Series]):
-    def calculate(self, data: pd.Series) -> pd.Series:
-        return data.replace([-np.inf, np.inf], np.nan).dropna()
-
-    # def calculate_spark(self, data):
-    def calculate_spark(self, data: SparkDataFrame):
-        return data.replace([np.inf, -np.inf], None).dropna()
-
-    @property
-    def empty(self):
-        # todo: can we do this lazy?
-        try:
-            result = self.get_result()
-            if is_spark_data(result):
-                return result.rdd.isEmpty()
-            return result.empty
-        except NoInputError:
-            return False
-
-
 @dataclasses.dataclass
 class StatTestResult:
     drift_score: Calculation
@@ -131,7 +110,7 @@ class StatTest:
     default_threshold: float = 0.05
 
     def __call__(
-        self, reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: Optional[float]
+            self, reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: Optional[float]
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
         p = self.func(reference_data, current_data, feature_type, actual_threshold)
@@ -143,28 +122,6 @@ class StatTest:
         return hash(self.name)
 
 
-class DropNA(Calculation):
-    def calculate(self, data: CI) -> CR:
-        return data.dropna()
-
-
-class Unique(Calculation):
-    def calculate(self, data: CI) -> CR:
-        return data.unique()
-
-
-class CreateSet(Calculation):
-    def calculate(self, data: CI) -> CR:
-        return set(data)
-
-
-class UnionList(Calculation):
-    second: Calculation
-
-    def calculate(self, data: CI) -> CR:
-        return list(data | self.second.get_result())
-
-
 def get_unique_not_nan_values_list_from_series(current_data: Calculation, reference_data: Calculation) -> Calculation:
     """Get unique values from current and reference series, drop NaNs"""
     return UnionList(
@@ -172,57 +129,6 @@ def get_unique_not_nan_values_list_from_series(current_data: Calculation, refere
         second=CreateSet(input_data=Unique(input_data=DropNA(input_data=reference_data))),
     )
     # return list(set(reference_data.dropna().unique()) | set(current_data.dropna().unique()))
-
-
-class Size(Calculation):
-    def calculate(self, data: CI) -> CR:
-        return data.shape[0]
-
-    def calculate_spark(self, data: SparkDataFrame):
-        return data.count()
-
-
-class Div(Calculation):
-    second: Calculation
-
-    def calculate(self, data: CI) -> CR:
-        return data / self.second.get_result()
-
-    # def calculate_spark(self, data: SparkDataFrame):
-    #     return data / self.second.get_result()
-
-
-class ValueCounts(Calculation):
-    def calculate(self, data: CI) -> CR:
-        return data.value_counts()
-
-    def calculate_spark(self, data: SparkDataFrame):
-        # materialize
-        column = single_column(data)
-        result = data.groupby(column.alias("_")).count().collect()
-        return {r["_"]: r["count"] for r in result}
-
-
-class Mul(Calculation):
-    second: Calculation
-
-    def calculate(self, data: CI) -> CR:
-        return data * self.second.get_result()
-
-    def calculate_spark(self, data: SparkDataFrame):
-        return data * self.second.get_result()
-
-
-class MultDict(Calculation):
-    mul: Calculation
-
-    def calculate(self, data: CI) -> CR:
-        m = self.mul.get_result()
-        return {k: v * m for k, v in data.items()}
-
-    # def calculate_spark(self, data: SparkDataFrame):
-    #     m = self.mul.get_result()
-    #     return {k: v * m for k, v in data.items()}
 
 
 class ChiSquare(Calculation):
@@ -239,15 +145,8 @@ class ChiSquare(Calculation):
         return chisquare([data.get(k, 0) for k in keys], [exp.get(k, 0) for k in keys])[1]
 
 
-class LessThen(Calculation):
-    second: _CalculationBase
-
-    def calculate(self, data: CI) -> CR:
-        return data < self.second.get_result()
-
-
 def _chi_stat_test(
-    reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: float
+        reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: float
 ) -> Tuple[Calculation, Calculation]:
     # keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     # k_norm = current_data.shape[0] / reference_data.shape[0]
@@ -265,16 +164,6 @@ chi_stat_test = StatTest(
 )
 
 z_stat_test = wasserstein_stat_test = ks_stat_test = jensenshannon_stat_test = chi_stat_test
-
-
-class NUnique(Calculation):
-    def calculate(self, data: CI) -> CR:
-        return data.nunique()
-
-    def calculate_spark(self, data: SparkDataFrame):
-        from pyspark.sql.functions import count_distinct
-
-        return data.select(count_distinct(single_column(data)).alias("nunique")).first()["nunique"]
 
 
 def _get_default_stattest(reference_data: Calculation, feature_type: str) -> StatTest:
@@ -303,82 +192,14 @@ def get_stattest(reference_data: Calculation, feature_type: str, stattest_func: 
         return _get_default_stattest(reference_data, feature_type)
 
 
-class Histogram(Calculation[pd.Series, Distribution]):
-    bins: int
-    density: bool
-
-    def __init__(self, input_data: _CalculationBase, bins: int, density: bool):
-        super().__init__(input_data=input_data, bins=bins, density=density)
-
-    def calculate(self, data: pd.Series) -> Distribution:
-        y, x = [
-            t.tolist()
-            for t in np.histogram(
-                data,
-                bins=self.bins,
-                density=self.density,
-            )
-        ]
-        return Distribution(x=x, y=y)
-
-    def calculate_spark(self, data: SparkDataFrame):
-        from pyspark.sql import SparkSession
-        from pyspark.sql.functions import col
-        from pyspark.sql.functions import floor
-        from pyspark.sql.functions import max
-        from pyspark.sql.functions import min
-        from pyspark.sql.functions import when
-
-        column = single_column(data)
-        col_range = data.select(min(column).alias("min"), max(column).alias("max")).first()
-        min_val, max_val = col_range["min"], col_range["max"]
-        step = (max_val - min_val) / self.bins
-        hist = (
-            data.select(column, floor((column - min_val) / step).alias("bucket"))
-            .select(column, when(col("bucket") >= self.bins, self.bins - 1).otherwise(col("bucket")).alias("bucket"))
-            .groupby("bucket")
-            .count()
-        )
-
-        spark = SparkSession.getActiveSession()
-        df_buckets = spark.sql(f"select id+1 as bucket from range({self.bins})")
-        hist = (
-            hist.join(df_buckets, "bucket", "right_outer")
-            .selectExpr("bucket", "nvl(count, 0) as count")
-            .orderBy("bucket")
-        )
-
-        y = [v["count"] for v in hist.select("count").collect()]
-        x = [min_val + step * i for i in range(self.bins + 1)]
-        return Distribution(x=x, y=y)
-
-
-class Mask(Calculation[pd.Series, pd.Series]):
-    mask: Calculation
-
-    def __init__(self, input_data: _CalculationBase, mask: Calculation):
-        super().__init__(input_data=input_data, mask=mask)
-
-    def calculate(self, data: CI) -> CR:
-        return data[self.mask.get_result()]
-
-
-class IsFinite(Calculation[pd.Series, pd.Series]):
-    def __init__(self, input_data: _CalculationBase):
-        super().__init__(input_data=input_data)
-
-    def calculate(self, data: CI) -> CR:
-        return np.isfinite(data)
-
-
 def get_one_column_drift(
-    *,
-    current_feature_data: InputColumnData,
-    reference_feature_data: InputColumnData,
-    column: ColumnName,
-    options: DataDriftOptions,
-    data_definition: DataDefinition,
-    column_type: ColumnType,
+        *,
+        current_feature_data: InputColumnData,
+        reference_feature_data: InputColumnData,
+        column: ColumnName,
+        options: DataDriftOptions,
+        data_definition: DataDefinition,
+        column_type: ColumnType,
 ) -> ColumnDriftResultCalculation:
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column}' with type {column_type}")
