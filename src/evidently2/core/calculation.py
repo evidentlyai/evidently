@@ -1,7 +1,8 @@
 import abc
+import inspect
 from collections import defaultdict
 from contextlib import contextmanager
-from typing import TYPE_CHECKING
+from typing import ClassVar, TYPE_CHECKING, Type
 from typing import Any
 from typing import ContextManager
 from typing import Dict
@@ -34,6 +35,34 @@ CR = TypeVar("CR")
 
 DataType = pd.DataFrame
 
+_engines : List[Type["CalculationEngine"]] = []
+class CalculationEngine:
+    implementations: ClassVar[Dict[Type["_CalculationBase"], Type["CalculationImplementation"]]] = {}
+
+    @classmethod
+    def can_use_engine(cls, data) -> bool:
+        # todo
+        raise NotImplementedError
+
+    def __init_subclass__(cls):
+        if cls is not CalculationEngine:
+            _engines.append(cls)
+
+Calc = TypeVar("Calc", bound="_CalculationBase")
+
+class CalculationImplementation(Generic[Calc]):
+    engine: ClassVar[Type[CalculationEngine]]
+    calculation_type: ClassVar[Type[Calc]]
+
+    def __init_subclass__(cls):
+        if not inspect.isabstract(cls) and hasattr(cls, "calculation_type"):
+            cls.engine.implementations[cls.calculation_type] = cls
+
+    @classmethod
+    @abc.abstractmethod
+    def calculate(cls, calculation: Calc, data):
+        raise NotImplementedError
+
 
 class _CalculationBase(EvidentlyBaseModel):
     @abc.abstractmethod
@@ -49,27 +78,26 @@ class _CalculationBase(EvidentlyBaseModel):
 
 
 class Calculation(_CalculationBase, Generic[CI, CR]):
+    engine: ClassVar[CalculationEngine]
     input_data: "_CalculationBase"
 
     # def __init__(self, input_data: _CalculationBase, **data):
     #     super().__init__(input_data=input_data, **data)
 
-    @abc.abstractmethod
+    def _get_engine(self, data):
+        for engine in _engines:
+            if engine.can_use_engine(data):
+                return engine
+        raise NotImplementedError(f"No engine found for {self.__class__.__name__} for data of type {data.__class__.__name__}")
+
     def calculate(self, data: CI) -> CR:
-        raise NotImplementedError
+        return self._get_engine(data).implementations[self.__class__].calculate(self, data)
 
-    def calculate_spark(self, data: SparkDataFrame):
-        raise NotImplementedError(f"No spark implementation for {self.__class__.__name__}")
-
-    def calculate_pd_or_spark(self, data):
-        if is_spark_data(data):
-            return self.calculate_spark(data)
-        return self.calculate(data)
 
     def get_result(self):
         with Context.current() as ctx:
             if self not in ctx.results:
-                ctx.results[self] = self.calculate_pd_or_spark(self.input_data.get_result())
+                ctx.results[self] = self.calculate(self.input_data.get_result())
             return ctx.results[self]
 
 
@@ -145,14 +173,6 @@ class InputData:
 class InputColumnData(Calculation):
     input_data: _CalculationBase
     column: str
-
-    def calculate(self, data: CI) -> CR:
-        return data[self.column]
-
-    def calculate_spark(self, data):
-        from pyspark.sql.functions import col
-
-        return data.select(col(self.column).alias("column"))
 
 
 def get_all_calculations(obj: BaseModel, result=None) -> Dict[Calculation, Set[Calculation]]:
