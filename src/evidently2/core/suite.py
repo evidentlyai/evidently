@@ -1,3 +1,5 @@
+from collections import Counter
+from pprint import pprint
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -8,8 +10,10 @@ from evidently2.core.calculation import DataType
 from evidently2.core.calculation import InputData
 from evidently2.core.calculation import Profile
 from evidently2.core.calculation import ProfileCalculations
+from evidently2.core.calculation import get_calculation_uses
 from evidently2.core.calculation import partial_calculations
 from evidently2.core.metric import BaseMetric
+from evidently2.core.metric import MetricResultCalculation
 from evidently.base_metric import MetricResult
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import create_data_definition
@@ -44,8 +48,18 @@ class Report(EvidentlyBaseModel):
     ):
         data = self._prepare_input_data(current_data, reference_data, column_mapping)
         with Context.use(self._ctx):
+            metric_calculations: Dict[BaseMetric, MetricResultCalculation] = {}
+            calculation_counter = Counter()
             for m in self.metrics:
-                self._metric_results[m] = m.get_calculation(data).get_result()
+                metric_calculations[m] = m.get_calculation(data)
+                calculation_counter.update(get_calculation_uses(metric_calculations[m]))
+
+            # pprint(calculation_counter)
+            for calc, count in calculation_counter.items():
+                if count < 2:
+                    calc.disable_cache()
+            for m, calc in metric_calculations.items():
+                self._metric_results[m] = calc.get_result()
 
     def create_reference_profile(
         self, reference_data: DataType, column_mapping: Optional[ColumnMapping] = None

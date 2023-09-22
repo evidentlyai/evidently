@@ -9,6 +9,7 @@ from evidently2.calculations.basic import Div
 from evidently2.calculations.basic import DropInf
 from evidently2.calculations.basic import DropNA
 from evidently2.calculations.basic import Histogram
+from evidently2.calculations.basic import IsEmpty
 from evidently2.calculations.basic import IsFinite
 from evidently2.calculations.basic import LessThen
 from evidently2.calculations.basic import Mask
@@ -191,3 +192,11 @@ class PandasIsFinite(PandasCalculation[IsFinite]):
     @classmethod
     def calculate(cls, self: IsFinite, data):
         return np.isfinite(data)
+
+
+class PandasIsEmpty(PandasCalculation[IsEmpty]):
+    calculation_type = IsEmpty
+
+    @classmethod
+    def calculate(cls, calculation: IsEmpty, data):
+        return data.empty

@@ -7,7 +7,7 @@ from evidently2.core.calculation import Context
 from evidently2.core.calculation import InputValue
 from evidently2.core.calculation import get_all_calculations
 from evidently2.core.calculation import partial_calculations
-from evidently2.core.compat import InputData2
+from evidently2.core.compat import CompatInputData
 from evidently2.core.spark import create_data_definition_spark
 from evidently.base_metric import ColumnName
 from evidently.base_metric import MetricResult
@@ -136,7 +136,7 @@ def new():
     class CustomOldMetric(Metric):
         column_name: ColumnName
 
-        def calculate2(self, input_data: InputData2):
+        def calculate(self, input_data: CompatInputData):
             current = input_data.get_current_column(self.column_name)
             reference = input_data.get_reference_column(self.column_name)
             return CustomOldMetricResult(value=sum(current) + sum(reference))

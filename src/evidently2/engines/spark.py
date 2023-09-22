@@ -6,6 +6,7 @@ import numpy as np
 from evidently2.calculations.basic import CleanColumn
 from evidently2.calculations.basic import DropInf
 from evidently2.calculations.basic import Histogram
+from evidently2.calculations.basic import IsEmpty
 from evidently2.calculations.basic import Mul
 from evidently2.calculations.basic import NUnique
 from evidently2.calculations.basic import Size
@@ -40,35 +41,32 @@ class SparkInputColumnData(SparkCalculation[InputColumnData]):
 
 
 class SparkDropInf(SparkCalculation[DropInf]):
+    calculation_type = DropInf
+
     @classmethod
     def calculate(cls, self: DropInf, data: SparkDataFrame):
         return data.filter(~single_column(data).isin([np.inf, -np.inf]))
 
 
 class SparkCleanColumn(SparkCalculation[CleanColumn]):
+    calculation_type = CleanColumn
+
     @classmethod
     def calculate(cls, self: CleanColumn, data: SparkDataFrame):
         return data.replace([np.inf, -np.inf], None).dropna()
 
-    # @property
-    # def empty(self):
-    #     # todo: can we do this lazy?
-    #     try:
-    #         result = self.get_result()
-    #         if is_spark_data(result):
-    #             return result.rdd.isEmpty()
-    #         return result.empty
-    #     except NoInputError:
-    #         return False
-
 
 class SparkSize(SparkCalculation[Size]):
+    calculation_type = Size
+
     @classmethod
     def calculate(cls, self: Size, data: SparkDataFrame):
         return data.count()
 
 
 class SparkValueCounts(SparkCalculation[ValueCounts]):
+    calculation_type = ValueCounts
+
     @classmethod
     def calculate(cls, self: ValueCounts, data: SparkDataFrame):
         # materialize
@@ -78,12 +76,16 @@ class SparkValueCounts(SparkCalculation[ValueCounts]):
 
 
 class SparkMul(SparkCalculation[Mul]):
+    calculation_type = Mul
+
     @classmethod
     def calculate(cls, self: Mul, data: SparkDataFrame):
         return data * self.second.get_result()
 
 
 class SparkNUnique(SparkCalculation[NUnique]):
+    calculation_type = NUnique
+
     @classmethod
     def calculate(cls, self: NUnique, data: SparkDataFrame):
         from pyspark.sql.functions import count_distinct
@@ -92,6 +94,8 @@ class SparkNUnique(SparkCalculation[NUnique]):
 
 
 class SparkHistogram(SparkCalculation[Histogram]):
+    calculation_type = Histogram
+
     @classmethod
     def calculate(cls, self: Histogram, data: SparkDataFrame):
         from pyspark.sql import SparkSession
@@ -123,3 +127,11 @@ class SparkHistogram(SparkCalculation[Histogram]):
         y = [v["count"] for v in hist.select("count").collect()]
         x = [min_val + step * i for i in range(self.bins + 1)]
         return Distribution(x=x, y=y)
+
+
+class SparkIsEmpty(SparkCalculation[IsEmpty]):
+    calculation_type = IsEmpty
+
+    @classmethod
+    def calculate(cls, self: IsEmpty, data: SparkDataFrame):
+        return data.rdd.isEmpty()

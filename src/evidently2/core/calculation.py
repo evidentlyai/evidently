@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
 from typing import ContextManager
+from typing import Counter
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -41,7 +42,7 @@ _engines: List[Type["CalculationEngine"]] = []
 
 
 class CalculationEngine:
-    implementations: ClassVar[Dict[Type["_CalculationBase"], Type["CalculationImplementation"]]] = {}
+    implementations: ClassVar[Dict[Type["_CalculationBase"], Type["CalculationImplementation"]]]
 
     @classmethod
     def can_use_engine(cls, data) -> bool:
@@ -51,6 +52,7 @@ class CalculationEngine:
     def __init_subclass__(cls):
         if cls is not CalculationEngine:
             _engines.append(cls)
+            cls.implementations = {}
 
 
 Calc = TypeVar("Calc", bound="_CalculationBase")
@@ -84,28 +86,47 @@ class _CalculationBase(EvidentlyBaseModel):
 
 
 class Calculation(_CalculationBase, Generic[CI, CR]):
+    class Config:
+        underscore_attrs_are_private = True
+
     engine: ClassVar[CalculationEngine]
     input_data: "_CalculationBase"
+    _cache: bool = True
 
     # def __init__(self, input_data: _CalculationBase, **data):
     #     super().__init__(input_data=input_data, **data)
 
-    def _get_engine(self, data):
+    def _get_implementation(self, data):
         for engine in _engines:
-            if engine.can_use_engine(data):
-                return engine
+            if engine.can_use_engine(data) and self.__class__ in engine.implementations:
+                return engine.implementations[self.__class__]
         raise NotImplementedError(
             f"No engine found for {self.__class__.__name__} for data of type {data.__class__.__name__}"
         )
 
     def calculate(self, data: CI) -> CR:
-        return self._get_engine(data).implementations[self.__class__].get_calculation(self, data)
+        return self._get_implementation(data).calculate(self, data)
 
     def get_result(self):
         with Context.current() as ctx:
             if self not in ctx.results:
-                ctx.results[self] = self.calculate(self.input_data.get_result())
+                result = self.calculate(self.input_data.get_result())
+                if self._cache:
+                    ctx.results[self] = result
+                # else:
+                #     print("no cache")
+                return result
             return ctx.results[self]
+
+    # todo
+    @property
+    def empty(self):
+        from evidently2.calculations.basic import IsEmpty
+
+        return IsEmpty(input_data=self)
+
+    def disable_cache(self):
+        self._cache = False
 
 
 class _Input(_CalculationBase):
@@ -182,17 +203,26 @@ class InputColumnData(Calculation):
     column: str
 
 
-def get_all_calculations(obj: BaseModel, result=None) -> Dict[Calculation, Set[Calculation]]:
-    result = result if result is not None else defaultdict(set)
+def get_all_calculations(obj: BaseModel, *, _result=None) -> Dict[Calculation, Set[Calculation]]:
+    _result = _result if _result is not None else defaultdict(set)
     is_calculation = isinstance(obj, Calculation)
     for field_name, field in obj.__fields__.items():
         field_type = field.type_
         if isinstance(field_type, type) and issubclass(field_type, BaseModel):
             # todo: lists, dicts etc
             field_value = getattr(obj, field_name)
-            get_all_calculations(field_value, result)
+            get_all_calculations(field_value, _result=_result)
             if is_calculation and issubclass(field_type, _CalculationBase) and not issubclass(field_type, _Input):
-                result[obj].add(field_value)
+                _result[obj].add(field_value)
+    return _result
+
+
+def get_calculation_uses(obj: BaseModel) -> Counter[Calculation]:
+    from collections import Counter
+
+    result = Counter()
+    for _, deps in get_all_calculations(obj).items():
+        result.update(deps)
     return result
 
 
