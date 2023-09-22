@@ -27,12 +27,7 @@ class ColumnMetricResultCalculation(MetricResultCalculation, Generic[MR]):
     column_type: str
 
 
-class Metric(EvidentlyBaseModel, Generic[MR]):
-
-    # @abc.abstractmethod
-    # def get_reference_calculations(self) -> List[Calculation]:
-    #     raise NotImplementedError
-
+class BaseMetric(EvidentlyBaseModel, Generic[MR]):
     @abc.abstractmethod
-    def calculate(self, data) -> MetricResultCalculation[MR]:
+    def get_calculation(self, data) -> MetricResultCalculation[MR]:
         raise NotImplementedError

@@ -3,10 +3,20 @@ from typing import ClassVar
 
 import numpy as np
 
+from evidently2.calculations.basic import CleanColumn
+from evidently2.calculations.basic import DropInf
+from evidently2.calculations.basic import Histogram
+from evidently2.calculations.basic import Mul
+from evidently2.calculations.basic import NUnique
+from evidently2.calculations.basic import Size
+from evidently2.calculations.basic import ValueCounts
+from evidently2.core.calculation import CalculationEngine
+from evidently2.core.calculation import CalculationImplementation
+from evidently2.core.calculation import InputColumnData
+from evidently2.core.spark import SparkDataFrame
+from evidently2.core.spark import is_spark_data
+from evidently2.core.spark import single_column
 from evidently.metric_results import Distribution
-from evidently2.calculations.basic import CleanColumn, DropInf, Histogram, Mul, NUnique, Size, ValueCounts
-from evidently2.core.calculation import CalculationEngine, CalculationImplementation, InputColumnData
-from evidently2.core.spark import SparkDataFrame, is_spark_data, single_column
 
 
 class SparkEngine(CalculationEngine):

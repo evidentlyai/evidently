@@ -27,7 +27,6 @@ from evidently.metric_results import Distribution
 
 
 class PandasEngine(CalculationEngine):
-
     @classmethod
     def can_use_engine(cls, data) -> bool:
         # fixme

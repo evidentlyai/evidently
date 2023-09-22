@@ -6,8 +6,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
+from evidently2.core.compat import Metric
 from evidently.base_metric import InputData
-from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.metrics.data_integrity.dataset_missing_values_metric import MissingValue
 from evidently.model.widget import BaseWidgetInfo

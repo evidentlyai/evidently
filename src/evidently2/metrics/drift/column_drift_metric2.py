@@ -1,23 +1,33 @@
 import dataclasses
-from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, TypeVar
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Generic
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import TypeVar
 
 import numpy as np
 import pandas as pd
 from scipy.stats import chisquare
 
-from evidently.base_metric import ColumnName, MetricResult
+from evidently2.core.calculation import DataType
+from evidently2.metrics.drift.column_drift_metric import ColumnDriftResult
+from evidently2.metrics.drift.column_drift_metric import StatTest
+from evidently.base_metric import ColumnName
+from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
 from evidently.metric_results import DistributionIncluded
 from evidently.options import DataDriftOptions
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
-from evidently2.core.calculation import DataType
-from evidently2.metrics.drift.column_drift_metric import ColumnDriftResult, StatTest
 
 ReferenceResultType = TypeVar("ReferenceResultType", bound=MetricResult)
 ResultType = TypeVar("ResultType", bound=MetricResult)
 
 ColumnDataType = pd.Series
+
 
 class Metric3(EvidentlyBaseModel, Generic[ReferenceResultType, ResultType]):
     def calculate_reference(self, data_definition: DataDefinition, reference: DataType) -> ReferenceResultType:
@@ -30,9 +40,11 @@ class Metric3(EvidentlyBaseModel, Generic[ReferenceResultType, ResultType]):
 class StatTestReferenceResult(MetricResult):
     pass
 
+
 class ChiSquareReferenceResult(StatTestReferenceResult):
     value_counts: Dict[Any, int]
     size: int
+
 
 class ColumnDriftReferenceResult(MetricResult):
     stat_test: str
@@ -50,6 +62,7 @@ class StatTestResult:
 StatTestFuncType = Callable[[StatTestReferenceResult, ColumnDataType, str, float], Tuple[float, bool]]
 StatTestReferenceFuncType = Callable[[ColumnDataType, str, float], StatTestReferenceResult]
 
+
 @dataclasses.dataclass
 class StatTest:
     name: str
@@ -59,9 +72,12 @@ class StatTest:
     allowed_feature_types: List[str]
     default_threshold: float = 0.05
 
-
     def __call__(
-        self, reference_data: StatTestReferenceResult, current_data: ColumnDataType, feature_type: str, threshold: Optional[float]
+        self,
+        reference_data: StatTestReferenceResult,
+        current_data: ColumnDataType,
+        feature_type: str,
+        threshold: Optional[float],
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
         p = self.func(reference_data, current_data, feature_type, actual_threshold)
@@ -72,11 +88,12 @@ class StatTest:
         # hash by name, so stattests with same name would be the same.
         return hash(self.name)
 
-def _chi_stat_reference(reference_data: ColumnDataType, feature_type: str, threshold: float) -> ChiSquareReferenceResult:
-    return ChiSquareReferenceResult(
-        value_counts=reference_data.value_counts().to_dict(),
-        size=reference_data.shape[0]
-    )
+
+def _chi_stat_reference(
+    reference_data: ColumnDataType, feature_type: str, threshold: float
+) -> ChiSquareReferenceResult:
+    return ChiSquareReferenceResult(value_counts=reference_data.value_counts().to_dict(), size=reference_data.shape[0])
+
 
 def _chi_stat_test(
     reference_data: ChiSquareReferenceResult, current_data: ColumnDataType, feature_type: str, threshold: float
@@ -93,10 +110,15 @@ def _chi_stat_test(
 
 
 chi_stat_test = StatTest(
-    name="chisquare", display_name="chi-square p_value", func=_chi_stat_test, get_reference=_chi_stat_reference, allowed_feature_types=["cat"]
+    name="chisquare",
+    display_name="chi-square p_value",
+    func=_chi_stat_test,
+    get_reference=_chi_stat_reference,
+    allowed_feature_types=["cat"],
 )
 
 z_stat_test = wasserstein_stat_test = ks_stat_test = jensenshannon_stat_test = chi_stat_test
+
 
 def _get_default_stattest(reference_data: ColumnDataType, feature_type: str) -> StatTest:
     if feature_type != "num":
@@ -122,6 +144,7 @@ def _get_default_stattest(reference_data: ColumnDataType, feature_type: str) -> 
 def get_stattest(reference_data: ColumnDataType, feature_type: str, stattest_func: Optional[str]) -> StatTest:
     if stattest_func is None:
         return _get_default_stattest(reference_data, feature_type)
+
 
 class ColumnDriftMetric(Metric3[ColumnDriftReferenceResult, ColumnDriftResult]):
     column_name: ColumnName
@@ -154,14 +177,14 @@ class ColumnDriftMetric(Metric3[ColumnDriftReferenceResult, ColumnDriftResult]):
         return ColumnDriftReferenceResult(
             stat_test=stat_test.name,
             stat_test_result=stat_test.get_reference(reference_column, column_type.value, self.stattest_threshold),
-            small_hist=DistributionIncluded(
-                x=reference_small_distribution[1], y=reference_small_distribution[0]
-            )
+            small_hist=DistributionIncluded(x=reference_small_distribution[1], y=reference_small_distribution[0])
             if reference_small_distribution
             else None,
         )
 
-    def calculate(self, data_definition: DataDefinition, ref: ColumnDriftReferenceResult, current: DataType) -> ColumnDriftResult:
+    def calculate(
+        self, data_definition: DataDefinition, ref: ColumnDriftReferenceResult, current: DataType
+    ) -> ColumnDriftResult:
         options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
 
         # todo: get it from registry useing ref.stat_test
@@ -172,7 +195,9 @@ class ColumnDriftMetric(Metric3[ColumnDriftReferenceResult, ColumnDriftResult]):
 
         current_column = current[self.column_name.name]
         current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
-        drift_result = drift_test_function(ref.stat_test_result, current_column, column_type.value, self.stattest_threshold)
+        drift_result = drift_test_function(
+            ref.stat_test_result, current_column, column_type.value, self.stattest_threshold
+        )
         column = self.column_name
 
         current_small_distribution: Optional[List[List[float]]] = None
@@ -189,7 +214,6 @@ class ColumnDriftMetric(Metric3[ColumnDriftReferenceResult, ColumnDriftResult]):
                 )
             ]
 
-
         return ColumnDriftResult(
             column_name=column.name,
             column_type=column_type.name,
@@ -197,8 +221,10 @@ class ColumnDriftMetric(Metric3[ColumnDriftReferenceResult, ColumnDriftResult]):
             stattest_threshold=drift_result.actual_threshold,
             drift_score=drift_result.drift_score,
             drift_detected=drift_result.drifted,
-            current_small_distribution=DistributionIncluded(x=current_small_distribution[1], y=current_small_distribution[0])         if current_small_distribution
+            current_small_distribution=DistributionIncluded(
+                x=current_small_distribution[1], y=current_small_distribution[0]
+            )
+            if current_small_distribution
             else None,
             reference_small_distribution=ref.small_hist,
-    )
-
+        )

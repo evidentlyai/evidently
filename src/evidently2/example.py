@@ -61,7 +61,7 @@ def new():
     )
 
     with Context.new():
-        result = metric.calculate(data)
+        result = metric.get_calculation(data)
     # pprint(result.get_result().dict())
     result_dict = {
         "column_name": "a",
@@ -126,14 +126,14 @@ def new():
     # print("not skip", not_skipping)
     # pprint(get_all_calculations(result.drift_score))
 
-    from evidently2.core.metric import Metric
+    from evidently2.core.metric import BaseMetric
 
     class CustomOldMetricResult(MetricResult):
         value: float
 
-    from evidently2.core.compat import Metric2
+    from evidently2.core.compat import Metric
 
-    class CustomOldMetric(Metric2):
+    class CustomOldMetric(Metric):
         column_name: ColumnName
 
         def calculate2(self, input_data: InputData2):
@@ -271,6 +271,7 @@ def groupby():
     # report2 = profile.run(cur)
     #
     # pprint(report2.as_dict())
+
 
 if __name__ == "__main__":
     # old_evidently()

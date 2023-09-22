@@ -2,8 +2,9 @@ import abc
 import inspect
 from collections import defaultdict
 from contextlib import contextmanager
-from typing import ClassVar, TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 from typing import Any
+from typing import ClassVar
 from typing import ContextManager
 from typing import Dict
 from typing import Generic
@@ -11,6 +12,7 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 
 import pandas as pd
@@ -35,7 +37,8 @@ CR = TypeVar("CR")
 
 DataType = pd.DataFrame
 
-_engines : List[Type["CalculationEngine"]] = []
+_engines: List[Type["CalculationEngine"]] = []
+
 
 class CalculationEngine:
     implementations: ClassVar[Dict[Type["_CalculationBase"], Type["CalculationImplementation"]]] = {}
@@ -49,7 +52,9 @@ class CalculationEngine:
         if cls is not CalculationEngine:
             _engines.append(cls)
 
+
 Calc = TypeVar("Calc", bound="_CalculationBase")
+
 
 class CalculationImplementation(Generic[Calc]):
     engine: ClassVar[Type[CalculationEngine]]
@@ -89,11 +94,12 @@ class Calculation(_CalculationBase, Generic[CI, CR]):
         for engine in _engines:
             if engine.can_use_engine(data):
                 return engine
-        raise NotImplementedError(f"No engine found for {self.__class__.__name__} for data of type {data.__class__.__name__}")
+        raise NotImplementedError(
+            f"No engine found for {self.__class__.__name__} for data of type {data.__class__.__name__}"
+        )
 
     def calculate(self, data: CI) -> CR:
-        return self._get_engine(data).implementations[self.__class__].calculate(self, data)
-
+        return self._get_engine(data).implementations[self.__class__].get_calculation(self, data)
 
     def get_result(self):
         with Context.current() as ctx:
@@ -273,7 +279,7 @@ class ProfileCalculations(BaseModel):
 
 class Profile(BaseModel):
     cache: ProfileCalculations
-    metrics: List["Metric"]
+    metrics: List["BaseMetric"]
     metric_calculations: List["MetricResultCalculation"]
 
     # todo: move from here
@@ -291,7 +297,7 @@ class Profile(BaseModel):
 
 # todo
 
-from evidently2.core.metric import Metric
+from evidently2.core.metric import BaseMetric
 from evidently2.core.metric import MetricResultCalculation
 
 Profile.update_forward_refs()

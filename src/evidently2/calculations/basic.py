@@ -1,9 +1,15 @@
 import numpy as np
 import pandas as pd
 
+from evidently2.core.calculation import CI
+from evidently2.core.calculation import CR
+from evidently2.core.calculation import Calculation
+from evidently2.core.calculation import NoInputError
+from evidently2.core.calculation import _CalculationBase
+from evidently2.core.spark import SparkDataFrame
+from evidently2.core.spark import is_spark_data
+from evidently2.core.spark import single_column
 from evidently.metric_results import Distribution
-from evidently2.core.calculation import CI, CR, Calculation, NoInputError, _CalculationBase
-from evidently2.core.spark import SparkDataFrame, is_spark_data, single_column
 
 
 class DropInf(Calculation):

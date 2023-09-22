@@ -61,7 +61,7 @@ def new():
     )
 
     with Context.new():
-        result = metric.calculate(data)
+        result = metric.get_calculation(data)
     # pprint(result.get_result().dict())
     result_dict = {
         "column_name": "a",
@@ -113,20 +113,23 @@ def new2():
 
     pprint(result.dict())
     result_dict = {
-        'column_name': 'a',
-        'column_type': 'Numerical',
-        'current_small_distribution': {'type': 'evidently.metric_results.DistributionIncluded',
-                                       'x': [-0.5, 0.0, 0.5],
-                                       'y': [0.0, 2.0]},
-        'drift_detected': True,
-        'drift_score': 0.04978706836786395,
-        'reference_small_distribution': {'type': 'evidently.metric_results.DistributionIncluded',
-                                         'x': [0.0, 1.0, 2.0],
-                                         'y': [0.3333333333333333,
-                                               0.6666666666666666]},
-        'stattest_name': 'chi-square p_value',
-        'stattest_threshold': 0.05,
-        'type': 'evidently2.metrics.drift.column_drift_metric.ColumnDriftResult'
+        "column_name": "a",
+        "column_type": "Numerical",
+        "current_small_distribution": {
+            "type": "evidently.metric_results.DistributionIncluded",
+            "x": [-0.5, 0.0, 0.5],
+            "y": [0.0, 2.0],
+        },
+        "drift_detected": True,
+        "drift_score": 0.04978706836786395,
+        "reference_small_distribution": {
+            "type": "evidently.metric_results.DistributionIncluded",
+            "x": [0.0, 1.0, 2.0],
+            "y": [0.3333333333333333, 0.6666666666666666],
+        },
+        "stattest_name": "chi-square p_value",
+        "stattest_threshold": 0.05,
+        "type": "evidently2.metrics.drift.column_drift_metric.ColumnDriftResult",
     }
     # column_mapping = ColumnMapping(numerical_features=["a"])
     # from evidently2.core.suite import Report

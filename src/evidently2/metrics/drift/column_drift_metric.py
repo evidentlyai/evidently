@@ -25,8 +25,8 @@ from evidently2.core.calculation import Calculation
 from evidently2.core.calculation import Constant
 from evidently2.core.calculation import InputColumnData
 from evidently2.core.calculation import InputData
+from evidently2.core.metric import BaseMetric
 from evidently2.core.metric import ColumnMetricResultCalculation
-from evidently2.core.metric import Metric
 from evidently2.core.spark import SparkDataFrame
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import ColumnName
@@ -58,14 +58,14 @@ class ColumnDriftResultCalculation(ColumnMetricResultCalculation[ColumnDriftResu
     reference_small_distribution: Calculation
 
 
-class ColumnDriftMetric(Metric[ColumnDriftResult]):
+class ColumnDriftMetric(BaseMetric[ColumnDriftResult]):
     """Calculate drift metric for a column"""
 
     column_name: ColumnName
     stattest: Optional[str]
     stattest_threshold: Optional[float]
 
-    def calculate(self, data: InputData) -> ColumnDriftResultCalculation:
+    def get_calculation(self, data: InputData) -> ColumnDriftResultCalculation:
         try:
             current_feature_data = data.get_current_column(self.column_name)
         except ColumnNotFound as ex:
@@ -110,7 +110,7 @@ class StatTest:
     default_threshold: float = 0.05
 
     def __call__(
-            self, reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: Optional[float]
+        self, reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: Optional[float]
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
         p = self.func(reference_data, current_data, feature_type, actual_threshold)
@@ -146,7 +146,7 @@ class ChiSquare(Calculation):
 
 
 def _chi_stat_test(
-        reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: float
+    reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: float
 ) -> Tuple[Calculation, Calculation]:
     # keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     # k_norm = current_data.shape[0] / reference_data.shape[0]
@@ -193,13 +193,13 @@ def get_stattest(reference_data: Calculation, feature_type: str, stattest_func: 
 
 
 def get_one_column_drift(
-        *,
-        current_feature_data: InputColumnData,
-        reference_feature_data: InputColumnData,
-        column: ColumnName,
-        options: DataDriftOptions,
-        data_definition: DataDefinition,
-        column_type: ColumnType,
+    *,
+    current_feature_data: InputColumnData,
+    reference_feature_data: InputColumnData,
+    column: ColumnName,
+    options: DataDriftOptions,
+    data_definition: DataDefinition,
+    column_type: ColumnType,
 ) -> ColumnDriftResultCalculation:
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column}' with type {column_type}")
