@@ -3,7 +3,7 @@ from typing import ClassVar
 
 import numpy as np
 
-from evidently2.calculations.basic import CleanColumn
+from evidently2.calculations.basic import CleanColumn, Max, MoreThen, Std
 from evidently2.calculations.basic import CreateSet
 from evidently2.calculations.basic import Div
 from evidently2.calculations.basic import DropInf
@@ -20,11 +20,11 @@ from evidently2.calculations.basic import Size
 from evidently2.calculations.basic import UnionList
 from evidently2.calculations.basic import Unique
 from evidently2.calculations.basic import ValueCounts
-from evidently2.core.calculation import CalculationEngine
+from evidently2.core.calculation import Calc, CalculationEngine
 from evidently2.core.calculation import CalculationImplementation
 from evidently2.core.calculation import InputColumnData
-from evidently2.core.spark import is_spark_data
 from evidently.metric_results import Distribution
+from evidently2.engines.spark.utils import is_spark_data
 
 
 class PandasEngine(CalculationEngine):
@@ -200,3 +200,29 @@ class PandasIsEmpty(PandasCalculation[IsEmpty]):
     @classmethod
     def calculate(cls, calculation: IsEmpty, data):
         return data.empty
+
+
+class PandasStd(PandasCalculation[Std]):
+    calculation_type = Std
+
+    @classmethod
+    def calculate(cls, calculation: Std, data):
+        return np.std(data)
+
+
+class PandasMoreThen(PandasCalculation[MoreThen]):
+    calculation_type = MoreThen
+
+    @classmethod
+    def calculate(cls, self: MoreThen, data):
+        return data >= self.second.get_result() if self.equal else data > self.second.get_result()
+
+class PandasMax(PandasCalculation[Max]):
+    calculation_type = Max
+
+    @classmethod
+    def calculate(cls, calculation: Calc, data):
+        return np.max(data)
+
+
+

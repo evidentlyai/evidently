@@ -1,33 +1,18 @@
-import dataclasses
-from typing import Callable
-from typing import List
 from typing import Optional
-from typing import Tuple
-
-from scipy.stats import chisquare
 
 from evidently2.calculations.basic import CleanColumn
 from evidently2.calculations.basic import CreateSet
-from evidently2.calculations.basic import Div
 from evidently2.calculations.basic import DropInf
 from evidently2.calculations.basic import DropNA
 from evidently2.calculations.basic import Histogram
-from evidently2.calculations.basic import LessThen
-from evidently2.calculations.basic import MultDict
-from evidently2.calculations.basic import NUnique
-from evidently2.calculations.basic import Size
 from evidently2.calculations.basic import UnionList
 from evidently2.calculations.basic import Unique
-from evidently2.calculations.basic import ValueCounts
-from evidently2.core.calculation import CI
-from evidently2.core.calculation import CR
+from evidently2.calculations.stattests.base import get_stattest
 from evidently2.core.calculation import Calculation
-from evidently2.core.calculation import Constant
 from evidently2.core.calculation import InputColumnData
 from evidently2.core.calculation import InputData
 from evidently2.core.metric import BaseMetric
 from evidently2.core.metric import ColumnMetricResultCalculation
-from evidently2.core.spark import SparkDataFrame
 from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
@@ -91,35 +76,6 @@ class ColumnDriftMetric(BaseMetric[ColumnDriftResult]):
         return drift_result
 
 
-@dataclasses.dataclass
-class StatTestResult:
-    drift_score: Calculation
-    drifted: Calculation
-    actual_threshold: float
-
-
-StatTestFuncType = Callable[[Calculation, Calculation, str, float], Tuple[Calculation, Calculation]]
-
-
-@dataclasses.dataclass
-class StatTest:
-    name: str
-    display_name: str
-    func: StatTestFuncType
-    allowed_feature_types: List[str]
-    default_threshold: float = 0.05
-
-    def __call__(
-        self, reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: Optional[float]
-    ) -> StatTestResult:
-        actual_threshold = self.default_threshold if threshold is None else threshold
-        p = self.func(reference_data, current_data, feature_type, actual_threshold)
-        drift_score, drifted = p
-        return StatTestResult(drift_score=drift_score, drifted=drifted, actual_threshold=actual_threshold)
-
-    def __hash__(self):
-        # hash by name, so stattests with same name would be the same.
-        return hash(self.name)
 
 
 def get_unique_not_nan_values_list_from_series(current_data: Calculation, reference_data: Calculation) -> Calculation:
@@ -131,65 +87,8 @@ def get_unique_not_nan_values_list_from_series(current_data: Calculation, refere
     # return list(set(reference_data.dropna().unique()) | set(current_data.dropna().unique()))
 
 
-class ChiSquare(Calculation):
-    exp: Calculation
-
-    def calculate(self, data: CI) -> CR:
-        exp = self.exp.get_result()
-        keys = set(data.keys()) | set(exp.keys())
-        return chisquare([data.get(k, 0) for k in keys], [exp.get(k, 0) for k in keys])[1]
-
-    def calculate_spark(self, data: SparkDataFrame):
-        exp = self.exp.get_result()
-        keys = set(data.keys()) | set(exp.keys())
-        return chisquare([data.get(k, 0) for k in keys], [exp.get(k, 0) for k in keys])[1]
 
 
-def _chi_stat_test(
-    reference_data: Calculation, current_data: Calculation, feature_type: str, threshold: float
-) -> Tuple[Calculation, Calculation]:
-    # keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
-    # k_norm = current_data.shape[0] / reference_data.shape[0]
-    k_norm = Div(input_data=Size(input_data=current_data), second=Size(input_data=reference_data))
-    ref_feature_dict = ValueCounts(input_data=reference_data)
-    current_feature_dict = ValueCounts(input_data=current_data)
-    f_exp = MultDict(input_data=ref_feature_dict, mul=k_norm)
-    p_value = ChiSquare(input_data=current_feature_dict, exp=f_exp)
-    # return p_value, p_value < threshold
-    return p_value, LessThen(input_data=p_value, second=Constant(value=threshold))
-
-
-chi_stat_test = StatTest(
-    name="chisquare", display_name="chi-square p_value", func=_chi_stat_test, allowed_feature_types=["cat"]
-)
-
-z_stat_test = wasserstein_stat_test = ks_stat_test = jensenshannon_stat_test = chi_stat_test
-
-
-def _get_default_stattest(reference_data: Calculation, feature_type: str) -> StatTest:
-    if feature_type != "num":
-        raise NotImplementedError
-
-    # todo: we can make this lazy too
-    n_values = NUnique(input_data=reference_data).get_result()
-    size = Size(input_data=reference_data).get_result()
-    if size <= 1000:
-        if n_values <= 5:
-            return chi_stat_test if n_values > 2 else z_stat_test
-        elif n_values > 5:
-            return ks_stat_test
-    elif size > 1000:
-        if n_values <= 5:
-            return jensenshannon_stat_test
-        elif n_values > 5:
-            return wasserstein_stat_test
-
-    raise ValueError(f"Unexpected feature_type {feature_type}")
-
-
-def get_stattest(reference_data: Calculation, feature_type: str, stattest_func: Optional[str]) -> StatTest:
-    if stattest_func is None:
-        return _get_default_stattest(reference_data, feature_type)
 
 
 def get_one_column_drift(

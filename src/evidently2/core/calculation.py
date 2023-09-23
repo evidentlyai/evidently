@@ -19,8 +19,6 @@ from typing import TypeVar
 import pandas as pd
 from pydantic import BaseModel
 
-from evidently2.core.spark import SparkDataFrame
-from evidently2.core.spark import is_spark_data
 from evidently.base_metric import ColumnName
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
@@ -156,6 +154,9 @@ class InputValue(_Input):
 
 class Constant(_Input):
     value: Any
+
+    def __init__(self, value: Any, **data):
+        super().__init__(value=value, **data)
 
     def get_result(self):
         return self.value

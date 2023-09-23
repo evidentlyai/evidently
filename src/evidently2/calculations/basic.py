@@ -81,3 +81,14 @@ class IsEmpty(Calculation):
             return self.get_result()
         except NoInputError:
             return False
+
+class Std(Calculation):
+    pass
+
+
+class MoreThen(Calculation):
+    second: _CalculationBase
+    equal: bool = False
+
+class Max(Calculation):
+    second: _CalculationBase

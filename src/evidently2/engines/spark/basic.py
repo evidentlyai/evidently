@@ -14,10 +14,8 @@ from evidently2.calculations.basic import ValueCounts
 from evidently2.core.calculation import CalculationEngine
 from evidently2.core.calculation import CalculationImplementation
 from evidently2.core.calculation import InputColumnData
-from evidently2.core.spark import SparkDataFrame
-from evidently2.core.spark import is_spark_data
-from evidently2.core.spark import single_column
 from evidently.metric_results import Distribution
+from evidently2.engines.spark.utils import SparkDataFrame, is_spark_data, single_column
 
 
 class SparkEngine(CalculationEngine):
