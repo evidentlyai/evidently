@@ -11,6 +11,7 @@ Monitoring dashboard with Evidently and Streamlit | [Evidently + Streamlit](stre
 Monitoring pipeline with Evidently, PostgreSQL, Grafana, and Prefect| [Evidently + PostgreSQL + Grafana + Prefect](postgres_grafana_batch_monitoring/)
 ML monitoring for FastAPI| [Evidently + PostgreSQL + FastAPI ](fastapi_monitoring/)
 Real-time ML monitoring with Grafana (old API) | [Evidently + Grafana](grafana_monitoring_service/)
+Evidently UI + Prefect | [Evidently UI + Prefect](prefect_evidently_ui/)
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
 
