@@ -1222,7 +1222,7 @@ def prepare_df_for_time_index_plot(
         plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
         plot_df["per"] = plot_df["per"].dt.to_timestamp()
         return plot_df, prefix
-    plot_df = df[column_name].reset_index().sort_values("index")
+    plot_df = df[column_name].reset_index().sort_values(index_name)
     plot_df["per"] = pd.cut(plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False)
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
