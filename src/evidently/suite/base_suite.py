@@ -24,6 +24,8 @@ from evidently.base_metric import ErrorResult
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
@@ -32,8 +34,6 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.notebook_utils import determine_template
-from evidently.suite.execution_graph import ExecutionGraph
-from evidently.suite.execution_graph import SimpleExecutionGraph
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
@@ -92,7 +92,7 @@ def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Uni
 class Context:
     """Pipeline execution context tracks pipeline execution and lifecycle"""
 
-    execution_graph: Optional[ExecutionGraph]
+    engine: Optional[Engine]
     metrics: list
     tests: list
     metric_results: Dict[Metric, Union[MetricResult, ErrorResult]]
@@ -272,7 +272,7 @@ class Suite:
 
     def __init__(self, options: Options):
         self.context = Context(
-            execution_graph=None,
+            engine=None,
             metrics=[],
             tests=[],
             metric_results={},
@@ -310,7 +310,7 @@ class Suite:
         self.context.state = States.Init
 
     def verify(self):
-        self.context.execution_graph = SimpleExecutionGraph(self.context.metrics, self.context.tests)
+        self.context.engine = PythonEngine(self.context.metrics, self.context.tests)
         self.context.state = States.Verified
 
     def create_additional_features(
@@ -319,9 +319,8 @@ class Suite:
         curr_additional_data = None
         ref_additional_data = None
         features = {}
-        if self.context.execution_graph is not None:
-            execution_graph: ExecutionGraph = self.context.execution_graph
-            for metric, calculation in execution_graph.get_metric_execution_iterator():
+        if self.context.engine is not None:
+            for metric, calculation in self.context.engine.get_metric_execution_iterator():
                 try:
                     required_features = metric.required_features(data_definition)
                 except Exception as e:
@@ -361,20 +360,8 @@ class Suite:
             return
 
         self.context.metric_results = {}
-        if self.context.execution_graph is not None:
-            execution_graph: ExecutionGraph = self.context.execution_graph
-
-            calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
-            for metric, calculation in execution_graph.get_metric_execution_iterator():
-                if calculation not in calculations:
-                    logging.debug(f"Executing {type(calculation)}...")
-                    try:
-                        calculations[calculation] = calculation.calculate(data)
-                    except BaseException as ex:
-                        calculations[calculation] = ErrorResult(exception=ex)
-                else:
-                    logging.debug(f"Using cached result for {type(calculation)}")
-                self.context.metric_results[metric] = calculations[calculation]
+        if self.context.engine is not None:
+            self.context.engine.execute_metrics(self.context, data)
 
         self.context.state = States.Calculated
 
@@ -384,7 +371,7 @@ class Suite:
 
         test_results = {}
 
-        for test in self.context.execution_graph.get_test_execution_iterator():
+        for test in self.context.engine.get_test_execution_iterator():
             try:
                 logging.debug(f"Executing {type(test)}...")
                 test_result = test.check()
@@ -420,7 +407,7 @@ class Suite:
 
     def reset(self):
         self.context = Context(
-            execution_graph=None,
+            engine=None,
             metrics=[],
             tests=[],
             metric_results={},
