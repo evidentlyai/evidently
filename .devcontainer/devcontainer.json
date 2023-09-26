@@ -5,7 +5,7 @@
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "onCreateCommand": "./.devcontainer/on-create.sh",
   "postAttachCommand": {
-    "ui": "source ./venv/bin/activate && evidently ui --port 8000 --demo-projects all"
+    "ui": "source ./venv/bin/activate && evidently ui --port 8000 --demo-projects all --workspace test-workspace"
   },
   "forwardPorts": [8000],
   "portsAttributes": {

@@ -16,3 +16,6 @@ MANIFEST
 profile.json
 
 __pycache__
+
+# see .devcontainer/devcontainer.json
+test-workspace
