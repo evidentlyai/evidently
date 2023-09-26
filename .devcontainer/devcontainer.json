@@ -1,0 +1,16 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/universal
+{
+  "name": "Default Linux Universal",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "onCreateCommand": "pip3 install -e \".[dev]\"",
+  "postAttachCommand": {
+    "ui": "evidently ui --port 8000 --demo-projects all"
+  },
+  "portsAttributes": {
+    "8000": {
+      "label": "evidently UI",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
