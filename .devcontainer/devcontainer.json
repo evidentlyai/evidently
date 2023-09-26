@@ -7,6 +7,7 @@
   "postAttachCommand": {
     "ui": "source ./venv/bin/activate && evidently ui --port 8000 --demo-projects all"
   },
+  "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
       "label": "evidently UI",
