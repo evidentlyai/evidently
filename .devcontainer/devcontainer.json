@@ -3,9 +3,9 @@
 {
   "name": "Default Linux Universal",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "onCreateCommand": "pip3 install -e \".[dev]\"",
+  "onCreateCommand": "./on-create.sh",
   "postAttachCommand": {
-    "ui": "evidently ui --port 8000 --demo-projects all"
+    "ui": "source ./venv/bin/activate && evidently ui --port 8000 --demo-projects all"
   },
   "portsAttributes": {
     "8000": {
