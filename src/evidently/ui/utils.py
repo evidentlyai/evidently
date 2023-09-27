@@ -6,7 +6,7 @@ from typing import Optional
 import requests
 from fastapi import Header
 from fastapi import HTTPException
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 from typing_extensions import Annotated
 
 from evidently.utils import NumpyEncoder

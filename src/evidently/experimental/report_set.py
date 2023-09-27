@@ -4,7 +4,7 @@ import uuid
 from typing import Dict
 from typing import Optional
 
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 
 from evidently.suite.base_suite import Snapshot
 
