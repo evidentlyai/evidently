@@ -1,14 +1,18 @@
 import abc
 import functools
 import logging
-from typing import Dict, Union
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
+from typing import Union
 
-from evidently.base_metric import Metric, InputData, ErrorResult, MetricResult
+from evidently.base_metric import ErrorResult
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)

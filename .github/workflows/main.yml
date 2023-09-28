@@ -66,7 +66,7 @@ jobs:
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
       - name: Run Tests
-        run: python -m pytest
+        run: python -m pytest --durations=50
   test:
     # The type of runner that the job will run on
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
@@ -90,7 +90,7 @@ jobs:
       - name: Install package
         run: pip install -e .[dev]
       - name: Run Tests
-        run: python -m pytest
+        run: python -m pytest --durations=50
 
   test-examples:
     name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}, min ${{ matrix.minimal }}
