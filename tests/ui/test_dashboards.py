@@ -2,7 +2,7 @@ import json
 from typing import Dict
 
 import pytest
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 
 from evidently.base_metric import MetricResult
 from evidently.descriptors import OOV
