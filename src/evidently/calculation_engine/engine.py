@@ -10,7 +10,6 @@ from typing import TypeVar
 
 from evidently.base_metric import Metric, InputData, ErrorResult, MetricResult
 from evidently.calculation_engine.metric_implementation import MetricImplementation
-from evidently.tests.base_test import Test
 
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)
 TInputData = TypeVar("TInputData")
@@ -79,16 +78,18 @@ def _aggregate_by_parameters(agg: dict, metric: Metric) -> dict:
     return agg
 
 
-_ImplRegistry = dict()
+_ImplRegistry: Dict[Type, Dict[Type, Type]] = dict()
 
 
 def metric_implementation(metric_cls):
     """
     Decorate metric implementation class, as a implementation for specific metric.
     """
+
     def wrapper(cls: Type[MetricImplementation]):
         _add_implementation(metric_cls, cls)
         return cls
+
     return wrapper
 
 
@@ -97,8 +98,10 @@ def _add_implementation(metric_cls, cls):
     for engine in engines:
         engine_impls = _ImplRegistry.get(engine, {})
         if metric_cls in engine_impls:
-            raise ValueError(f"Multiple impls of metric {metric_cls}: {engine_impls[metric_cls]}"
-                             f" already set, but trying to set {cls}")
+            raise ValueError(
+                f"Multiple impls of metric {metric_cls}: {engine_impls[metric_cls]}"
+                f" already set, but trying to set {cls}"
+            )
         engine_impls[metric_cls] = cls
         _ImplRegistry[engine] = engine_impls
     return cls

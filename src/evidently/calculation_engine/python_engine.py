@@ -1,16 +1,12 @@
 import abc
 import logging
-from typing import Dict
 from typing import Generic
 from typing import TypeVar
-from typing import Union
 
 import pandas as pd
 
-from evidently.base_metric import ErrorResult
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 
@@ -22,25 +18,11 @@ class PythonInputData(InputData):
 TMetric = TypeVar("TMetric", bound=Metric)
 
 
-class PythonEngine(Engine['PythonMetricImplementation', PythonInputData]):
-    # def execute_metrics(self, context, data: InputData):
-    #     calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
-    #     converted_data = self.convert_input_data(data)
-    #     for metric, calculation in self.get_metric_execution_iterator():
-    #         if calculation not in calculations:
-    #             logging.debug(f"Executing {type(calculation)}...")
-    #             try:
-    #                 calculations[metric] = calculation.calculate(context, converted_data)
-    #             except BaseException as ex:
-    #                 calculations[metric] = ErrorResult(exception=ex)
-    #         else:
-    #             logging.debug(f"Using cached result for {type(calculation)}")
-    #         context.metric_results[metric] = calculations[metric]
-
+class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
     def convert_input_data(self, data: InputData) -> PythonInputData:
         if type(data.current_data) != pd.DataFrame or (
-                data.reference_data is not None
-                and type(data.reference_data) != pd.DataFrame):
+            data.reference_data is not None and type(data.reference_data) != pd.DataFrame
+        ):
             raise ValueError("PandasEngine works only with pd.DataFrame input data")
         return PythonInputData(
             data.reference_data,
@@ -77,9 +59,7 @@ class PythonEngine(Engine['PythonMetricImplementation', PythonInputData]):
                 if data.reference_data is None:
                     continue
                 ref_feature_data = feature.generate_feature(data.reference_data, data.data_definition)
-                ref_feature_data.columns = [
-                    f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns
-                ]
+                ref_feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns]
 
                 if ref_additional_data is None:
                     ref_additional_data = ref_feature_data
@@ -91,6 +71,7 @@ class PythonEngine(Engine['PythonMetricImplementation', PythonInputData]):
     def get_metric_implementation(self, metric):
         impl = super().get_metric_implementation(metric)
         if impl is None and isinstance(metric, Metric):
+
             class _Wrapper(PythonMetricImplementation):
                 def calculate(self, context, data: PythonInputData):
                     return self.metric.calculate(data)
