@@ -129,12 +129,11 @@ class Report(ReportBase):
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
 
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
         data = InputData(
             reference_data,
             current_data,
-            ref_add,
-            curr_add,
+            None,
+            None,
             column_mapping,
             data_definition,
         )

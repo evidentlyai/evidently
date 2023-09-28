@@ -1,27 +1,48 @@
 import abc
 import functools
-from typing import Dict
+import logging
+from typing import Dict, Union
 from typing import Generic
 from typing import List
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
-from evidently.base_metric import Metric
+from evidently.base_metric import Metric, InputData, ErrorResult, MetricResult
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 from evidently.tests.base_test import Test
 
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)
+TInputData = TypeVar("TInputData")
 
 
-class Engine(Generic[TMetricImplementation]):
+class Engine(Generic[TMetricImplementation, TInputData]):
     def __init__(self, metrics, tests):
         self.metrics = metrics
         self.tests = tests
 
+    def execute_metrics(self, context, data: InputData):
+        calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
+        converted_data = self.convert_input_data(data)
+        self.generate_additional_features(converted_data)
+        for metric, calculation in self.get_metric_execution_iterator():
+            if calculation not in calculations:
+                logging.debug(f"Executing {type(calculation)}...")
+                try:
+                    calculations[metric] = calculation.calculate(context, converted_data)
+                except BaseException as ex:
+                    calculations[metric] = ErrorResult(exception=ex)
+            else:
+                logging.debug(f"Using cached result for {type(calculation)}")
+            context.metric_results[metric] = calculations[metric]
+
     @abc.abstractmethod
-    def execute_metrics(self, context, data):
+    def convert_input_data(self, data: InputData) -> TInputData:
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def generate_additional_features(self, data: TInputData):
+        raise NotImplementedError
 
     def get_metric_implementation(self, metric):
         """
@@ -47,9 +68,6 @@ class Engine(Generic[TMetricImplementation]):
 
         return [(metric, self.get_metric_implementation(metric_to_calculations[metric])) for metric in self.metrics]
 
-    def get_test_execution_iterator(self) -> List[Test]:
-        return self.tests
-
 
 def _aggregate_metrics(agg, item):
     agg[type(item)] = agg.get(type(item), []) + [item]
@@ -65,6 +83,9 @@ _ImplRegistry = dict()
 
 
 def metric_implementation(metric_cls):
+    """
+    Decorate metric implementation class, as a implementation for specific metric.
+    """
     def wrapper(cls: Type[MetricImplementation]):
         _add_implementation(metric_cls, cls)
         return cls
