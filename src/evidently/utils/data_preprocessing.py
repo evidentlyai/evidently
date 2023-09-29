@@ -161,7 +161,7 @@ def _process_column(
     column_type = predefined_type if predefined_type is not None else _get_column_type(column_name, data, mapping)
     return ColumnDefinition(column_name, column_type)
 
-
+import logging
 def _prediction_column(
     prediction: Optional[Union[str, int, Sequence[int], Sequence[str]]],
     target_type: Optional[ColumnType],
@@ -169,6 +169,7 @@ def _prediction_column(
     data: _InputData,
     mapping: Optional[ColumnMapping] = None,
 ) -> Optional[PredictionColumns]:
+    logging.warning(prediction)
     if prediction is None:
         return None
     if isinstance(prediction, str):
@@ -189,6 +190,10 @@ def _prediction_column(
                 raise ValueError("Prediction type is categorical but task is regression")
             if prediction_type == ColumnType.Numerical:
                 return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
+        if mapping.recomendations_type == "rank":
+            return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
+        if task == TaskType.RECOMMENDER_SYSTEMS and mapping.recomendations_type == "score":
+                return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
         if task is None:
             if prediction_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
                 # probably this is binary with single column of probabilities

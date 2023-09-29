@@ -52,6 +52,7 @@ from .regression_performance.regression_dummy_metric import RegressionDummyMetri
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
+from .recsys.precision_top_k import PrecisionTopKMetric
 
 __all__ = [
     "ClassificationClassBalance",
@@ -102,4 +103,5 @@ __all__ = [
     "RegressionPerformanceMetrics",
     "RegressionQualityMetric",
     "RegressionTopErrorMetric",
+    "PrecisionTopKMetric",
 ]
