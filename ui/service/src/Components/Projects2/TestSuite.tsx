@@ -5,29 +5,28 @@ import { DashboardContent } from '../../lib/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '../../lib/contexts/DashboardContext'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const { projectId, reportId } = params
+  const { projectId, testSuiteId } = params
 
   invariant(projectId, 'missing projectId')
-  invariant(reportId, 'missing reportId')
+  invariant(testSuiteId, 'missing testSuiteId')
 
-  return api.getDashboard(projectId, reportId)
+  return api.getDashboard(projectId, testSuiteId)
 }
 
-export const Report = () => {
-  const { projectId, reportId } = useParams()
+export const TestSuite = () => {
+  const { projectId, testSuiteId } = useParams()
   invariant(projectId, 'missing projectId')
-  invariant(reportId, 'missing reportId')
+  invariant(testSuiteId, 'missing testSuiteId')
 
   const data = useLoaderData() as Awaited<ReturnType<typeof loader>>
-
   return (
     <>
       <DashboardContext.Provider
         value={CreateDashboardContextState({
           getAdditionGraphData: (graphId) =>
-            api.getAdditionalGraphData(projectId, reportId, graphId),
+            api.getAdditionalGraphData(projectId, testSuiteId, graphId),
           getAdditionWidgetData: (widgetId) =>
-            api.getAdditionalWidgetData(projectId, reportId, widgetId)
+            api.getAdditionalWidgetData(projectId, testSuiteId, widgetId)
         })}
       >
         <DashboardContent info={data} />

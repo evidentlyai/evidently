@@ -26,7 +26,7 @@ export function ServiceMainPage(props: ServiceMainPageProps) {
   )
 }
 
-export function ServiceMainPage2(props: ServiceMainPageProps) {
+export function ServiceMainPageOld(props: ServiceMainPageProps) {
   let { children, projectId } = props
   return (
     <>

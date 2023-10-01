@@ -5,9 +5,16 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 import reportWebVitals from './reportWebVitals'
 import RemoteApi from './api/RemoteApi'
 import ApiContext from './lib/contexts/ApiContext'
-import { createBrowserRouter, Outlet, RouterProvider, useParams } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import './index.css'
-import { ServiceMainPage } from './Components/ServiceMainPage'
+import { ServiceMainPage, ServiceMainPageOld } from './Components/ServiceMainPage'
 import { ProjectData } from './Components/ProjectData'
 import {
   ProjectList,
@@ -15,26 +22,68 @@ import {
   loader as projectListLoader
 } from './Components/ProjectList'
 import { ServiceHeader } from './Components/ServiceHeader'
-import { Box, Typography } from '@material-ui/core'
+import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core'
 import { NavigationProgress } from './Components/NavigationProgress'
 import { Project, PROJECT_TABS } from './Components/Projects2/Project'
 import { Dashboard, loader as dashboardLoader } from './Components/Projects2/Dashboard'
 import { ReportsList, loader as reportListLoader } from './Components/Projects2/Reports'
 import { Report, loader as reportLoader } from './Components/Projects2/Report'
+import { TestSuite, loader as testSuiteLoader } from './Components/Projects2/TestSuite'
 import { TestSuitesList, loader as testSuitesListLoader } from './Components/Projects2/TestSuites'
+import { useEffect, useState } from 'react'
 
 const api = new RemoteApi('/api')
 
 const HomePage = () => {
   let { projectId, dashboardId } = useParams()
+  const [isNewVersion, setNewVersion] = useState(true)
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // delete this code and switch after PR approve
+  useEffect(() => {
+    const url = `${location.pathname}${location.search}${location.hash}`
+
+    const replaceArgs: [string, string][] = [
+      ['projects', 'projects2'],
+      ['test_suites', 'test-suites']
+    ]
+
+    if (isNewVersion) {
+      navigate(replaceArgs.reduce((url, replacer) => url.replace(...replacer), url))
+      return
+    }
+    navigate(
+      replaceArgs.reduce(
+        (url, replacer) => url.replace(...(replacer.reverse() as [string, string])),
+        url
+      )
+    )
+  }, [isNewVersion])
+
+  const SMPComponent = isNewVersion ? ServiceMainPage : ServiceMainPageOld
+
   return (
     <ThemeProvider theme={theme}>
       <ApiContext.Provider value={{ Api: api }}>
         <ServiceHeader api={api} />
         <NavigationProgress />
-        <ServiceMainPage projectId={projectId} reportId={dashboardId}>
-          <Outlet />
-        </ServiceMainPage>
+        <Box ml={3} my={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                onChange={() => setNewVersion((prev) => !prev)}
+                checked={isNewVersion}
+                color="primary"
+              />
+            }
+            label="Use new version"
+            labelPlacement="end"
+          />
+        </Box>
+        <SMPComponent projectId={projectId} reportId={dashboardId}>
+          <Outlet context={{ isNewVersion }} />
+        </SMPComponent>
       </ApiContext.Provider>
     </ThemeProvider>
   )
@@ -63,8 +112,8 @@ const router = createBrowserRouter([
         element: <Project />,
         children: [
           {
-            id: PROJECT_TABS[0].id,
             index: true,
+            id: PROJECT_TABS[0].id,
             element: <Dashboard />,
             loader: dashboardLoader
           },
@@ -86,7 +135,15 @@ const router = createBrowserRouter([
             id: PROJECT_TABS[2].id,
             path: PROJECT_TABS[2].link,
             element: <TestSuitesList />,
-            loader: testSuitesListLoader
+            loader: testSuitesListLoader,
+            children: [
+              {
+                id: 'show-test-suite-by-id',
+                path: ':testSuiteId',
+                element: <TestSuite />,
+                loader: testSuiteLoader
+              }
+            ]
           }
         ]
       }

@@ -40,12 +40,12 @@ export const ReportsList = () => {
     return (
       <Grid container>
         <Grid item xs={12}>
-          {showReportByIdMatch.params.reportId && (
+          {/* {showReportByIdMatch.params.reportId && (
             <TextWithCopyIcon
               showText={showReportByIdMatch.params.reportId}
               copyText={showReportByIdMatch.params.reportId}
             />
-          )}
+          )} */}
           {/* render it here in nested route */}
           <Outlet />
         </Grid>
