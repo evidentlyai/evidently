@@ -190,7 +190,7 @@ export const loader = async () => api.getProjects()
 
 export const ProjectList = () => {
   // take projects from loader above
-  const projects = useLoaderData() as ProjectInfo[]
+  const projects = useLoaderData() as Awaited<ReturnType<typeof loader>>
 
   return (
     <>
