@@ -8,7 +8,14 @@ import {
   TableHead,
   TableRow
 } from '@material-ui/core'
-import { Link as RouterLink, LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
+import {
+  Link as RouterLink,
+  LoaderFunctionArgs,
+  useLoaderData,
+  useParams,
+  useMatches,
+  Outlet
+} from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { api } from '../../api/RemoteApi'
 import { TextWithCopyIcon } from '../TextWithCopyIcon'
@@ -24,6 +31,27 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 export const TestSuitesList = () => {
   const { projectId } = useParams()
   const testSuites = useLoaderData() as Awaited<ReturnType<typeof loader>>
+  const matches = useMatches()
+
+  const showTestSuiteByIdMatch = matches.find(({ id }) => id === 'show-test-suite-by-id')
+
+  if (showTestSuiteByIdMatch) {
+    return (
+      <Grid container>
+        <Grid item xs={12}>
+          {/* {showTestSuiteByIdMatch.params.reportId && (
+            <TextWithCopyIcon
+              showText={showTestSuiteByIdMatch.params.reportId}
+              copyText={showTestSuiteByIdMatch.params.reportId}
+            />
+          )} */}
+          {/* render it here in nested route */}
+          <Outlet />
+        </Grid>
+      </Grid>
+    )
+  }
+
   return (
     <>
       <Grid container>

@@ -5,6 +5,7 @@ import {
   Link as RouterLink,
   useLoaderData,
   useNavigation,
+  useOutletContext,
   useSubmit
 } from 'react-router-dom'
 import {
@@ -121,9 +122,10 @@ const EditProjectInfoForm = ({
 }
 
 const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
+  const { isNewVersion } = useOutletContext<{ isNewVersion?: boolean }>()
   return (
     <>
-      <Link component={RouterLink} to={`/projects/${project.id}`}>
+      <Link component={RouterLink} to={`/projects${isNewVersion ? '2' : ''}/${project.id}`}>
         <Typography variant={'h6'}>{project.name}</Typography>
       </Link>
       <Typography style={{ whiteSpace: 'pre-line' }} variant="body1">
