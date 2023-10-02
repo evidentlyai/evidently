@@ -1,8 +1,10 @@
-import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
+import { LoaderFunctionArgs, RouteObject, useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { api } from '../../api/RemoteApi'
 import { DashboardContent } from '../../lib/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '../../lib/contexts/DashboardContext'
+import { satisfies } from 'semver'
+import { crumbFunction } from '../BreadCrumbs'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { projectId, testSuiteId } = params
@@ -13,12 +15,18 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return api.getDashboard(projectId, testSuiteId)
 }
 
-export const TestSuite = () => {
+type loaderData = Awaited<ReturnType<typeof loader>>
+
+export const handle: { crumb: crumbFunction<loaderData> } = {
+  crumb: (data, { pathname, params }) => ({ to: pathname, linkText: String(params.testSuiteId) })
+}
+
+export const Component = () => {
   const { projectId, testSuiteId } = useParams()
   invariant(projectId, 'missing projectId')
   invariant(testSuiteId, 'missing testSuiteId')
 
-  const data = useLoaderData() as Awaited<ReturnType<typeof loader>>
+  const data = useLoaderData() as loaderData
   return (
     <>
       <DashboardContext.Provider
@@ -34,3 +42,11 @@ export const TestSuite = () => {
     </>
   )
 }
+
+export default {
+  id: 'show-test-suite-by-id',
+  path: ':testSuiteId',
+  loader,
+  Component,
+  handle
+} satisfies RouteObject

@@ -16,20 +16,16 @@ import {
 import './index.css'
 import { ServiceMainPage, ServiceMainPageOld } from './Components/ServiceMainPage'
 import { ProjectData } from './Components/ProjectData'
-import {
-  ProjectList,
-  action as projectListAction,
-  loader as projectListLoader
-} from './Components/ProjectList'
+import ProjectListRoute from './Components/ProjectList'
 import { ServiceHeader } from './Components/ServiceHeader'
-import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core'
+import { Box, FormControlLabel, Switch } from '@material-ui/core'
 import { NavigationProgress } from './Components/NavigationProgress'
-import { Project, PROJECT_TABS } from './Components/Projects2/Project'
-import { Dashboard, loader as dashboardLoader } from './Components/Projects2/Dashboard'
-import { ReportsList, loader as reportListLoader } from './Components/Projects2/Reports'
-import { Report, loader as reportLoader } from './Components/Projects2/Report'
-import { TestSuite, loader as testSuiteLoader } from './Components/Projects2/TestSuite'
-import { TestSuitesList, loader as testSuitesListLoader } from './Components/Projects2/TestSuites'
+import ProjectRoute from './Components/Projects2/Project'
+import DashboardRoute from './Components/Projects2/Dashboard'
+import ReportsRoute from './Components/Projects2/Reports'
+import ReportRoute from './Components/Projects2/Report'
+import TestSuiteRoute from './Components/Projects2/TestSuite'
+import TestSuitesRoute from './Components/Projects2/TestSuites'
 import { useEffect, useState } from 'react'
 
 const api = new RemoteApi('/api')
@@ -40,27 +36,29 @@ const HomePage = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // delete this code and switch after PR approve
+  // Delete this code and switch after PR approve
   useEffect(() => {
     const url = `${location.pathname}${location.search}${location.hash}`
 
-    const replaceArgs: [string, string][] = [
-      ['projects', 'projects2'],
-      ['test_suites', 'test-suites']
+    const replaceUrlArgs: [string, string][] = [
+      ['/projects/', '/projects2/'],
+      ['/test_suites', '/test-suites']
     ]
 
     if (isNewVersion) {
-      navigate(replaceArgs.reduce((url, replacer) => url.replace(...replacer), url))
+      navigate(replaceUrlArgs.reduce((url, replacer) => url.replace(...replacer), url))
       return
     }
+
     navigate(
-      replaceArgs.reduce(
+      replaceUrlArgs.reduce(
         (url, replacer) => url.replace(...(replacer.reverse() as [string, string])),
         url
       )
     )
   }, [isNewVersion])
 
+  // Delete this code and switch after PR approve
   const SMPComponent = isNewVersion ? ServiceMainPage : ServiceMainPageOld
 
   return (
@@ -91,57 +89,39 @@ const HomePage = () => {
 
 const router = createBrowserRouter([
   {
-    path: '',
+    path: '/',
     element: <HomePage />,
+    handle: {
+      crumb: () => ({ to: '/', linkText: 'Home' })
+    },
     children: [
+      { ...ProjectListRoute, index: true },
       {
-        index: true,
-        element: <ProjectList />,
-        loader: projectListLoader,
-        action: projectListAction,
-        errorElement: <Typography variant="h4"> Something went wrong...</Typography>
-      },
-      {
-        // Old version
+        // Old version (for better manual testing)
         path: 'projects/:projectId/:page?/:reportId?',
         element: <ProjectData />
       },
       {
         // New version
-        path: 'projects2/:projectId',
-        element: <Project />,
+        ...ProjectRoute,
         children: [
           {
-            index: true,
-            id: PROJECT_TABS[0].id,
-            element: <Dashboard />,
-            loader: dashboardLoader
+            ...DashboardRoute,
+            index: true
           },
           {
-            id: PROJECT_TABS[1].id,
-            path: PROJECT_TABS[1].link,
-            element: <ReportsList />,
-            loader: reportListLoader,
+            ...ReportsRoute,
             children: [
               {
-                id: 'show-report-by-id',
-                path: ':reportId',
-                element: <Report />,
-                loader: reportLoader
+                ...ReportRoute
               }
             ]
           },
           {
-            id: PROJECT_TABS[2].id,
-            path: PROJECT_TABS[2].link,
-            element: <TestSuitesList />,
-            loader: testSuitesListLoader,
+            ...TestSuitesRoute,
             children: [
               {
-                id: 'show-test-suite-by-id',
-                path: ':testSuiteId',
-                element: <TestSuite />,
-                loader: testSuiteLoader
+                ...TestSuiteRoute
               }
             ]
           }

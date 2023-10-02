@@ -1,5 +1,5 @@
-import { Grid, TextField, Typography } from '@material-ui/core'
-import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router'
+import { Grid, TextField } from '@material-ui/core'
+import { LoaderFunctionArgs, RouteObject, useLoaderData, useParams } from 'react-router'
 import { DashboardContent } from '../../lib/components/DashboardContent'
 import { api } from '../../api/RemoteApi'
 import invariant from 'tiny-invariant'
@@ -15,7 +15,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   return api.getProjectDashboard(params.projectId, date_from, date_to)
 }
 
-export const Dashboard = () => {
+export const Component = () => {
   const { projectId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
   const { date_from, date_to } = Object.fromEntries(searchParams.entries())
@@ -35,7 +35,6 @@ export const Dashboard = () => {
             defaultValue={date_from && formatDate(new Date(Date.parse(date_from)))}
             onChange={(event) => {
               let { value } = event.target
-              console.log('value', value)
               setSearchParams(
                 { ...Object.fromEntries(searchParams.entries()), date_from: value },
                 { preventScrollReset: true, replace: true }
@@ -53,7 +52,6 @@ export const Dashboard = () => {
             defaultValue={date_to && formatDate(new Date(Date.parse(date_to)))}
             onChange={(event) => {
               let { value } = event.target
-              console.log('value', value)
               setSearchParams(
                 { ...Object.fromEntries(searchParams.entries()), date_to: value },
                 { preventScrollReset: true, replace: true }
@@ -72,3 +70,10 @@ export const Dashboard = () => {
     </>
   )
 }
+
+export default {
+  id: 'dashboard',
+  Component,
+  loader,
+  path: undefined
+} satisfies RouteObject

@@ -122,6 +122,7 @@ const EditProjectInfoForm = ({
 }
 
 const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
+  // Delete this code and switch after PR approve
   const { isNewVersion } = useOutletContext<{ isNewVersion?: boolean }>()
   return (
     <>
@@ -190,7 +191,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const loader = async () => api.getProjects()
 
-export const ProjectList = () => {
+export const Component = () => {
   // take projects from loader above
   const projects = useLoaderData() as Awaited<ReturnType<typeof loader>>
 
@@ -210,4 +211,12 @@ export const ProjectList = () => {
       </Box>
     </>
   )
+}
+
+export default {
+  loader,
+  action,
+  Component,
+  path2: undefined,
+  errorElement: <Typography variant="h4"> Something went wrong...</Typography>
 }

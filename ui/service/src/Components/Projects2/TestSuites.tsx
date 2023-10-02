@@ -14,13 +14,15 @@ import {
   useLoaderData,
   useParams,
   useMatches,
-  Outlet
+  Outlet,
+  RouteObject
 } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { api } from '../../api/RemoteApi'
 import { TextWithCopyIcon } from '../TextWithCopyIcon'
 import { formatDate } from '../../Utils/Datetime'
 import { DownloadButton } from '../DownloadButton'
+import { crumbFunction } from '../BreadCrumbs'
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   invariant(params.projectId, 'missing projectId')
@@ -28,9 +30,15 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   return api.getTestSuites(params.projectId)
 }
 
-export const TestSuitesList = () => {
+type loaderData = Awaited<ReturnType<typeof loader>>
+
+export const handle: { crumb: crumbFunction<loaderData> } = {
+  crumb: (data, { pathname, params }) => ({ to: pathname, linkText: 'Test Suites' })
+}
+
+export const Component = () => {
   const { projectId } = useParams()
-  const testSuites = useLoaderData() as Awaited<ReturnType<typeof loader>>
+  const testSuites = useLoaderData() as loaderData
   const matches = useMatches()
 
   const showTestSuiteByIdMatch = matches.find(({ id }) => id === 'show-test-suite-by-id')
@@ -39,13 +47,6 @@ export const TestSuitesList = () => {
     return (
       <Grid container>
         <Grid item xs={12}>
-          {/* {showTestSuiteByIdMatch.params.reportId && (
-            <TextWithCopyIcon
-              showText={showTestSuiteByIdMatch.params.reportId}
-              copyText={showTestSuiteByIdMatch.params.reportId}
-            />
-          )} */}
-          {/* render it here in nested route */}
           <Outlet />
         </Grid>
       </Grid>
@@ -88,3 +89,11 @@ export const TestSuitesList = () => {
     </>
   )
 }
+
+export default {
+  id: 'test_suites',
+  path: 'test-suites',
+  Component,
+  loader,
+  handle
+} satisfies RouteObject
