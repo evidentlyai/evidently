@@ -1,0 +1,17 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/universal
+{
+  "name": "Default Linux Universal",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "onCreateCommand": "./.devcontainer/on-create.sh",
+  "postAttachCommand": {
+    "ui": "source ./venv/bin/activate && evidently ui --port 8000 --demo-projects all --workspace test-workspace"
+  },
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "evidently UI",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
