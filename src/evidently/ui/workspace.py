@@ -43,7 +43,9 @@ class ProjectSnapshot:
     _dashboard_info: Optional[DashboardInfo] = None
     _additional_graphs: Optional[Dict[str, DetailsInfo]] = None
 
-    def __init__(self, id: uuid.UUID, project: "Project", value: Optional[Snapshot] = None):
+    def __init__(
+        self, id: uuid.UUID, project: "Project", value: Optional[Snapshot] = None
+    ):
         self.id = id
         self.project = project
         self.last_modified_data = None
@@ -59,7 +61,11 @@ class ProjectSnapshot:
     @property
     def report(self) -> ReportBase:
         if self._report is None:
-            self._report = self.value.as_report() if self.value.is_report else self.value.as_test_suite()
+            self._report = (
+                self.value.as_report()
+                if self.value.is_report
+                else self.value.as_test_suite()
+            )
         return self._report
 
     @property
@@ -80,7 +86,11 @@ class ProjectSnapshot:
 
     def load(self):
         self._value = Snapshot.load(self.path)
-        _, self._dashboard_info, self._additional_graphs = self.report._build_dashboard_info()
+        (
+            _,
+            self._dashboard_info,
+            self._additional_graphs,
+        ) = self.report._build_dashboard_info()
 
 
 WST = TypeVar("WST", bound="WorkspaceBase")
@@ -140,7 +150,10 @@ class Project(ProjectBase["Workspace"]):
             with open(os.path.join(path, METADATA_PATH)) as f:
                 return parse_obj_as(Project, json.load(f))
         except FileNotFoundError:
-            return Project(name="Unnamed Project", dashboard=DashboardConfig(name="Dashboard", panels=[]))
+            return Project(
+                name="Unnamed Project",
+                dashboard=DashboardConfig(name="Dashboard", panels=[]),
+            )
 
     def save(self):
         os.makedirs(os.path.join(self.path, SNAPSHOTS), exist_ok=True)
@@ -173,19 +186,29 @@ class Project(ProjectBase["Workspace"]):
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
         self._reload_snapshots()
-        return {key: value.value.as_report() for key, value in self._snapshots.items() if value.value.is_report}
+        return {
+            key: value.value.as_report()
+            for key, value in self._snapshots.items()
+            if value.value.is_report
+        }
 
     @property
     def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
         self._reload_snapshots()
-        return {key: value.value.as_test_suite() for key, value in self._snapshots.items() if not value.value.is_report}
+        return {
+            key: value.value.as_test_suite()
+            for key, value in self._snapshots.items()
+            if not value.value.is_report
+        }
 
     def get_snapshot(self, id: uuid.UUID) -> Optional[ProjectSnapshot]:
         self._reload_snapshots()
         return self._snapshots.get(id, None)
 
     def build_dashboard_info(
-        self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
+        self,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
     ) -> DashboardInfo:
         self.reload()
         return self.dashboard.build_dashboard_info(
@@ -198,7 +221,9 @@ class Project(ProjectBase["Workspace"]):
         )
 
     def show_dashboard(
-        self, timestamp_start: Optional[datetime.datetime] = None, timestamp_end: Optional[datetime.datetime] = None
+        self,
+        timestamp_start: Optional[datetime.datetime] = None,
+        timestamp_end: Optional[datetime.datetime] = None,
     ):
         dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
         template_params = TemplateParams(
@@ -212,7 +237,9 @@ class Project(ProjectBase["Workspace"]):
 
             return HTML(determine_template("inline")(params=template_params))
         except ImportError as err:
-            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
+            raise Exception(
+                "Cannot import HTML from IPython.display, no way to show html"
+            ) from err
 
 
 PT = TypeVar("PT", bound=ProjectBase)
@@ -273,7 +300,11 @@ class Workspace(WorkspaceBase[Project]):
         return Workspace(path=path)
 
     def create_project(self, name: str, description: Optional[str] = None) -> Project:
-        project = Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[]))
+        project = Project(
+            name=name,
+            description=description,
+            dashboard=DashboardConfig(name=name, panels=[]),
+        )
         return self.add_project(project)
 
     def add_project(self, project: ProjectBase) -> Project:
@@ -332,7 +363,11 @@ class Workspace(WorkspaceBase[Project]):
             shutil.rmtree(path)
 
 
-def upload_snapshot(item: ReportBase, workspace_or_url: Union[str, WorkspaceBase], project_id: Union[uuid.UUID, str]):
+def upload_snapshot(
+    item: ReportBase,
+    workspace_or_url: Union[str, WorkspaceBase],
+    project_id: Union[uuid.UUID, str],
+):
     if isinstance(workspace_or_url, WorkspaceBase):
         workspace_or_url.add_snapshot(project_id, item.to_snapshot())
         return

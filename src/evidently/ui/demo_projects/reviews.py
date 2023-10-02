@@ -20,9 +20,15 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
-    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
+    reviews_data = datasets.fetch_openml(
+        name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto"
+    )
     reviews = reviews_data.frame
-    for name, rs in (("TheOtherStore", 0), ("AMajorCompetitor", 42), ("AwesomeShop", 100)):
+    for name, rs in (
+        ("TheOtherStore", 0),
+        ("AMajorCompetitor", 42),
+        ("AwesomeShop", 100),
+    ):
         np.random.seed(rs)
         random_index = np.random.choice(reviews.index, 300, replace=False)
         reviews.loc[random_index, "Review_Text"] = (
@@ -66,22 +72,30 @@ def create_report(i: int, data):
             metrics.ColumnDriftMetric(column_name="Review_Text"),
             metrics.ColumnDriftMetric(column_name="Title"),
             metrics.ClassificationQualityMetric(),
-            metrics.ColumnSummaryMetric(column_name=descriptors.OOV(display_name="OOV").for_column("Review_Text")),
+            metrics.ColumnSummaryMetric(
+                column_name=descriptors.OOV(display_name="OOV").for_column(
+                    "Review_Text"
+                )
+            ),
             metrics.ColumnSummaryMetric(
                 column_name=descriptors.NonLetterCharacterPercentage(
                     display_name="NonLetterCharacterPercentage"
                 ).for_column("Review_Text")
             ),
             metrics.ColumnSummaryMetric(
-                column_name=descriptors.Sentiment(display_name="Sentiment").for_column("Review_Text")
-            ),
-            metrics.ColumnSummaryMetric(
-                column_name=descriptors.RegExp(display_name="urls", reg_exp=r".*(http|www)\S+.*").for_column(
+                column_name=descriptors.Sentiment(display_name="Sentiment").for_column(
                     "Review_Text"
                 )
             ),
+            metrics.ColumnSummaryMetric(
+                column_name=descriptors.RegExp(
+                    display_name="urls", reg_exp=r".*(http|www)\S+.*"
+                ).for_column("Review_Text")
+            ),
             metrics.ColumnValueRangeMetric(
-                column_name=descriptors.TextLength(display_name="TextLength in the Range").for_column("Review_Text"),
+                column_name=descriptors.TextLength(
+                    display_name="TextLength in the Range"
+                ).for_column("Review_Text"),
                 left=1,
                 right=1000,
             ),
@@ -108,7 +122,9 @@ def create_report(i: int, data):
         )
     else:
         text_report.run(
-            reference_data=reference, current_data=current[(current.Rating < 5)], column_mapping=column_mapping
+            reference_data=reference,
+            current_data=current[(current.Rating < 5)],
+            column_mapping=column_mapping,
         )
 
     return text_report
@@ -262,7 +278,11 @@ def create_project(workspace: WorkspaceBase, name: str):
             values=[
                 PanelValue(
                     metric_id="ColumnSummaryMetric",
-                    metric_args={"column_name": descriptors.OOV(display_name="OOV").for_column("Review_Text")},
+                    metric_args={
+                        "column_name": descriptors.OOV(display_name="OOV").for_column(
+                            "Review_Text"
+                        )
+                    },
                     field_path="current_characteristics.mean",
                     legend="OOV % (mean)",
                 ),
@@ -315,7 +335,9 @@ def create_project(workspace: WorkspaceBase, name: str):
                 PanelValue(
                     metric_id="ColumnSummaryMetric",
                     metric_args={
-                        "column_name": descriptors.Sentiment(display_name="Sentiment").for_column("Review_Text")
+                        "column_name": descriptors.Sentiment(
+                            display_name="Sentiment"
+                        ).for_column("Review_Text")
                     },
                     field_path="current_characteristics.mean",
                     legend="sentiment (mean)",
@@ -336,7 +358,11 @@ def create_project(workspace: WorkspaceBase, name: str):
                     metric_args={
                         "column_name": descriptors.TriggerWordsPresence(
                             display_name="competitors",
-                            words_list=["theotherstore", "amajorcompetitor", "awesomeshop"],
+                            words_list=[
+                                "theotherstore",
+                                "amajorcompetitor",
+                                "awesomeshop",
+                            ],
                             lemmatize=False,
                         ).for_column("Review_Text"),
                         "category": 1,
@@ -358,9 +384,9 @@ def create_project(workspace: WorkspaceBase, name: str):
                 PanelValue(
                     metric_id="ColumnSummaryMetric",
                     metric_args={
-                        "column_name": descriptors.RegExp(display_name="urls", reg_exp=r".*(http|www)\S+.*").for_column(
-                            "Review_Text"
-                        )
+                        "column_name": descriptors.RegExp(
+                            display_name="urls", reg_exp=r".*(http|www)\S+.*"
+                        ).for_column("Review_Text")
                     },
                     field_path="current_characteristics.mean",
                     legend="reviews with URLs",

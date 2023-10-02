@@ -26,7 +26,9 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
-    content = requests.get("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip").content
+    content = requests.get(
+        "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"
+    ).content
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         raw_data = pd.read_csv(
             arc.open("hour.csv"),
@@ -37,7 +39,8 @@ def create_data():
         )
 
         raw_data.index = raw_data.apply(
-            lambda row: datetime.combine(row.name, time(hour=int(row["hr"]))) + relativedelta(years=11),
+            lambda row: datetime.combine(row.name, time(hour=int(row["hr"])))
+            + relativedelta(years=11),
             axis=1,
         )
         raw_data.sort_index(inplace=True)
@@ -57,10 +60,16 @@ def create_data():
     column_mapping.categorical_features = categorical_features
 
     regressor = ensemble.RandomForestRegressor(random_state=0, n_estimators=50)
-    regressor.fit(reference[numerical_features + categorical_features], reference[target])
+    regressor.fit(
+        reference[numerical_features + categorical_features], reference[target]
+    )
 
-    reference["prediction"] = regressor.predict(reference[numerical_features + categorical_features])
-    current["prediction"] = regressor.predict(current[numerical_features + categorical_features])
+    reference["prediction"] = regressor.predict(
+        reference[numerical_features + categorical_features]
+    )
+    current["prediction"] = regressor.predict(
+        current[numerical_features + categorical_features]
+    )
 
     return current, reference, column_mapping
 
@@ -87,7 +96,11 @@ def create_report(i: int, data):
 
     data_drift_report.run(
         reference_data=reference,
-        current_data=current.loc[datetime(2023, 1, 29) + timedelta(days=i) : datetime(2023, 1, 29) + timedelta(i + 1)],
+        current_data=current.loc[
+            datetime(2023, 1, 29)
+            + timedelta(days=i) : datetime(2023, 1, 29)
+            + timedelta(i + 1)
+        ],
         column_mapping=column_mapping,
     )
     return data_drift_report
@@ -102,7 +115,11 @@ def create_test_suite(i: int, data):
 
     data_drift_test_suite.run(
         reference_data=reference,
-        current_data=current.loc[datetime(2023, 1, 29) + timedelta(days=i) : datetime(2023, 1, 29) + timedelta(i + 1)],
+        current_data=current.loc[
+            datetime(2023, 1, 29)
+            + timedelta(days=i) : datetime(2023, 1, 29)
+            + timedelta(i + 1)
+        ],
         column_mapping=column_mapping,
     )
     return data_drift_test_suite

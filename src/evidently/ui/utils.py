@@ -46,7 +46,11 @@ class RemoteClientBase:
             data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
 
         response = requests.request(
-            method, urllib.parse.urljoin(self.base_url, path), params=query_params, data=data, headers=headers
+            method,
+            urllib.parse.urljoin(self.base_url, path),
+            params=query_params,
+            data=data,
+            headers=headers,
         )
         response.raise_for_status()
         if response_model is not None:
