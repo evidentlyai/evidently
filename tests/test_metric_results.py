@@ -8,9 +8,9 @@ from typing import Set
 from typing import Type
 
 import pytest
-from pydantic.v1 import BaseModel
-from pydantic.v1 import Field
-from pydantic.v1 import parse_obj_as
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import MetricResult

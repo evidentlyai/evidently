@@ -3,7 +3,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult

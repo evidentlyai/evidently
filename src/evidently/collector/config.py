@@ -8,8 +8,8 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
-from pydantic.v1 import BaseModel
-from pydantic.v1 import parse_obj_as
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 from evidently.base_metric import Metric
 from evidently.collector.storage import CollectorStorage
