@@ -11,21 +11,21 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from pydantic.v1 import Field
-from pydantic.v1.fields import SHAPE_DICT
-from pydantic.v1.main import BaseModel
-from pydantic.v1.main import ModelMetaclass
-from pydantic.v1.utils import import_string
+from evidently._pydantic_compat import SHAPE_DICT
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import ModelMetaclass
+from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
-    from pydantic.v1.main import Model
-    from pydantic.v1.typing import DictStrAny
+    from evidently._pydantic_compat import DictStrAny
+    from evidently._pydantic_compat import Model
 T = TypeVar("T")
 
 
 def pydantic_type_validator(type_: Type[Any]):
     def decorator(f):
-        from pydantic.v1.validators import _VALIDATORS
+        from evidently._pydantic_compat import _VALIDATORS
 
         for cls, validators in _VALIDATORS:
             if cls is type_:

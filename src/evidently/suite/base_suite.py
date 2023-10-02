@@ -15,11 +15,11 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic.v1 import UUID4
-from pydantic.v1 import BaseModel
-from pydantic.v1 import parse_obj_as
 
 import evidently
+from evidently._pydantic_compat import UUID4
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import ErrorResult
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric

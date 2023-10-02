@@ -2,8 +2,8 @@ import json
 from typing import Dict
 
 import pytest
-from pydantic.v1 import parse_obj_as
 
+from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import MetricResult
 from evidently.descriptors import OOV
 from evidently.ui.dashboards import PanelValue

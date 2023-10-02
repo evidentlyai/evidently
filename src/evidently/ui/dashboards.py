@@ -13,9 +13,9 @@ from typing import Union
 
 import plotly.io as pio
 from plotly import graph_objs as go
-from pydantic.v1 import BaseModel
-from pydantic.v1 import validator
 
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import validator
 from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo

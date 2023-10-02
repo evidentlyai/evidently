@@ -7,8 +7,8 @@ from typing import Type
 from typing import Union
 
 import pandas as pd
-from pydantic.v1 import BaseModel
 
+from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -26,7 +26,7 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 if TYPE_CHECKING:
-    from pydantic.v1.main import Model
+    from evidently._pydantic_compat import Model
 
 
 class LabelModel(BaseModel):

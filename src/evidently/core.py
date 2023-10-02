@@ -9,21 +9,21 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pydantic.v1.fields import SHAPE_DICT
-from pydantic.v1.fields import SHAPE_LIST
-from pydantic.v1.fields import SHAPE_SET
-from pydantic.v1.fields import SHAPE_TUPLE
-from pydantic.v1.fields import ModelField
 
+from evidently._pydantic_compat import SHAPE_DICT
+from evidently._pydantic_compat import SHAPE_LIST
+from evidently._pydantic_compat import SHAPE_SET
+from evidently._pydantic_compat import SHAPE_TUPLE
+from evidently._pydantic_compat import ModelField
 from evidently.pydantic_utils import pydantic_type_validator
 
 if TYPE_CHECKING:
-    from pydantic.v1.typing import MappingIntStrAny, AbstractSetIntStr
+    from evidently._pydantic_compat import MappingIntStrAny, AbstractSetIntStr
 
 from enum import Enum
 
-from pydantic.v1 import BaseConfig
-from pydantic.v1 import BaseModel
+from evidently._pydantic_compat import BaseConfig
+from evidently._pydantic_compat import BaseModel
 
 IncludeOptions = Union["AbstractSetIntStr", "MappingIntStrAny"]
 

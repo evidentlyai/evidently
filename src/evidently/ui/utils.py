@@ -6,9 +6,9 @@ from typing import Optional
 import requests
 from fastapi import Header
 from fastapi import HTTPException
-from pydantic.v1 import parse_obj_as
 from typing_extensions import Annotated
 
+from evidently._pydantic_compat import parse_obj_as
 from evidently.utils import NumpyEncoder
 
 SECRET = os.environ.get("EVIDENTLY_SECRET", None)

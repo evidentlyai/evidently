@@ -4,8 +4,7 @@ from typing import Dict
 from typing import Optional
 from typing import Union
 
-from pydantic.v1 import BaseModel
-
+from evidently._pydantic_compat import BaseModel
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
