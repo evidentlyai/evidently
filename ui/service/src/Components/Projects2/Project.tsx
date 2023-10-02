@@ -1,44 +1,53 @@
-import { Grid, IconButton, Link, Tab, Tabs, Typography } from '@material-ui/core'
+import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@material-ui/core'
 
 import {
   Link as RouterLink,
   Outlet,
   useParams,
   useMatches,
-  useOutletContext
+  LoaderFunctionArgs,
+  useLoaderData
 } from 'react-router-dom'
 import FilterNoneIcon from '@material-ui/icons/FilterNone'
 import invariant from 'tiny-invariant'
+import { api } from '../../api/RemoteApi'
+import { crumbFunction } from '../BreadCrumbs'
 
-export const PROJECT_TABS = [
+const PROJECT_TABS = [
   { id: 'dashboard', link: '.' },
   { id: 'reports', link: 'reports' },
   { id: 'test_suites', link: 'test-suites', label: 'Test suites' },
   { id: 'comparisons', link: 'comparisons', disabled: true }
 ]
 
-// export const handle = {
-//   crumb: () => ''
-// }
+type loaderData = Awaited<ReturnType<typeof loader>>
 
-export const Project = () => {
-  const { projectId } = useParams()
-  const matches = useMatches()
+export const handle: { crumb: crumbFunction<loaderData> } = {
+  crumb: (data, { pathname }) => ({ to: pathname, linkText: data.name })
+}
 
-  const tabIndex = PROJECT_TABS.findIndex((tab) => matches.find(({ id }) => id === tab.id))
-
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  const { projectId } = params
   invariant(projectId, 'missing projectId')
 
+  return api.getProjectInfo(projectId)
+}
+
+export const Component = () => {
+  const matches = useMatches()
+  const project = useLoaderData() as loaderData
+  const tabIndex = PROJECT_TABS.findIndex((tab) => matches.find(({ id }) => id === tab.id))
+
   return (
-    <>
+    <Box mt={2}>
       <Grid container spacing={2} direction="row" justifyContent="flex-start" alignItems="flex-end">
         <Grid item xs={12}>
           <Typography style={{ color: '#aaa' }} variant="body2">
-            {`project id: ${projectId}`}
+            {`project id: ${project.id}`}
             <IconButton
               size="small"
               style={{ marginLeft: 10 }}
-              onClick={() => navigator.clipboard.writeText(projectId)}
+              onClick={() => navigator.clipboard.writeText(project.id)}
             >
               <FilterNoneIcon />
             </IconButton>
@@ -63,6 +72,13 @@ export const Project = () => {
         })}
       </Tabs>
       <Outlet />
-    </>
+    </Box>
   )
+}
+
+export default {
+  loader,
+  Component,
+  path: 'projects2/:projectId',
+  handle
 }

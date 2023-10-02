@@ -7,6 +7,7 @@ import { ProjectData } from './ProjectData'
 import LoadableView from '../lib/components/LoadableVIew'
 import ApiContext from '../lib/contexts/ApiContext'
 import { ProjectContext } from '../Contexts/ProjectContext'
+import { BreadCrumbs } from './BreadCrumbs'
 
 export interface ServiceMainPageProps {
   children: React.JSX.Element
@@ -20,6 +21,7 @@ export function ServiceMainPage(props: ServiceMainPageProps) {
       <Paper
         style={{ marginTop: '20px', marginLeft: '10px', marginRight: '10px', padding: '10px' }}
       >
+        <BreadCrumbs />
         {props.children}
       </Paper>
     </>

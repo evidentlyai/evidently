@@ -1,8 +1,9 @@
-import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
+import { LoaderFunctionArgs, RouteObject, useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { api } from '../../api/RemoteApi'
 import { DashboardContent } from '../../lib/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '../../lib/contexts/DashboardContext'
+import type { crumbFunction } from '../BreadCrumbs'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { projectId, reportId } = params
@@ -13,12 +14,18 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return api.getDashboard(projectId, reportId)
 }
 
-export const Report = () => {
+type loaderData = Awaited<ReturnType<typeof loader>>
+
+export const handle: { crumb: crumbFunction<loaderData> } = {
+  crumb: (data, { pathname, params }) => ({ to: pathname, linkText: String(params.reportId) })
+}
+
+export const Component = () => {
   const { projectId, reportId } = useParams()
   invariant(projectId, 'missing projectId')
   invariant(reportId, 'missing reportId')
 
-  const data = useLoaderData() as Awaited<ReturnType<typeof loader>>
+  const data = useLoaderData() as loaderData
 
   return (
     <>
@@ -35,3 +42,11 @@ export const Report = () => {
     </>
   )
 }
+
+export default {
+  id: 'show-report-by-id',
+  path: ':reportId',
+  Component,
+  loader,
+  handle
+} satisfies RouteObject
