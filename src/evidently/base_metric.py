@@ -12,7 +12,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic.v1.main import ModelMetaclass
+from pydantic.main import ModelMetaclass
 
 from evidently.core import BaseResult
 from evidently.core import ColumnType
