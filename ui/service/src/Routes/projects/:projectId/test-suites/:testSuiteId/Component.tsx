@@ -1,10 +1,9 @@
-import { LoaderFunctionArgs, RouteObject, useLoaderData, useParams } from 'react-router-dom'
+import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { api } from '../../api/RemoteApi'
-import { DashboardContent } from '../../lib/components/DashboardContent'
-import DashboardContext, { CreateDashboardContextState } from '../../lib/contexts/DashboardContext'
-import { satisfies } from 'semver'
-import { crumbFunction } from '../BreadCrumbs'
+import { api } from 'api/RemoteApi'
+import { DashboardContent } from 'lib/components/DashboardContent'
+import DashboardContext, { CreateDashboardContextState } from 'lib/contexts/DashboardContext'
+import { crumbFunction } from 'Components/BreadCrumbs'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { projectId, testSuiteId } = params
@@ -42,11 +41,3 @@ export const Component = () => {
     </>
   )
 }
-
-export default {
-  id: 'show-test-suite-by-id',
-  path: ':testSuiteId',
-  loader,
-  Component,
-  handle
-} satisfies RouteObject

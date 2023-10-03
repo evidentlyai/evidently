@@ -3,15 +3,14 @@ import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@material-ui
 import {
   Link as RouterLink,
   Outlet,
-  useParams,
   useMatches,
   LoaderFunctionArgs,
   useLoaderData
 } from 'react-router-dom'
 import FilterNoneIcon from '@material-ui/icons/FilterNone'
 import invariant from 'tiny-invariant'
-import { api } from '../../api/RemoteApi'
-import { crumbFunction } from '../BreadCrumbs'
+import { api } from 'api/RemoteApi'
+import { crumbFunction } from 'Components/BreadCrumbs'
 
 const PROJECT_TABS = [
   { id: 'dashboard', link: '.' },
@@ -49,7 +48,7 @@ export const Component = () => {
               style={{ marginLeft: 10 }}
               onClick={() => navigator.clipboard.writeText(project.id)}
             >
-              <FilterNoneIcon />
+              <FilterNoneIcon fontSize="small" />
             </IconButton>
           </Typography>
         </Grid>
@@ -74,11 +73,4 @@ export const Component = () => {
       <Outlet />
     </Box>
   )
-}
-
-export default {
-  loader,
-  Component,
-  path: 'projects2/:projectId',
-  handle
 }

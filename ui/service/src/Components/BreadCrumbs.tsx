@@ -13,14 +13,20 @@ export type crumbFunction<T> = (
   options: Pick<MatchObject, 'id' | 'params' | 'pathname'>
 ) => Crumb
 
+type MatchWithCrumbHandle = MatchObject & {
+  handle: { crumb: crumbFunction<any> }
+}
+
+const isCrumb = (match: MatchObject): match is MatchWithCrumbHandle =>
+  // fine for now
+  typeof (match as MatchWithCrumbHandle)?.handle?.crumb === 'function'
+
 export const BreadCrumbs = () => {
   const matches = useMatches()
   const crumbs = matches
     // TODO: filter it properly
-    .filter(({ handle }) => handle?.crumb)
-    .map(({ handle, data, id, pathname, params }) =>
-      handle.crumb(data, { id, pathname, params })
-    ) as Crumb[]
+    .filter(isCrumb)
+    .map(({ handle, data, id, pathname, params }) => handle.crumb(data, { id, pathname, params }))
 
   return (
     <Box>

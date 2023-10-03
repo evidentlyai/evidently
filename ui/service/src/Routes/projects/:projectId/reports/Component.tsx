@@ -14,17 +14,14 @@ import {
   useLoaderData,
   useParams,
   Outlet,
-  useMatch,
-  useMatches,
-  RouteObject
+  useMatches
 } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { api } from '../../api/RemoteApi'
-import { TextWithCopyIcon } from '../TextWithCopyIcon'
-import { formatDate } from '../../Utils/Datetime'
-import { DownloadButton } from '../DownloadButton'
-import { satisfies } from 'semver'
-import { crumbFunction } from '../BreadCrumbs'
+import { api } from 'api/RemoteApi'
+import { TextWithCopyIcon } from 'Components/TextWithCopyIcon'
+import { formatDate } from 'Utils/Datetime'
+import { DownloadButton } from 'Components/DownloadButton'
+import { crumbFunction } from 'Components/BreadCrumbs'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   invariant(params.projectId, 'missing projectId')
@@ -91,11 +88,3 @@ export const Component = () => {
     </>
   )
 }
-
-export default {
-  id: 'reports',
-  path: 'reports',
-  loader,
-  Component,
-  handle
-} satisfies RouteObject

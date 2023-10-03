@@ -1,10 +1,10 @@
 import { Grid, TextField } from '@material-ui/core'
-import { LoaderFunctionArgs, RouteObject, useLoaderData, useParams } from 'react-router'
-import { DashboardContent } from '../../lib/components/DashboardContent'
-import { api } from '../../api/RemoteApi'
+import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router'
+import { DashboardContent } from 'lib/components/DashboardContent'
+import { api } from 'api/RemoteApi'
 import invariant from 'tiny-invariant'
 import { useSearchParams } from 'react-router-dom'
-import { formatDate } from '../../Utils/Datetime'
+import { formatDate } from 'Utils/Datetime'
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url)
@@ -70,10 +70,3 @@ export const Component = () => {
     </>
   )
 }
-
-export default {
-  id: 'dashboard',
-  Component,
-  loader,
-  path: undefined
-} satisfies RouteObject

@@ -5,7 +5,6 @@ import {
   Link as RouterLink,
   useLoaderData,
   useNavigation,
-  useOutletContext,
   useSubmit
 } from 'react-router-dom'
 import {
@@ -20,9 +19,9 @@ import {
   Typography
 } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
-import { useHover } from '../hooks/useHover'
-import { ProjectInfo } from '../lib/api/Api'
-import { api } from '../api/RemoteApi'
+import { useHover } from 'hooks/useHover'
+import { ProjectInfo } from 'lib/api/Api'
+import { api } from 'api/RemoteApi'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -122,11 +121,9 @@ const EditProjectInfoForm = ({
 }
 
 const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
-  // Delete this code and switch after PR approve
-  const { isNewVersion } = useOutletContext<{ isNewVersion?: boolean }>()
   return (
     <>
-      <Link component={RouterLink} to={`/projects${isNewVersion ? '2' : ''}/${project.id}`}>
+      <Link component={RouterLink} to={`/projects/${project.id}`}>
         <Typography variant={'h6'}>{project.name}</Typography>
       </Link>
       <Typography style={{ whiteSpace: 'pre-line' }} variant="body1">
@@ -213,10 +210,4 @@ export const Component = () => {
   )
 }
 
-export default {
-  loader,
-  action,
-  Component,
-  path2: undefined,
-  errorElement: <Typography variant="h4"> Something went wrong...</Typography>
-}
+export const errorElement = <Typography variant="h4"> Something went wrong...</Typography>
