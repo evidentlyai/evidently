@@ -6,8 +6,8 @@ from evidently.metrics import ClassificationClassBalance
 from evidently.metrics import ClassificationClassSeparationPlot
 from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationPRCurve
-from evidently.metrics import ClassificationPRTable
 from evidently.metrics import ClassificationProbDistribution
+from evidently.metrics import ClassificationPRTable
 from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityByFeatureTable
 from evidently.metrics import ClassificationQualityMetric
