@@ -822,7 +822,7 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
             columns = [
                 column.column_name
                 for column in data_definition.get_columns("all")
-                if column.column_type == ColumnType.Text
+                if column.column_type != ColumnType.Text
             ]
 
         else:
