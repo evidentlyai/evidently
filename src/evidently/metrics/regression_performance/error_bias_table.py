@@ -78,7 +78,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
             text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
-            text_features_gen = {}
+            text_features_gen: Dict[str, Dict[str, GeneratedFeature]] = {}
             text_features_gen_result = []
             for col in text_cols:
                 if self.columns is not None and col not in self.columns:
@@ -91,7 +91,9 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
                     }
                 else:
                     column_descriptors = self.descriptors[col]
-                    col_dict = {f"{col}: " + name: value.feature(col) for name, value in column_descriptors.items()}
+                    col_dict: Dict[str, GeneratedFeature] = {
+                        f"{col}: " + name: value.feature(col) for name, value in column_descriptors.items()
+                    }
 
                 text_features_gen_result += list(col_dict.values())
                 text_features_gen[col] = col_dict
