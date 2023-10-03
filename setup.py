@@ -56,7 +56,7 @@ setup_args = dict(
         "scipy>=1.5.4",
         "requests>=2.21.0",
         "PyYAML>=5.1",
-        "pydantic>=2.3.0",
+        "pydantic<2",
         "fastapi>=0.100.0",
         "fastapi-restful>=0.5.0",
         "typing-inspect>=0.9.0",
