@@ -1,6 +1,5 @@
 *.egg-info
 venv
-venv2
 .venv
 .vscode
 .DS_Store
@@ -18,6 +17,7 @@ profile.json
 
 __pycache__
 
-workspace
+# see .devcontainer/devcontainer.json
+test-workspace
 
-/api_doc/
+workspace

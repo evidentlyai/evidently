@@ -9,7 +9,7 @@ from fastapi import Depends
 from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import Request
-from fastapi_restful.tasks import repeat_every
+from fastapi_utils.tasks import repeat_every
 from typing_extensions import Annotated
 
 from evidently import ColumnMapping

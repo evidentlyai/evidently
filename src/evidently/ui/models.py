@@ -4,7 +4,7 @@ import uuid
 from typing import Any
 from typing import List
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo

@@ -14,9 +14,10 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from pydantic.v1 import UUID4
-from pydantic.v1 import BaseModel
-from pydantic.v1 import parse_obj_as
+import pandas as pd
+from pydantic import UUID4
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import ErrorResult

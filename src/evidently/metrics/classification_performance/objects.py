@@ -1,8 +1,8 @@
 from typing import Dict
 from typing import Optional
 
-from pydantic.v1 import Field
-from pydantic.v1 import parse_obj_as
+from pydantic import Field
+from pydantic import parse_obj_as
 from sklearn.metrics import classification_report
 
 from evidently.base_metric import MetricResult
