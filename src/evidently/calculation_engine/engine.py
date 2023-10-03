@@ -9,6 +9,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+from evidently import ColumnMapping
 from evidently.base_metric import ErrorResult
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -41,6 +42,10 @@ class Engine(Generic[TMetricImplementation, TInputData]):
 
     @abc.abstractmethod
     def convert_input_data(self, data: InputData) -> TInputData:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
         raise NotImplementedError()
 
     @abc.abstractmethod

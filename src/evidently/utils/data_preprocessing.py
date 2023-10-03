@@ -76,6 +76,7 @@ class DataDefinition:
 
     _task: Optional[str]
     _classification_labels: Optional[TargetNames]
+    _reference_present: bool
 
     def __init__(
         self,
@@ -87,6 +88,7 @@ class DataDefinition:
         embeddings: Optional[Dict[str, List[str]]],
         task: Optional[str],
         classification_labels: Optional[TargetNames],
+        reference_present: bool,
     ):
         self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
@@ -96,6 +98,7 @@ class DataDefinition:
         self._prediction_columns = prediction_columns
         self._classification_labels = classification_labels
         self._embeddings = embeddings
+        self._reference_present = reference_present
 
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self._columns[column_name]
@@ -137,6 +140,9 @@ class DataDefinition:
 
     def embeddings(self) -> Optional[Dict]:
         return self._embeddings
+
+    def reference_present(self) -> bool:
+        return self._reference_present
 
 
 def _process_column(
@@ -424,6 +430,7 @@ def create_data_definition(
         task=task,
         classification_labels=mapping.target_names,
         embeddings=embeddings,
+        reference_present=reference_data is not None,
     )
 
 

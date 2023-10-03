@@ -10,7 +10,7 @@ import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.calculations.data_quality import get_corr_method
-from evidently.metric_results import DatasetColumns
+from evidently.core import ColumnType
 from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnCategoryMetric
 from evidently.metrics import ColumnQuantileMetric
@@ -50,6 +50,7 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import plot_correlations
 from evidently.tests.utils import plot_value_counts_tables
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
@@ -816,14 +817,19 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
         self.is_critical = is_critical
         self.columns = columns
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
+    def generate(self, data_definition: DataDefinition) -> List[TestMostCommonValueShare]:
         if self.columns is None:
-            columns = columns_info.get_all_columns_list(skip_text_columns=True)
+            columns = data_definition.get_columns("all")
 
         else:
             columns = self.columns
 
-        return [TestMostCommonValueShare(column_name=name, is_critical=self.is_critical) for name in columns]
+        return [
+            TestMostCommonValueShare(
+                column_name=column.column_name,
+                is_critical=self.is_critical,
+            ) for column in columns if column.column_type != ColumnType.Text
+        ]
 
 
 class MeanInNSigmasParameter(TestParameters):
@@ -961,14 +967,23 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
         self.is_critical = is_critical
         self.columns = columns
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
+    def generate(self, data_definition: DataDefinition) -> List[TestMeanInNSigmas]:
         if self.columns is None:
-            columns = columns_info.num_feature_names
+            columns = data_definition.get_columns("numerical_features")
 
         else:
-            columns = [column for column in self.columns if column in columns_info.num_feature_names]
+            columns = [
+                column for column in self.columns
+                if data_definition.get_column(column).column_type == ColumnType.Numerical
+            ]
 
-        return [TestMeanInNSigmas(column_name=name, n_sigmas=2, is_critical=self.is_critical) for name in columns]
+        return [
+            TestMeanInNSigmas(
+                column_name=column.column_name,
+                n_sigmas=2,
+                is_critical=self.is_critical,
+            ) for column in columns
+        ]
 
 
 class TestValueRange(Test):
@@ -1174,14 +1189,22 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
         self.is_critical = is_critical
         self.columns = columns
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
+    def generate(self, data_definition: DataDefinition) -> List[TestShareOfOutRangeValues]:
         if self.columns is None:
-            columns = columns_info.num_feature_names
+            columns = data_definition.get_columns("numerical_features")
 
         else:
-            columns = [column for column in self.columns if column in columns_info.num_feature_names]
+            columns = [
+                column for column in self.columns
+                if data_definition.get_column(column).column_type == ColumnType.Numerical
+            ]
 
-        return [TestShareOfOutRangeValues(column_name=name, is_critical=self.is_critical) for name in columns]
+        return [
+            TestShareOfOutRangeValues(
+                column_name=column.column_name,
+                is_critical=self.is_critical,
+            ) for column in columns
+        ]
 
 
 class ColumnValueListParameters(TestParameters):
@@ -1329,14 +1352,21 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
         self.is_critical = is_critical
         self.columns = columns
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
+    def generate(self, data_definition: DataDefinition) -> List[TestShareOfOutListValues]:
         if self.columns is None:
-            columns = columns_info.cat_feature_names
+            columns = data_definition.get_columns("categorical_features")
 
         else:
-            columns = [column for column in self.columns if column in columns_info.cat_feature_names]
-
-        return [TestShareOfOutListValues(column_name=name, is_critical=self.is_critical) for name in columns]
+            columns = [
+                column for column in self.columns
+                if data_definition.get_column(column).column_type == ColumnType.Categorical
+            ]
+        return [
+            TestShareOfOutListValues(
+                column_name=column.column_name,
+                is_critical=self.is_critical,
+            ) for column in columns
+        ]
 
 
 class TestColumnQuantile(BaseCheckValueTest):

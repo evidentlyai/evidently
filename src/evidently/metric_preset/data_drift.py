@@ -11,6 +11,7 @@ from evidently.metrics import DatasetDriftMetric
 from evidently.metrics import EmbeddingsDriftMetric
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.utils.data_drift_utils import add_emb_drift_to_reports
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataDriftPreset(MetricPreset):
@@ -70,7 +71,7 @@ class DataDriftPreset(MetricPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_metrics(self, data: InputData, columns: DatasetColumns):
+    def generate_metrics(self, data_definition: DataDefinition):
         result = [
             DatasetDriftMetric(
                 columns=self.columns,
@@ -100,7 +101,7 @@ class DataDriftPreset(MetricPreset):
                 per_column_stattest_threshold=self.per_column_stattest_threshold,
             ),
         ]
-        embeddings_data = data.column_mapping.embeddings
+        embeddings_data = data_definition.embeddings()
         if embeddings_data is None:
             return result
         result = add_emb_drift_to_reports(

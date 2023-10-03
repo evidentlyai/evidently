@@ -5,10 +5,12 @@ from typing import TypeVar
 
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.metric_implementation import MetricImplementation
+from evidently.utils.data_preprocessing import create_data_definition
 
 
 class PythonInputData(InputData):
@@ -32,6 +34,9 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
             data.column_mapping,
             data.data_definition,
         )
+
+    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+        return create_data_definition(current_data, reference_data, column_mapping)
 
     def generate_additional_features(self, data: PythonInputData):
         curr_additional_data = None

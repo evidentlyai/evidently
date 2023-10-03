@@ -1,5 +1,6 @@
 *.egg-info
 venv
+venv2
 .venv
 .vscode
 .DS_Store
@@ -16,3 +17,7 @@ MANIFEST
 profile.json
 
 __pycache__
+
+workspace
+
+/api_doc/

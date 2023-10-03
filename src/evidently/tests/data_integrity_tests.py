@@ -10,7 +10,6 @@ import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.base_metric import ColumnName
-from evidently.metric_results import DatasetColumns
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import DatasetMissingValuesMetric
@@ -38,6 +37,7 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import dataframes_to_table
 from evidently.tests.utils import plot_dicts_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.types import NumericApprox
@@ -603,14 +603,19 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
         self.is_critical = is_critical
         self.columns = columns
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfMissingValues]:
+    def generate(self, data_definition: DataDefinition) -> List[TestColumnShareOfMissingValues]:
         if self.columns is None:
-            columns = columns_info.get_all_columns_list()
+            columns = data_definition.get_columns("all")
 
         else:
             columns = self.columns
 
-        return [TestColumnShareOfMissingValues(column_name=name, is_critical=self.is_critical) for name in columns]
+        return [
+            TestColumnShareOfMissingValues(
+                column_name=column.column_name,
+                is_critical=self.is_critical,
+            ) for column in columns
+        ]
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):

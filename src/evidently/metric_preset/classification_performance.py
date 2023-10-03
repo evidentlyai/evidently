@@ -15,6 +15,7 @@ from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityByFeatureTable
 from evidently.metrics import ClassificationQualityMetric
 from evidently.metrics import ClassificationRocCurve
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationPreset(MetricPreset):
@@ -40,16 +41,15 @@ class ClassificationPreset(MetricPreset):
         self.probas_threshold = probas_threshold
         self.k = k
 
-    def generate_metrics(self, data: InputData, columns: DatasetColumns):
+    def generate_metrics(self, data_definition: DataDefinition):
         result = [
             ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k),
             ClassificationClassBalance(),
             ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k),
             ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k),
         ]
-        curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
 
-        if curr_predictions.prediction_probas is not None:
+        if data_definition.get_prediction_columns().prediction_probas is not None:
             result.extend(
                 [
                     ClassificationClassSeparationPlot(),
