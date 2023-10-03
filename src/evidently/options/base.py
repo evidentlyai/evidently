@@ -5,7 +5,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from evidently.options import ColorOptions
 from evidently.options.agg_data import RenderOptions
