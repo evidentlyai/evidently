@@ -1,9 +1,7 @@
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import InputData
 from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metric_results import DatasetColumns
 from evidently.metrics import RegressionAbsPercentageErrorPlot
 from evidently.metrics import RegressionErrorBiasTable
 from evidently.metrics import RegressionErrorDistribution

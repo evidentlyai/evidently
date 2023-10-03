@@ -82,7 +82,8 @@ def make_generator_by_columns(
 
             elif columns == "all" or columns is None:
                 columns_for_generation = [
-                    column.column_name for column in data_definition.get_columns("all")
+                    column.column_name
+                    for column in data_definition.get_columns("all")
                     if column != data_definition.get_id_column()
                 ]
 
@@ -97,14 +98,10 @@ def make_generator_by_columns(
                 ]
 
             elif columns == "text":
-                columns_for_generation = [
-                    column.column_name for column in data_definition.get_columns("text_features")
-                ]
+                columns_for_generation = [column.column_name for column in data_definition.get_columns("text_features")]
 
             elif columns == "features":
-                columns_for_generation = [
-                    column.column_name for column in data_definition.get_columns("all_features")
-                ]
+                columns_for_generation = [column.column_name for column in data_definition.get_columns("all_features")]
 
             else:
                 raise ValueError("Incorrect parameter 'columns' for test generator")

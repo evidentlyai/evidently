@@ -1,16 +1,13 @@
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import InputData
-from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metric_results import DatasetColumns
 from evidently.metrics import ClassificationClassBalance
 from evidently.metrics import ClassificationClassSeparationPlot
 from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationPRCurve
-from evidently.metrics import ClassificationProbDistribution
 from evidently.metrics import ClassificationPRTable
+from evidently.metrics import ClassificationProbDistribution
 from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityByFeatureTable
 from evidently.metrics import ClassificationQualityMetric

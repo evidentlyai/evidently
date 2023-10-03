@@ -614,7 +614,8 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
             TestColumnShareOfMissingValues(
                 column_name=column,
                 is_critical=self.is_critical,
-            ) for column in columns
+            )
+            for column in columns
         ]
 
 

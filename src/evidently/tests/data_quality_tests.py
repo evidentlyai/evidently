@@ -828,7 +828,9 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
             TestMostCommonValueShare(
                 column_name=column.column_name,
                 is_critical=self.is_critical,
-            ) for column in columns if column.column_type != ColumnType.Text
+            )
+            for column in columns
+            if column.column_type != ColumnType.Text
         ]
 
 
@@ -973,7 +975,8 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 
         else:
             columns = [
-                column for column in self.columns
+                column
+                for column in self.columns
                 if data_definition.get_column(column).column_type == ColumnType.Numerical
             ]
 
@@ -982,7 +985,8 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
                 column_name=column,
                 n_sigmas=2,
                 is_critical=self.is_critical,
-            ) for column in columns
+            )
+            for column in columns
         ]
 
 
@@ -1195,7 +1199,8 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 
         else:
             columns = [
-                column for column in self.columns
+                column
+                for column in self.columns
                 if data_definition.get_column(column).column_type == ColumnType.Numerical
             ]
 
@@ -1203,7 +1208,8 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
             TestShareOfOutRangeValues(
                 column_name=column,
                 is_critical=self.is_critical,
-            ) for column in columns
+            )
+            for column in columns
         ]
 
 
@@ -1358,14 +1364,16 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 
         else:
             columns = [
-                column for column in self.columns
+                column
+                for column in self.columns
                 if data_definition.get_column(column).column_type == ColumnType.Categorical
             ]
         return [
             TestShareOfOutListValues(
                 column_name=column.column_name,
                 is_critical=self.is_critical,
-            ) for column in columns
+            )
+            for column in columns
         ]
 
 

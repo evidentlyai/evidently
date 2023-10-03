@@ -1,8 +1,6 @@
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import InputData
-from evidently.metric_results import DatasetColumns
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsMostCommonValueShare
 from evidently.tests import TestAllColumnsShareOfMissingValues

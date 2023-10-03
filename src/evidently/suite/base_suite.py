@@ -14,7 +14,6 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-import pandas as pd
 from pydantic import UUID4
 from pydantic import BaseModel
 from pydantic import parse_obj_as

@@ -69,7 +69,6 @@ class TargetDriftPreset(MetricPreset):
         prediction = data_definition.get_prediction_columns()
         result: List[Metric] = []
         columns_by_target = []
-        prob_columns: Optional[Sequence[str]] = None
 
         if target is not None:
             columns_by_target.append(target.column_name)
