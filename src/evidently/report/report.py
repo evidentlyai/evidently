@@ -82,11 +82,14 @@ class Report(ReportBase):
         self._inner_suite.reset()
         self._inner_suite.verify()
 
-        data_definition = self._inner_suite.context.engine.get_data_definition(
-            reference_data,
-            current_data,
-            column_mapping,
-        )
+        if self._inner_suite.context.engine is None:
+            raise ValueError("No Engine is set")
+        else:
+            data_definition = self._inner_suite.context.engine.get_data_definition(
+                reference_data,
+                current_data,
+                column_mapping,
+            )
         # data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
 
         # get each item from metrics/presets and add to metrics list

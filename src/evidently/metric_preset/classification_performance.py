@@ -46,7 +46,8 @@ class ClassificationPreset(MetricPreset):
             ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k),
         ]
 
-        if data_definition.get_prediction_columns().prediction_probas is not None:
+        columns = data_definition.get_prediction_columns()
+        if columns is not None and columns.prediction_probas is not None:
             result.extend(
                 [
                     ClassificationClassSeparationPlot(),
