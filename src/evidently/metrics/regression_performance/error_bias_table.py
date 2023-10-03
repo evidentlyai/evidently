@@ -84,16 +84,14 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
                 if self.columns is not None and col not in self.columns:
                     continue
                 if self.descriptors is None or col not in self.descriptors:
-                    col_dict = {
+                    col_dict: Dict[str, GeneratedFeature] = {
                         f"{col}: Text Length": TextLength(col),
                         f"{col}: Non Letter Character %": NonLetterCharacterPercentage(col),
                         f"{col}: OOV %": OOVWordsPercentage(col),
                     }
                 else:
                     column_descriptors = self.descriptors[col]
-                    col_dict: Dict[str, GeneratedFeature] = {
-                        f"{col}: " + name: value.feature(col) for name, value in column_descriptors.items()
-                    }
+                    col_dict = {f"{col}: " + name: value.feature(col) for name, value in column_descriptors.items()}
 
                 text_features_gen_result += list(col_dict.values())
                 text_features_gen[col] = col_dict
