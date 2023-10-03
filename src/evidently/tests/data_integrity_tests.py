@@ -605,14 +605,14 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestColumnShareOfMissingValues]:
         if self.columns is None:
-            columns = data_definition.get_columns("all")
+            columns = [column.column_name for column in data_definition.get_columns("all")]
 
         else:
             columns = self.columns
 
         return [
             TestColumnShareOfMissingValues(
-                column_name=column.column_name,
+                column_name=column,
                 is_critical=self.is_critical,
             ) for column in columns
         ]

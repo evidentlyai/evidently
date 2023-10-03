@@ -969,7 +969,7 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestMeanInNSigmas]:
         if self.columns is None:
-            columns = data_definition.get_columns("numerical_features")
+            columns = [column.column_name for column in data_definition.get_columns("numerical_features")]
 
         else:
             columns = [
@@ -979,7 +979,7 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 
         return [
             TestMeanInNSigmas(
-                column_name=column.column_name,
+                column_name=column,
                 n_sigmas=2,
                 is_critical=self.is_critical,
             ) for column in columns
@@ -1191,7 +1191,7 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestShareOfOutRangeValues]:
         if self.columns is None:
-            columns = data_definition.get_columns("numerical_features")
+            columns = [column.column_name for column in data_definition.get_columns("numerical_features")]
 
         else:
             columns = [
@@ -1201,7 +1201,7 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 
         return [
             TestShareOfOutRangeValues(
-                column_name=column.column_name,
+                column_name=column,
                 is_critical=self.is_critical,
             ) for column in columns
         ]

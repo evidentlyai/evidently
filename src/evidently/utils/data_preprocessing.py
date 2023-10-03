@@ -421,6 +421,12 @@ def create_data_definition(
         else:
             task = None
 
+    labels = None
+    if target_column is not None:
+        labels = list(data.current[target_column.column_name].unique())
+        if data.reference is not None:
+            labels = list(set(labels) | set(data.reference[target_column.column_name].unique()))
+
     return DataDefinition(
         columns=[col for col in all_columns if col is not None],
         id_column=id_column,
@@ -428,7 +434,7 @@ def create_data_definition(
         target=target_column,
         prediction_columns=prediction_columns,
         task=task,
-        classification_labels=mapping.target_names,
+        classification_labels=mapping.target_names or labels,
         embeddings=embeddings,
         reference_present=reference_data is not None,
     )
