@@ -436,6 +436,7 @@ MetadataValueType = Union[str, Dict[str, str], List[str]]
 
 class Snapshot(BaseModel):
     id: UUID4
+    name: Optional[str] = None
     timestamp: datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
@@ -482,11 +483,13 @@ class ReportBase(Display):
     # collection of all possible common options
     options: Options
     id: uuid.UUID
+    name: Optional[str] = None
     timestamp: datetime
     metadata: Dict[str, MetadataValueType] = {}
     tags: List[str] = []
 
-    def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None):
+    def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None, name: str = None):
+        self.name = name
         self.options = Options.from_any_options(options)
         self.timestamp = timestamp or datetime.now()
 
@@ -506,6 +509,7 @@ class ReportBase(Display):
         suite = ContextPayload.from_context(ctx)
         return Snapshot(
             id=self.id,
+            name=self.name,
             suite=suite,
             timestamp=self.timestamp,
             metadata=self.metadata,

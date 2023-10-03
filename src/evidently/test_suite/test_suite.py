@@ -48,8 +48,9 @@ class TestSuite(ReportBase):
         id: Optional[uuid.UUID] = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
+        name: str = None,
     ):
-        super().__init__(options, timestamp)
+        super().__init__(options, timestamp, name)
         self._inner_suite = Suite(self.options)
         self.id = id or uuid.uuid4()
         self._test_presets = []
@@ -246,6 +247,7 @@ class TestSuite(ReportBase):
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
+            name=snapshot.name,
         )
         suite._inner_suite.context = ctx
         return suite
