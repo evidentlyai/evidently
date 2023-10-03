@@ -1,5 +1,5 @@
 import HomeRoute from './home'
-import ProjectsRoute from './projects/:projectId'
+import ProjectsRoute from './projects/projectId'
 import ProjectsListRoute from './projectsList'
 
 const homeRoute = {

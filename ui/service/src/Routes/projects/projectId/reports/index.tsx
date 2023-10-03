@@ -5,7 +5,7 @@ import { Component, handle, loader } from './Component'
 // children routes
 ////////////////////
 
-import ReportRoute from './:reportId'
+import ReportRoute from './reportId'
 
 export default {
   id: 'reports',
