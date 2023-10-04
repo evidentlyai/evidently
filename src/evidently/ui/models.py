@@ -34,7 +34,7 @@ class ReportModel(BaseModel):
             timestamp=report.timestamp,
             metrics=[MetricModel.from_metric(m) for m in report._first_level_metrics],
             metadata=report.metadata,
-            tags=report.tags
+            tags=report.tags,
         )
 
 
@@ -46,12 +46,7 @@ class TestSuiteModel(BaseModel):
 
     @classmethod
     def from_report(cls, report: TestSuite):
-        return cls(
-            id=report.id,
-            timestamp=report.timestamp,
-            metadata=report.metadata,
-            tags=report.tags
-        )
+        return cls(id=report.id, timestamp=report.timestamp, metadata=report.metadata, tags=report.tags)
 
 
 class DashboardInfoModel(BaseModel):
