@@ -1,15 +1,17 @@
 import dataclasses
 import datetime
 import uuid
-from typing import Any, Dict, List
+from typing import Any
+from typing import Dict
+from typing import List
 
 from pydantic import BaseModel
 
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
-from evidently.test_suite import TestSuite
 from evidently.suite.base_suite import MetadataValueType
+from evidently.test_suite import TestSuite
 
 
 class MetricModel(BaseModel):

@@ -7,6 +7,7 @@ from datetime import timedelta
 import pandas as pd
 import requests
 from dateutil.relativedelta import relativedelta
+from numpy import random
 from sklearn import ensemble
 
 from evidently import ColumnMapping
@@ -23,7 +24,6 @@ from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
 from evidently.ui.demo_projects import DemoProject
 from evidently.ui.workspace import WorkspaceBase
-from numpy import random
 
 
 def create_data():
