@@ -25,6 +25,7 @@ import { api } from 'api/RemoteApi'
 import { TextWithCopyIcon } from 'Components/TextWithCopyIcon'
 import { formatDate } from 'Utils/Datetime'
 import { DownloadButton } from 'Components/DownloadButton'
+import { HidedTags } from 'Components/HidedTags'
 import { crumbFunction } from 'Components/BreadCrumbs'
 import { useUpdateQueryStringValueWithoutNavigation } from 'hooks/useUpdateQueryStringValueWithoutNavigation'
 import { useState } from 'react'
@@ -88,6 +89,7 @@ export const Component = () => {
           <Grid item xs={5}>
             <Autocomplete
               multiple
+              limitTags={2}
               value={selectedTags}
               onChange={(_, newSelectedTags) => setTags(newSelectedTags)}
               id="tags"
@@ -112,17 +114,15 @@ export const Component = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredTestSuites.map((testSuite, idx) => (
-                <TableRow key={`ts-${idx}`}>
+              {filteredTestSuites.map((testSuite) => (
+                <TableRow key={`ts-${testSuite.id}`}>
                   <TableCell>
                     <TextWithCopyIcon showText={testSuite.id} copyText={testSuite.id} />
                   </TableCell>
 
                   <TableCell>
-                    <Box maxWidth={250} display={'flex'} alignContent={'center'} flexWrap={'wrap'}>
-                      {testSuite.tags.map((tag, index) => (
-                        <Chip style={{ margin: '3px' }} key={index} label={tag} />
-                      ))}
+                    <Box maxWidth={250}>
+                      <HidedTags id={testSuite.id} tags={testSuite.tags} />
                     </Box>
                   </TableCell>
 

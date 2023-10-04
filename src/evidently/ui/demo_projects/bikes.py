@@ -66,10 +66,20 @@ def create_data():
     return current, reference, column_mapping
 
 
+TAGS = [
+    "production_critical",
+    "city_bikes_hourly",
+    "tabular_data",
+    "regression_batch_model",
+    "high_seasonality",
+    "numerical_features",
+    "categorical_features",
+    "no_missing_values",
+]
+
+
 def create_report(i: int, data):
     current, reference, column_mapping = data
-
-    REPORT_TAGS = ["Sugar", "Salt", "Pepper", "Paprika"]
 
     data_drift_report = Report(
         metrics=[
@@ -86,7 +96,9 @@ def create_report(i: int, data):
             metrics.ColumnSummaryMetric(column_name="prediction"),
         ],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
-        tags=list(random.choice(REPORT_TAGS, random.randint(0, len(REPORT_TAGS) + 1), replace=False)),
+        tags=list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
+        if random.uniform(0, 1) < 0.3
+        else [],
     )
     data_drift_report.set_batch_size("daily")
 
@@ -100,13 +112,13 @@ def create_report(i: int, data):
 
 def create_test_suite(i: int, data):
 
-    TEST_SUITE_TAGS = ["Sugar", "Salt", "Pepper", "Paprika"]
-
     current, reference, column_mapping = data
     data_drift_test_suite = TestSuite(
         tests=[DataDriftTestPreset()],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
-        tags=list(random.choice(TEST_SUITE_TAGS, random.randint(0, len(TEST_SUITE_TAGS) + 1), replace=False)),
+        tags=list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
+        if random.uniform(0, 1) < 0.3
+        else [],
     )
 
     data_drift_test_suite.run(

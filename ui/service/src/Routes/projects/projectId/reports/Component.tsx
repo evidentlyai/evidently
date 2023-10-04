@@ -26,6 +26,7 @@ import { api } from 'api/RemoteApi'
 import { TextWithCopyIcon } from 'Components/TextWithCopyIcon'
 import { formatDate } from 'Utils/Datetime'
 import { DownloadButton } from 'Components/DownloadButton'
+import { HidedTags } from 'Components/HidedTags'
 import { crumbFunction } from 'Components/BreadCrumbs'
 import { Autocomplete } from '@material-ui/lab'
 import { useUpdateQueryStringValueWithoutNavigation } from 'hooks/useUpdateQueryStringValueWithoutNavigation'
@@ -88,16 +89,15 @@ export const Component = () => {
           <Grid item xs={5}>
             <Autocomplete
               multiple
+              limitTags={2}
               value={selectedTags}
               onChange={(_, newSelectedTags) => setTags(newSelectedTags)}
-              id="tags"
               options={ALL_TAGS}
               renderInput={(params) => (
                 <TextField {...params} variant="standard" label="Filter by Tags" />
               )}
             />
           </Grid>
-          <Grid item xs={6} sm={6}></Grid>
         </Grid>
       </Box>
 
@@ -113,15 +113,13 @@ export const Component = () => {
         </TableHead>
         <TableBody>
           {filteredReports.map((report) => (
-            <TableRow id={report.id}>
+            <TableRow key={`r-${report.id}`}>
               <TableCell>
                 <TextWithCopyIcon showText={report.id} copyText={report.id} />
               </TableCell>
               <TableCell>
-                <Box maxWidth={250} display={'flex'} alignContent={'center'} flexWrap={'wrap'}>
-                  {report.tags.map((tag, index) => (
-                    <Chip style={{ margin: '3px' }} key={index} label={tag} />
-                  ))}
+                <Box maxWidth={250}>
+                  <HidedTags id={report.id} tags={report.tags} />
                 </Box>
               </TableCell>
               <TableCell>{formatDate(new Date(Date.parse(report.timestamp)))}</TableCell>
