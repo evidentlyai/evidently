@@ -23,6 +23,7 @@ from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
 from evidently.ui.demo_projects import DemoProject
 from evidently.ui.workspace import WorkspaceBase
+from numpy import random
 
 
 def create_data():
@@ -67,6 +68,9 @@ def create_data():
 
 def create_report(i: int, data):
     current, reference, column_mapping = data
+
+    REPORT_TAGS = ["Sugar", "Salt", "Pepper", "Paprika"]
+
     data_drift_report = Report(
         metrics=[
             metrics.RegressionQualityMetric(),
@@ -82,6 +86,7 @@ def create_report(i: int, data):
             metrics.ColumnSummaryMetric(column_name="prediction"),
         ],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
+        tags=list(random.choice(REPORT_TAGS, random.randint(0, len(REPORT_TAGS) + 1), replace=False)),
     )
     data_drift_report.set_batch_size("daily")
 
@@ -94,10 +99,14 @@ def create_report(i: int, data):
 
 
 def create_test_suite(i: int, data):
+
+    TEST_SUITE_TAGS = ["Sugar", "Salt", "Pepper", "Paprika"]
+
     current, reference, column_mapping = data
     data_drift_test_suite = TestSuite(
         tests=[DataDriftTestPreset()],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
+        tags=list(random.choice(TEST_SUITE_TAGS, random.randint(0, len(TEST_SUITE_TAGS) + 1), replace=False)),
     )
 
     data_drift_test_suite.run(
