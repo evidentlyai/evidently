@@ -28,7 +28,12 @@ class ApproxValue(FrozenBaseModel, ExcludeNoneMixin):
     relative: Numeric
     absolute: Numeric
 
-    def __init__(self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None):
+    def __init__(
+        self,
+        value: Numeric,
+        relative: Optional[Numeric] = None,
+        absolute: Optional[Numeric] = None,
+    ):
         if relative is not None and relative <= 0:
             raise ValueError("Relative value for approx should be greater than 0")
 
@@ -46,7 +51,9 @@ class ApproxValue(FrozenBaseModel, ExcludeNoneMixin):
         return max(relative_value, self.absolute)
 
     def __format__(self, format_spec):
-        return f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
+        return (
+            f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
+        )
 
     def __repr__(self):
         return f"{self.value} ± {self.tolerance}"

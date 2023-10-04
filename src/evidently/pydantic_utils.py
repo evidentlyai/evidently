@@ -72,14 +72,18 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
     def __setattr__(self, key, value):
         if self.__init_values__ is not None:
             if key not in self.__fields__ and key not in self.__private_attributes__:
-                raise AttributeError(f"{self.__class__.__name__} has no attribute {key}")
+                raise AttributeError(
+                    f"{self.__class__.__name__} has no attribute {key}"
+                )
             self.__init_values__[key] = value
             return
         super().__setattr__(key, value)
 
     def __hash__(self):
         try:
-            return hash(self.__class__) + hash(tuple(self._field_hash(v) for v in self.__dict__.values()))
+            return hash(self.__class__) + hash(
+                tuple(self._field_hash(v) for v in self.__dict__.values())
+            )
         except TypeError:
             raise
 
@@ -93,7 +97,9 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
 
 
 def all_subclasses(cls: Type[T]) -> Set[Type[T]]:
-    return set(cls.__subclasses__()).union([s for c in cls.__subclasses__() for s in all_subclasses(c)])
+    return set(cls.__subclasses__()).union(
+        [s for c in cls.__subclasses__() for s in all_subclasses(c)]
+    )
 
 
 class PolymorphicModel(BaseModel):
@@ -131,7 +137,8 @@ class WithTestAndMetricDependencies(EvidentlyBaseModel):
         from evidently.tests.base_test import Test
 
         for field_name, field in itertools.chain(
-            self.__dict__.items(), ((pa, getattr(self, pa, None)) for pa in self.__private_attributes__)
+            self.__dict__.items(),
+            ((pa, getattr(self, pa, None)) for pa in self.__private_attributes__),
         ):
             if issubclass(type(field), (Metric, Test)):
                 yield field_name, field
@@ -168,7 +175,9 @@ class FieldPath:
         if item not in self._cls.__fields__:
             raise AttributeError(f"{self._cls} type does not have '{item}' field")
         field = self._cls.__fields__[item]
-        return FieldPath(self._path + [item], field.type_, is_mapping=field.shape == SHAPE_DICT)
+        return FieldPath(
+            self._path + [item], field.type_, is_mapping=field.shape == SHAPE_DICT
+        )
 
     def list_nested_fields(self) -> List[str]:
         if not issubclass(self._cls, BaseModel):

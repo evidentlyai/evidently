@@ -5,13 +5,11 @@ from typing import Text
 import joblib
 import pandas as pd
 import pendulum
-from prefect import flow, task
-
-from src.utils.utils import (
-    get_batch_interval,
-    extract_batch_data,
-    prepare_scoring_data
-)
+from prefect import flow
+from prefect import task
+from src.utils.utils import extract_batch_data
+from src.utils.utils import get_batch_interval
+from src.utils.utils import prepare_scoring_data
 
 
 @task
@@ -72,10 +70,7 @@ def save_predictions(predictions: pd.DataFrame, path: Path) -> None:
 
 
 @flow(flow_run_name="predict-on-{ts}", log_prints=True)
-def predict(
-    ts: pendulum.DateTime,
-    interval: int = 60
-) -> None:
+def predict(ts: pendulum.DateTime, interval: int = 60) -> None:
     """Calculate predictions for the new batch (interval) data.
 
     Args:
@@ -110,17 +105,8 @@ def predict(
 if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument(
-        "--ts",
-        dest="ts",
-        required=True
-    )
-    args_parser.add_argument(
-        "--interval",
-        dest="interval",
-        required=False,
-        default=60
-    )
+    args_parser.add_argument("--ts", dest="ts", required=True)
+    args_parser.add_argument("--interval", dest="interval", required=False, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

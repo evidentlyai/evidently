@@ -44,7 +44,10 @@ def create_report(i: int):
         timestamp=datetime.datetime.now() + datetime.timedelta(days=i),
     )
 
-    data_drift_report.run(reference_data=adult_ref, current_data=adult_cur.iloc[100 * i : 100 * (i + 1), :])
+    data_drift_report.run(
+        reference_data=adult_ref,
+        current_data=adult_cur.iloc[100 * i : 100 * (i + 1), :],
+    )
     return data_drift_report
 
 
@@ -54,7 +57,10 @@ def create_test_suite(i: int):
         timestamp=datetime.datetime.now() + datetime.timedelta(days=i),
     )
 
-    data_drift_test_suite.run(reference_data=adult_ref, current_data=adult_cur.iloc[100 * i : 100 * (i + 1), :])
+    data_drift_test_suite.run(
+        reference_data=adult_ref,
+        current_data=adult_cur.iloc[100 * i : 100 * (i + 1), :],
+    )
     return data_drift_test_suite
 
 
@@ -101,7 +107,11 @@ def create_project(workspace: WorkspaceBase):
             title="Dataset Quality",
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             values=[
-                PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Drift Share"),
+                PanelValue(
+                    metric_id="DatasetDriftMetric",
+                    field_path="share_of_drifted_columns",
+                    legend="Drift Share",
+                ),
                 PanelValue(
                     metric_id="DatasetMissingValuesMetric",
                     field_path=DatasetMissingValuesMetric.fields.current.share_of_missing_values,

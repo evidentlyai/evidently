@@ -70,7 +70,9 @@ from evidently.report import Report
         ),
         (
             pd.DataFrame({"test1": [1, 2, 3], "test2": [1, 2, 3], "test3": [1, 1, 1]}),
-            pd.DataFrame({"test1": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}),
+            pd.DataFrame(
+                {"test1": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}
+            ),
             ColumnMapping(numerical_features=["test1"]),
             ColumnSummaryMetric(column_name="test1"),
             {
@@ -126,7 +128,11 @@ def test_column_summary_metric_with_report(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0

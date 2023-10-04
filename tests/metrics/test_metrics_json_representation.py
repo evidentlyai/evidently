@@ -17,7 +17,11 @@ def test_same_type_metric_in_one_json_report() -> None:
             ColumnQuantileMetric(column_name="feature2", quantile=0.5),
         ]
     )
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     result_json = report.json()
     result = json.loads(result_json)
     assert "timestamp" in result

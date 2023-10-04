@@ -132,7 +132,11 @@ def data():
 
 def test_export_to_json(suite, data):
     current_data, reference_data, column_mapping = data
-    suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    suite.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
 
     # assert suite
 
@@ -179,7 +183,11 @@ def test_export_to_json(suite, data):
 
 def test_include_metric_results(suite: TestSuite, data):
     current_data, reference_data, column_mapping = data
-    suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    suite.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
 
     data = suite.as_dict(include_metrics=True)
 

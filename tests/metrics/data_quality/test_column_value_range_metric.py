@@ -99,7 +99,11 @@ def test_data_quality_values_in_range_metric_success(
     expected_result: ColumnValueRangeMetricResult,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     result = metric.get_result()
 
     smart_assert_equal(result, expected_result)
@@ -153,11 +157,17 @@ def test_data_quality_values_in_range_metric_success(
     ),
 )
 def test_data_quality_values_in_range_metric_errors(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueRangeMetric
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnValueRangeMetric,
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
 
@@ -241,7 +251,10 @@ def test_data_quality_values_in_range_metric_errors(
     ),
 )
 def test_data_quality_values_in_range_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueRangeMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnValueRangeMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
     report.run(

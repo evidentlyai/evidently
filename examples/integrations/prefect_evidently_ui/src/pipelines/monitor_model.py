@@ -1,24 +1,24 @@
 import argparse
 import logging
-from typing import List, Text
+from typing import List
+from typing import Text
 
 import pandas as pd
 import pendulum
-from evidently import ColumnMapping
-from evidently.metrics import (
-    ColumnDriftMetric,
-    RegressionQualityMetric,
-    DatasetSummaryMetric
-)
-from evidently.report import Report
-from evidently.metrics import ColumnSummaryMetric
-from evidently.ui.workspace import Workspace
-from prefect import flow, task
-
 from config.evidently_config import EVIDENTLY_WS
+from prefect import flow
+from prefect import task
 from src.pipelines.monitor_data import prepare_current_data
 from src.utils.evidently_monitoring import get_evidently_project
 from src.utils.utils import get_batch_interval
+
+from evidently import ColumnMapping
+from evidently.metrics import ColumnDriftMetric
+from evidently.metrics import ColumnSummaryMetric
+from evidently.metrics import DatasetSummaryMetric
+from evidently.metrics import RegressionQualityMetric
+from evidently.report import Report
+from evidently.ui.workspace import Workspace
 
 
 @task
@@ -29,7 +29,7 @@ def generate_model_performance_report(
     cat_features: List[Text],
     prediction_col: Text,
     target_col: Text,
-    timestamp: float
+    timestamp: float,
 ) -> Report:
     """
     Generate model performance report.
@@ -62,12 +62,12 @@ def generate_model_performance_report(
     logging.info("Create a model performance report")
     model_performance_report = Report(
         metrics=[RegressionQualityMetric()],
-        timestamp=pendulum.from_timestamp(timestamp)
+        timestamp=pendulum.from_timestamp(timestamp),
     )
     model_performance_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
 
     return model_performance_report
@@ -81,7 +81,7 @@ def generate_target_drift_report(
     cat_features: List[Text],
     prediction_col: Text,
     target_col: Text,
-    timestamp: float
+    timestamp: float,
 ) -> Report:
     """
     Generate target drift report.
@@ -116,24 +116,21 @@ def generate_target_drift_report(
         metrics=[
             ColumnDriftMetric(column_name=target_col, stattest="wasserstein"),
             ColumnSummaryMetric(column_name=target_col),
-            DatasetSummaryMetric()
+            DatasetSummaryMetric(),
         ],
-        timestamp=pendulum.from_timestamp(timestamp)
+        timestamp=pendulum.from_timestamp(timestamp),
     )
     target_drift_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
 
     return target_drift_report
 
 
 @flow(flow_run_name="monitor-model-on-{ts}", log_prints=True)
-def monitor_model(
-    ts: pendulum.DateTime,
-    interval: int = 60
-) -> None:
+def monitor_model(ts: pendulum.DateTime, interval: int = 60) -> None:
     """Build and save monitoring reports.
 
     Args:
@@ -144,10 +141,7 @@ def monitor_model(
     DATA_REF_DIR = "data/reference"
     target_col = "duration_min"
     prediction_col = "predictions"
-    num_features = [
-        "passenger_count", "trip_distance",
-        "fare_amount", "total_amount"
-    ]
+    num_features = ["passenger_count", "trip_distance", "fare_amount", "total_amount"]
     cat_features = ["PULocationID", "DOLocationID"]
 
     # Prepare current data
@@ -168,9 +162,7 @@ def monitor_model(
         # Prepare reference data
         ref_path = f"{DATA_REF_DIR}/reference_data_2021-01.parquet"
         ref_data = pd.read_parquet(ref_path)
-        columns: List[Text] = (
-            num_features + cat_features + [target_col, prediction_col]
-        )
+        columns: List[Text] = num_features + cat_features + [target_col, prediction_col]
         reference_data = ref_data.loc[:, columns]
 
         # Model performance report
@@ -181,7 +173,7 @@ def monitor_model(
             cat_features=cat_features,
             prediction_col=prediction_col,
             target_col=target_col,
-            timestamp=ts.timestamp()
+            timestamp=ts.timestamp(),
         )
 
         # Add reports (snapshots) to the Project Monitoring Dashboard
@@ -195,7 +187,7 @@ def monitor_model(
             cat_features=cat_features,
             prediction_col=prediction_col,
             target_col=target_col,
-            timestamp=ts.timestamp()
+            timestamp=ts.timestamp(),
         )
 
         project_td = get_evidently_project(ws, "Target Drift")
@@ -205,17 +197,8 @@ def monitor_model(
 if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument(
-        "--ts",
-        dest="ts",
-        required=True
-    )
-    args_parser.add_argument(
-        "--interval",
-        dest="interval",
-        required=False,
-        default=60
-    )
+    args_parser.add_argument("--ts", dest="ts", required=True)
+    args_parser.add_argument("--interval", dest="interval", required=False, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

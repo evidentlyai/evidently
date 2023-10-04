@@ -88,7 +88,11 @@ def test_data_quality_preset(
     column_mapping: ColumnMapping,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     assert report.show()
     json_result = report.json()
     result = json.loads(json_result)

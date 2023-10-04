@@ -95,15 +95,23 @@ from evidently.report import Report
                     "my_target": [0, 0, 0],
                 }
             ),
-            ColumnMapping(target="my_target", prediction=["label_a", "label_b", "label_c"]),
+            ColumnMapping(
+                target="my_target", prediction=["label_a", "label_b", "label_c"]
+            ),
         ),
     ),
 )
 def test_data_drift_metrics_no_errors(
-    current_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, data_mapping: ColumnMapping
+    current_dataset: pd.DataFrame,
+    reference_dataset: pd.DataFrame,
+    data_mapping: ColumnMapping,
 ) -> None:
     report = Report(metrics=[DataDriftTable()])
-    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=current_dataset,
+        reference_data=reference_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()
 
@@ -121,12 +129,16 @@ def test_data_drift_metrics_value_error() -> None:
     report = Report(metrics=[DataDriftTable()])
 
     with pytest.raises(ValueError):
-        report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
+        report.run(
+            current_data=test_data, reference_data=None, column_mapping=data_mapping
+        )
         report.json()
 
     with pytest.raises(ValueError):
         # noinspection PyTypeChecker
-        report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)
+        report.run(
+            current_data=None, reference_data=test_data, column_mapping=data_mapping
+        )
         report.json()
 
 
@@ -181,8 +193,12 @@ def test_data_drift_metrics_with_options() -> None:
                 "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.7,
-                "current": {"small_distribution": {"x": [1, 2, 3, 4, 5], "y": [1, 1, 1, 0, 0]}},
-                "reference": {"small_distribution": {"x": [1, 2, 3, 4, 5], "y": [1, 0, 0, 1, 1]}},
+                "current": {
+                    "small_distribution": {"x": [1, 2, 3, 4, 5], "y": [1, 1, 1, 0, 0]}
+                },
+                "reference": {
+                    "small_distribution": {"x": [1, 2, 3, 4, 5], "y": [1, 0, 0, 1, 1]}
+                },
             },
         },
         "number_of_columns": 3,
@@ -231,8 +247,12 @@ def test_data_drift_metrics_json_output() -> None:
                 "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.7,
-                "current": {"small_distribution": {"x": [0.0, 1.0, 4.0, 5.0], "y": [1, 1, 0, 1]}},
-                "reference": {"small_distribution": {"x": [0, 1, 4, 5], "y": [0, 1, 2, 1]}},
+                "current": {
+                    "small_distribution": {"x": [0.0, 1.0, 4.0, 5.0], "y": [1, 1, 0, 1]}
+                },
+                "reference": {
+                    "small_distribution": {"x": [0, 1, 4, 5], "y": [0, 1, 2, 1]}
+                },
             },
             "target": {
                 "column_name": "target",
@@ -241,8 +261,12 @@ def test_data_drift_metrics_json_output() -> None:
                 "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.7,
-                "current": {"small_distribution": {"x": [1.0, 3.0, 4.0, 5.0], "y": [0, 1, 1, 0]}},
-                "reference": {"small_distribution": {"x": [1, 3, 4, 5], "y": [1, 0, 1, 2]}},
+                "current": {
+                    "small_distribution": {"x": [1.0, 3.0, 4.0, 5.0], "y": [0, 1, 1, 0]}
+                },
+                "reference": {
+                    "small_distribution": {"x": [1, 3, 4, 5], "y": [1, 0, 1, 2]}
+                },
             },
         },
         "number_of_columns": 3,

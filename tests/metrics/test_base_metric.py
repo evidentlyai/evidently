@@ -20,7 +20,13 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 def test_metric_generator():
     test_data = pd.DataFrame({"col1": [3, 2, 3], "col2": [4, 5, 6], "col3": [4, 5, 6]})
-    report = Report(metrics=[generate_column_metrics(ColumnValueRangeMetric, parameters={"left": 0, "right": 10})])
+    report = Report(
+        metrics=[
+            generate_column_metrics(
+                ColumnValueRangeMetric, parameters={"left": 0, "right": 10}
+            )
+        ]
+    )
     report.run(
         current_data=test_data,
         reference_data=None,
@@ -31,7 +37,9 @@ def test_metric_generator():
     report = Report(
         metrics=[
             generate_column_metrics(
-                metric_class=ColumnValueRangeMetric, columns=["col2", "col3"], parameters={"left": 0, "right": 10}
+                metric_class=ColumnValueRangeMetric,
+                columns=["col2", "col3"],
+                parameters={"left": 0, "right": 10},
             )
         ]
     )
@@ -75,7 +83,10 @@ class SimpleMetricWithFeatures(Metric[int]):
         super().__init__()
 
     def calculate(self, data: InputData) -> int:
-        if data.data_definition.get_column(self.column_name).column_type == ColumnType.Categorical:
+        if (
+            data.data_definition.get_column(self.column_name).column_type
+            == ColumnType.Categorical
+        ):
             return data.get_current_column(self._feature.feature_name()).sum()
         return data.get_current_column(self.column_name).sum()
 
@@ -91,7 +102,10 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
     _features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
-        return {k: data.get_current_column(v.feature_name()).sum() for k, v in self._features.items()}
+        return {
+            k: data.get_current_column(v.feature_name()).sum()
+            for k, v in self._features.items()
+        }
 
     def required_features(self, data_definition: DataDefinition):
         self._features = {
@@ -109,7 +123,9 @@ class SimpleGeneratedFeature(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name] * 2)]))
 
     def feature_name(self) -> ColumnName:
@@ -129,11 +145,17 @@ class LengthFeature(GeneratedFeature):
         self.max_length = max_length
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(len))]))
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
+        return pd.DataFrame(
+            dict([(self.column_name, data[self.column_name].apply(len))])
+        )
 
     def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name, f"Length of {self.column_name}")
+        return additional_feature(
+            self, self.column_name, f"Length of {self.column_name}"
+        )
 
 
 @pytest.mark.parametrize(

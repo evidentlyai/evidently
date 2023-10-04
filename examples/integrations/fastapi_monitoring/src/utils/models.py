@@ -9,10 +9,11 @@ Base = declarative_base()
 
 # [Prediction]
 
+
 class PredictionTable(Base):
     """Implement table for storing features with corresponding predictions."""
 
-    __tablename__ = 'prediction'
+    __tablename__ = "prediction"
     id = Column(Integer, primary_key=True)
     lpep_pickup_datetime = Column(Float)
     PULocationID = Column(Integer)

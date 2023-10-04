@@ -21,11 +21,15 @@ def scatter_as_dict(scatter: PredActualScatter) -> Dict[str, ScatterData]:
 
 
 @overload
-def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]:
+def scatter_as_dict(
+    scatter: Optional[PredActualScatter],
+) -> Optional[Dict[str, ScatterData]]:
     ...
 
 
-def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]:
+def scatter_as_dict(
+    scatter: Optional[PredActualScatter],
+) -> Optional[Dict[str, ScatterData]]:
     if scatter is None:
         return None
     return scatter.dict()
@@ -50,14 +54,20 @@ class IntervalSeries(MetricResult):
     def data(self):
         if not hasattr(self, "_data"):
             self._data = pd.Series(
-                self.values, index=[Interval(a, b, closed="right") for a, b in zip(self.bins, self.bins[1:])]
+                self.values,
+                index=[
+                    Interval(a, b, closed="right")
+                    for a, b in zip(self.bins, self.bins[1:])
+                ],
             )
         return self._data
 
     @classmethod
     def from_data(cls, data: pd.Series):
         index = list(data.index)
-        interval_series = cls(values=list(data), bins=[i.left for i in index] + [index[-1].right])
+        interval_series = cls(
+            values=list(data), bins=[i.left for i in index] + [index[-1].right]
+        )
         interval_series._data = data
         return interval_series
 
@@ -77,7 +87,8 @@ class RegressionMetricScatter(MetricResult):
 
     def __mul__(self, other: float):
         return RegressionMetricScatter(
-            current=self.current * other, reference=self.reference * other if self.reference is not None else None
+            current=self.current * other,
+            reference=self.reference * other if self.reference is not None else None,
         )
 
 

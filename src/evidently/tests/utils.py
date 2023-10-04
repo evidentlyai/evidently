@@ -22,13 +22,17 @@ def plot_check(fig, condition, color_options: ColorOptions):
     left_line = pd.Series([condition.gt, condition.gte]).max()
 
     if not pd.isnull(left_line):
-        left_line_name = ["gt", "gte"][pd.Series([condition.gt, condition.gte]).argmax()]
+        left_line_name = ["gt", "gte"][
+            pd.Series([condition.gt, condition.gte]).argmax()
+        ]
         lines.append((left_line, left_line_name))
 
     right_line = pd.Series([condition.lt, condition.lte]).min()
 
     if not pd.isnull(right_line):
-        right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
+        right_line_name = ["lt", "lte"][
+            pd.Series([condition.lt, condition.lte]).argmin()
+        ]
         lines.append((right_line, right_line_name))
 
     if condition.eq is not None and not isinstance(condition.eq, ApproxValue):
@@ -50,21 +54,29 @@ def plot_check(fig, condition, color_options: ColorOptions):
                     x=(line, line),
                     y=(0, max_y),
                     mode="lines",
-                    line=dict(color=color_options.secondary_color, width=3, dash="dash"),
+                    line=dict(
+                        color=color_options.secondary_color, width=3, dash="dash"
+                    ),
                     name=name,
                 )
             )
 
     if left_line and right_line:
-        fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
+        fig.add_vrect(
+            x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0
+        )
 
     if condition.eq is not None and isinstance(condition.eq, ApproxValue):
         left_border = 0.0
         right_border = 0.0
 
         if condition.eq.relative > 1e-6:
-            left_border = condition.eq.value - condition.eq.value * condition.eq.relative
-            right_border = condition.eq.value + condition.eq.value * condition.eq.relative
+            left_border = (
+                condition.eq.value - condition.eq.value * condition.eq.relative
+            )
+            right_border = (
+                condition.eq.value + condition.eq.value * condition.eq.relative
+            )
             fig.add_vrect(
                 x0=left_border,
                 x1=right_border,
@@ -117,7 +129,9 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
     additional_plots = []
     if values is not None:
         curr_df = curr_df[curr_df["count"] != 0]
-        curr_vals_inside_lst = curr_df[curr_df.x.isin(values)].sort_values("count", ascending=False)
+        curr_vals_inside_lst = curr_df[curr_df.x.isin(values)].sort_values(
+            "count", ascending=False
+        )
         data = np.array(["", ""])
         if curr_vals_inside_lst.shape[0] > 0:
             data = curr_vals_inside_lst[:10].values
@@ -130,7 +144,9 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
                 ),
             )
         )
-        curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values("count", ascending=False)
+        curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values(
+            "count", ascending=False
+        )
         data = np.array(["", ""])
         if curr_vals_outside_lst.shape[0] > 0:
             data = curr_vals_outside_lst[:10].values
@@ -162,7 +178,9 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
         additional_plots.append(
             DetailsInfo(
                 title="Reference value counts (top 10)",
-                info=table_data(column_names=["value", "count"], data=ref_df[:10].values),
+                info=table_data(
+                    column_names=["value", "count"], data=ref_df[:10].values
+                ),
             )
         )
     return additional_plots
@@ -192,7 +210,9 @@ def dataframes_to_table(
             left_index=True,
             right_index=True,
         )
-        df["eq"] = (df["value"] == df["ref_value"]) | (df["value"].isna() & df["ref_value"].isna())
+        df["eq"] = (df["value"] == df["ref_value"]) | (
+            df["value"].isna() & df["ref_value"].isna()
+        )
         if "ref_display" not in df.columns:
             df["ref_display"] = df["ref_value"].fillna("NA").astype(str)
     else:
@@ -223,11 +243,18 @@ def dataframes_to_table(
 
 
 def plot_dicts_to_table(
-    dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
+    dict_curr: dict,
+    dict_ref: Optional[dict],
+    columns: list,
+    id_prfx: str,
+    sort_by: str = "curr",
+    asc: bool = False,
 ):
     return dataframes_to_table(
         pd.DataFrame.from_dict(dict_curr, orient="index", columns=["value"]),
-        None if dict_ref is None else pd.DataFrame.from_dict(dict_ref, orient="index", columns=["value"]),
+        None
+        if dict_ref is None
+        else pd.DataFrame.from_dict(dict_ref, orient="index", columns=["value"]),
         columns=columns,
         table_id=id_prfx,
         sort_by=sort_by,
@@ -248,7 +275,9 @@ def plot_correlations(current_correlations, reference_correlations):
         cols = 1
         subplot_titles = [""]
 
-    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    fig = make_subplots(
+        rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+    )
     if len(columns) < 15:
         heatmap_text = np.round(current_correlations, 2).astype(str)
         heatmap_texttemplate = "%{text}"
@@ -291,7 +320,9 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     else:
         cols = 1
         subplot_titles = [""]
-    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    fig = make_subplots(
+        rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+    )
     trace = go.Heatmap(
         z=curr_mtrx.values,
         x=list(map(str, curr_mtrx.labels)),
@@ -330,7 +361,9 @@ def plot_roc_auc(
         subplot_titles = ["current", "reference"]
 
     for label in curr_roc_curve.keys():
-        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        fig = make_subplots(
+            rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+        )
         trace = go.Scatter(
             x=curr_roc_curve[label]["fpr"],
             y=curr_roc_curve[label]["tpr"],
@@ -360,12 +393,19 @@ def plot_roc_auc(
             xaxis_title="False Positive Rate",
             showlegend=True,
         )
-        additional_plots.append((f"ROC Curve for label {label}", plotly_figure(title="", figure=fig)))
+        additional_plots.append(
+            (f"ROC Curve for label {label}", plotly_figure(title="", figure=fig))
+        )
 
     return additional_plots
 
 
-def plot_boxes(*, curr_for_plots: Boxes, ref_for_plots: Optional[Boxes], color_options: ColorOptions):
+def plot_boxes(
+    *,
+    curr_for_plots: Boxes,
+    ref_for_plots: Optional[Boxes],
+    color_options: ColorOptions,
+):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
     fig = go.Figure()
@@ -423,7 +463,9 @@ def plot_rates(
     )
     curr_df = curr_df[curr_df.thrs <= 1]
 
-    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    fig = make_subplots(
+        rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+    )
     for i, metric in enumerate(["fpr", "tpr", "fnr", "tnr"]):
         fig.add_trace(
             go.Scatter(

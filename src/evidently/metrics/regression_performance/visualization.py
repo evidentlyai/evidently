@@ -24,12 +24,22 @@ def plot_error_bias_colored_scatter(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
 
     for name, value, color in zip(
         ["Underestimation", "Overestimation", "Majority"],
-        [curr_scatter_data.underestimation, curr_scatter_data.overestimation, curr_scatter_data.majority],
-        [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
+        [
+            curr_scatter_data.underestimation,
+            curr_scatter_data.overestimation,
+            curr_scatter_data.majority,
+        ],
+        [
+            color_options.underestimation_color,
+            color_options.overestimation_color,
+            color_options.majority_color,
+        ],
     ):
         trace = go.Scatter(
             x=value.actual,
@@ -46,8 +56,16 @@ def plot_error_bias_colored_scatter(
     if ref_scatter_data is not None:
         for name, value, color in zip(
             ["Underestimation", "Overestimation", "Majority"],
-            [ref_scatter_data.underestimation, ref_scatter_data.overestimation, ref_scatter_data.majority],
-            [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
+            [
+                ref_scatter_data.underestimation,
+                ref_scatter_data.overestimation,
+                ref_scatter_data.majority,
+            ],
+            [
+                color_options.underestimation_color,
+                color_options.overestimation_color,
+                color_options.majority_color,
+            ],
         ):
             trace = go.Scatter(
                 x=value.actual,
@@ -86,7 +104,9 @@ def regression_perf_plot(
     sorted_index = val_for_plot.current.data.sort_index()
     x = [str(idx) for idx in sorted_index.index]
     y = list(sorted_index)
-    trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=current_color)
+    trace = go.Scatter(
+        x=x, y=y, mode="lines+markers", name=name, marker_color=current_color
+    )
     fig.add_trace(trace, 1, 1)
 
     df = hist_for_plot.current.to_df().sort_values("x")
@@ -100,7 +120,9 @@ def regression_perf_plot(
         sorted_index = val_for_plot.reference.data.sort_index()
         x = [str(idx) for idx in sorted_index.index]
         y = list(sorted_index)
-        trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=reference_color)
+        trace = go.Scatter(
+            x=x, y=y, mode="lines+markers", name=name, marker_color=reference_color
+        )
         fig.add_trace(trace, 1, 1)
 
         df = hist_for_plot.reference.to_df().sort_values("x")

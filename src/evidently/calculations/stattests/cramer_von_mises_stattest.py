@@ -43,7 +43,10 @@ class CramerVonMisesResult:
         self.pvalue = pvalue
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(statistic={self.statistic}, " f"pvalue={self.pvalue})"
+        return (
+            f"{self.__class__.__name__}(statistic={self.statistic}, "
+            f"pvalue={self.pvalue})"
+        )
 
 
 def _pval_cvm_2samp_exact(s, m, n):
@@ -76,7 +79,9 @@ def _pval_cvm_2samp_exact(s, m, n):
     dtype = np.min_scalar_type(max_gs)
 
     # the frequency table of $g_{u, v}^+$ defined in [1, p. 6]
-    gs = [np.array([[0], [1]], dtype=dtype)] + [np.empty((2, 0), dtype=dtype) for _ in range(m)]
+    gs = [np.array([[0], [1]], dtype=dtype)] + [
+        np.empty((2, 0), dtype=dtype) for _ in range(m)
+    ]
     for u in range(n + 1):
         next_gs = []
         tmp = np.empty((2, 0), dtype=dtype)
@@ -84,7 +89,14 @@ def _pval_cvm_2samp_exact(s, m, n):
             # Calculate g recursively with eq. 11 in [1]. Even though it
             # doesn't look like it, this also does 12/13 (all of Algorithm 1).
             vi, i0, i1 = np.intersect1d(tmp[0], g[0], return_indices=True)
-            tmp = np.concatenate([np.stack([vi, tmp[1, i0] + g[1, i1]]), np.delete(tmp, i0, 1), np.delete(g, i1, 1)], 1)
+            tmp = np.concatenate(
+                [
+                    np.stack([vi, tmp[1, i0] + g[1, i1]]),
+                    np.delete(tmp, i0, 1),
+                    np.delete(g, i1, 1),
+                ],
+                1,
+            )
             tmp[0] += (a * v - b * u) ** 2
             next_gs.append(tmp)
         gs = next_gs
@@ -125,7 +137,9 @@ def _cdf_cvm_inf(x):
     return tot
 
 
-def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
+def _cvm_2samp(
+    x: np.ndarray, y: np.ndarray, method: str = "auto"
+) -> CramerVonMisesResult:
     """Perform the two-sample Cramér-von Mises test
     Args:
         x : array_like

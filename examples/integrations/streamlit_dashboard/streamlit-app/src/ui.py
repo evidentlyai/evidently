@@ -1,12 +1,12 @@
 import os
 from pathlib import Path
-from PIL import Image
-import streamlit as st
-import streamlit.components.v1 as components
 from typing import Iterable
 from typing import List
 from typing import Text
 
+import streamlit as st
+import streamlit.components.v1 as components
+from PIL import Image
 from src.utils import EntityNotFoundError
 from src.utils import get_report_name
 from src.utils import period_dir_to_dates_range
@@ -160,14 +160,16 @@ def display_report(report_path: Path) -> List[Text]:
     elif report_path.is_dir():
         # list report parts
         report_parts: List[Path] = sorted(
-            list(map(
-                lambda report_part: report_path / report_part, 
-                os.listdir(report_path))
+            list(
+                map(
+                    lambda report_part: report_path / report_part,
+                    os.listdir(report_path),
                 )
             )
+        )
         tab_names: List[Text] = map(get_report_name, report_parts)
         tab_names_formatted = [f"📈 {name}" for name in tab_names]
-        
+
         # create tabs
         tabs: Iterable[object] = st.tabs(tab_names_formatted)
         report_contents: List[Text] = []
@@ -183,6 +185,6 @@ def display_report(report_path: Path) -> List[Text]:
                     )
 
         return report_contents
-    
-    else: 
+
+    else:
         return EntityNotFoundError("🔍 No reports found")

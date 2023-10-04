@@ -35,7 +35,9 @@ from evidently.report import Report
     ),
 )
 def test_dataset_missing_values_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DatasetMissingValuesMetric
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: DatasetMissingValuesMetric,
 ) -> None:
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data)
@@ -57,11 +59,18 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     data_mapping = ColumnMapping()
     metric = DatasetMissingValuesMetric()
     report = Report(metrics=[metric])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     result = metric.get_result()
     assert result is not None
     # expect na values and an empty string as null-values
-    assert result.current.different_missing_values == {None: 5, -np.inf: 1, np.inf: 1, "": 2}
+    assert result.current.different_missing_values == {
+        None: 5,
+        -np.inf: 1,
+        np.inf: 1,
+        "": 2,
+    }
     assert result.current.number_of_different_missing_values == 4
     assert result.current.number_of_missing_values == 9
     assert result.current.number_of_rows_with_missing_values == 3
@@ -93,7 +102,9 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
 
     metric = DatasetMissingValuesMetric(missing_values=["n/a"], replace=False)
     report = Report(metrics=[metric])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     result = metric.get_result()
     assert result is not None
     # expect n/a and other defaults as null-values
@@ -102,9 +113,13 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     assert result.reference is None
 
     # test custom list of null values, no default, but with Pandas nulls
-    metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
+    metric = DatasetMissingValuesMetric(
+        missing_values=["", 0, "n/a", -9999, None], replace=True
+    )
     report = Report(metrics=[metric])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     result = metric.get_result()
     assert result is not None
     assert result.current.number_of_different_missing_values == 5
@@ -112,9 +127,13 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     assert result.reference is None
 
     # test custom list of null values and ignore pandas null values
-    metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999], replace=True)
+    metric = DatasetMissingValuesMetric(
+        missing_values=["", 0, "n/a", -9999], replace=True
+    )
     report = Report(metrics=[metric])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     result = metric.get_result()
     assert result is not None
     assert result.current.number_of_different_missing_values == 4
@@ -137,9 +156,15 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     ),
 )
 def test_dataset_missing_values_metrics_value_error(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DatasetMissingValuesMetric
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: DatasetMissingValuesMetric,
 ) -> None:
     with pytest.raises(ValueError):
         report = Report(metrics=[metric])
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()

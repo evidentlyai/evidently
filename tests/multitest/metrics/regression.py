@@ -17,7 +17,12 @@ from tests.multitest.metrics.conftest import metric
 
 @metric
 def regression_error_plot():
-    return TestMetric("regression_error_plot", RegressionErrorPlot(), NoopOutcome(), [DatasetTags.REGRESSION])
+    return TestMetric(
+        "regression_error_plot",
+        RegressionErrorPlot(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
+    )
 
 
 @metric
@@ -33,25 +38,41 @@ def regression_abs_percentage_error_plot():
 @metric
 def regression_performance_metrics():
     return TestMetric(
-        "regression_performance_metrics", RegressionPerformanceMetrics(), NoopOutcome(), [DatasetTags.REGRESSION]
+        "regression_performance_metrics",
+        RegressionPerformanceMetrics(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
     )
 
 
 @metric
 def regression_quality_metric():
-    return TestMetric("regression_quality_metric", RegressionQualityMetric(), NoopOutcome(), [DatasetTags.REGRESSION])
+    return TestMetric(
+        "regression_quality_metric",
+        RegressionQualityMetric(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
+    )
 
 
 @metric
 def regression_top_error_metric():
     return TestMetric(
-        "regression_top_error_metric", RegressionTopErrorMetric(), NoopOutcome(), [DatasetTags.REGRESSION]
+        "regression_top_error_metric",
+        RegressionTopErrorMetric(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
     )
 
 
 @metric
 def regression_dummy_metric():
-    return TestMetric("regression_dummy_metric", RegressionDummyMetric(), NoopOutcome(), [DatasetTags.REGRESSION])
+    return TestMetric(
+        "regression_dummy_metric",
+        RegressionDummyMetric(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
+    )
 
 
 @metric
@@ -67,19 +88,30 @@ def regression_predicted_vs_actual_plot():
 @metric
 def regression_error_bias_table():
     return TestMetric(
-        "regression_error_bias_table", RegressionErrorBiasTable(), NoopOutcome(), [DatasetTags.REGRESSION]
+        "regression_error_bias_table",
+        RegressionErrorBiasTable(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
     )
 
 
 @metric
 def regression_error_normality():
-    return TestMetric("regression_error_normality", RegressionErrorNormality(), NoopOutcome(), [DatasetTags.REGRESSION])
+    return TestMetric(
+        "regression_error_normality",
+        RegressionErrorNormality(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
+    )
 
 
 @metric
 def regression_error_distribution():
     return TestMetric(
-        "regression_error_distribution", RegressionErrorDistribution(), NoopOutcome(), [DatasetTags.REGRESSION]
+        "regression_error_distribution",
+        RegressionErrorDistribution(),
+        NoopOutcome(),
+        [DatasetTags.REGRESSION],
     )
 
 

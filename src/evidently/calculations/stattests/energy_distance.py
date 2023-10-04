@@ -33,7 +33,10 @@ from evidently.core import ColumnType
 
 
 def _energy_dist(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: ColumnType,
+    threshold: float,
 ) -> Tuple[float, bool]:
     """Run the energy_distance test of two samples.
     Args:

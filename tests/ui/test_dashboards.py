@@ -21,14 +21,21 @@ class B(MetricResult):
 
 @pytest.mark.parametrize(
     "obj,path,value",
-    [(A(f="a"), "f", "a"), (B(f={}, f1=A(f="a")), "f1.f", "a"), (B(f={"a": A(f="a")}, f1=A(f="b")), "f.a.f", "a")],
+    [
+        (A(f="a"), "f", "a"),
+        (B(f={}, f1=A(f="a")), "f1.f", "a"),
+        (B(f={"a": A(f="a")}, f1=A(f="b")), "f.a.f", "a"),
+    ],
 )
 def test_getattr_nested(obj, path: str, value):
     assert getattr_nested(obj, path.split(".")) == value
 
 
 def test_panel_value_metric_args_ser():
-    pv = PanelValue(field_path="", metric_args={"col": OOV(display_name="OOV").for_column("Review_Text")})
+    pv = PanelValue(
+        field_path="",
+        metric_args={"col": OOV(display_name="OOV").for_column("Review_Text")},
+    )
 
     pl = json.dumps(pv.dict())
     pv2 = parse_obj_as(PanelValue, json.loads(pl))

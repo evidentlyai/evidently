@@ -1,7 +1,8 @@
-from PIL import Image
+from typing import Text
+
 import streamlit as st
 import streamlit.components.v1 as components
-from typing import Text
+from PIL import Image
 
 
 def set_page_container_style() -> None:
@@ -32,8 +33,8 @@ def display_sidebar_header() -> None:
     with st.sidebar:
         st.image(logo, use_column_width=True)
         col1, col2 = st.columns(2)
-        repo_link: Text = '#'
-        evidently_docs: Text = 'https://docs.evidentlyai.com/'
+        repo_link: Text = "#"
+        evidently_docs: Text = "https://docs.evidentlyai.com/"
         col1.markdown(
             f"<a style='display: block; text-align: center;' href={repo_link}>Source code</a>",
             unsafe_allow_html=True,
@@ -42,7 +43,7 @@ def display_sidebar_header() -> None:
             f"<a style='display: block; text-align: center;' href={evidently_docs}>Evidently docs</a>",
             unsafe_allow_html=True,
         )
-        st.header('')  # add space between logo and selectors
+        st.header("")  # add space between logo and selectors
 
 
 def display_header(report_name: Text, window_size: int) -> None:
@@ -53,8 +54,8 @@ def display_header(report_name: Text, window_size: int) -> None:
         window_size (int): Size of prediction data on which report built.
     """
 
-    st.header(f'Report: {report_name}')
-    st.caption(f'Window size: {window_size}')
+    st.header(f"Report: {report_name}")
+    st.caption(f"Window size: {window_size}")
 
 
 @st.cache_data

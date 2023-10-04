@@ -84,8 +84,12 @@ class Report(ReportBase):
         self._inner_suite.reset()
         self._inner_suite.verify()
 
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
+        data_definition = create_data_definition(
+            reference_data, current_data, column_mapping
+        )
+        data = InputData(
+            reference_data, current_data, None, None, column_mapping, data_definition
+        )
 
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
@@ -106,9 +110,13 @@ class Report(ReportBase):
             elif isinstance(item, MetricPreset):
                 metrics = []
 
-                for metric_item in item.generate_metrics(data=data, columns=self._columns_info):
+                for metric_item in item.generate_metrics(
+                    data=data, columns=self._columns_info
+                ):
                     if isinstance(metric_item, BaseGenerator):
-                        metrics.extend(metric_item.generate(columns_info=self._columns_info))
+                        metrics.extend(
+                            metric_item.generate(columns_info=self._columns_info)
+                        )
 
                     else:
                         metrics.append(metric_item)
@@ -126,10 +134,16 @@ class Report(ReportBase):
                 self._inner_suite.add_metric(item)
 
             else:
-                raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
+                raise ValueError(
+                    "Incorrect item instead of a metric or metric preset was passed to Report"
+                )
 
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
+        data_definition = create_data_definition(
+            reference_data, current_data, column_mapping
+        )
+        curr_add, ref_add = self._inner_suite.create_additional_features(
+            current_data, reference_data, data_definition
+        )
         data = InputData(
             reference_data,
             current_data,
@@ -151,7 +165,9 @@ class Report(ReportBase):
         include = include or {}
         exclude = exclude or {}
         for metric in self._first_level_metrics:
-            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
+            renderer = find_metric_renderer(
+                type(metric), self._inner_suite.context.renderers
+            )
             metric_id = metric.get_id()
             metrics.append(
                 {
@@ -169,11 +185,15 @@ class Report(ReportBase):
             "metrics": metrics,
         }
 
-    def as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
+    def as_pandas(
+        self, group: str = None
+    ) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
         metrics = defaultdict(list)
 
         for metric in self._first_level_metrics:
-            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
+            renderer = find_metric_renderer(
+                type(metric), self._inner_suite.context.renderers
+            )
             metric_id = metric.get_id()
             if group is not None and metric_id != group:
                 continue
@@ -195,7 +215,9 @@ class Report(ReportBase):
         color_options = self.options.color_options
 
         for test in self._first_level_metrics:
-            renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
+            renderer = find_metric_renderer(
+                type(test), self._inner_suite.context.renderers
+            )
             # set the color scheme from the report for each render
             renderer.color_options = color_options
             html_info = renderer.render_html(test)
@@ -203,10 +225,16 @@ class Report(ReportBase):
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():
                     if isinstance(additional_graph, AdditionalGraphInfo):
-                        additional_graphs.append(DetailsInfo("", additional_graph.params, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo(
+                                "", additional_graph.params, additional_graph.id
+                            )
+                        )
 
                     else:
-                        additional_graphs.append(DetailsInfo("", additional_graph, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo("", additional_graph, additional_graph.id)
+                        )
 
             metrics_results.extend(html_info)
 
@@ -214,7 +242,9 @@ class Report(ReportBase):
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result for result in metrics_results]),
             {
-                f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
+                f"{item.id}": dataclasses.asdict(item.info)
+                if dataclasses.is_dataclass(item.info)
+                else item.info
                 for item in additional_graphs
             },
         )
@@ -237,7 +267,9 @@ class Report(ReportBase):
 
     def _get_snapshot(self) -> Snapshot:
         snapshot = super()._get_snapshot()
-        snapshot.metrics_ids = [snapshot.suite.metrics.index(m) for m in self._first_level_metrics]
+        snapshot.metrics_ids = [
+            snapshot.suite.metrics.index(m) for m in self._first_level_metrics
+        ]
         return snapshot
 
     @classmethod

@@ -49,13 +49,24 @@ def help_handler(**_kv):
 
 
 def _add_default_parameters(configurable_parser, default_output_name: str):
-    configurable_parser.add_argument("--reference", dest="reference", required=True, help="Path to reference data")
-    configurable_parser.add_argument("--current", dest="current", help="Path to current data")
-    configurable_parser.add_argument("--output_path", dest="output_path", required=True, help="Path to store report")
     configurable_parser.add_argument(
-        "--report_name", dest="report_name", default=default_output_name, help="Report name"
+        "--reference", dest="reference", required=True, help="Path to reference data"
     )
-    configurable_parser.add_argument("--config", dest="config", required=True, help="Path to configuration")
+    configurable_parser.add_argument(
+        "--current", dest="current", help="Path to current data"
+    )
+    configurable_parser.add_argument(
+        "--output_path", dest="output_path", required=True, help="Path to store report"
+    )
+    configurable_parser.add_argument(
+        "--report_name",
+        dest="report_name",
+        default=default_output_name,
+        help="Report name",
+    )
+    configurable_parser.add_argument(
+        "--config", dest="config", required=True, help="Path to configuration"
+    )
 
 
 logging.basicConfig(level=logging.INFO)

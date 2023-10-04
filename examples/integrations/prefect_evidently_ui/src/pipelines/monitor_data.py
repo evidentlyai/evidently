@@ -1,10 +1,18 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import List, Text
+from typing import List
+from typing import Text
 
 import pandas as pd
 import pendulum
+from config.evidently_config import EVIDENTLY_WS
+from prefect import flow
+from prefect import task
+from src.utils.evidently_monitoring import get_evidently_project
+from src.utils.utils import extract_batch_data
+from src.utils.utils import get_batch_interval
+
 from evidently import ColumnMapping
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import ColumnSummaryMetric
@@ -12,11 +20,6 @@ from evidently.metrics import DatasetDriftMetric
 from evidently.metrics import DatasetMissingValuesMetric
 from evidently.report import Report
 from evidently.ui.workspace import Workspace
-from prefect import flow, task
-
-from config.evidently_config import EVIDENTLY_WS
-from src.utils.evidently_monitoring import get_evidently_project
-from src.utils.utils import extract_batch_data, get_batch_interval
 
 
 @task
@@ -38,11 +41,7 @@ def prepare_current_data(start_time: Text, end_time: Text) -> pd.DataFrame:
     # Get current data (features)
     data_path = f"{DATA_FEATURES_DIR}/green_tripdata_2021-02.parquet"
     data = pd.read_parquet(data_path)
-    current_data = extract_batch_data(
-        data,
-        start_time=start_time,
-        end_time=end_time
-    )
+    current_data = extract_batch_data(data, start_time=start_time, end_time=end_time)
 
     # Get predictions for the current data
     filename = pendulum.parse(end_time).to_date_string()
@@ -53,7 +52,9 @@ def prepare_current_data(start_time: Text, end_time: Text) -> pd.DataFrame:
     current_data = current_data.merge(predictions, on="uuid", how="left")
 
     # Fill missing values
-    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(-1)
+    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(
+        -1
+    )
 
     return current_data
 
@@ -64,7 +65,7 @@ def generate_data_quality_report(
     reference_data: pd.DataFrame,
     num_features: List[Text],
     prediction_col: Text,
-    timestamp: float
+    timestamp: float,
 ) -> Report:
     """
     Generate data quality report.
@@ -96,12 +97,12 @@ def generate_data_quality_report(
             DatasetDriftMetric(),
             DatasetMissingValuesMetric(),
         ],
-        timestamp=pendulum.from_timestamp(timestamp)
+        timestamp=pendulum.from_timestamp(timestamp),
     )
     data_quality_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
 
     return data_quality_report
@@ -113,7 +114,7 @@ def generate_prediction_drift_report(
     reference_data: pd.DataFrame,
     num_features: List[Text],
     prediction_col: Text,
-    timestamp: float
+    timestamp: float,
 ) -> Report:
     """
     Generate prediction drift report.
@@ -145,21 +146,18 @@ def generate_prediction_drift_report(
             ColumnDriftMetric(column_name=prediction_col, stattest="wasserstein"),
             ColumnSummaryMetric(column_name=prediction_col),
         ],
-        timestamp=pendulum.from_timestamp(timestamp)
+        timestamp=pendulum.from_timestamp(timestamp),
     )
     prediction_drift_report.run(
         reference_data=reference_data,
         current_data=current_data,
-        column_mapping=column_mapping
+        column_mapping=column_mapping,
     )
     return prediction_drift_report
 
 
 @flow(flow_run_name="monitor-data-on-{ts}", log_prints=True)
-def monitor_data(
-    ts: pendulum.DateTime,
-    interval: int = 60
-) -> None:
+def monitor_data(ts: pendulum.DateTime, interval: int = 60) -> None:
     """Build and save data validation reports.
 
     Args:
@@ -167,10 +165,7 @@ def monitor_data(
         interval (int, optional): Interval. Defaults to 60.
     """
 
-    num_features = [
-        "passenger_count", "trip_distance",
-        "fare_amount", "total_amount"
-    ]
+    num_features = ["passenger_count", "trip_distance", "fare_amount", "total_amount"]
     cat_features = ["PULocationID", "DOLocationID"]
     prediction_col = "predictions"
 
@@ -202,7 +197,7 @@ def monitor_data(
             reference_data=reference_data,
             num_features=num_features,
             prediction_col=prediction_col,
-            timestamp=ts.timestamp()
+            timestamp=ts.timestamp(),
         )
 
         # Add reports (snapshots) to the Project Monitoring Dashboard
@@ -215,7 +210,7 @@ def monitor_data(
             reference_data=reference_data,
             num_features=num_features,
             prediction_col=prediction_col,
-            timestamp=ts.timestamp()
+            timestamp=ts.timestamp(),
         )
         project_pd = get_evidently_project(ws, "Predictions Drift")
         ws.add_report(project_pd.id, pred_drift_report)
@@ -224,17 +219,8 @@ def monitor_data(
 if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument(
-        "--ts",
-        dest="ts",
-        required=True
-    )
-    args_parser.add_argument(
-        "--interval",
-        dest="interval",
-        required=False,
-        default=60
-    )
+    args_parser.add_argument("--ts", dest="ts", required=True)
+    args_parser.add_argument("--interval", dest="interval", required=False, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

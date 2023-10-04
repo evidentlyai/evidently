@@ -28,7 +28,11 @@ def classification_class_separation_plot():
         "classification_class_separation_plot",
         ClassificationClassSeparationPlot(),
         NoopOutcome(),
-        [DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
+        [
+            DatasetTags.CLASSIFICATION,
+            DatasetTags.BINARY_CLASSIFICATION,
+            DatasetTags.PROB_PREDICTIONS,
+        ],
     )
 
 
@@ -38,7 +42,11 @@ def classification_p_r_table():
         "classification_p_r_table",
         ClassificationPRTable(),
         NoopOutcome(),
-        [DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
+        [
+            DatasetTags.CLASSIFICATION,
+            DatasetTags.BINARY_CLASSIFICATION,
+            DatasetTags.PROB_PREDICTIONS,
+        ],
     )
 
 
@@ -48,21 +56,31 @@ def classification_p_r_curve():
         "classification_p_r_curve",
         ClassificationPRCurve(),
         NoopOutcome(),
-        [DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
+        [
+            DatasetTags.CLASSIFICATION,
+            DatasetTags.BINARY_CLASSIFICATION,
+            DatasetTags.PROB_PREDICTIONS,
+        ],
     )
 
 
 @metric
 def classification_quality_by_class():
     return TestMetric(
-        "classification_quality_by_class", ClassificationQualityByClass(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
+        "classification_quality_by_class",
+        ClassificationQualityByClass(),
+        NoopOutcome(),
+        [DatasetTags.CLASSIFICATION],
     )
 
 
 @metric
 def classification_class_balance():
     return TestMetric(
-        "classification_class_balance", ClassificationClassBalance(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
+        "classification_class_balance",
+        ClassificationClassBalance(),
+        NoopOutcome(),
+        [DatasetTags.CLASSIFICATION],
     )
 
 
@@ -85,7 +103,9 @@ def classification_class_balance_values():
                 metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(
-                        current=HistogramData.from_df(pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]}))
+                        current=HistogramData.from_df(
+                            pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})
+                        )
                     )
                 ),
             ),
@@ -106,8 +126,12 @@ def classification_class_balance_values():
                 metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(
-                        current=HistogramData.from_df(pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})),
-                        reference=HistogramData.from_df(pd.DataFrame({"x": ["c", "b", "a"], "count": [4, 3, 2]})),
+                        current=HistogramData.from_df(
+                            pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})
+                        ),
+                        reference=HistogramData.from_df(
+                            pd.DataFrame({"x": ["c", "b", "a"], "count": [4, 3, 2]})
+                        ),
                     )
                 ),
             ),
@@ -118,7 +142,10 @@ def classification_class_balance_values():
 @metric
 def classification_confusion_matrix():
     return TestMetric(
-        "classification_confusion_matrix", ClassificationConfusionMatrix(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
+        "classification_confusion_matrix",
+        ClassificationConfusionMatrix(),
+        NoopOutcome(),
+        [DatasetTags.CLASSIFICATION],
     )
 
 
@@ -128,14 +155,21 @@ def classification_roc_curve():
         "classification_roc_curve",
         ClassificationRocCurve(),
         NoopOutcome(),
-        [DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
+        [
+            DatasetTags.CLASSIFICATION,
+            DatasetTags.BINARY_CLASSIFICATION,
+            DatasetTags.PROB_PREDICTIONS,
+        ],
     )
 
 
 @metric
 def classification_quality_metric():
     return TestMetric(
-        "classification_quality_metric", ClassificationQualityMetric(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
+        "classification_quality_metric",
+        ClassificationQualityMetric(),
+        NoopOutcome(),
+        [DatasetTags.CLASSIFICATION],
     )
 
 
@@ -162,5 +196,8 @@ def classification_prob_distribution():
 @metric
 def classification_dummy_metric():
     return TestMetric(
-        "classification_dummy_metric", ClassificationDummyMetric(), NoopOutcome(), [DatasetTags.CLASSIFICATION]
+        "classification_dummy_metric",
+        ClassificationDummyMetric(),
+        NoopOutcome(),
+        [DatasetTags.CLASSIFICATION],
     )

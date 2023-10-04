@@ -14,7 +14,9 @@ pd.options.mode.chained_assignment = None
 
 def setup_logger():
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", handlers=[logging.StreamHandler()]
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.StreamHandler()],
     )
 
 
@@ -26,11 +28,7 @@ def check_docker_installation():
         exit("Docker was not found. Try to install it with https://www.docker.com")
 
 
-def check_dataset(
-    force: bool,
-    datasets_path: str,
-    dataset_name: str
-) -> None:
+def check_dataset(force: bool, datasets_path: str, dataset_name: str) -> None:
     logging.info("Check dataset %s", dataset_name)
     dataset_path = os.path.join(datasets_path, dataset_name)
 
@@ -45,7 +43,10 @@ def check_dataset(
             return
 
     logging.info("Download dataset %s", dataset_name)
-    run_script(cmd=["scripts/prepare_datasets.py", "-d", dataset_name, "-p", dataset_path], wait=True)
+    run_script(
+        cmd=["scripts/prepare_datasets.py", "-d", dataset_name, "-p", dataset_path],
+        wait=True,
+    )
 
 
 def download_test_datasets(force: bool):
@@ -59,7 +60,11 @@ def download_test_datasets(force: bool):
     else:
         logging.info("Datasets directory already exists")
 
-    for dataset_name in ("bike_random_forest", "bike_gradient_boosting", "kdd_k_neighbors_classifier"):
+    for dataset_name in (
+        "bike_random_forest",
+        "bike_gradient_boosting",
+        "kdd_k_neighbors_classifier",
+    ):
         check_dataset(force, datasets_path, dataset_name)
 
 

@@ -105,7 +105,10 @@ class FeatureQualityStats:
         return self.feature_type == "cat"
 
     def as_dict(self):
-        return {field.name: getattr(self, field.name) for field in dataclasses.fields(FeatureQualityStats)}
+        return {
+            field.name: getattr(self, field.name)
+            for field in dataclasses.fields(FeatureQualityStats)
+        }
 
     def __eq__(self, other):
         for field in dataclasses.fields(FeatureQualityStats):
@@ -159,7 +162,9 @@ class DataQualityStats:
         raise KeyError(item)
 
 
-def get_features_stats(feature: pd.Series, feature_type: ColumnType) -> FeatureQualityStats:
+def get_features_stats(
+    feature: pd.Series, feature_type: ColumnType
+) -> FeatureQualityStats:
     def get_percentage_from_all_values(value: Union[int, float]) -> float:
         return np.round(100 * value / all_values_count, 2)
 
@@ -174,16 +179,22 @@ def get_features_stats(feature: pd.Series, feature_type: ColumnType) -> FeatureQ
     result.count = int(feature.count())
     all_values_count = feature.shape[0]
     value_counts = feature.value_counts(dropna=False)
-    result.missing_percentage = np.round(100 * result.missing_count / all_values_count, 2)
+    result.missing_percentage = np.round(
+        100 * result.missing_count / all_values_count, 2
+    )
     unique_count: int = feature.nunique()
     result.unique_count = unique_count
     result.unique_percentage = get_percentage_from_all_values(unique_count)
     result.most_common_value = value_counts.index[0]
-    result.most_common_value_percentage = get_percentage_from_all_values(value_counts.iloc[0])
+    result.most_common_value_percentage = get_percentage_from_all_values(
+        value_counts.iloc[0]
+    )
 
     if result.count > 0 and pd.isnull(result.most_common_value):
         result.most_common_not_null_value = value_counts.index[1]
-        result.most_common_not_null_value_percentage = get_percentage_from_all_values(value_counts.iloc[1])
+        result.most_common_not_null_value_percentage = get_percentage_from_all_values(
+            value_counts.iloc[1]
+        )
 
     if feature_type == ColumnType.Numerical:
         # round most common feature value for numeric features to 1e-5
@@ -192,7 +203,9 @@ def get_features_stats(feature: pd.Series, feature_type: ColumnType) -> FeatureQ
         if isinstance(result.most_common_value, float):
             result.most_common_value = np.round(result.most_common_value, 5)
         result.infinite_count = int(np.sum(np.isinf(feature)))
-        result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
+        result.infinite_percentage = get_percentage_from_all_values(
+            result.infinite_count
+        )
         result.max = np.round(feature.max(), 2)
         result.min = np.round(feature.min(), 2)
         common_stats = dict(feature.describe())
@@ -219,12 +232,16 @@ def calculate_data_quality_stats(
     result = DataQualityStats(rows_count=get_rows_count(dataset))
 
     result.num_features_stats = {
-        feature_name: get_features_stats(dataset[feature_name], feature_type=ColumnType.Numerical)
+        feature_name: get_features_stats(
+            dataset[feature_name], feature_type=ColumnType.Numerical
+        )
         for feature_name in columns.num_feature_names
     }
 
     result.cat_features_stats = {
-        feature_name: get_features_stats(dataset[feature_name], feature_type=ColumnType.Categorical)
+        feature_name: get_features_stats(
+            dataset[feature_name], feature_type=ColumnType.Categorical
+        )
         for feature_name in columns.cat_feature_names
     }
 
@@ -235,7 +252,9 @@ def calculate_data_quality_stats(
         date_list = columns.datetime_feature_names
 
     result.datetime_features_stats = {
-        feature_name: get_features_stats(dataset[feature_name], feature_type=ColumnType.Datetime)
+        feature_name: get_features_stats(
+            dataset[feature_name], feature_type=ColumnType.Datetime
+        )
         for feature_name in date_list
     }
 
@@ -283,7 +302,9 @@ def prepare_data_for_plots(
     max_categories: Optional[int] = MAX_CATEGORIES,
 ) -> Tuple[pd.Series, Optional[pd.Series]]:
     if column_type == ColumnType.Categorical:
-        current_data, reference_data = relabel_data(current_data, reference_data, max_categories)
+        current_data, reference_data = relabel_data(
+            current_data, reference_data, max_categories
+        )
     else:
         current_data = current_data.copy()
         if reference_data is not None:
@@ -291,7 +312,9 @@ def prepare_data_for_plots(
     return current_data, reference_data
 
 
-def _select_features_for_corr(dataset: pd.DataFrame, data_definition: DataDefinition) -> tuple:
+def _select_features_for_corr(
+    dataset: pd.DataFrame, data_definition: DataDefinition
+) -> tuple:
     """Define which features should be used for calculating correlation matrices:
         - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
             unique values;
@@ -343,7 +366,9 @@ def _cramer_v(x: pd.Series, y: pd.Series) -> float:
     return value
 
 
-def get_pairwise_correlation(df, func: Callable[[pd.Series, pd.Series], float]) -> pd.DataFrame:
+def get_pairwise_correlation(
+    df, func: Callable[[pd.Series, pd.Series], float]
+) -> pd.DataFrame:
     """Compute pairwise correlation of columns
     Args:
         df: initial data frame.
@@ -393,7 +418,9 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
 
 
 def calculate_correlations(
-    dataset: pd.DataFrame, data_definition: DataDefinition, add_text_columns: Optional[list] = None
+    dataset: pd.DataFrame,
+    data_definition: DataDefinition,
+    add_text_columns: Optional[list] = None,
 ) -> Dict:
     num_for_corr, cat_for_corr = _select_features_for_corr(dataset, data_definition)
     if add_text_columns is not None:
@@ -401,19 +428,25 @@ def calculate_correlations(
     correlations = {}
 
     for kind in ["pearson", "spearman", "kendall", "cramer_v"]:
-        correlations[kind] = _calculate_correlations(dataset, num_for_corr, cat_for_corr, kind)
+        correlations[kind] = _calculate_correlations(
+            dataset, num_for_corr, cat_for_corr, kind
+        )
 
     return correlations
 
 
-def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
+def calculate_cramer_v_correlation(
+    column_name: str, dataset: pd.DataFrame, columns: List[str]
+) -> ColumnCorrelations:
     result_x = []
     result_y = []
 
     if not dataset[column_name].empty:
         for correlation_columns_name in columns:
             result_x.append(correlation_columns_name)
-            result_y.append(_cramer_v(dataset[column_name], dataset[correlation_columns_name]))
+            result_y.append(
+                _cramer_v(dataset[column_name], dataset[correlation_columns_name])
+            )
 
     return ColumnCorrelations(
         column_name=column_name,
@@ -465,7 +498,8 @@ def calculate_numerical_correlation(
             correlations_columns.append(other_column_name)
             correlations_values.append(
                 column.replace([np.inf, -np.inf], np.nan).corr(
-                    features[other_column_name].replace([np.inf, -np.inf], np.nan), method=kind
+                    features[other_column_name].replace([np.inf, -np.inf], np.nan),
+                    method=kind,
                 )
             )
 
@@ -480,7 +514,9 @@ def calculate_numerical_correlation(
     return result
 
 
-def calculate_column_distribution(column: pd.Series, column_type: str) -> ColumnDistribution:
+def calculate_column_distribution(
+    column: pd.Series, column_type: str
+) -> ColumnDistribution:
     if column.empty:
         distribution: ColumnDistribution = {}
 
@@ -499,7 +535,11 @@ def calculate_column_distribution(column: pd.Series, column_type: str) -> Column
     return distribution
 
 
-def get_corr_method(method: Optional[str], target_correlation: Optional[str] = None, pearson_default: bool = True):
+def get_corr_method(
+    method: Optional[str],
+    target_correlation: Optional[str] = None,
+    pearson_default: bool = True,
+):
     if method is not None:
         return method
     if method is None and pearson_default is False:

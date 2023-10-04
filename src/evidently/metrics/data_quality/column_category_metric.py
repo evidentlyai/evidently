@@ -39,7 +39,10 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     category: Union[int, float, str]
 
     def __init__(
-        self, column_name: Union[str, ColumnName], category: Union[int, float, str], options: AnyOptions = None
+        self,
+        column_name: Union[str, ColumnName],
+        category: Union[int, float, str],
+        options: AnyOptions = None,
     ) -> None:
         self.column_name = ColumnName.from_any(column_name)
         self.category = category
@@ -47,7 +50,9 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
 
     def calculate(self, data: InputData) -> ColumnCategoryMetricResult:
         if not data.has_column(self.column_name):
-            raise ValueError(f"Column '{self.column_name.display_name}' was not found in data.")
+            raise ValueError(
+                f"Column '{self.column_name.display_name}' was not found in data."
+            )
 
         current_column = data.get_current_column(self.column_name)
         reference_column = data.get_reference_column(self.column_name)
@@ -57,12 +62,16 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
         current_counts = current_column.value_counts(dropna=False).reset_index()
         current_counts.columns = ["x", "count"]
         counts_of_values["current"] = current_counts.head(10)
-        counts_of_values["current"].index = counts_of_values["current"].index.astype("str")
+        counts_of_values["current"].index = counts_of_values["current"].index.astype(
+            "str"
+        )
         if reference_column is not None:
             reference_counts = reference_column.value_counts(dropna=False).reset_index()
             reference_counts.columns = ["x", "count"]
             counts_of_values["reference"] = reference_counts.head(10)
-            counts_of_values["reference"].index = counts_of_values["reference"].index.astype("str")
+            counts_of_values["reference"].index = counts_of_values[
+                "reference"
+            ].index.astype("str")
 
         reference: Optional[CategoryStat] = None
         if reference_column is not None:
@@ -92,7 +101,11 @@ class ColumnCategoryMetricRenderer(MetricRenderer):
 
     def render_html(self, obj: ColumnCategoryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        result = [header_text(label=f"Column '{metric_result.column_name}'. Сategory '{metric_result.category}'.")]
+        result = [
+            header_text(
+                label=f"Column '{metric_result.column_name}'. Сategory '{metric_result.category}'."
+            )
+        ]
         counters = [
             CounterData.string(
                 label="current",

@@ -34,11 +34,19 @@ from evidently.core import ColumnType
 
 
 def _chi_stat_test(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: ColumnType,
+    threshold: float,
 ) -> Tuple[float, bool]:
-    keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
+    keys = get_unique_not_nan_values_list_from_series(
+        current_data=current_data, reference_data=reference_data
+    )
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
-    current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
+    current_feature_dict = {
+        **dict.fromkeys(keys, 0),
+        **dict(current_data.value_counts()),
+    }
     k_norm = current_data.shape[0] / reference_data.shape[0]
     f_exp = [ref_feature_dict[key] * k_norm for key in keys]
     f_obs = [current_feature_dict[key] for key in keys]

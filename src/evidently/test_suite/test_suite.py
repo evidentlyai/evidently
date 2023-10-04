@@ -81,7 +81,10 @@ class TestSuite(ReportBase):
         self._inner_suite.add_test(new_test)
 
     def __bool__(self):
-        return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
+        return all(
+            test_result.is_passed()
+            for _, test_result in self._inner_suite.context.test_results.items()
+        )
 
     def _add_tests_from_generator(self, test_generator: BaseGenerator):
         for test_item in test_generator.generate(columns_info=self._columns_info):
@@ -100,8 +103,12 @@ class TestSuite(ReportBase):
         self._columns_info = process_columns(current_data, column_mapping)
         self._inner_suite.reset()
         self._add_tests()
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
+        data_definition = create_data_definition(
+            reference_data, current_data, column_mapping
+        )
+        data = InputData(
+            reference_data, current_data, None, None, column_mapping, data_definition
+        )
         for preset in self._test_presets:
             tests = preset.generate_tests(data, self._columns_info)
 
@@ -114,8 +121,17 @@ class TestSuite(ReportBase):
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
         self._inner_suite.verify()
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
-        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
+        curr_add, ref_add = self._inner_suite.create_additional_features(
+            current_data, reference_data, data_definition
+        )
+        data = InputData(
+            reference_data,
+            current_data,
+            ref_add,
+            curr_add,
+            column_mapping,
+            data_definition,
+        )
 
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
@@ -128,7 +144,9 @@ class TestSuite(ReportBase):
         exclude: Dict[str, IncludeOptions] = None,
         **kwargs,
     ) -> str:
-        return super().json(include_render, include, exclude, include_metrics=include_metrics)
+        return super().json(
+            include_render, include, exclude, include_metrics=include_metrics
+        )
 
     def as_dict(  # type: ignore[override]
         self,
@@ -141,14 +159,22 @@ class TestSuite(ReportBase):
         test_results = []
         include = include or {}
         exclude = exclude or {}
-        counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
+        counter = Counter(
+            test_result.status
+            for test_result in self._inner_suite.context.test_results.values()
+        )
 
         for test in self._inner_suite.context.test_results:
-            renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            renderer = find_test_renderer(
+                type(test), self._inner_suite.context.renderers
+            )
             test_id = test.get_id()
             try:
                 test_data = renderer.render_json(
-                    test, include_render=include_render, include=include.get(test_id), exclude=exclude.get(test_id)
+                    test,
+                    include_render=include_render,
+                    include=include.get(test_id),
+                    exclude=exclude.get(test_id),
                 )
                 test_results.append(test_data)
             except BaseException as e:
@@ -164,7 +190,8 @@ class TestSuite(ReportBase):
             "summary": {
                 "all_passed": bool(self),
                 "total_tests": total_tests,
-                "success_tests": counter[TestStatus.SUCCESS] + counter[TestStatus.WARNING],
+                "success_tests": counter[TestStatus.SUCCESS]
+                + counter[TestStatus.WARNING],
                 "failed_tests": counter[TestStatus.FAIL],
                 "by_status": {k.value: v for k, v in counter.items()},
             },
@@ -175,9 +202,9 @@ class TestSuite(ReportBase):
             report = Report([])
             report._first_level_metrics = self._inner_suite.context.metrics
             report._inner_suite.context = self._inner_suite.context
-            result["metric_results"] = report.as_dict(include_render=include_render, include=include, exclude=exclude)[
-                "metrics"
-            ]
+            result["metric_results"] = report.as_dict(
+                include_render=include_render, include=include, exclude=exclude
+            )["metrics"]
         return result
 
     def _build_dashboard_info(self):
@@ -187,7 +214,9 @@ class TestSuite(ReportBase):
         color_options = self.options.color_options
 
         for test, test_result in self._inner_suite.context.test_results.items():
-            renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            renderer = find_test_renderer(
+                type(test), self._inner_suite.context.renderers
+            )
             renderer.color_options = color_options
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             test_results.append(renderer.render_html(test))
@@ -199,8 +228,16 @@ class TestSuite(ReportBase):
             params={
                 "counters": [{"value": f"{total_tests}", "label": "Tests"}]
                 + [
-                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.value.title()}"}
-                    for status in [TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.FAIL, TestStatus.ERROR]
+                    {
+                        "value": f"{by_status.get(status, 0)}",
+                        "label": f"{status.value.title()}",
+                    }
+                    for status in [
+                        TestStatus.SUCCESS,
+                        TestStatus.WARNING,
+                        TestStatus.FAIL,
+                        TestStatus.ERROR,
+                    ]
                 ]
             },
         )
@@ -215,7 +252,10 @@ class TestSuite(ReportBase):
                         description=test_info.description,
                         state=test_info.status.lower(),
                         details=dict(
-                            parts=[dict(id=item.id, title=item.title, type="widget") for item in test_info.details]
+                            parts=[
+                                dict(id=item.id, title=item.title, type="widget")
+                                for item in test_info.details
+                            ]
                         ),
                         groups=test_info.groups,
                     )
@@ -228,7 +268,11 @@ class TestSuite(ReportBase):
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
-            {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
+            {
+                item.id: dataclasses.asdict(item.info)
+                for idx, info in enumerate(test_results)
+                for item in info.details
+            },
         )
 
     def _get_snapshot(self) -> Snapshot:

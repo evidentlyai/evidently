@@ -50,10 +50,15 @@ from evidently.report import Report
     ),
 )
 def test_classification_prob_distribution_with_report(
-    current: pd.DataFrame, reference: Optional[pd.DataFrame], column_mapping: ColumnMapping, expected_json: Dict
+    current: pd.DataFrame,
+    reference: Optional[pd.DataFrame],
+    column_mapping: ColumnMapping,
+    expected_json: Dict,
 ):
     report = Report(metrics=[ClassificationProbDistribution()])
-    report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
+    report.run(
+        current_data=current, reference_data=reference, column_mapping=column_mapping
+    )
     report.show()
     result_json = report.json()
     result = json.loads(result_json)

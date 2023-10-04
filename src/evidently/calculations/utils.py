@@ -42,13 +42,21 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     return result
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False):
+def make_hist_for_cat_plot(
+    curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False
+):
     result = {}
-    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+    hist_df = (
+        curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+    )
     hist_df.columns = ["x", "count"]
     result["current"] = hist_df
     if ref is not None:
-        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+        hist_df = (
+            ref.astype(str)
+            .value_counts(normalize=normalize, dropna=dropna)
+            .reset_index()
+        )
         hist_df.columns = ["x", "count"]
         result["reference"] = hist_df
     return result
@@ -89,7 +97,11 @@ def get_data_for_num_num_plot(
     if (
         not agg_data
         or not is_possible_contour(col2_curr, col1_curr)
-        or (col1_ref is not None and col2_ref is not None and not is_possible_contour(col2_ref, col1_ref))
+        or (
+            col1_ref is not None
+            and col2_ref is not None
+            and not is_possible_contour(col2_ref, col1_ref)
+        )
     ):
         result = {
             "current": {
@@ -123,13 +135,22 @@ def prepare_box_data(
         names.append("reference")
     res = {}
     for df, name in zip(dfs, names):
-        df_for_plot = df.groupby(cat_feature_name)[num_feature_name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
+        df_for_plot = (
+            df.groupby(cat_feature_name)[num_feature_name]
+            .quantile([0, 0.25, 0.5, 0.75, 1])
+            .reset_index()
+        )
         df_for_plot.columns = [cat_feature_name, "q", num_feature_name]
         res_df = {}
         values = df_for_plot[cat_feature_name].unique()
 
         def _quantiles(qdf, value):
-            return qdf[df_for_plot.q == value].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
+            return (
+                qdf[df_for_plot.q == value]
+                .set_index(cat_feature_name)
+                .loc[values, num_feature_name]
+                .tolist()
+            )
 
         res_df["mins"] = _quantiles(df_for_plot, 0)
         res_df["lowers"] = _quantiles(df_for_plot, 0.25)
@@ -149,13 +170,21 @@ def transform_df_to_time_mean_view(
     data_column_name: str,
     column_data: pd.Series,
 ):
-    df = pd.DataFrame({"period": period_data, data_column_name: column_data, datetime_column_name: datetime_data})
+    df = pd.DataFrame(
+        {
+            "period": period_data,
+            data_column_name: column_data,
+            datetime_column_name: datetime_data,
+        }
+    )
     df = df.groupby("period")[data_column_name].mean().reset_index()
     df[datetime_column_name] = df["period"].dt.to_timestamp()
     return df
 
 
-def prepare_data_for_date_num(date_curr, date_ref, datetime_name, num_name, num_curr, num_ref):
+def prepare_data_for_date_num(
+    date_curr, date_ref, datetime_name, num_name, num_curr, num_ref
+):
     prefix, freq = choose_agg_period(date_curr, date_ref)
     current_period_data = date_curr.dt.to_period(freq=freq)
     df_for_time_plot_ref = None
@@ -186,7 +215,10 @@ def relabel_data(
     max_categories: Optional[int] = MAX_CATEGORIES,
 ) -> Tuple[pd.Series, Optional[pd.Series]]:
     if max_categories is None:
-        return current_data.copy(), reference_data.copy() if reference_data is not None else None
+        return (
+            current_data.copy(),
+            reference_data.copy() if reference_data is not None else None,
+        )
 
     current_data_str = current_data.astype(str)
     reference_data_str = None
@@ -211,15 +243,24 @@ def relabel_data(
         else:
             categories = curr_cats
 
-        cats = categories.sort_values(ascending=False).index.drop_duplicates(keep="first")[:max_categories].values
+        cats = (
+            categories.sort_values(ascending=False)
+            .index.drop_duplicates(keep="first")[:max_categories]
+            .values
+        )
 
         result_current = current_data.apply(lambda x: x if str(x) in cats else "other")
         result_reference = None
         if reference_data is not None:
-            result_reference = reference_data.apply(lambda x: x if str(x) in cats else "other")
+            result_reference = reference_data.apply(
+                lambda x: x if str(x) in cats else "other"
+            )
         return result_current, result_reference
     else:
-        return current_data.copy(), reference_data.copy() if reference_data is not None else None
+        return (
+            current_data.copy(),
+            reference_data.copy() if reference_data is not None else None,
+        )
 
 
 def transform_df_to_time_count_view(
@@ -229,7 +270,13 @@ def transform_df_to_time_count_view(
     data_column_name: str,
     column_data: pd.Series,
 ):
-    df = pd.DataFrame({"period": period_data, datetime_column_name: datetime_data, data_column_name: column_data})
+    df = pd.DataFrame(
+        {
+            "period": period_data,
+            datetime_column_name: datetime_data,
+            data_column_name: column_data,
+        }
+    )
     df = df.groupby(["period", data_column_name]).size()
     df.name = "num"
     df = df.reset_index()
@@ -237,7 +284,9 @@ def transform_df_to_time_count_view(
     return df[df["num"] > 0]
 
 
-def prepare_data_for_date_cat(date_curr, date_ref, datetime_name, cat_name, cat_curr, cat_ref):
+def prepare_data_for_date_cat(
+    date_curr, date_ref, datetime_name, cat_name, cat_curr, cat_ref
+):
     prefix, freq = choose_agg_period(date_curr, date_ref)
     current_period_data = date_curr.dt.to_period(freq=freq)
     df_for_time_plot_ref = None

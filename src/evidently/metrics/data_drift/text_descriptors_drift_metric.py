@@ -74,7 +74,9 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
                 "Non Letter Character %": NonLetterCharacterPercentage(),
                 "OOV %": OOV(),
             }
-        super().__init__(stattest=stattest, stattest_threshold=stattest_threshold, options=options)
+        super().__init__(
+            stattest=stattest, stattest_threshold=stattest_threshold, options=options
+        )
         self._generated_text_features = {}
         self._drift_options = DataDriftOptions(
             all_features_stattest=stattest, all_features_threshold=stattest_threshold
@@ -88,7 +90,8 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
             self._generated_text_features = {
-                name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
+                name: desc.feature(self.column_name)
+                for name, desc in self.descriptors.items()
             }
             return list(self.generated_text_features.values())
         return []
@@ -104,18 +107,26 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         else:
             agg_data = True
         curr_text_df = pd.concat(
-            [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+            [
+                data.get_current_column(x.feature_name())
+                for x in list(self.generated_text_features.values())
+            ],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
 
         ref_text_df = pd.concat(
-            [data.get_reference_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+            [
+                data.get_reference_column(x.feature_name())
+                for x in list(self.generated_text_features.values())
+            ],
             axis=1,
         )
         ref_text_df.columns = list(self.generated_text_features.keys())
         # text_dataset_columns = DatasetColumns(num_feature_names=curr_text_df.columns)
-        text_dataset_columns = process_columns(ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns))
+        text_dataset_columns = process_columns(
+            ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns)
+        )
 
         drift_by_columns = {}
         for col in curr_text_df.columns:
@@ -169,8 +180,10 @@ class DataDriftTableRenderer(MetricRenderer):
                 scatter_fig = plot_agg_line_data(
                     curr_data=data.scatter.scatter,
                     ref_data=None,
-                    line=(data.scatter.plot_shape["y0"] + data.scatter.plot_shape["y1"]) / 2,
-                    std=(data.scatter.plot_shape["y0"] - data.scatter.plot_shape["y1"]) / 2,
+                    line=(data.scatter.plot_shape["y0"] + data.scatter.plot_shape["y1"])
+                    / 2,
+                    std=(data.scatter.plot_shape["y0"] - data.scatter.plot_shape["y1"])
+                    / 2,
                     xaxis_name=data.scatter.x_name,
                     xaxis_name_ref=None,
                     yaxis_name=f"{data.column_name} (mean +/- std)",
@@ -231,7 +244,9 @@ class DataDriftTableRenderer(MetricRenderer):
         )
 
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name], agg_data)
+            column_params = self._generate_column_params(
+                column_name, results.drift_by_columns[column_name], agg_data
+            )
 
             if column_params is not None:
                 params_data.append(column_params)

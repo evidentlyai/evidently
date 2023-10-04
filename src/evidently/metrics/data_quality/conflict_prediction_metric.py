@@ -36,21 +36,35 @@ class ConflictPredictionMetric(Metric[ConflictPredictionMetricResults]):
             prediction_columns = [prediction_name]
         elif isinstance(prediction_name, list):
             prediction_columns = prediction_name
-        duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
+        duplicates = data.current_data[
+            data.current_data.duplicated(subset=columns, keep=False)
+        ]
         number_not_stable_prediction = duplicates.drop(
-            data.current_data[data.current_data.duplicated(subset=columns + prediction_columns, keep=False)].index
+            data.current_data[
+                data.current_data.duplicated(
+                    subset=columns + prediction_columns, keep=False
+                )
+            ].index
         ).shape[0]
-        share_not_stable_prediction = round(number_not_stable_prediction / data.current_data.shape[0], 3)
+        share_not_stable_prediction = round(
+            number_not_stable_prediction / data.current_data.shape[0], 3
+        )
         # reference
         reference = None
         if data.reference_data is not None:
-            duplicates_ref = data.reference_data[data.reference_data.duplicated(subset=columns, keep=False)]
+            duplicates_ref = data.reference_data[
+                data.reference_data.duplicated(subset=columns, keep=False)
+            ]
             number_not_stable_prediction_ref = duplicates_ref.drop(
                 data.reference_data[
-                    data.reference_data.duplicated(subset=columns + prediction_columns, keep=False)
+                    data.reference_data.duplicated(
+                        subset=columns + prediction_columns, keep=False
+                    )
                 ].index
             ).shape[0]
-            share_not_stable_prediction_ref = round(number_not_stable_prediction_ref / data.reference_data.shape[0], 3)
+            share_not_stable_prediction_ref = round(
+                number_not_stable_prediction_ref / data.reference_data.shape[0], 3
+            )
             reference = ConflictPredictionData(
                 number_not_stable_prediction=number_not_stable_prediction_ref,
                 share_not_stable_prediction=share_not_stable_prediction_ref,

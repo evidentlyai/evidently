@@ -79,10 +79,7 @@ def parse_data_drift_report(data_drift_report: Dict) -> Tuple[Dict, Dict]:
     prediction_result: Dict = metrics["DataDriftTable"]["drift_by_columns"][
         "predictions"
     ]
-    remove_prediction_fields: List[Text] = [
-        "current",
-        "reference"
-    ]
+    remove_prediction_fields: List[Text] = ["current", "reference"]
 
     for field in remove_prediction_fields:
         del prediction_result[field]

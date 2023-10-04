@@ -17,13 +17,21 @@ class TextLength(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
         def text_len(s):
             if s is None or (isinstance(s, float) and np.isnan(s)):
                 return 0
             return len(s)
 
-        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(text_len))]))
+        return pd.DataFrame(
+            dict([(self.column_name, data[self.column_name].apply(text_len))])
+        )
 
     def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name, self.display_name or f"Text Length for {self.column_name}")
+        return additional_feature(
+            self,
+            self.column_name,
+            self.display_name or f"Text Length for {self.column_name}",
+        )

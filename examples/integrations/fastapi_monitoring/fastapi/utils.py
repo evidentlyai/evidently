@@ -1,4 +1,6 @@
-from typing import Callable, Optional, Text
+from typing import Callable
+from typing import Optional
+from typing import Text
 
 import joblib
 
@@ -14,7 +16,7 @@ class ModelLoader:
         return cls._instance
 
     def __init__(self) -> None:
-        self.model_path: Text = 'models/model.joblib'
+        self.model_path: Text = "models/model.joblib"
         self.model: Optional[Callable] = None
 
     def get_model(self) -> Callable:

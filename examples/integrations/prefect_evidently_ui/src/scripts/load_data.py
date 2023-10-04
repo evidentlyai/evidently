@@ -1,5 +1,6 @@
-from typing import Text
 import os
+from typing import Text
+
 import requests
 from tqdm import tqdm
 
@@ -22,10 +23,7 @@ def download_data(destination: Text):
 
     NYC_SOURCE_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data"
 
-    files = [
-        "green_tripdata_2021-01.parquet",
-        "green_tripdata_2021-02.parquet"
-    ]
+    files = ["green_tripdata_2021-01.parquet", "green_tripdata_2021-02.parquet"]
 
     print("Download files:")
     for file in files:
@@ -39,9 +37,7 @@ def download_data(destination: Text):
 
         with open(save_path, "wb") as handle:
             total_size = int(resp.headers.get("Content-Length", 0))
-            progress_bar = tqdm(
-                total=total_size, desc=file, unit="B", unit_scale=True
-            )
+            progress_bar = tqdm(total=total_size, desc=file, unit="B", unit_scale=True)
 
             for data in resp.iter_content(chunk_size=8192):
                 handle.write(data)

@@ -33,19 +33,27 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     column_name: ColumnName
 
-    def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None) -> None:
+    def __init__(
+        self, column_name: Union[str, ColumnName], options: AnyOptions = None
+    ) -> None:
         self.column_name = ColumnName.from_any(column_name)
         super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if not data.has_column(self.column_name):
-            raise ValueError(f"Column '{self.column_name.display_name}' was not found in data.")
+            raise ValueError(
+                f"Column '{self.column_name.display_name}' was not found in data."
+            )
 
         if not self.column_name.is_main_dataset():
             column_type = ColumnType.Numerical
         else:
-            column_type = data.data_definition.get_column(self.column_name.name).column_type
-        current_column = data.get_current_column(self.column_name).replace([np.inf, -np.inf], np.nan)
+            column_type = data.data_definition.get_column(
+                self.column_name.name
+            ).column_type
+        current_column = data.get_current_column(self.column_name).replace(
+            [np.inf, -np.inf], np.nan
+        )
         reference_column = data.get_reference_column(self.column_name)
         if reference_column is not None:
             reference_column = reference_column.replace([np.inf, -np.inf], np.nan)
@@ -79,7 +87,9 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
         )
 
         result = [
-            header_text(label=f"Distribution for column '{metric_result.column_name}'."),
+            header_text(
+                label=f"Distribution for column '{metric_result.column_name}'."
+            ),
             plotly_figure(title="", figure=distr_fig, size=WidgetSize.FULL),
         ]
         return result

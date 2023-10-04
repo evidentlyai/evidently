@@ -29,7 +29,9 @@ def test_accuracy_score_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestAccuracyScore(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -54,7 +56,10 @@ def test_accuracy_score_test_render_json() -> None:
         "description": "The Accuracy Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Accuracy Score",
-        "parameters": {"value": 0.5, "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}},
+        "parameters": {
+            "value": 0.5,
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+        },
         "status": "SUCCESS",
     }
 
@@ -68,7 +73,9 @@ def test_precision_score_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestPrecisionScore(gt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -94,7 +101,10 @@ def test_precision_score_test_render_json() -> None:
         "description": "The Precision Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Precision Score",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "value": 0.5},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+            "value": 0.5,
+        },
         "status": "SUCCESS",
     }
 
@@ -108,7 +118,9 @@ def test_f1_score_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestF1Score(gt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -133,7 +145,10 @@ def test_f1_score_test_render_json() -> None:
         "description": "The F1 Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "F1 Score",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "value": 0.5},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+            "value": 0.5,
+        },
         "status": "SUCCESS",
     }
 
@@ -147,7 +162,9 @@ def test_recall_score_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestRecallScore(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -172,7 +189,10 @@ def test_recall_score_test_render_json() -> None:
         "description": "The Recall Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Recall Score",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "value": 0.5},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+            "value": 0.5,
+        },
         "status": "SUCCESS",
     }
 
@@ -186,13 +206,17 @@ def test_log_loss_test() -> None:
     )
     column_mapping = ColumnMapping(prediction="b", pos_label="a")
     suite = TestSuite(tests=[TestLogLoss(gte=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert not suite
     assert suite.show()
     assert suite.json()
 
     suite = TestSuite(tests=[TestLogLoss(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -208,7 +232,11 @@ def test_log_loss_test_json_render() -> None:
     )
     column_mapping = ColumnMapping(prediction="b", pos_label="a")
     suite = TestSuite(tests=[TestLogLoss()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=column_mapping,
+    )
     suite._inner_suite.raise_for_error()
     assert suite
 
@@ -220,7 +248,13 @@ def test_log_loss_test_json_render() -> None:
         "group": "classification",
         "name": "Logarithmic Loss",
         "parameters": {
-            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": approx(0.446, abs=0.0001)}},
+            "condition": {
+                "eq": {
+                    "absolute": 1e-12,
+                    "relative": 0.2,
+                    "value": approx(0.446, abs=0.0001),
+                }
+            },
             "value": approx(0.446, abs=0.0001),
         },
         "status": "SUCCESS",
@@ -237,7 +271,9 @@ def test_log_loss_test_cannot_calculate_log_loss() -> None:
     column_mapping = ColumnMapping(target="target", prediction="prediction")
 
     suite = TestSuite(tests=[TestLogLoss(lt=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert not suite
     test_info = suite.as_dict()["tests"][0]
     assert (
@@ -257,13 +293,17 @@ def test_roc_auc_test() -> None:
     )
     column_mapping = ColumnMapping(prediction=["a", "b"], pos_label="a")
     suite = TestSuite(tests=[TestRocAuc(gte=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
     suite = TestSuite(tests=[TestRocAuc(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert not suite
     assert suite.show()
     assert suite.json()
@@ -279,7 +319,9 @@ def test_roc_auc_test_json_render() -> None:
     )
     column_mapping = ColumnMapping(prediction=["f", "t"], pos_label="t")
     suite = TestSuite(tests=[TestRocAuc(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
 
@@ -305,7 +347,9 @@ def test_roc_auc_test_cannot_calculate_roc_auc() -> None:
     column_mapping = ColumnMapping(target="target", prediction="prediction")
 
     suite = TestSuite(tests=[TestRocAuc(lt=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     assert not suite
     test_info = suite.as_dict()["tests"][0]
     assert (
@@ -324,7 +368,9 @@ def test_precision_by_class_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestPrecisionByClass(label="a", gt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -368,7 +414,9 @@ def test_f1_by_class_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestF1ByClass(label="a", gt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -412,7 +460,9 @@ def test_recall_by_class_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestRecallByClass(label="b", gt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -456,7 +506,9 @@ def test_tpr_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTPR(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -472,7 +524,11 @@ def test_tpr_test_render_json() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTPR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=column_mapping,
+    )
     suite._inner_suite.raise_for_error()
     assert suite
 
@@ -483,7 +539,10 @@ def test_tpr_test_render_json() -> None:
         "description": "The True Positive Rate is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "True Positive Rate",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "value": 0.5},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+            "value": 0.5,
+        },
         "status": "SUCCESS",
     }
 
@@ -497,7 +556,9 @@ def test_tnr_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTNR(gt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -513,7 +574,11 @@ def test_tnr_test_render_json() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTNR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=column_mapping,
+    )
     suite._inner_suite.raise_for_error()
     assert suite
 
@@ -524,7 +589,10 @@ def test_tnr_test_render_json() -> None:
         "description": "The True Negative Rate is 1. The test threshold is eq=1 ± 0.2",
         "group": "classification",
         "name": "True Negative Rate",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 1}}, "value": 1},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 1}},
+            "value": 1,
+        },
         "status": "SUCCESS",
     }
 
@@ -538,7 +606,9 @@ def test_fpr_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFPR(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -554,7 +624,11 @@ def test_fpr_test_render_json() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFPR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=column_mapping,
+    )
     suite._inner_suite.raise_for_error()
     assert suite
 
@@ -565,7 +639,10 @@ def test_fpr_test_render_json() -> None:
         "description": "The False Positive Rate is 0. The test threshold is eq=0 ± 1e-12",
         "group": "classification",
         "name": "False Positive Rate",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0}}, "value": 0},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0}},
+            "value": 0,
+        },
         "status": "SUCCESS",
     }
 
@@ -579,7 +656,9 @@ def test_fnr_test() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFNR(lt=0.8)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=column_mapping
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -595,7 +674,11 @@ def test_fnr_test_render_json() -> None:
     )
     column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFNR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=column_mapping,
+    )
     suite._inner_suite.raise_for_error()
     assert suite
 
@@ -606,6 +689,9 @@ def test_fnr_test_render_json() -> None:
         "description": "The False Negative Rate is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "False Negative Rate",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "value": 0.5},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+            "value": 0.5,
+        },
         "status": "SUCCESS",
     }

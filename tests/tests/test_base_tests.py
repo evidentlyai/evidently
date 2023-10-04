@@ -79,6 +79,10 @@ def test_value_condition_str(condition_args, expected):
 
 def test_test_generator():
     test_data = pd.DataFrame({"col1": [1, 2, 3], "col2": [4, 5, 6]})
-    suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, parameters={"eq": 0})])
+    suite = TestSuite(
+        tests=[
+            generate_column_tests(TestColumnShareOfMissingValues, parameters={"eq": 0})
+        ]
+    )
     suite.run(current_data=test_data, reference_data=None)
     assert suite

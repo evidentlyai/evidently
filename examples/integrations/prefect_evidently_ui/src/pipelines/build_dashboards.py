@@ -1,5 +1,4 @@
 from prefect import flow
-
 from src.utils.evidently_monitoring import build_dashboards
 
 

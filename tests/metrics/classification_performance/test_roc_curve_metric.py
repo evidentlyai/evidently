@@ -16,6 +16,10 @@ def test_roc_curve_no_exceptions():
     )
     metric = ClassificationRocCurve()
     report = Report(metrics=[metric])
-    report.run(current_data=current, reference_data=None, column_mapping=ColumnMapping(prediction=["a", "b", "c"]))
+    report.run(
+        current_data=current,
+        reference_data=None,
+        column_mapping=ColumnMapping(prediction=["a", "b", "c"]),
+    )
     metric.get_result()
     report.json()

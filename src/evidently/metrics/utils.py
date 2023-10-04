@@ -24,5 +24,7 @@ def make_target_bins_for_reg_plots(
                 ),
             ]
         )
-    df_for_bins["target_binned"] = pd.cut(df_for_bins[target_column], min(df_for_bins[target_column].nunique(), 10))
+    df_for_bins["target_binned"] = pd.cut(
+        df_for_bins[target_column], min(df_for_bins[target_column].nunique(), 10)
+    )
     return df_for_bins

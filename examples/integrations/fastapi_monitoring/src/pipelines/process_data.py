@@ -10,10 +10,7 @@ def process() -> None:
     DATA_RAW_DIR = "data/raw"
     DATA_FEATURES_DIR = "data/features"
 
-    files = [
-        "green_tripdata_2021-01.parquet",
-        "green_tripdata_2021-02.parquet"
-    ]
+    files = ["green_tripdata_2021-01.parquet", "green_tripdata_2021-02.parquet"]
 
     print("Load train data")
     for file in files:
@@ -37,10 +34,10 @@ def process() -> None:
         data = data.drop(["store_and_fwd_flag"], axis=1)
 
         # Fill missing values with the median for numeric columns only
-        numeric_columns = data.select_dtypes(include='number').columns
+        numeric_columns = data.select_dtypes(include="number").columns
         medians = data[numeric_columns].median()
         data = data.fillna(medians).fillna(0)
-        data = data[data['duration_min'] != 0]
+        data = data[data["duration_min"] != 0]
 
         print("Save data")
         path_destination = f"{DATA_FEATURES_DIR}/{file}"

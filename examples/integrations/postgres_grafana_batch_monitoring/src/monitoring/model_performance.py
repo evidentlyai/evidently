@@ -28,7 +28,7 @@ def parse_model_performance_report(model_performance_report: Dict) -> Dict:
     quality_metric: Dict = model_performance_report["metrics"][0]
     assert quality_metric["metric"] == "RegressionQualityMetric"
     raw_quality_metric_result: Dict = quality_metric["result"]
-    current_metrics: Dict = raw_quality_metric_result['current']
+    current_metrics: Dict = raw_quality_metric_result["current"]
     raw_quality_metric_result.update(current_metrics)
     quality_metric_result: Dict = {
         k: v

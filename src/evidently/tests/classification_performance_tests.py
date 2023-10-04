@@ -94,14 +94,20 @@ class SimpleClassificationTest(BaseCheckValueTest):
 
         if ref_metrics is not None:
             return TestValueCondition(
-                eq=approx(self.get_value(ref_metrics), relative=0.2), source=ValueSource.REFERENCE
+                eq=approx(self.get_value(ref_metrics), relative=0.2),
+                source=ValueSource.REFERENCE,
             )
 
         if self.get_value(self.dummy_metric.get_result().dummy) is None:
-            raise ValueError("Neither required test parameters nor reference data has been provided.")
+            raise ValueError(
+                "Neither required test parameters nor reference data has been provided."
+            )
 
         return TestValueCondition(
-            **{self.condition_arg: self.get_value(self.dummy_metric.get_result().dummy)}, source=ValueSource.DUMMY
+            **{
+                self.condition_arg: self.get_value(self.dummy_metric.get_result().dummy)
+            },
+            source=ValueSource.DUMMY,
         )
 
     @abc.abstractmethod
@@ -109,7 +115,9 @@ class SimpleClassificationTest(BaseCheckValueTest):
         raise NotImplementedError()
 
 
-class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfusionMatrixParameters, ABC):
+class SimpleClassificationTestTopK(
+    SimpleClassificationTest, ClassificationConfusionMatrixParameters, ABC
+):
     _conf_matrix: ClassificationConfusionMatrix
 
     def __init__(
@@ -142,8 +150,12 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self._dummy_metric = ClassificationDummyMetric(
+            probas_threshold=self.probas_threshold, k=self.k
+        )
+        self._metric = ClassificationQualityMetric(
+            probas_threshold=self.probas_threshold, k=self.k
+        )
         self._conf_matrix = self.confusion_matric_metric()
 
     def calculate_value_for_test(self) -> Optional[Any]:
@@ -203,7 +215,9 @@ class TestF1Score(SimpleClassificationTestTopK):
         return result.f1
 
     def get_description(self, value: Numeric) -> str:
-        return f"The F1 Score is {value:.3g}. The test threshold is {self.get_condition()}"
+        return (
+            f"The F1 Score is {value:.3g}. The test threshold is {self.get_condition()}"
+        )
 
 
 @default_renderer(wrap_type=TestF1Score)
@@ -282,13 +296,19 @@ class TestRocAuc(SimpleClassificationTest):
 class TestRocAucRenderer(TestRenderer):
     def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_roc_curve: Optional[ROCCurve] = obj._roc_curve.get_result().current_roc_curve
-        ref_roc_curve: Optional[ROCCurve] = obj._roc_curve.get_result().reference_roc_curve
+        curr_roc_curve: Optional[
+            ROCCurve
+        ] = obj._roc_curve.get_result().current_roc_curve
+        ref_roc_curve: Optional[
+            ROCCurve
+        ] = obj._roc_curve.get_result().reference_roc_curve
 
         if curr_roc_curve is None:
             return info
 
-        tab_data = get_roc_auc_tab_data(curr_roc_curve, ref_roc_curve, color_options=self.color_options)
+        tab_data = get_roc_auc_tab_data(
+            curr_roc_curve, ref_roc_curve, color_options=self.color_options
+        )
 
         if len(tab_data) == 1:
             return info.with_details("ROC Curve", tab_data[0][1])
@@ -525,10 +545,18 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
             is_critical=is_critical,
         )
 
-        self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self._dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self._by_class_metric = ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k)
-        self._conf_matrix = ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
+        self._metric = ClassificationQualityMetric(
+            probas_threshold=self.probas_threshold, k=self.k
+        )
+        self._dummy_metric = ClassificationDummyMetric(
+            probas_threshold=self.probas_threshold, k=self.k
+        )
+        self._by_class_metric = ClassificationQualityByClass(
+            probas_threshold=self.probas_threshold, k=self.k
+        )
+        self._conf_matrix = ClassificationConfusionMatrix(
+            probas_threshold=self.probas_threshold, k=self.k
+        )
 
     @property
     def metric(self):
@@ -547,7 +575,9 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         return self._conf_matrix
 
     def calculate_value_for_test(self) -> Optional[Any]:
-        return self.get_value(self.by_class_metric.get_result().current.metrics[self.label])
+        return self.get_value(
+            self.by_class_metric.get_result().current.metrics[self.label]
+        )
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -557,12 +587,16 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         ref_metrics = result.reference.metrics if result.reference is not None else None
 
         if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics[self.label]), relative=0.2))
+            return TestValueCondition(
+                eq=approx(self.get_value(ref_metrics[self.label]), relative=0.2)
+            )
 
         dummy_result = self.dummy_metric.get_result().metrics_matrix[self.label]
 
         if self.get_value(dummy_result) is None:
-            raise ValueError("Neither required test parameters nor reference data has been provided.")
+            raise ValueError(
+                "Neither required test parameters nor reference data has been provided."
+            )
 
         return TestValueCondition(gt=self.get_value(dummy_result))
 
@@ -571,7 +605,9 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         raise NotImplementedError()
 
     def get_parameters(self) -> ByClassParameters:
-        return ByClassParameters(condition=self.get_condition(), value=self._value, label=self.label)
+        return ByClassParameters(
+            condition=self.get_condition(), value=self._value, label=self.label
+        )
 
 
 class TestPrecisionByClass(ByClassClassificationTest):
@@ -629,9 +665,7 @@ class TestF1ByClass(ByClassClassificationTest):
         return result.f1
 
     def get_description(self, value: Numeric) -> str:
-        return (
-            f"The F1 score of the label **{self.label}** is {value:.3g}. The test threshold is {self.get_condition()}"
-        )
+        return f"The F1 score of the label **{self.label}** is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestF1ByClass)

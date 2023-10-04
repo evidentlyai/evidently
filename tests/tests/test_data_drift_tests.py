@@ -61,7 +61,8 @@ def test_data_drift_test_number_of_drifted_features_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The drift is detected for 0 out of 4 features. The test " "threshold is lt=1.",
+        "description": "The drift is detected for 0 out of 4 features. The test "
+        "threshold is lt=1.",
         "group": "data_drift",
         "name": "Number of Drifted Features",
         "parameters": {
@@ -141,7 +142,8 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The drift is detected for 0% features (0 out of 4). The test " "threshold is lt=0.3",
+        "description": "The drift is detected for 0% features (0 out of 4). The test "
+        "threshold is lt=0.3",
         "group": "data_drift",
         "name": "Share of Drifted Columns",
         "parameters": {
@@ -165,7 +167,12 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
                     "stattest": "Z-test p_value",
                     "threshold": 0.05,
                 },
-                "target": {"detected": False, "score": 1.0, "stattest": "Z-test p_value", "threshold": 0.05},
+                "target": {
+                    "detected": False,
+                    "score": 1.0,
+                    "stattest": "Z-test p_value",
+                    "threshold": 0.05,
+                },
             },
         },
         "status": "SUCCESS",
@@ -173,12 +180,18 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
 
 
 def test_data_drift_test_feature_value_drift() -> None:
-    test_current_dataset = pd.DataFrame({"feature_1": [0, 0, 0, 1], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]})
+    test_current_dataset = pd.DataFrame(
+        {"feature_1": [0, 0, 0, 1], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]}
+    )
     test_reference_dataset = pd.DataFrame(
         {"feature_1": [0, 1, 2, 0], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestColumnDrift(column_name="feature_1")])
-    suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_current_dataset,
+        reference_data=test_reference_dataset,
+        column_mapping=ColumnMapping(),
+    )
     suite._inner_suite.raise_for_error()
     assert suite
     assert suite.show()
@@ -186,7 +199,9 @@ def test_data_drift_test_feature_value_drift() -> None:
 
 
 def test_data_drift_test_feature_value_drift_json_render() -> None:
-    test_current_dataset = pd.DataFrame({"feature_1": [0, 0, 0, 1], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]})
+    test_current_dataset = pd.DataFrame(
+        {"feature_1": [0, 0, 0, 1], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]}
+    )
     test_reference_dataset = pd.DataFrame(
         {"feature_1": [1, 1, 2, 0], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]}
     )

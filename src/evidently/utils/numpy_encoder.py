@@ -12,14 +12,32 @@ from evidently.utils.types import ApproxValue
 
 _TYPES_MAPPING = (
     (
-        (np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64, np.uint8, np.uint16, np.uint32, np.uint64),
+        (
+            np.int_,
+            np.intc,
+            np.intp,
+            np.int8,
+            np.int16,
+            np.int32,
+            np.int64,
+            np.uint8,
+            np.uint16,
+            np.uint32,
+            np.uint64,
+        ),
         int,
     ),
-    ((np.float_, np.float16, np.float32, np.float64), lambda obj: None if obj is np.nan else float(obj)),
+    (
+        (np.float_, np.float16, np.float32, np.float64),
+        lambda obj: None if obj is np.nan else float(obj),
+    ),
     ((np.ndarray,), lambda obj: obj.tolist()),
     ((np.bool_), bool),
     ((pd.Timedelta,), str),
-    ((np.void, type(pd.NaT)), lambda obj: None),  # should be before datetime as NaT is subclass of datetime.
+    (
+        (np.void, type(pd.NaT)),
+        lambda obj: None,
+    ),  # should be before datetime as NaT is subclass of datetime.
     ((pd.Timestamp, datetime.datetime, datetime.date), lambda obj: obj.isoformat()),
     # map ApproxValue to json value
     ((ApproxValue,), lambda obj: obj.dict()),

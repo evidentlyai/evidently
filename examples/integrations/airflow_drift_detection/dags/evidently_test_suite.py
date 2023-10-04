@@ -101,7 +101,9 @@ with DAG(
     )
 
     test_suite_html = PythonOperator(
-        task_id="test_suite_html", provide_context=True, python_callable=test_suite_html_execute
+        task_id="test_suite_html",
+        provide_context=True,
+        python_callable=test_suite_html_execute,
     )
 
 load_data >> data_quality_tests >> [test_suite_html]

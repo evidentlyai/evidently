@@ -17,11 +17,15 @@ def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
     return dataframe
 
 
-def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
+def process_columns(
+    dataset: pd.DataFrame, column_mapping: ColumnMapping
+) -> DatasetColumns:
     if column_mapping is None:
         # data mapping should not be empty in this step
         raise ValueError("column_mapping should be present")
-    date_column = column_mapping.datetime if column_mapping.datetime in dataset else None
+    date_column = (
+        column_mapping.datetime if column_mapping.datetime in dataset else None
+    )
     # index column name
     id_column = column_mapping.id
 
@@ -74,16 +78,26 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         empty_cols = dataset[num_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols == 1.0].index
         num_feature_names = sorted(
-            list(set(dataset[num_feature_names].select_dtypes([np.number]).columns).union(set(empty_cols)))
+            list(
+                set(
+                    dataset[num_feature_names].select_dtypes([np.number]).columns
+                ).union(set(empty_cols))
+            )
         )
 
     if datetime_feature_names is None:
-        datetime_feature_names = sorted(list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set))
+        datetime_feature_names = sorted(
+            list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set)
+        )
     else:
         empty_cols = dataset[datetime_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols == 1.0].index
         datetime_feature_names = sorted(
-            list(set(dataset[datetime_feature_names].select_dtypes(["datetime"]).columns).union(set(empty_cols)))
+            list(
+                set(
+                    dataset[datetime_feature_names].select_dtypes(["datetime"]).columns
+                ).union(set(empty_cols))
+            )
         )
 
     cat_feature_names = column_mapping.categorical_features
@@ -102,7 +116,10 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
 
     return DatasetColumns(
         utility_columns=DatasetUtilityColumns(
-            date=date_column, id=id_column, target=target_column, prediction=prediction_column
+            date=date_column,
+            id=id_column,
+            target=target_column,
+            prediction=prediction_column,
         ),
         target_type=target_type,
         num_feature_names=num_feature_names or [],
@@ -114,7 +131,9 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     )
 
 
-def _get_target_type(dataset: pd.DataFrame, column_mapping: ColumnMapping, task: Optional[str]) -> Optional[str]:
+def _get_target_type(
+    dataset: pd.DataFrame, column_mapping: ColumnMapping, task: Optional[str]
+) -> Optional[str]:
     """
     Args:
         dataset: input dataset
@@ -159,7 +178,10 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     Returns:
         Task parameter.
     """
-    if pd.api.types.is_numeric_dtype(dataset[target_name]) and dataset[target_name].nunique() >= 5:
+    if (
+        pd.api.types.is_numeric_dtype(dataset[target_name])
+        and dataset[target_name].nunique() >= 5
+    ):
         task = "regression"
 
     else:
@@ -168,11 +190,15 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     return task
 
 
-def recognize_column_type_(dataset: pd.DataFrame, column_name: str, columns: DatasetColumns) -> ColumnType:
+def recognize_column_type_(
+    dataset: pd.DataFrame, column_name: str, columns: DatasetColumns
+) -> ColumnType:
     """Try to get the column type."""
     column = dataset[column_name]
     reg_condition = columns.task == "regression" or (
-        pd.api.types.is_numeric_dtype(column) and columns.task != "classification" and column.nunique() > 5
+        pd.api.types.is_numeric_dtype(column)
+        and columns.task != "classification"
+        and column.nunique() > 5
     )
     if column_name == columns.utility_columns.target:
         if reg_condition:
@@ -181,7 +207,10 @@ def recognize_column_type_(dataset: pd.DataFrame, column_name: str, columns: Dat
         else:
             return ColumnType.Categorical
 
-    if isinstance(columns.utility_columns.prediction, str) and column_name == columns.utility_columns.prediction:
+    if (
+        isinstance(columns.utility_columns.prediction, str)
+        and column_name == columns.utility_columns.prediction
+    ):
         if reg_condition or (
             not pd.api.types.is_integer_dtype(column)
             and pd.api.types.is_numeric_dtype(column)
@@ -196,7 +225,10 @@ def recognize_column_type_(dataset: pd.DataFrame, column_name: str, columns: Dat
     if column_name in columns.num_feature_names:
         return ColumnType.Numerical
 
-    if isinstance(columns.utility_columns.prediction, list) and column_name in columns.utility_columns.prediction:
+    if (
+        isinstance(columns.utility_columns.prediction, list)
+        and column_name in columns.utility_columns.prediction
+    ):
         return ColumnType.Numerical
 
     if column_name in columns.cat_feature_names:
@@ -217,5 +249,7 @@ def recognize_column_type_(dataset: pd.DataFrame, column_name: str, columns: Dat
     return ColumnType.Unknown
 
 
-def recognize_column_type(dataset: pd.DataFrame, column_name: str, columns: DatasetColumns) -> str:
+def recognize_column_type(
+    dataset: pd.DataFrame, column_name: str, columns: DatasetColumns
+) -> str:
     return recognize_column_type_(dataset, column_name, columns).value

@@ -30,7 +30,11 @@ from evidently.report import Report
         ),
         (
             pd.DataFrame(
-                {"feature1": ["n", "d", "p", "n"], "feature2": [0, 2, 2, 432], "feature3": ["f", "f", np.NaN, 432]}
+                {
+                    "feature1": ["n", "d", "p", "n"],
+                    "feature2": [0, 2, 2, 432],
+                    "feature3": ["f", "f", np.NaN, 432],
+                }
             ),
             None,
             ColumnMapping(categorical_features=["feature1", "feature2", "feature3"]),
@@ -41,7 +45,9 @@ from evidently.report import Report
                     "cramer_v": ColumnCorrelations(
                         column_name="feature1",
                         kind="cramer_v",
-                        values=DistributionIncluded(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
+                        values=DistributionIncluded(
+                            x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]
+                        ),
                     )
                 },
                 reference=None,
@@ -58,7 +64,11 @@ def test_column_correlations_metric_success(
 ) -> None:
 
     report = Report(metrics=[metric])
-    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=column_mapping)
+    report.run(
+        current_data=current_dataset,
+        reference_data=reference_dataset,
+        column_mapping=column_mapping,
+    )
     result = metric.get_result()
     assert result == expected_result
 
@@ -80,7 +90,12 @@ def test_column_correlations_metric_success(
             "Cannot calculate correlations for 'ColumnType.Datetime' column type.",
         ),
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 2, 2, 432],
+                }
+            ),
             None,
             ColumnCorrelationsMetric(column_name="feature"),
             "Column 'feature' was not found in data.",
@@ -101,7 +116,11 @@ def test_column_correlations_metric_value_error(
 ) -> None:
     with pytest.raises(ValueError) as error:
         report = Report(metrics=[metric])
-        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_dataset,
+            reference_data=reference_dataset,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
     assert error.value.args[0] == error_message
@@ -111,7 +130,13 @@ def test_column_correlations_metric_value_error(
     "current_data, reference_data, metric, expected_json",
     (
         (
-            pd.DataFrame({"col": [1.4, 2.3, 3.4], "test": ["a", "b", "c"], "test2": ["a", "b", "c"]}),
+            pd.DataFrame(
+                {
+                    "col": [1.4, 2.3, 3.4],
+                    "test": ["a", "b", "c"],
+                    "test2": ["a", "b", "c"],
+                }
+            ),
             None,
             ColumnCorrelationsMetric(column_name="col"),
             {
@@ -121,7 +146,13 @@ def test_column_correlations_metric_value_error(
             },
         ),
         (
-            pd.DataFrame({"col": ["a", "b", "c"], "test": [1.4, 2.3, 3.4], "test2": [1.4, 2.3, 3.4]}),
+            pd.DataFrame(
+                {
+                    "col": ["a", "b", "c"],
+                    "test": [1.4, 2.3, 3.4],
+                    "test2": [1.4, 2.3, 3.4],
+                }
+            ),
             None,
             ColumnCorrelationsMetric(column_name="col"),
             {
@@ -131,7 +162,9 @@ def test_column_correlations_metric_value_error(
             },
         ),
         (
-            pd.DataFrame({"col1": [1, 2, 3, 4, 5, 6], "col2": [10, 20, 3.5, 11, 21, 5]}),
+            pd.DataFrame(
+                {"col1": [1, 2, 3, 4, 5, 6], "col2": [10, 20, 3.5, 11, 21, 5]}
+            ),
             pd.DataFrame(
                 {
                     "col1": [10, 20, 3.5, 11, 21, 5],
@@ -180,10 +213,17 @@ def test_column_correlations_metric_value_error(
     ),
 )
 def test_column_correlations_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnCorrelationsMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnCorrelationsMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     result_json = report.json()
     assert len(result_json) > 0

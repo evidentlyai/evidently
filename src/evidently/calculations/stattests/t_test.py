@@ -33,7 +33,10 @@ from evidently.core import ColumnType
 
 
 def _t_test2samp(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: ColumnType,
+    threshold: float,
 ) -> Tuple[float, bool]:
     """Compute the two-sample t test between reference and current
     Args:

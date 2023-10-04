@@ -25,7 +25,11 @@ class MockMetricResult(MetricResult):
 
 class MockMetric(Metric[MockMetricResult]):
     def calculate(self, data: InputData) -> MockMetricResult:
-        return MockMetricResult(value="a", series=pd.Series([0]), distribution=Distribution(x=[1, 1], y=[0, 0]))
+        return MockMetricResult(
+            value="a",
+            series=pd.Series([0]),
+            distribution=Distribution(x=[1, 1], y=[0, 0]),
+        )
 
 
 @default_renderer(wrap_type=MockMetric)
@@ -43,7 +47,9 @@ def report():
 
 
 def test_as_dict(report: Report):
-    assert report.as_dict() == {"metrics": [{"metric": "MockMetric", "result": {"value": "a"}}]}
+    assert report.as_dict() == {
+        "metrics": [{"metric": "MockMetric", "result": {"value": "a"}}]
+    }
     include_series = report.as_dict(include={"MockMetric": {"value", "series"}})
     assert "series" in include_series["metrics"][0]["result"]
     assert (pd.Series([0]) == include_series["metrics"][0]["result"]["series"]).all()
@@ -57,5 +63,9 @@ def test_json(report: Report):
     default = json.loads(report.json())["metrics"]
     assert default == [{"metric": "MockMetric", "result": {"value": "a"}}]
 
-    include_series = json.loads(report.json(include={"MockMetric": {"value", "series"}}))["metrics"]
-    assert include_series == [{"metric": "MockMetric", "result": {"value": "a", "series": [0]}}]
+    include_series = json.loads(
+        report.json(include={"MockMetric": {"value", "series"}})
+    )["metrics"]
+    assert include_series == [
+        {"metric": "MockMetric", "result": {"value": "a", "series": [0]}}
+    ]

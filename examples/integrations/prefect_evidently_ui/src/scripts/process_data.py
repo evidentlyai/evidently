@@ -1,5 +1,6 @@
-import pandas as pd
 import uuid
+
+import pandas as pd
 
 
 def process() -> None:
@@ -15,10 +16,7 @@ def process() -> None:
     DATA_RAW_DIR = "data/raw"
     DATA_FEATURES_DIR = "data/features"
 
-    files = [
-        "green_tripdata_2021-01.parquet",
-        "green_tripdata_2021-02.parquet"
-    ]
+    files = ["green_tripdata_2021-01.parquet", "green_tripdata_2021-02.parquet"]
 
     print("Load train data")
     for file in files:
@@ -31,9 +29,7 @@ def process() -> None:
         data["uuid"] = data["uuid"].astype("str")
 
         # Generate target variable (duration in minutes)
-        data["duration_min"] = (
-            data.lpep_dropoff_datetime - data.lpep_pickup_datetime
-        )
+        data["duration_min"] = data.lpep_dropoff_datetime - data.lpep_pickup_datetime
         data.duration_min = data.duration_min.apply(
             lambda td: float(td.total_seconds() / 60)
         )
@@ -45,7 +41,7 @@ def process() -> None:
         numeric_columns = data.select_dtypes(include="number").columns
         medians = data[numeric_columns].median()
         data = data.fillna(medians).fillna(0)
-        data = data[data['duration_min'] != 0]
+        data = data[data["duration_min"] != 0]
 
         print("Save data")
         path_destination = f"{DATA_FEATURES_DIR}/{file}"

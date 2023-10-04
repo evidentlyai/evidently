@@ -30,14 +30,18 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         curr_target = data.current_data[target_name]
         ref_target = None
         if data.reference_data is not None:
             ref_target = data.reference_data[target_name]
         target_names: Optional[Dict[Union[int, str], str]]
         if isinstance(dataset_columns.target_names, list):
-            target_names = {idx: str(val) for idx, val in enumerate(dataset_columns.target_names)}
+            target_names = {
+                idx: str(val) for idx, val in enumerate(dataset_columns.target_names)
+            }
         else:
             target_names = dataset_columns.target_names
         if target_names is not None:

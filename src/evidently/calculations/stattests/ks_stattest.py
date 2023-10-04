@@ -33,7 +33,10 @@ from evidently.core import ColumnType
 
 
 def _ks_stat_test(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: ColumnType,
+    threshold: float,
 ) -> Tuple[float, bool]:
     """Run the two-sample Kolmogorov-Smirnov test of two samples. Alternative: two-sided
     Args:

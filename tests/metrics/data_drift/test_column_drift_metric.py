@@ -52,15 +52,21 @@ test_stattest = StatTest(
                 "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.05,
-                "current": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [0, 0, 1, 1, 1]}},
-                "reference": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [1, 1, 1, 0, 0]}},
+                "current": {
+                    "small_distribution": {"x": [1, 2, 3, 5, 8], "y": [0, 0, 1, 1, 1]}
+                },
+                "reference": {
+                    "small_distribution": {"x": [1, 2, 3, 5, 8], "y": [1, 1, 1, 0, 0]}
+                },
             },
         ),
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [3, 2, 2]}),
             None,
-            ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
+            ColumnDriftMetric(
+                column_name="col", stattest="psi", stattest_threshold=0.1
+            ),
             {
                 "column_name": "col",
                 "column_type": "cat",
@@ -76,7 +82,9 @@ test_stattest = StatTest(
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [3, 2, 2]}),
             None,
-            ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
+            ColumnDriftMetric(
+                column_name="col", stattest=test_stattest, stattest_threshold=0.1
+            ),
             {
                 "column_name": "col",
                 "column_type": "cat",
@@ -98,7 +106,11 @@ def test_column_drift_metric_success(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     result_json = report.json()
     result = json.loads(result_json)
@@ -161,5 +173,9 @@ def test_column_drift_metric_errors(
     report = Report(metrics=[metric])
 
     with pytest.raises(ValueError, match=expected_error):
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=data_mapping,
+        )
         report.json()

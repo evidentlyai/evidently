@@ -18,12 +18,18 @@ def test_regression_performance_metrics() -> None:
     data_mapping = ColumnMapping()
 
     report = Report(metrics=[RegressionPerformanceMetrics()])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     assert report.metrics is not None
     assert report.show() is not None
     assert report.json()
 
-    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.metrics is not None
     assert report.show() is not None
     assert report.json()
@@ -49,6 +55,10 @@ def test_regression_performance_metrics_current_data_differ_from_reference() -> 
     data_mapping = ColumnMapping(target="my_target", prediction="my_prediction")
 
     report = Report(metrics=[RegressionPerformanceMetrics()])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()

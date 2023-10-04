@@ -1,19 +1,15 @@
-import pendulum
-from prefect import flow
 from typing import Text
 
+import pendulum
+from prefect import flow
 from src.pipelines.build_dashboards import build_projects_dashboards
-from src.pipelines.predict import predict
 from src.pipelines.monitor_data import monitor_data
 from src.pipelines.monitor_model import monitor_model
+from src.pipelines.predict import predict
 
 
 @flow(name="scheduled_taxi_nyc")
-def scheduled_flow(
-    start_date: Text,
-    end_date: Text,
-    interval: int = 60
-) -> None:
+def scheduled_flow(start_date: Text, end_date: Text, interval: int = 60) -> None:
     """
     Runs a scheduled flow for predicting and monitoring taxi
     demand in New York City.
@@ -71,7 +67,5 @@ if __name__ == "__main__":
     BATCH_INTERVAL = 60
 
     scheduled_flow(
-        start_date=START_DATE_TIME,
-        end_date=END_DATE_TIME,
-        interval=BATCH_INTERVAL
+        start_date=START_DATE_TIME, end_date=END_DATE_TIME, interval=BATCH_INTERVAL
     )

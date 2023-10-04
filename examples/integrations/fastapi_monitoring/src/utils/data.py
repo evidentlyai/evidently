@@ -1,8 +1,10 @@
-import pandas as pd
-from sqlalchemy import create_engine, select
-from typing import List, Text
+from typing import List
+from typing import Text
 
+import pandas as pd
 from config.config import DATABASE_URI
+from sqlalchemy import create_engine
+from sqlalchemy import select
 from src.utils.models import PredictionTable
 
 
@@ -10,15 +12,9 @@ def load_current_data(window_size: int) -> pd.DataFrame:
     engine = create_engine(DATABASE_URI)
     with engine.connect() as db_connection:
         order = PredictionTable.lpep_pickup_datetime.desc()
-        query = (
-            select(PredictionTable).order_by(order)
-                                   .limit(window_size)
-        )
-        current_data: pd.DataFrame = pd.read_sql_query(
-            sql=query,
-            con=db_connection
-        )
-        current_data.drop('id', axis=1, inplace=True)
+        query = select(PredictionTable).order_by(order).limit(window_size)
+        current_data: pd.DataFrame = pd.read_sql_query(sql=query, con=db_connection)
+        current_data.drop("id", axis=1, inplace=True)
     return current_data
 
 

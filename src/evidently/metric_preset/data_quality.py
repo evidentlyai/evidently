@@ -33,7 +33,9 @@ class DataQualityPreset(MetricPreset):
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         return [
             DatasetSummaryMetric(),
-            generate_column_metrics(ColumnSummaryMetric, columns=self.columns, skip_id_column=True),
+            generate_column_metrics(
+                ColumnSummaryMetric, columns=self.columns, skip_id_column=True
+            ),
             DatasetMissingValuesMetric(),
             DatasetCorrelationsMetric(),
         ]

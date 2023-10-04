@@ -69,10 +69,13 @@ class ColumnsDriftParameters(ConditionTestParameters):
     features: Dict[str, ColumnDriftParameter]
 
     @classmethod
-    def from_data_drift_table(cls, table: DataDriftTableResults, condition: TestValueCondition):
+    def from_data_drift_table(
+        cls, table: DataDriftTableResults, condition: TestValueCondition
+    ):
         return ColumnsDriftParameters(
             features={
-                feature: ColumnDriftParameter.from_metric(data) for feature, data in table.drift_by_columns.items()
+                feature: ColumnDriftParameter.from_metric(data)
+                for feature, data in table.drift_by_columns.items()
             },
             condition=condition,
         )
@@ -169,7 +172,9 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
             description=result.description,
             status=TestStatus(result.status),
             group=self.group,
-            parameters=ColumnsDriftParameters.from_data_drift_table(metrics, self.get_condition()),
+            parameters=ColumnsDriftParameters.from_data_drift_table(
+                metrics, self.get_condition()
+            ),
         )
 
 
@@ -180,7 +185,9 @@ class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
         if self.condition.has_condition():
             return self.condition
         else:
-            return TestValueCondition(lt=max(0, self.metric.get_result().number_of_columns // 3))
+            return TestValueCondition(
+                lt=max(0, self.metric.get_result().number_of_columns // 3)
+            )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_of_drifted_columns
@@ -270,7 +277,9 @@ class TestColumnDrift(Test):
             groups={
                 GroupingTypes.ByFeature.id: self.column_name.display_name,
             },
-            parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name.display_name),
+            parameters=ColumnDriftParameter.from_metric(
+                drift_info, column_name=self.column_name.display_name
+            ),
         )
 
 
@@ -525,7 +534,10 @@ class TestColumnDriftRenderer(TestRenderer):
         result = obj.metric.get_result()
         column_name = obj.column_name
         if result.column_type == "text":
-            if result.current.characteristic_words is not None and result.reference.characteristic_words is not None:
+            if (
+                result.current.characteristic_words is not None
+                and result.reference.characteristic_words is not None
+            ):
                 info.details = [
                     DetailsInfo(
                         id=f"{column_name} dritf curr",
@@ -535,7 +547,10 @@ class TestColumnDriftRenderer(TestRenderer):
                             type="table",
                             params={
                                 "header": ["", ""],
-                                "data": [[el, ""] for el in result.current.characteristic_words],
+                                "data": [
+                                    [el, ""]
+                                    for el in result.current.characteristic_words
+                                ],
                             },
                             size=2,
                         ),
@@ -548,7 +563,10 @@ class TestColumnDriftRenderer(TestRenderer):
                             type="table",
                             params={
                                 "header": ["", ""],
-                                "data": [[el, ""] for el in result.reference.characteristic_words],
+                                "data": [
+                                    [el, ""]
+                                    for el in result.reference.characteristic_words
+                                ],
                             },
                             size=2,
                         ),
@@ -580,11 +598,18 @@ class TestEmbeddingsDrift(Test):
     drift_method: Optional[DriftMethod]
     _metric: EmbeddingsDriftMetric
 
-    def __init__(self, embeddings_name: str, drift_method: Optional[DriftMethod] = None, is_critical: bool = True):
+    def __init__(
+        self,
+        embeddings_name: str,
+        drift_method: Optional[DriftMethod] = None,
+        is_critical: bool = True,
+    ):
         self.embeddings_name = embeddings_name
         self.drift_method = drift_method
         super().__init__(is_critical=is_critical)
-        self._metric = EmbeddingsDriftMetric(embeddings_name=self.embeddings_name, drift_method=self.drift_method)
+        self._metric = EmbeddingsDriftMetric(
+            embeddings_name=self.embeddings_name, drift_method=self.drift_method
+        )
 
     @property
     def metric(self):
@@ -622,6 +647,11 @@ class TestEmbeddingsDriftRenderer(TestRenderer):
     def render_html(self, obj: TestEmbeddingsDrift) -> TestHtmlInfo:
         info = super().render_html(obj)
         result = obj.metric.get_result()
-        fig = plot_contour_single(result.current, result.reference, "component 1", "component 2")
-        info.with_details(f"Drift in embeddings '{result.embeddings_name}'", plotly_figure(title="", figure=fig))
+        fig = plot_contour_single(
+            result.current, result.reference, "component 1", "component 2"
+        )
+        info.with_details(
+            f"Drift in embeddings '{result.embeddings_name}'",
+            plotly_figure(title="", figure=fig),
+        )
         return info

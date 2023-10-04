@@ -26,7 +26,9 @@ from evidently.report import Report
             ),
             None,
             DataQualityStabilityMetric(),
-            DataQualityStabilityMetricResult(number_not_stable_target=0, number_not_stable_prediction=0),
+            DataQualityStabilityMetricResult(
+                number_not_stable_target=0, number_not_stable_prediction=0
+            ),
         ),
         (
             pd.DataFrame(
@@ -46,7 +48,9 @@ from evidently.report import Report
                 }
             ),
             DataQualityStabilityMetric(),
-            DataQualityStabilityMetricResult(number_not_stable_target=2, number_not_stable_prediction=4),
+            DataQualityStabilityMetricResult(
+                number_not_stable_target=2, number_not_stable_prediction=4
+            ),
         ),
     ),
 )
@@ -57,7 +61,9 @@ def test_data_quality_stability_metric_success(
     expected: DataQualityStabilityMetricResult,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current, reference_data=reference, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current, reference_data=reference, column_mapping=ColumnMapping()
+    )
     result = metric.get_result()
     assert result == expected
 
@@ -117,7 +123,11 @@ def test_data_quality_stability_metric_with_report(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     assert report.show()
     result_json = report.json()
     assert len(result_json) > 0

@@ -65,7 +65,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     _text_features_gen: Optional[
         Dict[
             str,
-            Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
+            Dict[
+                str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]
+            ],
         ]
     ]
 
@@ -75,7 +77,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+            text_cols = [
+                col.column_name for col in data_definition.get_columns("text_features")
+            ]
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
@@ -84,7 +88,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage],
                 ] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
-                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
+                col_dict[
+                    f"{col}: Non Letter Character %"
+                ] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
 
                 text_features_gen_result += [
@@ -103,7 +109,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         return ()
 
     @staticmethod
-    def _get_correlations_stats(correlation: pd.DataFrame, data_definition: DataDefinition) -> CorrelationStats:
+    def _get_correlations_stats(
+        correlation: pd.DataFrame, data_definition: DataDefinition
+    ) -> CorrelationStats:
         correlation_matrix = correlation.copy()
         target = data_definition.get_target_column()
         target_name = None
@@ -113,12 +121,18 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         prediction_name = None
         if prediction is not None and prediction.predicted_values is not None:
             prediction_name = prediction.predicted_values.column_name
-        columns_corr = [i for i in correlation_matrix.columns if i not in [target_name, prediction_name]]
+        columns_corr = [
+            i
+            for i in correlation_matrix.columns
+            if i not in [target_name, prediction_name]
+        ]
         # fill diagonal with 1 values for getting abs max values
         np.fill_diagonal(correlation_matrix.values, 0)
 
         if prediction_name in correlation_matrix and target_name in correlation_matrix:
-            target_prediction_correlation = correlation_matrix.loc[prediction_name, target_name]
+            target_prediction_correlation = correlation_matrix.loc[
+                prediction_name, target_name
+            ]
 
             if pd.isnull(target_prediction_correlation):
                 target_prediction_correlation = None
@@ -127,7 +141,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             target_prediction_correlation = None
 
         if target_name in correlation_matrix:
-            abs_max_target_features_correlation = correlation_matrix.loc[target_name, columns_corr].abs().max()
+            abs_max_target_features_correlation = (
+                correlation_matrix.loc[target_name, columns_corr].abs().max()
+            )
 
             if pd.isnull(abs_max_target_features_correlation):
                 abs_max_target_features_correlation = None
@@ -136,7 +152,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             abs_max_target_features_correlation = None
 
         if prediction_name in correlation_matrix:
-            abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, columns_corr].abs().max()
+            abs_max_prediction_features_correlation = (
+                correlation_matrix.loc[prediction_name, columns_corr].abs().max()
+            )
 
             if pd.isnull(abs_max_prediction_features_correlation):
                 abs_max_prediction_features_correlation = None
@@ -149,7 +167,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         if pd.isnull(abs_max_correlation):
             abs_max_correlation = None
 
-        abs_max_features_correlation = correlation_matrix.loc[columns_corr, columns_corr].abs().max().max()
+        abs_max_features_correlation = (
+            correlation_matrix.loc[columns_corr, columns_corr].abs().max().max()
+        )
 
         if pd.isnull(abs_max_features_correlation):
             abs_max_features_correlation = None
@@ -163,12 +183,17 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         )
 
     def _get_correlations(
-        self, dataset: pd.DataFrame, data_definition: DataDefinition, add_text_columns: Optional[list]
+        self,
+        dataset: pd.DataFrame,
+        data_definition: DataDefinition,
+        add_text_columns: Optional[list],
     ) -> DatasetCorrelation:
         # process predictions. If task == 'classification' add prediction labels
 
         if add_text_columns is not None:
-            correlations_calculate = calculate_correlations(dataset, data_definition, sum(add_text_columns, []))
+            correlations_calculate = calculate_correlations(
+                dataset, data_definition, sum(add_text_columns, [])
+            )
             correlations = copy.deepcopy(correlations_calculate)
             for name, correlation in correlations_calculate.items():
                 if name != "cramer_v":
@@ -180,7 +205,10 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             correlations = copy.deepcopy(correlations_calculate)
 
         prediction_columns = data_definition.get_prediction_columns()
-        if prediction_columns is not None and prediction_columns.prediction_probas is not None:
+        if (
+            prediction_columns is not None
+            and prediction_columns.prediction_probas is not None
+        ):
             names = [col.column_name for col in prediction_columns.prediction_probas]
             for name, correlation in correlations_calculate.items():
                 if name != "cramer_v" and len(names) > 1:
@@ -219,23 +247,32 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         prediction_data = data_definition.get_prediction_columns()
         if prediction_data is not None and prediction_data.predicted_values is None:
             prediction_labels_name = "prediction_labels"
-            prediction_curr = get_prediction_data(curr_df, columns, data.column_mapping.pos_label)
+            prediction_curr = get_prediction_data(
+                curr_df, columns, data.column_mapping.pos_label
+            )
             curr_df[prediction_labels_name] = prediction_curr.predictions
             if ref_df is not None:
-                prediction_ref = get_prediction_data(ref_df, columns, data.column_mapping.pos_label)
+                prediction_ref = get_prediction_data(
+                    ref_df, columns, data.column_mapping.pos_label
+                )
                 ref_df[prediction_labels_name] = prediction_ref.predictions
             data_definition._prediction_columns = PredictionColumns(
                 prediction_probas=prediction_data.prediction_probas,
                 predicted_values=ColumnDefinition(prediction_labels_name, target_type),
             )
-            data_definition._columns[prediction_labels_name] = ColumnDefinition(prediction_labels_name, target_type)
+            data_definition._columns[prediction_labels_name] = ColumnDefinition(
+                prediction_labels_name, target_type
+            )
 
         # process text columns
         text_columns = []
         if self._text_features_gen is not None:
             for col in list(self._text_features_gen.keys()):
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self._text_features_gen[col].values())],
+                    [
+                        data.get_current_column(x.feature_name())
+                        for x in list(self._text_features_gen[col].values())
+                    ],
                     axis=1,
                 )
                 curr_text_df.columns = list(self._text_features_gen[col].keys())
@@ -271,7 +308,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         )
 
         if ref_df is not None:
-            reference_correlation: Optional[DatasetCorrelation] = self._get_correlations(
+            reference_correlation: Optional[
+                DatasetCorrelation
+            ] = self._get_correlations(
                 dataset=ref_df,
                 data_definition=data_definition,
                 add_text_columns=text_columns,
@@ -289,7 +328,9 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
 @default_renderer(wrap_type=DatasetCorrelationsMetric)
 class DataQualityCorrelationMetricsRenderer(MetricRenderer):
-    def _get_heatmaps(self, metric_result: DatasetCorrelationsMetricResult) -> BaseWidgetInfo:
+    def _get_heatmaps(
+        self, metric_result: DatasetCorrelationsMetricResult
+    ) -> BaseWidgetInfo:
         tabs = []
         curr_corr_result = metric_result.current.correlation
         for correlation_method in curr_corr_result:
@@ -308,7 +349,9 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
                 TabData(
                     title=correlation_method,
                     widget=get_heatmaps_widget(
-                        primary_data=HeatmapData(name="Current", matrix=current_correlation),
+                        primary_data=HeatmapData(
+                            name="Current", matrix=current_correlation
+                        ),
                         secondary_data=reference_heatmap_data,
                         color_options=self.color_options,
                     ),

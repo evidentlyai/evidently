@@ -29,7 +29,11 @@ def all_metric_results():
             continue
         module = import_module(mod_name)
         for key, value in module.__dict__.items():
-            if isinstance(value, type) and value is not MetricResult and issubclass(value, MetricResult):
+            if (
+                isinstance(value, type)
+                and value is not MetricResult
+                and issubclass(value, MetricResult)
+            ):
                 metric_result_field_classes.add(value)
     return metric_result_field_classes
 
@@ -66,7 +70,9 @@ class ExcludeModel(MetricResult):
     simple: SimpleField
 
 
-@pytest.mark.parametrize("obj, expected", [(ExcludeModel(simple=SimpleField(f1="a")), {})])
+@pytest.mark.parametrize(
+    "obj, expected", [(ExcludeModel(simple=SimpleField(f1="a")), {})]
+)
 def test_default_json(obj: MetricResult, expected):
     assert obj.get_dict() == expected
 

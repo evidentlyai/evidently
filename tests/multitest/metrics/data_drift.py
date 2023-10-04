@@ -38,7 +38,12 @@ def data_drift_table():
 
 @metric
 def column_value_plot():
-    return TestMetric("column_value_plot", ColumnValuePlot("age"), NoopOutcome(), dataset_names=["adult"])
+    return TestMetric(
+        "column_value_plot",
+        ColumnValuePlot("age"),
+        NoopOutcome(),
+        dataset_names=["adult"],
+    )
 
 
 @metric
@@ -49,7 +54,10 @@ def dataset_drift_metric():
 @metric
 def target_by_features_table():
     return TestMetric(
-        "target_by_features_table", TargetByFeaturesTable(), NoopOutcome(), include_tags=[DatasetTags.HAS_TARGET]
+        "target_by_features_table",
+        TargetByFeaturesTable(),
+        NoopOutcome(),
+        include_tags=[DatasetTags.HAS_TARGET],
     )
 
 
@@ -65,7 +73,12 @@ def text_descriptors_drift_metric():
 
 @metric
 def column_drift_metric():
-    return TestMetric("column_drift_metric", ColumnDriftMetric("age"), NoopOutcome(), dataset_names=["adult"])
+    return TestMetric(
+        "column_drift_metric",
+        ColumnDriftMetric("age"),
+        NoopOutcome(),
+        dataset_names=["adult"],
+    )
 
 
 @metric
@@ -89,7 +102,10 @@ def embeddings_dataset():
     embeddings_data_shifted.iloc[2500:5000, :5] = 0
 
     column_mapping = ColumnMapping(
-        embeddings={"small_subset": embeddings_data.columns[:10], "big_subset": embeddings_data.columns[10:29]},
+        embeddings={
+            "small_subset": embeddings_data.columns[:10],
+            "big_subset": embeddings_data.columns[10:29],
+        },
         target=embeddings_data.columns[30],
     )
 
@@ -104,7 +120,10 @@ def embeddings_dataset():
 @metric
 def embeddings_drift_metric():
     return TestMetric(
-        "embeddings_drift_metric", EmbeddingsDriftMetric("small_subset"), NoopOutcome(), datasets=[embeddings_dataset()]
+        "embeddings_drift_metric",
+        EmbeddingsDriftMetric("small_subset"),
+        NoopOutcome(),
+        datasets=[embeddings_dataset()],
     )
 
 
@@ -112,8 +131,16 @@ def embeddings_drift_metric():
 def text_domain_classifier_drift_metric():
     categories_ref = ["alt.atheism", "talk.religion.misc"]
     categories_cur = ["comp.graphics", "sci.space"]
-    reference = fetch_20newsgroups(subset="train", remove=("headers", "footers", "quotes"), categories=categories_ref)
-    current = fetch_20newsgroups(subset="test", remove=("headers", "footers", "quotes"), categories=categories_cur)
+    reference = fetch_20newsgroups(
+        subset="train",
+        remove=("headers", "footers", "quotes"),
+        categories=categories_ref,
+    )
+    current = fetch_20newsgroups(
+        subset="test",
+        remove=("headers", "footers", "quotes"),
+        categories=categories_cur,
+    )
     reference_data = pd.DataFrame({"text": reference.data})
     current_data = pd.DataFrame({"text": current.data})
 
@@ -130,7 +157,10 @@ def text_domain_classifier_drift_metric():
         ),
         datasets=[
             TestDataset(
-                "text_domain_classifier_drift_metric_data", current=current_data, reference=reference_data, tags=[]
+                "text_domain_classifier_drift_metric_data",
+                current=current_data,
+                reference=reference_data,
+                tags=[],
             ),
         ],
     )

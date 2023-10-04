@@ -1,26 +1,28 @@
-from typing import List, Optional, Text
+from typing import List
+from typing import Optional
+from typing import Text
+
+from config.evidently_config import EVIDENTLY_WS
 
 from evidently.metrics import ColumnDriftMetric
-from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics import DatasetMissingValuesMetric
+from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics import RegressionQualityMetric
 from evidently.ui.dashboards import CounterAgg
 from evidently.ui.dashboards import DashboardPanelCounter
 from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
-from evidently.ui.workspace import Project
 from evidently.ui.dashboards import ReportFilter
+from evidently.ui.workspace import Project
 from evidently.ui.workspace import Workspace
 from evidently.ui.workspace import WorkspaceBase
-
-from config.evidently_config import EVIDENTLY_WS
 
 
 def get_evidently_project(
     workspace: WorkspaceBase,
     project_name: Text,
-    project_description: Optional[Text] = None
+    project_description: Optional[Text] = None,
 ) -> Project:
     """Get Evidently project object (load existing or create new).
 
@@ -78,7 +80,7 @@ def add_regression_dashboard(project: Project) -> Project:
             ),
             text="value",
             agg=CounterAgg.LAST,
-            size=1
+            size=1,
         )
     )
 
@@ -94,7 +96,7 @@ def add_regression_dashboard(project: Project) -> Project:
             ),
             text="value",
             agg=CounterAgg.LAST,
-            size=1
+            size=1,
         )
     )
 
@@ -107,7 +109,7 @@ def add_regression_dashboard(project: Project) -> Project:
                 PanelValue(
                     metric_id="RegressionQualityMetric",
                     field_path=RegressionQualityMetric.fields.current.mean_error,
-                    legend="ME"
+                    legend="ME",
                 ),
                 PanelValue(
                     metric_id="RegressionQualityMetric",
@@ -131,7 +133,7 @@ def add_regression_dashboard(project: Project) -> Project:
             ),
             text="value",
             agg=CounterAgg.LAST,
-            size=2
+            size=2,
         )
     )
 
@@ -181,11 +183,11 @@ def add_target_drift_dashboard(project: Project) -> Project:
                 metric_id="ColumnDriftMetric",
                 field_path=ColumnDriftMetric.fields.stattest_threshold,
                 metric_args={"column_name.name": "duration_min"},
-                legend="stattest threshold"
+                legend="stattest threshold",
             ),
             text="",
             agg=CounterAgg.LAST,
-            size=1
+            size=1,
         )
     )
 
@@ -197,11 +199,11 @@ def add_target_drift_dashboard(project: Project) -> Project:
             value=PanelValue(
                 metric_id="DatasetSummaryMetric",
                 field_path=DatasetSummaryMetric.fields.current.number_of_rows,
-                legend="row counts"
+                legend="row counts",
             ),
             text="",
             agg=CounterAgg.LAST,
-            size=1
+            size=1,
         )
     )
 
@@ -219,7 +221,7 @@ def add_target_drift_dashboard(project: Project) -> Project:
                 ),
             ],
             plot_type=PlotType.BAR,
-            size=2
+            size=2,
         )
     )
 
@@ -237,7 +239,7 @@ def add_target_drift_dashboard(project: Project) -> Project:
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=2
+            size=2,
         )
     )
 
@@ -301,7 +303,11 @@ def add_data_quality_dashboard(project: Project) -> Project:
             title="Dataset Quality",
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             values=[
-                PanelValue(metric_id="DatasetDriftMetric", field_path="share_of_drifted_columns", legend="Drift Share"),
+                PanelValue(
+                    metric_id="DatasetDriftMetric",
+                    field_path="share_of_drifted_columns",
+                    legend="Drift Share",
+                ),
                 PanelValue(
                     metric_id="DatasetMissingValuesMetric",
                     field_path=DatasetMissingValuesMetric.fields.current.share_of_missing_values,
@@ -343,14 +349,14 @@ def add_predictions_drift_dashboard(project: Project) -> Project:
                 metric_id="ColumnDriftMetric",
                 field_path=ColumnDriftMetric.fields.stattest_threshold,
                 metric_args={"column_name.name": "predictions"},
-                legend="stattest threshold"
+                legend="stattest threshold",
             ),
             text="",
             agg=CounterAgg.LAST,
-            size=1
+            size=1,
         )
     )
-    
+
     # Counter: Drift Detected
     project.dashboard.add_panel(
         DashboardPanelCounter(
@@ -360,11 +366,11 @@ def add_predictions_drift_dashboard(project: Project) -> Project:
                 metric_id="ColumnDriftMetric",
                 field_path=ColumnDriftMetric.fields.drift_detected,
                 metric_args={"column_name.name": "predictions"},
-                legend="stattest threshold"
+                legend="stattest threshold",
             ),
             text="",
             agg=CounterAgg.LAST,
-            size=1
+            size=1,
         )
     )
 
@@ -382,7 +388,7 @@ def add_predictions_drift_dashboard(project: Project) -> Project:
                 ),
             ],
             plot_type=PlotType.LINE,
-            size=2
+            size=2,
         )
     )
 
@@ -417,7 +423,7 @@ def build_dashboards():
     """
 
     # [Get workspace]
-    
+
     ws: Workspace = Workspace.create(EVIDENTLY_WS)
 
     # [Build dashboards]

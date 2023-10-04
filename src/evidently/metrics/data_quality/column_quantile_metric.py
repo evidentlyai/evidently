@@ -45,7 +45,12 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
     column_name: ColumnName
     quantile: float
 
-    def __init__(self, column_name: Union[str, ColumnName], quantile: float, options: AnyOptions = None) -> None:
+    def __init__(
+        self,
+        column_name: Union[str, ColumnName],
+        quantile: float,
+        options: AnyOptions = None,
+    ) -> None:
         self.quantile = quantile
         self.column_name = ColumnName.from_any(column_name)
         super().__init__(options=options)
@@ -60,13 +65,17 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
         column_type, current_column, reference_column = data.get_data(self.column_name)
 
         if not pd.api.types.is_numeric_dtype(current_column.dtype):
-            raise ValueError(f"Column '{self.column_name}' in current data is not numeric.")
+            raise ValueError(
+                f"Column '{self.column_name}' in current data is not numeric."
+            )
 
         current_quantile = current_column.quantile(self.quantile)
 
         if reference_column is not None:
             if not pd.api.types.is_numeric_dtype(reference_column.dtype):
-                raise ValueError(f"Column '{self.column_name}' in reference data is not numeric.")
+                raise ValueError(
+                    f"Column '{self.column_name}' in reference data is not numeric."
+                )
 
             reference_quantile = reference_column.quantile(self.quantile)
             reference_column = reference_column.replace([np.inf, -np.inf], np.nan)
@@ -76,7 +85,9 @@ class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
             reference_quantile = None
 
         distributions = get_distribution_for_column(
-            column_type="num", current=current_column.replace([np.inf, -np.inf], np.nan), reference=reference_column
+            column_type="num",
+            current=current_column.replace([np.inf, -np.inf], np.nan),
+            reference=reference_column,
         )
         reference = None
         if reference_quantile is not None:
@@ -101,7 +112,9 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_counters(metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.float(label="Quantile", value=metric_result.quantile, precision=3),
+            CounterData.float(
+                label="Quantile", value=metric_result.quantile, precision=3
+            ),
             CounterData.float(
                 label="Quantile value (current)",
                 value=metric_result.current.value,
@@ -119,9 +132,13 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
             )
         return counter(counters=counters)
 
-    def _get_histogram(self, metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
+    def _get_histogram(
+        self, metric_result: ColumnQuantileMetricResult
+    ) -> BaseWidgetInfo:
         if metric_result.reference is not None:
-            reference_histogram_data: Optional[HistogramData] = HistogramData.from_distribution(
+            reference_histogram_data: Optional[
+                HistogramData
+            ] = HistogramData.from_distribution(
                 metric_result.reference.distribution,
                 name="reference",
             )
@@ -136,7 +153,9 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
             reference_quantile = None
 
         figure = plot_distr_with_cond_perc_button(
-            hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
+            hist_curr=HistogramData.from_distribution(
+                metric_result.current.distribution
+            ),
             hist_ref=reference_histogram_data,
             xaxis_name="",
             yaxis_name="Count",

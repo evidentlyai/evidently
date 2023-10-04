@@ -8,7 +8,11 @@ from evidently.options import ColorOptions
 
 
 def plot_distr(
-    *, hist_curr: HistogramData, hist_ref: Optional[HistogramData] = None, orientation="v", color_options: ColorOptions
+    *,
+    hist_curr: HistogramData,
+    hist_ref: Optional[HistogramData] = None,
+    orientation="v",
+    color_options: ColorOptions,
 ):
     fig = go.Figure()
 

@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
-import streamlit as st
 from typing import Dict
 from typing import List
 from typing import Text
 
+import streamlit as st
 from src.ui import display_header
 from src.ui import display_report
 from src.ui import display_sidebar_header

@@ -59,7 +59,9 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
         else:
             quality_metric = self.quality_metric
         if prediction_name is not None and not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
 
         # dummy by current
         # mae
@@ -147,15 +149,27 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
             mean_abs_perc_error_default=mean_abs_perc_error_default,
             abs_error_max_default=abs_error_max_default,
             mean_abs_error_by_ref=mean_abs_error_by_ref,
-            mean_abs_error=(quality_metric.get_result().current.mean_abs_error if quality_metric is not None else None),
+            mean_abs_error=(
+                quality_metric.get_result().current.mean_abs_error
+                if quality_metric is not None
+                else None
+            ),
             mean_abs_perc_error_by_ref=mean_abs_perc_error_by_ref,
             mean_abs_perc_error=(
-                quality_metric.get_result().current.mean_abs_perc_error if quality_metric is not None else None
+                quality_metric.get_result().current.mean_abs_perc_error
+                if quality_metric is not None
+                else None
             ),
             rmse_by_ref=rmse_by_ref,
-            rmse=quality_metric.get_result().current.rmse if quality_metric is not None else None,
+            rmse=quality_metric.get_result().current.rmse
+            if quality_metric is not None
+            else None,
             abs_error_max_by_ref=abs_error_max_by_ref,
-            abs_error_max=(quality_metric.get_result().current.abs_error_max if quality_metric is not None else None),
+            abs_error_max=(
+                quality_metric.get_result().current.abs_error_max
+                if quality_metric is not None
+                else None
+            ),
         )
 
 
@@ -204,5 +218,7 @@ class RegressionDummyMetricRenderer(MetricRenderer):
 
         return [
             header_text(label="Dummy Regression Quality"),
-            table_data(column_names=columns, data=np.around(in_table_data, 3).values, title=""),
+            table_data(
+                column_names=columns, data=np.around(in_table_data, 3).values, title=""
+            ),
         ]

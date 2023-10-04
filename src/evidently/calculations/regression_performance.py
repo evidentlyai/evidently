@@ -45,7 +45,9 @@ def _calculate_error_normality(error: ErrorWithQuantiles):
     }
 
 
-def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_interval_n_sigmas=1):
+def _calculate_quality_metrics(
+    dataset, prediction_column, target_column, conf_interval_n_sigmas=1
+):
     me = np.mean(dataset[prediction_column] - dataset[target_column])
     sde = np.std(dataset[prediction_column] - dataset[target_column], ddof=1)
 
@@ -55,9 +57,9 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
     sdae = np.std(abs_err, ddof=1)
 
     epsilon = np.finfo(np.float64).eps
-    abs_perc_err = np.abs(dataset[prediction_column] - dataset[target_column]) / np.maximum(
-        dataset[target_column], epsilon
-    )
+    abs_perc_err = np.abs(
+        dataset[prediction_column] - dataset[target_column]
+    ) / np.maximum(dataset[target_column], epsilon)
     mape = 100.0 * np.mean(abs_perc_err)
     sdape = np.std(abs_perc_err, ddof=1)
 
@@ -74,10 +76,14 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
 
 def _prepare_dataset(dataset, target_column, prediction_column):
     dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
-    dataset.dropna(axis=0, how="any", inplace=True, subset=[target_column, prediction_column])
+    dataset.dropna(
+        axis=0, how="any", inplace=True, subset=[target_column, prediction_column]
+    )
 
 
-def _calculate_underperformance(err_quantiles: ErrorWithQuantiles, conf_interval_n_sigmas: int = 1):
+def _calculate_underperformance(
+    err_quantiles: ErrorWithQuantiles, conf_interval_n_sigmas: int = 1
+):
     error = err_quantiles.error
     quantile_top = err_quantiles.quantile_top
     quantile_other = err_quantiles.quantile_other
@@ -104,7 +110,9 @@ def _calculate_underperformance(err_quantiles: ErrorWithQuantiles, conf_interval
     }
 
 
-def error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names) -> Dict[str, FeatureBias]:
+def error_bias_table(
+    dataset, err_quantiles, num_feature_names, cat_feature_names
+) -> Dict[str, FeatureBias]:
     num_bias = {
         feature_name: _error_num_feature_bias(dataset, feature_name, err_quantiles)
         for feature_name in num_feature_names
@@ -118,7 +126,9 @@ def error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_name
     return error_bias
 
 
-def _error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
+def _error_num_feature_bias(
+    dataset, feature_name, err_quantiles: ErrorWithQuantiles
+) -> FeatureBias:
     error = err_quantiles.error
     quantile_top = err_quantiles.quantile_top
     quantile_other = err_quantiles.quantile_other
@@ -149,13 +159,19 @@ def _stable_value_counts(series: pd.Series):
     return series.value_counts().reindex(pd.unique(series))
 
 
-def _error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
+def _error_cat_feature_bias(
+    dataset, feature_name, err_quantiles: ErrorWithQuantiles
+) -> FeatureBias:
     error = err_quantiles.error
     quantile_top = err_quantiles.quantile_top
     quantile_other = err_quantiles.quantile_other
     ref_overall_value = _stable_value_counts(dataset[feature_name]).idxmax()
-    ref_under_value = _stable_value_counts(dataset[error <= quantile_top][feature_name]).idxmax()
-    ref_over_value = _stable_value_counts(dataset[error >= quantile_other][feature_name]).idxmax()
+    ref_under_value = _stable_value_counts(
+        dataset[error <= quantile_top][feature_name]
+    ).idxmax()
+    ref_over_value = _stable_value_counts(
+        dataset[error >= quantile_other][feature_name]
+    ).idxmax()
     if (
         (ref_overall_value != ref_under_value)
         or (ref_over_value != ref_overall_value)
@@ -220,14 +236,20 @@ def calculate_regression_performance(
 
     _prepare_dataset(dataset, target_column, prediction_column)
     # calculate quality metrics
-    quality_metrics = _calculate_quality_metrics(dataset, prediction_column, target_column)
+    quality_metrics = _calculate_quality_metrics(
+        dataset, prediction_column, target_column
+    )
     # error normality
-    err_quantiles = error_with_quantiles(dataset, prediction_column, target_column, quantile=0.05)
+    err_quantiles = error_with_quantiles(
+        dataset, prediction_column, target_column, quantile=0.05
+    )
     quality_metrics["error_normality"] = _calculate_error_normality(err_quantiles)
     # underperformance metrics
     quality_metrics["underperformance"] = _calculate_underperformance(err_quantiles)
     quality_metrics["error_bias"] = {}
-    feature_bias = error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names)
+    feature_bias = error_bias_table(
+        dataset, err_quantiles, num_feature_names, cat_feature_names
+    )
     # convert to old format
     quality_metrics["error_bias"] = {
         feature: dict(feature_type=bias.feature_type, **bias.as_dict(error_bias_prefix))

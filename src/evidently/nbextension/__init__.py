@@ -3,4 +3,11 @@
 
 
 def _jupyter_nbextension_paths():
-    return [{"section": "notebook", "src": "nbextension/static", "dest": "evidently", "require": "evidently/extension"}]
+    return [
+        {
+            "section": "notebook",
+            "src": "nbextension/static",
+            "dest": "evidently",
+            "require": "evidently/extension",
+        }
+    ]

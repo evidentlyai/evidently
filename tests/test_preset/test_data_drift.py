@@ -36,7 +36,9 @@ def test_data_drift_preset():
         categorical_features=["category_feature_1", "category_feature_2"],
     )
     data_quality_suite.run(
-        current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=column_mapping
+        current_data=test_current_dataset,
+        reference_data=test_reference_dataset,
+        column_mapping=column_mapping,
     )
     data_quality_suite._inner_suite.raise_for_error()
     assert data_quality_suite

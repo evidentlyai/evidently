@@ -17,7 +17,13 @@ class TriggerWordsPresent(GeneratedFeature):
     lemmatize: bool = True
     _lem: WordNetLemmatizer
 
-    def __init__(self, column_name: str, words_list=(), lemmatize=True, display_name: Optional[str] = None):
+    def __init__(
+        self,
+        column_name: str,
+        words_list=(),
+        lemmatize=True,
+        display_name: Optional[str] = None,
+    ):
 
         self.column_name = column_name
         self.words_list = words_list
@@ -25,7 +31,9 @@ class TriggerWordsPresent(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
         if not hasattr(self, "_lem"):
             import nltk
 
@@ -65,10 +73,20 @@ class TriggerWordsPresent(GeneratedFeature):
         return self.column_name, tuple(self.words_list), self.lemmatize
 
     def feature_name(self):
-        return additional_feature(self, self._feature_column_name(), self.display_name or self._feature_display_name())
+        return additional_feature(
+            self,
+            self._feature_column_name(),
+            self.display_name or self._feature_display_name(),
+        )
 
     def _feature_column_name(self):
-        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatize)
+        return (
+            self.column_name
+            + "_"
+            + "_".join(self.words_list)
+            + "_"
+            + str(self.lemmatize)
+        )
 
     def _feature_display_name(self):
         return f"TriggerWordsPresent [words: {self.words_list}, lemmatize: {self.lemmatize}] for {self.column_name}"

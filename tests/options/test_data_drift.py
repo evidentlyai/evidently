@@ -56,16 +56,28 @@ def _another_stattest():
     [
         (None, {"feature1": None, "feature2": None}),
         ("st1", {"feature1": "st1", "feature2": "st1"}),
-        ({"feature1": _custom_stattest}, {"feature1": _custom_stattest, "feature2": None}),
-        ({"feature2": _custom_stattest}, {"feature1": None, "feature2": _custom_stattest}),
+        (
+            {"feature1": _custom_stattest},
+            {"feature1": _custom_stattest, "feature2": None},
+        ),
+        (
+            {"feature2": _custom_stattest},
+            {"feature1": None, "feature2": _custom_stattest},
+        ),
         (
             {"feature1": _another_stattest, "feature2": _custom_stattest},
             {"feature1": _another_stattest, "feature2": _custom_stattest},
         ),
         ({"feature1": "st1"}, {"feature1": "st1", "feature2": None}),
         ({"feature2": "st2"}, {"feature1": None, "feature2": "st2"}),
-        ({"feature1": "st1", "feature2": "st2"}, {"feature1": "st1", "feature2": "st2"}),
-        ({"feature1": _another_stattest, "feature2": "st2"}, {"feature1": _another_stattest, "feature2": "st2"}),
+        (
+            {"feature1": "st1", "feature2": "st2"},
+            {"feature1": "st1", "feature2": "st2"},
+        ),
+        (
+            {"feature1": _another_stattest, "feature2": "st2"},
+            {"feature1": _another_stattest, "feature2": "st2"},
+        ),
     ],
 )
 def test_stattest_function_valid(feature_func, expected):
@@ -77,9 +89,27 @@ def test_stattest_function_valid(feature_func, expected):
 @pytest.mark.parametrize(
     "global_st,cat_st,num_st,per_feature_st,expected",
     [
-        (None, None, None, None, {"cat1": None, "cat2": None, "num1": None, "num2": None}),
-        ("st1", None, None, None, {"cat1": "st1", "cat2": "st1", "num1": "st1", "num2": "st1"}),
-        (None, None, None, {"cat1": "st1"}, {"cat1": "st1", "cat2": None, "num1": None, "num2": None}),
+        (
+            None,
+            None,
+            None,
+            None,
+            {"cat1": None, "cat2": None, "num1": None, "num2": None},
+        ),
+        (
+            "st1",
+            None,
+            None,
+            None,
+            {"cat1": "st1", "cat2": "st1", "num1": "st1", "num2": "st1"},
+        ),
+        (
+            None,
+            None,
+            None,
+            {"cat1": "st1"},
+            {"cat1": "st1", "cat2": None, "num1": None, "num2": None},
+        ),
         (
             None,
             None,
@@ -92,25 +122,58 @@ def test_stattest_function_valid(feature_func, expected):
             None,
             None,
             {"cat1": _custom_stattest, "num1": _another_stattest},
-            {"cat1": _custom_stattest, "cat2": None, "num1": _another_stattest, "num2": None},
+            {
+                "cat1": _custom_stattest,
+                "cat2": None,
+                "num1": _another_stattest,
+                "num2": None,
+            },
         ),
-        (None, "st1", None, None, {"cat1": "st1", "cat2": "st1", "num1": None, "num2": None}),
+        (
+            None,
+            "st1",
+            None,
+            None,
+            {"cat1": "st1", "cat2": "st1", "num1": None, "num2": None},
+        ),
         (
             None,
             _custom_stattest,
             None,
             None,
-            {"cat1": _custom_stattest, "cat2": _custom_stattest, "num1": None, "num2": None},
+            {
+                "cat1": _custom_stattest,
+                "cat2": _custom_stattest,
+                "num1": None,
+                "num2": None,
+            },
         ),
         (
             None,
             None,
             _custom_stattest,
             None,
-            {"cat1": None, "cat2": None, "num1": _custom_stattest, "num2": _custom_stattest},
+            {
+                "cat1": None,
+                "cat2": None,
+                "num1": _custom_stattest,
+                "num2": _custom_stattest,
+            },
         ),
-        ("st1", "st2", None, None, {"cat1": "st2", "cat2": "st2", "num1": "st1", "num2": "st1"}),
-        ("st1", None, "st2", None, {"cat1": "st1", "cat2": "st1", "num1": "st2", "num2": "st2"}),
+        (
+            "st1",
+            "st2",
+            None,
+            None,
+            {"cat1": "st2", "cat2": "st2", "num1": "st1", "num2": "st1"},
+        ),
+        (
+            "st1",
+            None,
+            "st2",
+            None,
+            {"cat1": "st1", "cat2": "st1", "num1": "st2", "num2": "st2"},
+        ),
         (
             "st1",
             None,
@@ -127,7 +190,9 @@ def test_stattest_function_valid(feature_func, expected):
         ),
     ],
 )
-def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, expected):
+def test_stattest_function_valid_v2(
+    global_st, cat_st, num_st, per_feature_st, expected
+):
     features_with_types = {"cat1": "cat", "cat2": "cat", "num1": "num", "num2": "num"}
     options = DataDriftOptions(
         all_features_stattest=global_st,
@@ -136,7 +201,10 @@ def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, e
         per_feature_stattest=per_feature_st,
     )
     for feature, expected_func in expected.items():
-        assert options.get_feature_stattest_func(feature, features_with_types[feature]) == expected_func
+        assert (
+            options.get_feature_stattest_func(feature, features_with_types[feature])
+            == expected_func
+        )
 
 
 @pytest.mark.parametrize(
@@ -150,7 +218,9 @@ def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, e
         ]
     ),
 )
-def test_stattest_function_deprecated(feature_st, global_st, cat_st, num_st, per_feature_st):
+def test_stattest_function_deprecated(
+    feature_st, global_st, cat_st, num_st, per_feature_st
+):
     options = DataDriftOptions(
         feature_stattest_func=feature_st,
         all_features_stattest=global_st,
@@ -166,8 +236,14 @@ def test_stattest_function_deprecated(feature_st, global_st, cat_st, num_st, per
     "nbinsx,expected",
     [
         (20, {"feature1": 20, "feature2": 20}),
-        ({"feature1": 15}, {"feature1": 15, "feature2": DataDriftOptions.DEFAULT_NBINSX}),
-        ({"feature2": 11}, {"feature1": DataDriftOptions.DEFAULT_NBINSX, "feature2": 11}),
+        (
+            {"feature1": 15},
+            {"feature1": 15, "feature2": DataDriftOptions.DEFAULT_NBINSX},
+        ),
+        (
+            {"feature2": 11},
+            {"feature1": DataDriftOptions.DEFAULT_NBINSX, "feature2": 11},
+        ),
         ({"feature1": 25, "feature2": 35}, {"feature1": 25, "feature2": 35}),
     ],
 )

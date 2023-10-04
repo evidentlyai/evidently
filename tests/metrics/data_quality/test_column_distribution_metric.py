@@ -20,7 +20,9 @@ from evidently.report import Report
             ColumnDistributionMetric(column_name="category_feature"),
             ColumnDistributionMetricResult(
                 column_name="category_feature",
-                current=Distribution(x=pd.Series(["n", "d", "p"]), y=pd.Series([3, 2, 1])),
+                current=Distribution(
+                    x=pd.Series(["n", "d", "p"]), y=pd.Series([3, 2, 1])
+                ),
                 reference=None,
             ),
         ),
@@ -34,7 +36,11 @@ def test_column_distribution_metric_success(
 ) -> None:
     data_mapping = ColumnMapping()
     report = Report(metrics=[metric])
-    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=current_dataset,
+        reference_data=reference_dataset,
+        column_mapping=data_mapping,
+    )
     result = metric.get_result()
     assert list(result.current.x) == list(expected_result.current.x)
     assert list(result.current.y) == list(expected_result.current.y)
@@ -44,7 +50,12 @@ def test_column_distribution_metric_success(
     "current_dataset, reference_dataset, metric, error_message",
     (
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 2, 2, 432],
+                }
+            ),
             None,
             ColumnDistributionMetric(column_name="feature"),
             "Column 'feature' was not found in data.",
@@ -65,7 +76,11 @@ def test_column_distribution_metric_value_error(
 ) -> None:
     with pytest.raises(ValueError) as error:
         report = Report(metrics=[metric])
-        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+        report.run(
+            current_data=current_dataset,
+            reference_data=reference_dataset,
+            column_mapping=ColumnMapping(),
+        )
         metric.get_result()
 
     assert error.value.args[0] == error_message
@@ -94,10 +109,17 @@ def test_column_distribution_metric_value_error(
     ),
 )
 def test_column_distribution_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnDistributionMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnDistributionMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     result_json = report.json()
     assert len(result_json) > 0

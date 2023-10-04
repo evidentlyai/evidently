@@ -1,11 +1,9 @@
 import joblib
 import pandas as pd
+from config.config import DATA_COLUMNS
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_absolute_percentage_error
-
-
-from config.config import DATA_COLUMNS
 
 
 def train() -> None:
@@ -14,9 +12,9 @@ def train() -> None:
     DATA_DIR = "data/features"
 
     # Define the target variable, numerical features, and categorical features
-    target = DATA_COLUMNS['target_col']
-    num_features = DATA_COLUMNS['num_features']
-    cat_features = DATA_COLUMNS['cat_features']
+    target = DATA_COLUMNS["target_col"]
+    num_features = DATA_COLUMNS["num_features"]
+    cat_features = DATA_COLUMNS["cat_features"]
 
     print("Load train data")
     data = pd.read_parquet(f"{DATA_DIR}/green_tripdata_2021-01.parquet")

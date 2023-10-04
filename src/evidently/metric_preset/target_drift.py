@@ -66,7 +66,9 @@ class TargetDriftPreset(MetricPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
+    def generate_metrics(
+        self, data: InputData, columns: DatasetColumns
+    ) -> Sequence[Metric]:
         target = columns.utility_columns.target
         prediction = columns.utility_columns.prediction
         result: List[Metric] = []

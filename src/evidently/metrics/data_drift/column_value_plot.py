@@ -38,10 +38,14 @@ class ColumnValuePlotResults(MetricResult):
     column_name: str
     datetime_column_name: Optional[str]
     current: Union[ColumnScatterOrAgg]
-    current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, False)
+    current_raw, current_agg = raw_agg_properties(
+        "current", ColumnScatter, ColumnAggScatter, False
+    )
 
     reference: Union[ColumnScatterOrAgg]
-    reference_raw, reference_agg = raw_agg_properties("reference", ColumnScatter, ColumnAggScatter, False)
+    reference_raw, reference_agg = raw_agg_properties(
+        "reference", ColumnScatter, ColumnAggScatter, False
+    )
     prefix: Optional[str] = None
 
 
@@ -54,32 +58,44 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 
     def calculate(self, data: InputData) -> ColumnValuePlotResults:
         if self.column_name not in data.current_data.columns:
-            raise ValueError(f"Column '{self.column_name}' should present in the current dataset")
+            raise ValueError(
+                f"Column '{self.column_name}' should present in the current dataset"
+            )
 
         if data.reference_data is None:
             raise ValueError("Reference data should be present")
 
         if self.column_name not in data.reference_data.columns:
-            raise ValueError(f"Column '{self.column_name}' should present in the reference dataset")
+            raise ValueError(
+                f"Column '{self.column_name}' should present in the reference dataset"
+            )
 
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         if not (
             self.column_name in dataset_columns.num_feature_names
             or (
                 self.column_name == dataset_columns.utility_columns.target
-                and (data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[self.column_name]))
+                and (
+                    data.column_mapping.task == "regression"
+                    or is_numeric_dtype(data.current_data[self.column_name])
+                )
             )
             or (
                 isinstance(dataset_columns.utility_columns.prediction, str)
                 and self.column_name == dataset_columns.utility_columns.prediction
-                and (data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[self.column_name]))
+                and (
+                    data.column_mapping.task == "regression"
+                    or is_numeric_dtype(data.current_data[self.column_name])
+                )
             )
         ):
             raise ValueError("Expected numerical feature")
         datetime_column_name = dataset_columns.utility_columns.date
         curr_df = data.current_data.copy()
         ref_df = data.reference_data.copy()
-        curr_df = self._make_df_for_plot(curr_df, self.column_name, datetime_column_name)
+        curr_df = self._make_df_for_plot(
+            curr_df, self.column_name, datetime_column_name
+        )
         ref_df = self._make_df_for_plot(ref_df, self.column_name, datetime_column_name)
         if self.get_options().render_options.raw_data:
             return ColumnValuePlotResults(
@@ -90,13 +106,25 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
             )
         prefix = None
         if datetime_column_name is not None:
-            prefix, freq = choose_agg_period(curr_df[datetime_column_name], ref_df[datetime_column_name])
-            curr_plot, _ = prepare_df_for_time_index_plot(curr_df, self.column_name, datetime_column_name, prefix, freq)
-            ref_plot, _ = prepare_df_for_time_index_plot(ref_df, self.column_name, datetime_column_name, prefix, freq)
+            prefix, freq = choose_agg_period(
+                curr_df[datetime_column_name], ref_df[datetime_column_name]
+            )
+            curr_plot, _ = prepare_df_for_time_index_plot(
+                curr_df, self.column_name, datetime_column_name, prefix, freq
+            )
+            ref_plot, _ = prepare_df_for_time_index_plot(
+                ref_df, self.column_name, datetime_column_name, prefix, freq
+            )
         else:
-            _, bins = pd.cut(list(curr_df.index) + list(ref_df.index), 150, retbins=True)
-            curr_plot, _ = prepare_df_for_time_index_plot(curr_df, self.column_name, datetime_column_name, bins=bins)
-            ref_plot, _ = prepare_df_for_time_index_plot(ref_df, self.column_name, datetime_column_name, bins=bins)
+            _, bins = pd.cut(
+                list(curr_df.index) + list(ref_df.index), 150, retbins=True
+            )
+            curr_plot, _ = prepare_df_for_time_index_plot(
+                curr_df, self.column_name, datetime_column_name, bins=bins
+            )
+            ref_plot, _ = prepare_df_for_time_index_plot(
+                ref_df, self.column_name, datetime_column_name, bins=bins
+            )
         return ColumnValuePlotResults(
             column_name=self.column_name,
             datetime_column_name=datetime_column_name,
@@ -105,7 +133,9 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
             prefix=prefix,
         )
 
-    def _make_df_for_plot(self, df, column_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self, df, column_name: str, datetime_column_name: Optional[str]
+    ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(
@@ -121,7 +151,9 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 
 @default_renderer(wrap_type=ColumnValuePlot)
 class ColumnValuePlotRenderer(MetricRenderer):
-    def render_raw(self, current_scatter, reference_scatter, column_name, datetime_column_name):
+    def render_raw(
+        self, current_scatter, reference_scatter, column_name, datetime_column_name
+    ):
         # todo: better typing
         column = reference_scatter[column_name]
         if not isinstance(column, pd.Series):
@@ -172,7 +204,9 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 y=[y0, y1],
                 mode="markers",
                 name="Current",
-                marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
+                marker=dict(
+                    size=0.01, color=color_options.non_visible_color, opacity=0.005
+                ),
                 showlegend=False,
             )
         )
@@ -181,7 +215,9 @@ class ColumnValuePlotRenderer(MetricRenderer):
             xaxis_title=x_name,
             yaxis_title=f"{column_name} value",
             showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
             shapes=[
                 dict(
                     type="rect",
@@ -211,7 +247,11 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 ),
             ],
         )
-        return [plotly_figure(title=f"Column '{column_name}' Values", figure=fig, size=WidgetSize.FULL)]
+        return [
+            plotly_figure(
+                title=f"Column '{column_name}' Values", figure=fig, size=WidgetSize.FULL
+            )
+        ]
 
     def render_agg(self, current, reference, column_name, datetime_column_name, prefix):
         data = {**current, **reference}
@@ -242,7 +282,16 @@ class ColumnValuePlotRenderer(MetricRenderer):
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         if obj.get_options().render_options.raw_data:
-            return self.render_raw(result.current, result.reference, result.column_name, result.datetime_column_name)
+            return self.render_raw(
+                result.current,
+                result.reference,
+                result.column_name,
+                result.datetime_column_name,
+            )
         return self.render_agg(
-            result.current, result.reference, result.column_name, result.datetime_column_name, result.prefix
+            result.current,
+            result.reference,
+            result.column_name,
+            result.datetime_column_name,
+            result.prefix,
         )

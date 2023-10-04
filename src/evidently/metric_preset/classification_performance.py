@@ -33,7 +33,10 @@ class ClassificationPreset(MetricPreset):
     k: Optional[int]
 
     def __init__(
-        self, columns: Optional[List[str]] = None, probas_threshold: Optional[float] = None, k: Optional[int] = None
+        self,
+        columns: Optional[List[str]] = None,
+        probas_threshold: Optional[float] = None,
+        k: Optional[int] = None,
     ):
         super().__init__()
         self.columns = columns
@@ -42,12 +45,20 @@ class ClassificationPreset(MetricPreset):
 
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
-            ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k),
+            ClassificationQualityMetric(
+                probas_threshold=self.probas_threshold, k=self.k
+            ),
             ClassificationClassBalance(),
-            ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k),
-            ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k),
+            ClassificationConfusionMatrix(
+                probas_threshold=self.probas_threshold, k=self.k
+            ),
+            ClassificationQualityByClass(
+                probas_threshold=self.probas_threshold, k=self.k
+            ),
         ]
-        curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
+        curr_predictions = get_prediction_data(
+            data.current_data, columns, data.column_mapping.pos_label
+        )
 
         if curr_predictions.prediction_probas is not None:
             result.extend(

@@ -104,6 +104,10 @@ class DataDriftPreset(MetricPreset):
         if embeddings_data is None:
             return result
         result = add_emb_drift_to_reports(
-            result, embeddings_data, self.embeddings, self.embeddings_drift_method, EmbeddingsDriftMetric
+            result,
+            embeddings_data,
+            self.embeddings,
+            self.embeddings_drift_method,
+            EmbeddingsDriftMetric,
         )
         return result

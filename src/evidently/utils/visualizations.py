@@ -30,7 +30,11 @@ OPTIMAL_POINTS = 150
 
 
 def plot_distr(
-    *, hist_curr: HistogramData, hist_ref: Optional[HistogramData] = None, orientation="v", color_options: ColorOptions
+    *,
+    hist_curr: HistogramData,
+    hist_ref: Optional[HistogramData] = None,
+    orientation="v",
+    color_options: ColorOptions,
 ) -> go.Figure:
     fig = go.Figure()
 
@@ -64,12 +68,29 @@ def plot_distr(
     return fig
 
 
-def collect_updatemenus(name1: str, name2: str, y_name_1: str, y_name_2: str, visible: List[bool]):
-    button1 = dict(method="update", args=[{"visible": visible}, {"yaxis": {"title": y_name_1}}], label=name1)
-    button2 = dict(
-        method="update", args=[{"visible": [not x for x in visible]}, {"yaxis": {"title": y_name_2}}], label=name2
+def collect_updatemenus(
+    name1: str, name2: str, y_name_1: str, y_name_2: str, visible: List[bool]
+):
+    button1 = dict(
+        method="update",
+        args=[{"visible": visible}, {"yaxis": {"title": y_name_1}}],
+        label=name1,
     )
-    updatemenus = [dict(type="buttons", direction="right", buttons=[button1, button2], x=1.05, y=1.2, yanchor="top")]
+    button2 = dict(
+        method="update",
+        args=[{"visible": [not x for x in visible]}, {"yaxis": {"title": y_name_2}}],
+        label=name2,
+    )
+    updatemenus = [
+        dict(
+            type="buttons",
+            direction="right",
+            buttons=[button1, button2],
+            x=1.05,
+            y=1.2,
+            yanchor="top",
+        )
+    ]
     return updatemenus
 
 
@@ -122,18 +143,24 @@ def plot_distr_with_perc_button(
     if is_subplots:
         cols = 2
         subplot_titles = ["current", "reference"]
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
 
     fig = add_traces_with_perc(fig, hist_curr, 1, 1, curr_color, "current")
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     if hist_ref is not None:
-        fig = add_traces_with_perc(fig, hist_ref, 1, int(is_subplots) + 1, ref_color, "reference")
+        fig = add_traces_with_perc(
+            fig, hist_ref, 1, int(is_subplots) + 1, ref_color, "reference"
+        )
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
         visible += [True, False]
 
     fig.update_layout(yaxis_title=yaxis_name)
 
-    updatemenus = collect_updatemenus("abs", "perc", yaxis_name, yaxis_name_perc, visible)
+    updatemenus = collect_updatemenus(
+        "abs", "perc", yaxis_name, yaxis_name_perc, visible
+    )
     fig.update_layout(updatemenus=updatemenus)
     if is_subplots:
         fig.update_layout(showlegend=False)
@@ -162,9 +189,13 @@ def plot_distr_with_cond_perc_button(
 ):
     fig = make_subplots(rows=1, cols=1)
     visible = [True, False]
-    fig = add_traces_with_perc(fig, hist_curr, 1, 1, color_options.get_current_data_color(), "current")
+    fig = add_traces_with_perc(
+        fig, hist_curr, 1, 1, color_options.get_current_data_color(), "current"
+    )
     if hist_ref is not None:
-        fig = add_traces_with_perc(fig, hist_ref, 1, 1, color_options.get_reference_data_color(), "reference")
+        fig = add_traces_with_perc(
+            fig, hist_ref, 1, 1, color_options.get_reference_data_color(), "reference"
+        )
         visible += [True, False]
     lines = []
     left_line: Optional[float] = None
@@ -172,12 +203,16 @@ def plot_distr_with_cond_perc_button(
     if condition is not None:
         left_line = pd.Series([condition.gt, condition.gte]).max()
         if not pd.isnull(left_line):
-            left_line_name = ["gt", "gte"][pd.Series([condition.gt, condition.gte]).argmax()]
+            left_line_name = ["gt", "gte"][
+                pd.Series([condition.gt, condition.gte]).argmax()
+            ]
             lines.append((left_line, left_line_name))
 
         right_line = pd.Series([condition.lt, condition.lte]).min()
         if not pd.isnull(right_line):
-            right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
+            right_line_name = ["lt", "lte"][
+                pd.Series([condition.lt, condition.lte]).argmin()
+            ]
             lines.append((right_line, right_line_name))
         if condition.eq is not None and not isinstance(condition.eq, ApproxValue):
             lines.append((condition.eq, "eq"))
@@ -193,8 +228,12 @@ def plot_distr_with_cond_perc_button(
             right_border = 0.0
 
             if condition.eq.relative > 1e-6:
-                left_border = condition.eq.value - condition.eq.value * condition.eq.relative
-                right_border = condition.eq.value + condition.eq.value * condition.eq.relative
+                left_border = (
+                    condition.eq.value - condition.eq.value * condition.eq.relative
+                )
+                right_border = (
+                    condition.eq.value + condition.eq.value * condition.eq.relative
+                )
                 fig.add_vrect(
                     x0=left_border,
                     x1=right_border,
@@ -246,7 +285,9 @@ def plot_distr_with_cond_perc_button(
                     y=(0, max_y),
                     visible=True,
                     mode="lines",
-                    line=dict(color="green", width=3, dash=dict_style.get(name, "dash")),
+                    line=dict(
+                        color="green", width=3, dash=dict_style.get(name, "dash")
+                    ),
                     name=name,
                 ),
                 1,
@@ -258,7 +299,9 @@ def plot_distr_with_cond_perc_button(
                     y=(0, max_y_perc),
                     visible=False,
                     mode="lines",
-                    line=dict(color="green", width=3, dash=dict_style.get(name, "dash")),
+                    line=dict(
+                        color="green", width=3, dash=dict_style.get(name, "dash")
+                    ),
                     name=name,
                 ),
                 1,
@@ -267,12 +310,16 @@ def plot_distr_with_cond_perc_button(
             visible += [True, False]
 
     if fill and left_line and right_line:
-        fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
+        fig.add_vrect(
+            x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0
+        )
 
     fig.update_xaxes(title_text=xaxis_name)
     fig.update_layout(yaxis_title=yaxis_name)
 
-    updatemenus = collect_updatemenus("abs", "perc", yaxis_name, yaxis_name_perc, visible)
+    updatemenus = collect_updatemenus(
+        "abs", "perc", yaxis_name, yaxis_name_perc, visible
+    )
     fig.update_layout(updatemenus=updatemenus)
     if to_json:
         fig = json.loads(fig.to_json())
@@ -352,7 +399,9 @@ def plot_distr_with_log_button(
     layout = dict(updatemenus=updatemenus)
 
     fig = go.Figure(data=traces, layout=layout)
-    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    fig.update_layout(
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
     fig = json.loads(fig.to_json())
     return fig
 
@@ -391,7 +440,9 @@ def plot_num_feature_in_time(
                 y=ref_data.sort_values(datetime_name)[feature_name]
                 if not transpose
                 else ref_data.sort_values(datetime_name)[datetime_name],
-                line=dict(color=color_options.get_reference_data_color(), shape="spline"),
+                line=dict(
+                    color=color_options.get_reference_data_color(), shape="spline"
+                ),
                 name="reference",
             )
         )
@@ -403,7 +454,11 @@ def plot_num_feature_in_time(
     return feature_in_time_figure
 
 
-def plot_time_feature_distr(current: HistogramData, reference: Optional[HistogramData], color_options: ColorOptions):
+def plot_time_feature_distr(
+    current: HistogramData,
+    reference: Optional[HistogramData],
+    color_options: ColorOptions,
+):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name, "number_of_items"
     """
@@ -424,11 +479,15 @@ def plot_time_feature_distr(current: HistogramData, reference: Optional[Histogra
             go.Scatter(
                 x=ref_data["x"],
                 y=ref_data["count"],
-                line=dict(color=color_options.get_reference_data_color(), shape="spline"),
+                line=dict(
+                    color=color_options.get_reference_data_color(), shape="spline"
+                ),
                 name="reference",
             )
         )
-    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    fig.update_layout(
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
     fig = json.loads(fig.to_json())
     return fig
 
@@ -450,7 +509,10 @@ def plot_cat_feature_in_time(
     orientation = "v" if not transpose else "h"
     values = curr_data[feature_name].astype(str).unique()
     if ref_data is not None:
-        values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
+        values = np.union1d(
+            curr_data[feature_name].astype(str).unique(),
+            ref_data[feature_name].astype(str).unique(),
+        )
     for i, val in enumerate(values):
         x = curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name]
         y = curr_data.loc[curr_data[feature_name].astype(str) == val, "num"]
@@ -558,10 +620,15 @@ def histogram_for_data(
         ref_hist = np.histogram(ref, bins=bins)
         reference = make_hist_df(ref_hist)
 
-    return HistogramData.from_df(current), HistogramData.from_df(reference) if reference is not None else None
+    return (
+        HistogramData.from_df(current),
+        HistogramData.from_df(reference) if reference is not None else None,
+    )
 
 
-def make_hist_for_num_plot(curr: pd.Series, ref: Optional[pd.Series] = None, calculate_log: bool = False) -> Histogram:
+def make_hist_for_num_plot(
+    curr: pd.Series, ref: Optional[pd.Series] = None, calculate_log: bool = False
+) -> Histogram:
     current, reference = histogram_for_data(curr, ref)
     current_log = None
     reference_log = None
@@ -579,7 +646,11 @@ def make_hist_for_num_plot(curr: pd.Series, ref: Optional[pd.Series] = None, cal
 
 
 def plot_cat_cat_rel(
-    curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str, color_options: ColorOptions
+    curr: pd.DataFrame,
+    ref: pd.DataFrame,
+    target_name: str,
+    feature_name: str,
+    color_options: ColorOptions,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
@@ -589,7 +660,9 @@ def plot_cat_cat_rel(
     if ref is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
     visible = []
     for i, val in enumerate(curr[target_name].astype(str).unique()):
         trace = go.Bar(
@@ -604,7 +677,9 @@ def plot_cat_cat_rel(
 
         trace = go.Bar(
             x=curr.loc[curr[target_name] == val, feature_name],
-            y=curr.loc[curr[target_name] == val, "count_objects"] * 100 / curr["count_objects"].sum(),
+            y=curr.loc[curr[target_name] == val, "count_objects"]
+            * 100
+            / curr["count_objects"].sum(),
             marker_color=color_options.color_sequence[i],
             name=str(val),
             legendgroup=str(val),
@@ -628,7 +703,9 @@ def plot_cat_cat_rel(
 
             trace = go.Bar(
                 x=ref.loc[ref[target_name] == val, feature_name],
-                y=ref.loc[ref[target_name] == val, "count_objects"] * 100 / ref["count_objects"].sum(),
+                y=ref.loc[ref[target_name] == val, "count_objects"]
+                * 100
+                / ref["count_objects"].sum(),
                 marker_color=color_options.color_sequence[i],
                 opacity=0.6,
                 name=str(val),
@@ -683,20 +760,30 @@ def plot_num_num_rel(
     return fig
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False) -> Histogram:
-    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+def make_hist_for_cat_plot(
+    curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False
+) -> Histogram:
+    hist_df = (
+        curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+    )
     hist_df.columns = ["x", "count"]
     current = HistogramData.from_df(hist_df)
 
     reference = None
     if ref is not None:
-        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+        hist_df = (
+            ref.astype(str)
+            .value_counts(normalize=normalize, dropna=dropna)
+            .reset_index()
+        )
         hist_df.columns = ["x", "count"]
         reference = HistogramData.from_df(hist_df)
     return Histogram(current=current, reference=reference)
 
 
-def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
+def get_distribution_for_category_column(
+    column: pd.Series, normalize: bool = False
+) -> Distribution:
     value_counts = column.value_counts(normalize=normalize, dropna=False)
     return Distribution(
         x=value_counts.index.values,
@@ -731,8 +818,12 @@ def get_distribution_for_column(
 
     elif column_type == "num":
         if reference is not None:
-            bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
-            reference_distribution = get_distribution_for_numerical_column(reference, bins)
+            bins = np.histogram_bin_edges(
+                pd.concat([current.dropna(), reference.dropna()]), bins="doane"
+            )
+            reference_distribution = get_distribution_for_numerical_column(
+                reference, bins
+            )
 
         else:
             bins = np.histogram_bin_edges(current.dropna(), bins="doane")
@@ -740,14 +831,22 @@ def get_distribution_for_column(
         current_distribution = get_distribution_for_numerical_column(current, bins)
 
     else:
-        raise ValueError(f"Cannot get distribution for a column with type {column_type}")
+        raise ValueError(
+            f"Cannot get distribution for a column with type {column_type}"
+        )
 
     return current_distribution, reference_distribution
 
 
 def make_hist_df(hist: Tuple[np.ndarray, np.ndarray]) -> pd.DataFrame:
     hist_df = pd.DataFrame(
-        np.array([hist[1][:-1], hist[0], [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]]).T,
+        np.array(
+            [
+                hist[1][:-1],
+                hist[0],
+                [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])],
+            ]
+        ).T,
         columns=["x", "count", "range"],
     )
 
@@ -815,11 +914,24 @@ def plot_pred_actual_time(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
     for name, color in zip(
-        ["Predicted", "Actual"], [color_options.get_current_data_color(), color_options.get_reference_data_color()]
+        ["Predicted", "Actual"],
+        [
+            color_options.get_current_data_color(),
+            color_options.get_reference_data_color(),
+        ],
     ):
-        trace = go.Scatter(x=curr[x_name], y=curr[name], mode="lines", marker_color=color, name=name, legendgroup=name)
+        trace = go.Scatter(
+            x=curr[x_name],
+            y=curr[name],
+            mode="lines",
+            marker_color=color,
+            name=name,
+            legendgroup=name,
+        )
         fig.add_trace(trace, 1, 1)
 
         if ref is not None:
@@ -878,7 +990,9 @@ def plot_line_in_time(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
     trace = go.Scatter(
         x=curr[x_name],
         y=curr[y_name],
@@ -927,7 +1041,13 @@ def plot_line_in_time(
 
 
 def plot_scatter_for_data_drift(
-    curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: ColorOptions
+    curr_y: list,
+    curr_x: list,
+    y0: float,
+    y1: float,
+    y_name: str,
+    x_name: str,
+    color_options: ColorOptions,
 ):
     fig = go.Figure()
 
@@ -982,7 +1102,9 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     else:
         cols = 1
         subplot_titles = [""]
-    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    fig = make_subplots(
+        rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True
+    )
     trace = go.Heatmap(
         z=curr_mtrx.values,
         x=[str(item) for item in curr_mtrx.labels],
@@ -1024,7 +1146,9 @@ def get_gaussian_kde(m1, m2):
     xdelta = 2 * (xmax - xmin) / 10
     ydelta = 2 * (ymax - ymin) / 10
     # X, Y = np.mgrid[xmin - border(xmin) : xmax + border(xmax) : 30j, ymin - border(ymin) : ymax + border(ymax) : 30j]
-    X, Y = np.mgrid[xmin - xdelta : xmax + xdelta : 30j, ymin - ydelta : ymax + ydelta : 30j]
+    X, Y = np.mgrid[
+        xmin - xdelta : xmax + xdelta : 30j, ymin - ydelta : ymax + ydelta : 30j
+    ]
     x = np.linspace(xmin - xdelta, xmax + xdelta, num=30)
     y = np.linspace(ymin - ydelta, ymax + ydelta, num=30)
     positions = np.vstack([X.ravel(), Y.ravel()])
@@ -1034,7 +1158,9 @@ def get_gaussian_kde(m1, m2):
     return Z, list(x), list(y)
 
 
-def plot_contour_single(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = "", ytitle: str = ""):
+def plot_contour_single(
+    z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = "", ytitle: str = ""
+):
     color_options = ColorOptions()
     if z2 is not None:
         cols = 2
@@ -1042,7 +1168,9 @@ def plot_contour_single(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = 
     else:
         cols = 1
         subplot_titles = [""]
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
     trace = go.Contour(
         z=z1,
         line_width=1,
@@ -1069,7 +1197,12 @@ def plot_contour_single(z1: np.ndarray, z2: Optional[np.ndarray], xtitle: str = 
     return fig
 
 
-def plot_contour(curr_contour: ContourData, ref_contour: Optional[ContourData], xtitle: str = "", ytitle: str = ""):
+def plot_contour(
+    curr_contour: ContourData,
+    ref_contour: Optional[ContourData],
+    xtitle: str = "",
+    ytitle: str = "",
+):
     color_options = ColorOptions()
     if ref_contour is not None:
         cols = 2
@@ -1077,7 +1210,9 @@ def plot_contour(curr_contour: ContourData, ref_contour: Optional[ContourData], 
     else:
         cols = 1
         subplot_titles = [""]
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
     z1, y1, x1 = curr_contour[0], curr_contour[1], curr_contour[2]
     trace = go.Contour(
         z=z1,
@@ -1123,10 +1258,16 @@ def plot_top_error_contours(
     else:
         cols = 1
         subplot_titles = [""]
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
     for label, color in zip(
         ["underestimation", "majority", "overestimation"],
-        [color_options.underestimation_color, color_options.majority_color, color_options.overestimation_color],
+        [
+            color_options.underestimation_color,
+            color_options.majority_color,
+            color_options.overestimation_color,
+        ],
     ):
         z, y, x = curr_contour[label]
         trace = go.Contour(
@@ -1164,7 +1305,9 @@ def plot_top_error_contours(
     return fig
 
 
-def choose_agg_period(current_date_column: pd.Series, reference_date_column: Optional[pd.Series]) -> Tuple[str, str]:
+def choose_agg_period(
+    current_date_column: pd.Series, reference_date_column: Optional[pd.Series]
+) -> Tuple[str, str]:
     prefix_dict = {
         "A": "year",
         "Q": "quarter",
@@ -1223,7 +1366,9 @@ def prepare_df_for_time_index_plot(
         plot_df["per"] = plot_df["per"].dt.to_timestamp()
         return plot_df, prefix
     plot_df = df[column_name].reset_index().sort_values(index_name)
-    plot_df["per"] = pd.cut(plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False)
+    plot_df["per"] = pd.cut(
+        plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False
+    )
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
 
@@ -1286,7 +1431,13 @@ def collect_traces(
         )
         traces.append(green_line_trace)
     if std is not None and line is not None:
-        trace_rect = rect_trace(line, std, data[name]["per"].min(), data[name]["per"].max(), color_options.fill_color)
+        trace_rect = rect_trace(
+            line,
+            std,
+            data[name]["per"].min(),
+            data[name]["per"].max(),
+            color_options.fill_color,
+        )
         traces.append(trace_rect)
     if len(data.keys()) == 1:
         error_band_trace, line_trace = get_traces(
@@ -1310,7 +1461,12 @@ def collect_traces(
             "Actual",
             showlegend,
         )
-        traces += [error_band_trace_act, error_band_trace_pred, line_trace_act, line_trace_pred]
+        traces += [
+            error_band_trace_act,
+            error_band_trace_pred,
+            line_trace_act,
+            line_trace_pred,
+        ]
         return traces
     assert {"reference", "current"} == set(data.keys())
     error_band_trace_pred, line_trace_pred = get_traces(
@@ -1327,7 +1483,12 @@ def collect_traces(
         "reference",
         showlegend,
     )
-    traces += [error_band_trace_act, error_band_trace_pred, line_trace_act, line_trace_pred]
+    traces += [
+        error_band_trace_act,
+        error_band_trace_pred,
+        line_trace_act,
+        line_trace_pred,
+    ]
 
     return traces
 
@@ -1351,7 +1512,9 @@ def plot_agg_line_data(
         cols = 2
         subplot_titles = ["current", "reference"]
 
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig = make_subplots(
+        rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles
+    )
     curr_traces = collect_traces(curr_data, line, std, color_options, True, line_name)
     for trace in curr_traces:
         fig.add_trace(trace, 1, 1)

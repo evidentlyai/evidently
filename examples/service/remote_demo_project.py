@@ -1,4 +1,5 @@
-from evidently.ui.demo_project import DEMO_PROJECT_NAME, create_demo_project
+from evidently.ui.demo_project import DEMO_PROJECT_NAME
+from evidently.ui.demo_project import create_demo_project
 from evidently.ui.remote import RemoteWorkspace
 
 
@@ -14,5 +15,5 @@ def main():
     print(demo_project.id)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

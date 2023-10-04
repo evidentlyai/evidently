@@ -9,9 +9,14 @@ from evidently.utils.data_drift_utils import calculate_text_drift_score
 
 
 def _abs_text_content_drift(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: ColumnType,
+    threshold: float,
 ) -> Tuple[float, bool]:
-    return calculate_text_drift_score(reference_data, current_data, bootstrap=False, threshold=threshold)
+    return calculate_text_drift_score(
+        reference_data, current_data, bootstrap=False, threshold=threshold
+    )
 
 
 abs_text_content_drift_stat_test = StatTest(
