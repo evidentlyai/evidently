@@ -6,8 +6,8 @@ pandas==1.3.5
 numpy==1.19.5
 nltk==3.6.7
 scipy==1.5.4
-requests==2.21.0
-pydantic==2.3.0
+requests==2.19.0
+pydantic==1.10
 typer==0.3
 rich==13
 iterative-telemetry==0.0.5
