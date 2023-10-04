@@ -6,19 +6,23 @@ import { useState } from 'react'
 interface TagsProps {
   tags: string[]
   limitTags?: number
-  id: string
+  onClick: (tag: string) => void | undefined
 }
 
-export const HidedTags = ({ id, tags, limitTags = 2 }: TagsProps) => {
+export const HidedTags = ({ onClick, tags, limitTags = 2 }: TagsProps) => {
   const [isShowFull, setShowFull] = useState(false)
 
   return (
     <Box display={'flex'} alignContent={'center'} flexWrap={'wrap'}>
       {tags.slice(0, limitTags).map((tag) => (
-        <Chip key={tag} label={tag} style={{ margin: 3 }} />
+        <Chip onClick={() => onClick(tag)} key={tag} label={tag} style={{ margin: 3 }} />
       ))}
       {isShowFull &&
-        tags.slice(limitTags).map((tag) => <Chip key={tag} label={tag} style={{ margin: 3 }} />)}
+        tags
+          .slice(limitTags)
+          .map((tag) => (
+            <Chip onClick={() => onClick(tag)} key={tag} label={tag} style={{ margin: 3 }} />
+          ))}
       {!isShowFull && tags.length > limitTags && (
         <Chip
           variant="outlined"

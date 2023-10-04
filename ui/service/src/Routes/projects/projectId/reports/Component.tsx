@@ -119,7 +119,16 @@ export const Component = () => {
               </TableCell>
               <TableCell>
                 <Box maxWidth={250}>
-                  <HidedTags id={report.id} tags={report.tags} />
+                  <HidedTags
+                    onClick={(clickedTag) => {
+                      if (selectedTags.includes(clickedTag)) {
+                        return
+                      }
+
+                      setTags([...selectedTags, clickedTag])
+                    }}
+                    tags={report.tags}
+                  />
                 </Box>
               </TableCell>
               <TableCell>{formatDate(new Date(Date.parse(report.timestamp)))}</TableCell>

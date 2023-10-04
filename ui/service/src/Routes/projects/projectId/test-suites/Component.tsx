@@ -122,7 +122,16 @@ export const Component = () => {
 
                   <TableCell>
                     <Box maxWidth={250}>
-                      <HidedTags id={testSuite.id} tags={testSuite.tags} />
+                      <HidedTags
+                        onClick={(clickedTag) => {
+                          if (selectedTags.includes(clickedTag)) {
+                            return
+                          }
+
+                          setTags([...selectedTags, clickedTag])
+                        }}
+                        tags={testSuite.tags}
+                      />
                     </Box>
                   </TableCell>
 
