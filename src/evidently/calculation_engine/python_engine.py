@@ -6,6 +6,7 @@ from typing import TypeVar
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.base_metric import GenericInputData
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
@@ -21,22 +22,26 @@ TMetric = TypeVar("TMetric", bound=Metric)
 
 
 class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
-    def convert_input_data(self, data: InputData) -> PythonInputData:
-        if type(data.current_data) != pd.DataFrame or (
-            data.reference_data is not None and type(data.reference_data) != pd.DataFrame
+    def convert_input_data(self, data: GenericInputData) -> PythonInputData:
+        if not isinstance(data.current_data, pd.DataFrame) or (
+            data.reference_data is not None and not isinstance(data.reference_data, pd.DataFrame)
         ):
             raise ValueError("PandasEngine works only with pd.DataFrame input data")
         return PythonInputData(
             data.reference_data,
             data.current_data,
-            data.reference_additional_features,
-            data.current_additional_features,
+            None,
+            None,
             data.column_mapping,
             data.data_definition,
         )
 
     def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
-        return create_data_definition(current_data, reference_data, column_mapping)
+        if not isinstance(current_data, pd.DataFrame) or (
+            reference_data is not None and not isinstance(reference_data, pd.DataFrame)
+        ):
+            raise ValueError("PandasEngine works only with pd.DataFrame input data")
+        return create_data_definition(reference_data, current_data, column_mapping)
 
     def generate_additional_features(self, data: PythonInputData):
         curr_additional_data = None

@@ -11,7 +11,7 @@ from typing import Union
 
 from evidently import ColumnMapping
 from evidently.base_metric import ErrorResult
-from evidently.base_metric import InputData
+from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.metric_implementation import MetricImplementation
@@ -21,11 +21,17 @@ TInputData = TypeVar("TInputData")
 
 
 class Engine(Generic[TMetricImplementation, TInputData]):
-    def __init__(self, metrics, tests):
+    def __init__(self):
+        self.metrics = []
+        self.tests = []
+
+    def set_metrics(self, metrics):
         self.metrics = metrics
+
+    def set_tests(self, tests):
         self.tests = tests
 
-    def execute_metrics(self, context, data: InputData):
+    def execute_metrics(self, context, data: GenericInputData):
         calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
         converted_data = self.convert_input_data(data)
         self.generate_additional_features(converted_data)
@@ -41,7 +47,7 @@ class Engine(Generic[TMetricImplementation, TInputData]):
             context.metric_results[metric] = calculations[metric]
 
     @abc.abstractmethod
-    def convert_input_data(self, data: InputData) -> TInputData:
+    def convert_input_data(self, data: GenericInputData) -> TInputData:
         raise NotImplementedError()
 
     @abc.abstractmethod

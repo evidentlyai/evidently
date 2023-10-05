@@ -19,11 +19,10 @@ from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import ErrorResult
-from evidently.base_metric import InputData
+from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.engine import Engine
-from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
@@ -267,8 +266,7 @@ class Display:
 class Suite:
     context: Context
 
-    def __init__(self, options: Options, engine=None):
-        self._engine_type = engine or PythonEngine
+    def __init__(self, options: Options):
         self.context = Context(
             engine=None,
             metrics=[],
@@ -279,6 +277,9 @@ class Suite:
             renderers=DEFAULT_RENDERERS,
             options=options,
         )
+
+    def set_engine(self, engine: Engine):
+        self.context.engine = engine
 
     def add_test(self, test: Test):
         test.set_context(self.context)
@@ -308,10 +309,11 @@ class Suite:
         self.context.state = States.Init
 
     def verify(self):
-        self.context.engine = self._engine_type(self.context.metrics, self.context.tests)
+        self.context.engine.set_metrics(self.context.metrics)
+        self.context.engine.set_tests(self.context.tests)
         self.context.state = States.Verified
 
-    def run_calculate(self, data: InputData):
+    def run_calculate(self, data: GenericInputData):
         if self.context.state in [States.Init]:
             self.verify()
 

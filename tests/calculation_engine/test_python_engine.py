@@ -1,6 +1,7 @@
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.base_metric import GenericInputData
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import metric_implementation
@@ -41,7 +42,8 @@ class PythonSimpleMetric(PythonMetricImplementation[SimpleMetric]):
 
 
 def test_python_engine_registration():
-    engine = PythonEngine([SimpleMetric(10)], [])
+    engine = PythonEngine()
+    engine.set_metrics([SimpleMetric(10)])
     impl = engine.get_metric_implementation(SimpleMetric(10))
     assert impl is not None
     assert impl.calculate(None, None) == 20
@@ -49,15 +51,17 @@ def test_python_engine_registration():
 
 def test_python_engine():
     metric = SimpleMetric(10)
-    engine = PythonEngine([metric], [])
+    engine = PythonEngine()
+    engine.set_metrics([metric])
     ctx = Context(None, [metric], [], dict(), dict(), States.Verified, renderers=DEFAULT_RENDERERS)
-    engine.execute_metrics(ctx, InputData(pd.DataFrame(), pd.DataFrame(), None, None, ColumnMapping(), None))
+    engine.execute_metrics(ctx, GenericInputData(pd.DataFrame(), pd.DataFrame(), ColumnMapping(), None))
     assert ctx.metric_results[metric] == 20
 
 
 def test_python_engine2():
     metric = OldTypeSimpleMetric(10)
-    engine = PythonEngine([metric], [])
+    engine = PythonEngine()
+    engine.set_metrics([metric])
     ctx = Context(None, [metric], [], dict(), dict(), States.Verified, renderers=DEFAULT_RENDERERS)
-    engine.execute_metrics(ctx, InputData(pd.DataFrame(), pd.DataFrame(), None, None, ColumnMapping(), None))
+    engine.execute_metrics(ctx, GenericInputData(pd.DataFrame(), pd.DataFrame(), ColumnMapping(), None))
     assert ctx.metric_results[metric] == 25

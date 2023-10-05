@@ -5,11 +5,14 @@ from datetime import datetime
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 
 import pandas as pd
 
-from evidently.base_metric import InputData
+from evidently.base_metric import GenericInputData
+from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -26,7 +29,6 @@ from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
 from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
 TEST_GENERATORS = "test_generators"
@@ -92,13 +94,21 @@ class TestSuite(ReportBase):
         reference_data: Optional[pd.DataFrame],
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
+        engine: Optional[Type[Engine]] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
         self._inner_suite.reset()
+        self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
         self._add_tests()
-        self._data_definition = create_data_definition(reference_data, current_data, column_mapping)
+        if self._inner_suite.context.engine is None:
+            raise ValueError("Engine is not set")
+        self._data_definition = self._inner_suite.context.engine.get_data_definition(
+            current_data,
+            reference_data,
+            column_mapping,
+        )
         for preset in self._test_presets:
             tests = preset.generate_tests(self._data_definition)
 
@@ -111,7 +121,7 @@ class TestSuite(ReportBase):
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
         self._inner_suite.verify()
-        data = InputData(reference_data, current_data, None, None, column_mapping, self._data_definition)
+        data = GenericInputData(reference_data, current_data, column_mapping, self._data_definition)
 
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()

@@ -5,12 +5,15 @@ from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 
 import pandas as pd
 
-from evidently.base_metric import InputData
+from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
+from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
@@ -24,7 +27,6 @@ from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
-from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
 METRIC_GENERATORS = "metric_generators"
@@ -69,9 +71,10 @@ class Report(ReportBase):
     def run(
         self,
         *,
-        reference_data: Optional[pd.DataFrame],
-        current_data: pd.DataFrame,
+        reference_data,
+        current_data,
         column_mapping: Optional[ColumnMapping] = None,
+        engine: Optional[Type[Engine]] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -80,17 +83,16 @@ class Report(ReportBase):
             raise ValueError("Current dataset should be present")
 
         self._inner_suite.reset()
-        self._inner_suite.verify()
+        self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
 
         if self._inner_suite.context.engine is None:
             raise ValueError("No Engine is set")
         else:
             data_definition = self._inner_suite.context.engine.get_data_definition(
-                reference_data,
                 current_data,
+                reference_data,
                 column_mapping,
             )
-        # data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
 
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
@@ -133,12 +135,9 @@ class Report(ReportBase):
             else:
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
 
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(
+        data = GenericInputData(
             reference_data,
             current_data,
-            None,
-            None,
             column_mapping,
             data_definition,
         )
