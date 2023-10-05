@@ -1,7 +1,6 @@
 import abc
 
-from evidently.base_metric import InputData
-from evidently.metric_results import DatasetColumns
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class MetricPreset:
@@ -11,5 +10,5 @@ class MetricPreset:
         pass
 
     @abc.abstractmethod
-    def generate_metrics(self, data: InputData, columns: DatasetColumns):
+    def generate_metrics(self, data_definition: DataDefinition):
         raise NotImplementedError()

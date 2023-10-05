@@ -344,7 +344,7 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
 
     def required_features(self, data_definition: DataDefinition):
         if not self.column_name.is_main_dataset():
-            return ColumnMetric.required_features(self, data_definition)
+            return super().required_features(data_definition)
         column_type = data_definition.get_column(self.column_name.name).column_type
         if column_type == ColumnType.Text:
             self._generated_text_features = {

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel
+
+from evidently._pydantic_compat import BaseModel
 
 
 def smart_assert_equal(actual, expected, path=""):

@@ -11,12 +11,11 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
-from pydantic import UUID4
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import ValidationError
-from pydantic import parse_obj_as
-
+from evidently._pydantic_compat import UUID4
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import ValidationError
+from evidently._pydantic_compat import parse_obj_as
 from evidently.model.dashboard import DashboardInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.notebook_utils import determine_template

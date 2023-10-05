@@ -12,8 +12,8 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic.main import ModelMetaclass
 
+from evidently._pydantic_compat import ModelMetaclass
 from evidently.core import BaseResult
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
@@ -111,6 +111,14 @@ def additional_feature(feature: GeneratedFeature, feature_name: str, display_nam
 class ColumnNotFound(BaseException):
     def __init__(self, column_name: str):
         self.column_name = column_name
+
+
+@dataclass
+class GenericInputData:
+    reference_data: Optional[object]
+    current_data: object
+    column_mapping: ColumnMapping
+    data_definition: DataDefinition
 
 
 @dataclass

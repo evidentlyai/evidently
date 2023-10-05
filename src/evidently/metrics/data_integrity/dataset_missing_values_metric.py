@@ -160,16 +160,10 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
                     # add the column to set of columns with a missing value
                     columns_with_missing_values.add(column_name)
 
-        for _, row in dataset.iterrows():
-            for missing_value in self.missing_values:
-                if None in self.missing_values and row.isnull().any():
-                    # check pandas null values
-                    number_of_rows_with_missing_values += 1
-                    break
-
-                elif missing_value in row.values:
-                    number_of_rows_with_missing_values += 1
-                    break
+        dsf = dataset.isin(self.missing_values)
+        if None in self.missing_values:
+            dsf = dsf | dataset.isnull()
+        number_of_rows_with_missing_values = dsf.any(axis="columns").sum()
 
         if number_of_rows == 0:
             share_of_missing_values_by_column = {}

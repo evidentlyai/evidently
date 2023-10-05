@@ -201,29 +201,6 @@ def get_one_column_drift(
             )
         )
     if column_type != ColumnType.Text:
-        prediction = data_definition.get_prediction_columns()
-        labels = data_definition.classification_labels()
-        predicted_values = prediction.predicted_values if prediction else None
-        if (
-            column_type == ColumnType.Categorical
-            and labels is not None
-            and (
-                (target and column.name == target.column_name)
-                or (
-                    predicted_values
-                    and isinstance(predicted_values.column_name, str)
-                    and column.name == predicted_values.column_name
-                )
-            )
-        ):
-            column_values = np.union1d(current_column.unique(), reference_column.unique())
-            target_names = labels if isinstance(labels, list) else list(labels.values())
-            new_values = np.setdiff1d(list(target_names), column_values)
-            if len(new_values) > 0:
-                raise ValueError(f"Values {new_values} not presented in 'target_names'")
-            else:
-                current_column = current_column.map(target_names)
-                reference_column = reference_column.map(target_names)
         current_distribution, reference_distribution = get_distribution_for_column(
             column_type=column_type.value,
             current=current_column,

@@ -94,7 +94,7 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
             curr_plot, _ = prepare_df_for_time_index_plot(curr_df, self.column_name, datetime_column_name, prefix, freq)
             ref_plot, _ = prepare_df_for_time_index_plot(ref_df, self.column_name, datetime_column_name, prefix, freq)
         else:
-            _, bins = pd.cut(list(curr_df.index) + list(ref_df.index), 150, retbins=True)
+            _, bins = pd.cut(curr_df.index.union(ref_df.index), 150, retbins=True)
             curr_plot, _ = prepare_df_for_time_index_plot(curr_df, self.column_name, datetime_column_name, bins=bins)
             ref_plot, _ = prepare_df_for_time_index_plot(ref_df, self.column_name, datetime_column_name, bins=bins)
         return ColumnValuePlotResults(

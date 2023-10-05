@@ -1,10 +1,10 @@
 from typing import Dict
 from typing import Optional
 
-from pydantic import Field
-from pydantic import parse_obj_as
 from sklearn.metrics import classification_report
 
+from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import MetricResult
 from evidently.metric_results import Label
 

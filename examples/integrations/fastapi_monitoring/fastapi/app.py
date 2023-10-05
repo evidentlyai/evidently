@@ -3,8 +3,14 @@ from typing import Callable
 from typing import Text
 from evidently import ColumnMapping
 from fastapi import FastAPI, BackgroundTasks
-from fastapi.responses import HTMLResponse, JSONResponse, Response, FileResponse
-from pydantic import BaseModel
+
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+    Response,
+    FileResponse
+)
+from evidently._pydantic_compat import BaseModel
 import pandas as pd
 from config.config import DATA_COLUMNS
 from fastapi import BackgroundTasks

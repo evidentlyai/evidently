@@ -1,14 +1,24 @@
-import FilterNoneOutlinedIcon from "@material-ui/icons/FilterNoneOutlined";
-import * as React from "react";
-import {CSSProperties} from "react";
+import IconButton from '@material-ui/core/IconButton'
+import FilterNoneIcon from '@material-ui/icons/FilterNone'
+import { Box } from '@material-ui/core'
 
-export const TextWithCopyIcon = (props: {showText: string, copyText: string, style?: CSSProperties}) => {
-    return <>
-        <div onClick={() => navigator.clipboard.writeText(props.copyText)}
-             style={{...props.style, cursor: "pointer"}}
-        >
-            {props.showText}<FilterNoneOutlinedIcon
-            style={{marginBottom: "-0.2rem", paddingLeft: "3px"}} fontSize={"small"}/>
-        </div>
-    </>
+export const TextWithCopyIcon = ({
+  showText,
+  copyText
+}: {
+  showText: string
+  copyText: string
+}) => {
+  return (
+    <Box>
+      {showText}
+      <IconButton
+        size="small"
+        style={{ marginLeft: 10 }}
+        onClick={() => navigator.clipboard.writeText(copyText)}
+      >
+        <FilterNoneIcon fontSize="small" />
+      </IconButton>
+    </Box>
+  )
 }

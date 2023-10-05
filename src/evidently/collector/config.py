@@ -8,9 +8,9 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
-from pydantic import BaseModel
-from pydantic import parse_obj_as
 
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.collector.storage import CollectorStorage
 from evidently.collector.storage import InMemoryStorage

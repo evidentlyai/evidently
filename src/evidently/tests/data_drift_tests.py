@@ -11,7 +11,7 @@ import pandas as pd
 from evidently.base_metric import ColumnName
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metric_results import DatasetColumns
+from evidently.core import ColumnType
 from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
@@ -37,6 +37,7 @@ from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_contour_single
@@ -317,13 +318,13 @@ class TestAllFeaturesValueDrift(BaseGenerator):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
+    def generate(self, data_definition: DataDefinition) -> List[TestColumnDrift]:
         results = []
-        for name in columns_info.cat_feature_names:
-            if self.columns and name not in self.columns:
+        for column in data_definition.get_columns("categorical_features"):
+            if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
-                name,
+                column.column_name,
                 "cat",
                 self.stattest,
                 self.cat_stattest,
@@ -338,17 +339,17 @@ class TestAllFeaturesValueDrift(BaseGenerator):
             )
             results.append(
                 TestColumnDrift(
-                    column_name=name,
+                    column_name=column.column_name,
                     stattest=stattest,
                     stattest_threshold=threshold,
                     is_critical=self.is_critical,
                 )
             )
-        for name in columns_info.num_feature_names:
-            if self.columns and name not in self.columns:
+        for column in data_definition.get_columns("numerical_features"):
+            if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
-                name,
+                column.column_name,
                 "num",
                 self.stattest,
                 self.cat_stattest,
@@ -363,17 +364,17 @@ class TestAllFeaturesValueDrift(BaseGenerator):
             )
             results.append(
                 TestColumnDrift(
-                    column_name=name,
+                    column_name=column.column_name,
                     stattest=stattest,
                     stattest_threshold=threshold,
                     is_critical=self.is_critical,
                 )
             )
-        for name in columns_info.text_feature_names:
-            if self.columns and name not in self.columns:
+        for column in data_definition.get_columns("text_features"):
+            if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
-                name,
+                column.column_name,
                 "text",
                 self.stattest,
                 self.cat_stattest,
@@ -388,7 +389,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
             )
             results.append(
                 TestColumnDrift(
-                    column_name=name,
+                    column_name=column.column_name,
                     stattest=stattest,
                     stattest_threshold=threshold,
                     is_critical=self.is_critical,
@@ -440,17 +441,18 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_feature_threshold = per_column_stattest_threshold
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
+    def generate(self, data_definition: DataDefinition) -> List[TestColumnDrift]:
         result = []
         for name in self.features:
+            column = data_definition.get_column(name)
             stattest, threshold = resolve_stattest_threshold(
                 name,
                 "cat"
-                if name in columns_info.cat_feature_names
+                if column.column_type == ColumnType.Categorical
                 else "num"
-                if columns_info.num_feature_names
+                if column.column_type == ColumnType.Numerical
                 else "text"
-                if columns_info.text_feature_names
+                if column.column_type == ColumnType.Text
                 else "datetime",
                 self.stattest,
                 self.cat_stattest,

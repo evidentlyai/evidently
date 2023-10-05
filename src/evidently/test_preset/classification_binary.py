@@ -1,8 +1,6 @@
 from typing import Optional
 
-from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metric_results import DatasetColumns
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
 from evidently.tests import TestColumnDrift
@@ -10,6 +8,7 @@ from evidently.tests import TestF1Score
 from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallScore
 from evidently.tests import TestRocAuc
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class BinaryClassificationTestPreset(TestPreset):
@@ -39,17 +38,19 @@ class BinaryClassificationTestPreset(TestPreset):
         self.stattest_threshold = stattest_threshold
         self.probas_threshold = probas_threshold
 
-    def generate_tests(self, data: InputData, columns: DatasetColumns):
-        target = columns.utility_columns.target
+    def generate_tests(self, data_definition: DataDefinition):
+        target = data_definition.get_target_column()
 
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")
-        prediction_columns = data.data_definition.get_prediction_columns()
+        prediction_columns = data_definition.get_prediction_columns()
         is_probas_present = prediction_columns is not None and prediction_columns.prediction_probas is not None
         if not is_probas_present:
             return [
                 TestColumnDrift(
-                    column_name=target,
+
+                    column_name=target.column_name,
+
                     stattest=self.stattest,
                     stattest_threshold=self.stattest_threshold,
                 ),
@@ -61,7 +62,7 @@ class BinaryClassificationTestPreset(TestPreset):
 
         return [
             TestColumnDrift(
-                column_name=target,
+                column_name=target.column_name,
                 stattest=self.stattest,
                 stattest_threshold=self.stattest_threshold,
             ),

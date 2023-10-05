@@ -10,10 +10,10 @@ from typing import overload
 
 import numpy as np
 import pandas as pd
-from pydantic import parse_obj_as
-from pydantic import validator
 from typing_extensions import Literal
 
+from evidently._pydantic_compat import parse_obj_as
+from evidently._pydantic_compat import validator
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.core import pydantic_type_validator
