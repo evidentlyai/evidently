@@ -24,7 +24,6 @@ from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
-from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
@@ -80,19 +79,25 @@ class Report(ReportBase):
         if current_data is None:
             raise ValueError("Current dataset should be present")
 
-        self._columns_info = process_columns(current_data, column_mapping)
         self._inner_suite.reset()
         self._inner_suite.verify()
 
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
+        if self._inner_suite.context.engine is None:
+            raise ValueError("No Engine is set")
+        else:
+            data_definition = self._inner_suite.context.engine.get_data_definition(
+                reference_data,
+                current_data,
+                column_mapping,
+            )
+        # data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
 
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
         for item in self.metrics:
             # if the item is a metric generator, then we need to generate metrics and add them to the report
             if isinstance(item, BaseGenerator):
-                for metric in item.generate(columns_info=self._columns_info):
+                for metric in item.generate(data_definition):
                     if isinstance(metric, Metric):
                         self._first_level_metrics.append(metric)
                         self._inner_suite.add_metric(metric)
@@ -106,9 +111,9 @@ class Report(ReportBase):
             elif isinstance(item, MetricPreset):
                 metrics = []
 
-                for metric_item in item.generate_metrics(data=data, columns=self._columns_info):
+                for metric_item in item.generate_metrics(data_definition):
                     if isinstance(metric_item, BaseGenerator):
-                        metrics.extend(metric_item.generate(columns_info=self._columns_info))
+                        metrics.extend(metric_item.generate(data_definition))
 
                     else:
                         metrics.append(metric_item)
@@ -129,12 +134,11 @@ class Report(ReportBase):
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
 
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
         data = InputData(
             reference_data,
             current_data,
-            ref_add,
-            curr_add,
+            None,
+            None,
             column_mapping,
             data_definition,
         )

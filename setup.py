@@ -82,6 +82,7 @@ setup_args = dict(
             "pillow==9.5.0",
             "black==22.8.0",
             "isort==5.10.1",
+            "httpx==0.24.1"
         ]
     },
     entry_points={

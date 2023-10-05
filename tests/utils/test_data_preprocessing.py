@@ -47,6 +47,7 @@ def test_get_columns():
         task="classification",
         classification_labels=["class_1", "class_2", "class_3"],
         embeddings=None,
+        reference_present=True,
     )
 
     all_columns = [

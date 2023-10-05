@@ -50,7 +50,7 @@ from tests.conftest import smart_assert_equal
             ),
         ),
         (
-            pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
+            pd.DataFrame({"target": [1, 8, 3], "prediction": [6, 7, 8]}),
             pd.DataFrame({"target": [1, 2, 3, 4, 5], "prediction": [np.NaN, 2, 3, 4, 5]}),
             ColumnMapping(),
             DatasetSummaryMetric(),
@@ -75,7 +75,7 @@ from tests.conftest import smart_assert_equal
                     number_of_empty_rows=0,
                     number_of_empty_columns=0,
                     number_of_duplicated_rows=0,
-                    columns_type_data={"target": NumpyDtype(dtype="object"), "prediction": NumpyDtype(dtype="object")},
+                    columns_type_data={"target": NumpyDtype(dtype="int64"), "prediction": NumpyDtype(dtype="int64")},
                     nans_by_columns={"target": 0, "prediction": 0},
                     number_uniques_by_columns={"target": 3, "prediction": 3},
                 ),

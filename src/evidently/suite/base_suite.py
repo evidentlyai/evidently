@@ -14,8 +14,6 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-import pandas as pd
-
 import evidently
 from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
@@ -24,6 +22,8 @@ from evidently.base_metric import ErrorResult
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
@@ -32,8 +32,6 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.notebook_utils import determine_template
-from evidently.suite.execution_graph import ExecutionGraph
-from evidently.suite.execution_graph import SimpleExecutionGraph
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
@@ -45,7 +43,6 @@ from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
-from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -92,7 +89,7 @@ def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Uni
 class Context:
     """Pipeline execution context tracks pipeline execution and lifecycle"""
 
-    execution_graph: Optional[ExecutionGraph]
+    engine: Optional[Engine]
     metrics: list
     tests: list
     metric_results: Dict[Metric, Union[MetricResult, ErrorResult]]
@@ -270,9 +267,10 @@ class Display:
 class Suite:
     context: Context
 
-    def __init__(self, options: Options):
+    def __init__(self, options: Options, engine=None):
+        self._engine_type = engine or PythonEngine
         self.context = Context(
-            execution_graph=None,
+            engine=None,
             metrics=[],
             tests=[],
             metric_results={},
@@ -310,48 +308,8 @@ class Suite:
         self.context.state = States.Init
 
     def verify(self):
-        self.context.execution_graph = SimpleExecutionGraph(self.context.metrics, self.context.tests)
+        self.context.engine = self._engine_type(self.context.metrics, self.context.tests)
         self.context.state = States.Verified
-
-    def create_additional_features(
-        self, current_data: pd.DataFrame, reference_data: Optional[pd.DataFrame], data_definition: DataDefinition
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        curr_additional_data = None
-        ref_additional_data = None
-        features = {}
-        if self.context.execution_graph is not None:
-            execution_graph: ExecutionGraph = self.context.execution_graph
-            for metric, calculation in execution_graph.get_metric_execution_iterator():
-                try:
-                    required_features = metric.required_features(data_definition)
-                except Exception as e:
-                    logging.error(f"failed to get features for {type(metric)}: {e}", exc_info=e)
-                    continue
-                for feature in required_features:
-                    params = feature.get_parameters()
-                    if params is not None:
-                        _id = (type(feature), params)
-                        if _id in features:
-                            continue
-                        features[_id] = feature
-                    feature_data = feature.generate_feature(current_data, data_definition)
-                    feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
-                    if curr_additional_data is None:
-                        curr_additional_data = feature_data
-                    else:
-                        curr_additional_data = curr_additional_data.join(feature_data)
-                    if reference_data is None:
-                        continue
-                    ref_feature_data = feature.generate_feature(reference_data, data_definition)
-                    ref_feature_data.columns = [
-                        f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns
-                    ]
-
-                    if ref_additional_data is None:
-                        ref_additional_data = ref_feature_data
-                    else:
-                        ref_additional_data = ref_additional_data.join(ref_feature_data)
-        return curr_additional_data, ref_additional_data
 
     def run_calculate(self, data: InputData):
         if self.context.state in [States.Init]:
@@ -361,20 +319,8 @@ class Suite:
             return
 
         self.context.metric_results = {}
-        if self.context.execution_graph is not None:
-            execution_graph: ExecutionGraph = self.context.execution_graph
-
-            calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
-            for metric, calculation in execution_graph.get_metric_execution_iterator():
-                if calculation not in calculations:
-                    logging.debug(f"Executing {type(calculation)}...")
-                    try:
-                        calculations[calculation] = calculation.calculate(data)
-                    except BaseException as ex:
-                        calculations[calculation] = ErrorResult(exception=ex)
-                else:
-                    logging.debug(f"Using cached result for {type(calculation)}")
-                self.context.metric_results[metric] = calculations[calculation]
+        if self.context.engine is not None:
+            self.context.engine.execute_metrics(self.context, data)
 
         self.context.state = States.Calculated
 
@@ -384,7 +330,7 @@ class Suite:
 
         test_results = {}
 
-        for test in self.context.execution_graph.get_test_execution_iterator():
+        for test in self.context.tests:
             try:
                 logging.debug(f"Executing {type(test)}...")
                 test_result = test.check()
@@ -420,7 +366,7 @@ class Suite:
 
     def reset(self):
         self.context = Context(
-            execution_graph=None,
+            engine=None,
             metrics=[],
             tests=[],
             metric_results={},
