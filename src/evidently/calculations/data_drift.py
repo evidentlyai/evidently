@@ -21,7 +21,7 @@ from evidently.metric_results import DistributionIncluded
 from evidently.metric_results import ScatterAggField
 from evidently.metric_results import ScatterField
 from evidently.metric_results import raw_agg_properties
-from evidently.options import DataDriftOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import recognize_column_type_
 from evidently.utils.types import Numeric

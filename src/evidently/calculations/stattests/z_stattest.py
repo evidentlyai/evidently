@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import z_stat_test
     >>> options = DataDriftOptions(all_features_stattest=z_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="z")
 """
 from typing import Tuple
@@ -94,8 +94,7 @@ def _z_stat_test(
 z_stat_test = StatTest(
     name="z",
     display_name="Z-test p_value",
-    func=_z_stat_test,
     allowed_feature_types=[ColumnType.Categorical],
 )
 
-register_stattest(z_stat_test)
+register_stattest(z_stat_test,_z_stat_test)

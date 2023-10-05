@@ -20,7 +20,7 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import DataDriftOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import MetricRenderer

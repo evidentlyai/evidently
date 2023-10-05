@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import wasserstein_stat_test
     >>> options = DataDriftOptions(all_features_stattest=wasserstein_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="wasserstein")
 """
 from typing import Tuple
@@ -54,9 +54,8 @@ def _wasserstein_distance_norm(
 wasserstein_stat_test = StatTest(
     name="wasserstein",
     display_name="Wasserstein distance (normed)",
-    func=_wasserstein_distance_norm,
     allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(wasserstein_stat_test)
+register_stattest(wasserstein_stat_test,_wasserstein_distance_norm)

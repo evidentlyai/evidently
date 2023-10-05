@@ -8,7 +8,7 @@ from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.data_drift.base import WithDriftOptions
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import DataDriftOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer

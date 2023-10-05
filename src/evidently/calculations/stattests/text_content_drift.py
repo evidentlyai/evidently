@@ -17,9 +17,8 @@ def _perc_text_content_drift(
 perc_text_content_drift_stat_test = StatTest(
     name="perc_text_content_drift",
     display_name="Percentile text content drift",
-    func=_perc_text_content_drift,
     allowed_feature_types=[ColumnType.Text],
     default_threshold=0.95,
 )
 
-register_stattest(perc_text_content_drift_stat_test)
+register_stattest(perc_text_content_drift_stat_test,_perc_text_content_drift)

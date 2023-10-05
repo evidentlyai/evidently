@@ -147,9 +147,8 @@ def _mmd_stattest(
 emperical_mmd = StatTest(
     name="emperical_mmd",
     display_name="emperical_mmd",
-    func=_mmd_stattest,
     allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(emperical_mmd)
+register_stattest(emperical_mmd,_mmd_stattest)

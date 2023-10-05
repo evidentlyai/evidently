@@ -1,12 +1,11 @@
 import datetime
 import json
 import uuid
+from typing import Callable, Tuple, Type
 
 import numpy as np
 import pandas as pd
 
-from evidently.calculations.stattests.registry import StatTest
-from evidently.calculations.stattests.registry import get_registered_stattest_name
 from evidently.core import ColumnType
 from evidently.utils.types import ApproxValue
 
@@ -29,8 +28,11 @@ _TYPES_MAPPING = (
     ((uuid.UUID,), lambda obj: str(obj)),
     ((ColumnType,), lambda obj: obj.value),
     ((pd.Period,), lambda obj: str(obj)),
-    ((StatTest,), lambda obj: get_registered_stattest_name(obj)),
 )
+
+def add_type_mapping(types: Tuple[Type], encoder: Callable):
+    global _TYPES_MAPPING
+    _TYPES_MAPPING += ((types, encoder),)
 
 
 class NumpyEncoder(json.JSONEncoder):
