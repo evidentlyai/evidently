@@ -240,14 +240,20 @@ export interface ProjectInfo {
 
 export interface ProjectDetails extends ProjectInfo {}
 
+type MetadataValueType = Record<string, string | string[] | Record<string, string>>;
+
 export interface ReportInfo {
     id: string;
     timestamp: string;
+    tags: string[];
+    metadata: MetadataValueType;
 }
 
 export interface TestSuiteInfo {
     id: string;
     timestamp: string;
+    tags: string[];
+    metadata: MetadataValueType;
 }
 
 export interface VersionInfo {
@@ -264,6 +270,7 @@ export interface Api {
     getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo>
 
     getReports(projectId: string): Promise<ReportInfo[]>
+
     getTestSuites(projectId: string): Promise<TestSuiteInfo[]>
 
     getProjects(): Promise<ProjectInfo[]>
