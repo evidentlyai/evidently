@@ -35,7 +35,7 @@ def test_precision_value_judged_only():
         ),
     )
 
-    metric = PrecisionTopKMetric(k=3, judged_only=False)
+    metric = PrecisionTopKMetric(k=3, no_feedback_users=True)
     report = Report(metrics=[metric])
     column_mapping=ColumnMapping(recomendations_type='rank')
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
@@ -56,7 +56,7 @@ def test_precision_value_judged_only_scores():
         ),
     )
 
-    metric = PrecisionTopKMetric(k=3, judged_only=False)
+    metric = PrecisionTopKMetric(k=3, no_feedback_users=True)
     report = Report(metrics=[metric])
     column_mapping=ColumnMapping()
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)

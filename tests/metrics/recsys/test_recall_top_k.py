@@ -6,7 +6,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 
-def test_recsll_values():
+def test_recall_values():
     current = pd.DataFrame(
         data=dict(
             user_id=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
@@ -46,3 +46,24 @@ def test_recall_scores():
     assert results.current[1] == 0.5
     assert results.current[2] == 0.5
     assert results.current[3] == 1
+
+
+def test_recsll_include_no_feedback():
+    current = pd.DataFrame(
+        data=dict(
+            user_id=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+            prediction=[1, 2, 3, 1, 2, 3, 1, 2, 3],
+            target=[1, 0, 0, 0, 0, 0, 0, 0, 1],
+        ),
+    )
+
+    metric = RecallTopKMetric(k=2, no_feedback_users=True)
+    report = Report(metrics=[metric])
+    column_mapping=ColumnMapping(recomendations_type='rank')
+    report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
+
+    results = metric.get_result()
+    assert len(results.current) == 3
+    assert np.isclose(results.current[1], 0.333333333)
+    assert np.isclose(results.current[2], 0.333333333)
+    assert np.isclose(results.current[3], 0.666666666)

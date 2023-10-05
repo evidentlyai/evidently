@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 
 import pandas as pd
@@ -9,14 +8,15 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.metrics.recsys.base_top_k import TopKMetric
 from evidently.metrics.recsys.base_top_k import TopKMetricRenderer
 from evidently.metrics.recsys.base_top_k import TopKMetricResult
-from evidently.options.base import AnyOptions
 from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
+from evidently.options.base import AnyOptions
 
 
 class FBetaTopKMetric(TopKMetric):
     k: int
     beta: Optional[float]
     min_rel_score: Optional[int]
+    no_feedback_users: bool
     _precision_recall_calculation: PrecisionRecallCalculation
 
     def __init__(
@@ -24,31 +24,38 @@ class FBetaTopKMetric(TopKMetric):
         k: int,
         beta: Optional[float] = 1.,
         min_rel_score: Optional[int] = None,
+        no_feedback_users: bool = False,
         options: AnyOptions = None
     ) -> None:
         self.k = k
         self.beta = beta
         self.min_rel_score = min_rel_score
+        self.no_feedback_users = no_feedback_users,
         self._precision_recall_calculation = PrecisionRecallCalculation(max(k, 10), min_rel_score)
         super().__init__(
             options=options,
             k=k,
             min_rel_score=min_rel_score,
-            judged_only=True,
+            no_feedback_users=no_feedback_users,
         )
-
     def calculate(self, data: InputData) -> TopKMetricResult:
+        if self.no_feedback_users:
+            pr_key = 'precision_include_no_feedback'
+            rc_key = 'recall_include_no_feedback'
+        else:
+            pr_key = 'precision'
+            rc_key = 'recall'
         result = self._precision_recall_calculation.get_result()
         current = pd.Series(
             index = result.current['k'],
-            data = self.fbeta(result.current['precision_judged_only'], result.current['recall'])
+            data = self.fbeta(result.current[pr_key], result.current[rc_key])
         )
         ref_data = result.reference
         reference: Optional[pd.Series] = None
         if ref_data is not None:
             reference = pd.Series(
             index = ref_data['k'],
-            data = self.fbeta(ref_data['precision_judged_only'], ref_data['recall'])
+            data = self.fbeta(ref_data[pr_key], ref_data[rc_key])
         )
         return TopKMetricResult(
             k=self.k,

@@ -13,19 +13,17 @@ from evidently.metrics.recsys.base_top_k import TopKMetricResult
 class MAPKMetric(TopKMetric):
     def calculate(self, data: InputData) -> TopKMetricResult:
         result = self._precision_recall_calculation.get_result()
-        key = 'map'
-        if self.judged_only:
-            key = 'map_judged_only'
+
         current = pd.Series(
             index = result.current['k'],
-            data = result.current[key]
+            data = result.current['map']
         )
         ref_data = result.reference
         reference: Optional[pd.Series] = None
         if ref_data is not None:
             reference = pd.Series(
             index = ref_data['k'],
-            data = ref_data[key]
+            data = ref_data['map']
         )
         return TopKMetricResult(
             k=self.k,

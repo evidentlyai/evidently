@@ -4,9 +4,7 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import MetricResult
-from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.calculations.recommender_systems import collect_dataset
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -17,6 +15,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import plot_metric_k
 from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
+from evidently.base_metric import InputData
 
 
 class TopKMetricResult(MetricResult):
@@ -26,22 +25,46 @@ class TopKMetricResult(MetricResult):
 
 
 class TopKMetric(Metric[TopKMetricResult]):
+    key: Optional[str]
     _precision_recall_calculation: PrecisionRecallCalculation
     k: int
     min_rel_score: Optional[int]
-    judged_only: bool
+    no_feedback_users: bool
 
     def __init__(
         self, k: int,
         min_rel_score: Optional[int] = None,
-        judged_only: bool = True,
+        no_feedback_users: bool = False,
         options: AnyOptions = None
     ) -> None:
         self.k = k
         self.min_rel_score=min_rel_score
-        self.judged_only=judged_only
+        self.no_feedback_users=no_feedback_users
         self._precision_recall_calculation = PrecisionRecallCalculation(max(k, 10), min_rel_score)
         super().__init__(options=options)
+
+    def calculate(self, data: InputData) -> TopKMetricResult:
+        result = self._precision_recall_calculation.get_result()
+        key = self.key
+        if self.no_feedback_users:
+            key = f'{self.key}_include_no_feedback'
+
+        current = pd.Series(
+            index = result.current['k'],
+            data = result.current[key]
+        )
+        ref_data = result.reference
+        reference: Optional[pd.Series] = None
+        if ref_data is not None:
+            reference = pd.Series(
+            index = ref_data['k'],
+            data = ref_data[key]
+        )
+        return TopKMetricResult(
+            k=self.k,
+            reference=reference,
+            current=current
+        )
 
 
 @default_renderer(wrap_type=TopKMetric)
@@ -55,9 +78,12 @@ class TopKMetricRenderer(MetricRenderer):
         if metric_result.reference is not None:
             counters.append(CounterData.float(label="reference", value=metric_result.reference[k], precision=3))
         fig = plot_metric_k(metric_result.current, metric_result.reference, self.yaxis_name)
+        header_part = ' (no feedback users included)'
+        if not obj.no_feedback_users:
+            header_part = ' (no feedback users excluded)'
 
         return [
-            header_text(label=self.header + str(k)),
+            header_text(label=self.header + str(k) + header_part),
             counter(counters=counters),
             plotly_figure(title="", figure=fig)
         ]
