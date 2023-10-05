@@ -7,7 +7,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently.metric_results import DatasetColumns
+from evidently.utils.data_preprocessing import DataDefinition
 
 TObject = TypeVar("TObject")
 
@@ -27,18 +27,18 @@ class BaseGenerator(Generic[TObject]):
         if you want to create a test generator for 50, 90, 99 quantiles tests
         for all numeric columns with default condition, by reference quantiles
     >>> class TestQuantiles(BaseTestGenerator):
-    ...    def generate(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
+    ...    def generate(self, data_definition: DataDefinition) -> List[TestValueQuantile]:
     ...        return [
     ...            TestColumnQuantile(column_name=name, quantile=quantile)
     ...            for quantile in (0.5, 0.9, 0.99)
-    ...            for name in columns_info.num_feature_names
+    ...            for name in data_definition.get_columns("numerical_features")
     ...        ]
 
     Do not forget set correct test type for `generate` return value
     """
 
     @abc.abstractmethod
-    def generate(self, columns_info: DatasetColumns) -> List[TObject]:
+    def generate(self, data_definition: DataDefinition) -> List[TObject]:
         raise NotImplementedError()
 
 
@@ -73,7 +73,7 @@ def make_generator_by_columns(
         parameters_for_generation = parameters
 
     class ColumnsGenerator(BaseGenerator):
-        def generate(self, columns_info: DatasetColumns) -> List[TObject]:
+        def generate(self, data_definition: DataDefinition) -> List[TObject]:
             nonlocal parameters_for_generation
             result = []
 
@@ -81,19 +81,27 @@ def make_generator_by_columns(
                 columns_for_generation = columns
 
             elif columns == "all" or columns is None:
-                columns_for_generation = columns_info.get_all_columns_list(skip_id_column=skip_id_column)
+                columns_for_generation = [
+                    column.column_name
+                    for column in data_definition.get_columns("all")
+                    if column != data_definition.get_id_column()
+                ]
 
             elif columns == "cat":
-                columns_for_generation = columns_info.cat_feature_names
+                columns_for_generation = [
+                    column.column_name for column in data_definition.get_columns("categorical_features")
+                ]
 
             elif columns == "num":
-                columns_for_generation = columns_info.num_feature_names
+                columns_for_generation = [
+                    column.column_name for column in data_definition.get_columns("numerical_features")
+                ]
 
             elif columns == "text":
-                columns_for_generation = columns_info.text_feature_names
+                columns_for_generation = [column.column_name for column in data_definition.get_columns("text_features")]
 
             elif columns == "features":
-                columns_for_generation = columns_info.get_all_features_list(include_datetime_feature=True)
+                columns_for_generation = [column.column_name for column in data_definition.get_columns("all_features")]
 
             else:
                 raise ValueError("Incorrect parameter 'columns' for test generator")

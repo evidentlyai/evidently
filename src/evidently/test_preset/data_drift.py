@@ -4,9 +4,7 @@ from typing import Optional
 
 import numpy as np
 
-from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metric_results import DatasetColumns
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pipeline.column_mapping import TaskType
 from evidently.test_preset.test_preset import TestPreset
@@ -16,6 +14,7 @@ from evidently.tests import TestEmbeddingsDrift
 from evidently.tests import TestShareOfDriftedColumns
 from evidently.utils.data_drift_utils import add_emb_drift_to_reports
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataDriftTestPreset(TestPreset):
@@ -77,14 +76,15 @@ class DataDriftTestPreset(TestPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_tests(self, data: InputData, columns: DatasetColumns):
-        embeddings_data = data.column_mapping.embeddings
+    def generate_tests(self, data_definition: DataDefinition):
+        embeddings_data = data_definition.embeddings()
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))
             if self.columns is None:
                 self.columns = list(
                     np.setdiff1d(
-                        columns.num_feature_names + columns.cat_feature_names + columns.text_feature_names, embs
+                        [column.column_name for column in data_definition.get_columns("all_features")],
+                        embs,
                     )
                 )
             else:
@@ -107,10 +107,11 @@ class DataDriftTestPreset(TestPreset):
             ),
         ]
 
-        if columns.utility_columns.target is not None:
+        target_column = data_definition.get_target_column()
+        if target_column is not None:
             stattest, threshold = resolve_stattest_threshold(
-                columns.utility_columns.target,
-                "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",
+                target_column.column_name,
+                "cat" if data_definition.task() == TaskType.CLASSIFICATION_TASK else "num",
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
@@ -124,16 +125,17 @@ class DataDriftTestPreset(TestPreset):
             )
             preset_tests.append(
                 TestColumnDrift(
-                    column_name=columns.utility_columns.target,
+                    column_name=target_column.column_name,
                     stattest_threshold=threshold,
                     stattest=stattest,
                 )
             )
 
-        if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
+        prediction_columns = data_definition.get_prediction_columns()
+        if prediction_columns is not None and prediction_columns.predicted_values is not None:
             stattest, threshold = resolve_stattest_threshold(
-                columns.utility_columns.prediction,
-                "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",
+                prediction_columns.predicted_values.column_name,
+                "cat" if data_definition.task() == TaskType.CLASSIFICATION_TASK else "num",
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
@@ -147,7 +149,7 @@ class DataDriftTestPreset(TestPreset):
             )
             preset_tests.append(
                 TestColumnDrift(
-                    column_name=columns.utility_columns.prediction,
+                    column_name=prediction_columns.predicted_values.column_name,
                     stattest_threshold=threshold,
                     stattest=stattest,
                 )
