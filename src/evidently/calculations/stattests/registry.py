@@ -47,17 +47,29 @@ class StatTest:
         **kwargs,
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
-        impl = _impls[self].get(engine, None)
-        if impl is None:
-            raise NotImplementedError(f"'{self.name}' is not implemented for {engine}")
+        impl = self._get_impl(engine)
         data = impl.data_type(reference_data=reference_data, current_data=current_data, **kwargs)
         p = impl(data, feature_type, actual_threshold)
         drift_score, drifted = p
         return StatTestResult(drift_score=drift_score, drifted=drifted, actual_threshold=actual_threshold)
 
+    def _get_impl(self, engine: Type[Engine]):
+        impl = _impls.get(self, {}).get(engine, None)
+        if impl is None:
+            raise NotImplementedError(f"'{self.name}' is not implemented for {engine}")
+        return impl
+
     def __hash__(self):
         # hash by name, so stattests with same name would be the same.
         return hash(self.name)
+
+    @property
+    def func(self):
+        """For backward compatibility"""
+        impl = self._get_impl(PythonEngine)
+        if isinstance(impl, PythonStatTestWrapper):
+            return impl.func
+        return AttributeError("StatTest.func is deprecated, please use __call__")
 
 
 add_type_mapping((StatTest,), lambda obj: get_registered_stattest_name(obj))
@@ -102,19 +114,23 @@ _registered_stat_tests: Dict[str, Dict[ColumnType, StatTest]] = {}
 _registered_stat_test_funcs: Dict[StatTestFuncType, str] = {}
 
 
-def _create_impl_wrapper(func: StatTestFuncType):
-    class PythonStattestWrapper(PythonStatTest):
-        def __call__(self, data: PythonStatTestData, feature_type: ColumnType, threshold: float) -> StatTestFuncReturns:
-            return func(data.reference_data, data.current_data, feature_type, threshold)
+class PythonStatTestWrapper(PythonStatTest):
+    def __init__(self, func: StatTestFuncType):
+        self.func = func
 
-    return PythonStattestWrapper()
+    def __call__(self, data: PythonStatTestData, feature_type: ColumnType, threshold: float) -> StatTestFuncReturns:
+        return self.func(data.reference_data, data.current_data, feature_type, threshold)
+
+
+def create_impl_wrapper(func: StatTestFuncType):
+    return PythonStatTestWrapper(func)
 
 
 def register_stattest(stat_test: StatTest, default_impl: StatTestFuncType = None):
     _registered_stat_tests[stat_test.name] = {ft: stat_test for ft in stat_test.allowed_feature_types}
     _impls[stat_test] = {}
     if default_impl is not None:
-        _impls[stat_test][PythonEngine] = _create_impl_wrapper(default_impl)
+        _impls[stat_test][PythonEngine] = create_impl_wrapper(default_impl)
         _registered_stat_test_funcs[default_impl] = stat_test.name
 
 
@@ -168,7 +184,7 @@ def get_registered_stattest(
             display_name=f"custom function '{stattest_func.__name__}'",
             allowed_feature_types=[],
         )
-        _impls[stat_test][engine or PythonEngine] = _create_impl_wrapper(stattest_func)
+        add_stattest_impl(stat_test, engine or PythonEngine, create_impl_wrapper(stattest_func))
         return stat_test
     if callable(stattest_func) and stattest_func in _registered_stat_test_funcs:
         stattest_name = _registered_stat_test_funcs[stattest_func]
