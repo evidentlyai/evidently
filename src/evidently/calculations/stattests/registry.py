@@ -208,4 +208,6 @@ class StatTestInvalidFeatureTypeError(ValueError):
 
 
 def add_stattest_impl(stattest: StatTest, engine: Type[Engine], impl: StatTestImpl):
+    if stattest not in _impls:
+        _impls[stattest] = {}
     _impls[stattest][engine] = impl

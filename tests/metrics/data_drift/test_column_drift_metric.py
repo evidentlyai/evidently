@@ -6,8 +6,12 @@ import pandas as pd
 import pytest
 from pytest import approx
 
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.calculations.stattests import StatTest
 from evidently.calculations.stattests import psi_stat_test
+from evidently.calculations.stattests.registry import _impls
+from evidently.calculations.stattests.registry import add_stattest_impl
+from evidently.core import ColumnType
 from evidently.metrics import ColumnDriftMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
@@ -15,10 +19,11 @@ from evidently.report import Report
 test_stattest = StatTest(
     name="test_stattest",
     display_name="test stattest",
-    func=psi_stat_test.func,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.05,
 )
+
+add_stattest_impl(test_stattest, PythonEngine, _impls[psi_stat_test][PythonEngine])
 
 
 @pytest.mark.parametrize(
