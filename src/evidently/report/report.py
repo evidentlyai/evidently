@@ -74,7 +74,7 @@ class Report(ReportBase):
         reference_data,
         current_data,
         column_mapping: Optional[ColumnMapping] = None,
-        engine: Optional[Type[Engine]] = None
+        engine: Optional[Type[Engine]] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
