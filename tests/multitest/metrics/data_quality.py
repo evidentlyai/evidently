@@ -28,9 +28,7 @@ def column_correlations_metric():
 
 @metric
 def dataset_correlations_metric():
-    return TestMetric(
-        "dataset_correlations_metric", DatasetCorrelationsMetric(), NoopOutcome()
-    )
+    return TestMetric("dataset_correlations_metric", DatasetCorrelationsMetric(), NoopOutcome())
 
 
 @metric
@@ -77,9 +75,7 @@ def column_distribution_metric():
 def column_value_list_metric():
     return TestMetric(
         "column_value_list_metric",
-        ColumnValueListMetric(
-            column_name="relationship", values=["Husband", "Unmarried"]
-        ),
+        ColumnValueListMetric(column_name="relationship", values=["Husband", "Unmarried"]),
         NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -107,9 +103,7 @@ def conflict_prediction_metric():
 
 @metric
 def data_quality_stability_metric():
-    return TestMetric(
-        "data_quality_stability_metric", DataQualityStabilityMetric(), NoopOutcome()
-    )
+    return TestMetric("data_quality_stability_metric", DataQualityStabilityMetric(), NoopOutcome())
 
 
 @metric

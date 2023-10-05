@@ -47,9 +47,7 @@ def report():
 
 
 def test_as_dict(report: Report):
-    assert report.as_dict() == {
-        "metrics": [{"metric": "MockMetric", "result": {"value": "a"}}]
-    }
+    assert report.as_dict() == {"metrics": [{"metric": "MockMetric", "result": {"value": "a"}}]}
     include_series = report.as_dict(include={"MockMetric": {"value", "series"}})
     assert "series" in include_series["metrics"][0]["result"]
     assert (pd.Series([0]) == include_series["metrics"][0]["result"]["series"]).all()
@@ -63,9 +61,5 @@ def test_json(report: Report):
     default = json.loads(report.json())["metrics"]
     assert default == [{"metric": "MockMetric", "result": {"value": "a"}}]
 
-    include_series = json.loads(
-        report.json(include={"MockMetric": {"value", "series"}})
-    )["metrics"]
-    assert include_series == [
-        {"metric": "MockMetric", "result": {"value": "a", "series": [0]}}
-    ]
+    include_series = json.loads(report.json(include={"MockMetric": {"value", "series"}}))["metrics"]
+    assert include_series == [{"metric": "MockMetric", "result": {"value": "a", "series": [0]}}]

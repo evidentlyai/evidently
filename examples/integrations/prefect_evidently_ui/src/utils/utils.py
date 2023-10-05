@@ -30,9 +30,7 @@ def get_batch_interval(ts: pendulum.DateTime, interval: int) -> Tuple[Text, Text
     return start_time, end_time
 
 
-def extract_batch_data(
-    data: pd.DataFrame, start_time: Text, end_time: Text
-) -> pd.DataFrame:
+def extract_batch_data(data: pd.DataFrame, start_time: Text, end_time: Text) -> pd.DataFrame:
     """Extract the batch data for specified time interval.
 
     Args:

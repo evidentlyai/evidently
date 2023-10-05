@@ -33,9 +33,7 @@ class ClassificationProbDistributionResults(MetricResult):
 
 class ClassificationProbDistribution(Metric[ClassificationProbDistributionResults]):
     @staticmethod
-    def get_distribution(
-        dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable
-    ) -> Dict[str, list]:
+    def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:
         result = {}
         dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
         for label in prediction_labels:
@@ -57,9 +55,7 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
         if prediction is None:
             raise ValueError("Prediction column should be present")
 
-        prediction_data = get_prediction_data(
-            data.current_data, columns, data.column_mapping.pos_label
-        )
+        prediction_data = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
         if prediction_data.prediction_probas is None:
             current_distribution = None
             reference_distribution = None
@@ -114,9 +110,7 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
             pred_distr.update_layout(
                 xaxis_title="Probability",
                 yaxis_title="Share",
-                legend=dict(
-                    orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
-                ),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             )
             pred_distr_json = pred_distr.to_plotly_json()
             graphs.append(

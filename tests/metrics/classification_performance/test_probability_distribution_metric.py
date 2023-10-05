@@ -56,9 +56,7 @@ def test_classification_prob_distribution_with_report(
     expected_json: Dict,
 ):
     report = Report(metrics=[ClassificationProbDistribution()])
-    report.run(
-        current_data=current, reference_data=reference, column_mapping=column_mapping
-    )
+    report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
     report.show()
     result_json = report.json()
     result = json.loads(result_json)

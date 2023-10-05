@@ -83,9 +83,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
-            return TestValueCondition(
-                eq=reference.number_of_columns, source=ValueSource.REFERENCE
-            )
+            return TestValueCondition(eq=reference.number_of_columns, source=ValueSource.REFERENCE)
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Numeric:
@@ -108,9 +106,7 @@ class TestNumberOfColumnsRenderer(TestRenderer):
             dict_ref = reference_stats.columns_type
             columns = columns + ["reference dtype"]
 
-        additional_plots = plot_dicts_to_table(
-            dict_curr, dict_ref, columns, "number_of_column", "diff"
-        )
+        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_column", "diff")
         info.details = additional_plots
         return info
 
@@ -136,9 +132,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return f"The number of rows is {value}. The test threshold is {self.get_condition()}."
 
 
-class BaseIntegrityMissingValuesValuesTest(
-    ConditionFromReferenceMixin[DatasetMissingValues], ABC
-):
+class BaseIntegrityMissingValuesValuesTest(ConditionFromReferenceMixin[DatasetMissingValues], ABC):
     group: ClassVar = DATA_INTEGRITY_GROUP.id
     _metric: DatasetMissingValuesMetric
     missing_values: Optional[list] = None
@@ -171,9 +165,7 @@ class BaseIntegrityMissingValuesValuesTest(
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = DatasetMissingValuesMetric(
-            missing_values=self.missing_values, replace=self.replace
-        )
+        self._metric = DatasetMissingValuesMetric(missing_values=self.missing_values, replace=self.replace)
 
 
 class BaseTestMissingValuesRenderer(TestRenderer):
@@ -196,13 +188,8 @@ class BaseTestMissingValuesRenderer(TestRenderer):
         result = {}
 
         for columns_name in missing_values_info.number_of_missing_values_by_column:
-            missing_values_count = (
-                missing_values_info.number_of_missing_values_by_column[columns_name]
-            )
-            percent_count = (
-                missing_values_info.share_of_missing_values_by_column[columns_name]
-                * 100
-            )
+            missing_values_count = missing_values_info.number_of_missing_values_by_column[columns_name]
+            percent_count = missing_values_info.share_of_missing_values_by_column[columns_name] * 100
             result[columns_name] = f"{missing_values_count} ({percent_count:.2f}%)"
 
         return pd.DataFrame.from_dict(
@@ -226,9 +213,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
     ) -> TestHtmlInfo:
         """Get a table with missing values number and percents"""
         columns = ["column name", "current number of missing values"]
-        dict_curr = self._get_number_and_percents_of_missing_values(
-            metric_result.current
-        )
+        dict_curr = self._get_number_and_percents_of_missing_values(metric_result.current)
         dict_ref = None
         reference_stats = metric_result.reference
 
@@ -243,9 +228,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
 
     def _replace_missing_values_to_description(self, values: dict) -> dict:
         """Replace missing values in the dict keys to human-readable string"""
-        return {
-            self.MISSING_VALUES_NAMING_MAPPING.get(k, k): v for k, v in values.items()
-        }
+        return {self.MISSING_VALUES_NAMING_MAPPING.get(k, k): v for k, v in values.items()}
 
     def get_table_with_number_of_missing_values_by_one_missing_value(
         self,
@@ -262,9 +245,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
             # add one more column and values for reference data
             columns.append("reference number of missing values")
             # cast keys to str because None could be in keys, and it is not processed correctly in visual tables
-            dict_ref = self._replace_missing_values_to_description(
-                reference_missing_values
-            )
+            dict_ref = self._replace_missing_values_to_description(reference_missing_values)
 
         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, name)
         info.details = additional_plots
@@ -380,9 +361,7 @@ class TestShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
     def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        return self.get_table_with_missing_values_and_percents_by_column(
-            info, metric_result, "share_of_missing_values"
-        )
+        return self.get_table_with_missing_values_and_percents_by_column(info, metric_result, "share_of_missing_values")
 
 
 class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
@@ -404,8 +383,7 @@ class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest)
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of columns with missing values is {value}. "
-            f"The test threshold is {self.get_condition()}."
+            f"The number of columns with missing values is {value}. " f"The test threshold is {self.get_condition()}."
         )
 
 
@@ -464,9 +442,7 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
             ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(
-                lte=approx(
-                    reference.number_of_rows_with_missing_values * mult, relative=0.1
-                ),
+                lte=approx(reference.number_of_rows_with_missing_values * mult, relative=0.1),
                 source=ValueSource.REFERENCE,
             )
 
@@ -476,10 +452,7 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
         return self.metric.get_result().current.number_of_rows_with_missing_values
 
     def get_description(self, value: Numeric) -> str:
-        return (
-            f"The number of rows with missing values is {value}. "
-            f"The test threshold is {self.get_condition()}."
-        )
+        return f"The number of rows with missing values is {value}. " f"The test threshold is {self.get_condition()}."
 
 
 class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
@@ -501,14 +474,11 @@ class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of rows with missing values is {value:.3g}. "
-            f"The test threshold is {self.get_condition()}."
+            f"The share of rows with missing values is {value:.3g}. " f"The test threshold is {self.get_condition()}."
         )
 
 
-class BaseIntegrityColumnMissingValuesTest(
-    ConditionFromReferenceMixin[DatasetMissingValues], ABC
-):
+class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMissingValues], ABC):
     group: ClassVar = DATA_INTEGRITY_GROUP.id
     _metric: DatasetMissingValuesMetric
     column_name: str
@@ -544,9 +514,7 @@ class BaseIntegrityColumnMissingValuesTest(
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = DatasetMissingValuesMetric(
-            missing_values=self.missing_values, replace=self.replace
-        )
+        self._metric = DatasetMissingValuesMetric(missing_values=self.missing_values, replace=self.replace)
 
 
 class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesTest):
@@ -556,26 +524,19 @@ class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesT
 
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
-            if (
-                self.column_name
-                not in reference.number_of_different_missing_values_by_column
-            ):
+            if self.column_name not in reference.number_of_different_missing_values_by_column:
                 raise ValueError(
                     f"Cannot define test default conditions: no column '{self.column_name}' in reference dataset."
                 )
 
-            ref_value = reference.number_of_different_missing_values_by_column[
-                self.column_name
-            ]
+            ref_value = reference.number_of_different_missing_values_by_column[self.column_name]
             return TestValueCondition(lte=ref_value, source=ValueSource.REFERENCE)
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         metric_data = self.metric.get_result().current
-        return metric_data.number_of_different_missing_values_by_column[
-            self.column_name
-        ]
+        return metric_data.number_of_different_missing_values_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -586,25 +547,17 @@ class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesT
 
 @default_renderer(wrap_type=TestColumnNumberOfDifferentMissingValues)
 class TestColumnNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
-    def render_html(
-        self, obj: TestColumnNumberOfDifferentMissingValues
-    ) -> TestHtmlInfo:
+    def render_html(self, obj: TestColumnNumberOfDifferentMissingValues) -> TestHtmlInfo:
         """Get a table with a missing value and number of the value in the dataset"""
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_missing_values = (
-            metric_result.current.different_missing_values_by_column[obj.column_name]
-        )
+        current_missing_values = metric_result.current.different_missing_values_by_column[obj.column_name]
 
         if metric_result.reference is None:
             reference_missing_values = None
 
         else:
-            reference_missing_values = (
-                metric_result.reference.different_missing_values_by_column[
-                    obj.column_name
-                ]
-            )
+            reference_missing_values = metric_result.reference.different_missing_values_by_column[obj.column_name]
 
         return self.get_table_with_number_of_missing_values_by_one_missing_value(
             info,
@@ -625,16 +578,12 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
             ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             ref_value = reference.number_of_missing_values_by_column[self.column_name]
-            return TestValueCondition(
-                lte=approx(ref_value * mult, relative=0.1), source=ValueSource.REFERENCE
-            )
+            return TestValueCondition(lte=approx(ref_value * mult, relative=0.1), source=ValueSource.REFERENCE)
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.number_of_missing_values_by_column[
-            self.column_name
-        ]
+        return self.metric.get_result().current.number_of_missing_values_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -651,16 +600,12 @@ class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
     def get_condition_from_reference(self, reference: Optional[DatasetMissingValues]):
         if reference is not None:
             ref_value = reference.share_of_missing_values_by_column[self.column_name]
-            return TestValueCondition(
-                lte=approx(ref_value, relative=0.1), source=ValueSource.REFERENCE
-            )
+            return TestValueCondition(lte=approx(ref_value, relative=0.1), source=ValueSource.REFERENCE)
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.share_of_missing_values_by_column[
-            self.column_name
-        ]
+        return self.metric.get_result().current.share_of_missing_values_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -683,21 +628,14 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
         self.is_critical = is_critical
         self.columns = columns
 
-    def generate(
-        self, columns_info: DatasetColumns
-    ) -> List[TestColumnShareOfMissingValues]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfMissingValues]:
         if self.columns is None:
             columns = columns_info.get_all_columns_list()
 
         else:
             columns = self.columns
 
-        return [
-            TestColumnShareOfMissingValues(
-                column_name=name, is_critical=self.is_critical
-            )
-            for name in columns
-        ]
+        return [TestColumnShareOfMissingValues(column_name=name, is_critical=self.is_critical) for name in columns]
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
@@ -732,9 +670,7 @@ class TestNumberOfConstantColumnsRenderer(TestRenderer):
             dict_ref = reference_stats.number_uniques_by_columns
             columns = columns + ["reference nunique"]
 
-        additional_plots = plot_dicts_to_table(
-            dict_curr, dict_ref, columns, "number_of_constant_cols", "curr", True
-        )
+        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_constant_cols", "curr", True)
         info.details = additional_plots
         return info
 
@@ -771,9 +707,7 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
 
     def get_condition_from_reference(self, reference: Optional[DatasetSummary]):
         if reference is not None:
-            return TestValueCondition(
-                lte=reference.number_of_empty_columns, source=ValueSource.REFERENCE
-            )
+            return TestValueCondition(lte=reference.number_of_empty_columns, source=ValueSource.REFERENCE)
 
         return TestValueCondition(eq=0)
 
@@ -797,9 +731,7 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
             dict_ref = reference_stats.nans_by_columns
             columns = columns + ["reference number of NaNs"]
 
-        additional_plots = plot_dicts_to_table(
-            dict_curr, dict_ref, columns, "number_of_empty_columns"
-        )
+        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_empty_columns")
         info.details = additional_plots
         return info
 
@@ -946,9 +878,7 @@ class TestColumnAllConstantValuesRenderer(TestRenderer):
             ref_df = None
             if "reference" in counts_data.keys():
                 ref_df = counts_data["reference"]
-            additional_plots = plot_value_counts_tables_ref_curr(
-                column_name, curr_df, ref_df, "AllConstantValues"
-            )
+            additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllConstantValues")
             info.details = additional_plots
         return info
 
@@ -995,9 +925,7 @@ class TestColumnAllUniqueValuesRenderer(TestRenderer):
             ref_df = None
             if "reference" in counts_data.keys():
                 ref_df = counts_data["reference"]
-            additional_plots = plot_value_counts_tables_ref_curr(
-                column_name, curr_df, ref_df, "AllUniqueValues"
-            )
+            additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllUniqueValues")
             info.details = additional_plots
         return info
 
@@ -1036,9 +964,7 @@ class TestColumnsType(Test):
         if self.columns_type is None:
             if self.metric.get_result().reference is None:
                 status = TestStatus.ERROR
-                description = (
-                    "Cannot compare column types without conditions or a reference"
-                )
+                description = "Cannot compare column types without conditions or a reference"
                 return TestResult(
                     name=self.name,
                     description=description,
@@ -1088,9 +1014,7 @@ class TestColumnsType(Test):
                 )
             )
 
-            if expected_type == real_column_type or issubclass(
-                real_column_type, expected_type
-            ):
+            if expected_type == real_column_type or issubclass(real_column_type, expected_type):
                 # types are matched or expected type is a parent
                 continue
 
@@ -1122,10 +1046,7 @@ class TestColumnsTypeRenderer(TestRenderer):
                     type="table",
                     params={
                         "header": ["Column Name", "Actual Type", "Expected Type"],
-                        "data": [
-                            [c.column_name, c.actual_type, c.expected_type]
-                            for c in parameters.columns
-                        ],
+                        "data": [[c.column_name, c.actual_type, c.expected_type] for c in parameters.columns],
                     },
                     size=2,
                 ),
@@ -1168,9 +1089,7 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ColumnRegExpMetric(
-            column_name=self.column_name, reg_exp=self.reg_exp
-        )
+        self._metric = ColumnRegExpMetric(column_name=self.column_name, reg_exp=self.reg_exp)
 
     @property
     def metric(self):
@@ -1189,10 +1108,7 @@ class TestColumnRegExp(BaseCheckValueTest, ABC):
 
         if metric_result.reference:
             ref_value = metric_result.reference.number_of_not_matched
-            mult = (
-                metric_result.current.number_of_rows
-                / metric_result.reference.number_of_rows
-            )
+            mult = metric_result.current.number_of_rows / metric_result.reference.number_of_rows
 
             if mult is not None:
                 return TestValueCondition(
@@ -1228,10 +1144,7 @@ class TestColumnRegExpRenderer(TestRenderer):
 
         ref_df = None
 
-        if (
-            metric_result.reference is not None
-            and metric_result.reference.table_of_not_matched
-        ):
+        if metric_result.reference is not None and metric_result.reference.table_of_not_matched:
             ref_df = pd.DataFrame(metric_result.reference.table_of_not_matched.items())
             ref_df.columns = ["x", "count"]
 

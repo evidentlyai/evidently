@@ -135,33 +135,25 @@ class DataDriftTableRenderer(MetricRenderer):
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.characteristic_words],
                 )
-                details.with_part(
-                    "current: characteristic words", info=current_table_words
-                )
+                details.with_part("current: characteristic words", info=current_table_words)
                 reference_table_words = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.characteristic_words],
                 )
-                details.with_part(
-                    "reference: characteristic words", info=reference_table_words
-                )
+                details.with_part("reference: characteristic words", info=reference_table_words)
                 current_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.characteristic_examples],
                 )
-                details.with_part(
-                    "current: characteristic examples", info=current_table_examples
-                )
+                details.with_part("current: characteristic examples", info=current_table_examples)
                 reference_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.characteristic_examples],
                 )
-                details.with_part(
-                    "reference: characteristic examples", info=reference_table_examples
-                )
+                details.with_part("reference: characteristic examples", info=reference_table_examples)
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
 
@@ -205,16 +197,8 @@ class DataDriftTableRenderer(MetricRenderer):
                     scatter_fig = plot_agg_line_data(
                         curr_data=data.scatter.scatter,
                         ref_data=None,
-                        line=(
-                            data.scatter.plot_shape["y0"]
-                            + data.scatter.plot_shape["y1"]
-                        )
-                        / 2,
-                        std=(
-                            data.scatter.plot_shape["y0"]
-                            - data.scatter.plot_shape["y1"]
-                        )
-                        / 2,
+                        line=(data.scatter.plot_shape["y0"] + data.scatter.plot_shape["y1"]) / 2,
+                        std=(data.scatter.plot_shape["y0"] - data.scatter.plot_shape["y1"]) / 2,
                         xaxis_name=data.scatter.x_name,
                         xaxis_name_ref=None,
                         yaxis_name=f"{data.column_name} (mean +/- std)",
@@ -284,9 +268,7 @@ class DataDriftTableRenderer(MetricRenderer):
         columns = columns + all_columns
 
         for column_name in columns:
-            column_params = self._generate_column_params(
-                column_name, results.drift_by_columns[column_name], agg_data
-            )
+            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name], agg_data)
 
             if column_params is not None:
                 params_data.append(column_params)

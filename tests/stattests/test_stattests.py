@@ -28,9 +28,7 @@ def test_freq_obs_eq_freq_exp() -> None:
         approx(0.67309, abs=1e-5),
         False,
     )
-    assert hellinger_stat_test.func(
-        reference, current, ColumnType.Categorical, 0.1
-    ) == (
+    assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
         approx(0.06812, abs=1e-5),
         False,
     )
@@ -38,17 +36,13 @@ def test_freq_obs_eq_freq_exp() -> None:
 
 def test_freq_obs_not_eq_freq_exp() -> None:
     # observed and expected frequencies is not the same
-    reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat(
-        [x * 2 for x in [16, 18, 16, 14, 12, 12]]
-    )
+    reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([x * 2 for x in [16, 18, 16, 14, 12, 12]])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
     assert chi_stat_test.func(reference, current, ColumnType.Categorical, 0.5) == (
         approx(0.67309, abs=1e-5),
         False,
     )
-    assert hellinger_stat_test.func(
-        reference, current, ColumnType.Categorical, 0.1
-    ) == (
+    assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
         approx(0.06812, abs=1e-5),
         False,
     )
@@ -61,9 +55,7 @@ def test_cat_feature_with_nans() -> None:
         approx(1.0, abs=1e-5),
         False,
     )
-    assert hellinger_stat_test.func(
-        reference, current, ColumnType.Categorical, 0.1
-    ) == (
+    assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
         approx(0, abs=1e-5),
         False,
     )
@@ -104,9 +96,7 @@ def test_chi_stat_test_cat_feature() -> None:
         ),
     ),
 )
-def test_z_stat_test_cat_feature(
-    reference, current, expected_score, expected_condition_result: bool
-) -> None:
+def test_z_stat_test_cat_feature(reference, current, expected_score, expected_condition_result: bool) -> None:
     assert z_stat_test.func(reference, current, "cat", 0.5) == (
         expected_score,
         expected_condition_result,
@@ -188,9 +178,7 @@ def test_cramer_von_mises() -> None:
         # (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.9, 100)), 0.1, 0, True),
     ),
 )
-def test_emperical_mmd(
-    reference, current, threshold, expected_pvalue, drift_detected
-) -> None:
+def test_emperical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:
     np.random.seed(0)
     assert emperical_mmd.func(reference, current, "num", threshold) == (
         approx(expected_pvalue, abs=1e-2),
@@ -313,9 +301,7 @@ def test_for_null_fisher_exact(reference: pd.Series, current: pd.Series) -> None
         ),
     ),
 )
-def test_for_multiple_categories_fisher_exact(
-    reference: pd.Series, current: pd.Series
-) -> None:
+def test_for_multiple_categories_fisher_exact(reference: pd.Series, current: pd.Series) -> None:
     with pytest.raises(
         ValueError,
         match="Expects binary data for both reference and current, but found unique categories > 2",

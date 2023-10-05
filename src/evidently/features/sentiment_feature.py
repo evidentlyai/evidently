@@ -18,9 +18,7 @@ class Sentiment(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(
-        self, data: pd.DataFrame, data_definition: DataDefinition
-    ) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         import nltk
 
         nltk.download("vader_lexicon", quiet=True)
@@ -31,9 +29,7 @@ class Sentiment(GeneratedFeature):
                 return 0
             return sid.polarity_scores(s)["compound"]
 
-        return pd.DataFrame(
-            dict([(self.column_name, data[self.column_name].apply(sentiment_f))])
-        )
+        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(sentiment_f))]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(

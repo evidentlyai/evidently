@@ -33,9 +33,7 @@ def housing():
     housing = housing_data.frame
 
     housing.rename(columns={"MedHouseVal": "target"}, inplace=True)
-    housing["prediction"] = housing_data["target"].values + np.random.normal(
-        0, 3, housing.shape[0]
-    )
+    housing["prediction"] = housing_data["target"].values + np.random.normal(0, 3, housing.shape[0])
 
     housing_ref = housing.sample(n=5000, replace=False)
     housing_cur = housing.sample(n=5000, replace=False)
@@ -72,12 +70,8 @@ def bcancer_label():
     model = ensemble.RandomForestClassifier(random_state=1, n_estimators=10)
     model.fit(bcancer_ref[bcancer_data.feature_names.tolist()], bcancer_ref.target)
 
-    bcancer_label_ref["prediction"] = model.predict(
-        bcancer_label_ref[bcancer_data.feature_names.tolist()]
-    )
-    bcancer_label_cur["prediction"] = model.predict(
-        bcancer_label_cur[bcancer_data.feature_names.tolist()]
-    )
+    bcancer_label_ref["prediction"] = model.predict(bcancer_label_ref[bcancer_data.feature_names.tolist()])
+    bcancer_label_cur["prediction"] = model.predict(bcancer_label_cur[bcancer_data.feature_names.tolist()])
 
     return bcancer_label_cur, bcancer_label_ref
 
@@ -93,12 +87,8 @@ def bcancer():
     model = ensemble.RandomForestClassifier(random_state=1, n_estimators=10)
     model.fit(bcancer_ref[bcancer_data.feature_names.tolist()], bcancer_ref.target)
 
-    bcancer_ref["prediction"] = model.predict_proba(
-        bcancer_ref[bcancer_data.feature_names.tolist()]
-    )[:, 1]
-    bcancer_cur["prediction"] = model.predict_proba(
-        bcancer_cur[bcancer_data.feature_names.tolist()]
-    )[:, 1]
+    bcancer_ref["prediction"] = model.predict_proba(bcancer_ref[bcancer_data.feature_names.tolist()])[:, 1]
+    bcancer_cur["prediction"] = model.predict_proba(bcancer_cur[bcancer_data.feature_names.tolist()])[:, 1]
 
     return bcancer_cur, bcancer_ref
 

@@ -52,21 +52,15 @@ test_stattest = StatTest(
                 "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.05,
-                "current": {
-                    "small_distribution": {"x": [1, 2, 3, 5, 8], "y": [0, 0, 1, 1, 1]}
-                },
-                "reference": {
-                    "small_distribution": {"x": [1, 2, 3, 5, 8], "y": [1, 1, 1, 0, 0]}
-                },
+                "current": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [0, 0, 1, 1, 1]}},
+                "reference": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [1, 1, 1, 0, 0]}},
             },
         ),
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [3, 2, 2]}),
             None,
-            ColumnDriftMetric(
-                column_name="col", stattest="psi", stattest_threshold=0.1
-            ),
+            ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
             {
                 "column_name": "col",
                 "column_type": "cat",
@@ -82,9 +76,7 @@ test_stattest = StatTest(
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [3, 2, 2]}),
             None,
-            ColumnDriftMetric(
-                column_name="col", stattest=test_stattest, stattest_threshold=0.1
-            ),
+            ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
             {
                 "column_name": "col",
                 "column_type": "cat",

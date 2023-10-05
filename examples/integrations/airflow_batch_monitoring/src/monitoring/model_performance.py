@@ -28,9 +28,7 @@ def parse_model_performance_report(model_performance_report: Dict) -> Dict:
     assert quality_metric["metric"] == "RegressionQualityMetric"
     raw_quality_metric_result: Dict = quality_metric["result"]
     quality_metric_result: Dict = {
-        k: v
-        for k, v in raw_quality_metric_result.items()
-        if isinstance(v, (int, float, str, np.generic))
+        k: v for k, v in raw_quality_metric_result.items() if isinstance(v, (int, float, str, np.generic))
     }
     quality_metric_result = numpy_to_standard_types(quality_metric_result)
 
@@ -54,9 +52,7 @@ def parse_target_drift_report(target_drift_report: Dict) -> Dict:
     assert drift_metric["metric"] == "ColumnDriftMetric"
     raw_drift_metric_result: Dict = drift_metric["result"]
     drift_metric_result: Dict = {
-        k: v
-        for k, v in raw_drift_metric_result.items()
-        if isinstance(v, (int, float, str, np.generic))
+        k: v for k, v in raw_drift_metric_result.items() if isinstance(v, (int, float, str, np.generic))
     }
     drift_metric_result = numpy_to_standard_types(drift_metric_result)
     remove_fields: List[Text] = ["column_name", "column_type"]
@@ -85,12 +81,8 @@ def commit_model_metrics_to_db(
     session = open_sqa_session(engine)
 
     # Save Model Performance metrics
-    model_quality_metric_result: Dict = parse_model_performance_report(
-        model_performance_report
-    )
-    model_performance = ModelPerformanceTable(
-        **model_quality_metric_result, timestamp=timestamp
-    )
+    model_quality_metric_result: Dict = parse_model_performance_report(model_performance_report)
+    model_performance = ModelPerformanceTable(**model_quality_metric_result, timestamp=timestamp)
     add_or_update_by_ts(session, model_performance)
 
     # Save Target Drift metrics

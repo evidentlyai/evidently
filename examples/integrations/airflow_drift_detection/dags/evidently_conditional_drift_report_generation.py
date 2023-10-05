@@ -37,9 +37,7 @@ def _detect_dataset_drift(reference, production, column_mapping):
     """
 
     data_drift_report = Report(metrics=[DataDriftPreset()])
-    data_drift_report.run(
-        reference_data=reference, current_data=production, column_mapping=column_mapping
-    )
+    data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
 
     report = data_drift_report.as_dict()
 
@@ -75,9 +73,7 @@ def drift_analysis_execute(**context):
     data = context.get("ti").xcom_pull(key="data_frame")
     data_columns = context.get("ti").xcom_pull(key="data_columns")
 
-    dataset_drift = _detect_dataset_drift(
-        data[:200], data[200:], column_mapping=data_columns
-    )
+    dataset_drift = _detect_dataset_drift(data[:200], data[200:], column_mapping=data_columns)
 
     if dataset_drift:
         return "create_report"
@@ -87,9 +83,7 @@ def create_report_execute(**context):
     data = context.get("ti").xcom_pull(key="data_frame")
     data_columns = context.get("ti").xcom_pull(key="data_columns")
     data_drift_report = Report(metrics=[DataDriftPreset()])
-    data_drift_report.run(
-        reference_data=data[:200], current_data=data[200:], column_mapping=data_columns
-    )
+    data_drift_report.run(reference_data=data[:200], current_data=data[200:], column_mapping=data_columns)
 
     try:
         os.mkdir(dir_path)

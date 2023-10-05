@@ -45,9 +45,7 @@ from evidently.report import Report
                     "cramer_v": ColumnCorrelations(
                         column_name="feature1",
                         kind="cramer_v",
-                        values=DistributionIncluded(
-                            x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]
-                        ),
+                        values=DistributionIncluded(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
                     )
                 },
                 reference=None,
@@ -162,9 +160,7 @@ def test_column_correlations_metric_value_error(
             },
         ),
         (
-            pd.DataFrame(
-                {"col1": [1, 2, 3, 4, 5, 6], "col2": [10, 20, 3.5, 11, 21, 5]}
-            ),
+            pd.DataFrame({"col1": [1, 2, 3, 4, 5, 6], "col2": [10, 20, 3.5, 11, 21, 5]}),
             pd.DataFrame(
                 {
                     "col1": [10, 20, 3.5, 11, 21, 5],

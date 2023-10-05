@@ -92,9 +92,7 @@ class TestStatus(Enum):
     # Constants for test result status
     SUCCESS = "SUCCESS"  # the test was passed
     FAIL = "FAIL"  # success pass for the test
-    WARNING = (
-        "WARNING"  # the test was passed, but we have some issues during the execution
-    )
+    WARNING = "WARNING"  # the test was passed, but we have some issues during the execution
     ERROR = "ERROR"  # cannot calculate the test result, no data
     SKIPPED = "SKIPPED"  # the test was skipped
 
@@ -165,9 +163,7 @@ class Test(WithTestAndMetricDependencies):
             raise ValueError("No context is set")
         result = self._context.test_results.get(self, None)
         if result is None:
-            raise ValueError(
-                f"No result found for metric {self} of type {type(self).__name__}"
-            )
+            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result  # type: ignore[return-value]
 
     def get_id(self) -> str:
@@ -202,9 +198,7 @@ class TestValueCondition(ExcludeNoneMixin):
     lte: Optional[NumericApprox] = None
     not_eq: Optional[Numeric] = None
     not_in: Optional[List[Union[Numeric, str, bool]]] = None
-    source: Optional[ValueSource] = Field(
-        None, exclude=True
-    )  # todo: temporary to not fix tests
+    source: Optional[ValueSource] = Field(None, exclude=True)  # todo: temporary to not fix tests
 
     def has_condition(self) -> bool:
         """
@@ -389,9 +383,7 @@ class ConditionFromReferenceMixin(BaseCheckValueTest, Generic[T], ABC):
     reference_field: ClassVar[str] = "reference"
     _metric: Metric
 
-    def get_condition_from_reference(
-        self, reference: Optional[T]
-    ) -> TestValueCondition:
+    def get_condition_from_reference(self, reference: Optional[T]) -> TestValueCondition:
         raise NotImplementedError
 
     def get_condition(self) -> TestValueCondition:

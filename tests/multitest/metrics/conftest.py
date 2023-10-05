@@ -67,9 +67,7 @@ class TestMetric:
             outcomes = [(k, v) for k, v in outcomes if k[0] is not None]
 
         if len(outcomes) == 0:
-            raise ValueError(
-                f"Can't find test outcome for {self.name} x {dataset.name}"
-            )
+            raise ValueError(f"Can't find test outcome for {self.name} x {dataset.name}")
 
         # get longest tags match
         return list(sorted(outcomes, key=lambda x: -len(x[0][1])))[0][1]
@@ -84,9 +82,7 @@ def metric(f):
 
 
 def generate_dataset_outcome(m: TestMetric):
-    if isinstance(m.outcomes, dict) and any(
-        isinstance(k, TestDataset) for k in m.outcomes
-    ):
+    if isinstance(m.outcomes, dict) and any(isinstance(k, TestDataset) for k in m.outcomes):
         if not all(isinstance(k, TestDataset) for k in m.outcomes):
             raise ValueError(f"All keys should be TestDataset if one is in {m.name}")
         yield from ((m, i, d, o) for i, (d, o) in enumerate(m.outcomes.items()))
@@ -95,11 +91,7 @@ def generate_dataset_outcome(m: TestMetric):
         yield from ((m, i, d, m.get_outcome(d)) for i, d in enumerate(m.datasets))
         return
     if m.dataset_names is not None:
-        yield from (
-            (m, i, d, m.get_outcome(d))
-            for i, d in enumerate(dataset_fixtures)
-            if d.name in m.dataset_names
-        )
+        yield from ((m, i, d, m.get_outcome(d)) for i, d in enumerate(dataset_fixtures) if d.name in m.dataset_names)
         return
 
     for i, d in enumerate(dataset_fixtures):
@@ -128,9 +120,7 @@ metric_name_filter = []
 def generate_metric_dataset_outcome():
     load_test_metrics()
     for m in metric_fixtures:
-        if metric_type_filter and not any(
-            isinstance(m.metric, t) for t in metric_type_filter
-        ):
+        if metric_type_filter and not any(isinstance(m.metric, t) for t in metric_type_filter):
             continue
         if metric_name_filter and not any(m.name == n for n in metric_name_filter):
             continue

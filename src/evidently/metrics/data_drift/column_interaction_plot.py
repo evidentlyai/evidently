@@ -175,9 +175,7 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
                 reference=ref_res,
                 prefix=prefix,
             )
-        raise ValueError(
-            f"Combination of types {x_type} and {y_type} is not supported."
-        )
+        raise ValueError(f"Combination of types {x_type} and {y_type} is not supported.")
 
 
 @default_renderer(wrap_type=ColumnInteractionPlot)
@@ -188,10 +186,7 @@ class ColumnInteractionPlotRenderer(MetricRenderer):
         if (
             metric_result.x_type == ColumnType.Numerical
             and metric_result.y_type == ColumnType.Numerical
-            and (
-                metric_result.current_scatter is not None
-                or metric_result.current_contour is not None
-            )
+            and (metric_result.current_scatter is not None or metric_result.current_contour is not None)
         ):
             if (
                 isinstance(metric_result.current_scatter, Dict[str, List[Any]])
@@ -309,9 +304,7 @@ class ColumnInteractionPlotRenderer(MetricRenderer):
                 True,
             )
         return [
-            header_text(
-                label=f"Interactions between '{obj.x_column}' and '{obj.y_column}'"
-            ),
+            header_text(label=f"Interactions between '{obj.x_column}' and '{obj.y_column}'"),
             BaseWidgetInfo(
                 title="",
                 size=2,

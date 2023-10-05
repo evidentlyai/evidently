@@ -17,9 +17,7 @@ from evidently.metric_results import Distribution
         (pd.DataFrame({"test": [1, 2, None]}), 3),
         (pd.DataFrame({"test": [None, None, None]}), 3),
         (
-            pd.DataFrame(
-                {"test": [np.NAN, pd.NA, 2, 0, pd.NaT], "target": [1, 0, 1, 0, 1]}
-            ),
+            pd.DataFrame({"test": [np.NAN, pd.NA, 2, 0, pd.NaT], "target": [1, 0, 1, 0, 1]}),
             5,
         ),
     ),
@@ -36,13 +34,8 @@ def test_get_rows_count(dataset: pd.DataFrame, expected_rows: int) -> None:
         (pd.DataFrame({"test": [1, 2, 1, 2]}), "cat", {1: 2, 2: 2}),
     ),
 )
-def test_calculate_column_distribution(
-    dataset: pd.DataFrame, column_type: str, expected_distribution: list
-) -> None:
-    assert (
-        calculate_column_distribution(dataset["test"], column_type=column_type)
-        == expected_distribution
-    )
+def test_calculate_column_distribution(dataset: pd.DataFrame, column_type: str, expected_distribution: list) -> None:
+    assert calculate_column_distribution(dataset["test"], column_type=column_type) == expected_distribution
 
 
 def test_calculate_cramer_v_correlations():
@@ -54,9 +47,7 @@ def test_calculate_cramer_v_correlations():
             "test4": ["a", "b", "c"],
         }
     )
-    assert calculate_cramer_v_correlation(
-        "test1", data, ["test2", "test3", "test4"]
-    ) == ColumnCorrelations(
+    assert calculate_cramer_v_correlation("test1", data, ["test2", "test3", "test4"]) == ColumnCorrelations(
         column_name="test1",
         kind="cramer_v",
         values=Distribution(

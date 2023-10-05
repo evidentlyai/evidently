@@ -34,14 +34,10 @@ class ClassificationClassSeparationPlotResults(MetricResult):
     target_name: str
 
     current: Optional[ColumnScatterOrAgg] = None
-    current_raw, current_agg = raw_agg_properties(
-        "current", ColumnScatter, ColumnAggScatter, True
-    )
+    current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, True)
 
     reference: Optional[ColumnScatterOrAgg] = None
-    reference_raw, reference_agg = raw_agg_properties(
-        "reference", ColumnScatter, ColumnAggScatter, True
-    )
+    reference_raw, reference_agg = raw_agg_properties("reference", ColumnScatter, ColumnAggScatter, True)
 
 
 def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[str]):
@@ -49,22 +45,13 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
     for name in prediction_names:
         df_name = df.copy()
         df_name[target_name] = (df_name[target_name] == name).astype(int)
-        df_for_plot = (
-            df_name.groupby(target_name)[name]
-            .quantile([0, 0.25, 0.5, 0.75, 1])
-            .reset_index()
-        )
+        df_for_plot = df_name.groupby(target_name)[name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
         df_for_plot.columns = [target_name, "q", name]
         res_df = pd.DataFrame()
         values = df_for_plot[target_name].unique()
 
         def _quantiles(qdf, value):
-            return (
-                qdf[df_for_plot.q == value]
-                .set_index(target_name)
-                .loc[values, name]
-                .tolist()
-            )
+            return qdf[df_for_plot.q == value].set_index(target_name).loc[values, name].tolist()
 
         res_df["mins"] = _quantiles(df_for_plot, 0)
         res_df["lowers"] = _quantiles(df_for_plot, 0.25)
@@ -77,9 +64,7 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
     return res
 
 
-class ClassificationClassSeparationPlot(
-    Metric[ClassificationClassSeparationPlotResults]
-):
+class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 
@@ -88,12 +73,8 @@ class ClassificationClassSeparationPlot(
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
-        curr_predictions = get_prediction_data(
-            data.current_data, dataset_columns, data.column_mapping.pos_label
-        )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         if curr_predictions.prediction_probas is None:
             raise ValueError(
                 "ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions"
@@ -103,9 +84,7 @@ class ClassificationClassSeparationPlot(
         current_plot[target_name] = data.current_data[target_name]
         reference_plot = None
         if data.reference_data is not None:
-            ref_predictions = get_prediction_data(
-                data.reference_data, dataset_columns, data.column_mapping.pos_label
-            )
+            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
             if ref_predictions.prediction_probas is None:
                 raise ValueError(
                     "ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions"
@@ -120,9 +99,7 @@ class ClassificationClassSeparationPlot(
             )
         current_plot = prepare_box_data(current_plot, target_name, prediction_names)
         if reference_plot is not None:
-            reference_plot = prepare_box_data(
-                reference_plot, target_name, prediction_names
-            )
+            reference_plot = prepare_box_data(reference_plot, target_name, prediction_names)
         return ClassificationClassSeparationPlotResults(
             current=current_plot,
             reference=reference_plot,
@@ -132,9 +109,7 @@ class ClassificationClassSeparationPlot(
 
 @default_renderer(wrap_type=ClassificationClassSeparationPlot)
 class ClassificationClassSeparationPlotRenderer(MetricRenderer):
-    def render_html(
-        self, obj: ClassificationClassSeparationPlot
-    ) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ClassificationClassSeparationPlot) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         target_name = metric_result.target_name
         agg_data = not obj.get_options().render_options.raw_data

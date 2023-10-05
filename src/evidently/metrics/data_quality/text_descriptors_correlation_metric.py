@@ -65,8 +65,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
             self._generated_text_features = {
-                name: desc.feature(self.column_name)
-                for name, desc in self.descriptors.items()
+                name: desc.feature(self.column_name) for name, desc in self.descriptors.items()
             }
             return list(self.generated_text_features.values())
         return []
@@ -76,31 +75,21 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
 
     def calculate(self, data: InputData) -> TextDescriptorsCorrelationMetricResult:
         if self.column_name not in data.current_data:
-            raise ValueError(
-                f"Column '{self.column_name}' was not found in current data."
-            )
+            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(
-                    f"Column '{self.column_name}' was not found in reference data."
-                )
+                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
         curr_text_df = pd.concat(
-            [
-                data.get_current_column(x.feature_name())
-                for x in list(self.generated_text_features.values())
-            ],
+            [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
         ref_df = None
         if data.reference_data is not None:
             ref_text_df = pd.concat(
-                [
-                    data.get_reference_column(x.feature_name())
-                    for x in list(self.generated_text_features.values())
-                ],
+                [data.get_reference_column(x.feature_name()) for x in list(self.generated_text_features.values())],
                 axis=1,
             )
             ref_text_df.columns = list(self.generated_text_features.keys())
@@ -128,9 +117,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
                 correlations = calculate_numerical_correlation(
                     name,
                     data.get_reference_column(feature.feature_name()),
-                    data.current_data[
-                        [feature.column_name for feature in num_features]
-                    ],
+                    data.current_data[[feature.column_name for feature in num_features]],
                 )
                 ref_result[name] = {value.kind: value for value in correlations}
 
@@ -153,9 +140,7 @@ class TextDescriptorsCorrelationMetricRenderer(MetricRenderer):
             reference_correlation_values = None
 
             if ref_metric_result is not None and correlation_name in ref_metric_result:
-                reference_correlation_values = ref_metric_result[
-                    correlation_name
-                ].values
+                reference_correlation_values = ref_metric_result[correlation_name].values
             # logging.warning(reference_correlation_values)
             if current_correlation.values or reference_correlation_values:
                 tabs.append(
@@ -178,20 +163,14 @@ class TextDescriptorsCorrelationMetricRenderer(MetricRenderer):
         else:
             return None
 
-    def render_html(
-        self, obj: TextDescriptorsCorrelationMetric
-    ) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: TextDescriptorsCorrelationMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        result = [
-            header_text(label=f"Correlations for column '{metric_result.column_name}'.")
-        ]
+        result = [header_text(label=f"Correlations for column '{metric_result.column_name}'.")]
         for col in list(metric_result.current.keys()):
             reference = None
             if metric_result.reference is not None:
                 reference = metric_result.reference[col]
-            correlation_plots = self._get_plots_correlations(
-                metric_result.current[col], reference
-            )
+            correlation_plots = self._get_plots_correlations(metric_result.current[col], reference)
             if correlation_plots:
                 result.append(header_text(label=f"{col}"))
                 result.append(correlation_plots)

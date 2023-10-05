@@ -16,9 +16,7 @@ from evidently.calculations.stattests.registry import StatTestInvalidFeatureType
 from evidently.calculations.stattests.registry import StatTestNotFoundError
 
 
-def _custom_stattest(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str
-) -> Tuple[float, bool]:
+def _custom_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> Tuple[float, bool]:
     pass
 
 
@@ -136,7 +134,5 @@ def test_get_stattest_missing_stattest(stattest_func, feature_type):
     ],
 )
 def test_stattest_default_threshold(stat_test, override_threshold, expected_threshold):
-    result = stat_test(
-        pd.Series(dtype="float64"), pd.Series(dtype="float64"), "", override_threshold
-    )
+    result = stat_test(pd.Series(dtype="float64"), pd.Series(dtype="float64"), "", override_threshold)
     assert result.drift_score == expected_threshold

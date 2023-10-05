@@ -15,9 +15,7 @@ def test_data_quality_quantile_metric_success() -> None:
     data_mapping = ColumnMapping()
     metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
     report = Report(metrics=[metric])
-    report.run(
-        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
-    )
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     result = metric.get_result()
     assert result is not None
     assert result.quantile == 0.5
@@ -152,9 +150,7 @@ def test_column_quantile_metric_with_report(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(
-        current_data=current, reference_data=reference, column_mapping=column_mapping
-    )
+    report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
     assert report.show()
     result_json = report.json()
     assert len(result_json) > 0

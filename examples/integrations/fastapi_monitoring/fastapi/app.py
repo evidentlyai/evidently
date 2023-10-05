@@ -3,12 +3,7 @@ from typing import Callable
 from typing import Text
 from evidently import ColumnMapping
 from fastapi import FastAPI, BackgroundTasks
-from fastapi.responses import (
-    HTMLResponse,
-    JSONResponse,
-    Response,
-    FileResponse
-)
+from fastapi.responses import HTMLResponse, JSONResponse, Response, FileResponse
 from pydantic import BaseModel
 import pandas as pd
 from config.config import DATA_COLUMNS
@@ -30,9 +25,7 @@ from src.utils.reports import get_column_mapping
 from evidently import ColumnMapping
 from utils import ModelLoader
 
-logging.basicConfig(
-    level=logging.INFO, format="FASTAPI_APP - %(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="FASTAPI_APP - %(asctime)s - %(levelname)s - %(message)s")
 
 
 class Features(BaseModel):
@@ -51,9 +44,7 @@ def index() -> HTMLResponse:
 
 
 @app.post("/predict")
-def predict(
-    response: Response, features_item: Features, background_tasks: BackgroundTasks
-) -> JSONResponse:
+def predict(response: Response, features_item: Features, background_tasks: BackgroundTasks) -> JSONResponse:
     try:
         # Receive features item and read features batch
         features: pd.DataFrame = pd.read_json(features_item.features)

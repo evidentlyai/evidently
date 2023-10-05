@@ -173,14 +173,10 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             data.column_mapping.prediction,
             data.reference_data,
         )
-        curr_target_bins = df_target_binned.loc[
-            df_target_binned.data == "curr", "target_binned"
-        ]
+        curr_target_bins = df_target_binned.loc[df_target_binned.data == "curr", "target_binned"]
         ref_target_bins = None
         if data.reference_data is not None:
-            ref_target_bins = df_target_binned.loc[
-                df_target_binned.data == "ref", "target_binned"
-            ]
+            ref_target_bins = df_target_binned.loc[df_target_binned.data == "ref", "target_binned"]
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
         vals_for_plots: Dict[str, RegressionMetricScatter] = {}
@@ -209,16 +205,12 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             )
 
         # me plot
-        err_curr = (
-            data.current_data[data.column_mapping.prediction]
-            - data.current_data[data.column_mapping.target]
-        )
+        err_curr = data.current_data[data.column_mapping.prediction] - data.current_data[data.column_mapping.target]
         err_ref = None
 
         if is_ref_data:
             err_ref = (
-                data.reference_data[data.column_mapping.prediction]
-                - data.reference_data[data.column_mapping.target]
+                data.reference_data[data.column_mapping.prediction] - data.reference_data[data.column_mapping.target]
             )
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
@@ -276,15 +268,11 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 @default_renderer(wrap_type=RegressionPerformanceMetrics)
 class RegressionPerformanceMetricsRenderer(MetricRenderer):
     @staticmethod
-    def _get_underperformance_tails(
-        dataset_name: str, underperformance: dict
-    ) -> BaseWidgetInfo:
+    def _get_underperformance_tails(dataset_name: str, underperformance: dict) -> BaseWidgetInfo:
         return counter(
             title=f"{dataset_name.capitalize()}: Mean Error per Group (+/- std)",
             counters=[
-                CounterData.float(
-                    "Majority(90%)", underperformance["majority"]["mean_error"], 2
-                ),
+                CounterData.float("Majority(90%)", underperformance["majority"]["mean_error"], 2),
                 CounterData.float(
                     "Underestimation(5%)",
                     underperformance["underestimation"]["mean_error"],
@@ -306,13 +294,9 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
             counter(
                 title="Current: Regression Performance Metrics",
                 counters=[
-                    CounterData.float(
-                        "Mean error", metric_result.current.mean_error, 3
-                    ),
+                    CounterData.float("Mean error", metric_result.current.mean_error, 3),
                     CounterData.float("MAE", metric_result.current.mean_abs_error, 3),
-                    CounterData.float(
-                        "MAPE", metric_result.current.mean_abs_perc_error, 3
-                    ),
+                    CounterData.float("MAPE", metric_result.current.mean_abs_perc_error, 3),
                     CounterData.float("RMSE", metric_result.current.rmse, 3),
                     CounterData.float("r2 score", metric_result.current.r2_score, 3),
                 ],
@@ -323,19 +307,11 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                 counter(
                     title="Reference: Regression Performance Metrics",
                     counters=[
-                        CounterData.float(
-                            "Mean error", metric_result.reference.mean_error, 3
-                        ),
-                        CounterData.float(
-                            "MAE", metric_result.reference.mean_abs_error, 3
-                        ),
-                        CounterData.float(
-                            "MAPE", metric_result.reference.mean_abs_perc_error, 3
-                        ),
+                        CounterData.float("Mean error", metric_result.reference.mean_error, 3),
+                        CounterData.float("MAE", metric_result.reference.mean_abs_error, 3),
+                        CounterData.float("MAPE", metric_result.reference.mean_abs_perc_error, 3),
                         CounterData.float("RMSE", metric_result.reference.rmse, 3),
-                        CounterData.float(
-                            "r2 score", metric_result.reference.r2_score, 3
-                        ),
+                        CounterData.float("r2 score", metric_result.reference.r2_score, 3),
                     ],
                 ),
             )

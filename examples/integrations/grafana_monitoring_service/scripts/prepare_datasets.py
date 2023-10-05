@@ -15,9 +15,7 @@ import requests
 pd.options.mode.chained_assignment = None
 
 
-BIKE_DATA_SOURCE_URL = (
-    "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"
-)
+BIKE_DATA_SOURCE_URL = "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"
 
 
 def setup_logger() -> None:
@@ -86,23 +84,15 @@ def get_data_kdd_classification() -> Tuple[pd.DataFrame, pd.DataFrame]:
     )
     target = data.target_names[0]
     reference_kdd_data.reset_index(inplace=True, drop=True)
-    reference_kdd_data[target] = reference_kdd_data[target].apply(
-        lambda x: x.decode("utf8")
-    )
+    reference_kdd_data[target] = reference_kdd_data[target].apply(lambda x: x.decode("utf8"))
     production_kdd_data.reset_index(inplace=True, drop=True)
-    production_kdd_data[target] = production_kdd_data[target].apply(
-        lambda x: x.decode("utf8")
-    )
+    production_kdd_data[target] = production_kdd_data[target].apply(lambda x: x.decode("utf8"))
 
     classification_model = neighbors.KNeighborsClassifier(n_neighbors=1)
     classification_model.fit(reference_kdd_data[features], reference_kdd_data[target])
 
-    reference_kdd_data["prediction"] = classification_model.predict(
-        reference_kdd_data[features]
-    )
-    production_kdd_data["prediction"] = classification_model.predict(
-        production_kdd_data[features]
-    )
+    reference_kdd_data["prediction"] = classification_model.predict(reference_kdd_data[features])
+    production_kdd_data["prediction"] = classification_model.predict(production_kdd_data[features])
 
     return reference_kdd_data[features + [target, "prediction"]], production_kdd_data
 
@@ -123,9 +113,7 @@ def main(dataset_name: str, dataset_path: str) -> None:
     production_data.to_csv(os.path.join(dataset_path, "production.csv"), index=False)
 
     logging.info("Reference dataset was created with %s rows", reference_data.shape[0])
-    logging.info(
-        "Production dataset was created with %s rows", production_data.shape[0]
-    )
+    logging.info("Production dataset was created with %s rows", production_data.shape[0])
 
 
 DATA_SOURCES = {
@@ -156,7 +144,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     setup_logger()
     if args.dataset not in DATA_SOURCES:
-        exit(
-            f"Incorrect dataset name {args.dataset}, try to see correct names with --help"
-        )
+        exit(f"Incorrect dataset name {args.dataset}, try to see correct names with --help")
     main(args.dataset, args.path)

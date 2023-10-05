@@ -28,9 +28,7 @@ class RemoteWorkspace(RemoteClientBase, WorkspaceBase[RemoteProject]):
         except HTTPError as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
 
-    def create_project(
-        self, name: str, description: Optional[str] = None
-    ) -> RemoteProject:
+    def create_project(self, name: str, description: Optional[str] = None) -> RemoteProject:
         project: ProjectBase = ProjectBase(
             name=name,
             description=description,
@@ -39,14 +37,10 @@ class RemoteWorkspace(RemoteClientBase, WorkspaceBase[RemoteProject]):
         return self.add_project(project)
 
     def add_project(self, project: ProjectBase):
-        return self._request(
-            "/api/projects", "POST", body=project.dict(), response_model=RemoteProject
-        ).bind(self)
+        return self._request("/api/projects", "POST", body=project.dict(), response_model=RemoteProject).bind(self)
 
     def get_project(self, project_id: uuid.UUID) -> RemoteProject:
-        return self._request(
-            f"/api/projects/{project_id}", "GET", response_model=RemoteProject
-        )
+        return self._request(f"/api/projects/{project_id}", "GET", response_model=RemoteProject)
 
     def delete_project(self, project_id: STR_UUID):
         return self._request(f"/api/projects/{project_id}", "DELETE")
@@ -55,9 +49,7 @@ class RemoteWorkspace(RemoteClientBase, WorkspaceBase[RemoteProject]):
         return self._request("/api/projects", "GET", response_model=List[RemoteProject])
 
     def add_snapshot(self, project_id: Union[str, uuid.UUID], snapshot: Snapshot):
-        return self._request(
-            f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict()
-        )
+        return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())
 
     def delete_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID):
         return self._request(f"/api/projects/{project_id}/{snapshot_id}", "DELETE")

@@ -148,21 +148,14 @@ class BaseResult(BaseModel):
         field_tags = self.__config__.field_tags or {}
         result: Dict[str, Any] = {}
         for name, field in self.__fields__.items():
-            if field_tags.get(name) and all(
-                tag not in include_tags for tag in field_tags.get(name, set())
-            ):
+            if field_tags.get(name) and all(tag not in include_tags for tag in field_tags.get(name, set())):
                 continue
             if isinstance(field.type_, type) and issubclass(field.type_, BaseResult):
                 if (
-                    (
-                        not field.type_.__config__.dict_include
-                        or name in dict_exclude_fields
-                    )
+                    (not field.type_.__config__.dict_include or name in dict_exclude_fields)
                     and not field.field_info.include
                     and name not in include
-                    and all(
-                        tag not in include_tags for tag in field.type_.__config__.tags
-                    )
+                    and all(tag not in include_tags for tag in field.type_.__config__.tags)
                 ):
                     continue
 
@@ -202,9 +195,7 @@ class BaseResult(BaseModel):
     def __init_subclass__(cls, **kwargs):
         cls.__include_fields__ = None
 
-    def collect_pandas_columns(
-        self, prefix="", include: Set[str] = None, exclude: Set[str] = None
-    ) -> Dict[str, Any]:
+    def collect_pandas_columns(self, prefix="", include: Set[str] = None, exclude: Set[str] = None) -> Dict[str, Any]:
         include = include or self.__config__.pd_include_fields or set(self.__fields__)
         exclude = exclude or self.__config__.pd_exclude_fields or set()
 
@@ -215,18 +206,14 @@ class BaseResult(BaseModel):
             if isinstance(field.type_, type) and issubclass(field.type_, BaseResult):
                 if field.type_.__config__.pd_include:
                     field_value = getattr(self, name)
-                    field_prefix = (
-                        f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
-                    )
+                    field_prefix = f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
                     if field_value is None:
                         continue
                     elif isinstance(field_value, BaseResult):
                         data.update(field_value.collect_pandas_columns(field_prefix))
                     elif isinstance(field_value, dict):  # Dict[str, MetricResultField]
                         # todo: deal with more complex stuff later
-                        assert all(
-                            isinstance(v, BaseResult) for v in field_value.values()
-                        )
+                        assert all(isinstance(v, BaseResult) for v in field_value.values())
                         dict_value: BaseResult
                         for dict_key, dict_value in field_value.items():
                             for (

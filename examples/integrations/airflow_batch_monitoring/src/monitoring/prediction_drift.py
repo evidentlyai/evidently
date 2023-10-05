@@ -27,10 +27,7 @@ def parse_prediction_drift_report(prediction_drift_report: Report) -> Tuple[Dict
 
     prediction_drift_report_dict = prediction_drift_report.as_dict()
 
-    metrics: Dict = {
-        metric["metric"]: metric["result"]
-        for metric in prediction_drift_report_dict["metrics"]
-    }
+    metrics: Dict = {metric["metric"]: metric["result"] for metric in prediction_drift_report_dict["metrics"]}
 
     print("METRICS: ", metrics)
 
@@ -52,9 +49,7 @@ def parse_prediction_drift_report(prediction_drift_report: Report) -> Tuple[Dict
     return prediction_result
 
 
-def commit_prediction_drift_metrics_to_db(
-    drift_report_metrics: Dict, timestamp: float, db_uri: Text
-) -> None:
+def commit_prediction_drift_metrics_to_db(drift_report_metrics: Dict, timestamp: float, db_uri: Text) -> None:
     """Commit data metrics to database.
 
     Args:
@@ -65,9 +60,7 @@ def commit_prediction_drift_metrics_to_db(
     engine = create_engine(db_uri)
     session = open_sqa_session(engine)
 
-    data_drift_prediction = PredictionDriftTable(
-        **drift_report_metrics, timestamp=timestamp
-    )
+    data_drift_prediction = PredictionDriftTable(**drift_report_metrics, timestamp=timestamp)
     add_or_update_by_ts(session, data_drift_prediction)
 
     session.commit()

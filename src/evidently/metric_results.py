@@ -148,9 +148,7 @@ class DatasetColumns(MetricResult):
             return list(self.target_names.keys())
         return self.target_names
 
-    def get_all_features_list(
-        self, cat_before_num: bool = True, include_datetime_feature: bool = False
-    ) -> List[str]:
+    def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
         """List all features names.
 
         By default, returns cat features than num features and du not return other.
@@ -160,27 +158,17 @@ class DatasetColumns(MetricResult):
         If you want to add date time columns - set `include_datetime_feature` to True.
         """
         if cat_before_num:
-            result = (
-                self.cat_feature_names
-                + self.num_feature_names
-                + self.text_feature_names
-            )
+            result = self.cat_feature_names + self.num_feature_names + self.text_feature_names
 
         else:
-            result = (
-                self.num_feature_names
-                + self.cat_feature_names
-                + self.text_feature_names
-            )
+            result = self.num_feature_names + self.cat_feature_names + self.text_feature_names
 
         if include_datetime_feature and self.datetime_feature_names:
             result += self.datetime_feature_names
 
         return result
 
-    def get_all_columns_list(
-        self, skip_id_column: bool = False, skip_text_columns: bool = False
-    ) -> List[str]:
+    def get_all_columns_list(self, skip_id_column: bool = False, skip_text_columns: bool = False) -> List[str]:
         """List all columns."""
         result: List[str] = self.cat_feature_names + self.num_feature_names
 
@@ -215,10 +203,7 @@ class DatasetColumns(MetricResult):
             len_time_columns = 0
 
         return (
-            len(self.num_feature_names)
-            + len(self.cat_feature_names)
-            + len(self.text_feature_names)
-            + len_time_columns
+            len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
         )
 
 
@@ -229,9 +214,7 @@ def df_from_column_scatter(value: ColumnScatter) -> pd.DataFrame:
     return df
 
 
-def column_scatter_from_df(
-    df: Optional[pd.DataFrame], with_index: bool
-) -> Optional[ColumnScatter]:
+def column_scatter_from_df(df: Optional[pd.DataFrame], with_index: bool) -> Optional[ColumnScatter]:
     if df is None:
         return None
     data = {column: df[column] for column in df.columns}
@@ -404,9 +387,7 @@ TA = TypeVar("TA")
 
 
 @overload
-def raw_agg_properties(
-    field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]
-) -> Tuple[TR, TA]:
+def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]) -> Tuple[TR, TA]:
     ...
 
 
@@ -417,9 +398,7 @@ def raw_agg_properties(
     ...
 
 
-def raw_agg_properties(
-    field_name, raw_type: Type[TR], agg_type: Type[TA], optional: bool
-) -> Tuple[TR, TA]:
+def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: bool) -> Tuple[TR, TA]:
     def property_raw(self):
         val = getattr(self, field_name)
         if optional and val is None:

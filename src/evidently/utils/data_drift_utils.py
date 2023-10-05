@@ -84,10 +84,7 @@ def _calculate_threshold(
     text_stattest_threshold: Optional[float] = None,
     per_column_stattest_threshold: Optional[Dict[str, float]] = None,
 ) -> Optional[float]:
-    if (
-        per_column_stattest_threshold is not None
-        and feature_name in per_column_stattest_threshold.keys()
-    ):
+    if per_column_stattest_threshold is not None and feature_name in per_column_stattest_threshold.keys():
         return per_column_stattest_threshold.get(feature_name)
 
     if cat_stattest_threshold is not None and feature_type == "cat":
@@ -130,9 +127,7 @@ def roc_auc_domain_classifier(X_train, X_test, y_train, y_test) -> Tuple:
     return roc_auc, y_pred_proba, pipeline
 
 
-def roc_auc_random_classifier_percentile(
-    y_test: np.ndarray, p_value=0.05, iter_num=1000, seed=42
-) -> float:
+def roc_auc_random_classifier_percentile(y_test: np.ndarray, p_value=0.05, iter_num=1000, seed=42) -> float:
     def calc_roc_auc_random(y_test, seed=None):
         np.random.seed(seed)
         y_random_pred = np.random.rand(len(y_test))
@@ -175,21 +170,15 @@ def calculate_text_drift_score(
     )
     if not bootstrap:
         return domain_classifier_roc_auc, domain_classifier_roc_auc > threshold
-    random_classifier_percentile = roc_auc_random_classifier_percentile(
-        y_test, p_value=p_value
-    )
+    random_classifier_percentile = roc_auc_random_classifier_percentile(y_test, p_value=p_value)
     return (
         domain_classifier_roc_auc,
         domain_classifier_roc_auc > random_classifier_percentile,
     )
 
 
-def get_typical_examples(
-    X_test, y_test, y_pred_proba, examples_num=10
-) -> Tuple[List[str], List[str]]:
-    typical_examples = pd.DataFrame(
-        {"text": X_test, "label": y_test, "predict_proba": y_pred_proba}
-    )
+def get_typical_examples(X_test, y_test, y_pred_proba, examples_num=10) -> Tuple[List[str], List[str]]:
+    typical_examples = pd.DataFrame({"text": X_test, "label": y_test, "predict_proba": y_pred_proba})
 
     typical_current = typical_examples[typical_examples["label"] == 1]
     typical_current.sort_values("predict_proba", ascending=False, inplace=True)
@@ -208,22 +197,16 @@ def get_typical_words(pipeline, words_num=25) -> Tuple[List[str], List[str]]:
     weights_df = weights_df[weights_df["weight"] != 0]
 
     # build inverted index for vocabulary
-    inverted_vocabulary = {
-        value: key for key, value in pipeline["vectorization"].vocabulary_.items()
-    }
+    inverted_vocabulary = {value: key for key, value in pipeline["vectorization"].vocabulary_.items()}
     words_typical_current = weights_df[weights_df["weight"] > 0]
     words_typical_current.sort_values("weight", ascending=False, inplace=True)
     words_typical_current = words_typical_current.head(words_num)
-    words_typical_current["word"] = words_typical_current["feature_ind"].apply(
-        lambda x: inverted_vocabulary[x]
-    )
+    words_typical_current["word"] = words_typical_current["feature_ind"].apply(lambda x: inverted_vocabulary[x])
 
     words_typical_reference = weights_df[weights_df["weight"] < 0]
     words_typical_reference.sort_values("weight", ascending=True, inplace=True)
     words_typical_reference = words_typical_reference.head(words_num)
-    words_typical_reference["word"] = words_typical_reference["feature_ind"].apply(
-        lambda x: inverted_vocabulary[x]
-    )
+    words_typical_reference["word"] = words_typical_reference["feature_ind"].apply(lambda x: inverted_vocabulary[x])
 
     return list(words_typical_current["word"]), list(words_typical_reference["word"])
 
@@ -251,9 +234,7 @@ def get_text_data_for_plots(reference_data: pd.Series, current_data: pd.Series):
         y_test,
     )
     # get examples more characteristic of current or reference dataset
-    typical_examples_cur, typical_examples_ref = get_typical_examples(
-        X_test, y_test, y_pred_proba
-    )
+    typical_examples_cur, typical_examples_ref = get_typical_examples(X_test, y_test, y_pred_proba)
 
     # get words more characteristic of current or reference dataset
     typical_words_cur, typical_words_ref = get_typical_words(classifier_pipeline)

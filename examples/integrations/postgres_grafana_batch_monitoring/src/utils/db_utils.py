@@ -35,13 +35,7 @@ def add_or_update_by_ts(session: sqlalchemy.orm.Session, record: Base) -> None:
     # If such record found
     if query.count() > 0:
         # update record (row) by the new values
-        query.update(
-            {
-                column: getattr(record, column)
-                for column in record.__table__.columns.keys()
-                if column != "id"
-            }
-        )
+        query.update({column: getattr(record, column) for column in record.__table__.columns.keys() if column != "id"})
     else:
         # If not found then add new record (row)
         session.add(record)

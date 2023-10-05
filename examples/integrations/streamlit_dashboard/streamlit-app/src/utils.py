@@ -23,9 +23,7 @@ def list_periods(reports_dir: Path) -> List[Text]:
     """
 
     try:
-        return sorted(
-            list(filter(lambda e: (reports_dir / e).is_dir(), os.listdir(reports_dir)))
-        )
+        return sorted(list(filter(lambda e: (reports_dir / e).is_dir(), os.listdir(reports_dir))))
     except FileNotFoundError as e:
         raise EntityNotFoundError(e)
 

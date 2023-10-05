@@ -39,9 +39,7 @@ class ClassificationDummyMetricResults(MetricResult):
     metrics_matrix: ClassesMetrics
 
 
-class ClassificationDummyMetric(
-    ThresholdClassificationMetric[ClassificationDummyMetricResults]
-):
+class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
     _quality_metric: ClassificationQualityMetric
 
     def __init__(
@@ -71,16 +69,12 @@ class ClassificationDummyMetric(
         #  dummy by current
         labels_ratio = data.current_data[target_name].value_counts(normalize=True)
         np.random.seed(0)
-        dummy_preds = np.random.choice(
-            labels_ratio.index, data.current_data.shape[0], p=labels_ratio
-        )
+        dummy_preds = np.random.choice(labels_ratio.index, data.current_data.shape[0], p=labels_ratio)
         dummy_preds = pd.Series(dummy_preds)
         prediction: Optional[PredictionData] = None
 
         if prediction_name is not None:
-            target, prediction = self.get_target_prediction_data(
-                data.current_data, data.column_mapping
-            )
+            target, prediction = self.get_target_prediction_data(data.current_data, data.column_mapping)
             labels = prediction.labels
 
         else:
@@ -96,9 +90,7 @@ class ClassificationDummyMetric(
             data.column_mapping,
             current_matrix,
             target,
-            PredictionData(
-                predictions=dummy_preds, prediction_probas=None, labels=labels
-            ),
+            PredictionData(predictions=dummy_preds, prediction_probas=None, labels=labels),
         )
 
         metrics_matrix = ClassificationReport.create(
@@ -107,18 +99,12 @@ class ClassificationDummyMetric(
         ).classes
         threshold = 0.5
 
-        if (
-            prediction is not None
-            and prediction.prediction_probas is not None
-            and len(labels) == 2
-        ):
+        if prediction is not None and prediction.prediction_probas is not None and len(labels) == 2:
             if self.probas_threshold is not None or self.k is not None:
                 if self.probas_threshold is not None:
                     threshold = self.probas_threshold
                 if self.k is not None:
-                    threshold = k_probability_threshold(
-                        prediction.prediction_probas, self.k
-                    )
+                    threshold = k_probability_threshold(prediction.prediction_probas, self.k)
 
             current_dummy = self.correction_for_threshold(
                 current_dummy,
@@ -137,19 +123,9 @@ class ClassificationDummyMetric(
                 coeff_recall = min(1.0, 0.5 / (1 - threshold))
 
             coeff_precision = min(1.0, (1 - threshold) / 0.5)
-            neg_label_precision = (
-                precision_score(target, dummy_preds, pos_label=labels[1])
-                * coeff_precision
-            )
-            neg_label_recall = (
-                recall_score(target, dummy_preds, pos_label=labels[1]) * coeff_recall
-            )
-            f1_label2_value = (
-                2
-                * neg_label_precision
-                * neg_label_recall
-                / (neg_label_precision + neg_label_recall)
-            )
+            neg_label_precision = precision_score(target, dummy_preds, pos_label=labels[1]) * coeff_precision
+            neg_label_recall = recall_score(target, dummy_preds, pos_label=labels[1]) * coeff_recall
+            f1_label2_value = 2 * neg_label_precision * neg_label_recall / (neg_label_precision + neg_label_recall)
             metrics_matrix = {
                 str(labels[0]): ClassMetric(
                     precision=current_dummy.precision,
@@ -164,9 +140,7 @@ class ClassificationDummyMetric(
             }
         if prediction is not None and prediction.prediction_probas is not None:
             # dummy log_loss and roc_auc
-            binaraized_target = (
-                target.astype(str).values.reshape(-1, 1) == list(labels)
-            ).astype(int)
+            binaraized_target = (target.astype(str).values.reshape(-1, 1) == list(labels)).astype(int)
             dummy_prediction = np.full(
                 prediction.prediction_probas.shape,
                 1 / prediction.prediction_probas.shape[1],
@@ -180,15 +154,11 @@ class ClassificationDummyMetric(
         if data.reference_data is not None:
             labels_ratio = data.reference_data[target_name].value_counts(normalize=True)
             np.random.seed(1)
-            dummy_preds = np.random.choice(
-                labels_ratio.index, data.current_data.shape[0], p=labels_ratio
-            )
+            dummy_preds = np.random.choice(labels_ratio.index, data.current_data.shape[0], p=labels_ratio)
             dummy_preds = pd.Series(dummy_preds)
 
             if prediction_name is not None:
-                target, prediction = self.get_target_prediction_data(
-                    data.current_data, data.column_mapping
-                )
+                target, prediction = self.get_target_prediction_data(data.current_data, data.column_mapping)
                 labels = prediction.labels
             else:
                 target = data.current_data[target_name]
@@ -203,15 +173,9 @@ class ClassificationDummyMetric(
                 data.column_mapping,
                 current_matrix,
                 target,
-                PredictionData(
-                    predictions=dummy_preds, prediction_probas=None, labels=labels
-                ),
+                PredictionData(predictions=dummy_preds, prediction_probas=None, labels=labels),
             )
-            if (
-                prediction is not None
-                and prediction.prediction_probas is not None
-                and len(labels) == 2
-            ):
+            if prediction is not None and prediction.prediction_probas is not None and len(labels) == 2:
                 by_reference_dummy = self.correction_for_threshold(
                     by_reference_dummy,
                     threshold,
@@ -221,17 +185,13 @@ class ClassificationDummyMetric(
                 )
             if prediction is not None and prediction.prediction_probas is not None:
                 # dummy log_loss and roc_auc
-                binaraized_target = (
-                    target.astype(str).values.reshape(-1, 1) == list(labels)
-                ).astype(int)
+                binaraized_target = (target.astype(str).values.reshape(-1, 1) == list(labels)).astype(int)
                 dummy_prediction = np.full(
                     prediction.prediction_probas.shape,
                     1 / prediction.prediction_probas.shape[1],
                 )
                 if by_reference_dummy is not None:
-                    by_reference_dummy.log_loss = log_loss(
-                        binaraized_target, dummy_prediction
-                    )
+                    by_reference_dummy.log_loss = log_loss(binaraized_target, dummy_prediction)
                     by_reference_dummy.roc_auc = 0.5
 
         # model quality
@@ -284,10 +244,7 @@ class ClassificationDummyMetric(
             * coeff_precision
             * dummy_results.recall
             * coeff_recall
-            / (
-                dummy_results.precision * coeff_precision
-                + dummy_results.recall * coeff_recall
-            ),
+            / (dummy_results.precision * coeff_precision + dummy_results.recall * coeff_recall),
             roc_auc=0.5,
             log_loss=None,
             tpr=tpr,
@@ -334,7 +291,5 @@ class ClassificationDummyMetricRenderer(MetricRenderer):
 
         return [
             header_text(label="Dummy Classification Quality"),
-            table_data(
-                column_names=columns, data=np.around(in_table_data, 3).values, title=""
-            ),
+            table_data(column_names=columns, data=np.around(in_table_data, 3).values, title=""),
         ]

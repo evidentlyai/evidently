@@ -25,9 +25,7 @@ from evidently.utils.data_operations import replace_infinity_values_to_nan
             },
         ),
         (
-            pd.DataFrame(
-                {"test": [np.NAN, np.inf, 2, 0, 0], "target": [1, 0, 1, 0, -np.inf]}
-            ),
+            pd.DataFrame({"test": [np.NAN, np.inf, 2, 0, 0], "target": [1, 0, 1, 0, -np.inf]}),
             {
                 "target": {0: 1, 1: 0, 2: 1, 3: 0, 4: approx(np.nan, nan_ok=True)},
                 "test": {
@@ -41,7 +39,5 @@ from evidently.utils.data_operations import replace_infinity_values_to_nan
         ),
     ),
 )
-def test_replace_infinity_values_to_nan(
-    dataset: pd.DataFrame, expected_dataset: dict
-) -> None:
+def test_replace_infinity_values_to_nan(dataset: pd.DataFrame, expected_dataset: dict) -> None:
     assert replace_infinity_values_to_nan(dataset).to_dict() == expected_dataset

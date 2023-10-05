@@ -17,9 +17,7 @@ class NonLetterCharacterPercentage(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(
-        self, data: pd.DataFrame, data_definition: DataDefinition
-    ) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
 
         # counts share of characters that are not letters or spaces
         def non_letter_share(s):
@@ -31,9 +29,7 @@ class NonLetterCharacterPercentage(GeneratedFeature):
                     non_letters_num += 1
             return 100 * non_letters_num / len(s)
 
-        return pd.DataFrame(
-            dict([(self.column_name, data[self.column_name].apply(non_letter_share))])
-        )
+        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(non_letter_share))]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(

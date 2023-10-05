@@ -118,10 +118,7 @@ class bdist_egg_disabled(bdist_egg):
     """
 
     def run(self):
-        sys.exit(
-            "Aborting implicit building of eggs. Use `pip install .` "
-            " to install from source."
-        )
+        sys.exit("Aborting implicit building of eggs. Use `pip install .` " " to install from source.")
 
 
 def create_cmdclass(prerelease_cmd=None, package_data_spec=None, data_files_spec=None):
@@ -309,9 +306,7 @@ def mtime(path):
     return os.stat(path).st_mtime
 
 
-def install_npm(
-    path=None, build_dir=None, source_dir=None, build_cmd="build", force=False, npm=None
-):
+def install_npm(path=None, build_dir=None, source_dir=None, build_cmd="build", force=False, npm=None):
     """Return a Command for managing an npm installation.
 
     Note: The command is skipped if the `--skip-npm` flag is used.
@@ -353,17 +348,12 @@ def install_npm(
             if not which(npm_cmd[0]):
                 log.error(
                     "`{0}` unavailable.  If you're running this command "
-                    "using sudo, make sure `{0}` is available to sudo".format(
-                        npm_cmd[0]
-                    )
+                    "using sudo, make sure `{0}` is available to sudo".format(npm_cmd[0])
                 )
                 return
 
             if force or is_stale(node_modules, pjoin(node_package, "package.json")):
-                log.info(
-                    "Installing build dependencies with npm.  This may "
-                    "take a while..."
-                )
+                log.info("Installing build dependencies with npm.  This may " "take a while...")
                 run(npm_cmd + ["install"], cwd=node_package)
             if build_dir and source_dir and not force:
                 should_build = is_stale(build_dir, source_dir)
@@ -494,9 +484,7 @@ def _get_file_handler(package_data_spec, data_files_spec):
             for (key, patterns) in package_spec.items():
                 package_data[key] = _get_package_data(key, patterns)
 
-            self.distribution.data_files = _get_data_files(
-                data_files_spec, self.distribution.data_files
-            )
+            self.distribution.data_files = _get_data_files(data_files_spec, self.distribution.data_files)
 
     return FileHandler
 

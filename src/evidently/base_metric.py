@@ -96,16 +96,10 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
 
     @classmethod
     def from_any(cls, column_name: Union[str, "ColumnName"]):
-        return (
-            column_name
-            if not isinstance(column_name, str)
-            else ColumnName.main_dataset(column_name)
-        )
+        return column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
 
 
-def additional_feature(
-    feature: GeneratedFeature, feature_name: str, display_name: str
-) -> ColumnName:
+def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
     return ColumnName(
         name=feature.__class__.__name__ + "." + feature_name,
         display_name=display_name,
@@ -129,9 +123,7 @@ class InputData:
     data_definition: DataDefinition
 
     @staticmethod
-    def _get_by_column_name(
-        dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName
-    ) -> pd.Series:
+    def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
         if column.dataset == DatasetType.MAIN:
             if column.name not in dataset.columns:
                 raise ColumnNotFound(column.name)
@@ -142,28 +134,17 @@ class InputData:
 
     def get_current_column(self, column: Union[str, ColumnName]) -> pd.Series:
         _column = self._str_to_column_name(column)
-        return self._get_by_column_name(
-            self.current_data, self.current_additional_features, _column
-        )
+        return self._get_by_column_name(self.current_data, self.current_additional_features, _column)
 
-    def get_reference_column(
-        self, column: Union[str, ColumnName]
-    ) -> Optional[pd.Series]:
+    def get_reference_column(self, column: Union[str, ColumnName]) -> Optional[pd.Series]:
         if self.reference_data is None:
             return None
         _column = self._str_to_column_name(column)
-        if (
-            self.reference_additional_features is None
-            and _column.dataset == DatasetType.ADDITIONAL
-        ):
+        if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
             return None
-        return self._get_by_column_name(
-            self.reference_data, self.reference_additional_features, _column
-        )
+        return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
 
-    def get_data(
-        self, column: Union[str, ColumnName]
-    ) -> Tuple[ColumnType, pd.Series, Optional[pd.Series]]:
+    def get_data(self, column: Union[str, ColumnName]) -> Tuple[ColumnType, pd.Series, Optional[pd.Series]]:
         ref_data = None
         if self.reference_data is not None:
             ref_data = self.get_reference_column(column)
@@ -183,10 +164,7 @@ class InputData:
     def has_column(self, column_name: Union[str, ColumnName]):
         column = self._str_to_column_name(column_name)
         if column.dataset == DatasetType.MAIN:
-            return column.name in [
-                definition.column_name
-                for definition in self.data_definition.get_columns()
-            ]
+            return column.name in [definition.column_name for definition in self.data_definition.get_columns()]
         if self.current_additional_features is not None:
             return column.name in self.current_additional_features.columns
         return False
@@ -245,9 +223,7 @@ class Metric(
         if isinstance(result, ErrorResult):
             raise result.exception
         if result is None:
-            raise ValueError(
-                f"No result found for metric {self} of type {type(self).__name__}"
-            )
+            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result  # type: ignore[return-value]
 
     def get_parameters(self) -> Optional[tuple]:
@@ -267,9 +243,7 @@ class Metric(
             return None
         return params
 
-    def required_features(
-        self, data_definition: DataDefinition
-    ) -> List[GeneratedFeature]:
+    def required_features(self, data_definition: DataDefinition) -> List[GeneratedFeature]:
         required_features = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:
@@ -291,9 +265,7 @@ class ColumnMetricResult(MetricResult):
     column_type: str
 
     def get_pandas(self) -> pd.DataFrame:
-        return pd.DataFrame.from_dict(
-            {self.column_name: self.collect_pandas_columns()}, orient="index"
-        )
+        return pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
 
 
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)

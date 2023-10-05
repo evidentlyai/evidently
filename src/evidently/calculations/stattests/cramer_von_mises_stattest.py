@@ -43,10 +43,7 @@ class CramerVonMisesResult:
         self.pvalue = pvalue
 
     def __repr__(self):
-        return (
-            f"{self.__class__.__name__}(statistic={self.statistic}, "
-            f"pvalue={self.pvalue})"
-        )
+        return f"{self.__class__.__name__}(statistic={self.statistic}, " f"pvalue={self.pvalue})"
 
 
 def _pval_cvm_2samp_exact(s, m, n):
@@ -79,9 +76,7 @@ def _pval_cvm_2samp_exact(s, m, n):
     dtype = np.min_scalar_type(max_gs)
 
     # the frequency table of $g_{u, v}^+$ defined in [1, p. 6]
-    gs = [np.array([[0], [1]], dtype=dtype)] + [
-        np.empty((2, 0), dtype=dtype) for _ in range(m)
-    ]
+    gs = [np.array([[0], [1]], dtype=dtype)] + [np.empty((2, 0), dtype=dtype) for _ in range(m)]
     for u in range(n + 1):
         next_gs = []
         tmp = np.empty((2, 0), dtype=dtype)
@@ -137,9 +132,7 @@ def _cdf_cvm_inf(x):
     return tot
 
 
-def _cvm_2samp(
-    x: np.ndarray, y: np.ndarray, method: str = "auto"
-) -> CramerVonMisesResult:
+def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
     """Perform the two-sample Cramér-von Mises test
     Args:
         x : array_like

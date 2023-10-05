@@ -16,12 +16,8 @@ from tests.multitest.metrics.conftest import metric_fixtures
 
 
 @pytest.mark.parametrize("raw_data", [True, False], ids=["raw_data", "agg_data"])
-def test_metric(
-    tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome, raw_data, tmp_path
-):
-    report = Report(
-        metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}}
-    )
+def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome, raw_data, tmp_path):
+    report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
     if isinstance(outcome, Error):
         with pytest.raises(outcome.exception_type, match=outcome.match):
@@ -82,15 +78,10 @@ def {snake_case}():
         )
         for m in missing
     )
-    imports = "\n".join(
-        "from {module} import {cls}".format(cls=m.__name__, module=m.__module__)
-        for m in missing
-    )
+    imports = "\n".join("from {module} import {cls}".format(cls=m.__name__, module=m.__module__) for m in missing)
     print(imports)
     print(suggestion)
     assert len(missing) == 0, f"Missing metric fixtures for {missing}."
 
     no_datasets_str = "\n".join(mc.__name__ for mc in no_datasets)
-    assert (
-        len(no_datasets) == 0
-    ), f"No datasets configured for metrics {no_datasets_str}"
+    assert len(no_datasets) == 0, f"No datasets configured for metrics {no_datasets_str}"

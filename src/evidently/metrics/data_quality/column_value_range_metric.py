@@ -80,9 +80,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             share_not_in_range = 0.0
 
         else:
-            number_in_range = column.between(
-                left=float(left), right=float(right), inclusive="both"
-            ).sum()
+            number_in_range = column.between(left=float(left), right=float(right), inclusive="both").sum()
             number_not_in_range = rows_count - number_in_range
             share_in_range = number_in_range / rows_count
             share_not_in_range = number_not_in_range / rows_count
@@ -101,9 +99,7 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
             raise ValueError(f"Column {self.column_name} isn't present in data")
         column_type, current_data, reference_data = data.get_data(self.column_name)
         if column_type != ColumnType.Numerical:
-            raise ValueError(
-                f"Column {self.column_name} in reference data should be numeric."
-            )
+            raise ValueError(f"Column {self.column_name} in reference data should be numeric.")
 
         if self.left is None:
             if reference_data is None:
@@ -127,26 +123,18 @@ class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
         cur_distribution, ref_distribution = get_distribution_for_column(
             column_type="num",
             current=current_data.replace([np.inf, -np.inf], np.nan),
-            reference=reference_data.replace([np.inf, -np.inf], np.nan)
-            if reference_data is not None
-            else None,
+            reference=reference_data.replace([np.inf, -np.inf], np.nan) if reference_data is not None else None,
         )
 
-        current = self._calculate_in_range_stats(
-            current_data, left, right, cur_distribution
-        )
+        current = self._calculate_in_range_stats(current_data, left, right, cur_distribution)
         reference = None
         if reference_data is not None:
             # always should be present
             assert ref_distribution is not None
-            reference = self._calculate_in_range_stats(
-                reference_data, left, right, ref_distribution
-            )
+            reference = self._calculate_in_range_stats(reference_data, left, right, ref_distribution)
 
         return ColumnValueRangeMetricResult(
-            column_name=self.column_name
-            if isinstance(self.column_name, str)
-            else self.column_name.display_name,
+            column_name=self.column_name if isinstance(self.column_name, str) else self.column_name.display_name,
             left=left,
             right=right,
             current=current,
@@ -171,13 +159,9 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             matched_stat_headers.append("Reference")
 
             matched_stat[0].append(metric_result.reference.number_in_range)
-            matched_stat[1].append(
-                np.round(metric_result.reference.share_in_range * 100, 3)
-            )
+            matched_stat[1].append(np.round(metric_result.reference.share_in_range * 100, 3))
             matched_stat[2].append(metric_result.reference.number_not_in_range)
-            matched_stat[3].append(
-                np.round(metric_result.reference.share_not_in_range * 100, 3)
-            )
+            matched_stat[3].append(np.round(metric_result.reference.share_not_in_range * 100, 3))
             matched_stat[4].append(metric_result.reference.number_of_values)
 
         return table_data(
@@ -188,9 +172,7 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
 
     def _get_tabs(self, metric_result: ColumnValueRangeMetricResult) -> BaseWidgetInfo:
         if metric_result.reference is not None:
-            reference_histogram: Optional[
-                HistogramData
-            ] = HistogramData.from_distribution(
+            reference_histogram: Optional[HistogramData] = HistogramData.from_distribution(
                 metric_result.reference.distribution,
                 name="reference",
             )
@@ -199,9 +181,7 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             reference_histogram = None
 
         figure = plot_distr_with_cond_perc_button(
-            hist_curr=HistogramData.from_distribution(
-                metric_result.current.distribution
-            ),
+            hist_curr=HistogramData.from_distribution(metric_result.current.distribution),
             hist_ref=reference_histogram,
             xaxis_name="",
             yaxis_name="Count",

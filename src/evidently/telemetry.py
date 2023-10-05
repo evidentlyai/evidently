@@ -31,9 +31,7 @@ def find_or_create_user_id():
     lockfile = str(config_file.with_suffix(".lock"))
 
     try:
-        with FileLock(
-            lockfile, timeout=5
-        ):  # pylint: disable=abstract-class-instantiated
+        with FileLock(lockfile, timeout=5):  # pylint: disable=abstract-class-instantiated
             user_id = _read_user_id(config_file)
 
             if user_id is None:

@@ -19,9 +19,7 @@ if __name__ == "__main__":
 
     try:
 
-        window_size: int = st.sidebar.number_input(
-            label="window_size", min_value=1, step=1, value=3000
-        )
+        window_size: int = st.sidebar.number_input(label="window_size", min_value=1, step=1, value=3000)
         clicked_model_performance: bool = st.sidebar.button(label="Model performance")
         clicked_target_drift: bool = st.sidebar.button(label="Target drift")
 

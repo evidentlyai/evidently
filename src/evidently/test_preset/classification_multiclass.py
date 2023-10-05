@@ -50,9 +50,7 @@ class MulticlassClassificationTestPreset(TestPreset):
         target = columns.utility_columns.target
 
         if target is None:
-            raise ValueError(
-                "Target column should be set in mapping and be present in data"
-            )
+            raise ValueError("Target column should be set in mapping and be present in data")
 
         labels = set(data.current_data[target].unique())
 

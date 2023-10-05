@@ -81,11 +81,7 @@ def find_all_subclasses(
             continue
         module = import_module(mod_name)
         for key, value in module.__dict__.items():
-            if (
-                isinstance(value, type)
-                and value is not base
-                and issubclass(value, base)
-            ):
+            if isinstance(value, type) and value is not base and issubclass(value, base):
                 if not isabstract(value) or include_abstract:
                     classes.add(value)
 

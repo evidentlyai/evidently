@@ -12,9 +12,7 @@ def detect_dataset_drift(reference, production, column_mapping, get_ratio=False)
     """
 
     data_drift_report = Report(metrics=[DataDriftPreset(drift_share=0.4)])
-    data_drift_report.run(
-        reference_data=reference, current_data=production, column_mapping=column_mapping
-    )
+    data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
     report = data_drift_report.as_dict()
 
     if get_ratio:
@@ -37,27 +35,17 @@ def detect_features_drift(data_drift_report, column_mapping, get_scores=False):
     report = data_drift_report.as_dict()
 
     drifts = []
-    num_features = (
-        column_mapping.numerical_features if column_mapping.numerical_features else []
-    )
-    cat_features = (
-        column_mapping.categorical_features
-        if column_mapping.categorical_features
-        else []
-    )
+    num_features = column_mapping.numerical_features if column_mapping.numerical_features else []
+    cat_features = column_mapping.categorical_features if column_mapping.categorical_features else []
     for feature in num_features + cat_features:
-        drift_score = report["metrics"][1]["result"]["drift_by_columns"][feature][
-            "drift_score"
-        ]
+        drift_score = report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]
         if get_scores:
             drifts.append((feature, drift_score))
         else:
             drifts.append(
                 (
                     feature,
-                    report["metrics"][1]["result"]["drift_by_columns"][feature][
-                        "drift_detected"
-                    ],
+                    report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_detected"],
                 )
             )
 

@@ -42,9 +42,7 @@ class MetricRenderer(BaseRenderer):
         exclude: "IncludeOptions" = None,
     ) -> dict:
         result = obj.get_result()
-        return result.get_dict(
-            include_render=include_render, include=include, exclude=exclude
-        )
+        return result.get_dict(include_render=include_render, include=include, exclude=exclude)
 
     def render_html(self, obj) -> List[BaseWidgetInfo]:
         raise NotImplementedError()
@@ -94,9 +92,7 @@ class TestRenderer(BaseRenderer):
         include: "IncludeOptions" = None,
         exclude: "IncludeOptions" = None,
     ) -> dict:
-        return obj.get_result().get_dict(
-            include_render=include_render, include=include, exclude=exclude
-        )
+        return obj.get_result().get_dict(include_render=include_render, include=include, exclude=exclude)
 
 
 @dataclasses.dataclass

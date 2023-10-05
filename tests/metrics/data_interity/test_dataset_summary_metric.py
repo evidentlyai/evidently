@@ -51,9 +51,7 @@ from tests.conftest import smart_assert_equal
         ),
         (
             pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
-            pd.DataFrame(
-                {"target": [1, 2, 3, 4, 5], "prediction": [np.NaN, 2, 3, 4, 5]}
-            ),
+            pd.DataFrame({"target": [1, 2, 3, 4, 5], "prediction": [np.NaN, 2, 3, 4, 5]}),
             ColumnMapping(),
             DatasetSummaryMetric(),
             DatasetSummaryMetricResult(
@@ -206,9 +204,7 @@ def test_dataset_summary_metric_value_error(
         ),
         (
             pd.DataFrame({"test1": [1, 2, 3], "test2": [1, 2, 3], "test3": [1, 1, 1]}),
-            pd.DataFrame(
-                {"test4": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}
-            ),
+            pd.DataFrame({"test4": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}),
             ColumnMapping(),
             DatasetSummaryMetric(almost_duplicated_threshold=0.9),
             {

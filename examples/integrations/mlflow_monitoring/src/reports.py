@@ -83,9 +83,7 @@ def get_data_drift_metrics(report: Dict) -> Dict:
     return metrics
 
 
-def build_model_performance_test_report(
-    current_data: pd.DataFrame, column_mapping: ColumnMapping
-) -> Report:
+def build_model_performance_test_report(current_data: pd.DataFrame, column_mapping: ColumnMapping) -> Report:
     """
     Returns a list with pairs (feature_name, drift_score)
     Drift Score depends on the selected statistical test or distance and the threshold
@@ -151,8 +149,6 @@ def get_model_monitoring_metrics(regression_quality_report: Report) -> Dict:
     metrics["me"] = report_dict["metrics"][0]["result"]["current"]["mean_error"]
     metrics["mae"] = report_dict["metrics"][0]["result"]["current"]["mean_abs_error"]
     metrics["rmse"] = report_dict["metrics"][0]["result"]["current"]["rmse"]
-    metrics["mape"] = report_dict["metrics"][0]["result"]["current"][
-        "mean_abs_perc_error"
-    ]
+    metrics["mape"] = report_dict["metrics"][0]["result"]["current"]["mean_abs_perc_error"]
 
     return metrics

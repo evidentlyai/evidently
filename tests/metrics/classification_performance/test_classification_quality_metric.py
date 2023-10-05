@@ -16,9 +16,7 @@ def test_classification_quality():
 
     metric = ClassificationQualityMetric()
     report = Report(metrics=[metric])
-    report.run(
-        reference_data=None, current_data=current, column_mapping=ColumnMapping()
-    )
+    report.run(reference_data=None, current_data=current, column_mapping=ColumnMapping())
 
     results = metric.get_result()
     assert np.isclose(results.current.accuracy, 0.333333)
@@ -37,9 +35,7 @@ def test_classification_quality_binary():
 
     metric = ClassificationQualityMetric()
     report = Report(metrics=[metric])
-    report.run(
-        reference_data=None, current_data=current, column_mapping=ColumnMapping()
-    )
+    report.run(reference_data=None, current_data=current, column_mapping=ColumnMapping())
 
     results = metric.get_result()
     assert np.isclose(results.current.accuracy, 8 / 9)

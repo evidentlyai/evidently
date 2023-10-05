@@ -110,9 +110,7 @@ if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument("--ts", dest="ts", required=True)
-    args_parser.add_argument(
-        "--interval", dest="interval", required=False, type=int, default=60
-    )
+    args_parser.add_argument("--interval", dest="interval", required=False, type=int, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

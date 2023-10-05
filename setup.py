@@ -36,9 +36,7 @@ data_files_spec = [
     ("etc/jupyter/nbconfig/notebook.d", HERE, "evidently.json"),
 ]
 
-cmdclass = create_cmdclass(
-    "jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec
-)
+cmdclass = create_cmdclass("jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec)
 cmdclass["jsdeps"] = combine_commands(
     install_npm(os.path.join(HERE, "ui"), build_cmd="build"),
     ensure_targets(jstargets),

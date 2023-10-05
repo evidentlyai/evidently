@@ -40,9 +40,7 @@ def parse_data_quality_report(data_quality_report: Dict) -> Dict:
     for field in remove_fields:
         del summary_metrics[field]
 
-    summary_metrics["summary_metric_number_of_columns"] = summary_metrics[
-        "number_of_columns"
-    ]
+    summary_metrics["summary_metric_number_of_columns"] = summary_metrics["number_of_columns"]
     del summary_metrics["number_of_columns"]
 
     summary_metrics = numpy_to_standard_types(summary_metrics)
@@ -64,14 +62,10 @@ def parse_data_drift_report(data_drift_report: Dict) -> Tuple[Dict, Dict]:
             tuple of data drift and data drift prediction metric results.
     """
 
-    metrics: Dict = {
-        metric["metric"]: metric["result"] for metric in data_drift_report["metrics"]
-    }
+    metrics: Dict = {metric["metric"]: metric["result"] for metric in data_drift_report["metrics"]}
 
     dataset_result: Dict = metrics["DatasetDriftMetric"]
-    dataset_result["ds_drift_metric_number_of_columns"] = dataset_result[
-        "number_of_columns"
-    ]
+    dataset_result["ds_drift_metric_number_of_columns"] = dataset_result["number_of_columns"]
     del dataset_result["number_of_columns"]
 
     dataset_result = numpy_to_standard_types(dataset_result)
@@ -96,9 +90,7 @@ def commit_data_metrics_to_db(
     dataset_summary_metric_result: Dict = parse_data_quality_report(data_quality_report)
     drift_report_results: Dict = parse_data_drift_report(data_drift_report)
 
-    data_quality = DataQualityTable(
-        **dataset_summary_metric_result, **drift_report_results, timestamp=timestamp
-    )
+    data_quality = DataQualityTable(**dataset_summary_metric_result, **drift_report_results, timestamp=timestamp)
 
     add_or_update_by_ts(session=session, record=data_quality)
 

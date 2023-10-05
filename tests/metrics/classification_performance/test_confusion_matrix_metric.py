@@ -44,9 +44,7 @@ from evidently.report import Report
 def test_confusion_matrix(current, expected_labels, expected_matrix):
     metric = ClassificationConfusionMatrix(None, None)
     report = Report(metrics=[metric])
-    report.run(
-        current_data=current, reference_data=None, column_mapping=ColumnMapping()
-    )
+    report.run(current_data=current, reference_data=None, column_mapping=ColumnMapping())
     results = metric.get_result()
 
     assert results.reference_matrix is None

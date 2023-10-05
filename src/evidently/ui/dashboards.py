@@ -53,10 +53,9 @@ class ReportFilter(BaseModel):
     tag_values: List[str]
 
     def filter(self, report: Report):
-        return all(
-            report.metadata.get(key) == value
-            for key, value in self.metadata_values.items()
-        ) and all(tag in report.tags for tag in self.tag_values)
+        return all(report.metadata.get(key) == value for key, value in self.metadata_values.items()) and all(
+            tag in report.tags for tag in self.tag_values
+        )
 
 
 def get_nested(d: dict, path: List[str]):
@@ -122,9 +121,7 @@ class PanelValue(BaseModel):
         for metric in report._first_level_metrics:
             if self.metric_matched(metric):
                 try:
-                    results[metric] = getattr_nested(
-                        metric.get_result(), self.field_path_str.split(".")
-                    )
+                    results[metric] = getattr_nested(metric.get_result(), self.field_path_str.split("."))
                 except AttributeError:
                     pass
         return results
@@ -155,9 +152,7 @@ class DashboardPanelPlot(DashboardPanel):
 
     def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
 
-        points: List[Dict[Metric, List[Tuple[datetime.datetime, Any]]]] = [
-            {} for _ in range(len(self.values))
-        ]
+        points: List[Dict[Metric, List[Tuple[datetime.datetime, Any]]]] = [{} for _ in range(len(self.values))]
         for report in reports:
             if not self.filter.filter(report):
                 continue
@@ -226,9 +221,7 @@ class DashboardPanelCounter(DashboardPanel):
 
     def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
         if self.agg == CounterAgg.NONE:
-            return counter(
-                counters=[CounterData(self.title, self.text or "")], size=self.size
-            )
+            return counter(counters=[CounterData(self.title, self.text or "")], size=self.size)
         value = self._get_counter_value(reports)
         if isinstance(value, float):
             ct = CounterData.float(self.text or "", value, 3)
@@ -254,20 +247,14 @@ class DashboardConfig(BaseModel):
     panels: List[DashboardPanel]
 
     def build_dashboard_info(self, reports: Iterable[Report]) -> DashboardInfo:
-        return DashboardInfo(
-            self.name, widgets=[self.build_widget(p, reports) for p in self.panels]
-        )
+        return DashboardInfo(self.name, widgets=[self.build_widget(p, reports) for p in self.panels])
 
-    def build_widget(
-        self, panel: DashboardPanel, reports: Iterable[Report]
-    ) -> BaseWidgetInfo:
+    def build_widget(self, panel: DashboardPanel, reports: Iterable[Report]) -> BaseWidgetInfo:
         try:
             return panel.build_widget(reports)
         except Exception as e:
             traceback.print_exc()
-            return counter(
-                counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")]
-            )
+            return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
 
     def add_panel(self, panel: DashboardPanel):
         self.panels.append(panel)

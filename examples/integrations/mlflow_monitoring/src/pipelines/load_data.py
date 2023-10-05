@@ -18,15 +18,11 @@ def download_data(destination_path: Text):
     Acknowledgement: Fanaee-T, Hadi, and Gama, Joao, 'Event labeling combining ensemble detectors and background knowledge', Progress in Artificial Intelligence (2013): pp. 1-15, Springer Berlin Heidelberg
     """
 
-    SOURCE_URL = (
-        "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"
-    )
+    SOURCE_URL = "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"
 
     content = requests.get(SOURCE_URL).content
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
-        raw_data = pd.read_csv(
-            arc.open("hour.csv"), header=0, sep=",", parse_dates=["dteday"]
-        )
+        raw_data = pd.read_csv(arc.open("hour.csv"), header=0, sep=",", parse_dates=["dteday"])
 
     raw_data.index = raw_data.apply(
         lambda row: datetime.datetime.combine(row.dteday.date(), datetime.time(row.hr)),

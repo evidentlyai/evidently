@@ -38,9 +38,7 @@ def simulate() -> None:
     uuids: List[Text] = test_data["uuid"].to_list()
     engine = create_engine(DATABASE_URI)
     session = open_sqa_session(engine)
-    delete_query = PredictionTable.__table__.delete().where(
-        PredictionTable.uuid.in_(uuids)
-    )
+    delete_query = PredictionTable.__table__.delete().where(PredictionTable.uuid.in_(uuids))
     session.execute(delete_query)
     session.commit()
     session.close()
@@ -63,9 +61,7 @@ def simulate() -> None:
         Make prediction request.
         Send data batch serialized to JSON string.
         """
-        resp: requests.Response = requests.post(
-            url="http://0.0.0.0:5000/predict", json={"features": batch.to_json()}
-        )
+        resp: requests.Response = requests.post(url="http://0.0.0.0:5000/predict", json={"features": batch.to_json()})
 
         if resp.status_code == 200:
             # If OK then extract predictions
@@ -78,9 +74,7 @@ def simulate() -> None:
             Convert timestamp column to datetime:
                 method `to_json()` converts datetime values (in format '%Y-%m-%d %H:%M:%S') to float timestamp (in milliseconds)
             """
-            predictions["lpep_pickup_datetime"] = pd.to_datetime(
-                predictions["lpep_pickup_datetime"], unit="ms"
-            )
+            predictions["lpep_pickup_datetime"] = pd.to_datetime(predictions["lpep_pickup_datetime"], unit="ms")
             # Output predictions dataframe
             logging.info(f"Predictions:\n{predictions}")
         else:

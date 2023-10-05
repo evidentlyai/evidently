@@ -20,9 +20,7 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
-    reviews_data = datasets.fetch_openml(
-        name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto"
-    )
+    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
     reviews = reviews_data.frame
     for name, rs in (
         ("TheOtherStore", 0),
@@ -72,30 +70,22 @@ def create_report(i: int, data):
             metrics.ColumnDriftMetric(column_name="Review_Text"),
             metrics.ColumnDriftMetric(column_name="Title"),
             metrics.ClassificationQualityMetric(),
-            metrics.ColumnSummaryMetric(
-                column_name=descriptors.OOV(display_name="OOV").for_column(
-                    "Review_Text"
-                )
-            ),
+            metrics.ColumnSummaryMetric(column_name=descriptors.OOV(display_name="OOV").for_column("Review_Text")),
             metrics.ColumnSummaryMetric(
                 column_name=descriptors.NonLetterCharacterPercentage(
                     display_name="NonLetterCharacterPercentage"
                 ).for_column("Review_Text")
             ),
             metrics.ColumnSummaryMetric(
-                column_name=descriptors.Sentiment(display_name="Sentiment").for_column(
+                column_name=descriptors.Sentiment(display_name="Sentiment").for_column("Review_Text")
+            ),
+            metrics.ColumnSummaryMetric(
+                column_name=descriptors.RegExp(display_name="urls", reg_exp=r".*(http|www)\S+.*").for_column(
                     "Review_Text"
                 )
             ),
-            metrics.ColumnSummaryMetric(
-                column_name=descriptors.RegExp(
-                    display_name="urls", reg_exp=r".*(http|www)\S+.*"
-                ).for_column("Review_Text")
-            ),
             metrics.ColumnValueRangeMetric(
-                column_name=descriptors.TextLength(
-                    display_name="TextLength in the Range"
-                ).for_column("Review_Text"),
+                column_name=descriptors.TextLength(display_name="TextLength in the Range").for_column("Review_Text"),
                 left=1,
                 right=1000,
             ),
@@ -278,11 +268,7 @@ def create_project(workspace: WorkspaceBase, name: str):
             values=[
                 PanelValue(
                     metric_id="ColumnSummaryMetric",
-                    metric_args={
-                        "column_name": descriptors.OOV(display_name="OOV").for_column(
-                            "Review_Text"
-                        )
-                    },
+                    metric_args={"column_name": descriptors.OOV(display_name="OOV").for_column("Review_Text")},
                     field_path="current_characteristics.mean",
                     legend="OOV % (mean)",
                 ),
@@ -335,9 +321,7 @@ def create_project(workspace: WorkspaceBase, name: str):
                 PanelValue(
                     metric_id="ColumnSummaryMetric",
                     metric_args={
-                        "column_name": descriptors.Sentiment(
-                            display_name="Sentiment"
-                        ).for_column("Review_Text")
+                        "column_name": descriptors.Sentiment(display_name="Sentiment").for_column("Review_Text")
                     },
                     field_path="current_characteristics.mean",
                     legend="sentiment (mean)",
@@ -384,9 +368,9 @@ def create_project(workspace: WorkspaceBase, name: str):
                 PanelValue(
                     metric_id="ColumnSummaryMetric",
                     metric_args={
-                        "column_name": descriptors.RegExp(
-                            display_name="urls", reg_exp=r".*(http|www)\S+.*"
-                        ).for_column("Review_Text")
+                        "column_name": descriptors.RegExp(display_name="urls", reg_exp=r".*(http|www)\S+.*").for_column(
+                            "Review_Text"
+                        )
                     },
                     field_path="current_characteristics.mean",
                     legend="reviews with URLs",

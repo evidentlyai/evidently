@@ -18,9 +18,7 @@ def test_regression_performance_metrics() -> None:
     data_mapping = ColumnMapping()
 
     report = Report(metrics=[RegressionPerformanceMetrics()])
-    report.run(
-        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
-    )
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     assert report.metrics is not None
     assert report.show() is not None
     assert report.json()

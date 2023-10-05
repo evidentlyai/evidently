@@ -103,9 +103,7 @@ def classification_class_balance_values():
                 metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(
-                        current=HistogramData.from_df(
-                            pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})
-                        )
+                        current=HistogramData.from_df(pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]}))
                     )
                 ),
             ),
@@ -126,12 +124,8 @@ def classification_class_balance_values():
                 metric=metric,
                 result=ClassificationClassBalanceResult(
                     plot_data=Histogram(
-                        current=HistogramData.from_df(
-                            pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})
-                        ),
-                        reference=HistogramData.from_df(
-                            pd.DataFrame({"x": ["c", "b", "a"], "count": [4, 3, 2]})
-                        ),
+                        current=HistogramData.from_df(pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})),
+                        reference=HistogramData.from_df(pd.DataFrame({"x": ["c", "b", "a"], "count": [4, 3, 2]})),
                     )
                 ),
             ),

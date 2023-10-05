@@ -35,9 +35,7 @@ def get_data():
 
 
 def setup_report():
-    report = Report(
-        metrics=[ColumnValueRangeMetric("values1", left=5)], tags=["quality"]
-    )
+    report = Report(metrics=[ColumnValueRangeMetric("values1", left=5)], tags=["quality"])
 
     cur, ref = get_data()
     report.run(reference_data=ref, current_data=cur)
@@ -45,9 +43,7 @@ def setup_report():
 
 
 def setup_test_suite():
-    report = TestSuite(
-        tests=[TestNumberOfOutRangeValues("values1", left=5)], tags=["quality"]
-    )
+    report = TestSuite(tests=[TestNumberOfOutRangeValues("values1", left=5)], tags=["quality"])
 
     cur, ref = get_data()
     report.run(reference_data=ref, current_data=cur)
@@ -103,12 +99,7 @@ def setup_config():
 
 def send_data():
     size = 1
-    data = pd.DataFrame(
-        [
-            {"values1": 3.0 + datetime.datetime.now().minute % 5, "values2": 0.0}
-            for _ in range(size)
-        ]
-    )
+    data = pd.DataFrame([{"values1": 3.0 + datetime.datetime.now().minute % 5, "values2": 0.0} for _ in range(size)])
 
     client.send_data(COLLECTOR_ID, data)
     client.send_data(COLLECTOR_TEST_ID, data)
@@ -126,10 +117,7 @@ def start_sending_data():
 
 
 def main():
-    if (
-        not os.path.exists(WORKSACE_PATH)
-        or len(Workspace.create(WORKSACE_PATH).search_project(PROJECT_NAME)) == 0
-    ):
+    if not os.path.exists(WORKSACE_PATH) or len(Workspace.create(WORKSACE_PATH).search_project(PROJECT_NAME)) == 0:
         setup_workspace()
 
     setup_config()

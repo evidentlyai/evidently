@@ -47,9 +47,7 @@ from evidently.report import Report
                     "feature": ["a", "a", "c"],
                 }
             ),
-            ColumnMissingValuesMetric(
-                column_name="feature", missing_values=["a"], replace=False
-            ),
+            ColumnMissingValuesMetric(column_name="feature", missing_values=["a"], replace=False),
             ColumnMissingValuesMetricResult(
                 column_name="feature",
                 current=ColumnMissingValues(
@@ -143,9 +141,7 @@ def test_column_missing_values_metric_success(
                 }
             ),
             None,
-            ColumnMissingValuesMetric(
-                column_name="col", missing_values=[], replace=True
-            ),
+            ColumnMissingValuesMetric(column_name="col", missing_values=[], replace=True),
         ),
     ),
 )
@@ -245,9 +241,7 @@ def test_column_missing_values_metric_value_error(
                 }
             ),
             None,
-            ColumnMissingValuesMetric(
-                column_name="col", missing_values=["a"], replace=False
-            ),
+            ColumnMissingValuesMetric(column_name="col", missing_values=["a"], replace=False),
             {
                 "column_name": "col",
                 "current": {

@@ -22,9 +22,7 @@ def process() -> None:
 
         # Generate target variable (duration in minutes)
         data["duration_min"] = data.lpep_dropoff_datetime - data.lpep_pickup_datetime
-        data.duration_min = data.duration_min.apply(
-            lambda td: float(td.total_seconds() / 60)
-        )
+        data.duration_min = data.duration_min.apply(lambda td: float(td.total_seconds() / 60))
 
         # Drop unused columns
         data = data.drop(["store_and_fwd_flag"], axis=1)

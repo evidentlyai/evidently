@@ -18,18 +18,14 @@ class SentenceCount(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(
-        self, data: pd.DataFrame, data_definition: DataDefinition
-    ) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def sentence_count_f(s):
             if s is None or (isinstance(s, float) and np.isnan(s)):
                 return 0
             number = len(re.split(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s", s))
             return max(1, number)
 
-        return pd.DataFrame(
-            dict([(self.column_name, data[self.column_name].apply(sentence_count_f))])
-        )
+        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(sentence_count_f))]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(

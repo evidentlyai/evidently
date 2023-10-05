@@ -58,9 +58,7 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
     def calculate(self, data: InputData) -> EmbeddingsDriftMetricResults:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
-        drift_method = self.drift_method or model(
-            bootstrap=data.reference_data.shape[0] < 1000
-        )
+        drift_method = self.drift_method or model(bootstrap=data.reference_data.shape[0] < 1000)
         emb_dict = data.data_definition.embeddings()
         if emb_dict is None:
             raise ValueError("Embeddings should be defined in column mapping")
@@ -73,21 +71,11 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
         # visualisation
         ref_sample_size = min(SAMPLE_CONSTANT, data.reference_data.shape[0])
         curr_sample_size = min(SAMPLE_CONSTANT, data.current_data.shape[0])
-        ref_sample = data.reference_data[emb_list].sample(
-            ref_sample_size, random_state=24
-        )
-        curr_sample = data.current_data[emb_list].sample(
-            curr_sample_size, random_state=24
-        )
-        data_2d = TSNE(n_components=2).fit_transform(
-            pd.concat([ref_sample, curr_sample])
-        )
-        reference, _, _ = get_gaussian_kde(
-            data_2d[:ref_sample_size, 0], data_2d[:ref_sample_size, 1]
-        )
-        current, _, _ = get_gaussian_kde(
-            data_2d[ref_sample_size:, 0], data_2d[ref_sample_size:, 1]
-        )
+        ref_sample = data.reference_data[emb_list].sample(ref_sample_size, random_state=24)
+        curr_sample = data.current_data[emb_list].sample(curr_sample_size, random_state=24)
+        data_2d = TSNE(n_components=2).fit_transform(pd.concat([ref_sample, curr_sample]))
+        reference, _, _ = get_gaussian_kde(data_2d[:ref_sample_size, 0], data_2d[:ref_sample_size, 1])
+        current, _, _ = get_gaussian_kde(data_2d[ref_sample_size:, 0], data_2d[ref_sample_size:, 1])
 
         return EmbeddingsDriftMetricResults(
             embeddings_name=self.embeddings_name,
@@ -109,9 +97,7 @@ class EmbeddingsDriftMetricRenderer(MetricRenderer):
         else:
             drift = "not detected"
         drift_score = round(result.drift_score, 3)
-        fig = plot_contour_single(
-            result.current, result.reference, "component 1", "component 2"
-        )
+        fig = plot_contour_single(result.current, result.reference, "component 1", "component 2")
         return [
             counter(
                 counters=[

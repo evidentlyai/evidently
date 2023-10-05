@@ -31,9 +31,7 @@ def parse_model_performance_report(model_performance_report: Dict) -> Dict:
     current_metrics: Dict = raw_quality_metric_result["current"]
     raw_quality_metric_result.update(current_metrics)
     quality_metric_result: Dict = {
-        k: v
-        for k, v in raw_quality_metric_result.items()
-        if isinstance(v, (int, float, str, np.generic))
+        k: v for k, v in raw_quality_metric_result.items() if isinstance(v, (int, float, str, np.generic))
     }
     quality_metric_result = numpy_to_standard_types(quality_metric_result)
 
@@ -57,9 +55,7 @@ def parse_target_drift_report(target_drift_report: Dict) -> Dict:
     assert drift_metric["metric"] == "ColumnDriftMetric"
     raw_drift_metric_result: Dict = drift_metric["result"]
     drift_metric_result: Dict = {
-        k: v
-        for k, v in raw_drift_metric_result.items()
-        if isinstance(v, (int, float, str, np.generic))
+        k: v for k, v in raw_drift_metric_result.items() if isinstance(v, (int, float, str, np.generic))
     }
     drift_metric_result = numpy_to_standard_types(drift_metric_result)
     remove_fields: List[Text] = ["column_name", "column_type"]
@@ -70,9 +66,7 @@ def parse_target_drift_report(target_drift_report: Dict) -> Dict:
     return drift_metric_result
 
 
-def commit_model_metrics_to_db(
-    model_performance_report: Dict, target_drift_report: Dict, timestamp: float
-) -> None:
+def commit_model_metrics_to_db(model_performance_report: Dict, target_drift_report: Dict, timestamp: float) -> None:
     """Commit model metrics to database.
 
     Args:
@@ -84,14 +78,10 @@ def commit_model_metrics_to_db(
     engine = create_engine(DATABASE_URI)
     session = open_sqa_session(engine)
 
-    model_quality_metric_result: Dict = parse_model_performance_report(
-        model_performance_report
-    )
+    model_quality_metric_result: Dict = parse_model_performance_report(model_performance_report)
     target_drift_metric_result: Dict = parse_target_drift_report(target_drift_report)
 
-    model_performance = ModelPerformanceTable(
-        **model_quality_metric_result, timestamp=timestamp
-    )
+    model_performance = ModelPerformanceTable(**model_quality_metric_result, timestamp=timestamp)
     add_or_update_by_ts(session, model_performance)
 
     target_drift = TargetDriftTable(**target_drift_metric_result, timestamp=timestamp)

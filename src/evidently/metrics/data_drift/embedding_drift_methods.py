@@ -42,16 +42,12 @@ def get_pca_df(
         current_emb_new: transformed current_emb
     """
     pca = PCA(n_components=n_comp, random_state=0)
-    return pd.DataFrame(pca.fit_transform(reference_emb)), pd.DataFrame(
-        pca.transform(current_emb)
-    )
+    return pd.DataFrame(pca.fit_transform(reference_emb)), pd.DataFrame(pca.transform(current_emb))
 
 
 class DriftMethod(EvidentlyBaseModel):
     @abc.abstractmethod
-    def __call__(
-        self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame
-    ) -> Tuple[float, bool, str]:
+    def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         raise NotImplementedError
 
 
@@ -62,26 +58,15 @@ class DistanceDriftMethod(DriftMethod):
     quantile_probability: float = 0.95
     pca_components: Optional[int] = None
 
-    def __call__(
-        self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame
-    ) -> Tuple[float, bool, str]:
+    def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         if self.pca_components:
-            reference_emb, current_emb = get_pca_df(
-                reference_emb, current_emb, self.pca_components
-            )
-        res = DISTANCE_DICT[self.dist](
-            reference_emb.mean(axis=0), current_emb.mean(axis=0)
-        )
+            reference_emb, current_emb = get_pca_df(reference_emb, current_emb, self.pca_components)
+        res = DISTANCE_DICT[self.dist](reference_emb.mean(axis=0), current_emb.mean(axis=0))
         if self.bootstrap:
             bstrp_res = []
-            b_ref_size = int(
-                reference_emb.shape[0] ** 2
-                / (reference_emb.shape[0] + current_emb.shape[0])
-            )
+            b_ref_size = int(reference_emb.shape[0] ** 2 / (reference_emb.shape[0] + current_emb.shape[0]))
             b_curr_size = int(
-                current_emb.shape[0]
-                * reference_emb.shape[0]
-                / (reference_emb.shape[0] + current_emb.shape[0])
+                current_emb.shape[0] * reference_emb.shape[0] / (reference_emb.shape[0] + current_emb.shape[0])
             )
             for i in range(N_BOOTSTRAP):
                 np.random.seed(i)
@@ -141,13 +126,9 @@ class ModelDriftMethod(DriftMethod):
     quantile_probability: float = 0.95
     pca_components: Optional[int] = None
 
-    def __call__(
-        self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame
-    ) -> Tuple[float, bool, str]:
+    def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         if self.pca_components:
-            reference_emb, current_emb = get_pca_df(
-                reference_emb, current_emb, self.pca_components
-            )
+            reference_emb, current_emb = get_pca_df(reference_emb, current_emb, self.pca_components)
         reference_emb["target"] = [1] * reference_emb.shape[0]
         current_emb["target"] = [0] * current_emb.shape[0]
         data = pd.concat((reference_emb, current_emb))
@@ -169,9 +150,7 @@ class ModelDriftMethod(DriftMethod):
         roc_auc = roc_auc_score(y_test, y_pred_proba)
         if self.bootstrap:
             roc_auc_values = [calc_roc_auc_random(y_test, i) for i in range(100)]
-            rand_roc_auc = np.percentile(
-                roc_auc_values, 100 * self.quantile_probability
-            )
+            rand_roc_auc = np.percentile(roc_auc_values, 100 * self.quantile_probability)
             return roc_auc, roc_auc > rand_roc_auc, "model"
         return roc_auc, roc_auc > self.threshold, "model"
 
@@ -206,13 +185,9 @@ class RatioDriftMethod(DriftMethod):
     threshold: float = 0.2
     pca_components: Optional[int] = None
 
-    def __call__(
-        self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame
-    ) -> Tuple[float, bool, str]:
+    def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         if self.pca_components:
-            reference_emb, current_emb = get_pca_df(
-                reference_emb, current_emb, self.pca_components
-            )
+            reference_emb, current_emb = get_pca_df(reference_emb, current_emb, self.pca_components)
         stattest_func = get_stattest(
             reference_emb.iloc[:, 0],
             current_emb.iloc[:, 0],
@@ -292,13 +267,9 @@ class MMDDriftMethod(DriftMethod):
     quantile_probability: float = 0.05
     pca_components: Optional[int] = None
 
-    def __call__(
-        self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame
-    ) -> Tuple[float, bool, str]:
+    def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         if self.pca_components:
-            reference_emb, current_emb = get_pca_df(
-                reference_emb, current_emb, self.pca_components
-            )
+            reference_emb, current_emb = get_pca_df(reference_emb, current_emb, self.pca_components)
         x = reference_emb
         y = current_emb
         m = len(x)
@@ -315,9 +286,7 @@ class MMDDriftMethod(DriftMethod):
         K = pairwise_kernels(xy, metric="rbf", gamma=1.0 / sigma2)
         mmd2u = MMD2u(K, m, n)
         if self.bootstrap:
-            pair_dists_bstrp = pairwise_distances(
-                x.sample(min(m, 1000), random_state=0), metric="euclidean", n_jobs=-1
-            )
+            pair_dists_bstrp = pairwise_distances(x.sample(min(m, 1000), random_state=0), metric="euclidean", n_jobs=-1)
             sigma2_x = np.median(pair_dists_bstrp) ** 2
             gamma_x = 1.0 / sigma2_x
             K = pairwise_kernels(x, metric="rbf", gamma=gamma_x)

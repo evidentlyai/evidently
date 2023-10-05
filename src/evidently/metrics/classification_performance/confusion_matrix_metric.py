@@ -33,9 +33,7 @@ class ClassificationConfusionMatrixParameters(BaseModel):
     k: Optional[int]
 
     def confusion_matric_metric(self):
-        return ClassificationConfusionMatrix(
-            probas_threshold=self.probas_threshold, k=self.k
-        )
+        return ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
 
 
 class ClassificationConfusionMatrix(
@@ -51,9 +49,7 @@ class ClassificationConfusionMatrix(
         super().__init__(probas_threshold=probas_threshold, k=k, options=options)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
-        current_target_data, current_pred = self.get_target_prediction_data(
-            data.current_data, data.column_mapping
-        )
+        current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
         target_names = data.column_mapping.target_names
         current_results = calculate_matrix(
             current_target_data,
@@ -63,9 +59,7 @@ class ClassificationConfusionMatrix(
 
         reference_results = None
         if data.reference_data is not None:
-            ref_target_data, ref_pred = self.get_target_prediction_data(
-                data.reference_data, data.column_mapping
-            )
+            ref_target_data, ref_pred = self.get_target_prediction_data(data.reference_data, data.column_mapping)
 
             reference_results = calculate_matrix(
                 ref_target_data,
@@ -86,9 +80,7 @@ class ClassificationConfusionMatrixRenderer(MetricRenderer):
         metric_result = obj.get_result()
         target_names: Optional[Dict[Union[int, str], str]]
         if isinstance(metric_result.target_names, list):
-            target_names = {
-                idx: str(item) for idx, item in enumerate(metric_result.target_names)
-            }
+            target_names = {idx: str(item) for idx, item in enumerate(metric_result.target_names)}
         else:
             target_names = metric_result.target_names
         curr_matrix = metric_result.current_matrix

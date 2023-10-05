@@ -36,9 +36,7 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
 
     column_name: ColumnName
 
-    def __init__(
-        self, column_name: Union[str, ColumnName], options: AnyOptions = None
-    ) -> None:
+    def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None) -> None:
         self.column_name = ColumnName.from_any(column_name)
         super().__init__(options=options)
 
@@ -56,31 +54,17 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
             correlations = calculate_category_correlation(
                 column_name.display_name,
                 column_data,
-                dataset[
-                    [
-                        feature.column_name
-                        for feature in cat_features
-                        if feature.column_name != column_name.name
-                    ]
-                ],
+                dataset[[feature.column_name for feature in cat_features if feature.column_name != column_name.name]],
             )
         elif column_type == ColumnType.Numerical:
             num_features = data_definition.get_columns("numerical_features")
             correlations = calculate_numerical_correlation(
                 column_name.display_name,
                 column_data,
-                dataset[
-                    [
-                        feature.column_name
-                        for feature in num_features
-                        if feature.column_name != column_name.name
-                    ]
-                ],
+                dataset[[feature.column_name for feature in num_features if feature.column_name != column_name.name]],
             )
         else:
-            raise ValueError(
-                f"Cannot calculate correlations for '{column_type}' column type."
-            )
+            raise ValueError(f"Cannot calculate correlations for '{column_type}' column type.")
         return {corr.kind: corr for corr in correlations}
 
     def calculate(self, data: InputData) -> ColumnCorrelationsMetricResult:
@@ -110,26 +94,20 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
         return ColumnCorrelationsMetricResult(
             column_name=self.column_name.display_name,
             current=current_correlations,
-            reference=reference_correlations
-            if reference_correlations is not None
-            else None,
+            reference=reference_correlations if reference_correlations is not None else None,
         )
 
 
 @default_renderer(wrap_type=ColumnCorrelationsMetric)
 class ColumnCorrelationsMetricRenderer(MetricRenderer):
-    def _get_plots_correlations(
-        self, metric_result: ColumnCorrelationsMetricResult
-    ) -> Optional[BaseWidgetInfo]:
+    def _get_plots_correlations(self, metric_result: ColumnCorrelationsMetricResult) -> Optional[BaseWidgetInfo]:
         tabs = []
 
         for correlation_name, current_correlation in metric_result.current.items():
             reference_correlation_values = None
 
             if metric_result.reference and correlation_name in metric_result.reference:
-                reference_correlation_values = metric_result.reference[
-                    correlation_name
-                ].values
+                reference_correlation_values = metric_result.reference[correlation_name].values
 
             if current_correlation.values or reference_correlation_values:
                 tabs.append(
@@ -158,9 +136,7 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
 
         if correlation_plots:
             return [
-                header_text(
-                    label=f"Correlations for column '{metric_result.column_name}'."
-                ),
+                header_text(label=f"Correlations for column '{metric_result.column_name}'."),
                 correlation_plots,
             ]
 

@@ -109,25 +109,15 @@ def column_summary_metric_period():
                                 count=pd.Series([1, 0, 1, 1], name="count"),
                             ),
                         ),
-                        counts_of_values={
-                            "current": pd.DataFrame(
-                                {"x": [1.0, 2.0, 3.0], "count": [1, 1, 1]}
-                            )
-                        },
+                        counts_of_values={"current": pd.DataFrame({"x": [1.0, 2.0, 3.0], "count": [1, 1, 1]})},
                         data_in_time=DataInTime(
                             data_for_plots=DataInTimePlots(
                                 current=pd.DataFrame(
                                     {
                                         "period": [
-                                            pd.Period(
-                                                freq="D", year=2023, month=10, day=1
-                                            ),
-                                            pd.Period(
-                                                freq="D", year=2023, month=11, day=1
-                                            ),
-                                            pd.Period(
-                                                freq="D", year=2023, month=12, day=1
-                                            ),
+                                            pd.Period(freq="D", year=2023, month=10, day=1),
+                                            pd.Period(freq="D", year=2023, month=11, day=1),
+                                            pd.Period(freq="D", year=2023, month=12, day=1),
                                         ],
                                         "feature1": [1.0, 2.0, 3.0],
                                         "datetime": [
@@ -156,9 +146,7 @@ def column_summary_metric_success():
         m,
         outcomes={
             TestDataset(
-                current=pd.DataFrame(
-                    {"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}
-                ),
+                current=pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
                 reference=None,
                 column_mapping=ColumnMapping(),
             ): AssertExpectedResult(
@@ -181,17 +169,11 @@ def column_summary_metric_success():
                     ),
                     plot_data=DataQualityPlot(
                         bins_for_hist=Histogram(
-                            current=HistogramData.from_df(
-                                pd.DataFrame(dict(x=["1", "ff", "3"], count=[1, 1, 1]))
-                            )
+                            current=HistogramData.from_df(pd.DataFrame(dict(x=["1", "ff", "3"], count=[1, 1, 1])))
                         ),
                         data_in_time=None,
                         data_by_target=None,
-                        counts_of_values={
-                            "current": pd.DataFrame(
-                                dict(x=[1, "ff", 3], count=[1, 1, 1])
-                            )
-                        },
+                        counts_of_values={"current": pd.DataFrame(dict(x=[1, "ff", 3], count=[1, 1, 1]))},
                     ),
                 ),
             ),
@@ -236,6 +218,4 @@ def column_reg_exp_metric():
 
 @metric
 def dataset_missing_values_metric():
-    return TestMetric(
-        "dataset_missing_values_metric", DatasetMissingValuesMetric(), NoopOutcome()
-    )
+    return TestMetric("dataset_missing_values_metric", DatasetMissingValuesMetric(), NoopOutcome())

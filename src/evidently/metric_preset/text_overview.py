@@ -40,20 +40,14 @@ class TextOverviewPreset(MetricPreset):
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
             ColumnSummaryMetric(column_name=self.column_name),
-            TextDescriptorsDistribution(
-                column_name=self.column_name, descriptors=self.descriptors
-            ),
-            TextDescriptorsCorrelationMetric(
-                column_name=self.column_name, descriptors=self.descriptors
-            ),
+            TextDescriptorsDistribution(column_name=self.column_name, descriptors=self.descriptors),
+            TextDescriptorsCorrelationMetric(column_name=self.column_name, descriptors=self.descriptors),
         ]
         if data.reference_data is not None:
             result.extend(
                 [
                     ColumnDriftMetric(column_name=self.column_name),
-                    TextDescriptorsDriftMetric(
-                        column_name=self.column_name, descriptors=self.descriptors
-                    ),
+                    TextDescriptorsDriftMetric(column_name=self.column_name, descriptors=self.descriptors),
                 ]
             )
         return result

@@ -40,9 +40,7 @@ def display_sidebar_header() -> None:
     with st.sidebar:
         st.image(logo, use_column_width=True)
         col1, col2 = st.columns(2)
-        repo_link: Text = (
-            "https://github.com/mnrozhkov/evidently/tree/main/examples/integrations"
-        )
+        repo_link: Text = "https://github.com/mnrozhkov/evidently/tree/main/examples/integrations"
         evidently_docs: Text = "https://docs.evidentlyai.com/"
         col1.markdown(
             f"<a style='display: block; text-align: center;' href={repo_link}>Source code</a>",
@@ -72,9 +70,7 @@ def select_project(projects: List[Text]) -> Path:
     if not projects:
         raise EntityNotFoundError("🔍 Projects not found")
 
-    selected_project: Text = st.sidebar.selectbox(
-        label="💼 Select project", options=projects
-    )
+    selected_project: Text = st.sidebar.selectbox(label="💼 Select project", options=projects)
 
     return Path(selected_project)
 
@@ -117,9 +113,7 @@ def select_report(report_names: List[Text]) -> Text:
     if not report_names:
         raise EntityNotFoundError("🔍 Reports not found")
 
-    selected_report_name: Text = st.sidebar.selectbox(
-        label="📈 Select report", options=report_names
-    )
+    selected_report_name: Text = st.sidebar.selectbox(label="📈 Select report", options=report_names)
 
     return selected_report_name
 
@@ -180,9 +174,7 @@ def display_report(report_path: Path) -> List[Text]:
                 with open(report_part_path) as report_part_f:
                     report_part_content: Text = report_part_f.read()
                     report_contents.append(report_part_content)
-                    components.html(
-                        report_part_content, width=1000, height=1200, scrolling=True
-                    )
+                    components.html(report_part_content, width=1000, height=1200, scrolling=True)
 
         return report_contents
 

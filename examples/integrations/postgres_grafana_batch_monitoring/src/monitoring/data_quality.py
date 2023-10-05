@@ -42,9 +42,7 @@ def parse_data_quality_report(data_quality_report: Dict) -> Dict:
     for field in remove_fields:
         del summary_metric_result[field]
 
-    summary_metric_result["summary_metric_number_of_columns"] = summary_metric_result[
-        "number_of_columns"
-    ]
+    summary_metric_result["summary_metric_number_of_columns"] = summary_metric_result["number_of_columns"]
     del summary_metric_result["number_of_columns"]
 
     summary_metric_result = numpy_to_standard_types(summary_metric_result)
@@ -66,19 +64,13 @@ def parse_data_drift_report(data_drift_report: Dict) -> Tuple[Dict, Dict]:
             tuple of data drift and data drift prediction metric results.
     """
 
-    metrics: Dict = {
-        metric["metric"]: metric["result"] for metric in data_drift_report["metrics"]
-    }
+    metrics: Dict = {metric["metric"]: metric["result"] for metric in data_drift_report["metrics"]}
 
     dataset_result: Dict = metrics["DatasetDriftMetric"]
-    dataset_result["ds_drift_metric_number_of_columns"] = dataset_result[
-        "number_of_columns"
-    ]
+    dataset_result["ds_drift_metric_number_of_columns"] = dataset_result["number_of_columns"]
     del dataset_result["number_of_columns"]
 
-    prediction_result: Dict = metrics["DataDriftTable"]["drift_by_columns"][
-        "predictions"
-    ]
+    prediction_result: Dict = metrics["DataDriftTable"]["drift_by_columns"]["predictions"]
     remove_prediction_fields: List[Text] = ["current", "reference"]
 
     for field in remove_prediction_fields:
@@ -90,9 +82,7 @@ def parse_data_drift_report(data_drift_report: Dict) -> Tuple[Dict, Dict]:
     return dataset_result, prediction_result
 
 
-def commit_data_metrics_to_db(
-    data_quality_report: Dict, data_drift_report: Dict, timestamp: float
-) -> None:
+def commit_data_metrics_to_db(data_quality_report: Dict, data_drift_report: Dict, timestamp: float) -> None:
     """Commit data metrics to database.
 
     Args:
@@ -110,14 +100,10 @@ def commit_data_metrics_to_db(
     dataset_drift_result: Dict = drift_report_results[0]
     data_drift_prediction_result: Dict = drift_report_results[1]
 
-    data_drift_prediction = DataDriftPredictionTable(
-        **data_drift_prediction_result, timestamp=timestamp
-    )
+    data_drift_prediction = DataDriftPredictionTable(**data_drift_prediction_result, timestamp=timestamp)
     add_or_update_by_ts(session, data_drift_prediction)
 
-    data_quality = DataQualityTable(
-        **dataset_summary_metric_result, **dataset_drift_result, timestamp=timestamp
-    )
+    data_quality = DataQualityTable(**dataset_summary_metric_result, **dataset_drift_result, timestamp=timestamp)
     add_or_update_by_ts(session, data_quality)
 
     session.commit()

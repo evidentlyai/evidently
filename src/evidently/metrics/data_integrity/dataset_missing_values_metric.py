@@ -120,9 +120,7 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
         self.missing_values = frozenset(_missing_values)
         super().__init__(options=options)
 
-    def _calculate_missing_values_stats(
-        self, dataset: pd.DataFrame
-    ) -> DatasetMissingValues:
+    def _calculate_missing_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
         different_missing_values = {value: 0 for value in self.missing_values}
         columns_with_missing_values = set()
         number_of_missing_values = 0
@@ -154,13 +152,9 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
                     # increase overall counter
                     number_of_missing_values += column_missing_value
                     # increase by-column counter
-                    number_of_missing_values_by_column[
-                        column_name
-                    ] += column_missing_value
+                    number_of_missing_values_by_column[column_name] += column_missing_value
                     # increase by-missing-value counter for each column
-                    different_missing_values_by_column[column_name][
-                        missing_value
-                    ] += column_missing_value
+                    different_missing_values_by_column[column_name][missing_value] += column_missing_value
                     # increase by-missing-value counter
                     different_missing_values[missing_value] += column_missing_value
                     # add the column to set of columns with a missing value
@@ -184,15 +178,10 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
         else:
             share_of_missing_values_by_column = {
-                column_name: value / number_of_rows
-                for column_name, value in number_of_missing_values_by_column.items()
+                column_name: value / number_of_rows for column_name, value in number_of_missing_values_by_column.items()
             }
-            share_of_missing_values = number_of_missing_values / (
-                number_of_columns * number_of_rows
-            )
-            share_of_rows_with_missing_values = (
-                number_of_rows_with_missing_values / number_of_rows
-            )
+            share_of_missing_values = number_of_missing_values / (number_of_columns * number_of_rows)
+            share_of_rows_with_missing_values = number_of_rows_with_missing_values / number_of_rows
 
         number_of_different_missing_values_by_column = {}
 
@@ -211,9 +200,7 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
             share_of_columns_with_missing_values = 0.0
 
         else:
-            share_of_columns_with_missing_values = (
-                number_of_columns_with_missing_values / number_of_columns
-            )
+            share_of_columns_with_missing_values = number_of_columns_with_missing_values / number_of_columns
 
         return DatasetMissingValues(
             different_missing_values=different_missing_values,
@@ -240,9 +227,9 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
         current_missing_values = self._calculate_missing_values_stats(data.current_data)
 
         if data.reference_data is not None:
-            reference_missing_values: Optional[
-                DatasetMissingValues
-            ] = self._calculate_missing_values_stats(data.reference_data)
+            reference_missing_values: Optional[DatasetMissingValues] = self._calculate_missing_values_stats(
+                data.reference_data
+            )
 
         else:
             reference_missing_values = None
@@ -255,12 +242,8 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
 @default_renderer(wrap_type=DatasetMissingValuesMetric)
 class DatasetMissingValuesMetricRenderer(MetricRenderer):
-    def _get_table_stat(
-        self, dataset_name: str, stats: DatasetMissingValues
-    ) -> BaseWidgetInfo:
-        matched_stat = [
-            (k, v) for k, v in stats.number_of_missing_values_by_column.items()
-        ]
+    def _get_table_stat(self, dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
+        matched_stat = [(k, v) for k, v in stats.number_of_missing_values_by_column.items()]
         matched_stat = sorted(matched_stat, key=lambda x: x[1], reverse=True)
         matched_stat_headers = ["Value", "Count"]
         table_tab = table_data(
@@ -293,9 +276,7 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
         percents = round(stats.share_of_missing_values * 100, 3)
         return f"{stats.number_of_missing_values} ({percents}%)"
 
-    def _get_overall_missing_values_info(
-        self, metric_result: DatasetMissingValuesMetricResult
-    ) -> BaseWidgetInfo:
+    def _get_overall_missing_values_info(self, metric_result: DatasetMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [
             CounterData.string(
                 "Missing values (Current data)",
@@ -324,10 +305,6 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
         ]
 
         if metric_result.reference is not None:
-            result.append(
-                self._get_table_stat(
-                    dataset_name="reference", stats=metric_result.reference
-                )
-            )
+            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference))
 
         return result

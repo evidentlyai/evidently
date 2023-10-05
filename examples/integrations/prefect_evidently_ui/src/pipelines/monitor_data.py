@@ -52,9 +52,7 @@ def prepare_current_data(start_time: Text, end_time: Text) -> pd.DataFrame:
     current_data = current_data.merge(predictions, on="uuid", how="left")
 
     # Fill missing values
-    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(
-        -1
-    )
+    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(-1)
 
     return current_data
 

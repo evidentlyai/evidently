@@ -26,9 +26,7 @@ def process() -> None:
         dropoff_dt = data.lpep_dropoff_datetime
         pickup_dt = data.lpep_pickup_datetime
         data["duration_min"] = dropoff_dt - pickup_dt
-        data.duration_min = data.duration_min.apply(
-            lambda td: float(td.total_seconds() / 60)
-        )
+        data.duration_min = data.duration_min.apply(lambda td: float(td.total_seconds() / 60))
 
         # Drop unused columns
         data = data.drop(["store_and_fwd_flag"], axis=1)

@@ -46,9 +46,7 @@ def _skiprows(sampling_options: SamplingOptions) -> Union[Callable[[int], bool],
             raise Exception("nth sampling should have 'n' parameter >= 1")
         return __simple(sampling_options)
     if sampling_options.type == "random":
-        skip_rows = RandomizedSkipRows(
-            sampling_options.ratio, sampling_options.random_seed
-        )
+        skip_rows = RandomizedSkipRows(sampling_options.ratio, sampling_options.random_seed)
         return skip_rows.skiprows
     raise ValueError(f"Unexpected sampling type {sampling_options.type}")
 
@@ -75,11 +73,7 @@ class DataLoader:
         data_options: DataOptions,
         sampling_options: SamplingOptions = None,
     ):
-        sampling_opts = (
-            SamplingOptions("none", 0, 0)
-            if sampling_options is None
-            else sampling_options
-        )
+        sampling_opts = SamplingOptions("none", 0, 0) if sampling_options is None else sampling_options
         parse_dates = [data_options.date_column] if data_options.date_column else False
         return pd.read_csv(
             filename,

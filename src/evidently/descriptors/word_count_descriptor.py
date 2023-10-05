@@ -8,6 +8,4 @@ class WordCount(FeatureDescriptor):
         return word_count_feature.WordCount(column_name, self.display_name)
 
     def for_column(self, column_name: str):
-        return word_count_feature.WordCount(
-            column_name, self.display_name
-        ).feature_name()
+        return word_count_feature.WordCount(column_name, self.display_name).feature_name()

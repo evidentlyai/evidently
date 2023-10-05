@@ -46,9 +46,7 @@ logging.basicConfig(
 )
 
 # Add prometheus wsgi middleware to route /metrics requests
-app.wsgi_app = DispatcherMiddleware(
-    app.wsgi_app, {"/metrics": prometheus_client.make_wsgi_app()}
-)
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/metrics": prometheus_client.make_wsgi_app()})
 
 
 @dataclasses.dataclass
@@ -104,30 +102,22 @@ class MonitoringService:
         for dataset_info in datasets.values():
             self.reference[dataset_info.name] = dataset_info.references
             self.monitoring[dataset_info.name] = ModelMonitoring(
-                monitors=[
-                    EVIDENTLY_MONITORS_MAPPING[k]() for k in dataset_info.monitors
-                ],
+                monitors=[EVIDENTLY_MONITORS_MAPPING[k]() for k in dataset_info.monitors],
                 options=[],
             )
             self.column_mapping[dataset_info.name] = dataset_info.column_mapping
 
         self.metrics = {}
         self.next_run_time = {}
-        self.hash = hashlib.sha256(
-            pd.util.hash_pandas_object(self.reference["bike_random_forest"]).values
-        ).hexdigest()
-        self.hash_metric = prometheus_client.Gauge(
-            "evidently:reference_dataset_hash", "", labelnames=["hash"]
-        )
+        self.hash = hashlib.sha256(pd.util.hash_pandas_object(self.reference["bike_random_forest"]).values).hexdigest()
+        self.hash_metric = prometheus_client.Gauge("evidently:reference_dataset_hash", "", labelnames=["hash"])
 
     def iterate(self, dataset_name: str, new_rows: pd.DataFrame):
         """Add data to current dataset for specified dataset"""
         window_size = self.window_size
 
         if dataset_name in self.current:
-            current_data = pd.concat(
-                [self.current[dataset_name], new_rows], ignore_index=True
-            )
+            current_data = pd.concat([self.current[dataset_name], new_rows], ignore_index=True)
 
         else:
             current_data = new_rows
@@ -136,18 +126,13 @@ class MonitoringService:
 
         if current_size > self.window_size:
             # cut current_size by window size value
-            current_data.drop(
-                index=list(range(0, current_size - self.window_size)), inplace=True
-            )
+            current_data.drop(index=list(range(0, current_size - self.window_size)), inplace=True)
             current_data.reset_index(drop=True, inplace=True)
 
         self.current[dataset_name] = current_data
 
         if current_size < window_size:
-            logging.info(
-                f"Not enough data for measurement: {current_size} of {window_size}."
-                f" Waiting more data"
-            )
+            logging.info(f"Not enough data for measurement: {current_size} of {window_size}." f" Waiting more data")
             return
 
         next_run_time = self.next_run_time.get(dataset_name)
@@ -179,9 +164,7 @@ class MonitoringService:
                 continue
 
             if found is None:
-                found = prometheus_client.Gauge(
-                    metric_key, "", list(sorted(labels.keys()))
-                )
+                found = prometheus_client.Gauge(metric_key, "", list(sorted(labels.keys())))
                 self.metrics[metric_key] = found
 
             try:
@@ -199,16 +182,12 @@ SERVICE: Optional[MonitoringService] = None
 def configure_service():
     # pylint: disable=global-statement
     global SERVICE
-    config_file_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "config.yaml"
-    )
+    config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.yaml")
 
     # try to find a config file, it should be generated via the data preparation script
     if not os.path.exists(config_file_path):
         logging.error("File %s does not exist", config_file_path)
-        exit(
-            "Cannot find a config file for the metrics service. Try to check README.md for setup instructions."
-        )
+        exit("Cannot find a config file for the metrics service. Try to check README.md for setup instructions.")
 
     with open(config_file_path, "rb") as config_file:
         config = yaml.safe_load(config_file)
@@ -246,9 +225,7 @@ def configure_service():
             )
 
         else:
-            logging.info(
-                "Dataset %s is not configured in the config file", dataset_name
-            )
+            logging.info("Dataset %s is not configured in the config file", dataset_name)
 
     SERVICE = MonitoringService(datasets=datasets, window_size=options.window_size)
 

@@ -45,9 +45,7 @@ def monitor_model(ts: pendulum.DateTime, interval: int = 60) -> None:
 
     # Merge current data with predictions
     current_data = current_data.merge(predictions, on="uuid", how="left")
-    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(
-        -1
-    )
+    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(-1)
 
     if current_data.shape[0] == 0:
 
@@ -107,9 +105,7 @@ if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument("--ts", dest="ts", required=True)
-    args_parser.add_argument(
-        "--interval", dest="interval", required=False, type=int, default=60
-    )
+    args_parser.add_argument("--interval", dest="interval", required=False, type=int, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

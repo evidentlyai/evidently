@@ -23,40 +23,24 @@ class DataQualityStabilityMetric(Metric[DataQualityStabilityMetricResult]):
     def calculate(self, data: InputData) -> DataQualityStabilityMetricResult:
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
-        columns = [
-            column
-            for column in data.current_data.columns
-            if column not in (target_name, prediction_name)
-        ]
+        columns = [column for column in data.current_data.columns if column not in (target_name, prediction_name)]
 
         if not columns:
-            return DataQualityStabilityMetricResult(
-                number_not_stable_target=0, number_not_stable_prediction=0
-            )
+            return DataQualityStabilityMetricResult(number_not_stable_target=0, number_not_stable_prediction=0)
 
-        duplicates = data.current_data[
-            data.current_data.duplicated(subset=columns, keep=False)
-        ]
+        duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
 
         number_not_stable_target = None
         number_not_stable_prediction = None
 
         if target_name in data.current_data:
             number_not_stable_target = duplicates.drop(
-                data.current_data[
-                    data.current_data.duplicated(
-                        subset=columns + [target_name], keep=False
-                    )
-                ].index
+                data.current_data[data.current_data.duplicated(subset=columns + [target_name], keep=False)].index
             ).shape[0]
 
         if prediction_name in data.current_data:
             number_not_stable_prediction = duplicates.drop(
-                data.current_data[
-                    data.current_data.duplicated(
-                        subset=columns + [prediction_name], keep=False
-                    )
-                ].index
+                data.current_data[data.current_data.duplicated(subset=columns + [prediction_name], keep=False)].index
             ).shape[0]
 
         return DataQualityStabilityMetricResult(
@@ -73,9 +57,7 @@ class DataQualityStabilityMetricRenderer(MetricRenderer):
             header_text(label="Data Stability Metrics"),
             counter(
                 counters=[
-                    CounterData(
-                        "Not stable target", str(metric_result.number_not_stable_target)
-                    ),
+                    CounterData("Not stable target", str(metric_result.number_not_stable_target)),
                     CounterData(
                         "Not stable prediction",
                         str(metric_result.number_not_stable_prediction),

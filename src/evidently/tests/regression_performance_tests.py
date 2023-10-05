@@ -71,16 +71,10 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        ref_mae = (
-            metric_result.reference.mean_abs_error
-            if metric_result.reference is not None
-            else None
-        )
+        ref_mae = metric_result.reference.mean_abs_error if metric_result.reference is not None else None
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(
-            lt=self.dummy_metric.get_result().mean_abs_error_default
-        )
+        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_error_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.mean_abs_error
@@ -99,9 +93,7 @@ class TestValueMAERenderer(TestRenderer):
             hist_for_plot=result.hist_for_plot,
             name="MAE",
             curr_metric=result.current.mean_abs_error,
-            ref_metric=result.reference.mean_abs_error
-            if result.reference is not None
-            else None,
+            ref_metric=result.reference.mean_abs_error if result.reference is not None else None,
             color_options=self.color_options,
         )
         info.with_details("MAE", plotly_figure(title="", figure=fig))
@@ -115,16 +107,10 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        ref_mae = (
-            metric_result.reference.mean_abs_perc_error
-            if metric_result.reference is not None
-            else None
-        )
+        ref_mae = metric_result.reference.mean_abs_perc_error if metric_result.reference is not None else None
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(
-            lt=self.dummy_metric.get_result().mean_abs_perc_error_default
-        )
+        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_perc_error_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.mean_abs_perc_error
@@ -145,9 +131,7 @@ class TestValueMAPERenderer(TestRenderer):
             hist_for_plot=result.hist_for_plot,
             name="MAPE",
             curr_metric=result.current.mean_abs_perc_error,
-            ref_metric=result.reference.mean_abs_perc_error
-            if result.reference is not None
-            else None,
+            ref_metric=result.reference.mean_abs_perc_error if result.reference is not None else None,
             color_options=self.color_options,
         )
         info.with_details("MAPE", plotly_figure(title="", figure=fig))
@@ -161,11 +145,7 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        rmse_ref = (
-            metric_result.reference.rmse
-            if metric_result.reference is not None
-            else None
-        )
+        rmse_ref = metric_result.reference.rmse if metric_result.reference is not None else None
         if rmse_ref is not None:
             return TestValueCondition(eq=approx(rmse_ref, relative=0.1))
         return TestValueCondition(lt=self.dummy_metric.get_result().rmse_default)
@@ -200,9 +180,7 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
-        return TestValueCondition(
-            eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma)
-        )
+        return TestValueCondition(eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.mean_error
@@ -246,16 +224,10 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         metric_result = self.metric.get_result()
-        abs_error_max_ref = (
-            metric_result.reference.abs_error_max
-            if metric_result.reference is not None
-            else None
-        )
+        abs_error_max_ref = metric_result.reference.abs_error_max if metric_result.reference is not None else None
         if abs_error_max_ref is not None:
             return TestValueCondition(lte=approx(abs_error_max_ref, relative=0.1))
-        return TestValueCondition(
-            lte=self.dummy_metric.get_result().abs_error_max_default
-        )
+        return TestValueCondition(lte=self.dummy_metric.get_result().abs_error_max_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current.abs_error_max
@@ -272,9 +244,7 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         hist_curr = me_hist_for_plot.current
         hist_ref = me_hist_for_plot.reference
 
-        fig = plot_distr(
-            hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
-        )
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -286,9 +256,7 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
         if self.condition.has_condition():
             return self.condition
         result = self.metric.get_result()
-        r2_score_ref = (
-            result.reference.r2_score if result.reference is not None else None
-        )
+        r2_score_ref = result.reference.r2_score if result.reference is not None else None
         if r2_score_ref is not None:
             return TestValueCondition(eq=approx(r2_score_ref, relative=0.1))
         return TestValueCondition(gt=0)
@@ -297,9 +265,7 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().current.r2_score
 
     def get_description(self, value: Numeric) -> str:
-        return (
-            f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
-        )
+        return f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueR2Score)
@@ -313,9 +279,7 @@ class TestValueR2ScoreRenderer(TestRenderer):
             hist_for_plot=result.hist_for_plot,
             name="R2_score",
             curr_metric=result.current.r2_score,
-            ref_metric=result.reference.r2_score
-            if result.reference is not None
-            else None,
+            ref_metric=result.reference.r2_score if result.reference is not None else None,
             color_options=self.color_options,
         )
         info.with_details("R2 Score", plotly_figure(title="", figure=fig))

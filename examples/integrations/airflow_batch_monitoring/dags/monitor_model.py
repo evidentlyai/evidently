@@ -31,15 +31,12 @@ with dag:
         external_task_id="predict_task",
         allowed_states=["success"],
         failed_states=["failed", "skipped"],
-        execution_date_fn=lambda exec_date: exec_date
-        - relativedelta(minutes=BATCH_INTERVAL),
+        execution_date_fn=lambda exec_date: exec_date - relativedelta(minutes=BATCH_INTERVAL),
         poke_interval=30,
     )
 
     model_path = f'{Path(PROJECT_DIR).absolute() / f"{MODELS_DIR}/model.joblib"}'
-    check_model_exist = FileSensor(
-        task_id="check_model_exist", filepath=model_path, timeout=10
-    )
+    check_model_exist = FileSensor(task_id="check_model_exist", filepath=model_path, timeout=10)
 
     monitor_model = BashOperator(
         task_id="monitor_model",

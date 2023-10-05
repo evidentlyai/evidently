@@ -35,18 +35,12 @@ async def lifespan(app: FastAPI):
     app.state.storage.init_all(app.state.conf)
 
     if event_logger.is_enabled():
-        print(
-            f"Anonimous usage reporting is enabled. To disable it, set env variable {DO_NOT_TRACK_ENV} to any value"
-        )
+        print(f"Anonimous usage reporting is enabled. To disable it, set env variable {DO_NOT_TRACK_ENV} to any value")
     else:
         print("Anonimous usage reporting is disabled")
     event_logger.send_event(COLLECTOR_INTERFACE, "startup")
 
-    ensure_future(
-        repeat_every(seconds=app.state.conf.check_interval, raise_exceptions=True)(
-            check_snapshots
-        )()
-    )
+    ensure_future(repeat_every(seconds=app.state.conf.check_interval, raise_exceptions=True)(check_snapshots)())
     yield
     """ Run on shutdown
         Close the connection
@@ -59,9 +53,7 @@ collector_write_router = APIRouter(dependencies=[Depends(authenticated)])
 
 
 @collector_write_router.post("/{id}")
-async def create_collector(
-    id: Annotated[str, "Collector id"], data: CollectorConfig
-) -> CollectorConfig:
+async def create_collector(id: Annotated[str, "Collector id"], data: CollectorConfig) -> CollectorConfig:
     data.id = id
     app.state.conf.collectors[id] = data
     app.state.storage.init(id)
@@ -72,18 +64,14 @@ async def create_collector(
 @collector_write_router.get("/{id}")
 async def get_collector(id: Annotated[str, "Collector id"]) -> CollectorConfig:
     if id not in app.state.conf.collectors:
-        raise HTTPException(
-            status_code=404, detail=f"Collector config with id '{id}' not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     return app.state.conf.collectors[id]
 
 
 @collector_write_router.post("/{id}/reference")
 async def reference(id: Annotated[str, "Collector id"], request: Request):
     if id not in app.state.conf.collectors:
-        raise HTTPException(
-            status_code=404, detail=f"Collector config with id '{id}' not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     collector = app.state.conf.collectors[id]
     data = pd.DataFrame.from_dict(await request.json())
     path = collector.reference_path or f"{id}_reference.parquet"
@@ -96,9 +84,7 @@ async def reference(id: Annotated[str, "Collector id"], request: Request):
 @collector_write_router.post("/{id}/data")
 async def data(id: Annotated[str, "Collector id"], request: Request):
     if id not in app.state.conf.collectors:
-        raise HTTPException(
-            status_code=404, detail=f"Collector config with id '{id}' not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     async with app.state.storage.lock(id):
         app.state.storage.append(id, await request.json())
     return {}
@@ -107,9 +93,7 @@ async def data(id: Annotated[str, "Collector id"], request: Request):
 @collector_write_router.get("/{id}/logs")
 async def get_logs(id: Annotated[str, "Collector id"]) -> List[LogEvent]:
     if id not in app.state.conf.collectors:
-        raise HTTPException(
-            status_code=404, detail=f"Collector config with id '{id}' not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     return app.state.storage.get_logs(id)
 
 

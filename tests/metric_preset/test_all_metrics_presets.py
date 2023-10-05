@@ -41,9 +41,7 @@ def test_metric_presets(preset: MetricPreset, tmp_path, raw_data):
         }
     )
     data_mapping = ColumnMapping()
-    report = Report(
-        metrics=[preset], options=Options(render=RenderOptions(raw_data=raw_data))
-    )
+    report = Report(metrics=[preset], options=Options(render=RenderOptions(raw_data=raw_data)))
     report.run(
         current_data=current_data,
         reference_data=reference_data,

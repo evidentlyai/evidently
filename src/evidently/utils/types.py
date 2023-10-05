@@ -51,9 +51,7 @@ class ApproxValue(FrozenBaseModel, ExcludeNoneMixin):
         return max(relative_value, self.absolute)
 
     def __format__(self, format_spec):
-        return (
-            f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
-        )
+        return f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
 
     def __repr__(self):
         return f"{self.value} ± {self.tolerance}"

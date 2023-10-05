@@ -43,9 +43,7 @@ def prepare_current_data(start_time: Text, end_time: Text) -> pd.DataFrame:
     current_data = extract_batch_data(data, start_time=start_time, end_time=end_time)
 
     # Fill missing values
-    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(
-        -1
-    )
+    current_data = current_data.fillna(current_data.median(numeric_only=True)).fillna(-1)
     return current_data
 
 
@@ -63,9 +61,7 @@ def monitor_data(
     LOGGER.info("Start the pipeline")
 
     # Define columns
-    columns: List[Text] = (
-        COLUMN_MAPPING.numerical_features + COLUMN_MAPPING.categorical_features
-    )
+    columns: List[Text] = COLUMN_MAPPING.numerical_features + COLUMN_MAPPING.categorical_features
 
     # Prepare current data
     start_time, end_time = get_batch_interval(ts, interval)
@@ -126,9 +122,7 @@ if __name__ == "__main__":
 
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument("--ts", dest="ts", required=True)
-    args_parser.add_argument(
-        "--interval", dest="interval", required=False, type=int, default=60
-    )
+    args_parser.add_argument("--interval", dest="interval", required=False, type=int, default=60)
     args = args_parser.parse_args()
 
     ts = pendulum.parse(args.ts)

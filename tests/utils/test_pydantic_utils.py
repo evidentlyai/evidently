@@ -45,6 +45,4 @@ def test_field_path_with_dict():
         "nested_field",
     ]
 
-    assert (
-        str(MockMetricResultWithDict.fields.d.lol.nested_field) == "d.lol.nested_field"
-    )
+    assert str(MockMetricResultWithDict.fields.d.lol.nested_field) == "d.lol.nested_field"

@@ -22,15 +22,11 @@ def test_value_mae_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMAE(gte=10)])
-    suite.run(
-        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
-    )
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
     suite = TestSuite(tests=[TestValueMAE(eq=0.5)])
-    suite.run(
-        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
-    )
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
     assert suite.json()
@@ -77,15 +73,11 @@ def test_value_mape_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMAPE(lt=10)])
-    suite.run(
-        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
-    )
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
     suite = TestSuite(tests=[TestValueMAPE(eq=100)])
-    suite.run(
-        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
-    )
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
     assert suite.show()
     assert suite.json()
@@ -132,15 +124,11 @@ def test_value_mean_error_test() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueMeanError(gt=1)])
-    suite.run(
-        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
-    )
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
     suite = TestSuite(tests=[TestValueMeanError(eq=0.0)])
-    suite.run(
-        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
-    )
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
     assert suite.json()
@@ -170,9 +158,7 @@ def test_value_mean_error_test_render_json() -> None:
         "group": "regression",
         "name": "Mean Error (ME)",
         "parameters": {
-            "condition": {
-                "eq": {"absolute": 0.08164965809277261, "relative": 1e-06, "value": 0}
-            },
+            "condition": {"eq": {"absolute": 0.08164965809277261, "relative": 1e-06, "value": 0}},
             "value": 0.0,
         },
         "status": "SUCCESS",

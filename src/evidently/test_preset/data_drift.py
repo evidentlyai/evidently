@@ -84,9 +84,7 @@ class DataDriftTestPreset(TestPreset):
             if self.columns is None:
                 self.columns = list(
                     np.setdiff1d(
-                        columns.num_feature_names
-                        + columns.cat_feature_names
-                        + columns.text_feature_names,
+                        columns.num_feature_names + columns.cat_feature_names + columns.text_feature_names,
                         embs,
                     )
                 )
@@ -133,9 +131,7 @@ class DataDriftTestPreset(TestPreset):
                 )
             )
 
-        if columns.utility_columns.prediction is not None and isinstance(
-            columns.utility_columns.prediction, str
-        ):
+        if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
             stattest, threshold = resolve_stattest_threshold(
                 columns.utility_columns.prediction,
                 "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",

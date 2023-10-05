@@ -32,43 +32,25 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
         curr_df = data.current_data.copy()
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
-            raise ValueError(
-                "Expect one column for prediction. List of columns was provided."
-            )
-        curr_df = self._make_df_for_plot(
-            curr_df, target_name, prediction_name, datetime_column_name
-        )
+            raise ValueError("Expect one column for prediction. List of columns was provided.")
+        curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, datetime_column_name)
         curr_df["Absolute Percentage Error"] = (
-            100
-            * np.abs(curr_df[prediction_name] - curr_df[target_name])
-            / curr_df[target_name]
+            100 * np.abs(curr_df[prediction_name] - curr_df[target_name]) / curr_df[target_name]
         )
-        curr_df.dropna(
-            axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"]
-        )
+        curr_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
         if ref_df is not None:
-            ref_df = self._make_df_for_plot(
-                ref_df.copy(), target_name, prediction_name, datetime_column_name
-            )
+            ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
             ref_df["Absolute Percentage Error"] = (
-                100
-                * np.abs(ref_df[prediction_name] - ref_df[target_name])
-                / ref_df[target_name]
+                100 * np.abs(ref_df[prediction_name] - ref_df[target_name]) / ref_df[target_name]
             )
-            ref_df.dropna(
-                axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"]
-            )
+            ref_df.dropna(axis=0, how="any", inplace=True, subset=["Absolute Percentage Error"])
         reference_scatter: Optional[Union[ColumnScatter, dict]] = None
         raw_data = self.get_options().render_options.raw_data
         if raw_data:
             current_scatter = {}
-            current_scatter["Absolute Percentage Error"] = curr_df[
-                "Absolute Percentage Error"
-            ]
+            current_scatter["Absolute Percentage Error"] = curr_df["Absolute Percentage Error"]
             if datetime_column_name is not None:
                 current_scatter["x"] = curr_df[datetime_column_name]
                 x_name = "Timestamp"
@@ -78,14 +60,8 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
 
             if ref_df is not None:
                 reference_scatter = {}
-                reference_scatter["Absolute Percentage Error"] = ref_df[
-                    "Absolute Percentage Error"
-                ]
-                reference_scatter["x"] = (
-                    ref_df[datetime_column_name]
-                    if datetime_column_name
-                    else ref_df.index
-                )
+                reference_scatter["Absolute Percentage Error"] = ref_df["Absolute Percentage Error"]
+                reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
 
             return ColumnScatterResult(
                 current=current_scatter,
@@ -93,9 +69,7 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
                 x_name=x_name,
             )
         current_scatter = {}
-        plot_df, prefix = prepare_df_for_time_index_plot(
-            curr_df, "Absolute Percentage Error", datetime_column_name
-        )
+        plot_df, prefix = prepare_df_for_time_index_plot(curr_df, "Absolute Percentage Error", datetime_column_name)
         current_scatter["Absolute Percentage Error"] = plot_df
         x_name_ref: Optional[str] = None
         if ref_df is not None:
@@ -139,17 +113,13 @@ class RegressionAbsPercentageErrorPlot(Metric[ColumnScatterResult]):
                 subset=[target_name, prediction_name, datetime_column_name],
             )
             return result.sort_values(datetime_column_name)
-        result.dropna(
-            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
-        )
+        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
 
 @default_renderer(wrap_type=RegressionAbsPercentageErrorPlot)
 class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
-    def render_html(
-        self, obj: RegressionAbsPercentageErrorPlot
-    ) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: RegressionAbsPercentageErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current = result.current
         reference = result.reference

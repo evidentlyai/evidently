@@ -53,7 +53,5 @@ class ClassificationReport(MetricResult):
                 continue
             v["f1"] = v.pop("f1-score")
         class_metrics = {k: parse_obj_as(ClassMetric, report[str(k)]) for k in classes}
-        other = {
-            k: v for k, v in report.items() if k not in [str(cl) for cl in classes]
-        }
+        other = {k: v for k, v in report.items() if k not in [str(cl) for cl in classes]}
         return parse_obj_as(cls, {"classes": class_metrics, **other})

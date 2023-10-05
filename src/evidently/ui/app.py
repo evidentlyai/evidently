@@ -56,9 +56,7 @@ async def lifespan(app: FastAPI):
     observer.start()
 
     if event_logger.is_enabled():
-        print(
-            f"Anonimous usage reporting is enabled. To disable it, set env variable {DO_NOT_TRACK_ENV} to any value"
-        )
+        print(f"Anonimous usage reporting is enabled. To disable it, set env variable {DO_NOT_TRACK_ENV} to any value")
     else:
         print("Anonimous usage reporting is disabled")
     event_logger.send_event(SERVICE_INTERFACE, "startup")
@@ -126,24 +124,18 @@ async def version():
 async def list_projects() -> Sequence[ProjectBase]:
     workspace: Workspace = app.state.workspace
     projects = workspace.list_projects()
-    event_logger.send_event(
-        SERVICE_INTERFACE, "list_projects", project_count=len(projects)
-    )
+    event_logger.send_event(SERVICE_INTERFACE, "list_projects", project_count=len(projects))
     return projects
 
 
 @api_read_router.get("/projects/{project_id}/reports")
-async def list_reports(
-    project_id: Annotated[uuid.UUID, PROJECT_ID]
-) -> List[ReportModel]:
+async def list_reports(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[ReportModel]:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
     reports = [ReportModel.from_report(r) for r in project.reports.values()]
-    event_logger.send_event(
-        SERVICE_INTERFACE, "list_reports", reports_count=len(reports)
-    )
+    event_logger.send_event(SERVICE_INTERFACE, "list_reports", reports_count=len(reports))
     return reports
 
 
@@ -158,18 +150,14 @@ async def get_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> Proj
 
 
 @api_read_router.get("/projects/search/{project_name}")
-async def search_projects(
-    project_name: Annotated[str, "Name of the project to search"]
-) -> List[Project]:
+async def search_projects(project_name: Annotated[str, "Name of the project to search"]) -> List[Project]:
     workspace: Workspace = app.state.workspace
     event_logger.send_event(SERVICE_INTERFACE, "search_projects")
     return workspace.search_project(project_name=project_name)
 
 
 @api_write_router.post("/projects/{project_id}/info")
-async def update_project_info(
-    project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectBase
-) -> ProjectBase:
+async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data: ProjectBase) -> ProjectBase:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
@@ -184,9 +172,7 @@ async def update_project_info(
 
 
 @api_read_router.get("/projects/{project_id}/test_suites")
-async def list_test_suites(
-    project_id: Annotated[uuid.UUID, PROJECT_ID]
-) -> List[TestSuiteModel]:
+async def list_test_suites(project_id: Annotated[uuid.UUID, PROJECT_ID]) -> List[TestSuiteModel]:
     workspace: Workspace = app.state.workspace
     project = workspace.get_project(project_id)
     if project is None:
@@ -212,9 +198,7 @@ async def get_snapshot_graph_data(
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
     event_logger.send_event(SERVICE_INTERFACE, "get_snapshot_graph_data")
-    return Response(
-        media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder)
-    )
+    return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
 
 
 @api_read_router.get("/projects/{project_id}/{snapshot_id}/download")
@@ -298,9 +282,7 @@ async def project_dashboard(
         raise HTTPException(status_code=404, detail="Project not found")
 
     info = DashboardInfoModel.from_dashboard_info(
-        project.build_dashboard_info(
-            timestamp_start=timestamp_start, timestamp_end=timestamp_end
-        )
+        project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
     )
     # todo: add numpy encoder to fastapi
     # return info
@@ -325,9 +307,7 @@ def delete_project(project_id: Annotated[uuid.UUID, PROJECT_ID]):
 
 
 @api_read_router.post("/projects/{project_id}/snapshots")
-async def add_snapshot(
-    project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot
-):
+async def add_snapshot(project_id: Annotated[uuid.UUID, PROJECT_ID], snapshot: Snapshot):
     workspace: Workspace = app.state.workspace
     if workspace.get_project(project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")

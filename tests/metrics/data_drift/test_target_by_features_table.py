@@ -37,9 +37,7 @@ def test_target_by_features_table_success(
     metric: TargetByFeaturesTable,
     expected_json: dict,
 ) -> None:
-    report = Report(
-        metrics=[metric], options=Options(render=RenderOptions(raw_data=True))
-    )
+    report = Report(metrics=[metric], options=Options(render=RenderOptions(raw_data=True)))
     report.run(
         current_data=current_data,
         reference_data=reference_data,

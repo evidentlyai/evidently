@@ -66,6 +66,4 @@ if __name__ == "__main__":
     END_DATE_TIME = "2021-02-28 23:00:00"
     BATCH_INTERVAL = 60
 
-    scheduled_flow(
-        start_date=START_DATE_TIME, end_date=END_DATE_TIME, interval=BATCH_INTERVAL
-    )
+    scheduled_flow(start_date=START_DATE_TIME, end_date=END_DATE_TIME, interval=BATCH_INTERVAL)

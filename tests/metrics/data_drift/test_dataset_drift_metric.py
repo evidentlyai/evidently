@@ -95,9 +95,7 @@ from evidently.report import Report
                     "my_target": [0, 0, 0],
                 }
             ),
-            ColumnMapping(
-                target="my_target", prediction=["label_a", "label_b", "label_c"]
-            ),
+            ColumnMapping(target="my_target", prediction=["label_a", "label_b", "label_c"]),
         ),
     ),
 )
@@ -129,16 +127,12 @@ def test_dataset_drift_metric_value_error() -> None:
     report = Report(metrics=[DatasetDriftMetric()])
 
     with pytest.raises(ValueError):
-        report.run(
-            current_data=test_data, reference_data=None, column_mapping=data_mapping
-        )
+        report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
         report.json()
 
     with pytest.raises(ValueError):
         # noinspection PyTypeChecker
-        report.run(
-            current_data=None, reference_data=test_data, column_mapping=data_mapping
-        )
+        report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)
         report.json()
 
 

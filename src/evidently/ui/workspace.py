@@ -43,9 +43,7 @@ class ProjectSnapshot:
     _dashboard_info: Optional[DashboardInfo] = None
     _additional_graphs: Optional[Dict[str, DetailsInfo]] = None
 
-    def __init__(
-        self, id: uuid.UUID, project: "Project", value: Optional[Snapshot] = None
-    ):
+    def __init__(self, id: uuid.UUID, project: "Project", value: Optional[Snapshot] = None):
         self.id = id
         self.project = project
         self.last_modified_data = None
@@ -61,11 +59,7 @@ class ProjectSnapshot:
     @property
     def report(self) -> ReportBase:
         if self._report is None:
-            self._report = (
-                self.value.as_report()
-                if self.value.is_report
-                else self.value.as_test_suite()
-            )
+            self._report = self.value.as_report() if self.value.is_report else self.value.as_test_suite()
         return self._report
 
     @property
@@ -186,20 +180,12 @@ class Project(ProjectBase["Workspace"]):
     @property
     def reports(self) -> Dict[uuid.UUID, Report]:
         self._reload_snapshots()
-        return {
-            key: value.value.as_report()
-            for key, value in self._snapshots.items()
-            if value.value.is_report
-        }
+        return {key: value.value.as_report() for key, value in self._snapshots.items() if value.value.is_report}
 
     @property
     def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
         self._reload_snapshots()
-        return {
-            key: value.value.as_test_suite()
-            for key, value in self._snapshots.items()
-            if not value.value.is_report
-        }
+        return {key: value.value.as_test_suite() for key, value in self._snapshots.items() if not value.value.is_report}
 
     def get_snapshot(self, id: uuid.UUID) -> Optional[ProjectSnapshot]:
         self._reload_snapshots()
@@ -237,9 +223,7 @@ class Project(ProjectBase["Workspace"]):
 
             return HTML(determine_template("inline")(params=template_params))
         except ImportError as err:
-            raise Exception(
-                "Cannot import HTML from IPython.display, no way to show html"
-            ) from err
+            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
 
 PT = TypeVar("PT", bound=ProjectBase)

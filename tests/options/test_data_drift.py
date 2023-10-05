@@ -190,9 +190,7 @@ def test_stattest_function_valid(feature_func, expected):
         ),
     ],
 )
-def test_stattest_function_valid_v2(
-    global_st, cat_st, num_st, per_feature_st, expected
-):
+def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, expected):
     features_with_types = {"cat1": "cat", "cat2": "cat", "num1": "num", "num2": "num"}
     options = DataDriftOptions(
         all_features_stattest=global_st,
@@ -201,10 +199,7 @@ def test_stattest_function_valid_v2(
         per_feature_stattest=per_feature_st,
     )
     for feature, expected_func in expected.items():
-        assert (
-            options.get_feature_stattest_func(feature, features_with_types[feature])
-            == expected_func
-        )
+        assert options.get_feature_stattest_func(feature, features_with_types[feature]) == expected_func
 
 
 @pytest.mark.parametrize(
@@ -218,9 +213,7 @@ def test_stattest_function_valid_v2(
         ]
     ),
 )
-def test_stattest_function_deprecated(
-    feature_st, global_st, cat_st, num_st, per_feature_st
-):
+def test_stattest_function_deprecated(feature_st, global_st, cat_st, num_st, per_feature_st):
     options = DataDriftOptions(
         feature_stattest_func=feature_st,
         all_features_stattest=global_st,

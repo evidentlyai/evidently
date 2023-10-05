@@ -53,13 +53,9 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
         curr_df = data.current_data
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
-            raise ValueError(
-                "Expect one column for prediction. List of columns was provided."
-            )
+            raise ValueError("Expect one column for prediction. List of columns was provided.")
         agg_data = True
         if self.get_options().render_options.raw_data:
             agg_data = False
@@ -75,9 +71,7 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
             reference_error = ref_df[prediction_name] - ref_df[target_name]
             ref_qq_lines = probplot(reference_error, dist="norm", plot=None)
             reference_theoretical = self._get_theoretical_line(ref_qq_lines)
-            reference_plot_data = self._get_plot_data(
-                ref_qq_lines, reference_error, agg_data
-            )
+            reference_plot_data = self._get_plot_data(ref_qq_lines, reference_error, agg_data)
         return RegressionErrorNormalityResults(
             current_plot=current_plot_data,
             current_theoretical=current_theoretical,
@@ -101,9 +95,7 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
                 subset=[target_name, prediction_name, datetime_column_name],
             )
             return result.sort_values(datetime_column_name)
-        result.dropna(
-            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
-        )
+        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
     def _get_theoretical_line(self, res: Any):
@@ -118,9 +110,7 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
         df = pd.DataFrame({"x": res[0][0], "y": res[0][1]})
         if not agg_data:
             return df
-        df["bin"] = pd.cut(
-            err_data.sort_values().values, bins=10, labels=False, retbins=False
-        )
+        df["bin"] = pd.cut(err_data.sort_values().values, bins=10, labels=False, retbins=False)
         return (
             df.groupby("bin", group_keys=False)
             .apply(lambda x: x.sample(n=min(100, x.shape[0]), random_state=0))
@@ -144,9 +134,7 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
             cols = 2
             subplot_titles = ["current", "reference"]
 
-        fig = make_subplots(
-            rows=1, cols=cols, shared_yaxes=False, subplot_titles=subplot_titles
-        )
+        fig = make_subplots(rows=1, cols=cols, shared_yaxes=False, subplot_titles=subplot_titles)
 
         sample_quantile_trace = go.Scatter(
             x=current_plot["x"],

@@ -63,13 +63,9 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         prediction_name = dataset_columns.utility_columns.prediction
 
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
-            raise ValueError(
-                "Expect one column for prediction. List of columns was provided."
-            )
+            raise ValueError("Expect one column for prediction. List of columns was provided.")
         current_metrics = calculate_regression_performance(
             dataset=data.current_data,
             columns=dataset_columns,
@@ -170,14 +166,10 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         df_target_binned = make_target_bins_for_reg_plots(
             data.current_data, target_name, prediction_name, data.reference_data
         )
-        curr_target_bins = df_target_binned.loc[
-            df_target_binned.data == "curr", "target_binned"
-        ]
+        curr_target_bins = df_target_binned.loc[df_target_binned.data == "curr", "target_binned"]
         ref_target_bins = None
         if data.reference_data is not None:
-            ref_target_bins = df_target_binned.loc[
-                df_target_binned.data == "ref", "target_binned"
-            ]
+            ref_target_bins = df_target_binned.loc[df_target_binned.data == "ref", "target_binned"]
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
         vals_for_plots: Dict[str, RegressionMetricScatter] = {}
@@ -206,9 +198,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         err_ref = None
 
         if is_ref_data:
-            err_ref = (
-                data.reference_data[prediction_name] - data.reference_data[target_name]
-            )
+            err_ref = data.reference_data[prediction_name] - data.reference_data[target_name]
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
         if r2_score_ref is not None:

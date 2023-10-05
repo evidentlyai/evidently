@@ -51,7 +51,5 @@ def save_predictions(predictions: pd.DataFrame) -> None:
 
     engine = create_engine(DATABASE_URI)
     session = open_sqa_session(engine)
-    session.add_all(
-        [PredictionTable(**pred) for pred in predictions.to_dict("records")]
-    )
+    session.add_all([PredictionTable(**pred) for pred in predictions.to_dict("records")])
     session.commit()

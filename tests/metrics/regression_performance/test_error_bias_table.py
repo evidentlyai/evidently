@@ -74,9 +74,7 @@ def test_regression_error_bias_table_value_errors(
     data_mapping = ColumnMapping()
 
     with pytest.raises(ValueError) as error:
-        report = Report(
-            metrics=[metric], options=Options(render=RenderOptions(raw_data=True))
-        )
+        report = Report(metrics=[metric], options=Options(render=RenderOptions(raw_data=True)))
         report.run(
             current_data=current_dataset,
             reference_data=reference_dataset,
@@ -150,9 +148,7 @@ def test_regression_error_bias_table_with_report(
     metric: RegressionErrorBiasTable,
     expected_json: dict,
 ) -> None:
-    report = Report(
-        metrics=[metric], options=Options(render=RenderOptions(raw_data=True))
-    )
+    report = Report(metrics=[metric], options=Options(render=RenderOptions(raw_data=True)))
     report.run(
         current_data=current_data,
         reference_data=reference_data,

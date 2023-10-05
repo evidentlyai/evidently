@@ -14,9 +14,7 @@ def _abs_text_content_drift(
     feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
-    return calculate_text_drift_score(
-        reference_data, current_data, bootstrap=False, threshold=threshold
-    )
+    return calculate_text_drift_score(reference_data, current_data, bootstrap=False, threshold=threshold)
 
 
 abs_text_content_drift_stat_test = StatTest(

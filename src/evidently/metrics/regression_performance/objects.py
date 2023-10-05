@@ -55,19 +55,14 @@ class IntervalSeries(MetricResult):
         if not hasattr(self, "_data"):
             self._data = pd.Series(
                 self.values,
-                index=[
-                    Interval(a, b, closed="right")
-                    for a, b in zip(self.bins, self.bins[1:])
-                ],
+                index=[Interval(a, b, closed="right") for a, b in zip(self.bins, self.bins[1:])],
             )
         return self._data
 
     @classmethod
     def from_data(cls, data: pd.Series):
         index = list(data.index)
-        interval_series = cls(
-            values=list(data), bins=[i.left for i in index] + [index[-1].right]
-        )
+        interval_series = cls(values=list(data), bins=[i.left for i in index] + [index[-1].right])
         interval_series._data = data
         return interval_series
 

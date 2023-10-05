@@ -48,9 +48,7 @@ class RegressionTopErrorMetricResults(MetricResult):
     agg_data: bool
 
     current_raw, current_agg = raw_agg_properties("current", TopData, AggTopData, False)
-    reference_raw, reference_agg = raw_agg_properties(
-        "reference", TopData, AggTopData, True
-    )
+    reference_raw, reference_agg = raw_agg_properties("reference", TopData, AggTopData, True)
 
 
 class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
@@ -61,13 +59,9 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         curr_df = data.current_data.copy()
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError(
-                "The columns 'target' and 'prediction' columns should be present"
-            )
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
         if not isinstance(prediction_name, str):
-            raise ValueError(
-                "Expect one column for prediction. List of columns was provided."
-            )
+            raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         curr_error = curr_df[prediction_name] - curr_df[target_name]
         quantile_5 = np.quantile(curr_error, 0.05)
@@ -75,23 +69,15 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
         curr_df["Error bias"] = list(
             map(
-                lambda x: "Underestimation"
-                if x <= quantile_5
-                else "Majority"
-                if x < quantile_95
-                else "Overestimation",
+                lambda x: "Underestimation" if x <= quantile_5 else "Majority" if x < quantile_95 else "Overestimation",
                 curr_error,
             )
         )
-        curr_mean_err_per_group = self._calculate_underperformance(
-            curr_error, quantile_5, quantile_95
-        )
+        curr_mean_err_per_group = self._calculate_underperformance(curr_error, quantile_5, quantile_95)
 
         reference: Optional[Union[TopData, AggTopData]] = None
         if ref_df is not None:
-            ref_df = self._make_df_for_plot(
-                ref_df.copy(), target_name, prediction_name, None
-            )
+            ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, None)
             ref_error = ref_df[prediction_name] - ref_df[target_name]
             quantile_5 = np.quantile(ref_error, 0.05)
             quantile_95 = np.quantile(ref_error, 0.95)
@@ -106,45 +92,27 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
                     ref_error,
                 )
             )
-            ref_mean_err_per_group = self._calculate_underperformance(
-                ref_error, quantile_5, quantile_95
-            )
+            ref_mean_err_per_group = self._calculate_underperformance(ref_error, quantile_5, quantile_95)
         if self.get_options().render_options.raw_data or not self._is_possible_contour(
             curr_df, ref_df, prediction_name, target_name
         ):
             curr_df.drop_duplicates(subset=[prediction_name, target_name], inplace=True)
-            curr_scatter = self._get_data_for_scatter(
-                curr_df, target_name, prediction_name
-            )
+            curr_scatter = self._get_data_for_scatter(curr_df, target_name, prediction_name)
             if ref_df is not None:
-                ref_df.drop_duplicates(
-                    subset=[prediction_name, target_name], inplace=True
-                )
-                ref_scatter = self._get_data_for_scatter(
-                    ref_df, target_name, prediction_name
-                )
-                reference = TopData(
-                    mean_err_per_group=ref_mean_err_per_group, scatter=ref_scatter
-                )
+                ref_df.drop_duplicates(subset=[prediction_name, target_name], inplace=True)
+                ref_scatter = self._get_data_for_scatter(ref_df, target_name, prediction_name)
+                reference = TopData(mean_err_per_group=ref_mean_err_per_group, scatter=ref_scatter)
             return RegressionTopErrorMetricResults(
-                current=TopData(
-                    mean_err_per_group=curr_mean_err_per_group, scatter=curr_scatter
-                ),
+                current=TopData(mean_err_per_group=curr_mean_err_per_group, scatter=curr_scatter),
                 reference=reference,
                 agg_data=False,
             )
         curr_contour = self._get_data_for_сontour(curr_df, target_name, prediction_name)
         if ref_df is not None:
-            ref_contour = self._get_data_for_сontour(
-                ref_df, target_name, prediction_name
-            )
-            reference = AggTopData(
-                mean_err_per_group=ref_mean_err_per_group, contour=ref_contour
-            )
+            ref_contour = self._get_data_for_сontour(ref_df, target_name, prediction_name)
+            reference = AggTopData(mean_err_per_group=ref_mean_err_per_group, contour=ref_contour)
         return RegressionTopErrorMetricResults(
-            current=AggTopData(
-                mean_err_per_group=curr_mean_err_per_group, contour=curr_contour
-            ),
+            current=AggTopData(mean_err_per_group=curr_mean_err_per_group, contour=curr_contour),
             reference=reference,
             agg_data=True,
         )
@@ -165,15 +133,11 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
                 subset=[target_name, prediction_name, datetime_column_name],
             )
             return result.sort_values(datetime_column_name)
-        result.dropna(
-            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
-        )
+        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
     @staticmethod
-    def _get_data_for_scatter(
-        df: pd.DataFrame, target_name: str, prediction_name: str
-    ) -> RegressionScatter:
+    def _get_data_for_scatter(df: pd.DataFrame, target_name: str, prediction_name: str) -> RegressionScatter:
         underestimation = PredActualScatter(
             predicted=df.loc[df["Error bias"] == "Underestimation", prediction_name],
             actual=df.loc[df["Error bias"] == "Underestimation", target_name],
@@ -204,9 +168,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
     ):
         curr_condition = (
             is_possible_contour(
-                curr_df.loc[
-                    curr_df["Error bias"] == "Underestimation", prediction_name
-                ],
+                curr_df.loc[curr_df["Error bias"] == "Underestimation", prediction_name],
                 curr_df.loc[curr_df["Error bias"] == "Underestimation", target_name],
             )
             and is_possible_contour(
@@ -222,9 +184,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         if ref_df is not None:
             ref_condition = (
                 is_possible_contour(
-                    ref_df.loc[
-                        ref_df["Error bias"] == "Underestimation", prediction_name
-                    ],
+                    ref_df.loc[ref_df["Error bias"] == "Underestimation", prediction_name],
                     ref_df.loc[ref_df["Error bias"] == "Underestimation", target_name],
                 )
                 and is_possible_contour(
@@ -232,9 +192,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
                     ref_df.loc[ref_df["Error bias"] == "Majority", target_name],
                 )
                 and is_possible_contour(
-                    ref_df.loc[
-                        ref_df["Error bias"] == "Overestimation", prediction_name
-                    ],
+                    ref_df.loc[ref_df["Error bias"] == "Overestimation", prediction_name],
                     ref_df.loc[ref_df["Error bias"] == "Overestimation", target_name],
                 )
             )
@@ -243,9 +201,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         return False
 
     @staticmethod
-    def _get_data_for_сontour(
-        df: pd.DataFrame, target_name: str, prediction_name: str
-    ) -> dict:
+    def _get_data_for_сontour(df: pd.DataFrame, target_name: str, prediction_name: str) -> dict:
 
         underestimation = get_gaussian_kde(
             df.loc[df["Error bias"] == "Underestimation", prediction_name],
@@ -305,31 +261,15 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
     def render_html(self, obj: RegressionTopErrorMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         curr_mean_err_per_group = result.current.mean_err_per_group
-        ref_mean_err_per_group = (
-            result.reference.mean_err_per_group
-            if result.reference is not None
-            else None
-        )
+        ref_mean_err_per_group = result.reference.mean_err_per_group if result.reference is not None else None
         if not result.agg_data:
             curr_scatter = result.current_raw.scatter
-            ref_scatter = (
-                result.reference_raw.scatter
-                if result.reference_raw is not None
-                else None
-            )
-            fig = plot_error_bias_colored_scatter(
-                curr_scatter, ref_scatter, color_options=self.color_options
-            )
+            ref_scatter = result.reference_raw.scatter if result.reference_raw is not None else None
+            fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter, color_options=self.color_options)
         else:
             curr_contour = result.current_agg.contour
-            ref_contour = (
-                result.reference_agg.contour
-                if result.reference_agg is not None
-                else None
-            )
-            fig = plot_top_error_contours(
-                curr_contour, ref_contour, "Acual value", "Predicted value"
-            )
+            ref_contour = result.reference_agg.contour if result.reference_agg is not None else None
+            fig = plot_top_error_contours(curr_contour, ref_contour, "Acual value", "Predicted value")
             fig = json.loads(fig.to_json())
         res = [
             header_text(label="Error Bias Table"),
@@ -362,15 +302,11 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
                         ),
                         CounterData(
                             "Underestimation(5%)",
-                            self._format_value(
-                                ref_mean_err_per_group, "underestimation"
-                            ),
+                            self._format_value(ref_mean_err_per_group, "underestimation"),
                         ),
                         CounterData(
                             "Overestimation(5%)",
-                            self._format_value(
-                                ref_mean_err_per_group, "overestimation"
-                            ),
+                            self._format_value(ref_mean_err_per_group, "overestimation"),
                         ),
                     ],
                 )
@@ -388,7 +324,4 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         return res
 
     def _format_value(self, result, counter_type):
-        return (
-            f"{round(result[counter_type]['mean_error'], 2)}"
-            f" ({round(result[counter_type]['std_error'], 2)})"
-        )
+        return f"{round(result[counter_type]['mean_error'], 2)}" f" ({round(result[counter_type]['std_error'], 2)})"

@@ -55,26 +55,16 @@ def get_one_column_drift(
         ColumnType.Categorical,
         ColumnType.Text,
     ):
-        raise ValueError(
-            f"Cannot calculate drift metric for column '{column}' with type {column_type}"
-        )
+        raise ValueError(f"Cannot calculate drift metric for column '{column}' with type {column_type}")
 
     target = data_definition.get_target_column()
     stattest = None
     threshold = None
     if column.is_main_dataset():
-        if (
-            target
-            and column.name == target.column_name
-            and column_type == ColumnType.Numerical
-        ):
+        if target and column.name == target.column_name and column_type == ColumnType.Numerical:
             stattest = options.num_target_stattest_func
 
-        elif (
-            target
-            and column.name == target.column_name
-            and column_type == ColumnType.Categorical
-        ):
+        elif target and column.name == target.column_name and column_type == ColumnType.Categorical:
             stattest = options.cat_target_stattest_func
 
         if not stattest:
@@ -96,9 +86,7 @@ def get_one_column_drift(
     current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if current_column.empty:
-        raise ValueError(
-            f"An empty column '{column.name}' was provided for drift calculation in the current dataset."
-        )
+        raise ValueError(f"An empty column '{column.name}' was provided for drift calculation in the current dataset.")
 
     current_distribution = None
     reference_distribution = None
@@ -114,21 +102,13 @@ def get_one_column_drift(
 
     if column_type == ColumnType.Numerical:
         if not pd.api.types.is_numeric_dtype(reference_column):
-            raise ValueError(
-                f"Column '{column}' in reference dataset should contain numerical values only."
-            )
+            raise ValueError(f"Column '{column}' in reference dataset should contain numerical values only.")
 
         if not pd.api.types.is_numeric_dtype(current_column):
-            raise ValueError(
-                f"Column '{column}' in current dataset should contain numerical values only."
-            )
+            raise ValueError(f"Column '{column}' in current dataset should contain numerical values only.")
 
-    drift_test_function = get_stattest(
-        reference_column, current_column, column_type, stattest
-    )
-    drift_result = drift_test_function(
-        reference_column, current_column, column_type, threshold
-    )
+    drift_test_function = get_stattest(reference_column, current_column, column_type, stattest)
+    drift_result = drift_test_function(reference_column, current_column, column_type, threshold)
 
     scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:
@@ -166,9 +146,7 @@ def get_one_column_drift(
                 pd.DataFrame(
                     {
                         column.name: current_feature_data.values,
-                        "Timestamp": None
-                        if datetime_data is None
-                        else datetime_data.values,
+                        "Timestamp": None if datetime_data is None else datetime_data.values,
                     },
                     index=index_data.values,
                 ),
@@ -187,13 +165,9 @@ def get_one_column_drift(
         plot_shape["y0"] = reference_mean - reference_std
         plot_shape["y1"] = reference_mean + reference_std
         if agg_data:
-            scatter = ScatterAggField(
-                scatter=current_scatter, x_name=x_name, plot_shape=plot_shape
-            )
+            scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
         else:
-            scatter = ScatterField(
-                scatter=current_scatter, x_name=x_name, plot_shape=plot_shape
-            )
+            scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
     elif column_type == ColumnType.Categorical:
         reference_counts = reference_column.value_counts(sort=False)
@@ -242,9 +216,7 @@ def get_one_column_drift(
                 )
             )
         ):
-            column_values = np.union1d(
-                current_column.unique(), reference_column.unique()
-            )
+            column_values = np.union1d(current_column.unique(), reference_column.unique())
             target_names = labels if isinstance(labels, list) else list(labels.values())
             new_values = np.setdiff1d(list(target_names), column_values)
             if len(new_values) > 0:
@@ -258,9 +230,7 @@ def get_one_column_drift(
             reference=reference_column,
         )
         if reference_distribution is None:
-            raise ValueError(
-                f"Cannot calculate reference distribution for column '{column}'."
-            )
+            raise ValueError(f"Cannot calculate reference distribution for column '{column}'.")
 
     elif column_type == ColumnType.Text and drift_result.drifted:
         (
@@ -279,9 +249,7 @@ def get_one_column_drift(
         stattest_threshold=drift_result.actual_threshold,
         current=DriftStatsField(
             distribution=current_distribution,
-            small_distribution=DistributionIncluded(
-                x=current_small_distribution[1], y=current_small_distribution[0]
-            )
+            small_distribution=DistributionIncluded(x=current_small_distribution[1], y=current_small_distribution[0])
             if current_small_distribution
             else None,
             correlations=current_correlations,
@@ -333,25 +301,17 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
         try:
             current_feature_data = data.get_current_column(self.column_name)
         except ColumnNotFound as ex:
-            raise ValueError(
-                f"Cannot find column '{ex.column_name}' in current dataset"
-            )
+            raise ValueError(f"Cannot find column '{ex.column_name}' in current dataset")
         try:
             reference_feature_data = data.get_reference_column(self.column_name)
         except ColumnNotFound as ex:
-            raise ValueError(
-                f"Cannot find column '{ex.column_name}' in reference dataset"
-            )
+            raise ValueError(f"Cannot find column '{ex.column_name}' in reference dataset")
 
         column_type = ColumnType.Numerical
         if self.column_name.is_main_dataset():
-            column_type = data.data_definition.get_column(
-                self.column_name.name
-            ).column_type
+            column_type = data.data_definition.get_column(self.column_name.name).column_type
         datetime_column = data.data_definition.get_datetime_column()
-        options = DataDriftOptions(
-            all_features_stattest=self.stattest, threshold=self.stattest_threshold
-        )
+        options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
         if self.get_options().render_options.raw_data:
             agg_data = False
         else:
@@ -362,9 +322,7 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
             column=self.column_name,
             index_data=data.current_data.index,
             column_type=column_type,
-            datetime_data=data.current_data[datetime_column.column_name]
-            if datetime_column
-            else None,
+            datetime_data=data.current_data[datetime_column.column_name] if datetime_column else None,
             data_definition=data.data_definition,
             options=options,
             agg_data=agg_data,
@@ -414,16 +372,8 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 scatter_fig = plot_agg_line_data(
                     curr_data=result.scatter.scatter,
                     ref_data=None,
-                    line=(
-                        result.scatter.plot_shape["y0"]
-                        + result.scatter.plot_shape["y1"]
-                    )
-                    / 2,
-                    std=(
-                        result.scatter.plot_shape["y0"]
-                        - result.scatter.plot_shape["y1"]
-                    )
-                    / 2,
+                    line=(result.scatter.plot_shape["y0"] + result.scatter.plot_shape["y1"]) / 2,
+                    std=(result.scatter.plot_shape["y0"] - result.scatter.plot_shape["y1"]) / 2,
                     xaxis_name=result.scatter.x_name,
                     xaxis_name_ref=None,
                     yaxis_name=f"{result.column_name} (mean +/- std)",
@@ -431,14 +381,9 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     return_json=False,
                     line_name="reference (mean)",
                 )
-            tabs.append(
-                TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig))
-            )
+            tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
-        if (
-            result.current.distribution is not None
-            and result.reference.distribution is not None
-        ):
+        if result.current.distribution is not None and result.reference.distribution is not None:
             distr_fig = plot_distr_with_perc_button(
                 hist_curr=HistogramData.from_distribution(result.current.distribution),
                 hist_ref=HistogramData.from_distribution(result.reference.distribution),
@@ -450,9 +395,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 subplots=False,
                 to_json=False,
             )
-            tabs.append(
-                TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig))
-            )
+            tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
 
         if (
             result.current.characteristic_examples is not None
@@ -482,9 +425,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             )
 
             tabs = [
-                TabData(
-                    title="current: characteristic words", widget=current_table_words
-                ),
+                TabData(title="current: characteristic words", widget=current_table_words),
                 TabData(
                     title="reference: characteristic words",
                     widget=reference_table_words,

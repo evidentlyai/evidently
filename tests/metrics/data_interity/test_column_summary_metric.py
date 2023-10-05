@@ -70,9 +70,7 @@ from evidently.report import Report
         ),
         (
             pd.DataFrame({"test1": [1, 2, 3], "test2": [1, 2, 3], "test3": [1, 1, 1]}),
-            pd.DataFrame(
-                {"test1": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}
-            ),
+            pd.DataFrame({"test1": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}),
             ColumnMapping(numerical_features=["test1"]),
             ColumnSummaryMetric(column_name="test1"),
             {
