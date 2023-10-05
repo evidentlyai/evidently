@@ -11,7 +11,7 @@ SparkDataFrame = DataFrame
 
 
 def create_data_definition_spark(
-    reference_data: Optional["SparkDataFrame"], current_data: "SparkDataFrame", mapping: ColumnMapping
+    reference_data: Optional[DataFrame], current_data: DataFrame, mapping: ColumnMapping
 ) -> DataDefinition:
 
     # todo
