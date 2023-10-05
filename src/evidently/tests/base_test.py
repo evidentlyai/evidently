@@ -13,8 +13,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from pydantic import Field
-
+from evidently._pydantic_compat import Field
 from evidently.base_metric import BaseResult
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult

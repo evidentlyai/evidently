@@ -78,13 +78,13 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns("text_features")) > 0:
             text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
-            text_features_gen = {}
+            text_features_gen: Dict[str, Dict[str, GeneratedFeature]] = {}
             text_features_gen_result = []
             for col in text_cols:
                 if self.columns is not None and col not in self.columns:
                     continue
                 if self.descriptors is None or col not in self.descriptors:
-                    col_dict = {
+                    col_dict: Dict[str, GeneratedFeature] = {
                         f"{col}: Text Length": TextLength(col),
                         f"{col}: Non Letter Character %": NonLetterCharacterPercentage(col),
                         f"{col}: OOV %": OOVWordsPercentage(col),

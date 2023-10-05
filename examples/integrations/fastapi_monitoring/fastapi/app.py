@@ -9,7 +9,7 @@ from fastapi.responses import (
     Response,
     FileResponse
 )
-from pydantic import BaseModel
+from evidently._pydantic_compat import BaseModel
 import pandas as pd
 
 from config.config import DATA_COLUMNS

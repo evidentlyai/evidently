@@ -5,8 +5,8 @@ from typing import Dict
 from typing import List
 
 import pandas as pd
-from pydantic import BaseModel
 
+from evidently._pydantic_compat import BaseModel
 from evidently.pydantic_utils import PolymorphicModel
 
 
