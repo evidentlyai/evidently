@@ -24,7 +24,6 @@ from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.engine import Engine
-from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
@@ -268,10 +267,9 @@ class Display:
 class Suite:
     context: Context
 
-    def __init__(self, options: Options, engine=None):
-        self._engine_type = engine or PythonEngine
+    def __init__(self, options: Options):
         self.context = Context(
-            engine=self._engine_type(),
+            engine=None,
             metrics=[],
             tests=[],
             metric_results={},
@@ -280,6 +278,9 @@ class Suite:
             renderers=DEFAULT_RENDERERS,
             options=options,
         )
+
+    def set_engine(self, engine: Engine):
+        self.context.engine = engine
 
     def add_test(self, test: Test):
         test.set_context(self.context)
@@ -368,7 +369,7 @@ class Suite:
 
     def reset(self):
         self.context = Context(
-            engine=self._engine_type(),
+            engine=None,
             metrics=[],
             tests=[],
             metric_results={},

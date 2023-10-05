@@ -13,6 +13,7 @@ import pandas as pd
 from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
@@ -49,12 +50,11 @@ class Report(ReportBase):
         reference_id: str = None,
         batch_size: str = None,
         dataset_id: str = None,
-        engine: Optional[Type[Engine]] = None,
     ):
         super().__init__(options, timestamp)
         # just save all metrics and metric presets
         self.metrics = metrics
-        self._inner_suite = Suite(self.options, engine=engine)
+        self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
         self.id = id or uuid.uuid4()
         self.metadata = metadata or {}
@@ -74,6 +74,7 @@ class Report(ReportBase):
         reference_data,
         current_data,
         column_mapping: Optional[ColumnMapping] = None,
+        engine: Optional[Type[Engine]] = None
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -82,6 +83,7 @@ class Report(ReportBase):
             raise ValueError("Current dataset should be present")
 
         self._inner_suite.reset()
+        self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
 
         if self._inner_suite.context.engine is None:
             raise ValueError("No Engine is set")

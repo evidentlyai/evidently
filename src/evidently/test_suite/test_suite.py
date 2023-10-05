@@ -12,6 +12,7 @@ import pandas as pd
 
 from evidently.base_metric import GenericInputData
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -48,10 +49,9 @@ class TestSuite(ReportBase):
         id: Optional[uuid.UUID] = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
-        engine: Optional[Type[Engine]] = None,
     ):
         super().__init__(options, timestamp)
-        self._inner_suite = Suite(self.options, engine)
+        self._inner_suite = Suite(self.options)
         self.id = id or uuid.uuid4()
         self._test_presets = []
         self._test_generators = []
@@ -94,11 +94,13 @@ class TestSuite(ReportBase):
         reference_data: Optional[pd.DataFrame],
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
+        engine: Optional[Type[Engine]] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
         self._inner_suite.reset()
+        self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
         self._add_tests()
         if self._inner_suite.context.engine is None:
             raise ValueError("Engine is not set")
