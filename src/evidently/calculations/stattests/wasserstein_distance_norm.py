@@ -58,4 +58,4 @@ wasserstein_stat_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(wasserstein_stat_test,_wasserstein_distance_norm)
+register_stattest(wasserstein_stat_test, _wasserstein_distance_norm)

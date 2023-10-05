@@ -21,4 +21,4 @@ perc_text_content_drift_stat_test = StatTest(
     default_threshold=0.95,
 )
 
-register_stattest(perc_text_content_drift_stat_test,_perc_text_content_drift)
+register_stattest(perc_text_content_drift_stat_test, _perc_text_content_drift)

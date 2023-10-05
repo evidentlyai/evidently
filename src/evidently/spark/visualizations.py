@@ -1,34 +1,41 @@
-from typing import Optional, Tuple
+from typing import Optional
+from typing import Tuple
 
 import pandas as pd
-from pyspark.sql import DataFrame, functions as sf
+from pyspark.sql import DataFrame
+from pyspark.sql import functions as sf
 
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.spark.base import SparkSeries
-from evidently.spark.calculations.histogram import get_histogram, hist_bin_doane
+from evidently.spark.calculations.histogram import get_histogram
+from evidently.spark.calculations.histogram import hist_bin_doane
+from evidently.spark.utils import calculate_stats
 from evidently.utils.visualizations import OPTIMAL_POINTS
 
 PERIOD_COL = "period"
 
 
 def prepare_df_for_time_index_plot(
-        df: DataFrame,
-        column_name: str,
-        datetime_name: Optional[str],
-        # prefix: Optional[str] = None,
-        # freq: Optional[str] = None,
-        # bins: Optional[np.ndarray] = None,
+    df: DataFrame,
+    column_name: str,
+    datetime_name: Optional[str],
+    # prefix: Optional[str] = None,
+    # freq: Optional[str] = None,
+    # bins: Optional[np.ndarray] = None,
 ) -> Tuple[pd.DataFrame, Optional[str]]:
     if datetime_name is not None:
-        prefix, pattern, freq = choose_agg_period(df[datetime_name], None)
+        prefix, pattern, freq = choose_agg_period(df, None, datetime_name)
         date_col = sf.col(datetime_name)
         if pattern == "week":
             period_col = sf.concat(sf.year(date_col), "-", sf.weekofyear(date_col)).alias(PERIOD_COL)
         else:
             period_col = sf.date_format(date_col, pattern).alias(PERIOD_COL)
-        plot_df = df.select(column_name, period_col).groupby(period_col).agg(sf.mean(column_name).alias("mean"),
-                                                                             sf.stddev_pop(column_name).alias("std"))
+        plot_df = (
+            df.select(column_name, period_col)
+            .groupby(period_col)
+            .agg(sf.mean(column_name).alias("mean"), sf.stddev_pop(column_name).alias("std"))
+        )
         if pattern == "week":
             split = sf.split(PERIOD_COL, "-")
             week = split.getItem(1)
@@ -37,13 +44,25 @@ def prepare_df_for_time_index_plot(
             plot_df = plot_df.select("*", sf.date_add(year, week * 7 - week_start_diff).alias(PERIOD_COL)).toPandas()
         return plot_df, prefix
 
-    plot_df = df.rdd.zipWithIndex().toDF().select(sf.col("_1").getItem(column_name).alias(column_name),
-                                                  sf.floor(sf.col("_2") / OPTIMAL_POINTS).alias(PERIOD_COL))
-    plot_df = plot_df.groupby(PERIOD_COL).agg(sf.mean(column_name).alias("mean"), sf.stddev_pop(column_name).alias("std")).toPandas()
+    plot_df = (
+        df.rdd.zipWithIndex()
+        .toDF()
+        .select(
+            sf.col("_1").getItem(column_name).alias(column_name),
+            sf.floor(sf.col("_2") / OPTIMAL_POINTS).alias(PERIOD_COL),
+        )
+    )
+    plot_df = (
+        plot_df.groupby(PERIOD_COL)
+        .agg(sf.mean(column_name).alias("mean"), sf.stddev_pop(column_name).alias("std"))
+        .toPandas()
+    )
     return plot_df, None
 
 
-def choose_agg_period(current_date: DataFrame, reference_date: Optional[DataFrame], date_column_name: str) -> Tuple[str, str, str]:
+def choose_agg_period(
+    current_date: DataFrame, reference_date: Optional[DataFrame], date_column_name: str
+) -> Tuple[str, str, str]:
     prefix_dict = {
         "A": ("year", "y"),
         "Q": ("quarter", "y-Q"),
@@ -52,11 +71,10 @@ def choose_agg_period(current_date: DataFrame, reference_date: Optional[DataFram
         "D": ("day", "y-M-d"),
         "H": ("hour", "y-M-d:H"),
     }
-    date_stats = current_date.select(sf.min(date_column_name).alias("max"), sf.max(date_column_name).alias("min")).first()
-    max_date, min_date = date_stats["max"], date_stats["min"]
+    max_date, min_date = calculate_stats(current_date, date_column_name, sf.max, sf.min)
     if reference_date is not None:
-        date_stats = current_date.select(sf.min(date_column_name).alias("max"), sf.max(date_column_name).alias("min")).first()
-        max_date, min_date = max(max_date, date_stats["max"]), min(min_date, date_stats["min"])
+        max_date_r, min_date_r = calculate_stats(reference_date, date_column_name, sf.max, sf.min)
+        max_date, min_date = max(max_date, max_date_r), min(min_date, min_date_r)
     days = (max_date - min_date).days
     time_points = pd.Series(
         index=["A", "Q", "M", "W", "D", "H"],
@@ -74,7 +92,7 @@ def choose_agg_period(current_date: DataFrame, reference_date: Optional[DataFram
 
 
 def get_distribution_for_column(
-        *, column_type: ColumnType, column_name: str, current: SparkSeries, reference: Optional[SparkSeries] = None
+    *, column_type: ColumnType, column_name: str, current: SparkSeries, reference: Optional[SparkSeries] = None
 ) -> Tuple[Distribution, Optional[Distribution]]:
     reference_distribution: Optional[Distribution] = None
 
@@ -87,12 +105,16 @@ def get_distribution_for_column(
     elif column_type == ColumnType.Numerical:
         if reference is not None:
             bins, dmax, dmin = hist_bin_doane(current.dropna().union(reference.dropna()), column_name)
-            reference_distribution = get_distribution_for_numerical_column(reference, column_name, bins=bins, dmax=dmax, dmin=dmin)
+            reference_distribution = get_distribution_for_numerical_column(
+                reference, column_name, bins=bins, dmax=dmax, dmin=dmin
+            )
 
         else:
             bins, dmax, dmin = hist_bin_doane(current.dropna(), column_name)
 
-        current_distribution = get_distribution_for_numerical_column(current, column_name, bins=bins, dmax=dmax, dmin=dmin)
+        current_distribution = get_distribution_for_numerical_column(
+            current, column_name, bins=bins, dmax=dmax, dmin=dmin
+        )
 
     else:
         raise ValueError(f"Cannot get distribution for a column with type {column_type}")
@@ -101,7 +123,9 @@ def get_distribution_for_column(
 
 
 def get_distribution_for_category_column(column: SparkSeries, column_name: str) -> Distribution:
-    value_counts = column.groupby(column_name).agg(sf.count_distinct(column_name).alias("count")).toPandas()
+    value_counts = pd.DataFrame(
+        column.groupby(column_name).agg(sf.count_distinct(column_name).alias("count")).toPandas()
+    )
     return Distribution(
         x=value_counts["count"],
         y=value_counts[column_name],
@@ -109,15 +133,20 @@ def get_distribution_for_category_column(column: SparkSeries, column_name: str) 
 
 
 def get_distribution_for_numerical_column(
-        column: SparkSeries,
-        column_name: str,
-        bins: Optional[int] = None,
-        dmax: Optional[float] = None,
-        dmin: Optional[float] = None
+    column: SparkSeries,
+    column_name: str,
+    bins: Optional[int] = None,
+    dmax: Optional[float] = None,
+    dmin: Optional[float] = None,
 ) -> Distribution:
-    bins = bins or hist_bin_doane(column, column_name)
+    bins = bins or hist_bin_doane(column, column_name)[0]
     histogram = get_histogram(column, column_name, nbinsx=bins, density=False, dmax=dmax, dmin=dmin)
     return Distribution(
         x=histogram[1],
         y=histogram[0],
     )
+
+
+def get_text_data_for_plots(reference_data, current_data):
+    # todo
+    raise NotImplementedError

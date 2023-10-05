@@ -1,20 +1,27 @@
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
 import numpy as np
-import pandas as pd
 from pyspark.sql import functions as sf
 
-from evidently.base_metric import ColumnName, DataDefinition
-from evidently.calculations.data_drift import (
-    ColumnDataDriftMetrics, ColumnType, DistributionIncluded, DriftStatsField, ScatterField)
+from evidently.base_metric import ColumnName
+from evidently.base_metric import DataDefinition
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
+from evidently.calculations.data_drift import ColumnType
+from evidently.calculations.data_drift import DistributionIncluded
+from evidently.calculations.data_drift import DriftStatsField
+from evidently.calculations.data_drift import ScatterField
 from evidently.metric_results import ScatterAggField
 from evidently.options.data_drift import DataDriftOptions
 from evidently.spark import SparkEngine
 from evidently.spark.base import SparkSeries
 from evidently.spark.calculations.histogram import get_histogram
 from evidently.spark.calculations.stattests.base import get_stattest
+from evidently.spark.utils import calculate_stats
 from evidently.spark.utils import is_numeric_dtype
-from evidently.spark.visualizations import get_distribution_for_column, prepare_df_for_time_index_plot
+from evidently.spark.visualizations import get_distribution_for_column
+from evidently.spark.visualizations import get_text_data_for_plots
+from evidently.spark.visualizations import prepare_df_for_time_index_plot
 
 
 def get_one_column_drift(
@@ -83,7 +90,14 @@ def get_one_column_drift(
             raise ValueError(f"Column '{column}' in current dataset should contain numerical values only.")
 
     drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
-    drift_result = drift_test_function( reference_column, current_column, column_type, threshold, engine=SparkEngine,column_name=column.name,)
+    drift_result = drift_test_function(
+        reference_column,
+        current_column,
+        column_type,
+        threshold,
+        engine=SparkEngine,
+        column_name=column.name,
+    )
 
     scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:
@@ -92,92 +106,83 @@ def get_one_column_drift(
         reference_small_distribution = get_histogram(reference_column, column.name, current_nbinsx, density=True)
         if not agg_data:
             raise NotImplementedError("Spark Metrics only works with agg_data=True")
-            # current_scatter = {column.display_name: current_column}
-            # if datetime_data is not None:
-            #     current_scatter["Timestamp"] = datetime_data
-            #     x_name = "Timestamp"
-            # else:
-            #     current_scatter["Index"] = index_data
-            #     x_name = "Index"
-        else:
-            current_scatter = {}
 
-            df, prefix = prepare_df_for_time_index_plot(
-                current_column,
-                column.name,
-                datetime_column,
-            )
-            current_scatter["current"] = df
-            if prefix is None:
-                x_name = "Index binned"
-            else:
-                x_name = f"Timestamp ({prefix})"
+        current_scatter = {}
+
+        df, prefix = prepare_df_for_time_index_plot(
+            current_column,
+            column.name,
+            datetime_column,
+        )
+        current_scatter["current"] = df
+        if prefix is None:
+            x_name = "Index binned"
+        else:
+            x_name = f"Timestamp ({prefix})"
 
         plot_shape = {}
-        reference_stats = reference_column.select(sf.mean(column.name).alias("m"), sf.stddev_pop(column.name).alias("s")).first()
-        reference_mean, reference_std = reference_stats["m"], reference_stats["s"]
+        reference_mean, reference_std = calculate_stats(reference_column, column.name, sf.mean, sf.stddev_pop)
         plot_shape["y0"] = reference_mean - reference_std
         plot_shape["y1"] = reference_mean + reference_std
-        if agg_data:
-            scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
-        # else:
-        #     scatter = ScatterField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
+        scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
     elif column_type == ColumnType.Categorical:
-        reference_counts = reference_column.value_counts(sort=False)
-        current_counts = current_column.value_counts(sort=False)
-        keys = set(reference_counts.keys()).union(set(current_counts.keys()))
-
-        for key in keys:
-            if key not in reference_counts:
-                reference_counts.loc[key] = 0
-            if key not in current_counts:
-                current_counts.loc[key] = 0
-
-        reference_small_distribution = np.array(
-            reversed(
-                list(
-                    map(
-                        list,
-                        zip(*sorted(reference_counts.items(), key=lambda x: str(x[0]))),
-                    )
-                )
-            )
-        )
-        current_small_distribution = np.array(
-            reversed(
-                list(
-                    map(
-                        list,
-                        zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))),
-                    )
-                )
-            )
-        )
+        pass  # todo: categorical
+        # reference_counts = reference_column.value_counts(sort=False)
+        # current_counts = current_column.value_counts(sort=False)
+        # keys = set(reference_counts.keys()).union(set(current_counts.keys()))
+        #
+        # for key in keys:
+        #     if key not in reference_counts:
+        #         reference_counts.loc[key] = 0
+        #     if key not in current_counts:
+        #         current_counts.loc[key] = 0
+        #
+        # reference_small_distribution = np.array(
+        #     reversed(
+        #         list(
+        #             map(
+        #                 list,
+        #                 zip(*sorted(reference_counts.items(), key=lambda x: str(x[0]))),
+        #             )
+        #         )
+        #     )
+        # )
+        # current_small_distribution = np.array(
+        #     reversed(
+        #         list(
+        #             map(
+        #                 list,
+        #                 zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))),
+        #             )
+        #         )
+        #     )
+        # )
     if column_type != ColumnType.Text:
-        prediction = data_definition.get_prediction_columns()
-        labels = data_definition.classification_labels()
-        predicted_values = prediction.predicted_values if prediction else None
-        if (
-            column_type == ColumnType.Categorical
-            and labels is not None
-            and (
-                (target and column.name == target.column_name)
-                or (
-                    predicted_values
-                    and isinstance(predicted_values.column_name, str)
-                    and column.name == predicted_values.column_name
-                )
-            )
-        ):
-            column_values = np.union1d(current_column.unique(), reference_column.unique())
-            target_names = labels if isinstance(labels, list) else list(labels.values())
-            new_values = np.setdiff1d(list(target_names), column_values)
-            if len(new_values) > 0:
-                raise ValueError(f"Values {new_values} not presented in 'target_names'")
-            else:
-                current_column = current_column.map(target_names)
-                reference_column = reference_column.map(target_names)
+        # todo: categorical
+        # prediction = data_definition.get_prediction_columns()
+        # labels = data_definition.classification_labels()
+        # predicted_values = prediction.predicted_values if prediction else None
+        # if (
+        #     column_type == ColumnType.Categorical
+        #     and labels is not None
+        #     and (
+        #         (target and column.name == target.column_name)
+        #         or (
+        #             predicted_values
+        #             and isinstance(predicted_values.column_name, str)
+        #             and column.name == predicted_values.column_name
+        #         )
+        #     )
+        # ):
+        #     column_values = np.union1d(current_column.unique(), reference_column.unique())
+        #     target_names = labels if isinstance(labels, list) else list(labels.values())
+        #     new_values = np.setdiff1d(list(target_names), column_values)
+        #     if len(new_values) > 0:
+        #         raise ValueError(f"Values {new_values} not presented in 'target_names'")
+        #     else:
+        #         current_column = current_column.map(target_names)
+        #         reference_column = reference_column.map(target_names)
 
         current_distribution, reference_distribution = get_distribution_for_column(
             column_type=column_type,
@@ -205,7 +210,9 @@ def get_one_column_drift(
         stattest_threshold=drift_result.actual_threshold,
         current=DriftStatsField(
             distribution=current_distribution,
-            small_distribution=DistributionIncluded(x=current_small_distribution[1].tolist(), y=current_small_distribution[0])
+            small_distribution=DistributionIncluded(
+                x=current_small_distribution[1].tolist(), y=current_small_distribution[0]
+            )
             if current_small_distribution
             else None,
             correlations=current_correlations,

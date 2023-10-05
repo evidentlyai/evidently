@@ -59,4 +59,4 @@ mann_whitney_u_stat_test = StatTest(
     default_threshold=0.05,
 )
 
-register_stattest(mann_whitney_u_stat_test,_mannwhitneyu_rank)
+register_stattest(mann_whitney_u_stat_test, _mannwhitneyu_rank)

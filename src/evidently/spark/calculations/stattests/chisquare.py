@@ -1,11 +1,11 @@
-from typing import Optional
-
 from pyspark.sql.functions import col
 
 from evidently.calculations.stattests import chi_stat_test
 from evidently.calculations.stattests.registry import StatTestFuncReturns
 from evidently.core import ColumnType
-from .base import SparkStatTestImpl, SpartStatTestData
+
+from .base import SparkStatTestImpl
+from .base import SpartStatTestData
 
 
 class SparkChiSquare(SparkStatTestImpl):
@@ -17,6 +17,7 @@ class SparkChiSquare(SparkStatTestImpl):
         column_name = data.column_name
 
         from scipy.stats import chisquare
+
         cur_vc = cur.groupby(column_name).count()
         cur_count = cur.count()
         ref_count = ref.count()

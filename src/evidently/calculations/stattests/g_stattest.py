@@ -65,4 +65,4 @@ g_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(g_test,_g_stat_test)
+register_stattest(g_test, _g_stat_test)

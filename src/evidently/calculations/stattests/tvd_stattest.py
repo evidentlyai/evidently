@@ -87,4 +87,4 @@ tvd_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(tvd_test,_tvd_stattest)
+register_stattest(tvd_test, _tvd_stattest)

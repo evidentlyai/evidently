@@ -1,5 +1,3 @@
-from typing import Optional
-
 import numpy as np
 
 from evidently.calculations.stattests import psi_stat_test
@@ -11,7 +9,7 @@ from .base import SpartStatTestData
 from .utils import get_binned_data
 
 
-class SparkJensenShannon(SparkStatTestImpl):
+class SparkPSI(SparkStatTestImpl):
     base_stat_test = psi_stat_test
 
     def __call__(self, data: SpartStatTestData, feature_type: ColumnType, threshold: float) -> StatTestFuncReturns:
@@ -24,6 +22,3 @@ class SparkJensenShannon(SparkStatTestImpl):
         psi_value = np.sum(psi_values)
 
         return psi_value, psi_value >= threshold
-
-
-

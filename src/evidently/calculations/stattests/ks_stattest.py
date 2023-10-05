@@ -56,4 +56,4 @@ ks_stat_test = StatTest(
     default_threshold=0.05,
 )
 
-register_stattest(ks_stat_test,_ks_stat_test)
+register_stattest(ks_stat_test, _ks_stat_test)

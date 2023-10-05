@@ -77,4 +77,4 @@ fisher_exact_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(fisher_exact_test,_fisher_exact_stattest)
+register_stattest(fisher_exact_test, _fisher_exact_stattest)

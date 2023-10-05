@@ -66,4 +66,4 @@ jensenshannon_stat_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(jensenshannon_stat_test,_jensenshannon)
+register_stattest(jensenshannon_stat_test, _jensenshannon)

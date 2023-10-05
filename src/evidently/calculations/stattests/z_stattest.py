@@ -97,4 +97,4 @@ z_stat_test = StatTest(
     allowed_feature_types=[ColumnType.Categorical],
 )
 
-register_stattest(z_stat_test,_z_stat_test)
+register_stattest(z_stat_test, _z_stat_test)

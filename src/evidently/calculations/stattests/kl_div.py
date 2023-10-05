@@ -59,4 +59,4 @@ kl_div_stat_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(kl_div_stat_test,_kl_div)
+register_stattest(kl_div_stat_test, _kl_div)

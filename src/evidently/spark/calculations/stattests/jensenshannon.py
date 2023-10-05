@@ -1,5 +1,3 @@
-from typing import Optional
-
 from scipy.spatial import distance
 
 from evidently.calculations.stattests import jensenshannon_stat_test

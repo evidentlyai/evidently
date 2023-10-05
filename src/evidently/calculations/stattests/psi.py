@@ -62,4 +62,4 @@ psi_stat_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(psi_stat_test,_psi)
+register_stattest(psi_stat_test, _psi)

@@ -96,4 +96,4 @@ hellinger_stat_test = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(hellinger_stat_test,_hellinger_distance)
+register_stattest(hellinger_stat_test, _hellinger_distance)

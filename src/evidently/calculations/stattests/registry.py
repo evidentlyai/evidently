@@ -1,9 +1,14 @@
 import dataclasses
-from typing import Any, Callable, ClassVar, Generic, Type, TypeVar
+from typing import Any
+from typing import Callable
+from typing import ClassVar
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
+from typing import TypeVar
 from typing import Union
 
 import pandas as pd
@@ -33,8 +38,13 @@ class StatTest:
     default_threshold: float = 0.05
 
     def __call__(
-            self,  reference_data: Any, current_data: Any, feature_type: ColumnType, threshold: Optional[float], engine: Type[Engine] = PythonEngine,
-            **kwargs
+        self,
+        reference_data: Any,
+        current_data: Any,
+        feature_type: ColumnType,
+        threshold: Optional[float],
+        engine: Type[Engine] = PythonEngine,
+        **kwargs,
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
         impl = _impls[self].get(engine, None)
@@ -53,8 +63,6 @@ class StatTest:
 add_type_mapping((StatTest,), lambda obj: get_registered_stattest_name(obj))
 
 
-
-
 @dataclasses.dataclass
 class StatTestData:
     reference_data: Any
@@ -68,11 +76,12 @@ TStatTestEngine = TypeVar("TStatTestEngine", bound=Engine)
 class StatTestImpl(Generic[TStatTestData, TStatTestEngine]):
     data_type: ClassVar[Type[TStatTestData]]
 
-    def __call__(self, data: TStatTestData, feature_type: ColumnType, threshold: float
-                 ) -> StatTestFuncReturns:
+    def __call__(self, data: TStatTestData, feature_type: ColumnType, threshold: float) -> StatTestFuncReturns:
         raise NotImplementedError
 
-_impls : Dict[StatTest, Dict[Type[Engine], StatTestImpl]] = {}
+
+_impls: Dict[StatTest, Dict[Type[Engine], StatTestImpl]] = {}
+
 
 @dataclasses.dataclass
 class PythonStatTestData(StatTestData):
@@ -83,8 +92,7 @@ class PythonStatTestData(StatTestData):
 class PythonStatTest(StatTestImpl[PythonStatTestData, PythonEngine]):
     data_type = PythonStatTestData
 
-    def __call__(self, data: PythonStatTestData, feature_type: ColumnType,
-                 threshold: float) -> StatTestFuncReturns:
+    def __call__(self, data: PythonStatTestData, feature_type: ColumnType, threshold: float) -> StatTestFuncReturns:
         raise NotImplementedError
 
 
@@ -96,8 +104,7 @@ _registered_stat_test_funcs: Dict[StatTestFuncType, str] = {}
 
 def _create_impl_wrapper(func: StatTestFuncType):
     class PythonStattestWrapper(PythonStatTest):
-        def __call__(self, data: PythonStatTestData, feature_type: ColumnType,
-                     threshold: float) -> StatTestFuncReturns:
+        def __call__(self, data: PythonStatTestData, feature_type: ColumnType, threshold: float) -> StatTestFuncReturns:
             return func(data.reference_data, data.current_data, feature_type, threshold)
 
     return PythonStattestWrapper()
@@ -138,10 +145,10 @@ def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, fe
 
 
 def get_stattest(
-        reference_data: pd.Series,
-        current_data: pd.Series,
-        feature_type: Union[ColumnType, str],
-        stattest_func: Optional[PossibleStatTestType],
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: Union[ColumnType, str],
+    stattest_func: Optional[PossibleStatTestType],
 ) -> StatTest:
     if isinstance(feature_type, str):
         feature_type = ColumnType(feature_type)
@@ -150,13 +157,18 @@ def get_stattest(
     return get_registered_stattest(stattest_func, feature_type)
 
 
-def get_registered_stattest(stattest_func: Optional[PossibleStatTestType], feature_type: ColumnType = None,
-                            engine: Type[Engine] = None) -> StatTest:
+def get_registered_stattest(
+    stattest_func: Optional[PossibleStatTestType], feature_type: ColumnType = None, engine: Type[Engine] = None
+) -> StatTest:
     if isinstance(stattest_func, StatTest):
         return stattest_func
     if callable(stattest_func) and stattest_func not in _registered_stat_test_funcs:
-        stat_test = StatTest(name="", display_name=f"custom function '{stattest_func.__name__}'", allowed_feature_types=[], )
-        _impls[stat_test][engine] = _create_impl_wrapper(stattest_func)
+        stat_test = StatTest(
+            name="",
+            display_name=f"custom function '{stattest_func.__name__}'",
+            allowed_feature_types=[],
+        )
+        _impls[stat_test][engine or PythonEngine] = _create_impl_wrapper(stattest_func)
         return stat_test
     if callable(stattest_func) and stattest_func in _registered_stat_test_funcs:
         stattest_name = _registered_stat_test_funcs[stattest_func]

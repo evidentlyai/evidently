@@ -67,4 +67,4 @@ epps_singleton_test = StatTest(
     default_threshold=0.05,
 )
 
-register_stattest(epps_singleton_test,_epps_singleton)
+register_stattest(epps_singleton_test, _epps_singleton)

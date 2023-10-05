@@ -32,9 +32,9 @@ class SparkColumnDriftMetric(SparkMetricImplementation[ColumnDriftMetric]):
 
         options = DataDriftOptions(all_features_stattest=self.metric.stattest, threshold=self.metric.stattest_threshold)
         if self.metric.get_options().render_options.raw_data:
-            agg_data = False
-        else:
-            agg_data = True
+            raise NotImplementedError("Spark Metrics do not support raw data visualisations")
+        if reference_feature_data is None:
+            raise ValueError("Reference should be present for ColumnDriftMetric")
         drift_result = get_one_column_drift(
             current_feature_data=current_feature_data,
             reference_feature_data=reference_feature_data,
@@ -43,7 +43,7 @@ class SparkColumnDriftMetric(SparkMetricImplementation[ColumnDriftMetric]):
             datetime_column=datetime_column_name,
             data_definition=data.data_definition,
             options=options,
-            agg_data=agg_data,
+            agg_data=True,
         )
 
         return ColumnDataDriftMetrics(

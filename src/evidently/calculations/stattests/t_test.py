@@ -55,4 +55,4 @@ t_test = StatTest(
     allowed_feature_types=[ColumnType.Numerical],
 )
 
-register_stattest(t_test,_t_test2samp)
+register_stattest(t_test, _t_test2samp)

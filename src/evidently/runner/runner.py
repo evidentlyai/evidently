@@ -6,7 +6,7 @@ from typing import Optional
 from typing import Type
 
 from evidently.options.data_drift import DataDriftOptions
-from evidently.options import QualityMetricsOptions
+from evidently.options.quality_metrics import QualityMetricsOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.runner.loader import DataLoader
 from evidently.runner.loader import DataOptions

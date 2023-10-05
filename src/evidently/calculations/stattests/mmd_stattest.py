@@ -151,4 +151,4 @@ emperical_mmd = StatTest(
     default_threshold=0.1,
 )
 
-register_stattest(emperical_mmd,_mmd_stattest)
+register_stattest(emperical_mmd, _mmd_stattest)

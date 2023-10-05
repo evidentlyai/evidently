@@ -21,4 +21,4 @@ abs_text_content_drift_stat_test = StatTest(
     default_threshold=0.55,
 )
 
-register_stattest(abs_text_content_drift_stat_test,_abs_text_content_drift)
+register_stattest(abs_text_content_drift_stat_test, _abs_text_content_drift)

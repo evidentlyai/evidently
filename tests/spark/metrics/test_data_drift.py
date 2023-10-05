@@ -10,14 +10,18 @@ from evidently.spark.engine import SparkEngine
 from tests.conftest import smart_assert_equal
 
 
-@pytest.mark.parametrize("metric", [
-    ColumnDriftMetric(column_name=ColumnName.from_any("a")),
-    ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="wasserstein"),
-    ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="psi"),
-    ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="jensenshannon")
-])
+@pytest.mark.parametrize(
+    "metric",
+    [
+        ColumnDriftMetric(column_name=ColumnName.from_any("a")),
+        ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="wasserstein"),
+        ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="psi"),
+        ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="jensenshannon"),
+    ],
+)
 def test_column_data_drift(metric):
     from evidently.options.data_drift import DataDriftOptions
+
     DataDriftOptions.__fields__["nbinsx"].default = 2
 
     ref_pd = pd.DataFrame([{"a": 0}, {"a": 1}, {"a": 2}])
