@@ -105,6 +105,14 @@ class ColumnNotFound(BaseException):
 
 
 @dataclass
+class GenericInputData:
+    reference_data: Optional[object]
+    current_data: object
+    column_mapping: ColumnMapping
+    data_definition: DataDefinition
+
+
+@dataclass
 class InputData:
     reference_data: Optional[pd.DataFrame]
     current_data: pd.DataFrame

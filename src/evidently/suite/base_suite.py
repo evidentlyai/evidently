@@ -20,7 +20,7 @@ from pydantic import parse_obj_as
 
 import evidently
 from evidently.base_metric import ErrorResult
-from evidently.base_metric import InputData
+from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.engine import Engine
@@ -271,7 +271,7 @@ class Suite:
     def __init__(self, options: Options, engine=None):
         self._engine_type = engine or PythonEngine
         self.context = Context(
-            engine=None,
+            engine=self._engine_type(),
             metrics=[],
             tests=[],
             metric_results={},
@@ -309,10 +309,11 @@ class Suite:
         self.context.state = States.Init
 
     def verify(self):
-        self.context.engine = self._engine_type(self.context.metrics, self.context.tests)
+        self.context.engine.set_metrics(self.context.metrics)
+        self.context.engine.set_tests(self.context.tests)
         self.context.state = States.Verified
 
-    def run_calculate(self, data: InputData):
+    def run_calculate(self, data: GenericInputData):
         if self.context.state in [States.Init]:
             self.verify()
 
@@ -367,7 +368,7 @@ class Suite:
 
     def reset(self):
         self.context = Context(
-            engine=None,
+            engine=self._engine_type(),
             metrics=[],
             tests=[],
             metric_results={},
