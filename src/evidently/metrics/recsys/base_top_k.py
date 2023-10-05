@@ -16,6 +16,7 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import plot_metric_k
+from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
 
 
 class TopKMetricResult(MetricResult):
@@ -25,7 +26,7 @@ class TopKMetricResult(MetricResult):
 
 
 class TopKMetric(Metric[TopKMetricResult]):
-
+    _precision_recall_calculation: PrecisionRecallCalculation
     k: int
     min_rel_score: Optional[int]
     judged_only: bool
@@ -39,31 +40,8 @@ class TopKMetric(Metric[TopKMetricResult]):
         self.k = k
         self.min_rel_score=min_rel_score
         self.judged_only=judged_only
+        self._precision_recall_calculation = PrecisionRecallCalculation(max(k, 10), min_rel_score)
         super().__init__(options=options)
-
-
-    def get_curr_and_ref_df(self, data: InputData):
-        target_column = data.data_definition.get_target_column()
-        prediction = data.data_definition.get_prediction_columns()
-        if target_column is None or prediction is None:
-            raise ValueError("Target and prediction were not found in data.")
-        _, target_current, target_reference = data.get_data(target_column.column_name)
-        if data.column_mapping.recomendations_type == "rank":
-            pred_name = prediction.predicted_values.column_name
-        else:
-            pred_name = prediction.prediction_probas[0].column_name
-        _, prediction_current, prediction_reference = data.get_data(pred_name)
-        user_column = data.column_mapping.user_id
-        if user_column is None:
-            raise ValueError("User_id was not found in data.")
-        _, user_current, user_reference = data.get_data(user_column)
-        curr = collect_dataset(user_current, target_current, prediction_current, self.min_rel_score, self.judged_only)
-        ref: Optional[pd.DataFrame] = None
-        if user_reference is not None and target_reference is not None and prediction_reference is not None:
-            ref = collect_dataset(
-                user_reference, target_reference, prediction_reference, self.min_rel_score, self.judged_only
-            )
-        return curr, ref
 
 
 @default_renderer(wrap_type=TopKMetric)

@@ -12,7 +12,7 @@ from evidently.options.base import AnyOptions
 from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
 
 
-class RecallTopKMetric(TopKMetric):
+class MARKMetric(TopKMetric):
     k: int
     min_rel_score: Optional[int]
     _precision_recall_calculation: PrecisionRecallCalculation
@@ -37,14 +37,14 @@ class RecallTopKMetric(TopKMetric):
         result = self._precision_recall_calculation.get_result()
         current = pd.Series(
             index = result.current['k'],
-            data = result.current['recall']
+            data = result.current['mar']
         )
         ref_data = result.reference
         reference: Optional[pd.Series] = None
         if ref_data is not None:
             reference = pd.Series(
             index = ref_data['k'],
-            data = ref_data['recall']
+            data = ref_data['mar']
         )
         return TopKMetricResult(
             k=self.k,
@@ -53,7 +53,7 @@ class RecallTopKMetric(TopKMetric):
         )
 
 
-@default_renderer(wrap_type=RecallTopKMetric)
-class RecallTopKMetricRenderer(TopKMetricRenderer):
-    yaxis_name = "recall@k"
-    header = "Recall@"
+@default_renderer(wrap_type=MARKMetric)
+class MARKMetricRenderer(TopKMetricRenderer):
+    yaxis_name = "mar@k"
+    header = "MAR@"

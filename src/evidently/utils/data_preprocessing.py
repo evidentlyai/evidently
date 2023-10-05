@@ -169,7 +169,6 @@ def _prediction_column(
     data: _InputData,
     mapping: Optional[ColumnMapping] = None,
 ) -> Optional[PredictionColumns]:
-    logging.warning(prediction)
     if prediction is None:
         return None
     if isinstance(prediction, str):

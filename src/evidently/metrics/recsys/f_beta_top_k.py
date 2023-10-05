@@ -2,6 +2,7 @@ from typing import List
 from typing import Optional
 
 import pandas as pd
+import numpy as np
 
 from evidently.base_metric import InputData
 from evidently.renderers.base_renderer import default_renderer
@@ -12,19 +13,22 @@ from evidently.options.base import AnyOptions
 from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
 
 
-class RecallTopKMetric(TopKMetric):
+class FBetaTopKMetric(TopKMetric):
     k: int
+    beta: Optional[float]
     min_rel_score: Optional[int]
     _precision_recall_calculation: PrecisionRecallCalculation
 
     def __init__(
         self,
         k: int,
+        beta: Optional[float] = 1.,
         min_rel_score: Optional[int] = None,
         options: AnyOptions = None
     ) -> None:
         self.k = k
-        self.min_rel_score=min_rel_score
+        self.beta = beta
+        self.min_rel_score = min_rel_score
         self._precision_recall_calculation = PrecisionRecallCalculation(max(k, 10), min_rel_score)
         super().__init__(
             options=options,
@@ -37,14 +41,14 @@ class RecallTopKMetric(TopKMetric):
         result = self._precision_recall_calculation.get_result()
         current = pd.Series(
             index = result.current['k'],
-            data = result.current['recall']
+            data = self.fbeta(result.current['precision_judged_only'], result.current['recall'])
         )
         ref_data = result.reference
         reference: Optional[pd.Series] = None
         if ref_data is not None:
             reference = pd.Series(
             index = ref_data['k'],
-            data = ref_data['recall']
+            data = self.fbeta(ref_data['precision_judged_only'], ref_data['recall'])
         )
         return TopKMetricResult(
             k=self.k,
@@ -52,8 +56,14 @@ class RecallTopKMetric(TopKMetric):
             current=current
         )
 
+    def fbeta(self, precision, recall):
+        beta_sqr = self.beta ** 2
+        precision_arr = np.array(precision)
+        recall_arr = np.array(recall)
+        return (1 + beta_sqr) * precision_arr * recall_arr / (beta_sqr * precision_arr + recall_arr)
 
-@default_renderer(wrap_type=RecallTopKMetric)
-class RecallTopKMetricRenderer(TopKMetricRenderer):
-    yaxis_name = "recall@k"
-    header = "Recall@"
+
+@default_renderer(wrap_type=FBetaTopKMetric)
+class FBetaTopKMetricRenderer(TopKMetricRenderer):
+    yaxis_name = "f_beta@k"
+    header = "F_beta@"

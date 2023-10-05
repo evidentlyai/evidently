@@ -54,6 +54,10 @@ from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
 from .recsys.precision_top_k import PrecisionTopKMetric
 from .recsys.recall_top_k import RecallTopKMetric
+from .recsys.f_beta_top_k import FBetaTopKMetric
+from .recsys.map_k import MAPKMetric
+from .recsys.mar_k import MARKMetric
+from .recsys.ndcg_k import NDCGKMetric
 
 __all__ = [
     "ClassificationClassBalance",
@@ -106,4 +110,8 @@ __all__ = [
     "RegressionTopErrorMetric",
     "PrecisionTopKMetric",
     "RecallTopKMetric",
+    "FBetaTopKMetric",
+    "MAPKMetric",
+    "MARKMetric",
+    "NDCGKMetric",
 ]

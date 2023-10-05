@@ -10,13 +10,12 @@ from evidently.metrics.recsys.base_top_k import TopKMetricRenderer
 from evidently.metrics.recsys.base_top_k import TopKMetricResult
 
 
-class PrecisionTopKMetric(TopKMetric):
+class MAPKMetric(TopKMetric):
     def calculate(self, data: InputData) -> TopKMetricResult:
         result = self._precision_recall_calculation.get_result()
-        key = 'precision'
+        key = 'map'
         if self.judged_only:
-            key = 'precision_judged_only'
-
+            key = 'map_judged_only'
         current = pd.Series(
             index = result.current['k'],
             data = result.current[key]
@@ -35,7 +34,7 @@ class PrecisionTopKMetric(TopKMetric):
         )
 
 
-@default_renderer(wrap_type=PrecisionTopKMetric)
+@default_renderer(wrap_type=MAPKMetric)
 class PrecisionTopKMetricRenderer(TopKMetricRenderer):
-    yaxis_name = "precision@k"
-    header = "Precision@"
+    yaxis_name = "map@k"
+    header = "MAP@"
