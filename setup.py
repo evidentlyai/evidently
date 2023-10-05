@@ -83,6 +83,9 @@ setup_args = dict(
             "black==22.8.0",
             "isort==5.10.1",
             "httpx==0.24.1"
+        ],
+        "spark": [
+            "pyspark"
         ]
     },
     entry_points={
