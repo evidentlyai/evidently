@@ -37,7 +37,8 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
         max_k = min(user_df['size'].max(), max_k)
         res = {}
         for k in range(1, max_k + 1):
-            tp = df[df.preds <= k].groupby('users').target.sum().rename(f'tp_{k}')
+            tp = df[df.preds <= k].groupby('users').target.agg(['sum', 'last'])
+            tp.columns = [f'tp_{k}', f'rel_{k}']
             user_df = pd.concat([user_df, tp], axis=1).fillna(0)
             user_df[f'precision_{k}'] = user_df[f'tp_{k}'] / np.minimum(user_df['size'], k)
             user_df[f'recall_{k}'] = user_df[f'tp_{k}'] / user_df['all']
@@ -48,10 +49,22 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
             user_df.loc[user_df['all'] != 0, [f'precision_{k}' for k in range(1, k + 1)]].mean()
         )
         res['map_include_no_feedback'] = list(
-            user_df[[f'precision_{k}' for k in range(1, k + 1)]].expanding(axis=1).mean().mean()
+            user_df[[f'precision_{k}' for k in range(1, k + 1)]]
+                .multiply(user_df[[f'rel_{k}' for k in range(1, k + 1)]].values)
+                .expanding(axis=1)
+                .sum()
+                .divide(user_df['all'], axis=0)
+                .fillna(0)
+                .mean()
         )
         res['map'] = list(
-            user_df.loc[user_df['all'] != 0, [f'precision_{k}' for k in range(1, k + 1)]].expanding(axis=1).mean().mean()
+            user_df.loc[user_df['all'] != 0, [f'precision_{k}' for k in range(1, k + 1)]]
+                .multiply(user_df.loc[user_df['all'] != 0, [f'rel_{k}' for k in range(1, k + 1)]].values)
+                .expanding(axis=1)
+                .sum()
+                .divide(user_df.loc[user_df['all'] != 0, 'all'], axis=0)
+                .fillna(0)
+                .mean()
         )
         res['recall_include_no_feedback'] = list(
             user_df[[f'recall_{k}' for k in range(1, k + 1)]].mean()
@@ -60,10 +73,22 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
             user_df.loc[user_df['all'] != 0, [f'recall_{k}' for k in range(1, k + 1)]].mean()
         )
         res['mar_include_no_feedback'] = list(
-            user_df[[f'recall_{k}' for k in range(1, k + 1)]].expanding(axis=1).mean().mean()
+            user_df[[f'recall_{k}' for k in range(1, k + 1)]]
+                .multiply(user_df[[f'rel_{k}' for k in range(1, k + 1)]].values)
+                .expanding(axis=1)
+                .sum()
+                .divide(user_df['all'], axis=0)
+                .fillna(0)
+                .mean()
         )
         res['mar'] = list(
-            user_df.loc[user_df['all'] != 0, [f'recall_{k}' for k in range(1, k + 1)]].expanding(axis=1).mean().mean()
+            user_df.loc[user_df['all'] != 0, [f'recall_{k}' for k in range(1, k + 1)]]
+                .multiply(user_df.loc[user_df['all'] != 0, [f'rel_{k}' for k in range(1, k + 1)]].values)
+                .expanding(axis=1)
+                .sum()
+                .divide(user_df.loc[user_df['all'] != 0, 'all'], axis=0)
+                .fillna(0)
+                .mean()
         )
         return res
 

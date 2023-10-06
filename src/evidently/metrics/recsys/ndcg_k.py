@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 
 import pandas as pd
@@ -10,24 +9,27 @@ from evidently.metrics.recsys.base_top_k import TopKMetricRenderer
 from evidently.metrics.recsys.base_top_k import TopKMetricResult
 from evidently.base_metric import Metric
 from evidently.options.base import AnyOptions
-from evidently.calculations.recommender_systems import collect_dataset
+from evidently.calculations.recommender_systems import get_curr_and_ref_df
 
 
 class NDCGKMetric(Metric[TopKMetricResult]):
     k: int
     min_rel_score: Optional[int]
+    no_feedback_users: bool
 
     def __init__(
         self, k: int,
         min_rel_score: Optional[int] = None,
+        no_feedback_users: bool = False,
         options: AnyOptions = None
     ) -> None:
         self.k = k
         self.min_rel_score=min_rel_score
+        self.no_feedback_users=no_feedback_users
         super().__init__(options=options)
-    
+
     def calculate(self, data: InputData) -> TopKMetricResult:
-        curr, ref = self.get_curr_and_ref_df(data)
+        curr, ref = get_curr_and_ref_df(data, self.min_rel_score, self.no_feedback_users, False)
         current = self.calculate_ndcg(curr, self.k)
         reference: Optional[dict] = None
         if ref is not None:
@@ -38,11 +40,11 @@ class NDCGKMetric(Metric[TopKMetricResult]):
             current=current,
             reference=reference,
         )
-    
+
     def calculate_ndcg(self, df, k):
         df = df.copy()
-        users_with_int = df[df.target > 0].users.unique()
-        df = df[df.users.isin(users_with_int)]
+        # users_with_int = df[df.target > 0].users.unique()
+        # df = df[df.users.isin(users_with_int)]
         df['dcg'] = df['target'] / np.log2(df['preds'] + 1)
         max_k = int(min(df['preds'].max(), max(k, 10)))
         df = df.sort_values(['users','target'], ascending=False)
@@ -54,38 +56,10 @@ class NDCGKMetric(Metric[TopKMetricResult]):
             user_df = pd.concat([dcg, idcg], axis=1).fillna(0)
             ndcg_k.append((user_df['dcg'] / user_df['idcg']).replace([np.inf, -np.inf], np.nan).fillna(0).mean())
 
-
         return pd.Series(
             index=[k for k in range(1, max_k + 1)],
             data=ndcg_k
         )
-        
-    
-    def get_curr_and_ref_df(self, data: InputData):
-        target_column = data.data_definition.get_target_column()
-        prediction = data.data_definition.get_prediction_columns()
-        if target_column is None or prediction is None:
-            raise ValueError("Target and prediction were not found in data.")
-        _, target_current, target_reference = data.get_data(target_column.column_name)
-        recomendations_type = data.column_mapping.recomendations_type
-        if recomendations_type == "rank":
-            pred_name = prediction.predicted_values.column_name
-        else:
-            pred_name = prediction.prediction_probas[0].column_name
-        _, prediction_current, prediction_reference = data.get_data(pred_name)
-        user_column = data.column_mapping.user_id
-        if user_column is None:
-            raise ValueError("User_id was not found in data.")
-        _, user_current, user_reference = data.get_data(user_column)
-        curr = collect_dataset(user_current, target_current, prediction_current, self.min_rel_score)
-        if recomendations_type == 'score':
-            curr['preds'] = curr.groupby('users')['preds'].transform('rank', ascending=False)
-        ref: Optional[pd.DataFrame] = None
-        if user_reference is not None and target_reference is not None and prediction_reference is not None:
-            ref = collect_dataset(user_reference, target_reference, prediction_reference, self.min_rel_score)
-            if recomendations_type == 'score':
-                ref['preds'] = ref.groupby('users')['preds'].transform('rank', ascending=False)
-        return curr, ref
 
 
 @default_renderer(wrap_type=NDCGKMetric)
