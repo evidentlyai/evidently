@@ -22,7 +22,7 @@ class SparkWasserstein(SparkStatTestImpl):
         column_name = data.column_name
         from scipy.stats import wasserstein_distance
 
-        (std,) = calculate_stats(ref, column_name, sf.stddev_pop)
+        std = calculate_stats(ref, column_name, sf.stddev_pop)
         norm = max(std, 0.001)
 
         (w1, vals1) = get_histogram(cur, column_name, APPROX_WASSERSTEIN_BINS, False)
