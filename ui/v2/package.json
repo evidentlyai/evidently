@@ -1,0 +1,13 @@
+{
+    "version": "1.0.0",
+    "private": true,
+    "description": "Evidently UI monorepo",
+    "scripts": {
+        "preinstall": "npx only-allow pnpm"
+    },
+    "license": "ISC",
+    "engines": {
+        "node": ">=16",
+        "pnpm": ">=8"
+    }
+}
