@@ -1,9 +1,9 @@
 {
     "version": "1.0.0",
-    "private": true,
-    "description": "Evidently UI monorepo",
+    "description": "Evidently UI Monorepo",
     "scripts": {
-        "preinstall": "npx only-allow pnpm"
+        "type-check": "pnpm -r type-check",
+        "lint": "pnpm -r lint"
     },
     "license": "ISC",
     "engines": {
