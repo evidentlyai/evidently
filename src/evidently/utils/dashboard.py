@@ -192,6 +192,7 @@ window.drawDashboard({params.dashboard_id},
 </body>
 """
 
+
 def inline_iframe_html_template(params: TemplateParams):
     resize_script = """
 <script type="application/javascript">
@@ -234,6 +235,7 @@ def inline_iframe_html_template(params: TemplateParams):
     {resize_script}
     <iframe class='evidently-iframe' width="100%" frameborder="0" srcdoc="{html.escape(html_doc)}">
     """
+
 
 def __load_js():
     return open(os.path.join(STATIC_PATH, "index.js"), encoding="utf-8").read()
