@@ -153,7 +153,7 @@ class Display:
             dashboard_info=dashboard_info,
             additional_graphs=graphs,
         )
-        return self._render(determine_template("auto"), template_params)
+        return self.show("inline")._repr_html_()
 
     def show(self, mode="auto"):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
@@ -164,9 +164,10 @@ class Display:
         )
         # pylint: disable=import-outside-toplevel
         try:
-            from IPython.display import HTML
+            from IPython.display import IFrame
 
-            return HTML(self._render(determine_template(mode), template_params))
+            text = self._render(determine_template("inline"), template_params).replace("&", "&amp;").replace("\"", "&quot;")
+            return IFrame("about:blank", "100%", "600px", [f"srcdoc=\"{text}\""])
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
