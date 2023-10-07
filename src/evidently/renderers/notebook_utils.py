@@ -1,5 +1,5 @@
-from evidently.utils.dashboard import file_html_template
 from evidently.utils.dashboard import inline_template
+from evidently.utils.dashboard import inline_iframe_html_template
 
 
 def determine_template(mode: str):
@@ -9,6 +9,7 @@ def determine_template(mode: str):
         from IPython import get_ipython
 
         is_colab = type(get_ipython()).__module__.startswith("google.colab")
+
     except ImportError:
         is_colab = False
 
@@ -17,8 +18,12 @@ def determine_template(mode: str):
             render_mode = "inline"
         else:
             render_mode = "nbextension"
+            # render_mode = "inline"
+
     if render_mode == "inline":
-        return file_html_template
+        return inline_iframe_html_template
+
     if render_mode == "nbextension":
         return inline_template
+
     raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")

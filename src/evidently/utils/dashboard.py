@@ -12,6 +12,7 @@ from typing import Optional
 import evidently
 from evidently.model.dashboard import DashboardInfo
 from evidently.utils import NumpyEncoder
+import html
 
 STATIC_PATH = os.path.join(evidently.__path__[0], "nbextension", "static")
 
@@ -154,6 +155,10 @@ def file_html_template(params: TemplateParams):
     f"url({params.font_file});"}
 }}
 
+.center-align {{
+  text-align: center;
+}}
+
 .material-icons {{
   font-family: 'Material Icons';
   font-weight: normal;
@@ -173,7 +178,9 @@ def file_html_template(params: TemplateParams):
 {data_block}
 </head>
 <body>
-<div id="root_{params.dashboard_id}">Loading...</div>
+<div id="root_{params.dashboard_id}">
+    <h1 class="center-align">Loading...</h1>
+</div>
 {lib_block}
 {js_files_block}
 <script>
@@ -185,6 +192,48 @@ window.drawDashboard({params.dashboard_id},
 </body>
 """
 
+def inline_iframe_html_template(params: TemplateParams):
+    resize_script = """
+<script type="application/javascript">
+;(function () {
+  const getIframeHeight = (iframe) => iframe.contentWindow.document.body.scrollHeight
+  const resizeIFrameHeight = (iframe) => (iframe.height = getIframeHeight(iframe))
+
+  const watchHeightChangingHeight = (iframe, watchTime = 2000, interval = 100) => {
+    let prevHeight = undefined
+
+    let intervalId = setInterval(() => {
+      const currentHeight = getIframeHeight(iframe)
+      if (
+        prevHeight !== currentHeight &&
+        (prevHeight === undefined || prevHeight < currentHeight)
+      ) {
+        prevHeight = currentHeight
+        resizeIFrameHeight(iframe)
+      }
+    }, interval)
+
+    setTimeout(() => {
+      clearInterval(intervalId)
+    }, watchTime)
+  }
+
+  setTimeout(() =>
+    document
+      .querySelectorAll('.evidently-iframe')
+      .forEach((iframe) => watchHeightChangingHeight(iframe))
+  )
+})()
+
+</script>
+"""
+
+    html_doc = file_html_template(params)
+
+    return f"""
+    {resize_script}
+    <iframe class='evidently-iframe' width="100%" frameborder="0" srcdoc="{html.escape(html_doc)}">
+    """
 
 def __load_js():
     return open(os.path.join(STATIC_PATH, "index.js"), encoding="utf-8").read()
