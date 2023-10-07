@@ -1,5 +1,5 @@
-from evidently.utils.dashboard import inline_template
 from evidently.utils.dashboard import inline_iframe_html_template
+from evidently.utils.dashboard import inline_template
 
 
 def determine_template(mode: str):

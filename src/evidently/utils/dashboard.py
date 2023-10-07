@@ -1,5 +1,6 @@
 import base64
 import dataclasses
+import html
 import json
 import os
 import shutil
@@ -12,7 +13,6 @@ from typing import Optional
 import evidently
 from evidently.model.dashboard import DashboardInfo
 from evidently.utils import NumpyEncoder
-import html
 
 STATIC_PATH = os.path.join(evidently.__path__[0], "nbextension", "static")
 
