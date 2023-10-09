@@ -5,6 +5,7 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 from sklearn import datasets
 from sklearn import ensemble
 
@@ -19,6 +20,7 @@ class DatasetTags(Enum):
     BINARY_CLASSIFICATION = "binary_classification"
     MULTICLASS_CLASSIFICATION = "multiclass_classification"
     REGRESSION = "regression"
+    RECSYS = "recsys"
 
 
 @dataclasses.dataclass(eq=True)
@@ -154,3 +156,16 @@ def reviews():
     )
 
     return TestDataset(name="reviews", current=reviews_cur, reference=reviews_ref, column_mapping=column_mapping)
+
+
+@dataset
+def recsys():
+    users = sum([[x] * 10 for x in range(10)], [])
+    np.random.seed(0)
+    items = np.random.randint(0, high=100, size=100)
+    rank = [x + 1 for x in range(10)] * 10
+    np.random.seed(0)
+    true = np.random.choice([1, 0], 100, p=[0.1, 0.9])
+    df = pd.DataFrame({"user_id": users, "item_id": items, "prediction": rank, "target": true})
+
+    return TestDataset("recsys", df, df, [DatasetTags.RECSYS])

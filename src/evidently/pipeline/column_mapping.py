@@ -9,6 +9,7 @@ from typing import Union
 class TaskType:
     REGRESSION_TASK: str = "regression"
     CLASSIFICATION_TASK: str = "classification"
+    RECOMMENDER_SYSTEMS: str = "recsys"
 
 
 TargetNames = Union[List[Union[int, str]], Dict[Union[int, str], str]]
@@ -29,6 +30,9 @@ class ColumnMapping:
     pos_label: Optional[Union[str, int]] = 1
     text_features: Optional[List[str]] = None
     embeddings: Optional[Embeddings] = None
+    user_id: Optional[str] = "user_id"
+    item_id: Optional[str] = "item_id"
+    recomendations_type: Optional[str] = "score"
 
     def is_classification_task(self):
         return self.task == TaskType.CLASSIFICATION_TASK

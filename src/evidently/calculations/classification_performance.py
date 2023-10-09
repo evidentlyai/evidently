@@ -99,6 +99,7 @@ def get_prediction_data(
     # for multiclass classification return just values and probas
     prediction = data_columns.utility_columns.prediction
     target = data_columns.utility_columns.target
+
     if isinstance(prediction, list) and len(prediction) > 2:
         # list of columns with prediction probas, should be same as target labels
         return PredictionData(
@@ -205,7 +206,7 @@ def get_prediction_data(
         isinstance(prediction, str)
         and target is not None
         and is_integer_dtype(data[target].dtype)
-        and data[prediction].dtype == dtype("float")
+        and is_float_dtype(data[prediction])
     ):
         predictions = (data[prediction] >= threshold).astype(dtype("int64"))
         prediction_probas = pd.DataFrame.from_dict(

@@ -195,6 +195,10 @@ def _prediction_column(
                 raise ValueError("Prediction type is categorical but task is regression")
             if prediction_type == ColumnType.Numerical:
                 return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
+        if mapping is not None and mapping.recomendations_type == "rank":
+            return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
+        if task == TaskType.RECOMMENDER_SYSTEMS and mapping is not None and mapping.recomendations_type == "score":
+            return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
         if task is None:
             if prediction_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
                 # probably this is binary with single column of probabilities

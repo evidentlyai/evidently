@@ -1366,3 +1366,23 @@ def plot_agg_line_data(
     if return_json:
         return json.loads(fig.to_json())
     return fig
+
+
+def plot_metric_k(curr_data: pd.Series, ref_data: Optional[pd.Series], yaxis_name: str):
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if ref_data is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig.add_trace(go.Scatter(x=curr_data.index, y=curr_data, marker_color=color_options.get_current_data_color()), 1, 1)
+    if ref_data is not None:
+        fig.add_trace(
+            go.Scatter(x=ref_data.index, y=ref_data, marker_color=color_options.get_reference_data_color()), 1, 2
+        )
+    fig.update_xaxes(title_text="k", tickformat=",d")
+    fig.update_layout(yaxis_title=yaxis_name, showlegend=False)
+    return fig
