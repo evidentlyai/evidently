@@ -377,7 +377,7 @@ def ensure_prediction_column_is_string(
     return result_prediction_column
 
 
-def get_dataset_drift(drift_metrics, drift_share=0.5) -> DatasetDrift:
+def get_dataset_drift(drift_metrics: Dict[str, ColumnDataDriftMetrics], drift_share=0.5) -> DatasetDrift:
     number_of_drifted_columns = sum([1 if drift.drift_detected else 0 for _, drift in drift_metrics.items()])
     share_drifted_columns = number_of_drifted_columns / len(drift_metrics)
     dataset_drift = bool(share_drifted_columns >= drift_share)
@@ -436,7 +436,7 @@ def get_drift_for_columns(
     )
 
     # calculate result
-    drift_by_columns = {}
+    drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
 
     for column_name in columns:
         drift_by_columns[column_name] = get_one_column_drift(

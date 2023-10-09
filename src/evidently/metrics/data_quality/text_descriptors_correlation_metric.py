@@ -8,6 +8,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import calculate_numerical_correlation
+from evidently.core import ColumnType
 from evidently.core import ColumnType as ColumnType_data
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
@@ -102,7 +103,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         if ref_df is not None:
             ref_result = {}
 
-        num_features = data.data_definition.get_columns("numerical_features")
+        num_features = data.data_definition.get_columns(ColumnType.Numerical, features_only=True)
         for name, feature in self.generated_text_features.items():
             correlations = calculate_numerical_correlation(
                 name,

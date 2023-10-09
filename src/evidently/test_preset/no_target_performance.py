@@ -95,7 +95,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
             if self.columns is None:
                 self.columns = list(
                     np.setdiff1d(
-                        [column.column_name for column in data_definition.get_columns("all_features")],
+                        [column.column_name for column in data_definition.get_columns(features_only=True)],
                         embs,
                     )
                 )

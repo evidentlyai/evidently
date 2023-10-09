@@ -117,7 +117,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         # text_dataset_columns = DatasetColumns(num_feature_names=curr_text_df.columns)
         text_dataset_columns = process_columns(ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns))
 
-        drift_by_columns = {}
+        drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
         for col in curr_text_df.columns:
             drift_by_columns[col] = get_one_column_drift(
                 current_data=curr_text_df,

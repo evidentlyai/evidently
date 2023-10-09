@@ -1,16 +1,24 @@
+from typing import Dict
+from typing import List
 from typing import Optional
+from typing import Sequence
 from typing import Union
 
 import numpy as np
+from pyspark.sql import DataFrame
 from pyspark.sql import functions as sf
 
 from evidently.base_metric import ColumnName
 from evidently.base_metric import DataDefinition
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import ColumnType
+from evidently.calculations.data_drift import DatasetDriftMetrics
 from evidently.calculations.data_drift import DistributionIncluded
 from evidently.calculations.data_drift import DriftStatsField
 from evidently.calculations.data_drift import ScatterField
+from evidently.calculations.data_drift import get_dataset_drift
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import ScatterAggField
 from evidently.options.data_drift import DataDriftOptions
 from evidently.spark import SparkEngine
@@ -34,7 +42,6 @@ def get_one_column_drift(
     options: DataDriftOptions,
     data_definition: DataDefinition,
     column_type: ColumnType,
-    agg_data: bool,
 ) -> ColumnDataDriftMetrics:
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column}' with type {column_type}")
@@ -104,9 +111,6 @@ def get_one_column_drift(
         current_nbinsx = options.get_nbinsx(column.name)
         current_small_distribution = get_histogram(current_column, column.name, current_nbinsx, density=True)
         reference_small_distribution = get_histogram(reference_column, column.name, current_nbinsx, density=True)
-        if not agg_data:
-            raise NotImplementedError("Spark Metrics only works with agg_data=True")
-
         current_scatter = {}
 
         df, prefix = prepare_df_for_time_index_plot(
@@ -127,7 +131,8 @@ def get_one_column_drift(
         scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
     elif column_type == ColumnType.Categorical:
-        pass  # todo: categorical
+        raise NotImplementedError("SparkEngine does not work with categorical columns yet")
+        # todo: categorical
         # reference_counts = reference_column.value_counts(sort=False)
         # current_counts = current_column.value_counts(sort=False)
         # keys = set(reference_counts.keys()).union(set(current_counts.keys()))
@@ -234,3 +239,122 @@ def get_one_column_drift(
     )
 
     return metrics
+
+
+def get_drift_for_columns(
+    *,
+    current_data: DataFrame,
+    reference_data: DataFrame,
+    data_definition: DataDefinition,
+    data_drift_options: DataDriftOptions,
+    drift_share_threshold: Optional[float] = None,
+    columns: Optional[List[str]] = None,
+) -> DatasetDriftMetrics:
+    if columns is None:
+        # ensure prediction column is a string - add label values for classification tasks
+        prediction_columns = data_definition.get_prediction_columns()
+        ensure_prediction_column_is_string(
+            prediction_column=prediction_columns.get_columns_list() if prediction_columns is not None else None,
+            current_data=current_data,
+            reference_data=reference_data,
+        )
+        columns = _get_all_columns_for_drift(data_definition)
+
+    drift_share_threshold = (
+        drift_share_threshold if drift_share_threshold is not None else data_drift_options.drift_share
+    )
+
+    datetime_column = data_definition.get_datetime_column()
+    datetime_column_name = datetime_column.column_name if datetime_column is not None else None
+
+    # calculate result
+    drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
+
+    for column_name in columns:
+        drift_by_columns[column_name] = get_one_column_drift(
+            current_feature_data=current_data,
+            reference_feature_data=reference_data,
+            datetime_column=datetime_column_name,
+            column=ColumnName.from_any(column_name),
+            options=data_drift_options,
+            data_definition=data_definition,
+            column_type=data_definition.get_column(column_name).column_type,
+        )
+
+    dataset_drift = get_dataset_drift(drift_by_columns, drift_share_threshold)
+    return DatasetDriftMetrics(
+        number_of_columns=len(columns),
+        number_of_drifted_columns=dataset_drift.number_of_drifted_columns,
+        share_of_drifted_columns=dataset_drift.dataset_drift_score,
+        dataset_drift=dataset_drift.dataset_drift,
+        drift_by_columns=drift_by_columns,
+        options=data_drift_options,
+        dataset_columns=DatasetColumns(
+            utility_columns=DatasetUtilityColumns(),
+            target_type=None,
+            num_feature_names=[],
+            cat_feature_names=[],
+            text_feature_names=[],
+            datetime_feature_names=[],
+            target_names=[],
+            task=None,
+        ),
+    )
+
+
+def _get_all_columns_for_drift(data_definition: DataDefinition) -> List[str]:
+    result: List[str] = []
+    target_column = data_definition.get_target_column()
+
+    if target_column:
+        result.append(target_column.column_name)
+
+    prediction_column = data_definition.get_prediction_columns()
+
+    if prediction_column is not None:
+        result.extend(c.column_name for c in prediction_column.get_columns_list())
+
+    result += [c.column_name for c in data_definition.get_columns(ColumnType.Numerical, features_only=True)]
+    result += [c.column_name for c in data_definition.get_columns(ColumnType.Categorical, features_only=True)]
+    result += [c.column_name for c in data_definition.get_columns(ColumnType.Text, features_only=True)]
+
+    return result
+
+
+def ensure_prediction_column_is_string(
+    *,
+    prediction_column: Optional[Union[str, Sequence]],
+    current_data: DataFrame,
+    reference_data: DataFrame,
+    threshold: float = 0.5,
+) -> Optional[str]:
+    """Update dataset by predictions type:
+
+    - if prediction column is None or a string, no dataset changes
+    - (binary classification) if predictions is a list and its length equals 2
+        set predicted_labels column by `threshold`
+    - (multy label classification) if predictions is a list and its length is greater than 2
+        set predicted_labels from probability values in columns by prediction column
+
+
+    Returns:
+         prediction column name.
+    """
+    result_prediction_column = None
+
+    if prediction_column is None or isinstance(prediction_column, str):
+        result_prediction_column = prediction_column
+
+    elif isinstance(prediction_column, list):
+        raise NotImplementedError("SparkEngine do not support multiple prediction columns yet")
+        # if len(prediction_column) > 2:
+        #     reference_data["predicted_labels"] = _get_pred_labels_from_prob(reference_data, prediction_column)
+        #     current_data["predicted_labels"] = _get_pred_labels_from_prob(current_data, prediction_column)
+        #     result_prediction_column = "predicted_labels"
+        #
+        # elif len(prediction_column) == 2:
+        #     reference_data["predicted_labels"] = (reference_data[prediction_column[0]] > threshold).astype(int)
+        #     current_data["predicted_labels"] = (current_data[prediction_column[0]] > threshold).astype(int)
+        #     result_prediction_column = "predicted_labels"
+
+    return result_prediction_column

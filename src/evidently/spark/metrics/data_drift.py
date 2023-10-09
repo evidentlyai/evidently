@@ -3,7 +3,10 @@ from evidently.calculation_engine.engine import metric_implementation
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.core import ColumnType
 from evidently.metrics import ColumnDriftMetric
+from evidently.metrics import DataDriftTable
+from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
 from evidently.options.data_drift import DataDriftOptions
+from evidently.spark.calculations.data_drift import get_drift_for_columns
 from evidently.spark.calculations.data_drift import get_one_column_drift
 from evidently.spark.engine import SparkInputData
 from evidently.spark.engine import SparkMetricImplementation
@@ -32,7 +35,7 @@ class SparkColumnDriftMetric(SparkMetricImplementation[ColumnDriftMetric]):
 
         options = DataDriftOptions(all_features_stattest=self.metric.stattest, threshold=self.metric.stattest_threshold)
         if self.metric.get_options().render_options.raw_data:
-            raise NotImplementedError("Spark Metrics do not support raw data visualisations")
+            raise NotImplementedError("Spark Metrics do not support raw data visualizations")
         if reference_feature_data is None:
             raise ValueError("Reference should be present for ColumnDriftMetric")
         drift_result = get_one_column_drift(
@@ -43,7 +46,6 @@ class SparkColumnDriftMetric(SparkMetricImplementation[ColumnDriftMetric]):
             datetime_column=datetime_column_name,
             data_definition=data.data_definition,
             options=options,
-            agg_data=True,
         )
 
         return ColumnDataDriftMetrics(
@@ -56,4 +58,30 @@ class SparkColumnDriftMetric(SparkMetricImplementation[ColumnDriftMetric]):
             current=drift_result.current,
             scatter=drift_result.scatter,
             reference=drift_result.reference,
+        )
+
+
+@metric_implementation(DataDriftTable)
+class SparkDataDriftTable(SparkMetricImplementation[DataDriftTable]):
+    def calculate(self, context, data: SparkInputData) -> DataDriftTableResults:
+        if data.reference_data is None:
+            raise ValueError("Reference dataset should be present")
+
+        if self.metric.get_options().render_options.raw_data:
+            raise NotImplementedError("SparkEngine do not support raw_data=True")
+
+        result = get_drift_for_columns(
+            current_data=data.current_data,
+            reference_data=data.reference_data,
+            data_drift_options=self.metric.drift_options,
+            data_definition=data.data_definition,
+            columns=self.metric.columns,
+        )
+        return DataDriftTableResults(
+            number_of_columns=result.number_of_columns,
+            number_of_drifted_columns=result.number_of_drifted_columns,
+            share_of_drifted_columns=result.share_of_drifted_columns,
+            dataset_drift=result.dataset_drift,
+            drift_by_columns=result.drift_by_columns,
+            dataset_columns=result.dataset_columns,
         )
