@@ -50,8 +50,9 @@ class Report(ReportBase):
         reference_id: str = None,
         batch_size: str = None,
         dataset_id: str = None,
+        name: str = None,
     ):
-        super().__init__(options, timestamp)
+        super().__init__(options, timestamp, name)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
@@ -254,6 +255,7 @@ class Report(ReportBase):
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
+            name=snapshot.name,
         )
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
