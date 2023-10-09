@@ -2,24 +2,62 @@ from typing import Any
 from typing import Callable
 from typing import Tuple
 from typing import Union
+from typing import overload
 
 from pyspark.sql import Column
 from pyspark.sql import DataFrame
 from pyspark.sql.types import ByteType
+from pyspark.sql.types import CharType
+from pyspark.sql.types import DataType
+from pyspark.sql.types import DateType
 from pyspark.sql.types import DecimalType
 from pyspark.sql.types import DoubleType
 from pyspark.sql.types import FloatType
 from pyspark.sql.types import IntegerType
 from pyspark.sql.types import LongType
 from pyspark.sql.types import ShortType
+from pyspark.sql.types import StringType
+from pyspark.sql.types import TimestampNTZType
+from pyspark.sql.types import TimestampType
+from pyspark.sql.types import VarcharType
 
 from evidently.base_metric import ColumnName
 
 
-def is_numeric_dtype(df: DataFrame, column: ColumnName):
-    dtype = df.schema.fields[df.schema.names.index(column.name)].dataType
+def get_column_type(df: DataFrame, column: str):
+    return df.schema.fields[df.schema.names.index(column)].dataType
 
+
+def is_numeric_dtype(dtype: DataType):
     return isinstance(dtype, (LongType, FloatType, IntegerType, ShortType, ByteType, DoubleType, DecimalType))
+
+
+def is_integer_dtype(dtype: DataType):
+    return isinstance(dtype, (LongType, IntegerType, ShortType))
+
+
+def is_string_dtype(dtype: DataType):
+    return isinstance(dtype, (StringType, VarcharType, CharType))
+
+
+def is_datetime64_dtype(dtype: DataType):
+    return isinstance(dtype, (DateType, TimestampType, TimestampNTZType))
+
+
+def is_numeric_column_dtype(df: DataFrame, column: ColumnName):
+    dtype = get_column_type(df, column.name)
+
+    return is_numeric_dtype(dtype)
+
+
+@overload
+def calculate_stats(df: DataFrame, column_name: str, funcs: Callable[[str], Column]) -> Any:
+    ...
+
+
+@overload
+def calculate_stats(df: DataFrame, column_name: str, *funcs: Callable[[str], Column]) -> Tuple:
+    ...
 
 
 def calculate_stats(df: DataFrame, column_name: str, *funcs: Callable[[str], Column]) -> Union[Tuple, Any]:

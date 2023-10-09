@@ -18,7 +18,7 @@ from evidently.spark.base import SparkSeries
 from evidently.spark.calculations.histogram import get_histogram
 from evidently.spark.calculations.stattests.base import get_stattest
 from evidently.spark.utils import calculate_stats
-from evidently.spark.utils import is_numeric_dtype
+from evidently.spark.utils import is_numeric_column_dtype
 from evidently.spark.visualizations import get_distribution_for_column
 from evidently.spark.visualizations import get_text_data_for_plots
 from evidently.spark.visualizations import prepare_df_for_time_index_plot
@@ -83,10 +83,10 @@ def get_one_column_drift(
     typical_words_ref = None
 
     if column_type == ColumnType.Numerical:
-        if not is_numeric_dtype(reference_column, column):
+        if not is_numeric_column_dtype(reference_column, column):
             raise ValueError(f"Column '{column}' in reference dataset should contain numerical values only.")
 
-        if not is_numeric_dtype(current_column, column):
+        if not is_numeric_column_dtype(current_column, column):
             raise ValueError(f"Column '{column}' in current dataset should contain numerical values only.")
 
     drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
