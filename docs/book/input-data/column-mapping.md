@@ -304,7 +304,7 @@ column_mapping = ColumnMapping()
 
 column_mapping.target = 'target'
 column_mapping.prediction = ['churn', 'not_churn']
-pos_label = 'churn'
+column_mapping.pos_label = 'churn'
 
 ```
 
@@ -324,7 +324,7 @@ column_mapping = ColumnMapping()
 
 column_mapping.target = 'target'
 column_mapping.prediction = 'not_churn'
-pos_label = 'churn'
+column_mapping.pos_label = 'churn'
 
 ```
 Both naming the column after one of the labels and passing the name of the positive class are requirements.
@@ -345,7 +345,7 @@ column_mapping = ColumnMapping()
 
 column_mapping.target = 'target'
 column_mapping.prediction = 'prediction'
-pos_label = 1
+column_mapping.pos_label = 1
 column_mapping.target_names = ['churn', 'not_churn']
 
 ```
