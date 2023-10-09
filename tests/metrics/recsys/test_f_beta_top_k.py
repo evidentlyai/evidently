@@ -17,7 +17,7 @@ def test_fbeta_values():
 
     metric = FBetaTopKMetric(k=2)
     report = Report(metrics=[metric])
-    column_mapping=ColumnMapping(recomendations_type='rank')
+    column_mapping = ColumnMapping(recomendations_type="rank")
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()
@@ -31,14 +31,14 @@ def test_fbeta_scores():
     current = pd.DataFrame(
         data=dict(
             user_id=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
-            prediction=[1.25, 1., 0.3, 0.9, 0.8, 0.7, 1., 0.5, 0.3],
+            prediction=[1.25, 1.0, 0.3, 0.9, 0.8, 0.7, 1.0, 0.5, 0.3],
             target=[1, 0, 0, 0, 0, 0, 0, 0, 1],
         ),
     )
 
     metric = FBetaTopKMetric(k=3)
     report = Report(metrics=[metric])
-    column_mapping=ColumnMapping()
+    column_mapping = ColumnMapping()
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()
@@ -52,14 +52,14 @@ def test_fbeta_scores_include_no_feedback():
     current = pd.DataFrame(
         data=dict(
             user_id=["a", "a", "a", "b", "b", "b", "c", "c", "c"],
-            prediction=[1.25, 1., 0.3, 0.9, 0.8, 0.7, 1., 0.5, 0.3],
+            prediction=[1.25, 1.0, 0.3, 0.9, 0.8, 0.7, 1.0, 0.5, 0.3],
             target=[1, 0, 0, 0, 0, 0, 0, 0, 1],
         ),
     )
 
     metric = FBetaTopKMetric(k=3, no_feedback_users=True)
     report = Report(metrics=[metric])
-    column_mapping=ColumnMapping()
+    column_mapping = ColumnMapping()
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()
