@@ -60,6 +60,9 @@ class FBetaTopKMetric(TopKMetric):
         recall_arr = np.array(recall)
         return (1 + beta_sqr) * precision_arr * recall_arr / (beta_sqr * precision_arr + recall_arr)
 
+    def key(self) -> str:
+        return ""
+
 
 @default_renderer(wrap_type=FBetaTopKMetric)
 class FBetaTopKMetricRenderer(TopKMetricRenderer):

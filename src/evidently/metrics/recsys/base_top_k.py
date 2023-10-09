@@ -1,3 +1,4 @@
+import abc
 from typing import List
 from typing import Optional
 
@@ -24,8 +25,7 @@ class TopKMetricResult(MetricResult):
     reference: Optional[pd.Series] = None
 
 
-class TopKMetric(Metric[TopKMetricResult]):
-    key: Optional[str]
+class TopKMetric(Metric[TopKMetricResult], abc.ABC):
     _precision_recall_calculation: PrecisionRecallCalculation
     k: int
     min_rel_score: Optional[int]
@@ -42,7 +42,7 @@ class TopKMetric(Metric[TopKMetricResult]):
 
     def calculate(self, data: InputData) -> TopKMetricResult:
         result = self._precision_recall_calculation.get_result()
-        key = self.key
+        key = self.key()
         if key is None:
             raise ValueError("Key should be specified")
         if self.no_feedback_users:
@@ -54,6 +54,10 @@ class TopKMetric(Metric[TopKMetricResult]):
         if ref_data is not None:
             reference = pd.Series(index=ref_data["k"], data=ref_data[key])
         return TopKMetricResult(k=self.k, reference=reference, current=current)
+
+    @abc.abstractmethod
+    def key(self) -> str:
+        raise NotImplementedError()
 
 
 @default_renderer(wrap_type=TopKMetric)

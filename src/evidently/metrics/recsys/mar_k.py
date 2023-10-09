@@ -4,7 +4,8 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class MARKMetric(TopKMetric):
-    key = "mar"
+    def key(self):
+        return "mar"
 
 
 @default_renderer(wrap_type=MARKMetric)

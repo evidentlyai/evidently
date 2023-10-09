@@ -4,7 +4,8 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class MAPKMetric(TopKMetric):
-    key = "map"
+    def key(self):
+        return "map"
 
 
 @default_renderer(wrap_type=MAPKMetric)
