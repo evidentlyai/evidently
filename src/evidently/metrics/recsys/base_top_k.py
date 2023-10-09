@@ -46,7 +46,7 @@ class TopKMetric(Metric[TopKMetricResult], abc.ABC):
         if key is None:
             raise ValueError("Key should be specified")
         if self.no_feedback_users:
-            key = f"{self.key}_include_no_feedback"
+            key = f"{self.key()}_include_no_feedback"
 
         current = pd.Series(index=result.current["k"], data=result.current[key])
         ref_data = result.reference

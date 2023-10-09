@@ -166,6 +166,6 @@ def recsys():
     rank = [x + 1 for x in range(10)] * 10
     np.random.seed(0)
     true = np.random.choice([1, 0], 100, p=[0.1, 0.9])
-    df = pd.DataFrame({"user_id": users, "item_id": items, "predictions": rank, "target": true})
+    df = pd.DataFrame({"user_id": users, "item_id": items, "prediction": rank, "target": true})
 
     return TestDataset("recsys", df, df, [DatasetTags.RECSYS])

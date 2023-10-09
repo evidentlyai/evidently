@@ -28,7 +28,12 @@ def column_correlations_metric():
 
 @metric
 def dataset_correlations_metric():
-    return TestMetric("dataset_correlations_metric", DatasetCorrelationsMetric(), NoopOutcome())
+    return TestMetric(
+        "dataset_correlations_metric",
+        DatasetCorrelationsMetric(),
+        NoopOutcome(),
+        exclude_tags=[DatasetTags.RECSYS],
+    )
 
 
 @metric

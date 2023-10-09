@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import List
 from typing import Optional
 
 import numpy as np
@@ -8,7 +9,10 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_curr_and_ref_df
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
 
 
 class PrecisionRecallCalculationResult(MetricResult):
@@ -91,3 +95,9 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
             current=current,
             reference=reference,
         )
+
+
+@default_renderer(wrap_type=PrecisionRecallCalculation)
+class PrecisionTopKMetricRenderer(MetricRenderer):
+    def render_html(self, obj: PrecisionRecallCalculation) -> List[BaseWidgetInfo]:
+        return []
