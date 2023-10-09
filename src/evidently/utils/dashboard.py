@@ -195,45 +195,34 @@ window.drawDashboard({params.dashboard_id},
 
 def inline_iframe_html_template(params: TemplateParams):
     resize_script = """
-<script type="application/javascript">
-;(function () {
-  const getIframeHeight = (iframe) => iframe.contentWindow.document.body.scrollHeight
-  const resizeIFrameHeight = (iframe) => (iframe.height = getIframeHeight(iframe))
+        <script type="application/javascript">        
+            ;(function () {
+              if (window.evidentlyResizeIframeInterval) {
+                clearInterval(window.evidentlyResizeIframeInterval)
+                window.evidentlyResizeIframeInterval = null
+              }
 
-  const watchHeightChangingHeight = (iframe, watchTime = 2000, interval = 100) => {
-    let prevHeight = undefined
+              ;(function (INTERVAL = 100) {
+                window.evidentlyResizeIframeInterval = setInterval(() => {
+                  document
+                    .querySelectorAll('iframe.evidently-ui-iframe')
+                    .forEach((iframe) => resizeIFrameHeightToFitContent(iframe))
+                }, INTERVAL)
 
-    let intervalId = setInterval(() => {
-      const currentHeight = getIframeHeight(iframe)
-      if (
-        prevHeight !== currentHeight &&
-        (prevHeight === undefined || prevHeight < currentHeight)
-      ) {
-        prevHeight = currentHeight
-        resizeIFrameHeight(iframe)
-      }
-    }, interval)
+                const getIframeHeight = (iframe) => iframe.contentWindow.document.body.scrollHeight
 
-    setTimeout(() => {
-      clearInterval(intervalId)
-    }, watchTime)
-  }
-
-  setTimeout(() =>
-    document
-      .querySelectorAll('.evidently-iframe')
-      .forEach((iframe) => watchHeightChangingHeight(iframe))
-  )
-})()
-
-</script>
-"""
+                const resizeIFrameHeightToFitContent = (iframe) =>
+                  iframe.height !== getIframeHeight(iframe) && (iframe.height = getIframeHeight(iframe))
+              })()
+            })()
+        </script>
+    """
 
     html_doc = file_html_template(params)
 
     return f"""
     {resize_script}
-    <iframe class='evidently-iframe' width="100%" frameborder="0" srcdoc="{html.escape(html_doc)}">
+    <iframe class='evidently-ui-iframe' width="100%" frameborder="0" srcdoc="{html.escape(html_doc)}">
     """
 
 
