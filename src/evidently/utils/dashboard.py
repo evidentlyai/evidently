@@ -195,7 +195,7 @@ window.drawDashboard({params.dashboard_id},
 
 def inline_iframe_html_template(params: TemplateParams):
     resize_script = """
-        <script type="application/javascript">        
+        <script type="application/javascript">
             ;(function () {
               if (window.evidentlyResizeIframeInterval) {
                 clearInterval(window.evidentlyResizeIframeInterval)
