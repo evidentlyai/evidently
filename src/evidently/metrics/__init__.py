@@ -41,6 +41,12 @@ from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality.stability_metric import DataQualityStabilityMetric
 from .data_quality.text_descriptors_correlation_metric import TextDescriptorsCorrelationMetric
 from .data_quality.text_descriptors_distribution import TextDescriptorsDistribution
+from .recsys.f_beta_top_k import FBetaTopKMetric
+from .recsys.map_k import MAPKMetric
+from .recsys.mar_k import MARKMetric
+from .recsys.ndcg_k import NDCGKMetric
+from .recsys.precision_top_k import PrecisionTopKMetric
+from .recsys.recall_top_k import RecallTopKMetric
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
 from .regression_performance.error_bias_table import RegressionErrorBiasTable
 from .regression_performance.error_distribution import RegressionErrorDistribution
@@ -52,12 +58,6 @@ from .regression_performance.regression_dummy_metric import RegressionDummyMetri
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
-from .recsys.precision_top_k import PrecisionTopKMetric
-from .recsys.recall_top_k import RecallTopKMetric
-from .recsys.f_beta_top_k import FBetaTopKMetric
-from .recsys.map_k import MAPKMetric
-from .recsys.mar_k import MARKMetric
-from .recsys.ndcg_k import NDCGKMetric
 
 __all__ = [
     "ClassificationClassBalance",

@@ -1368,11 +1368,7 @@ def plot_agg_line_data(
     return fig
 
 
-def plot_metric_k(
-    curr_data: pd.Series,
-    ref_data: Optional[pd.Series],
-    yaxis_name: str
-):
+def plot_metric_k(curr_data: pd.Series, ref_data: Optional[pd.Series], yaxis_name: str):
     color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -1387,6 +1383,6 @@ def plot_metric_k(
         fig.add_trace(
             go.Scatter(x=ref_data.index, y=ref_data, marker_color=color_options.get_reference_data_color()), 1, 2
         )
-    fig.update_xaxes(title_text="k", tickformat= ',d')
+    fig.update_xaxes(title_text="k", tickformat=",d")
     fig.update_layout(yaxis_title=yaxis_name, showlegend=False)
     return fig
