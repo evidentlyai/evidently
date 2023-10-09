@@ -75,7 +75,7 @@ pip install -e .[dev]
 ### Running black 
 We use black for code auto formatting.
 ```sh
-black .
+black -l 120 -t py37 .
 ```
 
 ### Running isort 
