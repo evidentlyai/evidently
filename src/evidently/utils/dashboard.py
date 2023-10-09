@@ -1,5 +1,6 @@
 import base64
 import dataclasses
+import html
 import json
 import os
 import shutil
@@ -154,6 +155,10 @@ def file_html_template(params: TemplateParams):
     f"url({params.font_file});"}
 }}
 
+.center-align {{
+  text-align: center;
+}}
+
 .material-icons {{
   font-family: 'Material Icons';
   font-weight: normal;
@@ -173,7 +178,9 @@ def file_html_template(params: TemplateParams):
 {data_block}
 </head>
 <body>
-<div id="root_{params.dashboard_id}">Loading...</div>
+<div id="root_{params.dashboard_id}">
+    <h1 class="center-align">Loading...</h1>
+</div>
 {lib_block}
 {js_files_block}
 <script>
@@ -184,6 +191,39 @@ window.drawDashboard({params.dashboard_id},
 </script>
 </body>
 """
+
+
+def inline_iframe_html_template(params: TemplateParams):
+    resize_script = """
+        <script type="application/javascript">
+            ;(function () {
+              if (window.evidentlyResizeIframeInterval) {
+                clearInterval(window.evidentlyResizeIframeInterval)
+                window.evidentlyResizeIframeInterval = null
+              }
+
+              ;(function (INTERVAL = 100) {
+                window.evidentlyResizeIframeInterval = setInterval(() => {
+                  document
+                    .querySelectorAll('iframe.evidently-ui-iframe')
+                    .forEach((iframe) => resizeIFrameHeightToFitContent(iframe))
+                }, INTERVAL)
+
+                const getIframeHeight = (iframe) => iframe.contentWindow.document.body.scrollHeight
+
+                const resizeIFrameHeightToFitContent = (iframe) =>
+                  iframe.height !== getIframeHeight(iframe) && (iframe.height = getIframeHeight(iframe))
+              })()
+            })()
+        </script>
+    """
+
+    html_doc = file_html_template(params)
+
+    return f"""
+    {resize_script}
+    <iframe class='evidently-ui-iframe' width="100%" frameborder="0" srcdoc="{html.escape(html_doc)}">
+    """
 
 
 def __load_js():
