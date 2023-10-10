@@ -18,8 +18,8 @@ from evidently.calculation_engine.metric_implementation import MetricImplementat
 from evidently.core import ColumnType
 from evidently.spark.base import SparkDataFrame
 from evidently.spark.base import SparkSeries
+from evidently.spark.base import create_data_definition_spark
 from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.data_preprocessing import create_data_definition
 
 
 class SparkInputData(InputData):
@@ -118,7 +118,7 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData]):
         )
 
     def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
-        return create_data_definition(current_data, reference_data, column_mapping)
+        return create_data_definition_spark(current_data, reference_data, column_mapping)
 
     def generate_additional_features(self, data: SparkInputData):
         pass
