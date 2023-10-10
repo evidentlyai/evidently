@@ -3,10 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evidently UI</title>
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Evidently - ML Monitoring Demo. Hosted example to monitor the performance of a demand forecasting model on a toy dataset."
+    />
+    <title>Evidently - ML Monitoring Demo</title>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // hack for vite bundler
+      // https://github.com/plouc/nivo/issues/1455#issuecomment-815904731
+      var global = globalThis
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

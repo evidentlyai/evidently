@@ -1,8 +1,10 @@
 import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { api } from 'api/RemoteApi'
-import { DashboardContent } from 'lib/components/DashboardContent'
-import DashboardContext, { CreateDashboardContextState } from 'lib/contexts/DashboardContext'
+import { DashboardContent } from 'evidently-ui/components/DashboardContent'
+import DashboardContext, {
+  CreateDashboardContextState
+} from 'evidently-ui/contexts/DashboardContext'
 import { crumbFunction } from 'Components/BreadCrumbs'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -17,7 +19,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 type loaderData = Awaited<ReturnType<typeof loader>>
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
-  crumb: (data, { pathname, params }) => ({ to: pathname, linkText: String(params.testSuiteId) })
+  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.testSuiteId) })
 }
 
 export const Component = () => {

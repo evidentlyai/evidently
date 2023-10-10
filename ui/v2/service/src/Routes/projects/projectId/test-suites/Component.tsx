@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Chip,
   Grid,
   Link,
   Table,
@@ -10,7 +9,7 @@ import {
   TableHead,
   TableRow,
   TextField
-} from '@material-ui/core'
+} from '@mui/material'
 import {
   Link as RouterLink,
   LoaderFunctionArgs,
@@ -29,7 +28,7 @@ import { HidedTags } from 'Components/HidedTags'
 import { crumbFunction } from 'Components/BreadCrumbs'
 import { useUpdateQueryStringValueWithoutNavigation } from 'hooks/useUpdateQueryStringValueWithoutNavigation'
 import { useState } from 'react'
-import { Autocomplete } from '@material-ui/lab'
+import { Autocomplete } from '@mui/material'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   invariant(params.projectId, 'missing projectId')
@@ -40,7 +39,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 type loaderData = Awaited<ReturnType<typeof loader>>
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
-  crumb: (data, { pathname, params }) => ({ to: pathname, linkText: 'Test Suites' })
+  crumb: (_, { pathname }) => ({ to: pathname, linkText: 'Test Suites' })
 }
 
 export const Component = () => {
@@ -84,7 +83,7 @@ export const Component = () => {
 
   return (
     <>
-      <Box sx={{ padding: 20 }}>
+      <Box sx={{ padding: 2 }}>
         <Grid container>
           <Grid item xs={5}>
             <Autocomplete

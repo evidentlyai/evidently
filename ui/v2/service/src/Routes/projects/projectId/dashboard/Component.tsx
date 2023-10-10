@@ -1,6 +1,6 @@
-import { Grid, TextField } from '@material-ui/core'
-import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router'
-import { DashboardContent } from 'lib/components/DashboardContent'
+import { Grid, TextField } from '@mui/material'
+import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
+import { DashboardContent } from 'evidently-ui/components/DashboardContent'
 import { api } from 'api/RemoteApi'
 import invariant from 'tiny-invariant'
 import { useSearchParams } from 'react-router-dom'
@@ -30,6 +30,7 @@ export const Component = () => {
         <Grid item>
           <TextField
             id="from-datetime"
+            variant="standard"
             label="From"
             type="datetime-local"
             defaultValue={date_from && formatDate(new Date(Date.parse(date_from)))}
@@ -47,6 +48,7 @@ export const Component = () => {
           />
           <TextField
             id="to-datetime"
+            variant="standard"
             label="To"
             type="datetime-local"
             defaultValue={date_to && formatDate(new Date(Date.parse(date_to)))}

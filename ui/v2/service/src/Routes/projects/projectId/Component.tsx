@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@material-ui/core'
+import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/material'
 
 import {
   Link as RouterLink,
