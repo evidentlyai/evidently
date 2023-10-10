@@ -1,6 +1,7 @@
 from typing import Any
 from typing import Callable
 from typing import Tuple
+from typing import Type
 from typing import Union
 from typing import overload
 
@@ -21,6 +22,8 @@ from pyspark.sql.types import TimestampType
 
 from evidently.base_metric import ColumnName
 
+CharType: Type[DataType]
+VarcharType: Type[DataType]
 try:
     from pyspark.sql.types import CharType
 except ImportError:
