@@ -7,7 +7,6 @@ from typing import overload
 from pyspark.sql import Column
 from pyspark.sql import DataFrame
 from pyspark.sql.types import ByteType
-from pyspark.sql.types import CharType
 from pyspark.sql.types import DataType
 from pyspark.sql.types import DateType
 from pyspark.sql.types import DecimalType
@@ -19,9 +18,18 @@ from pyspark.sql.types import ShortType
 from pyspark.sql.types import StringType
 from pyspark.sql.types import TimestampNTZType
 from pyspark.sql.types import TimestampType
-from pyspark.sql.types import VarcharType
 
 from evidently.base_metric import ColumnName
+
+try:
+    from pyspark.sql.types import CharType
+except ImportError:
+    CharType = StringType
+
+try:
+    from pyspark.sql.types import VarcharType
+except ImportError:
+    VarcharType = StringType
 
 
 def get_column_type(df: DataFrame, column: str):
