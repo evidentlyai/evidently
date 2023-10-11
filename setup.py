@@ -65,7 +65,7 @@ setup_args = dict(
         "typer>=0.3",
         "rich>=13",
         "iterative-telemetry>=0.0.5",
-        "pyarrow>=11"
+        "pyarrow<11.0dev"
     ],
     extras_require={
         "dev": [
