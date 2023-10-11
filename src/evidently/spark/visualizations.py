@@ -123,12 +123,10 @@ def get_distribution_for_column(
 
 
 def get_distribution_for_category_column(column: SparkSeries, column_name: str) -> Distribution:
-    value_counts = pd.DataFrame(
-        column.groupby(column_name).agg(sf.count_distinct(column_name).alias("count")).toPandas()
-    )
+    value_counts = pd.DataFrame(column.groupby(column_name).agg(sf.count(column_name).alias("count")).toPandas())
     return Distribution(
-        x=value_counts["count"],
-        y=value_counts[column_name],
+        y=value_counts["count"].to_numpy(),
+        x=value_counts[column_name].to_numpy(),
     )
 
 

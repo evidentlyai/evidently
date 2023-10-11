@@ -1,3 +1,4 @@
+from typing import Dict
 from typing import Optional
 from typing import Tuple
 
@@ -63,3 +64,7 @@ def hist_bin_doane(data: SparkSeries, column_name: str) -> Tuple[int, Optional[f
             width = (dmax - dmin) / (1.0 + np.log2(size) + np.log2(1.0 + np.absolute(g1) / sg1))
             return int(np.ceil((dmax - dmin) / width)), dmax, dmin
     return 1, None, None
+
+
+def value_counts(data: SparkSeries, column_name: str) -> Dict:
+    return {r[column_name]: r["count"] for r in data.groupby(column_name).count().collect()}

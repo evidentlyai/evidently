@@ -24,6 +24,7 @@ from evidently.options.data_drift import DataDriftOptions
 from evidently.spark import SparkEngine
 from evidently.spark.base import SparkSeries
 from evidently.spark.calculations.histogram import get_histogram
+from evidently.spark.calculations.histogram import value_counts
 from evidently.spark.calculations.stattests.base import get_stattest
 from evidently.spark.utils import calculate_stats
 from evidently.spark.utils import is_numeric_column_dtype
@@ -36,7 +37,6 @@ def get_one_column_drift(
     *,
     current_feature_data: SparkSeries,
     reference_feature_data: SparkSeries,
-    # index_data: pd.Series,
     datetime_column: Optional[str],
     column: ColumnName,
     options: DataDriftOptions,
@@ -131,64 +131,12 @@ def get_one_column_drift(
         scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)
 
     elif column_type == ColumnType.Categorical:
-        raise NotImplementedError("SparkEngine does not work with categorical columns yet")
-        # todo: categorical
-        # reference_counts = reference_column.value_counts(sort=False)
-        # current_counts = current_column.value_counts(sort=False)
-        # keys = set(reference_counts.keys()).union(set(current_counts.keys()))
-        #
-        # for key in keys:
-        #     if key not in reference_counts:
-        #         reference_counts.loc[key] = 0
-        #     if key not in current_counts:
-        #         current_counts.loc[key] = 0
-        #
-        # reference_small_distribution = np.array(
-        #     reversed(
-        #         list(
-        #             map(
-        #                 list,
-        #                 zip(*sorted(reference_counts.items(), key=lambda x: str(x[0]))),
-        #             )
-        #         )
-        #     )
-        # )
-        # current_small_distribution = np.array(
-        #     reversed(
-        #         list(
-        #             map(
-        #                 list,
-        #                 zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))),
-        #             )
-        #         )
-        #     )
-        # )
+        current_vc = value_counts(current_column, column.name)
+        reference_vc = value_counts(reference_column, column.name)
+        keys = np.array(list(set(current_vc.keys()).union(reference_vc.keys())))
+        current_small_distribution = [current_vc.get(k, 0) for k in keys], keys  # type: ignore[assignment]
+        reference_small_distribution = [reference_vc.get(k, 0) for k in keys], keys  # type: ignore[assignment]
     if column_type != ColumnType.Text:
-        # todo: categorical
-        # prediction = data_definition.get_prediction_columns()
-        # labels = data_definition.classification_labels()
-        # predicted_values = prediction.predicted_values if prediction else None
-        # if (
-        #     column_type == ColumnType.Categorical
-        #     and labels is not None
-        #     and (
-        #         (target and column.name == target.column_name)
-        #         or (
-        #             predicted_values
-        #             and isinstance(predicted_values.column_name, str)
-        #             and column.name == predicted_values.column_name
-        #         )
-        #     )
-        # ):
-        #     column_values = np.union1d(current_column.unique(), reference_column.unique())
-        #     target_names = labels if isinstance(labels, list) else list(labels.values())
-        #     new_values = np.setdiff1d(list(target_names), column_values)
-        #     if len(new_values) > 0:
-        #         raise ValueError(f"Values {new_values} not presented in 'target_names'")
-        #     else:
-        #         current_column = current_column.map(target_names)
-        #         reference_column = reference_column.map(target_names)
-
         current_distribution, reference_distribution = get_distribution_for_column(
             column_type=column_type,
             column_name=column.name,

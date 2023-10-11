@@ -12,16 +12,29 @@ from tests.conftest import smart_assert_equal
 
 
 @pytest.mark.parametrize(
-    "metric",
+    "metric,column_mapping",
     [
-        ColumnDriftMetric(column_name=ColumnName.from_any("a")),
-        ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="wasserstein"),
-        ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="psi"),
-        ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="jensenshannon"),
-        DataDriftTable(),
+        (ColumnDriftMetric(column_name=ColumnName.from_any("a")), ColumnMapping(numerical_features=["a", "b"])),
+        (
+            ColumnDriftMetric(column_name=ColumnName.from_any("a")),
+            ColumnMapping(categorical_features=["a", "b"], target_names=[0, 1, 2], target="a"),
+        ),
+        (
+            ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="wasserstein"),
+            ColumnMapping(numerical_features=["a", "b"]),
+        ),
+        (
+            ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="psi"),
+            ColumnMapping(numerical_features=["a", "b"]),
+        ),
+        (
+            ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="jensenshannon"),
+            ColumnMapping(numerical_features=["a", "b"]),
+        ),
+        (DataDriftTable(), ColumnMapping(numerical_features=["a", "b"])),
     ],
 )
-def test_column_data_drift(metric):
+def test_column_data_drift(metric, column_mapping):
     from evidently.options.data_drift import DataDriftOptions
 
     DataDriftOptions.__fields__["nbinsx"].default = 2
@@ -32,8 +45,6 @@ def test_column_data_drift(metric):
     session = SparkSession.builder.getOrCreate()
     ref = session.createDataFrame(ref_pd)
     cur = session.createDataFrame(cur_pd)
-
-    column_mapping = ColumnMapping(numerical_features=["a", "b"])
 
     report = Report(metrics=[metric])
     report.run(reference_data=ref_pd, current_data=cur_pd, column_mapping=column_mapping)
