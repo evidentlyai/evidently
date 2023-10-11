@@ -131,12 +131,9 @@ Optional shared parameters for multiple metrics:
 
 | Metric name | Description | Parameters |
 |---|---|---|
-| **RecallTopKMetric()** | Calculates the recall at K. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **PrecisionTopKMetric()** | Calculates the precision at top K.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **FBetaTopKMetric()** | Calculates the F-measure at top K.| **Required**:<ul><li>`beta`(default = 1)</li><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **MAPKMetric()** | Calculates the Mean Average Precision (MAP) at K.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **MARKMetric()** | Calculates the Mean Average Recall (MAR) at K.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **NDCGKMetric()** | Calculates the Normalized Discounted Cumulative Gain at K | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-
-
-
+| **RecallTopKMetric()** | Calculates the recall at top 'k'. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **PrecisionTopKMetric()** | Calculates the precision at top 'k'.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **FBetaTopKMetric()** | Calculates the F-measure at top 'k'.| **Required**:<ul><li>`beta`(default = 1)</li><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **MAPKMetric()** | Calculates the Mean Average Precision (MAP) at 'k'.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **MARKMetric()** | Calculates the Mean Average Recall (MAR) at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **NDCGKMetric()** | Calculates the Normalized Discounted Cumulative Gain at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
