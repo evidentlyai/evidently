@@ -17,7 +17,7 @@ def test_fbeta_values():
 
     metric = FBetaTopKMetric(k=2)
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recomendations_type="rank")
+    column_mapping = ColumnMapping(recommendations_type="rank")
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()

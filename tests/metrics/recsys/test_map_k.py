@@ -17,7 +17,7 @@ def test_map_value():
 
     metric = MAPKMetric(k=2)
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recomendations_type="rank")
+    column_mapping = ColumnMapping(recommendations_type="rank")
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()
@@ -38,7 +38,7 @@ def test_map_value_judged_only():
 
     metric = MAPKMetric(k=3, no_feedback_users=True)
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recomendations_type="rank")
+    column_mapping = ColumnMapping(recommendations_type="rank")
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()
