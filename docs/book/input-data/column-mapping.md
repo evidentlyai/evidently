@@ -359,7 +359,7 @@ To evaluate the quality of a ranking or a recommendation system, you must pass:
 * The model score or rank as the prediction.
 * The information about user actions (e.g., click, assigned score) as the target. 
 
-Here are examples of the expected data inputs.
+Here are the examples of the expected data inputs.
 
 If the model prediction is a score (expected by default):
 
