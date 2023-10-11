@@ -145,6 +145,34 @@ def get_distribution_for_numerical_column(
     )
 
 
-def get_text_data_for_plots(reference_data, current_data):
+def get_text_data_for_plots(reference_data: SparkSeries, current_data: SparkSeries, column_name: str):
     # todo
-    raise NotImplementedError
+    raise NotImplementedError("SparkEngine does not support text columns yet")
+    # domain_data = pd.concat(
+    #     [
+    #         pd.DataFrame({"text": reference_data, "target": 0}),
+    #         pd.DataFrame({"text": current_data, "target": 1}),
+    #     ]
+    # )
+    #
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     domain_data["text"],
+    #     domain_data["target"],
+    #     test_size=0.5,
+    #     random_state=42,
+    #     shuffle=True,
+    # )
+    #
+    # _, y_pred_proba, classifier_pipeline = roc_auc_domain_classifier(
+    #     X_train,
+    #     X_test,
+    #     y_train,
+    #     y_test,
+    # )
+    # # get examples more characteristic of current or reference dataset
+    # typical_examples_cur, typical_examples_ref = get_typical_examples(X_test, y_test, y_pred_proba)
+    #
+    # # get words more characteristic of current or reference dataset
+    # typical_words_cur, typical_words_ref = get_typical_words(classifier_pipeline)
+    #
+    # return typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref

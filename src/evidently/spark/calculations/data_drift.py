@@ -152,7 +152,7 @@ def get_one_column_drift(
             typical_examples_ref,
             typical_words_cur,
             typical_words_ref,
-        ) = get_text_data_for_plots(reference_column, current_column)
+        ) = get_text_data_for_plots(reference_column, current_column, column.name)
 
     metrics = ColumnDataDriftMetrics(
         column_name=column.display_name,
