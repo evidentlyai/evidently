@@ -155,8 +155,11 @@ column_mapping = ColumnMapping()
 column_mapping.target = 'y'
 column_mapping.task = 'regression'
 ```
-It accepts two values: 'regression' and 'classification'. 
- 
+It accepts the following values: 
+* 'regression'
+* 'classification'
+* ‘recsys` (for ranking and recommender systems)
+
 **Default**: If you don't specify the task, Evidently will use a simple strategy: if the target has a numeric type and the number of unique values > 5: task == ‘regression.’ In all other cases, the task == ‘classification’.
 
 {% hint style="info" %} 
