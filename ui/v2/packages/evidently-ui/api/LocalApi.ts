@@ -25,25 +25,36 @@ export default class LocalApi implements Api {
     this.projects = projects ?? []
   }
 
-  async getProjectDashboard(): Promise<DashboardInfo> {
+  async getProjectDashboard(
+    _projectId: string,
+    _from?: string,
+    _to?: string
+  ): Promise<DashboardInfo> {
     return { name: 'Project Dasboard', widgets: [] }
   }
-
-  async getReports(): Promise<ReportInfo[]> {
+  async getReports(_projectId: string): Promise<ReportInfo[]> {
     return [{ id: 'report_1', timestamp: new Date(Date.now()).toString(), tags: [], metadata: {} }]
   }
 
-  getAdditionalGraphData(graphId: string): Promise<AdditionalGraphInfo> {
+  getAdditionalGraphData(
+    _projectId: string,
+    _dashboardId: string,
+    graphId: string
+  ): Promise<AdditionalGraphInfo> {
     var graph = this.additionalGraphs.get(graphId)
     return graph ? Promise.resolve(graph as AdditionalGraphInfo) : Promise.reject('No graph found')
   }
 
-  getAdditionalWidgetData(widgetId: string): Promise<WidgetInfo> {
+  getAdditionalWidgetData(
+    _projectId: string,
+    _dashboardId: string,
+    widgetId: string
+  ): Promise<WidgetInfo> {
     var graph = this.additionalGraphs.get(widgetId)
     return graph ? Promise.resolve(graph as WidgetInfo) : Promise.reject('No graph found')
   }
 
-  getDashboard(): Promise<DashboardInfo> {
+  getDashboard(_projectId: string, _dashboardId: string): Promise<DashboardInfo> {
     return Promise.resolve(this.dashboard)
   }
 
@@ -51,21 +62,21 @@ export default class LocalApi implements Api {
     return Promise.resolve(this.projects)
   }
 
-  getReport(): Promise<DashboardInfo> {
+  getReport(_projectId: string, _reportId: string): Promise<DashboardInfo> {
     return Promise.resolve(this.dashboard)
   }
 
-  getTestSuite(): Promise<DashboardInfo> {
+  getTestSuite(_projectId: string, _reportId: string): Promise<DashboardInfo> {
     return Promise.resolve(this.dashboard)
   }
 
-  getTestSuites(): Promise<TestSuiteInfo[]> {
+  getTestSuites(_projectId: string): Promise<TestSuiteInfo[]> {
     return Promise.resolve([
       { id: 'test_suite1', timestamp: new Date(Date.now()).toString(), tags: [], metadata: {} }
     ])
   }
 
-  getProjectInfo(): Promise<ProjectDetails> {
+  getProjectInfo(_projectId: string): Promise<ProjectDetails> {
     return Promise.resolve({ id: 'project1', name: 'Project #1' })
   }
 
