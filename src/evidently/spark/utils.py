@@ -25,12 +25,12 @@ from evidently.base_metric import ColumnName
 CharType: Type[DataType]
 VarcharType: Type[DataType]
 try:
-    from pyspark.sql.types import CharType
+    from pyspark.sql.types import CharType  # type: ignore[no-redef]
 except ImportError:
     CharType = StringType
 
 try:
-    from pyspark.sql.types import VarcharType
+    from pyspark.sql.types import VarcharType  # type: ignore[no-redef]
 except ImportError:
     VarcharType = StringType
 
