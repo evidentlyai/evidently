@@ -1,3 +1,7 @@
+from typing import Callable
+from typing import List
+
+import numpy as np
 import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
@@ -8,33 +12,46 @@ from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.report import Report
 from evidently.spark.engine import SparkEngine
+from evidently.tests.utils import approx
 from tests.conftest import smart_assert_equal
 
 
 @pytest.mark.parametrize(
-    "metric,column_mapping",
+    "metric,column_mapping,result_adjust",
     [
-        (ColumnDriftMetric(column_name=ColumnName.from_any("a")), ColumnMapping(numerical_features=["a", "b"])),
+        (ColumnDriftMetric(column_name=ColumnName.from_any("a")), ColumnMapping(numerical_features=["a", "b"]), {}),
         (
             ColumnDriftMetric(column_name=ColumnName.from_any("a")),
             ColumnMapping(categorical_features=["a", "b"], target_names=[0, 1, 2], target="a"),
+            {},
         ),
         (
             ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="wasserstein"),
             ColumnMapping(numerical_features=["a", "b"]),
+            {"drift_score": lambda x: approx(x, absolute=0.05)},
         ),
         (
             ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="psi"),
             ColumnMapping(numerical_features=["a", "b"]),
+            {},
         ),
         (
             ColumnDriftMetric(column_name=ColumnName.from_any("a"), stattest="jensenshannon"),
             ColumnMapping(numerical_features=["a", "b"]),
+            {},
         ),
-        (DataDriftTable(), ColumnMapping(numerical_features=["a", "b"])),
+        (DataDriftTable(num_stattest="jensenshannon"), ColumnMapping(numerical_features=["a", "b"]), {}),
+        (
+            DataDriftTable(num_stattest="jensenshannon", cat_stattest="chisquare"),
+            ColumnMapping(numerical_features=["a"], categorical_features=["b"]),
+            {
+                "drift_by_columns.b.current.distribution.x": lambda x: np.array(list(reversed(x))),
+                "drift_by_columns.b.current.distribution.y": lambda x: np.array(list(reversed(x))),
+            },
+        ),
     ],
 )
-def test_column_data_drift(metric, column_mapping):
+def test_column_data_drift(metric, column_mapping, result_adjust):
     from evidently.options.data_drift import DataDriftOptions
 
     DataDriftOptions.__fields__["nbinsx"].default = 2
@@ -57,4 +74,15 @@ def test_column_data_drift(metric, column_mapping):
     spark_report._inner_suite.raise_for_error()
 
     res2 = spark_report.as_dict(include_render=True)["metrics"][0]["result"]
+
+    for path, adj in result_adjust.items():
+        recursive_adjust(res1, path.split("."), adj)
     smart_assert_equal(res2, res1)
+
+
+def recursive_adjust(obj, path: List[str], adj: Callable):
+    p, *path = path
+    if len(path) == 0:
+        obj[p] = adj(obj[p])
+        return
+    recursive_adjust(obj[p], path, adj)
