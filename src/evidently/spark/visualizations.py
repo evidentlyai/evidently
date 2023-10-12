@@ -13,7 +13,7 @@ from evidently.spark.calculations.histogram import hist_bin_doane
 from evidently.spark.utils import calculate_stats
 from evidently.utils.visualizations import OPTIMAL_POINTS
 
-PERIOD_COL = "period"
+PERIOD_COL = "per"
 
 
 def prepare_df_for_time_index_plot(
