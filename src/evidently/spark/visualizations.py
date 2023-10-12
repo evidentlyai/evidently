@@ -4,6 +4,9 @@ from typing import Tuple
 import pandas as pd
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as sf
+from pyspark.sql.types import LongType
+from pyspark.sql.types import StructField
+from pyspark.sql.types import StructType
 
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
@@ -44,9 +47,11 @@ def prepare_df_for_time_index_plot(
             plot_df = plot_df.select("*", sf.date_add(year, week * 7 - week_start_diff).alias(PERIOD_COL)).toPandas()
         return plot_df, prefix
     ptp = df.count() - 1
+
+    schema = StructType(fields=[StructField("_1", dataType=df.schema), StructField("_2", dataType=LongType())])
     plot_df = (
         df.rdd.zipWithIndex()
-        .toDF()
+        .toDF(schema=schema)
         .select(
             sf.col("_1").getItem(column_name).alias(column_name),
             sf.floor(sf.col("_2") / (ptp / (OPTIMAL_POINTS - 1))).alias(PERIOD_COL),
@@ -105,13 +110,15 @@ def get_distribution_for_column(
 
     elif column_type == ColumnType.Numerical:
         if reference is not None:
-            bins, dmax, dmin = hist_bin_doane(current.dropna().union(reference.dropna()), column_name)
+            bins, dmax, dmin = hist_bin_doane(
+                current.dropna(subset=[column_name]).union(reference.dropna(subset=[column_name])), column_name
+            )
             reference_distribution = get_distribution_for_numerical_column(
                 reference, column_name, bins=bins, dmax=dmax, dmin=dmin
             )
 
         else:
-            bins, dmax, dmin = hist_bin_doane(current.dropna(), column_name)
+            bins, dmax, dmin = hist_bin_doane(current.dropna(subset=[column_name]), column_name)
 
         current_distribution = get_distribution_for_numerical_column(
             current, column_name, bins=bins, dmax=dmax, dmin=dmin

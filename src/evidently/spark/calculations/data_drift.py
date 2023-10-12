@@ -64,7 +64,7 @@ def get_one_column_drift(
     reference_column = reference_feature_data
 
     # clean and check the column in reference dataset
-    reference_column = reference_column.replace([-np.inf, np.inf], np.nan).dropna()
+    reference_column = reference_column.replace([-np.inf, np.inf], np.nan).dropna(subset=[column.name])
 
     if reference_column.rdd.isEmpty():
         raise ValueError(
@@ -72,7 +72,7 @@ def get_one_column_drift(
         )
 
     # clean and check the column in current dataset
-    current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
+    current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna(subset=[column.name])
 
     if current_column.rdd.isEmpty():
         raise ValueError(f"An empty column '{column.name}' was provided for drift calculation in the current dataset.")
