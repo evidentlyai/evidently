@@ -118,14 +118,14 @@ def get_one_column_drift(
             column.name,
             datetime_column,
         )
-        current_scatter["current"] = df
+        current_scatter["current (mean)"] = df
         if prefix is None:
             x_name = "Index binned"
         else:
             x_name = f"Timestamp ({prefix})"
 
         plot_shape = {}
-        reference_mean, reference_std = calculate_stats(reference_column, column.name, sf.mean, sf.stddev_pop)
+        reference_mean, reference_std = calculate_stats(reference_column, column.name, sf.mean, sf.stddev)
         plot_shape["y0"] = reference_mean - reference_std
         plot_shape["y1"] = reference_mean + reference_std
         scatter = ScatterAggField(scatter=current_scatter, x_name=x_name, plot_shape=plot_shape)

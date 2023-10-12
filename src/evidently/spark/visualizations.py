@@ -43,18 +43,18 @@ def prepare_df_for_time_index_plot(
             week_start_diff = sf.date_format(year, "F")
             plot_df = plot_df.select("*", sf.date_add(year, week * 7 - week_start_diff).alias(PERIOD_COL)).toPandas()
         return plot_df, prefix
-
+    ptp = df.count() - 1
     plot_df = (
         df.rdd.zipWithIndex()
         .toDF()
         .select(
             sf.col("_1").getItem(column_name).alias(column_name),
-            sf.floor(sf.col("_2") / OPTIMAL_POINTS).alias(PERIOD_COL),
+            sf.floor(sf.col("_2") / (ptp / (OPTIMAL_POINTS - 1))).alias(PERIOD_COL),
         )
     )
     plot_df = (
         plot_df.groupby(PERIOD_COL)
-        .agg(sf.mean(column_name).alias("mean"), sf.stddev_pop(column_name).alias("std"))
+        .agg(sf.mean(column_name).alias("mean"), sf.stddev(column_name).alias("std"))
         .toPandas()
     )
     return plot_df, None
