@@ -17,13 +17,14 @@ from pyspark.sql.types import IntegerType
 from pyspark.sql.types import LongType
 from pyspark.sql.types import ShortType
 from pyspark.sql.types import StringType
-from pyspark.sql.types import TimestampNTZType
 from pyspark.sql.types import TimestampType
 
 from evidently.base_metric import ColumnName
 
 CharType: Type[DataType]
 VarcharType: Type[DataType]
+TimestampNTZType: Type[DataType]
+
 try:
     from pyspark.sql.types import CharType  # type: ignore[no-redef]
 except ImportError:
@@ -33,6 +34,12 @@ try:
     from pyspark.sql.types import VarcharType  # type: ignore[no-redef]
 except ImportError:
     VarcharType = StringType
+
+
+try:
+    from pyspark.sql.types import TimestampNTZType  # type: ignore[no-redef]
+except ImportError:
+    TimestampNTZType = TimestampType
 
 
 def get_column_type(df: DataFrame, column: str):
