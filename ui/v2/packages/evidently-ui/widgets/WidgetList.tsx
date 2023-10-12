@@ -8,8 +8,8 @@ import ArrowLeftIcon from '@mui/icons-material/ArrowLeft'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 
 const WidgetList: React.FunctionComponent<WidgetListParams & { widgetSize: number }> = (params) => {
-  let [pageState, setPageState] = React.useState({ page: 0 })
-  let drawWidgets = params.widgets.slice(
+  const [pageState, setPageState] = React.useState({ page: 0 })
+  const drawWidgets = params.widgets.slice(
     pageState.page * params.pageSize,
     (pageState.page + 1) * params.pageSize
   )

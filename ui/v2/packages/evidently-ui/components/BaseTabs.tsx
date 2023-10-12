@@ -14,7 +14,7 @@ interface BaseTabsProps {
   activeTab: number
   tabs: TabInfo[]
   tabStyle?: string
-  onNewTabSelected: (event: React.ChangeEvent<{}>, newTabIdx: number) => void
+  onNewTabSelected: (event: React.SyntheticEvent, newTabIdx: number) => void
 }
 
 const BaseTabs: React.FunctionComponent<BaseTabsProps> = (props) => {

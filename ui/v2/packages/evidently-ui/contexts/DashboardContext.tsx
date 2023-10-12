@@ -40,9 +40,9 @@ export interface DashboardContextState {
 }
 
 const DashboardContext = React.createContext<DashboardContextState>({
-  getAdditionGraphData: (_) =>
+  getAdditionGraphData: () =>
     new Promise((_, reject) => reject("default context doesn't contain methods to get data")),
-  getAdditionWidgetData: (_) =>
+  getAdditionWidgetData: () =>
     new Promise((_, reject) => reject("default context doesn't contain methods to get data"))
 })
 

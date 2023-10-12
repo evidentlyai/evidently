@@ -42,7 +42,7 @@ function sizeTransform(size: WidgetSize): 1 | 3 | 6 | 12 {
 }
 
 export function WidgetRenderer(key: string, info: WidgetInfo) {
-  var content = <NotImplementedWidgetContent />
+  let content = <NotImplementedWidgetContent />
   if (info.type === 'counter') {
     content = <CounterWidgetContent {...(info.params as CounterWidgetParams)} />
   } else if (info.type === 'percent') {
@@ -83,7 +83,7 @@ export function WidgetRenderer(key: string, info: WidgetInfo) {
   } else if (info.type === 'rich_data') {
     content = <RichDataWidget {...(info.params as RichDataParams)} widgetSize={info.size} />
   } else if (info.type === 'list') {
-    let listInfo = info as unknown as WidgetListParams
+    const listInfo = info as unknown as WidgetListParams
     content = (
       <WidgetList widgets={listInfo.widgets} pageSize={listInfo.pageSize} widgetSize={info.size} />
     )

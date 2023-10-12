@@ -14,7 +14,7 @@ export function Report(props: { params: DashboardInfo }) {
 }
 
 export const ProjectDashboard = (props: { projectId: string; from?: string; to?: string }) => {
-  let callback = (api: Api) => api.getProjectDashboard(props.projectId, props.from, props.to)
+  const callback = (api: Api) => api.getProjectDashboard(props.projectId, props.from, props.to)
   return (
     <>
       <ApiContext.Consumer>
@@ -33,7 +33,7 @@ export const ProjectDashboard = (props: { projectId: string; from?: string; to?:
 }
 
 export function ProjectReport(props: { projectId: string; reportId: string }) {
-  let { projectId, reportId } = props
+  const { projectId, reportId } = props
   return (
     <>
       <ApiContext.Consumer>

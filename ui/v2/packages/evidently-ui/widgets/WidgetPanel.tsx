@@ -6,7 +6,7 @@ interface WidgetPanelProps {
   children: React.ReactNode
 }
 
-class WidgetPanel extends React.Component<WidgetPanelProps, {}> {
+class WidgetPanel extends React.Component<WidgetPanelProps> {
   render() {
     return (
       <Grid container alignItems={'stretch'} spacing={1} direction={'row'} mt={1}>

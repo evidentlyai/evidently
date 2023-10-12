@@ -162,13 +162,13 @@ const TestSuiteWidgetContent: React.FC<TestSuiteWidgetParams> = ({ tests, testGr
   for (let i = 0; i < tests.length; i++) {
     const test = tests[i]
     const keys = Object.keys(test.groups)
-    for (let key of keys) {
+    for (const key of keys) {
       if (existingGroupTypes.findIndex((k) => k === key) === -1) {
         existingGroupTypes.push(key)
       }
     }
   }
-  let availableTypes = [
+  const availableTypes = [
     ...DefaultGroups,
     ...(testGroupTypes ?? []).filter((t) => existingGroupTypes.findIndex((k) => k === t.id) !== -1)
   ]
