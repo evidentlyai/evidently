@@ -56,6 +56,7 @@ def prepare_df_for_time_index_plot(
         plot_df.groupby(PERIOD_COL)
         .agg(sf.mean(column_name).alias("mean"), sf.stddev(column_name).alias("std"))
         .toPandas()
+        .sort_values(PERIOD_COL)  # type: ignore[attr-defined]
     )
     return plot_df, None
 
