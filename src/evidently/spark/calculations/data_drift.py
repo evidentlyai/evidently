@@ -8,6 +8,7 @@ import numpy as np
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as sf
 
+from evidently import ColumnMapping
 from evidently.base_metric import ColumnName
 from evidently.base_metric import DataDefinition
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
@@ -194,6 +195,7 @@ def get_drift_for_columns(
     current_data: DataFrame,
     reference_data: DataFrame,
     data_definition: DataDefinition,
+    column_mapping: ColumnMapping,
     data_drift_options: DataDriftOptions,
     drift_share_threshold: Optional[float] = None,
     columns: Optional[List[str]] = None,
@@ -206,7 +208,7 @@ def get_drift_for_columns(
             current_data=current_data,
             reference_data=reference_data,
         )
-        columns = _get_all_columns_for_drift(data_definition)
+        columns = _get_all_columns_for_drift(data_definition, column_mapping)
 
     drift_share_threshold = (
         drift_share_threshold if drift_share_threshold is not None else data_drift_options.drift_share
@@ -250,7 +252,7 @@ def get_drift_for_columns(
     )
 
 
-def _get_all_columns_for_drift(data_definition: DataDefinition) -> List[str]:
+def _get_all_columns_for_drift(data_definition: DataDefinition, column_mapping: ColumnMapping) -> List[str]:
     result: List[str] = []
     target_column = data_definition.get_target_column()
 
@@ -262,9 +264,18 @@ def _get_all_columns_for_drift(data_definition: DataDefinition) -> List[str]:
     if prediction_column is not None:
         result.extend(c.column_name for c in prediction_column.get_columns_list())
 
-    result += [c.column_name for c in data_definition.get_columns(ColumnType.Numerical, features_only=True)]
-    result += [c.column_name for c in data_definition.get_columns(ColumnType.Categorical, features_only=True)]
-    result += [c.column_name for c in data_definition.get_columns(ColumnType.Text, features_only=True)]
+    result += [
+        c
+        for c in column_mapping.numerical_features or []
+        if data_definition.get_column(c).column_type == ColumnType.Numerical
+    ]
+    result += [
+        c
+        for c in column_mapping.categorical_features or []
+        if data_definition.get_column(c).column_type == ColumnType.Categorical
+    ]
+    # todo: text
+    # result += [c for c in column_mapping.numerical_features if data_definition.get_column(c).column_type == ColumnType.Numerical]
 
     return result
 

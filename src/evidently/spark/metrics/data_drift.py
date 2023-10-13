@@ -75,6 +75,7 @@ class SparkDataDriftTable(SparkMetricImplementation[DataDriftTable]):
             reference_data=data.reference_data,
             data_drift_options=self.metric.drift_options,
             data_definition=data.data_definition,
+            column_mapping=data.column_mapping,
             columns=self.metric.columns,
         )
         return DataDriftTableResults(
