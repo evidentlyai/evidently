@@ -9,7 +9,7 @@ def collect_dataset(
     users: pd.Series,
     target: pd.Series,
     preds: pd.Series,
-    recomendations_type: str,
+    recommendations_type: str,
     min_rel_score: Optional[int],
     no_feedback_users: bool,
     bin_data: bool,
@@ -18,7 +18,7 @@ def collect_dataset(
     df.columns = ["users", "target", "preds"]
     if min_rel_score:
         df["target"] = (df["target"] >= min_rel_score).astype(int)
-    if recomendations_type == "score":
+    if recommendations_type == "score":
         df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False)
     if bin_data:
         df["target"] = (df["target"] > 0).astype(int)
@@ -37,10 +37,10 @@ def get_curr_and_ref_df(
     if target_column is None or prediction is None:
         raise ValueError("Target and prediction were not found in data.")
     _, target_current, target_reference = data.get_data(target_column.column_name)
-    recomendations_type = data.column_mapping.recomendations_type
-    if recomendations_type is None:
-        recomendations_type = "scores"
-    if recomendations_type == "rank" and prediction.predicted_values is not None:
+    recommendations_type = data.column_mapping.recommendations_type
+    if recommendations_type is None:
+        recommendations_type = "scores"
+    if recommendations_type == "rank" and prediction.predicted_values is not None:
         pred_name = prediction.predicted_values.column_name
     elif prediction.prediction_probas is not None:
         pred_name = prediction.prediction_probas[0].column_name
@@ -53,7 +53,7 @@ def get_curr_and_ref_df(
         user_current,
         target_current,
         prediction_current,
-        recomendations_type,
+        recommendations_type,
         min_rel_score,
         no_feedback_users,
         bin_data,
@@ -65,7 +65,7 @@ def get_curr_and_ref_df(
             user_reference,
             target_reference,
             prediction_reference,
-            recomendations_type,
+            recommendations_type,
             min_rel_score,
             no_feedback_users,
             bin_data,

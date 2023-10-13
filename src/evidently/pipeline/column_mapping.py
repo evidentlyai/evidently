@@ -32,7 +32,7 @@ class ColumnMapping:
     embeddings: Optional[Embeddings] = None
     user_id: Optional[str] = "user_id"
     item_id: Optional[str] = "item_id"
-    recomendations_type: Optional[str] = "score"
+    recommendations_type: Optional[str] = "score"
 
     def is_classification_task(self):
         return self.task == TaskType.CLASSIFICATION_TASK
