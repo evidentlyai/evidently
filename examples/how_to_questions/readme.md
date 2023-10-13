@@ -21,6 +21,7 @@ How to add a custom Metric or Test? | [link](how_to_make_custom_metric_and_test.
 How to specify color options? | [link](how_to_customize_color_scheme.ipynb) 
 How to set test criticality as "warning"? | [link](how_to_specify_test_criticality.ipynb)
 How to save and load snapshots? | [link](how_to_use_snapshots.ipynb)
+How to calculate metrics for ranking and recommender systems? | [link](how_to_calculate_recsys_metrics.ipynb)
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
 

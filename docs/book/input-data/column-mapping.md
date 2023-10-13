@@ -155,8 +155,11 @@ column_mapping = ColumnMapping()
 column_mapping.target = 'y'
 column_mapping.task = 'regression'
 ```
-It accepts two values: 'regression' and 'classification'. 
- 
+It accepts the following values: 
+* `regression`
+* `classification`
+* `recsys` (for ranking and recommender systems)
+
 **Default**: If you don't specify the task, Evidently will use a simple strategy: if the target has a numeric type and the number of unique values > 5: task == ‘regression.’ In all other cases, the task == ‘classification’.
 
 {% hint style="info" %} 
@@ -350,3 +353,34 @@ column_mapping.target_names = ['churn', 'not_churn']
 
 ```
 If you pass the target names, they will appear on the visualizations.
+
+# Recommender systems
+To evaluate the quality of a ranking or a recommendation system, you must pass:
+* The model score or rank as the prediction.
+* The information about user actions (e.g., click, assigned score) as the target. 
+
+Here are the examples of the expected data inputs.
+
+If the model prediction is a score (expected by default):
+
+| user_id | item_id | prediction (score) | target (interaction result) |
+|---|---|---|---|
+| user_1 | item_1 | 1.95 | 0 |
+| user_1 | item_2 | 0.8 | 1 |
+| user_1 | item_3 | 0.05 | 0 |
+
+If the model prediction is a rank:
+| user_id | item_id | prediction (rank) | target (interaction result) |
+|---|---|---|---|
+| user_1 | item_1 | 1 | 0 |
+| user_1 | item_2 | 2 | 1 |
+| user_1 | item_3 | 3 | 0 |
+
+The **target** column with the interaction result can contain either:
+* a binary label (where `1` is a positive outcome)
+* any true labels or scores (any positive values, where a higher value corresponds to a better recommendation match or a more valuable user action).
+
+You might need to add additional details about your dataset via column mapping:
+* `recommendations_type`: `score` (default) or `rank`. Helps specify whether the prediction column contains ranking or predicted score.
+* `user_id`: helps specify the column that contains user IDs.
+* `item_id`: helps specify the column that contains ranked items.
