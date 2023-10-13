@@ -264,16 +264,14 @@ def _get_all_columns_for_drift(data_definition: DataDefinition, column_mapping: 
     if prediction_column is not None:
         result.extend(c.column_name for c in prediction_column.get_columns_list())
 
-    result += [
-        c
-        for c in column_mapping.numerical_features or []
-        if data_definition.get_column(c).column_type == ColumnType.Numerical
+    num_features = column_mapping.numerical_features or [
+        c.column_name for c in data_definition.get_columns(ColumnType.Numerical, features_only=True)
     ]
-    result += [
-        c
-        for c in column_mapping.categorical_features or []
-        if data_definition.get_column(c).column_type == ColumnType.Categorical
+    result += [c for c in num_features if data_definition.get_column(c).column_type == ColumnType.Numerical]
+    cat_features = column_mapping.categorical_features or [
+        c.column_name for c in data_definition.get_columns(ColumnType.Categorical, features_only=True)
     ]
+    result += [c for c in cat_features if data_definition.get_column(c).column_type == ColumnType.Categorical]
     # todo: text
     # result += [c for c in column_mapping.numerical_features if data_definition.get_column(c).column_type == ColumnType.Numerical]
 

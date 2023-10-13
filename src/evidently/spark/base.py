@@ -368,6 +368,12 @@ def _get_column_type_spark(column_name: str, data: _InputData, mapping: Optional
 
     # all other features
     if is_integer_dtype(cur_type if cur_type is not None else ref_type):
+        # spark only
+        if (
+            data.reference is None or ref_unique == 1 and data.reference.select(column_name).dropna().count() == 0
+        ) and (data.current is None or cur_unique == 1 and data.current.select(column_name).dropna().count() == 0):
+            return ColumnType.Numerical
+        # spark only
         nunique = ref_unique or cur_unique
         if nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL:
             return ColumnType.Categorical
