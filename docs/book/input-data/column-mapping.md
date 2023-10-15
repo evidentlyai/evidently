@@ -240,7 +240,7 @@ column_mapping.prediction = ['Setosa', 'Versicolour', 'Virginica']
 
 ```
 
-Naming the columns after the lables is a requirement. You cannot pass a custom list.
+Naming the columns after the labels is a requirement. You cannot pass a custom list.
 
 ### Binary classification, option 1
 
