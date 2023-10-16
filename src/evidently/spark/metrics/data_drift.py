@@ -4,7 +4,9 @@ from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.core import ColumnType
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
+from evidently.metrics import DatasetDriftMetric
 from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
+from evidently.metrics.data_drift.dataset_drift_metric import DatasetDriftMetricResults
 from evidently.options.data_drift import DataDriftOptions
 from evidently.spark.calculations.data_drift import get_drift_for_columns
 from evidently.spark.calculations.data_drift import get_one_column_drift
@@ -85,4 +87,27 @@ class SparkDataDriftTable(SparkMetricImplementation[DataDriftTable]):
             dataset_drift=result.dataset_drift,
             drift_by_columns=result.drift_by_columns,
             dataset_columns=result.dataset_columns,
+        )
+
+
+@metric_implementation(DatasetDriftMetric)
+class SparkDatasetDriftMetric(SparkMetricImplementation[DatasetDriftMetric]):
+    def calculate(self, context, data: SparkInputData) -> DatasetDriftMetricResults:
+        if data.reference_data is None:
+            raise ValueError("Reference dataset should be present")
+
+        result = get_drift_for_columns(
+            current_data=data.current_data,
+            reference_data=data.reference_data,
+            data_drift_options=self.metric.drift_options,
+            data_definition=data.data_definition,
+            column_mapping=data.column_mapping,
+            columns=self.metric.columns,
+        )
+        return DatasetDriftMetricResults(
+            drift_share=self.metric.drift_share,
+            number_of_columns=result.number_of_columns,
+            number_of_drifted_columns=result.number_of_drifted_columns,
+            share_of_drifted_columns=result.share_of_drifted_columns,
+            dataset_drift=result.dataset_drift,
         )
