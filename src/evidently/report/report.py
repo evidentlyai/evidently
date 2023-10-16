@@ -173,7 +173,7 @@ class Report(ReportBase):
             "metrics": metrics,
         }
 
-    def as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
+    def _as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
         metrics = defaultdict(list)
 
         for metric in self._first_level_metrics:
