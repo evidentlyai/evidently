@@ -2,6 +2,8 @@ import abc
 import datetime
 import traceback
 import uuid
+from collections import Counter
+from collections import defaultdict
 from enum import Enum
 from typing import Any
 from typing import Dict
@@ -30,7 +32,11 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.report import Report
 from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import T
+from evidently.test_suite import TestSuite
+from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestStatus
 
 COLOR_DISCRETE_SEQUENCE = (
     "#ed0400",
@@ -51,8 +57,11 @@ pio.templates[pio.templates.default].layout.colorway = COLOR_DISCRETE_SEQUENCE
 class ReportFilter(BaseModel):
     metadata_values: Dict[str, str]
     tag_values: List[str]
+    include_test_suites: bool = False
 
-    def filter(self, report: Report):
+    def filter(self, report: ReportBase):
+        if not self.include_test_suites and isinstance(report, TestSuite):
+            return False
         return all(report.metadata.get(key) == value for key, value in self.metadata_values.items()) and all(
             tag in report.tags for tag in self.tag_values
         )
@@ -116,9 +125,14 @@ class PanelValue(BaseModel):
                 return False
         return True
 
-    def get(self, report: Report) -> Dict[Metric, Any]:
+    def get(self, report: ReportBase) -> Dict[Metric, Any]:
         results = {}
-        for metric in report._first_level_metrics:
+        metrics = []
+        if isinstance(report, Report):
+            metrics = report._first_level_metrics
+        elif isinstance(report, TestSuite):
+            metrics = report._inner_suite.context.metrics
+        for metric in metrics:
             if self.metric_matched(metric):
                 try:
                     results[metric] = getattr_nested(metric.get_result(), self.field_path_str.split("."))
@@ -142,7 +156,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     size: WidgetSize = WidgetSize.FULL
 
     @abc.abstractmethod
-    def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
+    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
         raise NotImplementedError
 
 
@@ -150,7 +164,7 @@ class DashboardPanelPlot(DashboardPanel):
     values: List[PanelValue]
     plot_type: PlotType
 
-    def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
+    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
 
         points: List[Dict[Metric, List[Tuple[datetime.datetime, Any]]]] = [{} for _ in range(len(self.values))]
         for report in reports:
@@ -219,7 +233,7 @@ class DashboardPanelCounter(DashboardPanel):
     value: Optional[PanelValue] = None
     text: Optional[str] = None
 
-    def build_widget(self, reports: Iterable[Report]) -> BaseWidgetInfo:
+    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
         if self.agg == CounterAgg.NONE:
             return counter(counters=[CounterData(self.title, self.text or "")], size=self.size)
         value = self._get_counter_value(reports)
@@ -229,7 +243,7 @@ class DashboardPanelCounter(DashboardPanel):
             ct = CounterData.int(self.text or "", value)
         return counter(title=self.title, counters=[ct], size=self.size)
 
-    def _get_counter_value(self, reports: Iterable[Report]):
+    def _get_counter_value(self, reports: Iterable[ReportBase]):
         if self.value is None:
             raise ValueError("Counters with agg should have value")
         if self.agg == CounterAgg.LAST:
@@ -239,14 +253,83 @@ class DashboardPanelCounter(DashboardPanel):
         raise ValueError(f"Unknown agg type {self.agg}")
 
 
+class TestFilter(BaseModel):
+    test_id: Optional[str] = None
+    test_hash: Optional[int] = None
+    test_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
+
+    def test_matched(self, test: Test) -> bool:
+        if self.test_hash is not None and hash(test) == self.test_hash:
+            return True
+        if self.test_id is not None and self.test_id != test.get_id():
+            return False
+        for field, value in self.test_args.items():
+            try:
+                if getattr_nested(test, field.split(".")) != value:
+                    return False
+            except AttributeError:
+                return False
+        return True
+
+    def get(self, test_suite: TestSuite) -> Dict[Test, TestStatus]:
+        results = {}
+        for test in test_suite._inner_suite.context.tests:
+            if self.test_matched(test):
+                try:
+                    results[test] = test.get_result().status
+                except AttributeError:
+                    pass
+        return results
+
+
+tests_colors = {
+    TestStatus.FAIL: "red",
+    TestStatus.SUCCESS: "green",
+    TestStatus.ERROR: "black",
+    TestStatus.WARNING: "yellow",
+    TestStatus.SKIPPED: "grey",
+}
+
+
+class DashboardPanelTestSuite(DashboardPanel):
+    test_filter: TestFilter = TestFilter()
+    filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
+
+    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
+        self.filter.include_test_suites = True
+
+        points: Dict[datetime.datetime, Dict[Test, TestStatus]] = defaultdict(dict)
+        for report in reports:
+            if not self.filter.filter(report):
+                continue
+            if not isinstance(report, TestSuite):
+                continue
+
+            points[report.timestamp].update(self.test_filter.get(report))
+
+        dates = list(sorted(points.keys()))
+        bars = [Counter(points[d].values()) for d in dates]
+
+        fig = go.Figure(
+            data=[
+                go.Bar(name=status.value, x=dates, y=[c[status] for c in bars], marker_color=color)
+                for status, color in tests_colors.items()
+            ],
+            layout={"showlegend": True},
+        )
+        fig.update_layout(barmode="stack")
+
+        return plotly_figure(title=self.title, figure=fig, size=self.size)
+
+
 class DashboardConfig(BaseModel):
     name: str
     panels: List[DashboardPanel]
 
-    def build_dashboard_info(self, reports: Iterable[Report]) -> DashboardInfo:
+    def build_dashboard_info(self, reports: Iterable[ReportBase]) -> DashboardInfo:
         return DashboardInfo(self.name, widgets=[self.build_widget(p, reports) for p in self.panels])
 
-    def build_widget(self, panel: DashboardPanel, reports: Iterable[Report]) -> BaseWidgetInfo:
+    def build_widget(self, panel: DashboardPanel, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
         try:
             return panel.build_widget(reports)
         except Exception as e:
