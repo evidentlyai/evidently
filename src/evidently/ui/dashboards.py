@@ -283,11 +283,11 @@ class TestFilter(BaseModel):
 
 
 tests_colors = {
-    TestStatus.FAIL: "red",
-    TestStatus.SUCCESS: "green",
     TestStatus.ERROR: "black",
-    TestStatus.WARNING: "yellow",
-    TestStatus.SKIPPED: "grey",
+    TestStatus.FAIL: "#f44336",
+    TestStatus.WARNING: "#ffa726",
+    TestStatus.SUCCESS: "#66bb6a",
+    TestStatus.SKIPPED: "#29b6f6",
 }
 
 
