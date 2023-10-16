@@ -10,5 +10,14 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8000'
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: 'static/[name]-[hash][extname]',
+        chunkFileNames: 'static/js/[name]-[hash].js',
+        entryFileNames: 'static/js/[name]-[hash].js'
+      }
+    }
   }
 })
