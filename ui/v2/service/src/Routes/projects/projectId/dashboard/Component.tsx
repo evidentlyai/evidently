@@ -1,4 +1,6 @@
-import { Grid, TextField } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import dayjs from 'dayjs'
 import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
 import { DashboardContent } from 'evidently-ui/components/DashboardContent'
 import { api } from 'api/RemoteApi'
@@ -17,51 +19,47 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
 export const Component = () => {
   const { projectId } = useParams()
+  invariant(projectId, 'missing projectId')
   const [searchParams, setSearchParams] = useSearchParams()
-  const { date_from, date_to } = Object.fromEntries(searchParams.entries())
-
   const data = useLoaderData() as Awaited<ReturnType<typeof loader>>
 
-  invariant(projectId, 'missing projectId')
+  const date_from = searchParams.get('date_from')
+  const date_to = searchParams.get('date_to')
+
+  const getOnChangeDate =
+    (dateType: 'date_from' | 'date_to') => (dateValue: '' | null | dayjs.Dayjs) => {
+      setSearchParams((params) => {
+        params.delete(dateType)
+
+        if (dateValue) {
+          params.append(dateType, formatDate(new Date(dateValue.toISOString())))
+        }
+
+        return params
+      })
+    }
 
   return (
     <>
-      <Grid container justifyContent={'flex-end'}>
+      <Grid container my={3} gap={2} justifyContent="flex-end" justifyItems={'center'}>
         <Grid item>
-          <TextField
-            id="from-datetime"
-            variant="standard"
+          <Box display="flex" alignItems="center" height={1}>
+            <Typography variant="h6">Date</Typography>
+          </Box>
+        </Grid>
+
+        <Grid item>
+          <DateTimePicker
             label="From"
-            type="datetime-local"
-            defaultValue={date_from && formatDate(new Date(Date.parse(date_from)))}
-            onChange={(event) => {
-              let { value } = event.target
-              setSearchParams(
-                { ...Object.fromEntries(searchParams.entries()), date_from: value },
-                { preventScrollReset: true, replace: true }
-              )
-            }}
-            InputLabelProps={{
-              shrink: true
-            }}
-            style={{ paddingRight: '20px' }}
+            value={date_from && dayjs(date_from)}
+            onChange={getOnChangeDate('date_from')}
           />
-          <TextField
-            id="to-datetime"
-            variant="standard"
+        </Grid>
+        <Grid item>
+          <DateTimePicker
             label="To"
-            type="datetime-local"
-            defaultValue={date_to && formatDate(new Date(Date.parse(date_to)))}
-            onChange={(event) => {
-              let { value } = event.target
-              setSearchParams(
-                { ...Object.fromEntries(searchParams.entries()), date_to: value },
-                { preventScrollReset: true, replace: true }
-              )
-            }}
-            InputLabelProps={{
-              shrink: true
-            }}
+            value={date_to && dayjs(date_to)}
+            onChange={getOnChangeDate('date_to')}
           />
         </Grid>
       </Grid>

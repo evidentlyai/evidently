@@ -16,6 +16,8 @@
     "@hookform/resolvers": "^3.3.1",
     "@mui/icons-material": "^5.14.12",
     "@mui/material": "^5.14.12",
+    "@mui/x-date-pickers": "^6.16.2",
+    "dayjs": "^1.11.10",
     "evidently-ui": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
