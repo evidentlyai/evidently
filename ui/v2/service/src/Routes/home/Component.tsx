@@ -1,5 +1,8 @@
 import { Outlet, useLoaderData } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import 'dayjs/locale/en-gb'
 
 import { api } from 'api/RemoteApi'
 
@@ -15,11 +18,13 @@ export const Component = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <ServiceHeader version={version} />
-      <NavigationProgress />
-      <ServiceMainPage>
-        <Outlet />
-      </ServiceMainPage>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
+        <ServiceHeader version={version} />
+        <NavigationProgress />
+        <ServiceMainPage>
+          <Outlet />
+        </ServiceMainPage>
+      </LocalizationProvider>
     </ThemeProvider>
   )
 }
