@@ -14,7 +14,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        assetFileNames: 'static/[name]-[hash][extname]',
+        assetFileNames: (assetInfo) => {
+          const [extType] = assetInfo.name.split('.').reverse()
+          return `static/${extType}/[name]-[hash][extname]`
+        },
         chunkFileNames: 'static/js/[name]-[hash].js',
         entryFileNames: 'static/js/[name]-[hash].js'
       }
