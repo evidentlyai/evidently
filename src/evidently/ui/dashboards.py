@@ -283,16 +283,16 @@ class TestFilter(BaseModel):
 
 
 tests_colors = {
-    TestStatus.ERROR: "black",
+    TestStatus.ERROR: "#29b6f6",
     TestStatus.FAIL: "#f44336",
     TestStatus.WARNING: "#ffa726",
     TestStatus.SUCCESS: "#66bb6a",
-    TestStatus.SKIPPED: "#29b6f6",
+    TestStatus.SKIPPED: "#ab47bc",
 }
 
 
 class DashboardPanelTestSuite(DashboardPanel):
-    test_filter: TestFilter = TestFilter()
+    test_filters: List[TestFilter] = []
     filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
 
     def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
@@ -304,8 +304,11 @@ class DashboardPanelTestSuite(DashboardPanel):
                 continue
             if not isinstance(report, TestSuite):
                 continue
-
-            points[report.timestamp].update(self.test_filter.get(report))
+            if self.test_filters:
+                for test_filter in self.test_filters:
+                    points[report.timestamp].update(test_filter.get(report))
+            else:
+                points[report.timestamp].update(TestFilter().get(report))
 
         dates = list(sorted(points.keys()))
         bars = [Counter(points[d].values()) for d in dates]
