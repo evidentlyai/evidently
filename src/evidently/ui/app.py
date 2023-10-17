@@ -70,8 +70,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
-static_path = os.path.join(ui_path, "static")
-app.mount("/static", StaticFiles(directory=static_path), name="static")
+
+
+@app.get("/static/{file_path:path}")
+async def read_file(file_path: str):
+    return FileResponse(os.path.join(ui_path, "static", file_path))
 
 
 @app.get("/", include_in_schema=False)
