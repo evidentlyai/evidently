@@ -15,7 +15,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
-          const [extType] = assetInfo.name.split('.').reverse()
+          let [extType] = assetInfo.name.split('.').reverse()
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+            extType = 'img'
+          }
           return `static/${extType}/[name]-[hash][extname]`
         },
         chunkFileNames: 'static/js/[name]-[hash].js',
