@@ -27,6 +27,7 @@ package_data_spec = {
         "ui/ui/*",
         "ui/ui/static/css/*",
         "ui/ui/static/js/*",
+        "ui/ui/static/img/*",
     ]
 }
 
