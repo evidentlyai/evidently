@@ -87,7 +87,7 @@ export const Component = () => {
     <>
       <Box sx={{ padding: 2 }}>
         <Grid container>
-          <Grid item xs={5}>
+          <Grid item xs={12} md={6}>
             <Autocomplete
               multiple
               limitTags={2}

@@ -7,7 +7,7 @@ import 'dayjs/locale/en-gb'
 import { api } from 'api/RemoteApi'
 
 import { NavigationProgress, ServiceMainPage, ServiceHeader, crumbFunction } from 'Components'
-import { theme } from './theme'
+import { theme } from 'evidently-ui/theme'
 
 export const loader = () => api.getVersion()
 
