@@ -1,4 +1,4 @@
-import { Layout, PlotData } from 'plotly.js-dist-min'
+import { Layout, PlotData } from 'plotly.js-cartesian-dist-min'
 
 export class Result<T> {
   constructor(result?: T, error?: string) {
