@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [16]
+        node-version: [16, 18]
     steps:
     - name: ⬇️ Checkout repo
       uses: actions/checkout@v4
