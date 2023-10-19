@@ -5,7 +5,6 @@ import uuid
 from collections import Counter
 from collections import defaultdict
 from enum import Enum
-from pprint import pprint
 from typing import Any
 from typing import Dict
 from typing import Iterable
@@ -161,6 +160,19 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
         raise NotImplementedError
 
 
+def _get_metric_hover(metric: Metric, value: PanelValue):
+    params = []
+    for name, value in metric.dict().items():
+        if name in ["type"]:
+            continue
+        if value is None:
+            continue
+        params.append(f"{name}: {value}")
+    params_join = "<br>".join(params)
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>.{value.field_path}"
+    return hover
+
+
 class DashboardPanelPlot(DashboardPanel):
     values: List[PanelValue]
     plot_type: PlotType
@@ -185,15 +197,8 @@ class DashboardPanelPlot(DashboardPanel):
 
             for metric, pts in metric_pts.items():
                 pts.sort(key=lambda x: x[0])
-                params = []
-                for name, value in metric.dict().items():
-                    if name in ["type"]:
-                        continue
-                    if value is None:
-                        continue
-                    params.append(f"{name}: {value}")
-                params_join = "<br>".join(params)
-                hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>.{val.field_path}"
+
+                hover = _get_metric_hover(metric, val)
                 if self.plot_type == PlotType.HISTOGRAM:
                     plot = go.Histogram(
                         x=[p[1] for p in pts],
@@ -297,6 +302,19 @@ tests_colors = {
 tests_colors_order = {ts: i for i, ts in enumerate(tests_colors)}
 
 
+def _get_test_hover(test: Test):
+    params = []
+    for name, value in test.dict().items():
+        if name in ["type"]:
+            continue
+        if value is None:
+            continue
+        params.append(f"{name}: {value}")
+    params_join = "<br>".join(params)
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>"
+    return hover
+
+
 class TestSuitePanelType(Enum):
     AGGREGATE = "aggregate"
     DETAILED = "detailed"
@@ -347,21 +365,31 @@ class DashboardPanelTestSuite(DashboardPanel):
     def _create_detailed_fig(self, points: Dict[datetime.datetime, Dict[Test, TestStatus]]):
         dates = list(sorted(points.keys()))
         tests = list(set(t for p in points.values() for t in p.keys()))
-        color_scale = []
-        colors = len(tests_colors)
-        for i, col in enumerate(tests_colors.values()):
-            color_scale.append([i / colors, col])
-            color_scale.append([(i + 1) / colors, col])
-
-        pprint(color_scale)
         fig = go.Figure(
-            data=go.Heatmap(
-                z=[[tests_colors_order[points[d][t]] + 0.1 for d in dates] for t in tests],
-                y=[f"{i}: {t.name}" for i, t in enumerate(tests)],
-                x=dates,
-                colorscale=color_scale,
-            )
+            data=[
+                go.Bar(
+                    name=test.name,
+                    x=dates,
+                    y=[1 for _ in range(len(dates))],
+                    marker_color=[tests_colors.get(points[d].get(test, TestStatus.SKIPPED)) for d in dates],
+                    hovertemplate=_get_test_hover(test),
+                    showlegend=False,
+                )
+                for test in tests
+            ]
+            + [
+                go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode="markers",
+                    name=status.value,
+                    marker=dict(size=7, color=col, symbol="square"),
+                )
+                for status, col in tests_colors.items()
+            ],
+            layout={"showlegend": True},
         )
+        fig.update_layout(barmode="stack", bargap=0)
         return fig
 
 
