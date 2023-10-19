@@ -5,6 +5,7 @@ import uuid
 from collections import Counter
 from collections import defaultdict
 from enum import Enum
+from pprint import pprint
 from typing import Any
 from typing import Dict
 from typing import Iterable
@@ -293,10 +294,18 @@ tests_colors = {
     TestStatus.SKIPPED: "#ab47bc",
 }
 
+tests_colors_order = {ts: i for i, ts in enumerate(tests_colors)}
+
+
+class TestSuitePanelType(Enum):
+    AGGREGATE = "aggregate"
+    DETAILED = "detailed"
+
 
 class DashboardPanelTestSuite(DashboardPanel):
     test_filters: List[TestFilter] = []
     filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
+    panel_type: TestSuitePanelType = TestSuitePanelType.AGGREGATE
 
     def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
         self.filter.include_test_suites = True
@@ -313,9 +322,18 @@ class DashboardPanelTestSuite(DashboardPanel):
             else:
                 points[report.timestamp].update(TestFilter().get(report))
 
+        if self.panel_type == TestSuitePanelType.AGGREGATE:
+            fig = self._create_aggregate_fig(points)
+        elif self.panel_type == TestSuitePanelType.DETAILED:
+            fig = self._create_detailed_fig(points)
+        else:
+            raise ValueError(f"Unknown panel type {self.panel_type}")
+
+        return plotly_figure(title=self.title, figure=fig, size=self.size)
+
+    def _create_aggregate_fig(self, points: Dict[datetime.datetime, Dict[Test, TestStatus]]):
         dates = list(sorted(points.keys()))
         bars = [Counter(points[d].values()) for d in dates]
-
         fig = go.Figure(
             data=[
                 go.Bar(name=status.value, x=dates, y=[c[status] for c in bars], marker_color=color)
@@ -324,8 +342,27 @@ class DashboardPanelTestSuite(DashboardPanel):
             layout={"showlegend": True},
         )
         fig.update_layout(barmode="stack")
+        return fig
 
-        return plotly_figure(title=self.title, figure=fig, size=self.size)
+    def _create_detailed_fig(self, points: Dict[datetime.datetime, Dict[Test, TestStatus]]):
+        dates = list(sorted(points.keys()))
+        tests = list(set(t for p in points.values() for t in p.keys()))
+        color_scale = []
+        colors = len(tests_colors)
+        for i, col in enumerate(tests_colors.values()):
+            color_scale.append([i / colors, col])
+            color_scale.append([(i + 1) / colors, col])
+
+        pprint(color_scale)
+        fig = go.Figure(
+            data=go.Heatmap(
+                z=[[tests_colors_order[points[d][t]] + 0.1 for d in dates] for t in tests],
+                y=[f"{i}: {t.name}" for i, t in enumerate(tests)],
+                x=dates,
+                colorscale=color_scale,
+            )
+        )
+        return fig
 
 
 class DashboardConfig(BaseModel):
