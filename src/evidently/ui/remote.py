@@ -24,7 +24,7 @@ class RemoteWorkspace(RemoteClientBase, WorkspaceBase[RemoteProject]):
 
     def verify(self):
         try:
-            self._request("/api", "GET").raise_for_status()
+            self._request("/api/", "GET").raise_for_status()
         except HTTPError as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
 
