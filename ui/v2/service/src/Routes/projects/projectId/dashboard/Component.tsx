@@ -27,7 +27,7 @@ export const Component = () => {
   const date_to = searchParams.get('date_to')
 
   const getOnChangeDate =
-    (dateType: 'date_to' | 'date_from') => (dateValue: '' | null | dayjs.Dayjs) => {
+    (dateType: 'date_from' | 'date_to') => (dateValue: '' | null | dayjs.Dayjs) => {
       setSearchParams((params) => {
         params.delete(dateType)
 
