@@ -320,7 +320,7 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
     def render_html(self, obj: DatasetCorrelationsMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            header_text(label="Dataset Correlations Metric"),
+            header_text(label="Dataset Correlations"),
             self._get_heatmaps(metric_result=metric_result),
         ]
         return result
