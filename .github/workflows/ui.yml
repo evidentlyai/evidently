@@ -15,11 +15,11 @@ jobs:
       with:
         version: 8
     - name: Use Node.js ${{ matrix.node-version }}
-      working-directory: ui/v2
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
+        cache-dependency-path: ui/v2/pnpm-lock.yaml
     - name: 📥 Install dependencies
       working-directory: ui/v2
       run: pnpm i
