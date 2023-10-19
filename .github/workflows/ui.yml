@@ -1,4 +1,4 @@
-name: UI Workflow
+name: UI
 on:
   push:
     branches: [ feature/ui-update-dependencies ]
