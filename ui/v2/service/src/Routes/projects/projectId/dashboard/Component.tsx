@@ -43,12 +43,6 @@ export const Component = () => {
     <>
       <Grid container my={3} gap={2} justifyContent="flex-end" justifyItems={'center'}>
         <Grid item>
-          <Box display="flex" alignItems="center" height={1}>
-            <Typography variant="h6">Date</Typography>
-          </Box>
-        </Grid>
-
-        <Grid item>
           <DateTimePicker
             label="From"
             value={date_from && dayjs(date_from)}
