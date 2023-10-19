@@ -2,9 +2,13 @@ name: UI
 on:
   push:
     branches: [ feature/ui-update-dependencies ]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   ui:
     runs-on: ubuntu-20.04
+    if: github.event.pull_request.draft == false
     strategy:
       matrix:
         node-version: [16, 18]
