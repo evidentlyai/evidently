@@ -1,22 +1,27 @@
-# Evidently
+---
+description: Log Evidently metrics with DVC via DVCLive.
+---
+
+*This is a community-contributed integration. Author: [Francesco Calcavecchia](https://github.com/francesco086).*
+
+**TL;DR:** You can use Evidently to calculate metrics, and DVCLive to log and view the results.
+
+Jupyter notebook with en example:
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/dvclive_logging/dvclive_integration.ipynb" %}
+
+# **Overview**
 
 [DVCLive](/doc/dvclive) can be used to track the results of
 [Evidently](https://www.evidentlyai.com/). In the following we demonstrate it
 through an example.
 
-<p align='center'>
-  <a href="https://colab.research.google.com/github/iterative/dvclive/blob/main/examples/DVCLive-Evidently.ipynb">
-    <img src="https://colab.research.google.com/assets/colab-badge.svg" />
-  </a>
-</p>
-
-## Setup
+# **How it works**
 
 ```cli
 $ pip install dvc dvclive evidently pandas
 ```
 
-## Load the data
+## **Step 1. Load the data**
 
 Load the
 [data from UCI repository](https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip)
@@ -38,7 +43,7 @@ df.head()
 
 This is how it looks: ![](<../.gitbook/assets/integrations/dvc_data_preview-min.png>)
 
-## Define column mapping
+## **Step 2. Define column mapping**
 
 You should specify the categorical and numerical features so that Evidently
 performs the correct statistical test for each of them. While Evidently can
@@ -53,7 +58,7 @@ data_columns.numerical_features = ['weathersit', 'temp', 'atemp', 'hum', 'windsp
 data_columns.categorical_features = ['holiday', 'workingday']
 ```
 
-## Define what to log
+## **Step 3. Define what to log**
 
 Specify which metrics you want to calculate. In this case, you can generate the
 Data Drift report and log the drift score for each feature.
@@ -91,7 +96,7 @@ def eval_drift(reference, production, column_mapping):
 You can adapt what you want to calculate by selecting a different Preset or
 Metric from those available in Evidently.
 
-## Define the comparison windows
+## **Step 4. Define the comparison windows**
 
 Specify the period that is considered reference: Evidently will use it as the
 base for the comparison. Then, you should choose the periods to treat as
@@ -110,7 +115,7 @@ experiment_batches = [
 ]
 ```
 
-## Run and log experiments in DVC
+## **Step 5. Run and log experiments in DVC**
 
 There are two ways to track the results of Evidently with DVCLive:
 
@@ -123,7 +128,9 @@ your IDE. However, if you are using VSCode, we recommend using the
 [DVC extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Iterative.dvc)
 to inspect the results.
 
-### 1. One single experiment
+## **Step 6**
+
+### **Option 1. One single experiment**
 
 ```python
 from dvclive import Live
@@ -154,14 +161,14 @@ $ dvc plots show
 and inspecting the resulting `dvc_plots/index.html`, which should look like
 this: ![](<../.gitbook/assets/integrations/dvc_plot_show.png>)
 
-<admon icon="book">
+<!-- <admon icon="book"> -->
 
 In a Jupyter notebook environment, you can show the plots as a cell output
 simply by using `Live(report="notebook")`.
 
-</admon>
+<!-- </admon> -->
 
-### 2. Multiple experiments
+### **Option 2. Multiple experiments**
 
 ```python
 from dvclive import Live
@@ -202,7 +209,7 @@ $ dvc exp show
  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
-<admon icon="book">
+<!-- <admon icon="book"> -->
 
 In a Jupyter notebook environment, you can access the experiments results using
 the [Python DVC api](/doc/api-reference):
@@ -213,4 +220,4 @@ import dvc.api
 dvc.api.exp_show()
 ```
 
-</admon>
+<!-- </admon> -->
