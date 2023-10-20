@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 import uuid
 from collections import defaultdict
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -76,6 +77,7 @@ class Report(ReportBase):
         current_data,
         column_mapping: Optional[ColumnMapping] = None,
         engine: Optional[Type[Engine]] = None,
+        additional_datasets: Dict[str, Any] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -137,10 +139,7 @@ class Report(ReportBase):
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
 
         data = GenericInputData(
-            reference_data,
-            current_data,
-            column_mapping,
-            data_definition,
+            reference_data, current_data, column_mapping, data_definition, additional_datasets=additional_datasets or {}
         )
         self._inner_suite.run_calculate(data)
 
