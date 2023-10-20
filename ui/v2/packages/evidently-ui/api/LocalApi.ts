@@ -30,7 +30,12 @@ export default class LocalApi implements Api {
     _from?: string,
     _to?: string
   ): Promise<DashboardInfo> {
-    return { name: 'Project Dasboard', widgets: [] }
+    return {
+      name: 'Project Dasboard',
+      widgets: [],
+      min_timestamp: new Date(Date.now()).toString(),
+      max_timestamp: new Date(Date.now()).toString()
+    }
   }
   async getReports(_projectId: string): Promise<ReportInfo[]> {
     return [{ id: 'report_1', timestamp: new Date(Date.now()).toString(), tags: [], metadata: {} }]
