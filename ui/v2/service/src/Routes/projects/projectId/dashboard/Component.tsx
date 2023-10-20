@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material'
+import { Alert, AlertTitle, Box, Grid, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import dayjs from 'dayjs'
 import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
@@ -20,11 +20,8 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 export const Component = () => {
   const { projectId } = useParams()
   invariant(projectId, 'missing projectId')
-  const [searchParams, setSearchParams] = useSearchParams()
-  const data = useLoaderData() as Awaited<ReturnType<typeof loader>>
 
-  const date_from = searchParams.get('date_from')
-  const date_to = searchParams.get('date_to')
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const getOnChangeDate =
     (dateType: 'date_from' | 'date_to') => (dateValue: '' | null | dayjs.Dayjs) => {
@@ -39,27 +36,77 @@ export const Component = () => {
       })
     }
 
+  const data = useLoaderData() as Awaited<ReturnType<typeof loader>>
+  const dataRanges = { minDate: dayjs(data.min_timestamp), maxDate: dayjs(data.max_timestamp) }
+
+  const date_from = dayjs(searchParams.get('date_from') || dataRanges.minDate)
+  const date_to = dayjs(searchParams.get('date_to') || dataRanges.maxDate)
+
+  const isIncorrectTimeIntervalMessage = !date_from.isBefore(date_to)
+    ? 'incorrect time interval'
+    : ''
+
   return (
     <>
-      <Grid container my={3} gap={2} justifyContent="flex-end" justifyItems={'center'}>
+      <Grid
+        container
+        // position={'sticky'}
+        // top={0}
+        // left={0}
+        padding={1}
+        zIndex={1}
+        my={3}
+        gap={2}
+        justifyContent="flex-end"
+        justifyItems={'center'}
+      >
         <Grid item>
           <DateTimePicker
+            {...dataRanges}
+            slotProps={{
+              textField: {
+                // error: Boolean(isIncorrectTimeIntervalMessage),
+                variant: 'standard'
+                // helperText: isIncorrectTimeIntervalMessage
+              }
+            }}
             label="From"
-            value={date_from && dayjs(date_from)}
+            value={date_from}
             onChange={getOnChangeDate('date_from')}
           />
         </Grid>
         <Grid item>
+          <Box height={1} display={'flex'} alignItems={'center'}>
+            <Typography> – </Typography>
+          </Box>
+        </Grid>
+        <Grid item>
           <DateTimePicker
+            {...dataRanges}
+            slotProps={{
+              textField: {
+                variant: 'standard'
+                // error: Boolean(isIncorrectTimeIntervalMessage),
+                // helperText: isIncorrectTimeIntervalMessage
+              }
+            }}
             label="To"
-            value={date_to && dayjs(date_to)}
+            value={date_to}
             onChange={getOnChangeDate('date_to')}
           />
         </Grid>
+        {isIncorrectTimeIntervalMessage && (
+          <Grid item xs={12}>
+            <Alert severity="error">
+              <AlertTitle>Error</AlertTitle>
+              {isIncorrectTimeIntervalMessage}
+            </Alert>
+          </Grid>
+        )}
       </Grid>
 
       <Grid container spacing={3} direction="row" alignItems="stretch">
-        <DashboardContent info={data} />
+        {!isIncorrectTimeIntervalMessage && <DashboardContent info={data} />}
       </Grid>
     </>
   )

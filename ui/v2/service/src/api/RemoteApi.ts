@@ -71,18 +71,15 @@ export default class RemoteApi implements Api {
   }
 
   async getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo> {
-    let query = ''
-    if (from !== undefined && from !== '') {
-      query = `timestamp_start=${from}`
-    }
-    if (to !== undefined && to !== '') {
-      query = (query === '' ? `${query}&` : '') + `timestamp_end=${to}`
-    }
-    if (query != '') {
-      query = '?' + query
-    }
-    const resp = await fetch(`${this.endpoint}/projects/${projectId}/dashboard${query}`)
-    console.log(resp)
+    const params = new URLSearchParams()
+
+    from && params.append('timestamp_start', from)
+    to && params.append('timestamp_end', to)
+
+    const resp = await fetch(
+      `${this.endpoint}/projects/${projectId}/dashboard?${params.toString()}`
+    )
+
     if (resp.ok) {
       return new JsonParser().parse(await resp.text()) as DashboardInfo
     }

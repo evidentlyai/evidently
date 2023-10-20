@@ -220,6 +220,8 @@ export type AdditionalGraphInfo = BigGraphWidgetParams
 export interface DashboardInfo {
   name: string
   widgets: WidgetInfo[]
+  max_timestamp: string
+  min_timestamp: string
 }
 
 export interface SectionInfo {
