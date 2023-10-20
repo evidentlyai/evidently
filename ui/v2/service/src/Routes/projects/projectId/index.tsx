@@ -1,5 +1,4 @@
 import { RouteObject } from 'react-router-dom'
-import { Component, handle, loader } from './Component'
 
 ////////////////////
 // children routes
@@ -12,8 +11,6 @@ import TestSuitesOldRoute from './test_suites'
 
 export default {
   path: 'projects/:projectId',
-  loader,
-  Component,
-  handle,
+  lazy: () => import('./Component'),
   children: [DashboardRoute, ReportsRoute, TestSuitesRoute, TestSuitesOldRoute]
 } satisfies RouteObject

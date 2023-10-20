@@ -1,5 +1,4 @@
 import { RouteObject } from 'react-router-dom'
-import { Component, handle, loader } from './Component'
 
 ////////////////////
 // children routes
@@ -7,7 +6,5 @@ import { Component, handle, loader } from './Component'
 
 export default {
   path: '/',
-  Component,
-  handle,
-  loader
+  lazy: () => import('./Component')
 } satisfies RouteObject
