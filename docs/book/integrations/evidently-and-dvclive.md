@@ -17,11 +17,19 @@ through an example.
 
 # **How it works**
 
+Evidently calculates a rich set of metrics and statistical tests. You can choose any of the [pre-built reports](../reports/) or combine [individual metrics](../reference/all-metrics.md) to define what you want to measure. For example, you can evaluate prediction drift and feature drift together.
+
+You can then generate the calculation output **in a Python dictionary format**. You should explicitly define which parts of the output to send to **DVCLive Tracking**.
+
+## **Step 1. Install DVCLive and Evidently**
+
+Install DVCLive, Evidently, and pandas (to handle the data) in your Python environment:
+
 ```cli
 $ pip install dvc dvclive evidently pandas
 ```
 
-## **Step 1. Load the data**
+## **Step 2. Load the data**
 
 Load the
 [data from UCI repository](https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip)
@@ -43,7 +51,7 @@ df.head()
 
 This is how it looks: ![](<../.gitbook/assets/integrations/dvc_data_preview-min.png>)
 
-## **Step 2. Define column mapping**
+## **Step 3. Define column mapping**
 
 You should specify the categorical and numerical features so that Evidently
 performs the correct statistical test for each of them. While Evidently can
@@ -58,7 +66,7 @@ data_columns.numerical_features = ['weathersit', 'temp', 'atemp', 'hum', 'windsp
 data_columns.categorical_features = ['holiday', 'workingday']
 ```
 
-## **Step 3. Define what to log**
+## **Step 4. Define what to log**
 
 Specify which metrics you want to calculate. In this case, you can generate the
 Data Drift report and log the drift score for each feature.
@@ -96,7 +104,7 @@ def eval_drift(reference, production, column_mapping):
 You can adapt what you want to calculate by selecting a different Preset or
 Metric from those available in Evidently.
 
-## **Step 4. Define the comparison windows**
+## **Step 5. Define the comparison windows**
 
 Specify the period that is considered reference: Evidently will use it as the
 base for the comparison. Then, you should choose the periods to treat as
@@ -115,7 +123,7 @@ experiment_batches = [
 ]
 ```
 
-## **Step 5. Run and log experiments in DVC**
+## **Step 6. Run and log experiments in DVC**
 
 There are two ways to track the results of Evidently with DVCLive:
 
@@ -128,7 +136,7 @@ your IDE. However, if you are using VSCode, we recommend using the
 [DVC extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Iterative.dvc)
 to inspect the results.
 
-## **Step 6**
+## **Step 7**
 
 ### **Option 1. One single experiment**
 
