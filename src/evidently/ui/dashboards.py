@@ -18,6 +18,7 @@ from plotly import graph_objs as go
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import validator
+from evidently.base_metric import ColumnName
 from evidently.base_metric import Metric
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
@@ -158,6 +159,28 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     @abc.abstractmethod
     def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
         raise NotImplementedError
+
+
+def _flatten_params_rec(obj: Any, paths: List[str]) -> List[Tuple[List[str], str]]:
+    res = []
+    if isinstance(obj, ColumnName) and obj == ColumnName.from_any(obj.name):
+        return [(paths, obj.name)]
+    if isinstance(obj, BaseModel):
+        for field_name, field in obj.__fields__.items():
+            if isinstance(obj, EvidentlyBaseModel) and field_name == "type":
+                continue
+            field_value = getattr(obj, field_name)
+            if field_value == field.default:
+                continue
+            if isinstance(field.type_, type) and issubclass(field.type_, BaseModel):
+                res.extend(_flatten_params_rec(field_value, paths + [field_name]))
+            else:
+                res.append((paths + [field_name], str(field_value)))
+    return res
+
+
+def _flatten_params(obj: EvidentlyBaseModel) -> Dict[str, str]:
+    return {".".join(path): val for path, val in _flatten_params_rec(obj, [])}
 
 
 def _get_metric_hover(metric: Metric, value: PanelValue):
@@ -303,15 +326,9 @@ tests_colors_order = {ts: i for i, ts in enumerate(tests_colors)}
 
 
 def _get_test_hover(test: Test):
-    params = []
-    for name, value in test.dict().items():
-        if name in ["type"]:
-            continue
-        if value is None:
-            continue
-        params.append(f"{name}: {value}")
+    params = [f"{k}: {v}" for k, v in _flatten_params(test).items()]
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test.name}</b><br>{params_join}<br>"
     return hover
 
 
