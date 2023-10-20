@@ -6,6 +6,11 @@ import ProjectsListRoute from './projectsList'
 
 const homeRoute = {
   ...HomeRoute,
+
+  ////////////////////
+  // children routes
+  ////////////////////
+
   children: [ProjectsListRoute, ProjectsRoute]
 } satisfies RouteObject
 
