@@ -21,6 +21,7 @@
   * [Notebook environments](integrations/notebook-environments.md)
   * [Evidently and Airflow](integrations/evidently-and-airflow.md)
   * [Evidently and MLflow](integrations/evidently-and-mlflow.md)
+  * [Evidently and DVCLive](integrations/evidently-and-dvclive.md)
   * [Evidently and Metaflow](integrations/evidently-and-metaflow.md)
 
 ## User Guide
