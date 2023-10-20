@@ -1,4 +1,5 @@
 import uuid
+from json.decoder import JSONDecodeError
 from typing import List
 from typing import Optional
 from typing import Union
@@ -24,8 +25,9 @@ class RemoteWorkspace(RemoteClientBase, WorkspaceBase[RemoteProject]):
 
     def verify(self):
         try:
-            self._request("/api/", "GET").raise_for_status()
-        except HTTPError as e:
+            response = self._request("/api/version", "GET")
+            assert response.json()["application"] == "Evidently UI"
+        except (HTTPError, JSONDecodeError, KeyError, AssertionError) as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
 
     def create_project(self, name: str, description: Optional[str] = None) -> RemoteProject:

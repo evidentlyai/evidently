@@ -112,7 +112,10 @@ async def root():
 
 @api_read_router.get("/version")
 async def version():
-    return {"version": evidently.__version__}
+    return {
+        "application": "Evidently UI",
+        "version": evidently.__version__,
+    }
 
 
 @api_read_router.get("/projects")
