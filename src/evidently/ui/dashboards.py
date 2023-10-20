@@ -162,12 +162,12 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
 
 def _get_metric_hover(metric: Metric, value: PanelValue):
     params = []
-    for name, value in metric.dict().items():
+    for name, v in metric.dict().items():
         if name in ["type"]:
             continue
-        if value is None:
+        if v is None:
             continue
-        params.append(f"{name}: {value}")
+        params.append(f"{name}: {v}")
     params_join = "<br>".join(params)
     hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>.{value.field_path}"
     return hover
@@ -389,7 +389,11 @@ class DashboardPanelTestSuite(DashboardPanel):
             ],
             layout={"showlegend": True},
         )
-        fig.update_layout(barmode="stack", bargap=0)
+        fig.update_layout(
+            barmode="stack",
+            bargap=0.01,
+            barnorm="fraction",
+        )
         return fig
 
 
