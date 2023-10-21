@@ -14,7 +14,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
   invariant(params.projectId, 'missing projectId')
 
-  return api.getProjectDashboard(params.projectId, date_from, date_to)
+  return api.getProjectDashboard(params.projectId, date_from, date_to, request.signal)
 }
 
 export const Component = () => {

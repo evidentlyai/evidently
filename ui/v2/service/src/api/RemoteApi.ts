@@ -70,14 +70,20 @@ export default class RemoteApi implements Api {
     throw Error(`${resp.status}, ${resp.statusText}`)
   }
 
-  async getProjectDashboard(projectId: string, from?: string, to?: string): Promise<DashboardInfo> {
+  async getProjectDashboard(
+    projectId: string,
+    from?: string,
+    to?: string,
+    signal?: AbortSignal
+  ): Promise<DashboardInfo> {
     const params = new URLSearchParams()
 
     from && params.append('timestamp_start', from)
     to && params.append('timestamp_end', to)
 
     const resp = await fetch(
-      `${this.endpoint}/projects/${projectId}/dashboard?${params.toString()}`
+      `${this.endpoint}/projects/${projectId}/dashboard?${params.toString()}`,
+      { signal }
     )
 
     if (resp.ok) {
