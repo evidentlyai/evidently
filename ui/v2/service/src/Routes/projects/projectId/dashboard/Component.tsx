@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Box, Grid, Typography } from '@mui/material'
+import { Alert, AlertTitle, Box, Collapse, Grid, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import dayjs from 'dayjs'
 import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
@@ -28,7 +28,7 @@ export const Component = () => {
       setSearchParams((params) => {
         params.delete(dateType)
 
-        if (dateValue) {
+        if (dateValue && dateValue.isValid()) {
           params.append(dateType, formatDate(new Date(dateValue.toISOString())))
         }
 
@@ -42,17 +42,13 @@ export const Component = () => {
   const date_from = dayjs(searchParams.get('date_from') || dataRanges.minDate)
   const date_to = dayjs(searchParams.get('date_to') || dataRanges.maxDate)
 
-  const isIncorrectTimeIntervalMessage = !date_from.isBefore(date_to)
-    ? 'incorrect time interval'
-    : ''
+  const isCorrectTimeInterval = date_from.isBefore(date_to)
+  const isIncorrectTimeIntervalMessage = !isCorrectTimeInterval ? 'incorrect time interval' : ''
 
   return (
     <>
       <Grid
         container
-        // position={'sticky'}
-        // top={0}
-        // left={0}
         padding={1}
         zIndex={1}
         my={3}
@@ -65,9 +61,7 @@ export const Component = () => {
             {...dataRanges}
             slotProps={{
               textField: {
-                // error: Boolean(isIncorrectTimeIntervalMessage),
                 variant: 'standard'
-                // helperText: isIncorrectTimeIntervalMessage
               }
             }}
             label="From"
@@ -86,8 +80,6 @@ export const Component = () => {
             slotProps={{
               textField: {
                 variant: 'standard'
-                // error: Boolean(isIncorrectTimeIntervalMessage),
-                // helperText: isIncorrectTimeIntervalMessage
               }
             }}
             label="To"
@@ -95,18 +87,18 @@ export const Component = () => {
             onChange={getOnChangeDate('date_to')}
           />
         </Grid>
-        {isIncorrectTimeIntervalMessage && (
-          <Grid item xs={12}>
+        <Grid item xs={12}>
+          <Collapse unmountOnExit in={!isCorrectTimeInterval}>
             <Alert severity="error">
               <AlertTitle>Error</AlertTitle>
               {isIncorrectTimeIntervalMessage}
             </Alert>
-          </Grid>
-        )}
+          </Collapse>
+        </Grid>
       </Grid>
 
       <Grid container spacing={3} direction="row" alignItems="stretch">
-        {!isIncorrectTimeIntervalMessage && <DashboardContent info={data} />}
+        {isCorrectTimeInterval && <DashboardContent info={data} />}
       </Grid>
     </>
   )
