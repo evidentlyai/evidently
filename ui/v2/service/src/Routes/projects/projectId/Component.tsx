@@ -5,12 +5,14 @@ import {
   Outlet,
   useMatches,
   LoaderFunctionArgs,
-  useLoaderData
+  useLoaderData,
+  ShouldRevalidateFunction
 } from 'react-router-dom'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import invariant from 'tiny-invariant'
 import { api } from 'api/RemoteApi'
 import { crumbFunction } from 'Components/BreadCrumbs'
+import { isOnlySearchParamsChanges } from 'Utils/isOnlySearchParamsChanges'
 
 const PROJECT_TABS = [
   { id: 'dashboard', link: '.' },
@@ -23,6 +25,14 @@ type loaderData = Awaited<ReturnType<typeof loader>>
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (data, { pathname }) => ({ to: pathname, linkText: data.name })
+}
+
+export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
+  if (isOnlySearchParamsChanges(args)) {
+    return false
+  }
+
+  return true
 }
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -41,7 +51,7 @@ export const Component = () => {
     <Box mt={2}>
       <Grid container spacing={2} direction="row" justifyContent="flex-start" alignItems="flex-end">
         <Grid item xs={12}>
-          <Typography style={{ color: '#aaa' }} variant="body2">
+          <Typography sx={{ color: '#aaa' }} variant="body2">
             {`project id: ${project.id}`}
             <IconButton
               size="small"

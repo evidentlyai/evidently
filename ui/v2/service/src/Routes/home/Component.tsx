@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData } from 'react-router-dom'
+import { Outlet, ShouldRevalidateFunction, useLoaderData } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -8,10 +8,18 @@ import { api } from 'api/RemoteApi'
 
 import { NavigationProgress, ServiceMainPage, ServiceHeader, crumbFunction } from 'Components'
 import { theme } from 'evidently-ui/theme'
+import { isOnlySearchParamsChanges } from 'Utils/isOnlySearchParamsChanges'
 
 export const loader = () => api.getVersion()
-
 type loaderData = Awaited<ReturnType<typeof loader>>
+
+export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
+  if (isOnlySearchParamsChanges(args)) {
+    return false
+  }
+
+  return true
+}
 
 export const Component = () => {
   const { version } = useLoaderData() as loaderData
