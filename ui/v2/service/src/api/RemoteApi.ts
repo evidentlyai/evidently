@@ -72,8 +72,8 @@ export default class RemoteApi implements Api {
 
   async getProjectDashboard(
     projectId: string,
-    from?: string,
-    to?: string,
+    from?: string | null,
+    to?: string | null,
     signal?: AbortSignal
   ): Promise<DashboardInfo> {
     const params = new URLSearchParams()

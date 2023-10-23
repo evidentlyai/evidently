@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/material'
+import { Alert, Box, Collapse, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/material'
 
 import {
   Link as RouterLink,
@@ -24,7 +24,17 @@ const PROJECT_TABS = [
 type loaderData = Awaited<ReturnType<typeof loader>>
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
-  crumb: (data, { pathname }) => ({ to: pathname, linkText: data.name })
+  crumb: (data, { pathname }) => ({ to: pathname, linkText: data?.name || 'undefined' })
+}
+
+export function ErrorBoundary() {
+  return (
+    <Collapse sx={{ my: 3 }} unmountOnExit in={true}>
+      <Alert severity="error">
+        <Typography variant="h6">Something went wrong...</Typography>
+      </Alert>
+    </Collapse>
+  )
 }
 
 export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
