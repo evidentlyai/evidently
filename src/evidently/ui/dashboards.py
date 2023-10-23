@@ -316,11 +316,11 @@ class TestFilter(BaseModel):
 
 
 tests_colors = {
-    TestStatus.ERROR: "#29b6f6",
-    TestStatus.FAIL: "#f44336",
-    TestStatus.WARNING: "#ffa726",
-    TestStatus.SUCCESS: "#66bb6a",
-    TestStatus.SKIPPED: "#ab47bc",
+    TestStatus.ERROR: "#6B8BA4",
+    TestStatus.FAIL: "#ed0400",
+    TestStatus.WARNING: "#ffad01",
+    TestStatus.SUCCESS: "#0a5f38",
+    TestStatus.SKIPPED: "#a00498",
 }
 
 tests_colors_order = {ts: i for i, ts in enumerate(tests_colors)}
