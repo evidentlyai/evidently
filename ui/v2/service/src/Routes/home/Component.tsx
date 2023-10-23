@@ -1,4 +1,9 @@
-import { Outlet, ShouldRevalidateFunction, useLoaderData } from 'react-router-dom'
+import {
+  Outlet,
+  ScrollRestoration,
+  ShouldRevalidateFunction,
+  useLoaderData
+} from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -26,6 +31,7 @@ export const Component = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <ScrollRestoration />
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <ServiceHeader version={version} />
         <NavigationProgress />
