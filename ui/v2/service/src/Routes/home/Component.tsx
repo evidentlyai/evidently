@@ -31,10 +31,10 @@ export const Component = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <ScrollRestoration />
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <ServiceHeader version={version} />
         <NavigationProgress />
+        <ScrollRestoration />
         <ServiceMainPage>
           <Outlet />
         </ServiceMainPage>
