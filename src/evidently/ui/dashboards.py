@@ -13,6 +13,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import pandas as pd
 import plotly.io as pio
 from plotly import graph_objs as go
 
@@ -341,6 +342,7 @@ class DashboardPanelTestSuite(DashboardPanel):
     test_filters: List[TestFilter] = []
     filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
     panel_type: TestSuitePanelType = TestSuitePanelType.AGGREGATE
+    time_agg: Optional[str] = None
 
     def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
         self.filter.include_test_suites = True
@@ -351,11 +353,12 @@ class DashboardPanelTestSuite(DashboardPanel):
                 continue
             if not isinstance(report, TestSuite):
                 continue
+            ts = self._to_period(report.timestamp)
             if self.test_filters:
                 for test_filter in self.test_filters:
-                    points[report.timestamp].update(test_filter.get(report))
+                    points[ts].update(test_filter.get(report))
             else:
-                points[report.timestamp].update(TestFilter().get(report))
+                points[ts].update(TestFilter().get(report))
 
         if self.panel_type == TestSuitePanelType.AGGREGATE:
             fig = self._create_aggregate_fig(points)
@@ -412,6 +415,11 @@ class DashboardPanelTestSuite(DashboardPanel):
             barnorm="fraction",
         )
         return fig
+
+    def _to_period(self, timestamp: datetime.datetime) -> datetime.datetime:
+        if self.time_agg is None:
+            return timestamp
+        return pd.Series([timestamp], name="dt").dt.to_period(self.time_agg)[0]
 
 
 class DashboardConfig(BaseModel):
