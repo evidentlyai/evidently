@@ -42,15 +42,18 @@ export const Component = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const getOnChangeDate = (dateType: QueryLiterals) => (dateValue: dayjs.Dayjs | null) => {
-    setSearchParams((params) => {
-      params.delete(dateType)
+    setSearchParams(
+      (params) => {
+        params.delete(dateType)
 
-      if (dateValue) {
-        params.append(dateType, formatDate(dateValue.toDate()))
-      }
+        if (dateValue) {
+          params.append(dateType, formatDate(dateValue.toDate()))
+        }
 
-      return params
-    })
+        return params
+      },
+      { preventScrollReset: true, replace: true }
+    )
   }
 
   const data = useLoaderData() as Awaited<ReturnType<typeof loader>>
