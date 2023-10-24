@@ -134,7 +134,7 @@ In the tab “ALL”, you can see the distribution of classes against the values
 
 ![](<../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature\_example\_all (1).png>)
 
-For each class, you can seee the predicted probabilities alongside the values of the feature.
+For each class, you can see the predicted probabilities alongside the values of the feature.
 
 ![](<../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature\_example\_class (1).png>)
 
