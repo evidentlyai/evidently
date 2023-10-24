@@ -4,6 +4,7 @@ import uuid
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Optional
 
 from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import Metric
@@ -11,6 +12,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
+from evidently.ui.workspace import Project
 
 
 class MetricModel(BaseModel):
@@ -53,7 +55,26 @@ class TestSuiteModel(BaseModel):
 class DashboardInfoModel(BaseModel):
     name: str
     widgets: List[Any]
+    min_timestamp: Optional[datetime.datetime] = None
+    max_timestamp: Optional[datetime.datetime] = None
 
     @classmethod
     def from_dashboard_info(cls, dashboard_info: DashboardInfo):
         return cls(**dataclasses.asdict(dashboard_info))
+
+    @classmethod
+    def from_project_with_time_range(
+        cls,
+        project: Project,
+        timestamp_start: Optional[datetime.datetime] = None,
+        timestamp_end: Optional[datetime.datetime] = None,
+    ):
+
+        time_range = dict(
+            min_timestamp=min(r.timestamp for r in project.reports.values()),
+            max_timestamp=max(r.timestamp for r in project.reports.values()),
+        )
+
+        info = project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
+
+        return cls(**dataclasses.asdict(info), **time_range)
