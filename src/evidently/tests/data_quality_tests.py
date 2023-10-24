@@ -820,9 +820,7 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
     def generate(self, data_definition: DataDefinition) -> List[TestMostCommonValueShare]:
         if self.columns is None:
             columns = [
-                column.column_name
-                for column in data_definition.get_columns("all")
-                if column.column_type != ColumnType.Text
+                column.column_name for column in data_definition.get_columns() if column.column_type != ColumnType.Text
             ]
 
         else:
@@ -974,7 +972,9 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestMeanInNSigmas]:
         if self.columns is None:
-            columns = [column.column_name for column in data_definition.get_columns("numerical_features")]
+            columns = [
+                column.column_name for column in data_definition.get_columns(ColumnType.Numerical, features_only=True)
+            ]
 
         else:
             columns = [
@@ -1198,7 +1198,9 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestShareOfOutRangeValues]:
         if self.columns is None:
-            columns = [column.column_name for column in data_definition.get_columns("numerical_features")]
+            columns = [
+                column.column_name for column in data_definition.get_columns(ColumnType.Numerical, features_only=True)
+            ]
 
         else:
             columns = [
@@ -1363,7 +1365,7 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestShareOfOutListValues]:
         if self.columns is None:
-            columns = data_definition.get_columns("categorical_features")
+            columns = data_definition.get_columns(ColumnType.Categorical, features_only=True)
 
         else:
             columns = [

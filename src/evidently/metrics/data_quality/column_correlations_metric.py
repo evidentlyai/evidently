@@ -49,7 +49,7 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
         column_type: ColumnType,
     ) -> Dict[str, ColumnCorrelations]:
         if column_type == ColumnType.Categorical:
-            cat_features = data_definition.get_columns("categorical_features")
+            cat_features = data_definition.get_columns(ColumnType.Categorical, features_only=True)
 
             correlations = calculate_category_correlation(
                 column_name.display_name,
@@ -57,7 +57,7 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
                 dataset[[feature.column_name for feature in cat_features if feature.column_name != column_name.name]],
             )
         elif column_type == ColumnType.Numerical:
-            num_features = data_definition.get_columns("numerical_features")
+            num_features = data_definition.get_columns(ColumnType.Numerical, features_only=True)
             correlations = calculate_numerical_correlation(
                 column_name.display_name,
                 column_data,

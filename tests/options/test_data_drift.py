@@ -1,7 +1,7 @@
 import pytest
 from numpy.ma.testutils import approx
 
-from evidently.options import DataDriftOptions
+from evidently.options.data_drift import DataDriftOptions
 
 
 @pytest.mark.parametrize(

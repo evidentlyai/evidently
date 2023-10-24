@@ -20,8 +20,8 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import DataDriftOptions
 from evidently.options.base import AnyOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -117,7 +117,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         # text_dataset_columns = DatasetColumns(num_feature_names=curr_text_df.columns)
         text_dataset_columns = process_columns(ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns))
 
-        drift_by_columns = {}
+        drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
         for col in curr_text_df.columns:
             drift_by_columns[col] = get_one_column_drift(
                 current_data=curr_text_df,

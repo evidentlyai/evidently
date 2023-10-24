@@ -16,6 +16,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import ColumnType
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -55,8 +56,8 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
         self._text_features_gen = None
 
     def required_features(self, data_definition: DataDefinition):
-        if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+        if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:
+            text_cols = [col.column_name for col in data_definition.get_columns(ColumnType.Text, features_only=True)]
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:

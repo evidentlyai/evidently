@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import jensenshannon_stat_test
     >>> options = DataDriftOptions(all_features_stattest=jensenshannon_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="jensenshannon")
 """
 from typing import Optional
@@ -62,9 +62,8 @@ def _jensenshannon(
 jensenshannon_stat_test = StatTest(
     name="jensenshannon",
     display_name="Jensen-Shannon distance",
-    func=_jensenshannon,
     allowed_feature_types=[ColumnType.Categorical, ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(jensenshannon_stat_test)
+register_stattest(jensenshannon_stat_test, _jensenshannon)

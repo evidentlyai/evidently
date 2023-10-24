@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import psi_stat_test
     >>> options = DataDriftOptions(all_features_stattest=psi_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="psi")
 """
 from typing import Tuple
@@ -58,9 +58,8 @@ def _psi(
 psi_stat_test = StatTest(
     name="psi",
     display_name="PSI",
-    func=_psi,
     allowed_feature_types=[ColumnType.Categorical, ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(psi_stat_test)
+register_stattest(psi_stat_test, _psi)

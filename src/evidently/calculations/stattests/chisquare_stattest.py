@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import chi_stat_test
     >>> options = DataDriftOptions(all_features_stattest=chi_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="chisquare")
 """
 from typing import Tuple
@@ -49,8 +49,7 @@ def _chi_stat_test(
 chi_stat_test = StatTest(
     name="chisquare",
     display_name="chi-square p_value",
-    func=_chi_stat_test,
     allowed_feature_types=[ColumnType.Categorical],
 )
 
-register_stattest(chi_stat_test)
+register_stattest(chi_stat_test, default_impl=_chi_stat_test)

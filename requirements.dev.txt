@@ -14,9 +14,12 @@ pillow==9.5.0
 black==22.8.0
 isort==5.10.1
 
+pyspark
+
 # service dependencies
 fastapi<=0.102.0  # todo: update crashing mypy and remove restriction
 fastapi-utils
 uvicorn
 pyarrow
 httpx
+

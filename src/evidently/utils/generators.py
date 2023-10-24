@@ -7,6 +7,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+from evidently.core import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition
 
 TObject = TypeVar("TObject")
@@ -31,7 +32,7 @@ class BaseGenerator(Generic[TObject]):
     ...        return [
     ...            TestColumnQuantile(column_name=name, quantile=quantile)
     ...            for quantile in (0.5, 0.9, 0.99)
-    ...            for name in data_definition.get_columns("numerical_features")
+    ...            for name in data_definition.get_columns(ColumnType.Numerical, features_only=True)
     ...        ]
 
     Do not forget set correct test type for `generate` return value
@@ -83,25 +84,31 @@ def make_generator_by_columns(
             elif columns == "all" or columns is None:
                 columns_for_generation = [
                     column.column_name
-                    for column in data_definition.get_columns("all")
+                    for column in data_definition.get_columns()
                     if column != data_definition.get_id_column()
                 ]
 
             elif columns == "cat":
                 columns_for_generation = [
-                    column.column_name for column in data_definition.get_columns("categorical_features")
+                    column.column_name
+                    for column in data_definition.get_columns(ColumnType.Categorical, features_only=True)
                 ]
 
             elif columns == "num":
                 columns_for_generation = [
-                    column.column_name for column in data_definition.get_columns("numerical_features")
+                    column.column_name
+                    for column in data_definition.get_columns(ColumnType.Numerical, features_only=True)
                 ]
 
             elif columns == "text":
-                columns_for_generation = [column.column_name for column in data_definition.get_columns("text_features")]
+                columns_for_generation = [
+                    column.column_name for column in data_definition.get_columns(ColumnType.Text, features_only=True)
+                ]
 
             elif columns == "features":
-                columns_for_generation = [column.column_name for column in data_definition.get_columns("all_features")]
+                columns_for_generation = [
+                    column.column_name for column in data_definition.get_columns(features_only=True)
+                ]
 
             else:
                 raise ValueError("Incorrect parameter 'columns' for test generator")

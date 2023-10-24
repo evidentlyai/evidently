@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import cramer_von_mises
     >>> options = DataDriftOptions(all_features_stattest=cramer_von_mises)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="cramer_von_mises")
 """
 
@@ -215,9 +215,8 @@ def _cramer_von_mises(
 cramer_von_mises = StatTest(
     name="cramer_von_mises",
     display_name="Cramer-von Mises",
-    func=_cramer_von_mises,
     allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(cramer_von_mises)
+register_stattest(cramer_von_mises, default_impl=_cramer_von_mises)

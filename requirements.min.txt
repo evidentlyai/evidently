@@ -12,4 +12,5 @@ typer==0.3
 rich==13
 iterative-telemetry==0.0.5
 watchdog==3.0.0
-pyarrow==11.0.0
+pyarrow<11.0dev
+pyspark==3.0.0
