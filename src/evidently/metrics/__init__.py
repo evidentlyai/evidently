@@ -9,6 +9,8 @@ from .classification_performance.class_separation_metric import ClassificationCl
 from .classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from .classification_performance.classification_quality_metric import ClassificationQualityMetric
 from .classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
+from .classification_performance.lift_curve_metric import ClassificationLiftCurve
+from .classification_performance.lift_table_metric import ClassificationLiftTable
 from .classification_performance.pr_curve_metric import ClassificationPRCurve
 from .classification_performance.pr_table_metric import ClassificationPRTable
 from .classification_performance.probability_distribution_metric import ClassificationProbDistribution
@@ -71,6 +73,8 @@ __all__ = [
     "ClassificationQualityByClass",
     "ClassificationQualityByFeatureTable",
     "ClassificationRocCurve",
+    "ClassificationLiftCurve",
+    "ClassificationLiftTable",
     "ColumnDriftMetric",
     "ColumnValuePlot",
     "DataDriftTable",

@@ -1,14 +1,21 @@
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
+from typing import Union
 
 import pandas as pd
 
+from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_lift_table
 from evidently.calculations.classification_performance import get_prediction_data
-from evidently.metrics.base_metric import Metric
+from evidently.metric_results import Label
+from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -18,10 +25,26 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
+if TYPE_CHECKING:
+    from evidently._pydantic_compat import Model
+
+
+class LabelModel(BaseModel):
+    __root__: Union[int, str]
+
+    def validate(cls: Type["Model"], value: Any):  # type: ignore[override, misc]
+        try:
+            return int(value)
+        except TypeError:
+            return value
+
+
+LiftTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
+
 
 class ClassificationLiftTableResults(MetricResult):
-    current_lift_table: Optional[dict] = None
-    reference_lift_table: Optional[dict] = None
+    current_lift_table: Optional[LiftTable] = None
+    reference_lift_table: Optional[LiftTable] = None
     top: Optional[int] = 10
 
 
@@ -40,6 +63,7 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
 
     def __init__(self, top: int = 10) -> None:
         self.top = top
+        super().__init__()
 
     def calculate(self, data: InputData) -> ClassificationLiftTableResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
