@@ -98,7 +98,7 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                 # for label in labels:
 
                 # lift_curve[int(prediction.prediction_probas.columns[0])] = LiftCurveData(
-                lift_curve[label] = LiftCurveData(
+                lift_curve[int(label)] = LiftCurveData(
                     lift=[i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     top=[i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     count=[i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],

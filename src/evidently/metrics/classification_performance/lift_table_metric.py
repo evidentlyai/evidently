@@ -160,7 +160,7 @@ class ClassificationLiftTableRenderer(MetricRenderer):
                         title="",
                         size=size,
                     )
-                    tab_data.append(TabData(label, table))
+                    tab_data.append(TabData(str(label), table))
                 result.append(widget_tabs(title="Current: Lift Table", tabs=tab_data))
         if reference_lift_table is not None:
             if len(reference_lift_table.keys()) == 1:
@@ -181,6 +181,6 @@ class ClassificationLiftTableRenderer(MetricRenderer):
                         title="",
                         size=size,
                     )
-                    tab_data.append(TabData(label, table))
+                    tab_data.append(TabData(str(label), table))
                 result.append(widget_tabs(title="Reference: Lift Table", tabs=tab_data))
         return result
