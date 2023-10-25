@@ -115,6 +115,7 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData]):
             None,
             data.column_mapping,
             data.data_definition,
+            additional_datasets=data.additional_datasets,
         )
 
     def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
