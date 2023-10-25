@@ -3,6 +3,8 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -111,6 +113,8 @@ class GenericInputData:
     column_mapping: ColumnMapping
     data_definition: DataDefinition
 
+    additional_datasets: Dict[str, Any]
+
 
 @dataclass
 class InputData:
@@ -120,6 +124,8 @@ class InputData:
     current_additional_features: Optional[pd.DataFrame]
     column_mapping: ColumnMapping
     data_definition: DataDefinition
+
+    additional_datasets: Dict[str, Any]
 
     @staticmethod
     def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
