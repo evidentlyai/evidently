@@ -12,7 +12,7 @@ import 'dayjs/locale/en-gb'
 import { api } from 'api/RemoteApi'
 
 import { NavigationProgress, ServiceMainPage, ServiceHeader, crumbFunction } from 'Components'
-import { theme } from 'evidently-ui/theme'
+import { theme, CssVarsBasic } from 'evidently-ui/theme'
 import { isOnlySearchParamsChanges } from 'Utils/isOnlySearchParamsChanges'
 
 export const loader = () => api.getVersion()
@@ -31,6 +31,7 @@ export const Component = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssVarsBasic />
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <ServiceHeader version={version} />
         <NavigationProgress />

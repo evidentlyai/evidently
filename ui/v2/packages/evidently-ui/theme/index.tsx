@@ -1,5 +1,10 @@
 import { createTheme } from '@mui/material/styles'
 
+import {
+  experimental_extendTheme as extendTheme,
+  Experimental_CssVarsProvider as CssVarsProvider
+} from '@mui/material/styles'
+
 export const theme = createTheme({
   shape: {
     borderRadius: 0
@@ -36,3 +41,8 @@ export const theme = createTheme({
     ].join(',')
   }
 })
+
+export function CssVarsBasic() {
+  const extendetTheme = extendTheme(theme)
+  return <CssVarsProvider theme={extendetTheme} />
+}
