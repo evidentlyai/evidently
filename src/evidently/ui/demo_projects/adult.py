@@ -11,7 +11,7 @@ from evidently.ui.dashboards import DashboardPanelTestSuite
 from evidently.ui.dashboards import ReportFilter
 from evidently.ui.dashboards import TestFilter
 from evidently.ui.dashboards import TestSuitePanelType
-from evidently.ui.demo_projects import DemoProject
+from evidently.ui.demo_projects.base import DemoProject
 from evidently.ui.workspace import WorkspaceBase
 
 
