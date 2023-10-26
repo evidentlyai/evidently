@@ -34,8 +34,8 @@ class ColumnMapping:
     item_id: Optional[str] = "item_id"
     recommendations_type: Optional[str] = "score"
 
-    def is_classification_task(self):
+    def is_classification_task(self) -> bool:
         return self.task == TaskType.CLASSIFICATION_TASK
 
-    def is_regression_task(self):
+    def is_regression_task(self) -> bool:
         return self.task == TaskType.REGRESSION_TASK

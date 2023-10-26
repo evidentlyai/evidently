@@ -1,4 +1,5 @@
 import warnings
+from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import Optional
@@ -67,7 +68,7 @@ class DataDriftOptions(BaseModel):
     cat_target_stattest_func: Optional[PossibleStatTestType] = None
     num_target_stattest_func: Optional[PossibleStatTestType] = None
 
-    def as_dict(self):
+    def as_dict(self) -> Dict[str, Any]:
         return {
             "confidence": self.confidence,
             "drift_share": self.drift_share,
