@@ -15,7 +15,7 @@ def ui(
     demo_projects: str = Option(
         "",
         "--demo-projects",
-        help="Comma-separated list of demo projects to generate. Possible values: [all|bikes|reviews]",
+        help="Comma-separated list of demo projects to generate. Possible values: [all|bikes|reviews|adult]",
     ),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
