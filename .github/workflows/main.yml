@@ -118,7 +118,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-        run: pip install -e .[dev]
+        run: pip install -e .[dev,spark]
       - name: Install minimal reqs
         if: matrix.minimal
         run: pip install -r requirements.min.txt
