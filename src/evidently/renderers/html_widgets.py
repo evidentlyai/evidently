@@ -15,6 +15,7 @@ from plotly.subplots import make_subplots
 
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
+from evidently.metric_results import LiftCurve
 from evidently.metric_results import PRCurve
 from evidently.metric_results import ROCCurve
 from evidently.model.widget import BaseWidgetInfo
@@ -723,6 +724,81 @@ def get_pr_rec_plot_data(
             fig.add_trace(trace, 1, 2)
             fig.update_xaxes(title_text="Recall", row=1, col=2)
         fig.update_layout(yaxis_title="Precision", showlegend=True)
+
+        additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
+    return additional_plots
+
+
+def get_lift_plot_data(
+    current_lift_curve: LiftCurve,
+    reference_lift_curve: Optional[PRCurve],
+    color_options: ColorOptions,
+) -> List[Tuple[str, BaseWidgetInfo]]:
+    """
+    Forms plot data for lift metric visualization
+
+    Parameters
+    ----------
+    current_lift_curve: dict
+        Calculated lift table data for current sample
+    reference_lift_curve: Optional[dict]
+        Calculated lift table data for reference sample
+    color_options: ColorOptions
+        Standard Evidently class-collection of colors for data visualization
+
+    Return values
+    -------------
+    additional_plots: List[Tuple[str, BaseWidgetInfo]]
+        Plot objects within List
+    """
+    additional_plots = []
+    cols = 1
+    subplot_titles = [""]
+    if reference_lift_curve is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    for label in current_lift_curve.keys():
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        trace = go.Scatter(
+            x=current_lift_curve[label].top,
+            y=current_lift_curve[label].lift,
+            mode="lines+markers",
+            name="Lift",
+            hoverinfo="text",
+            text=[
+                f"top: {str(int(current_lift_curve[label].top[i]))}, " f"lift={str(current_lift_curve[label].lift[i])}"
+                for i in range(100)
+            ],
+            legendgroup="Lift",
+            marker=dict(
+                size=6,
+                color=color_options.get_current_data_color(),
+            ),
+        )
+        fig.add_trace(trace, 1, 1)
+        fig.update_xaxes(title_text="Top", row=1, col=1)
+        if reference_lift_curve is not None:
+            trace = go.Scatter(
+                x=reference_lift_curve[label].top,
+                y=reference_lift_curve[label].lift,
+                mode="lines+markers",
+                name="Lift",
+                hoverinfo="text",
+                text=[
+                    f"top: {str(int(reference_lift_curve[label].top[i]))}, "
+                    f"lift={str(reference_lift_curve[label].lift[i])}"
+                    for i in range(100)
+                ],
+                legendgroup="Lift",
+                showlegend=False,
+                marker=dict(
+                    size=6,
+                    color=color_options.get_current_data_color(),
+                ),
+            )
+            fig.add_trace(trace, 1, 2)
+            fig.update_xaxes(title_text="Top", row=1, col=2)
+        fig.update_layout(yaxis_title="Lift", showlegend=True)
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots
