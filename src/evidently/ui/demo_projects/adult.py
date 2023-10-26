@@ -49,10 +49,10 @@ def create_project(workspace: WorkspaceBase, name: str):
     project.description = "A toy demo project using Adult dataset. Showcases TestSuite panels"
     project.dashboard.add_panel(
         DashboardPanelTestSuite(
-            title="Column Drift tests",
+            title="Column Drift tests for key features: aggregated",
             test_filters=[
-                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "age"}),
-                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "education"}),
+                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "hours-per-week"}),
+                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "capital-gain"}),
             ],
             filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
             size=WidgetSize.HALF,
@@ -61,7 +61,7 @@ def create_project(workspace: WorkspaceBase, name: str):
     )
     project.dashboard.add_panel(
         DashboardPanelTestSuite(
-            title="All tests",
+            title="All tests: aggregated",
             filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
             size=WidgetSize.HALF,
             time_agg="1D",
@@ -69,10 +69,10 @@ def create_project(workspace: WorkspaceBase, name: str):
     )
     project.dashboard.add_panel(
         DashboardPanelTestSuite(
-            title="Column Drift tests: detailed",
+            title="Column Drift tests for key features: detailed",
             test_filters=[
-                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "age"}),
-                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "education"}),
+                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "hours-per-week"}),
+                TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "capital-gain"}),
             ],
             filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
             size=WidgetSize.HALF,
