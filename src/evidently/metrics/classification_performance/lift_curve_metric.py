@@ -4,11 +4,13 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_lift_table
 from evidently.calculations.classification_performance import get_prediction_data
-from evidently.metrics.base_metric import Metric
+from evidently.metric_results import LiftCurve
+from evidently.metric_results import LiftCurveData
+from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -20,8 +22,8 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationLiftCurveResults(MetricResult):
-    current_lift_curve: Optional[dict] = None
-    reference_lift_curve: Optional[dict] = None
+    current_lift_curve: Optional[LiftCurve] = None
+    reference_lift_curve: Optional[LiftCurve] = None
 
 
 class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
@@ -46,7 +48,7 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
             reference_lift_curve=ref_lift_curve,
         )
 
-    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData):
+    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData) -> LiftCurve:
         labels = prediction.labels
         if prediction.prediction_probas is None:
             raise ValueError("Lift Curve can be calculated only " "on binary probabilistic predictions")
@@ -63,22 +65,23 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                     prediction.prediction_probas.iloc[:, 0].tolist(),
                 )
             )
-            lift_table[int(prediction.prediction_probas.columns[0])] = calculate_lift_table(binded)
+            lift_table[prediction.prediction_probas.columns[0]] = calculate_lift_table(binded)
 
-            lift_curve[int(prediction.prediction_probas.columns[0])] = {
-                "lift": [i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "top": [i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "count": [i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "prob": [i[2] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "tp": [i[3] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "fp": [i[4] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "precision": [i[5] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "recall": [i[6] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "f1_score": [i[7] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "max_lift": [i[9] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "relative_lift": [i[10] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                "percent": lift_table[prediction.prediction_probas.columns[0]][0][11],
-            }
+            lift_curve[prediction.prediction_probas.columns[0]] = LiftCurveData(
+                lift=[i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                top=[i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                count=[i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                prob=[i[2] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                tp=[i[3] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                fp=[i[4] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                precision=[i[5] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                recall=[i[6] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                f1_score=[i[7] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                max_lift=[i[9] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                relative_lift=[i[10] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                percent=[i[11] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                # percent = lift_table[prediction.prediction_probas.columns[0]][0][11],
+            )
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
@@ -90,32 +93,33 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                         prediction.prediction_probas[label],
                     )
                 )
-                lift_table[int(label)] = calculate_lift_table(binded)
+                lift_table[label] = calculate_lift_table(binded)
 
             for label in labels:
-
-                lift_curve[int(prediction.prediction_probas.columns[0])] = {
-                    "lift": [i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "top": [i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "count": [i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "prob": [i[2] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "tp": [i[3] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "fp": [i[4] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "precision": [i[5] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "recall": [i[6] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "f1_score": [i[7] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "max_lift": [i[9] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "relative_lift": [i[10] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    "percent": lift_table[prediction.prediction_probas.columns[0]][0][11],
-                }
+                # lift_curve[int(prediction.prediction_probas.columns[0])] = LiftCurveData(
+                lift_curve[label] = LiftCurveData(
+                    lift=[i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    top=[i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    count=[i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    prob=[i[2] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    tp=[i[3] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    fp=[i[4] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    precision=[i[5] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    recall=[i[6] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    f1_score=[i[7] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    max_lift=[i[9] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    relative_lift=[i[10] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    percent=[i[11] for i in lift_table[prediction.prediction_probas.columns[0]]],
+                    # percent = lift_table[prediction.prediction_probas.columns[0]][0][11],
+                )
         return lift_curve
 
 
 @default_renderer(wrap_type=ClassificationLiftCurve)
 class ClassificationLiftCurveRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationLiftCurve) -> List[BaseWidgetInfo]:
-        current_lift_curve = obj.get_result().current_lift_curve
-        reference_lift_curve = obj.get_result().reference_lift_curve
+        current_lift_curve: Optional[LiftCurve] = obj.get_result().current_lift_curve
+        reference_lift_curve: Optional[LiftCurve] = obj.get_result().reference_lift_curve
         if current_lift_curve is None:
             return []
 

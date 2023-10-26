@@ -15,6 +15,7 @@ from plotly.subplots import make_subplots
 
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
+from evidently.metric_results import LiftCurve
 from evidently.metric_results import PRCurve
 from evidently.metric_results import ROCCurve
 from evidently.model.widget import BaseWidgetInfo
@@ -729,8 +730,8 @@ def get_pr_rec_plot_data(
 
 
 def get_lift_plot_data(
-    current_lift_curve: dict,
-    reference_lift_curve: Optional[dict],
+    current_lift_curve: LiftCurve,
+    reference_lift_curve: Optional[PRCurve],
     color_options: ColorOptions,
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     """
@@ -759,14 +760,13 @@ def get_lift_plot_data(
     for label in current_lift_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
-            x=current_lift_curve[label]["top"],
-            y=current_lift_curve[label]["lift"],
+            x=current_lift_curve[label].top,
+            y=current_lift_curve[label].lift,
             mode="lines+markers",
             name="Lift",
             hoverinfo="text",
             text=[
-                f"top: {str(int(current_lift_curve[label]['top'][i]))}, "
-                f"lift={str(current_lift_curve[label]['lift'][i])}"
+                f"top: {str(int(current_lift_curve[label].top[i]))}, " f"lift={str(current_lift_curve[label].lift[i])}"
                 for i in range(100)
             ],
             legendgroup="Lift",
@@ -779,14 +779,14 @@ def get_lift_plot_data(
         fig.update_xaxes(title_text="Top", row=1, col=1)
         if reference_lift_curve is not None:
             trace = go.Scatter(
-                x=reference_lift_curve[label]["top"],
-                y=reference_lift_curve[label]["lift"],
+                x=reference_lift_curve[label].top,
+                y=reference_lift_curve[label].lift,
                 mode="lines+markers",
                 name="Lift",
                 hoverinfo="text",
                 text=[
-                    f"top: {str(int(reference_lift_curve[label]['top'][i]))}, "
-                    f"lift={str(reference_lift_curve[label]['lift'][i])}"
+                    f"top: {str(int(reference_lift_curve[label].top[i]))}, "
+                    f"lift={str(reference_lift_curve[label].lift[i])}"
                     for i in range(100)
                 ],
                 legendgroup="Lift",

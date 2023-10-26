@@ -8,6 +8,8 @@ from evidently.metrics.classification_performance.class_separation_metric import
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
+from evidently.metrics.classification_performance.lift_curve_metric import ClassificationLiftCurve
+from evidently.metrics.classification_performance.lift_table_metric import ClassificationLiftTable
 from evidently.metrics.classification_performance.pr_curve_metric import ClassificationPRCurve
 from evidently.metrics.classification_performance.pr_table_metric import ClassificationPRTable
 from evidently.metrics.classification_performance.probability_distribution_metric import ClassificationProbDistribution
@@ -47,6 +49,26 @@ def classification_p_r_curve():
     return TestMetric(
         "classification_p_r_curve",
         ClassificationPRCurve(),
+        NoopOutcome(),
+        [DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
+    )
+
+
+@metric
+def classification_lift_table():
+    return TestMetric(
+        "classification_lift_table",
+        ClassificationLiftTable(),
+        NoopOutcome(),
+        [DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
+    )
+
+
+@metric
+def classification_lift_curve():
+    return TestMetric(
+        "classification_lift_curve",
+        ClassificationLiftCurve(),
         NoopOutcome(),
         [DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )

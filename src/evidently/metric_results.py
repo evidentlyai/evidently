@@ -320,6 +320,28 @@ class ROCCurveData(MetricResult):
 ROCCurve = Dict[Label, ROCCurveData]
 
 
+class LiftCurveData(MetricResult):
+    class Config:
+        dict_include = False
+        tags = {IncludeTags.Render}
+
+    lift: PlotData
+    top: PlotData
+    count: PlotData
+    prob: PlotData
+    tp: PlotData
+    fp: PlotData
+    precision: PlotData
+    recall: PlotData
+    f1_score: PlotData
+    max_lift: PlotData
+    relative_lift: PlotData
+    percent: PlotData
+
+
+LiftCurve = Dict[Label, LiftCurveData]
+
+
 class HistogramData(MetricResult):
     class Config:
         dict_include = False
