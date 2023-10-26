@@ -17,6 +17,7 @@ from evidently.calculations.classification_performance import get_prediction_dat
 from evidently.metric_results import Label
 from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
@@ -61,9 +62,9 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
 
     top: int
 
-    def __init__(self, top: int = 10) -> None:
+    def __init__(self, top: int = 10, options: AnyOptions = None) -> None:
         self.top = top
-        super().__init__()
+        super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ClassificationLiftTableResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

@@ -65,9 +65,9 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                     prediction.prediction_probas.iloc[:, 0].tolist(),
                 )
             )
-            lift_table[int(prediction.prediction_probas.columns[0])] = calculate_lift_table(binded)
+            lift_table[prediction.prediction_probas.columns[0]] = calculate_lift_table(binded)
 
-            lift_curve[int(prediction.prediction_probas.columns[0])] = LiftCurveData(
+            lift_curve[prediction.prediction_probas.columns[0]] = LiftCurveData(
                 lift=[i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
                 top=[i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
                 count=[i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
@@ -93,12 +93,11 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                         prediction.prediction_probas[label],
                     )
                 )
-                lift_table[int(label)] = calculate_lift_table(binded)
+                lift_table[label] = calculate_lift_table(binded)
 
-                # for label in labels:
-
+            for label in labels:
                 # lift_curve[int(prediction.prediction_probas.columns[0])] = LiftCurveData(
-                lift_curve[int(label)] = LiftCurveData(
+                lift_curve[label] = LiftCurveData(
                     lift=[i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     top=[i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     count=[i[1] for i in lift_table[prediction.prediction_probas.columns[0]]],
