@@ -6,9 +6,15 @@ You can run distributed computation using Spark if you work with large datasets.
 
 # Supported metrics
 
-Currently, the following metrics are supported: 
+Currently, the following Tests, Metrics and Presets are supported: 
 * `ColumnDriftMetric()`
 * `DataDriftTable()`
+* `DatasetDriftMetric()`
+* `DataDriftPreset()`
+* `TestColumnDrift()`
+* `TestShareOfDriftedColumns()`
+* `TestNumberOfDriftedColumns()`
+* `DataDriftTestPreset()`
   
 For drift calculation, the following methods are supported:
 * `chisquare`
