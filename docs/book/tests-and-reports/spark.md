@@ -1,5 +1,5 @@
 ---
-description: How to use Evidently on Spark.
+description: How to run calculations on Spark.
 ---
 
 You can run distributed computation using Spark if you work with large datasets. 
@@ -28,7 +28,7 @@ You can refer to an example How-to-notebook showing how to use Evidently on Spar
 
 # Run Evidently with Spark
 
-To run Evidently on Spark DataFrame, you need to specify the corresponding engine in the `run()` method for the Report calculation:
+To run Evidently on a Spark DataFrame, you need to specify the corresponding engine in the `run()` method for the Report calculation:
 
 To import `SparkEngine` from Evidently, use the following command:  
 ```
