@@ -1,4 +1,4 @@
-from evidently.metrics.recsys.diversity import DivercityMetric
+from evidently.metrics.recsys.diversity import DiversityMetric
 from evidently.metrics.recsys.f_beta_top_k import FBetaTopKMetric
 from evidently.metrics.recsys.item_bias import ItemBiasMetric
 from evidently.metrics.recsys.map_k import MAPKMetric
@@ -171,10 +171,10 @@ def item_bias():
 
 
 @metric
-def divercity_bias():
+def diversity_bias():
     return TestMetric(
-        "divercity",
-        DivercityMetric(k=3, item_features=["feature_1", "feature_2"]),
+        "diversity",
+        DiversityMetric(k=3, item_features=["feature_1", "feature_2"]),
         NoopOutcome(),
         [DatasetTags.RECSYS],
     )

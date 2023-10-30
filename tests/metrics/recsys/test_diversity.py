@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from evidently.metrics import DivercityMetric
+from evidently.metrics import DiversityMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
@@ -17,7 +17,7 @@ def test_curr_rank():
             "prediction": [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4],
         }
     )
-    metric = DivercityMetric(k=4, item_features=["item_f1", "item_f2"])
+    metric = DiversityMetric(k=4, item_features=["item_f1", "item_f2"])
     report = Report(metrics=[metric])
     column_mapping = ColumnMapping(recommendations_type="rank")
     report.run(reference_data=None, current_data=curr, column_mapping=column_mapping)
@@ -37,7 +37,7 @@ def test_curr_scores():
             "prediction": [10, 9, 8, 7, 10, 9, 8, 7, 10, 9, 8, 7],
         }
     )
-    metric = DivercityMetric(k=4, item_features=["item_f1", "item_f2"])
+    metric = DiversityMetric(k=4, item_features=["item_f1", "item_f2"])
     report = Report(metrics=[metric])
     column_mapping = ColumnMapping(recommendations_type="score")
     report.run(reference_data=None, current_data=curr, column_mapping=column_mapping)

@@ -25,7 +25,7 @@ from evidently.utils.visualizations import get_distribution_for_numerical_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
-class DivercityMetricResult(MetricResult):
+class DiversityMetricResult(MetricResult):
     k: int
     current_value: float
     current_distr: Distribution
@@ -33,7 +33,7 @@ class DivercityMetricResult(MetricResult):
     reference_distr: Optional[Distribution] = None
 
 
-class DivercityMetric(Metric[DivercityMetricResult]):
+class DiversityMetric(Metric[DiversityMetricResult]):
     """Intra list diversity"""
 
     _pairwise_distance: PairwiseDistance
@@ -73,7 +73,7 @@ class DivercityMetric(Metric[DivercityMetricResult]):
         value = np.mean(ilds)
         return distr, value
 
-    def calculate(self, data: InputData) -> DivercityMetricResult:
+    def calculate(self, data: InputData) -> DiversityMetricResult:
         result = self._pairwise_distance.get_result()
         dist_matrix = result.dist_matrix
         name_dict = result.name_dict
@@ -107,7 +107,7 @@ class DivercityMetric(Metric[DivercityMetricResult]):
                 dist_matrix=dist_matrix,
                 name_dict=name_dict,
             )
-        return DivercityMetricResult(
+        return DiversityMetricResult(
             k=self.k,
             current_value=curr_value,
             current_distr=curr_distr,
@@ -116,9 +116,9 @@ class DivercityMetric(Metric[DivercityMetricResult]):
         )
 
 
-@default_renderer(wrap_type=DivercityMetric)
-class DivercityMetricRenderer(MetricRenderer):
-    def render_html(self, obj: DivercityMetric) -> List[BaseWidgetInfo]:
+@default_renderer(wrap_type=DiversityMetric)
+class DiversityMetricRenderer(MetricRenderer):
+    def render_html(self, obj: DiversityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         counters = [CounterData.float(label="current", value=metric_result.current_value, precision=4)]
         if metric_result.reference_value is not None:
@@ -137,7 +137,7 @@ class DivercityMetricRenderer(MetricRenderer):
         )
 
         return [
-            header_text(label="Divercity@" + str(metric_result.k)),
+            header_text(label="Diversity@" + str(metric_result.k)),
             counter(counters=counters),
             plotly_figure(title="", figure=distr_fig),
         ]

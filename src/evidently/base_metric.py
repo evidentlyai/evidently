@@ -114,8 +114,6 @@ class GenericInputData:
     data_definition: DataDefinition
     additional_datasets: Dict[str, Any]
 
-    additional_datasets: Dict[str, Any]
-
 
 @dataclass
 class InputData:
@@ -125,8 +123,6 @@ class InputData:
     current_additional_features: Optional[pd.DataFrame]
     column_mapping: ColumnMapping
     data_definition: DataDefinition
-    additional_datasets: Dict[str, Any]
-
     additional_datasets: Dict[str, Any]
 
     @staticmethod

@@ -43,7 +43,7 @@ from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality.stability_metric import DataQualityStabilityMetric
 from .data_quality.text_descriptors_correlation_metric import TextDescriptorsCorrelationMetric
 from .data_quality.text_descriptors_distribution import TextDescriptorsDistribution
-from .recsys.diversity import DivercityMetric
+from .recsys.diversity import DiversityMetric
 from .recsys.f_beta_top_k import FBetaTopKMetric
 from .recsys.item_bias import ItemBiasMetric
 from .recsys.map_k import MAPKMetric
@@ -125,7 +125,7 @@ __all__ = [
     "MAPKMetric",
     "MARKMetric",
     "NDCGKMetric",
-    "DivercityMetric",
+    "DiversityMetric",
     "PersonalisationMetric",
     "NoveltyMetric",
     "PopularityBias",
