@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import energy_dist_test
     >>> options = DataDriftOptions(all_features_stattest=energy_dist_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="ed")
 """
 from typing import Tuple
@@ -51,9 +51,8 @@ def _energy_dist(
 energy_dist_test = StatTest(
     name="ed",
     display_name="Energy-distance",
-    func=_energy_dist,
     allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(energy_dist_test)
+register_stattest(energy_dist_test, _energy_dist)

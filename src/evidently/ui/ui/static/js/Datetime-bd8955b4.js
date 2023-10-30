@@ -1,0 +1,1 @@
+function o(t){return typeof t!=typeof new Date?(console.log(`not a date ${typeof t}: ${t}`),t):`${t.getFullYear()}-${(t.getMonth()+1).toString().padStart(2,"0")}-${t.getDate().toString().padStart(2,"0")}T${t.getHours().toString().padStart(2,"0")}:${t.getMinutes().toString().padStart(2,"0")}`}export{o as f};

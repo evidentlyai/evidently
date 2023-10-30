@@ -320,7 +320,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestColumnDrift]:
         results = []
-        for column in data_definition.get_columns("categorical_features"):
+        for column in data_definition.get_columns(ColumnType.Categorical, features_only=True):
             if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
@@ -345,7 +345,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                     is_critical=self.is_critical,
                 )
             )
-        for column in data_definition.get_columns("numerical_features"):
+        for column in data_definition.get_columns(ColumnType.Numerical, features_only=True):
             if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
@@ -370,7 +370,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                     is_critical=self.is_critical,
                 )
             )
-        for column in data_definition.get_columns("text_features"):
+        for column in data_definition.get_columns(ColumnType.Text, features_only=True):
             if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(

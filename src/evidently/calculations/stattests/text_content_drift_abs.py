@@ -17,9 +17,8 @@ def _abs_text_content_drift(
 abs_text_content_drift_stat_test = StatTest(
     name="abs_text_content_drift",
     display_name="Absolute text content drift",
-    func=_abs_text_content_drift,
     allowed_feature_types=[ColumnType.Text],
     default_threshold=0.55,
 )
 
-register_stattest(abs_text_content_drift_stat_test)
+register_stattest(abs_text_content_drift_stat_test, _abs_text_content_drift)

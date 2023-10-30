@@ -23,6 +23,14 @@ def test_root_route():
     assert response.status_code == 200
 
 
+def test_remote_verify_route():
+    response = client.get("/api/version")
+    assert response.status_code == 200
+    version_response = response.json()
+    assert "version" in version_response
+    assert version_response["application"] == "Evidently UI"
+
+
 @pytest.mark.usefixtures("demo_project_workspace")
 def test_api_project():
     response = client.get("/api/projects")

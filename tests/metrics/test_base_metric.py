@@ -96,7 +96,7 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
     def required_features(self, data_definition: DataDefinition):
         self._features = {
             column.column_name: LengthFeature(column.column_name)
-            for column in data_definition.get_columns("text_features")
+            for column in data_definition.get_columns(ColumnType.Text, features_only=True)
         }
         return list(self._features.values())
 

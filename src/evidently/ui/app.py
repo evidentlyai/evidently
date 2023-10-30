@@ -112,7 +112,10 @@ async def root():
 
 @api_read_router.get("/version")
 async def version():
-    return {"version": evidently.__version__}
+    return {
+        "application": "Evidently UI",
+        "version": evidently.__version__,
+    }
 
 
 @api_read_router.get("/projects")
@@ -274,8 +277,8 @@ async def project_dashboard(
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    info = DashboardInfoModel.from_dashboard_info(
-        project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
+    info = DashboardInfoModel.from_project_with_time_range(
+        project, timestamp_start=timestamp_start, timestamp_end=timestamp_end
     )
     # todo: add numpy encoder to fastapi
     # return info

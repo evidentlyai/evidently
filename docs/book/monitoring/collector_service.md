@@ -159,7 +159,7 @@ Sending data:
 
 ![](../.gitbook/assets/monitoring/collector_send-min.png)
 
-The data is receieved by the collector service:
+The data is received by the collector service:
 
 ![](../.gitbook/assets/monitoring/collector_data-min.png)
 

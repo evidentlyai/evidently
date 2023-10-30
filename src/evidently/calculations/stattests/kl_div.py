@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import kl_div_stat_test
     >>> options = DataDriftOptions(all_features_stattest=kl_div_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="kl_div")
 """
 from typing import Tuple
@@ -55,9 +55,8 @@ def _kl_div(
 kl_div_stat_test = StatTest(
     name="kl_div",
     display_name="Kullback-Leibler divergence",
-    func=_kl_div,
     allowed_feature_types=[ColumnType.Categorical, ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(kl_div_stat_test)
+register_stattest(kl_div_stat_test, _kl_div)

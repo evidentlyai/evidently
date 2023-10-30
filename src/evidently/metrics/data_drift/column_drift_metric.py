@@ -22,8 +22,8 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import HistogramData
 from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import DataDriftOptions
 from evidently.options.base import AnyOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData

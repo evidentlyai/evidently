@@ -13,12 +13,17 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   linter:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
+    if: github.event.pull_request.draft == false
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -54,6 +59,7 @@ jobs:
   test-minimal:
     name: Test on minimal requirements
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -62,7 +68,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-        run: pip install -e .[dev]
+        run: pip install -e .[dev,spark]
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
       - name: Run Tests
@@ -72,6 +78,7 @@ jobs:
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
     needs: linter
     runs-on: ${{ matrix.os }}
+    if: github.event.pull_request.draft == false
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
@@ -88,7 +95,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-        run: pip install -e .[dev]
+        run: pip install -e .[dev,spark]
       - name: Run Tests
         run: python -m pytest --durations=50
 
@@ -96,6 +103,7 @@ jobs:
     name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}, min ${{ matrix.minimal }}
     needs: test
     runs-on: ${{ matrix.os }}
+    if: github.event.pull_request.draft == false
     strategy:
       matrix:
         os: [ ubuntu-latest ]
@@ -110,7 +118,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-        run: pip install -e .[dev]
+        run: pip install -e .[dev,spark]
       - name: Install minimal reqs
         if: matrix.minimal
         run: pip install -r requirements.min.txt
@@ -127,6 +135,7 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4

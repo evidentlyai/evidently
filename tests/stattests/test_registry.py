@@ -3,6 +3,7 @@ from typing import Tuple
 import pandas as pd
 import pytest
 
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.calculations.stattests import StatTest
 from evidently.calculations.stattests import chi_stat_test
 from evidently.calculations.stattests import get_stattest
@@ -14,16 +15,26 @@ from evidently.calculations.stattests import wasserstein_stat_test
 from evidently.calculations.stattests import z_stat_test
 from evidently.calculations.stattests.registry import StatTestInvalidFeatureTypeError
 from evidently.calculations.stattests.registry import StatTestNotFoundError
+from evidently.calculations.stattests.registry import add_stattest_impl
+from evidently.calculations.stattests.registry import create_impl_wrapper
+from evidently.core import ColumnType
 
 
-def _custom_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> Tuple[float, bool]:
+def _custom_stattest(
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, _: float
+) -> Tuple[float, bool]:
     pass
+
+
+custom_stattest = StatTest("", "custom function '_custom_stattest'", [])
+
+add_stattest_impl(custom_stattest, PythonEngine, create_impl_wrapper(_custom_stattest))
 
 
 @pytest.mark.parametrize(
     "stattest_func, feature_type, expected",
     [
-        (_custom_stattest, "num", StatTest("", "custom function '_custom_stattest'", _custom_stattest, [])),
+        (_custom_stattest, "num", custom_stattest),
         ("ks", "num", ks_stat_test),
         ("z", "cat", z_stat_test),
         ("chisquare", "cat", chi_stat_test),
@@ -94,11 +105,12 @@ def test_get_stattest_missing_stattest(stattest_func, feature_type):
 @pytest.mark.parametrize(
     "stat_test, override_threshold, expected_threshold",
     [
-        (StatTest("", "", lambda rd, cd, ft, thr: (thr, False), []), None, 0.05),
-        (StatTest("", "", lambda rd, cd, ft, thr: (thr, False), [], 0.1), None, 0.1),
-        (StatTest("", "", lambda rd, cd, ft, thr: (thr, False), []), 0.5, 0.5),
+        (StatTest("", "", []), None, 0.05),
+        (StatTest("", "", [], 0.1), None, 0.1),
+        (StatTest("", "", []), 0.5, 0.5),
     ],
 )
 def test_stattest_default_threshold(stat_test, override_threshold, expected_threshold):
-    result = stat_test(pd.Series(dtype="float64"), pd.Series(dtype="float64"), "", override_threshold)
+    add_stattest_impl(stat_test, PythonEngine, create_impl_wrapper(lambda rd, cd, ft, thr: (thr, False)))
+    result = stat_test(pd.Series(dtype="float64"), pd.Series(dtype="float64"), ColumnType.Numerical, override_threshold)
     assert result.drift_score == expected_threshold

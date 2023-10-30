@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import hellinger_stat_test
     >>> options = DataDriftOptions(all_features_stattest=hellinger_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="hellinger")
 """
 from collections import defaultdict
@@ -92,9 +92,8 @@ def _hellinger_distance(
 hellinger_stat_test = StatTest(
     name="hellinger",
     display_name="Hellinger distance",
-    func=_hellinger_distance,
     allowed_feature_types=[ColumnType.Categorical, ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(hellinger_stat_test)
+register_stattest(hellinger_stat_test, _hellinger_distance)

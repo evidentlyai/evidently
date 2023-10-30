@@ -74,8 +74,8 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         super().__init__(options=options)
 
     def required_features(self, data_definition: DataDefinition):
-        if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+        if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:
+            text_cols = [col.column_name for col in data_definition.get_columns(ColumnType.Text, features_only=True)]
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
@@ -320,7 +320,7 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
     def render_html(self, obj: DatasetCorrelationsMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            header_text(label="Dataset Correlations Metric"),
+            header_text(label="Dataset Correlations"),
             self._get_heatmaps(metric_result=metric_result),
         ]
         return result

@@ -41,28 +41,15 @@ class PredictionColumns:
         return [col for col in result if col is not None]
 
 
-def _check_filter(column: ColumnDefinition, utility_columns: List[str], filter_def: str) -> bool:
-    if filter_def == "all":
-        return True
-    if filter_def == "categorical_columns":
-        return column.column_type == ColumnType.Categorical
-    if filter_def == "numerical_columns":
-        return column.column_type == ColumnType.Numerical
-    if filter_def == "datetime_columns":
-        return column.column_type == ColumnType.Datetime
-    if filter_def == "text_columns":
-        return column.column_type == ColumnType.Text
-    if filter_def == "all_features":
-        return column.column_name not in utility_columns
-    if filter_def == "text_features":
-        return column.column_type == ColumnType.Text and column.column_name not in utility_columns
-    if filter_def == "categorical_features":
-        return column.column_type == ColumnType.Categorical and column.column_name not in utility_columns
-    if filter_def == "numerical_features":
-        return column.column_type == ColumnType.Numerical and column.column_name not in utility_columns
-    if filter_def == "datetime_features":
-        return column.column_type == ColumnType.Datetime and column.column_name not in utility_columns
-    raise ValueError(f"Unknown filter: {filter_def}")
+def _check_filter(
+    column: ColumnDefinition, utility_columns: List[str], filter_def: ColumnType = None, features_only: bool = False
+) -> bool:
+    if filter_def is None:
+        return column.column_name not in utility_columns if features_only else True
+    if not features_only:
+        return column.column_type == filter_def
+
+    return column.column_type == filter_def and column.column_name not in utility_columns
 
 
 @dataclasses.dataclass
@@ -109,7 +96,7 @@ class DataDefinition:
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self._columns[column_name]
 
-    def get_columns(self, filter_def: str = "all") -> List[ColumnDefinition]:
+    def get_columns(self, filter_def: ColumnType = None, features_only: bool = False) -> List[ColumnDefinition]:
         if self._prediction_columns is not None:
             prediction = self._prediction_columns.get_columns_list()
         else:
@@ -126,7 +113,11 @@ class DataDefinition:
             ]
             if col is not None
         ]
-        return [column for column in self._columns.values() if _check_filter(column, utility_columns, filter_def)]
+        return [
+            column
+            for column in self._columns.values()
+            if _check_filter(column, utility_columns, filter_def, features_only)
+        ]
 
     def get_target_column(self) -> Optional[ColumnDefinition]:
         return self._target

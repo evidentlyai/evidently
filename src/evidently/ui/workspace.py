@@ -179,6 +179,14 @@ class Project(ProjectBase["Workspace"]):
         self._reload_snapshots()
         return {key: value.value.as_test_suite() for key, value in self._snapshots.items() if not value.value.is_report}
 
+    @property
+    def reports_and_test_suites(self) -> Dict[uuid.UUID, ReportBase]:
+        self._reload_snapshots()
+        return {
+            key: value.value.as_report() if value.value.is_report else value.value.as_test_suite()
+            for key, value in self._snapshots.items()
+        }
+
     def get_snapshot(self, id: uuid.UUID) -> Optional[ProjectSnapshot]:
         self._reload_snapshots()
         return self._snapshots.get(id, None)
@@ -190,7 +198,7 @@ class Project(ProjectBase["Workspace"]):
         return self.dashboard.build_dashboard_info(
             [
                 r
-                for r in self.reports.values()
+                for r in self.reports_and_test_suites.values()
                 if (timestamp_start is None or r.timestamp >= timestamp_start)
                 and (timestamp_end is None or r.timestamp < timestamp_end)
             ]

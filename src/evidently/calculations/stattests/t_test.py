@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import t_test
     >>> options = DataDriftOptions(all_features_stattest=t_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="t_test")
 """
 from typing import Tuple
@@ -52,8 +52,7 @@ def _t_test2samp(
 t_test = StatTest(
     name="t_test",
     display_name="t_test",
-    func=_t_test2samp,
     allowed_feature_types=[ColumnType.Numerical],
 )
 
-register_stattest(t_test)
+register_stattest(t_test, _t_test2samp)

@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import tvd_test
     >>> options = DataDriftOptions(all_features_stattest=tvd_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="TVD")
 """
 from typing import Tuple
@@ -83,9 +83,8 @@ def _tvd_stattest(
 tvd_test = StatTest(
     name="TVD",
     display_name="Total-Variation-Distance",
-    func=_tvd_stattest,
     allowed_feature_types=[ColumnType.Categorical],
     default_threshold=0.1,
 )
 
-register_stattest(tvd_test)
+register_stattest(tvd_test, _tvd_stattest)

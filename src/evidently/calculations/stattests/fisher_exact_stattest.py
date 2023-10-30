@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import fisher_exact_test
     >>> options = DataDriftOptions(all_features_stattest=fisher_exact_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="fisher_exact")
 """
 from typing import Tuple
@@ -73,9 +73,8 @@ def _fisher_exact_stattest(
 fisher_exact_test = StatTest(
     name="fisher_exact",
     display_name="Fisher's Exact test",
-    func=_fisher_exact_stattest,
     allowed_feature_types=[ColumnType.Categorical],
     default_threshold=0.1,
 )
 
-register_stattest(fisher_exact_test)
+register_stattest(fisher_exact_test, _fisher_exact_stattest)

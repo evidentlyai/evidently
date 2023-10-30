@@ -605,7 +605,7 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
 
     def generate(self, data_definition: DataDefinition) -> List[TestColumnShareOfMissingValues]:
         if self.columns is None:
-            columns = [column.column_name for column in data_definition.get_columns("all")]
+            columns = [column.column_name for column in data_definition.get_columns()]
 
         else:
             columns = self.columns

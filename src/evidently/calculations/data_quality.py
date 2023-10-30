@@ -304,8 +304,8 @@ def _select_features_for_corr(dataset: pd.DataFrame, data_definition: DataDefini
         cat_for_corr: list of feature names for kramer_v correlation matrix.
     """
 
-    num = data_definition.get_columns("numerical_columns")
-    cat = data_definition.get_columns("categorical_columns")
+    num = data_definition.get_columns(ColumnType.Numerical)
+    cat = data_definition.get_columns(ColumnType.Categorical)
     num_for_corr = []
     cat_for_corr = []
 

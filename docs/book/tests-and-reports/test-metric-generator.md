@@ -62,7 +62,7 @@ Here is how you generate tests only for **categorical columns**:
 
 ```python
 suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="cat", parameters={"lt": 0.1})])
-suite.run(current_data=current_data, reference_data=refernce_data)
+suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
  

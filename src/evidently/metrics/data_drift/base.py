@@ -7,7 +7,7 @@ from typing import TypeVar
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.options import DataDriftOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.pydantic_utils import FrozenBaseModel
 
 T = TypeVar("T", bound=MetricResult)

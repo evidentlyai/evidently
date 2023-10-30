@@ -131,6 +131,7 @@ class TestSuite(ReportBase):
             self._data_definition,
             additional_datasets=additional_datasets or {},
         )
+
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
