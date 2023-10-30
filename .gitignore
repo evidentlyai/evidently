@@ -21,3 +21,5 @@ __pycache__
 test-workspace
 
 workspace
+
+.tsc-dist-dts

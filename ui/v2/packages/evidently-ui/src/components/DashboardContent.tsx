@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { DashboardInfo } from '../api'
+import { DashboardInfo } from '~/api'
 import { WidgetRenderer } from '../widgets/WidgetRenderer'
 
 export interface DashboardContentProps {

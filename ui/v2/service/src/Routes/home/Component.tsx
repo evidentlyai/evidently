@@ -4,7 +4,7 @@ import {
   ShouldRevalidateFunction,
   useLoaderData
 } from 'react-router-dom'
-import { ThemeProvider } from '@mui/material/styles'
+// import { ThemeProvider } from '@mui/material/styles'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import 'dayjs/locale/en-gb'
@@ -12,7 +12,7 @@ import 'dayjs/locale/en-gb'
 import { api } from 'api/RemoteApi'
 
 import { NavigationProgress, ServiceMainPage, ServiceHeader, crumbFunction } from 'Components'
-import { theme } from 'evidently-ui/theme'
+
 import { isOnlySearchParamsChanges } from 'Utils/isOnlySearchParamsChanges'
 
 export const loader = () => api.getVersion()
@@ -30,16 +30,16 @@ export const Component = () => {
   const { version } = useLoaderData() as loaderData
 
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
-        <ServiceHeader version={version} />
-        <NavigationProgress />
-        <ScrollRestoration />
-        <ServiceMainPage>
-          <Outlet />
-        </ServiceMainPage>
-      </LocalizationProvider>
-    </ThemeProvider>
+    // <ThemeProvider theme={theme}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
+      <ServiceHeader version={version} />
+      <NavigationProgress />
+      <ScrollRestoration />
+      <ServiceMainPage>
+        <Outlet />
+      </ServiceMainPage>
+    </LocalizationProvider>
+    // </ThemeProvider>
   )
 }
 

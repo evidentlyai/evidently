@@ -8,11 +8,11 @@ import {
   DetailsPart,
   WidgetInfo,
   WidgetSize
-} from '../../api'
+} from '~/api'
 
 import DashboardContext, { DashboardContextState } from '../../contexts/DashboardContext'
 
-import AutoTabs from '../../components/AutoTabs'
+import AutoTabs from '~/components/AutoTabs'
 import LoadableView from '../../components/LoadableVIew'
 
 import BigGraphWidgetContent from '../BigGraphWidgetContent'

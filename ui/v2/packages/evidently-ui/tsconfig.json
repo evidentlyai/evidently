@@ -11,15 +11,22 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "react-jsx",
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "composite": true,
+    "outDir": ".tsc-dist-dts",
+    "emitDeclarationOnly": true,
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": ["*"]
+    }
   },
-  "include": ["api", "widgets", "contexts", "components", "standalone-app"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }

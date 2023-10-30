@@ -4,7 +4,17 @@
   "type": "module",
   "scripts": {
     "type-check": "tsc",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "postinstall": "tsc --build"
+  },
+  "exports": {
+    "./*": {
+      "default": "./src/*",
+      "types": [
+        "./.tsc-dist-dts/src/*/index.d.ts",
+        "./.tsc-dist-dts/src/*.d.ts"
+      ]
+    }
   },
   "peerDependencies": {
     "@emotion/react": "^11.11.1",
