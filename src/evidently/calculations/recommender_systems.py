@@ -72,3 +72,20 @@ def get_curr_and_ref_df(
         )
 
     return curr, ref
+
+
+def get_prediciton_name(data: InputData):
+    if isinstance(data.column_mapping.prediction, str):
+        return data.column_mapping.prediction
+    if "prediction" in data.current_data.columns and (
+        (data.reference_data is not None and "prediction" in data.reference_data.columns)
+        or (data.reference_data is None)
+    ):
+        return "prediction"
+    raise ValueError("Prediction should be presented and must be one column")
+
+
+def get_stats_novelty(train_data: pd.DataFrame, item_id: str, user_id: str):
+    user_interacted = train_data.groupby(item_id)[user_id].nunique()
+    interactions = user_interacted / user_interacted.shape[0]
+    return interactions

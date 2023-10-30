@@ -1386,3 +1386,60 @@ def plot_metric_k(curr_data: pd.Series, ref_data: Optional[pd.Series], yaxis_nam
     fig.update_xaxes(title_text="k", tickformat=",d")
     fig.update_layout(yaxis_title=yaxis_name, showlegend=False)
     return fig
+
+
+def plot_bias(
+    curr: Distribution,
+    curr_train: Distribution,
+    ref: Optional[Distribution],
+    ref_train: Optional[Distribution],
+    xaxis_name: str,
+):
+    color_options = ColorOptions()
+
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+    if ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Bar(
+        x=curr.x,
+        y=(curr.count / curr.count.sum()) * 100,
+        marker_color=color_options.get_current_data_color(),
+        name="recomendation",
+        legendgroup="recomendation",
+        visible=True,
+    )
+    fig.add_trace(trace, 1, 1)
+    trace = go.Bar(
+        x=curr_train.x,
+        y=(curr_train.count / curr_train.count.sum()) * 100,
+        marker_color=color_options.additional_data_color,
+        name="train",
+        legendgroup="train",
+        visible=True,
+    )
+    fig.add_trace(trace, 1, 1)
+    if ref is not None and ref_train is not None:
+        trace = go.Bar(
+            x=ref.x,
+            y=(ref.count / ref.count.sum()) * 100,
+            marker_color=color_options.get_reference_data_color(),
+            name="recomendation",
+            legendgroup="recomendation",
+            visible=False,
+        )
+        fig.add_trace(trace, 1, 2)
+        trace = go.Bar(
+            x=ref_train.x,
+            y=(ref_train.count / ref_train.count.sum()) * 100,
+            marker_color=color_options.additional_data_color,
+            name="train",
+            legendgroup="train",
+            visible=False,
+        )
+        fig.add_trace(trace, 1, 2)
+    fig.update_layout(yaxis_title="percent")
+    fig.update_layout(xaxis_title=xaxis_name)
+    return fig

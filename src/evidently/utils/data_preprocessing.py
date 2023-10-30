@@ -73,6 +73,8 @@ class DataDefinition:
     _id_column: Optional[ColumnDefinition]
     _datetime_column: Optional[ColumnDefinition]
     _embeddings: Optional[Dict[str, List[str]]]
+    _user_id: Optional[ColumnDefinition]
+    _item_id: Optional[ColumnDefinition]
 
     _task: Optional[str]
     _classification_labels: Optional[TargetNames]
@@ -86,6 +88,8 @@ class DataDefinition:
         id_column: Optional[ColumnDefinition],
         datetime_column: Optional[ColumnDefinition],
         embeddings: Optional[Dict[str, List[str]]],
+        user_id: Optional[ColumnDefinition],
+        item_id: Optional[ColumnDefinition],
         task: Optional[str],
         classification_labels: Optional[TargetNames],
         reference_present: bool,
@@ -96,6 +100,8 @@ class DataDefinition:
         self._task = task
         self._target = target
         self._prediction_columns = prediction_columns
+        self._item_id = item_id
+        self._user_id = user_id
         self._classification_labels = classification_labels
         self._embeddings = embeddings
         self._reference_present = reference_present
@@ -114,6 +120,8 @@ class DataDefinition:
                 self._id_column,
                 self._datetime_column,
                 self._target,
+                self._user_id,
+                self._item_id,
                 *prediction,
             ]
             if col is not None
@@ -128,6 +136,12 @@ class DataDefinition:
 
     def get_id_column(self) -> Optional[ColumnDefinition]:
         return self._id_column
+
+    def get_user_id_column(self) -> Optional[ColumnDefinition]:
+        return self._user_id
+
+    def get_item_id_column(self) -> Optional[ColumnDefinition]:
+        return self._item_id
 
     def get_datetime_column(self) -> Optional[ColumnDefinition]:
         return self._datetime_column
@@ -267,6 +281,24 @@ def create_data_definition(
         ),
         data,
     )
+    user_id = _process_column(
+        _column_not_present_in_list(
+            mapping.user_id,
+            embedding_columns,
+            "warning",
+            "Column {column} is in embeddings list and as an user_id field. Ignoring user_id field.",
+        ),
+        data,
+    )
+    item_id = _process_column(
+        _column_not_present_in_list(
+            mapping.item_id,
+            embedding_columns,
+            "warning",
+            "Column {column} is in embeddings list and as an item_id field. Ignoring item_id field.",
+        ),
+        data,
+    )
     target_column = _process_column(
         _column_not_present_in_list(
             mapping.target,
@@ -299,6 +331,8 @@ def create_data_definition(
 
     all_columns = [
         id_column,
+        user_id,
+        item_id,
         datetime_column,
         target_column,
         *prediction_cols,
@@ -434,6 +468,8 @@ def create_data_definition(
     return DataDefinition(
         columns=[col for col in all_columns if col is not None],
         id_column=id_column,
+        user_id=user_id,
+        item_id=item_id,
         datetime_column=datetime_column,
         target=target_column,
         prediction_columns=prediction_columns,

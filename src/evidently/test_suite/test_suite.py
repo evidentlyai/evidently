@@ -2,6 +2,7 @@ import dataclasses
 import uuid
 from collections import Counter
 from datetime import datetime
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -96,6 +97,7 @@ class TestSuite(ReportBase):
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
         engine: Optional[Type[Engine]] = None,
+        additional_datasets: Dict[str, Any] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -122,8 +124,13 @@ class TestSuite(ReportBase):
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
         self._inner_suite.verify()
-        data = GenericInputData(reference_data, current_data, column_mapping, self._data_definition)
-
+        data = GenericInputData(
+            reference_data,
+            current_data,
+            column_mapping,
+            self._data_definition,
+            additional_datasets=additional_datasets or {},
+        )
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 

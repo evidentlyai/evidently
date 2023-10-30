@@ -54,7 +54,7 @@ def test_python_engine():
     engine = PythonEngine()
     engine.set_metrics([metric])
     ctx = Context(None, [metric], [], dict(), dict(), States.Verified, renderers=DEFAULT_RENDERERS)
-    engine.execute_metrics(ctx, GenericInputData(pd.DataFrame(), pd.DataFrame(), ColumnMapping(), None))
+    engine.execute_metrics(ctx, GenericInputData(pd.DataFrame(), pd.DataFrame(), ColumnMapping(), None, {}))
     assert ctx.metric_results[metric] == 20
 
 
@@ -63,5 +63,5 @@ def test_python_engine2():
     engine = PythonEngine()
     engine.set_metrics([metric])
     ctx = Context(None, [metric], [], dict(), dict(), States.Verified, renderers=DEFAULT_RENDERERS)
-    engine.execute_metrics(ctx, GenericInputData(pd.DataFrame(), pd.DataFrame(), ColumnMapping(), None))
+    engine.execute_metrics(ctx, GenericInputData(pd.DataFrame(), pd.DataFrame(), ColumnMapping(), None, {}))
     assert ctx.metric_results[metric] == 25
