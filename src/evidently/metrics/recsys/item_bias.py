@@ -4,20 +4,19 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.calculations.recommender_systems import get_prediciton_name
-from evidently.core import ColumnType
-from evidently.metric_results import Distribution
-from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.utils.visualizations import get_distribution_for_column
+from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.metric_results import Distribution
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.visualizations import get_distribution_for_category_column
-from evidently.utils.visualizations import get_distribution_for_numerical_column
 from evidently.utils.visualizations import plot_bias
-
+from evidently.metric_results import HistogramData
+from evidently.core import ColumnType
+import logging
 
 class ItemBiasMetricResult(MetricResult):
     k: int
@@ -32,7 +31,9 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
     k: int
     column_name: str
 
-    def __init__(self, k: int, column_name: str, options: AnyOptions = None) -> None:
+    def __init__(
+        self, k: int, column_name: str, options: AnyOptions = None
+    ) -> None:
         self.k = k
         self.column_name = column_name
         super().__init__(options=options)
@@ -43,7 +44,11 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
         current_train_data = data.additional_datasets.get("current_train_data")
         reference_train_data = data.additional_datasets.get("reference_train_data")
         if current_train_data is None:
-            raise ValueError("current_train_data should be presented in additional_datasets")
+            raise ValueError(
+                """current_train_data should be presented in additional_datasets with key "current_train_data": 
+                report.run(reference_data=reference_df, current_data=current_df, column_mapping=column_mapping,
+                additional_datasets={"current_train_data": current_train_df})"""
+            )
         col_item_id = data.data_definition.get_item_id_column()
         col_user_id = data.data_definition.get_user_id_column()
         recommendations_type = data.column_mapping.recommendations_type
@@ -52,7 +57,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
         if column.column_type not in [ColumnType.Categorical, ColumnType.Numerical]:
             raise ValueError(f"{column.column_name} expected to be numerical or categorical")
 
-        curr_train = current_train_data.drop_duplicates(subset=[col_item_id.column_name], keep="last")
+        curr_train = current_train_data.drop_duplicates(subset=[col_item_id.column_name], keep='last')
         curr = data.current_data.copy()
         if recommendations_type == "score":
             curr[prediction_name] = curr.groupby(col_user_id.column_name)[prediction_name].transform(
@@ -62,17 +67,19 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
 
         if column.column_name not in current_train_data.columns:
             raise ValueError(f"{column.column_name} expected to be in current_train_data")
+        column_type = "num"
         if column.column_type == ColumnType.Categorical:
-            current_train_distr = get_distribution_for_category_column(curr_train[column.column_name])
-            current_distr = get_distribution_for_category_column(curr[column.column_name])
-        elif column.column_type == ColumnType.Numerical:
-            current_train_distr = get_distribution_for_numerical_column(curr_train[column.column_name])
-            current_distr = get_distribution_for_numerical_column(curr[column.column_name])
+            column_type = "cat"
+        current_distr, current_train_distr = get_distribution_for_column(
+            column_type=column_type,
+            current=curr[column.column_name],
+            reference=curr_train[column.column_name]
+        )
         reference_train_distr: Optional[Distribution] = None
         reference_distr: Optional[Distribution] = None
         if data.reference_data is not None:
             ref_train = curr_train
-            ref = data.reference_data.drop_duplicates(subset=[col_user_id.column_name], keep="last")
+            ref = data.reference_data.copy()
             if recommendations_type == "score":
                 ref[prediction_name] = ref.groupby(col_user_id.column_name)[prediction_name].transform(
                     "rank", ascending=False
@@ -81,13 +88,12 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
             if reference_train_data is not None:
                 if column.column_name not in reference_train_data.columns:
                     raise ValueError(f"{column.column_name} expected to be in reference_train_data")
-                ref_train = reference_train_data.drop_duplicates(subset=[col_user_id.column_name], keep="last")
-            if column.column_type == ColumnType.Categorical:
-                reference_train_distr = get_distribution_for_category_column(curr_train[column.column_name])
-                reference_distr = get_distribution_for_category_column(curr[column.column_name])
-            elif column.column_type == ColumnType.Numerical:
-                reference_train_distr = get_distribution_for_numerical_column(ref_train[column.column_name])
-                reference_distr = get_distribution_for_numerical_column(ref[column.column_name])
+                ref_train = reference_train_data.drop_duplicates(subset=[col_user_id.column_name], keep='last')
+            reference_distr, reference_train_distr = get_distribution_for_column(
+                column_type=column_type,
+                current=ref[column.column_name],
+                reference=ref_train[column.column_name]
+            )
         return ItemBiasMetricResult(
             k=self.k,
             column_name=self.column_name,
@@ -105,9 +111,9 @@ class ItemBiasMetricRenderer(MetricRenderer):
         distr_fig = plot_bias(
             curr=HistogramData.from_distribution(metric_result.current_distr),
             curr_train=HistogramData.from_distribution(metric_result.current_train_distr),
-            ref=HistogramData.from_distribution(metric_result.reference_train_distr),
-            ref_train=HistogramData.from_distribution(metric_result.reference_distr),
-            xaxis_name=metric_result.column_name,
+            ref=HistogramData.from_distribution(metric_result.reference_distr),
+            ref_train=HistogramData.from_distribution(metric_result.reference_train_distr),
+            xaxis_name=metric_result.column_name
         )
 
         return [

@@ -1409,7 +1409,6 @@ def plot_bias(
         marker_color=color_options.get_current_data_color(),
         name="recomendation",
         legendgroup="recomendation",
-        visible=True,
     )
     fig.add_trace(trace, 1, 1)
     trace = go.Bar(
@@ -1418,17 +1417,16 @@ def plot_bias(
         marker_color=color_options.additional_data_color,
         name="train",
         legendgroup="train",
-        visible=True,
     )
     fig.add_trace(trace, 1, 1)
     if ref is not None and ref_train is not None:
         trace = go.Bar(
             x=ref.x,
             y=(ref.count / ref.count.sum()) * 100,
-            marker_color=color_options.get_reference_data_color(),
+            marker_color=color_options.get_current_data_color(),
             name="recomendation",
             legendgroup="recomendation",
-            visible=False,
+            showlegend=False,
         )
         fig.add_trace(trace, 1, 2)
         trace = go.Bar(
@@ -1437,9 +1435,10 @@ def plot_bias(
             marker_color=color_options.additional_data_color,
             name="train",
             legendgroup="train",
-            visible=False,
+            showlegend=False,
         )
         fig.add_trace(trace, 1, 2)
     fig.update_layout(yaxis_title="percent")
-    fig.update_layout(xaxis_title=xaxis_name)
+    # fig.update_layout(xaxis_title=xaxis_name)
+    fig.update_xaxes(title_text=xaxis_name)
     return fig

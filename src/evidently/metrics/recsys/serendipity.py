@@ -21,7 +21,7 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.visualizations import get_distribution_for_numerical_column
+from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
@@ -73,9 +73,9 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             for i, j in product(user_train, user_df):
                 res += dist_matrix[name_dict[i], name_dict[j]]
             user_res.append(len(user_df) - res / len(user_train))
-        distr = get_distribution_for_numerical_column(user_res)
+        distr_data = pd.Series(user_res)
         value = np.mean(user_res)
-        return distr, value
+        return distr_data, value
 
     def calculate(self, data: InputData) -> SerendipityMetricResult:
         result = self._pairwise_distance.get_result()
@@ -96,7 +96,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
                 additional_datasets={"current_train_data": current_train_df})"""
             )
         prediction_name = get_prediciton_name(data)
-        curr_distr, curr_value = self.get_serendipity(
+        curr_distr_data, curr_value = self.get_serendipity(
             df=data.current_data,
             train_df=current_train_data,
             k=self.k,
@@ -109,13 +109,13 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             name_dict=name_dict,
         )
 
-        ref_distr: Optional[Distribution] = None
+        ref_distr_data: Optional[pd.Series] = None
         ref_value: Optional[float] = None
         if data.reference_data is not None:
             reference_train = current_train_data
             if reference_train_data is not None:
                 reference_train = reference_train_data
-            ref_distr, ref_value = self.get_serendipity(
+            ref_distr_data, ref_value = self.get_serendipity(
                 df=data.reference_data,
                 train_df=reference_train,
                 k=self.k,
@@ -127,6 +127,11 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
                 dist_matrix=dist_matrix,
                 name_dict=name_dict,
             )
+        curr_distr, ref_distr = get_distribution_for_column(
+            column_type="num",
+            current=curr_distr_data,
+            reference=ref_distr_data
+        )
         return SerendipityMetricResult(
             k=self.k,
             current_value=curr_value,
@@ -147,7 +152,7 @@ class SerendipityMetricRenderer(MetricRenderer):
         distr_fig = plot_distr_with_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current_distr),
             hist_ref=HistogramData.from_distribution(metric_result.reference_distr),
-            xaxis_name="",
+            xaxis_name="user serendipity",
             yaxis_name="Count",
             yaxis_name_perc="Percent",
             same_color=False,

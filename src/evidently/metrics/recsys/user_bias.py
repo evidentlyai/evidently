@@ -13,8 +13,7 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.visualizations import get_distribution_for_category_column
-from evidently.utils.visualizations import get_distribution_for_numerical_column
+from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_bias
 
 
@@ -53,12 +52,14 @@ class UserBiasMetric(Metric[UserBiasMetricResult]):
         curr = data.current_data.drop_duplicates(subset=[col_user_id.column_name], keep="last")
         if column.column_name not in current_train_data.columns:
             raise ValueError(f"{column.column_name} expected to be in current_train_data")
+        column_type = "num"
         if column.column_type == ColumnType.Categorical:
-            current_train_distr = get_distribution_for_category_column(curr_train[column.column_name])
-            current_distr = get_distribution_for_category_column(curr[column.column_name])
-        elif column.column_type == ColumnType.Numerical:
-            current_train_distr = get_distribution_for_numerical_column(curr_train[column.column_name])
-            current_distr = get_distribution_for_numerical_column(curr[column.column_name])
+            column_type = "cat"
+        current_distr, current_train_distr = get_distribution_for_column(
+                column_type=column_type,
+                current=curr[column.column_name],
+                reference=curr_train[column.column_name]
+            )
         reference_train_distr: Optional[Distribution] = None
         reference_distr: Optional[Distribution] = None
         if data.reference_data is not None:
@@ -68,12 +69,12 @@ class UserBiasMetric(Metric[UserBiasMetricResult]):
                 if column.column_name not in reference_train_data.columns:
                     raise ValueError(f"{column.column_name} expected to be in reference_train_data")
                 ref_train = reference_train_data.drop_duplicates(subset=[col_user_id.column_name], keep="last")
-            if column.column_type == ColumnType.Categorical:
-                reference_train_distr = get_distribution_for_category_column(curr_train[column.column_name])
-                reference_distr = get_distribution_for_category_column(curr[column.column_name])
-            elif column.column_type == ColumnType.Numerical:
-                reference_train_distr = get_distribution_for_numerical_column(ref_train[column.column_name])
-                reference_distr = get_distribution_for_numerical_column(ref[column.column_name])
+            
+            reference_distr, reference_train_distr = get_distribution_for_column(
+                column_type=column_type,
+                current=ref[column.column_name],
+                reference=ref_train[column.column_name]
+            )
         return UserBiasMetricResult(
             column_name=self.column_name,
             current_train_distr=current_train_distr,
@@ -90,8 +91,8 @@ class UserBiasMetricRenderer(MetricRenderer):
         distr_fig = plot_bias(
             curr=HistogramData.from_distribution(metric_result.current_distr),
             curr_train=HistogramData.from_distribution(metric_result.current_train_distr),
-            ref=HistogramData.from_distribution(metric_result.reference_train_distr),
-            ref_train=HistogramData.from_distribution(metric_result.reference_distr),
+            ref=HistogramData.from_distribution(metric_result.reference_distr),
+            ref_train=HistogramData.from_distribution(metric_result.reference_train_distr),
             xaxis_name=metric_result.column_name,
         )
 

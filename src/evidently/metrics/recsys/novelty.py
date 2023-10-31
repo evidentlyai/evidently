@@ -2,6 +2,7 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -18,7 +19,7 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.visualizations import get_distribution_for_numerical_column
+from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
@@ -48,8 +49,8 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
         data = data[data[prediction_name] <= k]
         data["miuf"] = -np.log2(data[item_name].map(interactions)).replace([np.inf, -np.inf], np.nan)
         data = data[~data.miuf.isna()]
-        distr = get_distribution_for_numerical_column(data.groupby(user_name).miuf.mean())
-        value = distr.x.mean()
+        distr = data.groupby(user_name).miuf.mean()
+        value = distr.mean()
         return distr, value
 
     def calculate(self, data: InputData) -> NoveltyMetricResult:
@@ -63,7 +64,7 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
 
         curr_interactions = curr_user_interacted / current_n_users
         prediction_name = get_prediciton_name(data)
-        curr_distr, curr_value = self.get_miuf(
+        curr_distr_data, curr_value = self.get_miuf(
             data.current_data,
             self.k,
             data.column_mapping.recommendations_type,
@@ -72,14 +73,14 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
             prediction_name,
             curr_interactions,
         )
-        ref_distr: Optional[Distribution] = None
+        ref_distr_data: Optional[pd.Series] = None
         ref_value: Optional[float] = None
         if data.reference_data is not None:
             ref_interactions = curr_interactions
             if ref_user_interacted is not None and reference_n_users is not None:
                 ref_interactions = ref_user_interacted / reference_n_users
-            ref_distr, ref_value = self.get_miuf(
-                data.current_data,
+            ref_distr_data, ref_value = self.get_miuf(
+                data.reference_data,
                 self.k,
                 data.column_mapping.recommendations_type,
                 user_id,
@@ -87,6 +88,11 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
                 prediction_name,
                 ref_interactions,
             )
+        curr_distr, ref_distr = get_distribution_for_column(
+            column_type="num",
+            current=curr_distr_data,
+            reference=ref_distr_data
+        )
         return NoveltyMetricResult(
             k=self.k,
             current_value=curr_value,
@@ -107,7 +113,7 @@ class NoveltyMetricRenderer(MetricRenderer):
         distr_fig = plot_distr_with_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current_distr),
             hist_ref=HistogramData.from_distribution(metric_result.reference_distr),
-            xaxis_name="",
+            xaxis_name="mean inverse user frequency",
             yaxis_name="Count",
             yaxis_name_perc="Percent",
             same_color=False,

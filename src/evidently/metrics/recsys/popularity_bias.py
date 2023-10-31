@@ -19,7 +19,7 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.visualizations import get_distribution_for_numerical_column
+from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
@@ -70,8 +70,8 @@ class PopularityBias(Metric[PopularityBiasResult]):
             data["popularity"] = data["popularity"] / train_stats.max()
         data = data[~data.popularity.isna()]
         value = data.groupby(user_name).popularity.mean().mean()
-        distr = get_distribution_for_numerical_column(data.popularity)
-        return value, distr
+        distr_data = data.popularity
+        return value, distr_data
 
     def get_gini(
         self,
@@ -108,7 +108,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
                 "rank", ascending=False
             )
 
-        current_apr, current_distr = self.get_apr(
+        current_apr, current_distr_data = self.get_apr(
             self.k,
             current_data,
             curr_user_interacted,
@@ -127,7 +127,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
         reference_apr: Optional[float] = None
         ref_coverage: Optional[float] = None
         ref_gini: Optional[float] = None
-        reference_distr: Optional[Distribution] = None
+        reference_distr_data: Optional[pd.Series] = None
         if data.reference_data is not None:
             reference_data = data.reference_data.copy()
             if recommendations_type == "score":
@@ -137,7 +137,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
             if ref_user_interacted is None:
                 ref_user_interacted = curr_user_interacted
 
-            reference_apr, reference_distr = self.get_apr(
+            reference_apr, reference_distr_data = self.get_apr(
                 self.k,
                 reference_data,
                 ref_user_interacted,
@@ -150,6 +150,11 @@ class PopularityBias(Metric[PopularityBiasResult]):
             ref_coverage = reference_data[item_id].nunique() / len(ref_user_interacted)
 
             ref_gini = self.get_gini(self.k, reference_data, prediction_name, item_id)
+        current_distr, reference_distr = get_distribution_for_column(
+            column_type="num",
+            current=current_distr_data,
+            reference=reference_distr_data
+        )
 
         return PopularityBiasResult(
             k=self.k,
@@ -172,21 +177,24 @@ class PopularityBiasRenderer(MetricRenderer):
         is_normed = ""
         if metric_result.normalize_arp:
             is_normed = " normilized"
+        result = [header_text(label="Popularity bias top " + str(metric_result.k))]
         counters = [
             CounterData.float(label="current APR" + is_normed, value=metric_result.current_apr, precision=4),
             CounterData.float(label="current coverage", value=metric_result.current_coverage, precision=4),
             CounterData.float(label="current gini", value=metric_result.current_gini, precision=4),
         ]
+        result.append(counter(counters=counters))
         if (
             metric_result.reference_apr is not None
             and metric_result.reference_coverage is not None
             and metric_result.reference_gini is not None
         ):
-            counters += [
+            counters = [
                 CounterData.float(label="reference APR" + is_normed, value=metric_result.reference_apr, precision=4),
                 CounterData.float(label="reference coverage", value=metric_result.reference_coverage, precision=4),
                 CounterData.float(label="reference gini", value=metric_result.reference_gini, precision=4),
             ]
+            result.append(counter(counters=counters))
 
         distr_fig = plot_distr_with_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current_distr),
@@ -199,9 +207,6 @@ class PopularityBiasRenderer(MetricRenderer):
             subplots=False,
             to_json=False,
         )
+        result.append(plotly_figure(title="", figure=distr_fig))
 
-        return [
-            header_text(label="Popularity bias top " + str(metric_result.k)),
-            counter(counters=counters),
-            plotly_figure(title="", figure=distr_fig),
-        ]
+        return result

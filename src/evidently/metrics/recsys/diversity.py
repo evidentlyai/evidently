@@ -21,7 +21,7 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.utils.visualizations import get_distribution_for_numerical_column
+from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
@@ -69,7 +69,7 @@ class DiversityMetric(Metric[DiversityMetricResult]):
             for i, j in combinations(rec_list, 2):
                 user_res += dist_matrix[name_dict[i], name_dict[j]]
             ilds.append(user_res / len(rec_list))
-        distr = get_distribution_for_numerical_column(ilds)
+        distr = pd.Series(ilds)
         value = np.mean(ilds)
         return distr, value
 
@@ -83,7 +83,7 @@ class DiversityMetric(Metric[DiversityMetricResult]):
         if user_id is None or item_id is None or recommendations_type is None:
             raise ValueError("user_id and item_id and recommendations_type should be specified")
         prediction_name = get_prediciton_name(data)
-        curr_distr, curr_value = self.get_ild(
+        curr_distr_data, curr_value = self.get_ild(
             df=data.current_data,
             k=self.k,
             recommendations_type=recommendations_type,
@@ -94,10 +94,10 @@ class DiversityMetric(Metric[DiversityMetricResult]):
             name_dict=name_dict,
         )
 
-        ref_distr: Optional[Distribution] = None
+        ref_distr_data: Optional[pd.Series] = None
         ref_value: Optional[float] = None
         if data.reference_data is not None:
-            ref_distr, ref_value = self.get_ild(
+            ref_distr_data, ref_value = self.get_ild(
                 df=data.reference_data,
                 k=self.k,
                 recommendations_type=recommendations_type,
@@ -107,6 +107,11 @@ class DiversityMetric(Metric[DiversityMetricResult]):
                 dist_matrix=dist_matrix,
                 name_dict=name_dict,
             )
+        curr_distr, ref_distr = get_distribution_for_column(
+            column_type="num",
+            current=curr_distr_data,
+            reference=ref_distr_data
+        )
         return DiversityMetricResult(
             k=self.k,
             current_value=curr_value,
@@ -127,7 +132,7 @@ class DiversityMetricRenderer(MetricRenderer):
         distr_fig = plot_distr_with_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current_distr),
             hist_ref=HistogramData.from_distribution(metric_result.reference_distr),
-            xaxis_name="",
+            xaxis_name="user intra list diversity",
             yaxis_name="Count",
             yaxis_name_perc="Percent",
             same_color=False,
