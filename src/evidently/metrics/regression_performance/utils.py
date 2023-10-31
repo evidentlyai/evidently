@@ -13,12 +13,12 @@ def apply_func_to_binned_data(
     reference = None
     if is_ref_data:
         reference = IntervalSeries.from_data(
-            df_for_bins[df_for_bins.data == "ref"].groupby("target_binned").apply(_apply)
+            df_for_bins[df_for_bins.data == "ref"].groupby("target_binned", observed=False).apply(_apply)
         )
 
     result = RegressionMetricScatter(
         current=IntervalSeries.from_data(
-            df_for_bins[df_for_bins.data == "curr"].groupby("target_binned").apply(_apply)
+            df_for_bins[df_for_bins.data == "curr"].groupby("target_binned", observed=False).apply(_apply)
         ),
         reference=reference,
     )
