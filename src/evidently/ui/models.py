@@ -72,13 +72,14 @@ class DashboardInfoModel(BaseModel):
         time_range: Dict[str, Optional[datetime.datetime]]
         reports = project.reports_and_test_suites
         if len(reports) == 0:
-            time_range = {"min_timestamp": None, "max_timestamp": None}
+            min_timestamp = max_timestamp = None
         else:
-            time_range = dict(
-                min_timestamp=min(r.timestamp for r in reports.values()),
-                max_timestamp=max(r.timestamp for r in reports.values()),
-            )
+            min_timestamp=min(r.timestamp for r in reports.values())
+            max_timestamp=max(r.timestamp for r in reports.values())
+            if min_timestamp == max_timestamp:
+                max_timestamp += datetime.timedelta(seconds=1)
+
 
         info = project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
 
-        return cls(**dataclasses.asdict(info), **time_range)
+        return cls(**dataclasses.asdict(info), min_timestamp=min_timestamp, max_timestamp=max_timestamp)
