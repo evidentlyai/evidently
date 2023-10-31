@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { WidgetInfo } from '../api'
+import { WidgetInfo } from '~/api'
 
 import { Grid, Card, CardContent, Typography } from '@mui/material'
 

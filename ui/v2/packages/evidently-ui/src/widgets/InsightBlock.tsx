@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Alert, AlertTitle } from '@mui/material'
 
-import { InsightsParams } from '../api'
+import { InsightsParams } from '~/api'
 
 interface InsightBlockProps {
   data: InsightsParams

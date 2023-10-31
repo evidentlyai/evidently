@@ -1,5 +1,5 @@
 import React from 'react'
-import { WidgetListParams } from '../api'
+import { WidgetListParams } from '~/api'
 import WidgetPanel from './WidgetPanel'
 import { WidgetRenderer } from './WidgetRenderer'
 import { Grid, Button } from '@mui/material'

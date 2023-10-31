@@ -13,7 +13,7 @@ import {
   WidgetSize,
   TextWidgetParams,
   TestSuiteWidgetParams
-} from '../api'
+} from '~/api'
 
 import Widget from './Widget'
 import CounterWidgetContent from './CounterWidgetContent'

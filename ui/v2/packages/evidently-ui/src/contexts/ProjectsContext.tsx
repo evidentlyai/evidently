@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ProjectInfo } from '../api'
+import { ProjectInfo } from '~/api'
 
 export interface ProjectsContextState {
   Projects: ProjectInfo[]

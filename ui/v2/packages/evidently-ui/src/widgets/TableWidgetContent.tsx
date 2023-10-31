@@ -10,7 +10,7 @@ import {
   TableRow
 } from '@mui/material'
 
-import { TableWidgetParams } from '../api'
+import { TableWidgetParams } from '~/api'
 
 const TableWidgetContent: React.FunctionComponent<TableWidgetParams> = (props) => (
   <TableContainer component={Paper}>

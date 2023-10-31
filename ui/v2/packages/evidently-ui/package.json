@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "type-check": "tsc",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "postinstall": "tsc --build"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "exports": {
     "./*": {

@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Box, Button, Grid, Select } from '@mui/material'
 
-import { DashboardInfo } from '../api'
+import { DashboardInfo } from '~/api'
 import { DashboardContent } from './DashboardContent'
 
 interface SummaryViewProps {

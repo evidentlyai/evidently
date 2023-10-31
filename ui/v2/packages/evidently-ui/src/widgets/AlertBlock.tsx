@@ -5,7 +5,7 @@ import { Theme } from '@mui/material/styles'
 
 import { lighten, darken } from '@mui/material/styles'
 
-import { MetricAlertParams } from '../api'
+import { MetricAlertParams } from '~/api'
 
 interface AlertBlockProps {
   data: MetricAlertParams

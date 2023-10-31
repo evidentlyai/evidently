@@ -1,8 +1,8 @@
-import { Api, DashboardInfo } from '../api'
-import ApiContext from '../contexts/ApiContext'
-import DashboardContext, { CreateDashboardContextState } from '../contexts/DashboardContext'
-import LoadableView from '../components/LoadableVIew'
-import { DashboardContent } from '../components/DashboardContent'
+import { Api, DashboardInfo } from '~/api'
+import ApiContext from '~/contexts/ApiContext'
+import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
+import LoadableView from '~/components/LoadableVIew'
+import { DashboardContent } from '~/components/DashboardContent'
 import { Grid } from '@mui/material'
 
 export function Report(props: { params: DashboardInfo }) {

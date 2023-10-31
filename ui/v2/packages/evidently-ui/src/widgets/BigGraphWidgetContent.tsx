@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { BigGraphWidgetParams } from '../api'
-import Plot from '../components/Plot'
+import { BigGraphWidgetParams } from '~/api'
+import Plot from '~/components/Plot'
 
 interface BigGraphWidgetProps extends BigGraphWidgetParams {
   widgetSize: number

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TestSuiteWidgetParams, TestDataInfo, TestGroupData, TestGroupTypeData } from '../../api'
+import { TestSuiteWidgetParams, TestDataInfo, TestGroupData, TestGroupTypeData } from '~/api'
 import TestInfo, { StateToSeverity } from './TestData'
 import { Button, Collapse, Grid, Paper, Select } from '@mui/material'
 import { Alert, AlertTitle } from '@mui/material'

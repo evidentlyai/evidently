@@ -11,7 +11,7 @@ import {
   LineGraphOptions,
   ScatterGraphOptions,
   WidgetSize
-} from '../../api'
+} from '~/api'
 
 import { GraphDetails } from './GraphDetails'
 import { LineGraphColumn } from './LineGraphColumn'

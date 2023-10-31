@@ -23,6 +23,7 @@
     "composite": true,
     "outDir": ".tsc-dist-dts",
     "emitDeclarationOnly": true,
+    "declaration": true,
     "baseUrl": "./src",
     "paths": {
       "~/*": ["*"]

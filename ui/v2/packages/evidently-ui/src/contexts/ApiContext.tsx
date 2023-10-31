@@ -10,7 +10,7 @@ import {
   TestSuiteInfo,
   WidgetInfo,
   VersionInfo
-} from '../api'
+} from '~/api'
 
 interface ApiContextState {
   Api: Api

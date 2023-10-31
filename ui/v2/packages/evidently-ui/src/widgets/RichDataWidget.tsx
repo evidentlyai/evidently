@@ -15,9 +15,9 @@ import {
 import ExpandLessSharpIcon from '@mui/icons-material/ExpandLessSharp'
 import ExpandMoreSharpIcon from '@mui/icons-material/ExpandMoreSharp'
 
-import { RichDataParams } from '../api'
+import { RichDataParams } from '~/api'
 
-import Plot from '../components/Plot'
+import Plot from '~/components/Plot'
 import { BigTableDetails } from './BigTableWidget/BigTableDetails'
 
 const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: number }> = (

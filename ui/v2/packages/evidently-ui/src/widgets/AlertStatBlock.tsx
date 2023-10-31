@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Typography } from '@mui/material'
-import { AlertStats } from '../api'
+import { AlertStats } from '~/api'
 import AlertBlock from './AlertBlock'
 
 interface AlertStatBlockProps {

@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 // import {WithStyles, WithTheme} from "@material-ui/core/styles";
 import { ResponsiveLineCanvas } from '@nivo/line'
 
-import { BigTableDataRow, LineGraphOptions } from '../../api'
+import { BigTableDataRow, LineGraphOptions } from '~/api'
 // import withTheme from "@material-ui/core/styles/withTheme";
 
 interface LineGraphColumnProps extends LineGraphOptions {

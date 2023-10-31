@@ -10,15 +10,15 @@ import {
   WidgetSize
 } from '~/api'
 
-import DashboardContext, { DashboardContextState } from '../../contexts/DashboardContext'
+import DashboardContext, { DashboardContextState } from '~/contexts/DashboardContext'
 
 import AutoTabs from '~/components/AutoTabs'
-import LoadableView from '../../components/LoadableVIew'
+import LoadableView from '~/components/LoadableVIew'
 
-import BigGraphWidgetContent from '../BigGraphWidgetContent'
-import InsightBlock from '../InsightBlock'
-import { WidgetRenderer } from '../WidgetRenderer'
-import NotImplementedWidgetContent from '../NotImplementedWidgetContent'
+import BigGraphWidgetContent from '~/widgets/BigGraphWidgetContent'
+import InsightBlock from '~/widgets/InsightBlock'
+import { WidgetRenderer } from '~/widgets/WidgetRenderer'
+import NotImplementedWidgetContent from '~/widgets/NotImplementedWidgetContent'
 
 interface BigTableDetailsProps {
   details: BigTableRowDetails

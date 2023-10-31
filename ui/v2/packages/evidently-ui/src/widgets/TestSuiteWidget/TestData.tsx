@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { TestDataInfo, TestState } from '../../api'
+import { TestDataInfo, TestState } from '~/api'
 import { Button, Collapse, Paper, Alert, AlertTitle, AlertColor } from '@mui/material'
 
-import { BigTableDetails } from '../BigTableWidget/BigTableDetails'
+import { BigTableDetails } from '~/widgets/BigTableWidget/BigTableDetails'
 import ReactMarkdown from 'react-markdown'
 
 const availableStates: TestState[] = ['unknown', 'success', 'warning', 'fail']

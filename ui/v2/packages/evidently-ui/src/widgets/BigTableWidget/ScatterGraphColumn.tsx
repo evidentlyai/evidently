@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 
-import { BigTableDataRow, LineGraphOptions } from '../../api'
+import { BigTableDataRow, LineGraphOptions } from '~/api'
 
 interface ScatterGraphColumnProps extends LineGraphOptions {
   data: BigTableDataRow

@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 
 import { Grid, Card, CardContent, Typography } from '@mui/material'
 
-import { WidgetInfo } from '../api'
+import { WidgetInfo } from '~/api'
 
 /***
  * base part of widget to control:

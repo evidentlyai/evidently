@@ -5,7 +5,7 @@ import { Box } from '@mui/material'
 
 import { ResponsiveBarCanvas } from '@nivo/bar'
 
-import { BigTableDataRow, LineGraphOptions } from '../../api'
+import { BigTableDataRow, LineGraphOptions } from '~/api'
 
 interface HistogramGraphColumnProps extends LineGraphOptions {
   data: BigTableDataRow

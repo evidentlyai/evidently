@@ -23,5 +23,5 @@
     "baseUrl": "./src"
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "../packages/evidently-ui/" }]
+  "references": [{ "path": "../packages/evidently-ui/" }]
 }
