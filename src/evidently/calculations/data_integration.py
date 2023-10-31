@@ -38,8 +38,8 @@ def get_number_of_almost_duplicated_columns(dataset: pd.DataFrame, threshold: fl
 
             # if columns are categorical, then we need to check categories lists
             # if the lists are not the same, Series.eq method raises an exception
-            if pd.api.types.is_categorical_dtype(dataset[column_name_1]) and pd.api.types.is_categorical_dtype(
-                dataset[column_name_2]
+            if isinstance(dataset[column_name_1].dtype, pd.CategoricalDtype) and isinstance(
+                dataset[column_name_2].dtype, pd.CategoricalDtype
             ):
                 if dataset[column_name_1].cat.categories.tolist() != dataset[column_name_2].cat.categories.tolist():
                     continue
