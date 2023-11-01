@@ -1172,13 +1172,16 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
         "W": "week",
         "D": "day",
         "H": "hour",
+        "min": "minute"
     }
     datetime_feature = current_date_column
     if reference_date_column is not None:
         datetime_feature = pd.concat([datetime_feature, reference_date_column])
     days = (datetime_feature.max() - datetime_feature.min()).days
+    if days == 0:
+        days = (datetime_feature.max() - datetime_feature.min()).seconds / (3600 * 24)
     time_points = pd.Series(
-        index=["A", "Q", "M", "W", "D", "H"],
+        index=["A", "Q", "M", "W", "D", "H", "min"],
         data=[
             abs(OPTIMAL_POINTS - days / 365),
             abs(OPTIMAL_POINTS - days / 90),
@@ -1186,6 +1189,7 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
             abs(OPTIMAL_POINTS - days / 7),
             abs(OPTIMAL_POINTS - days),
             abs(OPTIMAL_POINTS - days * 24),
+            abs(OPTIMAL_POINTS - days * 24 * 60),
         ],
     )
     period_prefix = prefix_dict[time_points.idxmin()]
