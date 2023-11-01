@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import { ProjectReport } from 'evidently-ui/standalone-app'
 import { AdditionalGraphInfo, DashboardInfo } from 'evidently-ui/api'
 import ApiContext from 'evidently-ui/contexts/ApiContext'
 import LocalApi from 'evidently-ui/api/LocalApi'
-import { theme } from 'evidently-ui/theme'
+import { theme } from 'evidently-ui/theme/v1'
+import { ProjectReport } from 'evidently-ui/standalone/app'
 
 import { ThemeProvider } from '@mui/material/styles'
 
