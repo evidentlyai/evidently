@@ -1,5 +1,5 @@
 import React from 'react'
-import { Paper } from '@mui/material'
+import { Box } from '@mui/material'
 import { BreadCrumbs } from './BreadCrumbs'
 
 export interface ServiceMainPageProps {
@@ -9,10 +9,10 @@ export interface ServiceMainPageProps {
 export function ServiceMainPage(props: ServiceMainPageProps) {
   return (
     <>
-      <Paper sx={{ marginTop: '20px', marginLeft: '10px', marginRight: '10px', padding: '10px' }}>
+      <Box sx={{ marginTop: '20px', marginLeft: '10px', marginRight: '10px', padding: '10px' }}>
         <BreadCrumbs />
         {props.children}
-      </Paper>
+      </Box>
     </>
   )
 }
