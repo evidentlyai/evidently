@@ -12,8 +12,8 @@
     "./*": {
       "default": "./src/*",
       "types": [
-        "./.tsc-dist-dts/src/*/index.d.ts",
-        "./.tsc-dist-dts/src/*.d.ts"
+        "./.tsc-dts/src/*/index.d.ts",
+        "./.tsc-dts/src/*.d.ts"
       ]
     }
   },
