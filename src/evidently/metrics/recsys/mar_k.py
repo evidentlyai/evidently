@@ -11,4 +11,4 @@ class MARKMetric(TopKMetric):
 @default_renderer(wrap_type=MARKMetric)
 class MARKMetricRenderer(TopKMetricRenderer):
     yaxis_name = "mar@k"
-    header = "MAR@"
+    header = "MAR"

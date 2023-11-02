@@ -67,4 +67,4 @@ class FBetaTopKMetric(TopKMetric):
 @default_renderer(wrap_type=FBetaTopKMetric)
 class FBetaTopKMetricRenderer(TopKMetricRenderer):
     yaxis_name = "f_beta@k"
-    header = "F_beta@"
+    header = "F_beta"

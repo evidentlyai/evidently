@@ -123,7 +123,7 @@ class NoveltyMetricRenderer(MetricRenderer):
         )
 
         return [
-            header_text(label="Novelty (top-{metric_result.k})"),
+            header_text(label=f"Novelty (top-{metric_result.k})"),
             counter(counters=counters),
             plotly_figure(title="", figure=distr_fig),
         ]

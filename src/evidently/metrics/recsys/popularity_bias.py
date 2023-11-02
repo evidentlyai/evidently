@@ -21,7 +21,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
-
+import logging
 
 class PopularityBiasResult(MetricResult):
     k: int
@@ -117,7 +117,9 @@ class PopularityBias(Metric[PopularityBiasResult]):
             user_id,
             item_id,
         )
-
+        logging.warning(current_data[item_id].unique().dtype)
+        logging.warning(current_data[item_id].unique()[:5])
+        logging.warning(curr_user_interacted.index[:5])
         curr_coverage = len(np.intersect1d(current_data[item_id].unique(), curr_user_interacted.index)) / len(
             curr_user_interacted
         )
@@ -177,7 +179,7 @@ class PopularityBiasRenderer(MetricRenderer):
         is_normed = ""
         if metric_result.normalize_arp:
             is_normed = " normilized"
-        result = [header_text(label="Popularity bias (top-{metric_result.k})")]
+        result = [header_text(label=f"Popularity bias (top-{metric_result.k})")]
         counters = [
             CounterData.float(label="current ARP" + is_normed, value=metric_result.current_apr, precision=4),
             CounterData.float(label="current coverage", value=metric_result.current_coverage, precision=4),

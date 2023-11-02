@@ -162,7 +162,7 @@ class SerendipityMetricRenderer(MetricRenderer):
         )
 
         return [
-            header_text(label="Serendipity (top-{metric_result.k})"),
+            header_text(label=f"Serendipity (top-{metric_result.k})"),
             counter(counters=counters),
             plotly_figure(title="", figure=distr_fig),
         ]
