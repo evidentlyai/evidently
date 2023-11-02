@@ -171,7 +171,7 @@ class FieldPath:
         return FieldPath(self._path + [item], field.type_, is_mapping=field.shape == SHAPE_DICT)
 
     def list_nested_fields(self) -> List[str]:
-        if not issubclass(self._cls, BaseModel):
+        if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
         for name, field in self._cls.__fields__.items():

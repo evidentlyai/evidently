@@ -39,6 +39,7 @@ from evidently.ui.watcher import WorkspaceDirHandler
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import ProjectBase
 from evidently.ui.workspace import Workspace
+from evidently.ui.workspace import WorkspaceBase
 from evidently.utils import NumpyEncoder
 
 SERVICE_INTERFACE = "service_backend"
@@ -49,11 +50,6 @@ async def lifespan(app: FastAPI):
     """Run at startup
     Initialise the Client and add it to app.state
     """
-    workspace = Workspace(app.state.workspace_path)
-    app.state.workspace = workspace
-    observer = Observer()
-    observer.schedule(WorkspaceDirHandler(workspace), workspace.path, recursive=True)
-    observer.start()
 
     if event_logger.is_enabled():
         print(f"Anonimous usage reporting is enabled. To disable it, set env variable {DO_NOT_TRACK_ENV} to any value")
@@ -167,6 +163,17 @@ async def update_project_info(project_id: Annotated[uuid.UUID, PROJECT_ID], data
     project.save()
     event_logger.send_event(SERVICE_INTERFACE, "update_project_info")
     return project
+
+
+@api_write_router.get("/projects/{project_id}/reload")
+async def reload_project_snapshots(project_id: Annotated[uuid.UUID, PROJECT_ID]):
+    workspace: Workspace = app.state.workspace
+    project = workspace.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="project not found")
+    project.reload(reload_snapshots=True)
+    event_logger.send_event(SERVICE_INTERFACE, "reload_project_snapshots")
+    return
 
 
 @api_read_router.get("/projects/{project_id}/test_suites")
@@ -324,10 +331,27 @@ api_router.include_router(api_write_router)
 app.include_router(api_router)
 
 
+def prepare_workspace(workspace_path: str, **kwargs) -> WorkspaceBase:
+    workspace: WorkspaceBase
+    if "://" in workspace_path:
+        from evidently.ui.fsspec_workspace import FSSpecWorkspace
+
+        workspace = FSSpecWorkspace(workspace_path, **kwargs)
+        print(f"Using FSSpecWorkspace at {workspace_path}")
+    else:
+        workspace = Workspace(workspace_path)
+        print(f"Using local workspace at {workspace_path}")
+    if isinstance(workspace, Workspace):
+        observer = Observer()
+        observer.schedule(WorkspaceDirHandler(workspace), workspace.path, recursive=True)
+        observer.start()
+    return workspace
+
+
 def run(host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace", secret: str = None):
     if secret is not None:
         set_secret(secret)
-    app.state.workspace_path = workspace
+    app.state.workspace = prepare_workspace(workspace)
     uvicorn.run(app, host=host, port=port)
 
 
