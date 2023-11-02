@@ -24,7 +24,6 @@ const isCrumb = (match: MatchObject): match is MatchWithCrumbHandle =>
 export const BreadCrumbs = () => {
   const matches = useMatches()
   const crumbs = matches
-    // TODO: filter it properly
     .filter(isCrumb)
     .map(({ handle, data, id, pathname, params }) => handle.crumb(data, { id, pathname, params }))
 

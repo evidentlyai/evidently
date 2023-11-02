@@ -52,6 +52,10 @@ class NotImplementedApi implements Api {
   getVersion(): Promise<VersionInfo> {
     return Promise.resolve({ version: '0.0.0' })
   }
+
+  editProjectInfo(_project: ProjectDetails) {
+    return Promise.resolve()
+  }
 }
 
 const ApiContext = React.createContext<ApiContextState>({ Api: new NotImplementedApi() })

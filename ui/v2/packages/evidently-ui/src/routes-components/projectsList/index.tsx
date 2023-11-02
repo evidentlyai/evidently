@@ -1,13 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import {
-  ActionFunctionArgs,
-  Form,
-  Link as RouterLink,
-  useLoaderData,
-  useNavigation,
-  useSubmit
-} from 'react-router-dom'
+import { Form, Link as RouterLink, useLoaderData, useNavigation, useSubmit } from 'react-router-dom'
 
 import {
   Box,
@@ -21,11 +14,12 @@ import {
   Typography
 } from '@mui/material'
 
+import type { loaderData } from './data'
+
 import EditIcon from '@mui/icons-material/Edit'
 
-import { useHover } from 'hooks/useHover'
-import { ProjectInfo } from 'evidently-ui/api'
-import { api } from 'api/RemoteApi'
+import { useHover } from '~/hooks/useHover'
+import { ProjectInfo } from '~/api'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -183,21 +177,8 @@ const Project = ({ project }: projectProps) => {
   )
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  // for safety
-  if (request.headers.get('Content-type') !== 'application/json') {
-    throw new Response('Unsupported Media Type', { status: 415 })
-  }
-
-  const json = await request.json()
-  return api.editProjectInfo(json)
-}
-
-export const loader = async () => api.getProjects()
-
 export const Component = () => {
-  // take projects from loader above
-  const projects = useLoaderData() as Awaited<ReturnType<typeof loader>>
+  const projects = useLoaderData() as loaderData
 
   return (
     <>

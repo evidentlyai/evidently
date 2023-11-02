@@ -88,4 +88,8 @@ export default class LocalApi implements Api {
   getVersion(): Promise<VersionInfo> {
     return Promise.resolve({ version: 'x.x.x' })
   }
+
+  editProjectInfo(_project: ProjectDetails) {
+    return Promise.resolve()
+  }
 }

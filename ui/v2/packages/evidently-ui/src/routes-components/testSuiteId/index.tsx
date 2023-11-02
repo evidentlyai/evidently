@@ -1,28 +1,16 @@
-import { LoaderFunctionArgs, useLoaderData, useParams } from 'react-router-dom'
+import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { api } from 'api/RemoteApi'
-import { DashboardContent } from 'evidently-ui/components/DashboardContent'
-import DashboardContext, {
-  CreateDashboardContextState
-} from 'evidently-ui/contexts/DashboardContext'
-import { crumbFunction } from 'Components/BreadCrumbs'
-
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const { projectId, testSuiteId } = params
-
-  invariant(projectId, 'missing projectId')
-  invariant(testSuiteId, 'missing testSuiteId')
-
-  return api.getDashboard(projectId, testSuiteId)
-}
-
-type loaderData = Awaited<ReturnType<typeof loader>>
+import { DashboardContent } from '~/components/DashboardContent'
+import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
+import { crumbFunction } from '~/components/BreadCrumbs'
+import { loaderData } from './data'
+import { Api } from '~/api'
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.testSuiteId) })
 }
 
-export const Component = () => {
+export const TestSuiteTemplate = ({ api }: { api: Api }) => {
   const { projectId, testSuiteId } = useParams()
   invariant(projectId, 'missing projectId')
   invariant(testSuiteId, 'missing testSuiteId')

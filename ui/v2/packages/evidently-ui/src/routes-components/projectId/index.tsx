@@ -1,18 +1,9 @@
 import { Alert, Box, Collapse, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/material'
 
-import {
-  Link as RouterLink,
-  Outlet,
-  useMatches,
-  LoaderFunctionArgs,
-  useLoaderData,
-  ShouldRevalidateFunction
-} from 'react-router-dom'
+import { Link as RouterLink, Outlet, useMatches, useLoaderData } from 'react-router-dom'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import invariant from 'tiny-invariant'
-import { api } from 'api/RemoteApi'
-import { crumbFunction } from 'Components/BreadCrumbs'
-import { isOnlySearchParamsChanges } from 'Utils/isOnlySearchParamsChanges'
+import { crumbFunction } from '~/components/BreadCrumbs'
+import { loaderData } from './data'
 
 const PROJECT_TABS = [
   { id: 'dashboard', link: '.' },
@@ -20,8 +11,6 @@ const PROJECT_TABS = [
   { id: 'test_suites', link: 'test-suites', label: 'Test suites' },
   { id: 'comparisons', link: 'comparisons', disabled: true }
 ]
-
-type loaderData = Awaited<ReturnType<typeof loader>>
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (data, { pathname }) => ({ to: pathname, linkText: data?.name || 'undefined' })
@@ -35,21 +24,6 @@ export function ErrorBoundary() {
       </Alert>
     </Collapse>
   )
-}
-
-export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
-  if (isOnlySearchParamsChanges(args)) {
-    return false
-  }
-
-  return true
-}
-
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const { projectId } = params
-  invariant(projectId, 'missing projectId')
-
-  return api.getProjectInfo(projectId)
 }
 
 export const Component = () => {

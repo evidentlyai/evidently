@@ -15,30 +15,21 @@ import {
 
 import {
   Link as RouterLink,
-  LoaderFunctionArgs,
   useLoaderData,
   useParams,
   Outlet,
   useMatches,
   useSearchParams
 } from 'react-router-dom'
-import invariant from 'tiny-invariant'
-import { api } from 'api/RemoteApi'
-import { TextWithCopyIcon } from 'Components/TextWithCopyIcon'
-import { formatDate } from 'Utils/Datetime'
-import { DownloadButton } from 'Components/DownloadButton'
-import { HidedTags } from 'Components/HidedTags'
-import { crumbFunction } from 'Components/BreadCrumbs'
+
+import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
+import { formatDate } from '~/utils'
+import { DownloadButton } from '~/components/DownloadButton'
+import { HidedTags } from '~/components/HidedTags'
+import { crumbFunction } from '~/components/BreadCrumbs'
 import { Autocomplete } from '@mui/material'
-import { useUpdateQueryStringValueWithoutNavigation } from 'hooks/useUpdateQueryStringValueWithoutNavigation'
-
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  invariant(params.projectId, 'missing projectId')
-
-  return api.getReports(params.projectId)
-}
-
-type loaderData = Awaited<ReturnType<typeof loader>>
+import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
+import { loaderData } from './data'
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (_, { pathname }) => ({ to: pathname, linkText: 'Reports' })

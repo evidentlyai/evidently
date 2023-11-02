@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Box,
   Button,
@@ -8,35 +10,27 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TextField
+  TextField,
+  Autocomplete
 } from '@mui/material'
+
 import {
   Link as RouterLink,
-  LoaderFunctionArgs,
   useLoaderData,
   useParams,
   useMatches,
   Outlet,
   useSearchParams
 } from 'react-router-dom'
-import invariant from 'tiny-invariant'
-import { api } from 'api/RemoteApi'
-import { TextWithCopyIcon } from 'Components/TextWithCopyIcon'
-import { formatDate } from 'Utils/Datetime'
-import { DownloadButton } from 'Components/DownloadButton'
-import { HidedTags } from 'Components/HidedTags'
-import { crumbFunction } from 'Components/BreadCrumbs'
-import { useUpdateQueryStringValueWithoutNavigation } from 'hooks/useUpdateQueryStringValueWithoutNavigation'
-import { useState } from 'react'
-import { Autocomplete } from '@mui/material'
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  invariant(params.projectId, 'missing projectId')
+import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
+import { formatDate } from '~/utils'
+import { DownloadButton } from '~/components/DownloadButton'
+import { HidedTags } from '~/components/HidedTags'
+import { crumbFunction } from '~/components/BreadCrumbs'
+import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 
-  return api.getTestSuites(params.projectId)
-}
-
-type loaderData = Awaited<ReturnType<typeof loader>>
+import { loaderData } from './data'
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (_, { pathname }) => ({ to: pathname, linkText: 'Test Suites' })

@@ -13,9 +13,6 @@
     "copy-assets-all": "pnpm copy-assets-service && pnpm copy-assets-standalone",
     "full-build": "pnpm build && pnpm clean-assets-all && pnpm copy-assets-all"
   },
-  "devDependencies": {
-    "typescript": "^5.0.2"
-  },
   "engines": {
     "node": ">=16",
     "pnpm": ">=8"

@@ -1,40 +1,20 @@
-import {
-  Outlet,
-  ScrollRestoration,
-  ShouldRevalidateFunction,
-  useLoaderData
-} from 'react-router-dom'
+import { Outlet, ScrollRestoration, useLoaderData } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { NavigationProgress, ServiceMainPage, ServiceHeader, crumbFunction } from '~/components'
 import 'dayjs/locale/en-gb'
+import { Theme } from '@mui/material/styles'
 
-import { api } from 'api/RemoteApi'
+import type { loaderData } from './data'
 
-import { NavigationProgress, ServiceMainPage, ServiceHeader, crumbFunction } from 'Components'
-
-import { isOnlySearchParamsChanges } from 'Utils/isOnlySearchParamsChanges'
-
-import { theme } from 'evidently-ui/theme/v1'
-
-export const loader = () => api.getVersion()
-type loaderData = Awaited<ReturnType<typeof loader>>
-
-export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
-  if (isOnlySearchParamsChanges(args)) {
-    return false
-  }
-
-  return true
-}
-
-export const Component = () => {
+export const HomeComponentTemplate = ({ theme, logoSrc }: { theme: Theme; logoSrc: string }) => {
   const { version } = useLoaderData() as loaderData
 
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
-        <ServiceHeader version={version} />
+        <ServiceHeader version={version} logoSrc={logoSrc} />
         <NavigationProgress />
         <ScrollRestoration />
         <ServiceMainPage>
