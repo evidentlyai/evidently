@@ -1407,8 +1407,8 @@ def plot_bias(
         x=curr.x,
         y=(curr.count / curr.count.sum()) * 100,
         marker_color=color_options.get_current_data_color(),
-        name="recomendation",
-        legendgroup="recomendation",
+        name="recommendation",
+        legendgroup="recommendation",
     )
     fig.add_trace(trace, 1, 1)
     trace = go.Bar(
@@ -1424,8 +1424,8 @@ def plot_bias(
             x=ref.x,
             y=(ref.count / ref.count.sum()) * 100,
             marker_color=color_options.get_current_data_color(),
-            name="recomendation",
-            legendgroup="recomendation",
+            name="recommendation",
+            legendgroup="recommendation",
             showlegend=False,
         )
         fig.add_trace(trace, 1, 2)
@@ -1439,6 +1439,5 @@ def plot_bias(
         )
         fig.add_trace(trace, 1, 2)
     fig.update_layout(yaxis_title="percent")
-    # fig.update_layout(xaxis_title=xaxis_name)
     fig.update_xaxes(title_text=xaxis_name)
     return fig

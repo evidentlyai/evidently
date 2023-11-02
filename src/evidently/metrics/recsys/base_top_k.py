@@ -72,12 +72,12 @@ class TopKMetricRenderer(MetricRenderer):
         if metric_result.reference is not None:
             counters.append(CounterData.float(label="reference", value=metric_result.reference[k], precision=3))
         fig = plot_metric_k(metric_result.current, metric_result.reference, self.yaxis_name)
-        header_part = " (no feedback users included)"
+        header_part = " No feedback users included."
         if not obj.no_feedback_users:
-            header_part = " (no feedback users excluded)"
+            header_part = " No feedback users excluded."
 
         return [
-            header_text(label=self.header + str(k) + header_part),
+            header_text(label=self.header +  f' (top-{k}).' + header_part),
             counter(counters=counters),
             plotly_figure(title="", figure=fig),
         ]

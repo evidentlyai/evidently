@@ -129,7 +129,7 @@ class PersonalisationMetricRenderer(MetricRenderer):
             counters.append(CounterData.float(label="reference", value=metric_result.reference_value, precision=4))
 
         result = [
-            header_text(label=f"Personalisation@{metric_result.k}"),
+            header_text(label=f"Personalization (top-{metric_result.k})"),
             counter(counters=counters),
             self._get_table_stat("current", metric_result.current_table, metric_result.reference_table),
         ]

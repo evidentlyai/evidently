@@ -132,7 +132,7 @@ class DiversityMetricRenderer(MetricRenderer):
         distr_fig = plot_distr_with_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current_distr),
             hist_ref=HistogramData.from_distribution(metric_result.reference_distr),
-            xaxis_name="user intra list diversity",
+            xaxis_name="intra list diversity by user",
             yaxis_name="Count",
             yaxis_name_perc="Percent",
             same_color=False,
@@ -142,7 +142,7 @@ class DiversityMetricRenderer(MetricRenderer):
         )
 
         return [
-            header_text(label="Diversity@" + str(metric_result.k)),
+            header_text(label=f"Diversity (top-{metric_result.k})"),
             counter(counters=counters),
             plotly_figure(title="", figure=distr_fig),
         ]

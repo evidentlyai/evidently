@@ -16,7 +16,7 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import plot_bias
 from evidently.metric_results import HistogramData
 from evidently.core import ColumnType
-import logging
+
 
 class ItemBiasMetricResult(MetricResult):
     k: int

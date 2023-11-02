@@ -177,11 +177,11 @@ class PopularityBiasRenderer(MetricRenderer):
         is_normed = ""
         if metric_result.normalize_arp:
             is_normed = " normilized"
-        result = [header_text(label="Popularity bias top " + str(metric_result.k))]
+        result = [header_text(label="Popularity bias (top-{metric_result.k})")]
         counters = [
-            CounterData.float(label="current APR" + is_normed, value=metric_result.current_apr, precision=4),
+            CounterData.float(label="current ARP" + is_normed, value=metric_result.current_apr, precision=4),
             CounterData.float(label="current coverage", value=metric_result.current_coverage, precision=4),
-            CounterData.float(label="current gini", value=metric_result.current_gini, precision=4),
+            CounterData.float(label="current gini index", value=metric_result.current_gini, precision=4),
         ]
         result.append(counter(counters=counters))
         if (
@@ -190,9 +190,9 @@ class PopularityBiasRenderer(MetricRenderer):
             and metric_result.reference_gini is not None
         ):
             counters = [
-                CounterData.float(label="reference APR" + is_normed, value=metric_result.reference_apr, precision=4),
+                CounterData.float(label="reference ARP" + is_normed, value=metric_result.reference_apr, precision=4),
                 CounterData.float(label="reference coverage", value=metric_result.reference_coverage, precision=4),
-                CounterData.float(label="reference gini", value=metric_result.reference_gini, precision=4),
+                CounterData.float(label="reference gini index", value=metric_result.reference_gini, precision=4),
             ]
             result.append(counter(counters=counters))
 
