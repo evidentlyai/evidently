@@ -65,6 +65,12 @@ class FSSpecProject(ProjectBase["FSSpecWorkspace"]):
         with self.workspace.fs.open(posixpath.join(self.path, METADATA_PATH), "w") as f:
             return json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
+    def load_snapshot(self, snapshot_id: uuid.UUID) -> Snapshot:
+        path = posixpath.join(self.path, SNAPSHOTS, str(snapshot_id) + ".json")
+
+        with self.workspace.fs.open(path, "r") as f:
+            return parse_obj_as(Snapshot, json.load(f))
+
     def reload(self, reload_snapshots=False):
         project = self.load(self.workspace.fs, self.path).bind(self.workspace)
         self.__dict__.update(project.__dict__)
@@ -86,10 +92,8 @@ class FSSpecProject(ProjectBase["FSSpecWorkspace"]):
     def reload_snapshot(self, snapshot_id: Union[str, uuid.UUID], skip_errors=True):
         if isinstance(snapshot_id, str):
             snapshot_id = uuid.UUID(snapshot_id)
-        path = posixpath.join(self.path, SNAPSHOTS, str(snapshot_id) + ".json")
         try:
-            with self.workspace.fs.open(path, "r") as f:
-                suite = parse_obj_as(Snapshot, json.load(f))
+            suite = self.load_snapshot(snapshot_id)
             self._snapshots[snapshot_id] = ProjectSnapshot(snapshot_id, self, suite)
         except ValidationError:
             if not skip_errors:
