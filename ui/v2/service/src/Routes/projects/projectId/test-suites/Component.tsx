@@ -17,7 +17,9 @@ import {
   useParams,
   useMatches,
   Outlet,
-  useSearchParams
+  useSearchParams,
+  ActionFunctionArgs,
+  useSubmit
 } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { api } from 'api/RemoteApi'
@@ -36,6 +38,12 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return api.getTestSuites(params.projectId)
 }
 
+export const action = async ({ params }: ActionFunctionArgs) => {
+  invariant(params.projectId, 'missing projectId')
+
+  return api.reloadProject(params.projectId)
+}
+
 type loaderData = Awaited<ReturnType<typeof loader>>
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
@@ -46,6 +54,7 @@ export const Component = () => {
   const { projectId } = useParams()
   const testSuites = useLoaderData() as loaderData
   const matches = useMatches()
+  const submit = useSubmit()
 
   const [searchParams] = useSearchParams()
   const [selectedTags, setTags] = useState(() => searchParams.get('tags')?.split(',') || [])
@@ -84,7 +93,7 @@ export const Component = () => {
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Grid container>
+        <Grid container spacing={2} alignItems={'end'}>
           <Grid item xs={12} md={6}>
             <Autocomplete
               multiple
@@ -98,7 +107,17 @@ export const Component = () => {
               )}
             />
           </Grid>
-          <Grid item xs={6} sm={6}></Grid>
+          <Grid item flexGrow={2}>
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                onClick={() => submit(null, { method: 'post' })}
+                color="primary"
+              >
+                Refresh Test-Suites
+              </Button>
+            </Box>
+          </Grid>
         </Grid>
       </Box>
       <Grid container>
