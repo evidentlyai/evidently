@@ -491,9 +491,10 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
                 cur_type = ref_type
     nunique = ref_unique or cur_unique
     # special case: target
+    column_dtype = cur_type if cur_type is not None else ref_type
     if mapping is not None and (column_name == mapping.target or (mapping.target is None and column_name == "target")):
         reg_condition = mapping.task == "regression" or (
-            pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+            pd.api.types.is_numeric_dtype(column_dtype)
             and mapping.task != "classification"
             and (nunique is not None and nunique > NUMBER_UNIQUE_AS_CATEGORICAL)
         )
@@ -507,20 +508,20 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
         or (mapping.prediction is None and column_name == "prediction")
     ):
         if (
-            pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
+            pd.api.types.is_string_dtype(column_dtype)
             or (
-                pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
+                pd.api.types.is_integer_dtype(column_dtype)
                 and mapping.task != "regression"
                 and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL)
             )
             or (
-                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+                pd.api.types.is_numeric_dtype(column_dtype)
                 and mapping.task != "regression"
                 and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL)
                 and (data.current[column_name].max() > 1 or data.current[column_name].min() < 0)
             )
             or (
-                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+                pd.api.types.is_numeric_dtype(column_dtype)
                 and mapping.task == "classification"
                 and (data.current[column_name].max() > 1 or data.current[column_name].min() < 0)
             )
@@ -530,13 +531,15 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
             return ColumnType.Numerical
 
     # all other features
-    if pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type):
+    if pd.api.types.is_integer_dtype(column_dtype):
         nunique = ref_unique or cur_unique
         if nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL:
             return ColumnType.Categorical
         return ColumnType.Numerical
-    if pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type):
+    if pd.api.types.is_numeric_dtype(column_dtype):
+        if column_dtype == bool:
+            return ColumnType.Categorical
         return ColumnType.Numerical
-    if pd.api.types.is_datetime64_dtype(cur_type if cur_type is not None else ref_type):
+    if pd.api.types.is_datetime64_dtype(column_dtype):
         return ColumnType.Datetime
     return ColumnType.Categorical
