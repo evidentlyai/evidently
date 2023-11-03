@@ -292,5 +292,5 @@ export interface Api {
 
   getVersion(): Promise<VersionInfo>
 
-  editProjectInfo(project: ProjectDetails): Promise<void>
+  editProjectInfo(project: ProjectDetails): Promise<Response>
 }

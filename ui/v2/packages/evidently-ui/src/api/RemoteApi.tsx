@@ -140,5 +140,7 @@ export class RemoteApi implements Api {
     if (!response.ok) {
       throw Error(`${response.status}, ${response.statusText}`)
     }
+
+    return response
   }
 }

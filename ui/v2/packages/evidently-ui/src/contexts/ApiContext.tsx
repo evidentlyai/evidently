@@ -54,7 +54,7 @@ class NotImplementedApi implements Api {
   }
 
   editProjectInfo(_project: ProjectDetails) {
-    return Promise.resolve()
+    return Promise.resolve(new Response('ok', { status: 200 }))
   }
 }
 
