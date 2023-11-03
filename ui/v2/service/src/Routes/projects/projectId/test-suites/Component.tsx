@@ -114,7 +114,7 @@ export const Component = () => {
                 onClick={() => submit(null, { method: 'post' })}
                 color="primary"
               >
-                Refresh Test-Suites
+                Refresh Test Suites
               </Button>
             </Box>
           </Grid>
