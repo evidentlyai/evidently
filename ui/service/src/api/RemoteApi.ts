@@ -1,3 +1,3 @@
-import { RemoteApi } from 'evidently-ui/api/RemoteApi'
+import { RemoteApi } from 'evidently-ui-lib/api/RemoteApi'
 
 export const api = new RemoteApi('/api')

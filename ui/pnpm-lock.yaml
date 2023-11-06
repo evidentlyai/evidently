@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  packages/evidently-ui:
+  packages/evidently-ui-lib:
     dependencies:
       '@emotion/react':
         specifier: ^11.11.1
@@ -122,9 +122,9 @@ importers:
       '@mui/material':
         specifier: ^5.14.12
         version: 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)
-      evidently-ui:
+      evidently-ui-lib:
         specifier: workspace:*
-        version: link:../packages/evidently-ui
+        version: link:../packages/evidently-ui-lib
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -183,9 +183,9 @@ importers:
       '@mui/material':
         specifier: ^5.14.12
         version: 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)
-      evidently-ui:
+      evidently-ui-lib:
         specifier: workspace:*
-        version: link:../packages/evidently-ui
+        version: link:../packages/evidently-ui-lib
       react:
         specifier: ^18.2.0
         version: 18.2.0

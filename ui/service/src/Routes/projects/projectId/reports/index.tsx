@@ -1,5 +1,5 @@
 import { RouteObject } from 'react-router-dom'
-import { injectAPI } from 'evidently-ui/routes-components/reports/data'
+import { injectAPI } from 'evidently-ui-lib/routes-components/reports/data'
 import { api } from 'api/RemoteApi'
 
 const { loader } = injectAPI({ api })
@@ -13,7 +13,7 @@ import ReportRoute from './reportId'
 export default {
   id: 'reports',
   path: 'reports',
-  lazy: () => import('evidently-ui/routes-components/reports'),
+  lazy: () => import('evidently-ui-lib/routes-components/reports'),
   loader,
   children: [ReportRoute]
 } satisfies RouteObject

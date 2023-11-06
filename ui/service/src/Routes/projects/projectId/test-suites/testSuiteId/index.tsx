@@ -1,5 +1,5 @@
 import { RouteObject } from 'react-router-dom'
-import { injectAPI } from 'evidently-ui/routes-components/testSuiteId/data'
+import { injectAPI } from 'evidently-ui-lib/routes-components/testSuiteId/data'
 import { api } from 'api/RemoteApi'
 
 const { loader } = injectAPI({ api })
@@ -9,7 +9,7 @@ export default {
   path: ':testSuiteId',
   lazy: async () => {
     const { TestSuiteTemplate, ...rest } = await import(
-      'evidently-ui/routes-components/testSuiteId'
+      'evidently-ui-lib/routes-components/testSuiteId'
     )
 
     const Component = () => {

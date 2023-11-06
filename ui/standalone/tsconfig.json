@@ -4,5 +4,5 @@
     "baseUrl": "./src"
   },
   "include": ["src"],
-  "references": [{ "path": "../packages/evidently-ui/" }]
+  "references": [{ "path": "../packages/evidently-ui-lib/" }]
 }
