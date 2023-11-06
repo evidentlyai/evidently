@@ -5,13 +5,7 @@ import { InJectAPI } from '~/utils'
 
 export type loaderData = DashboardInfo
 
-type QueryAliases = 'FROM' | 'TO'
-export type QueryLiterals = 'date_from' | 'date_to'
-
-export const QUERY_PARAMS: Record<QueryAliases, QueryLiterals> = {
-  FROM: 'date_from',
-  TO: 'date_to'
-}
+import { FILTER_QUERY_PARAMS } from '~/components/DashboardDateFilter'
 
 export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
   loader: ({ params, request }) => {
@@ -19,8 +13,8 @@ export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
 
     const { searchParams } = new URL(request.url)
 
-    let date_from = searchParams.get(QUERY_PARAMS.FROM)
-    let date_to = searchParams.get(QUERY_PARAMS.TO)
+    let date_from = searchParams.get(FILTER_QUERY_PARAMS.FROM)
+    let date_to = searchParams.get(FILTER_QUERY_PARAMS.TO)
 
     if (date_from && !dayjs(date_from).isValid()) {
       date_from = null
