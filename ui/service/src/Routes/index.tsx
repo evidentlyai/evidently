@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom'
+import { RouteObject, createBrowserRouter } from 'react-router-dom'
 
 import HomeRoute from './home'
 import ProjectsRoute from './projects/projectId'
@@ -15,4 +15,4 @@ const homeRoute = {
   children: [ProjectsListRoute, ProjectsRoute, NotFound]
 } satisfies RouteObject
 
-export const Routes = [homeRoute]
+export const router = createBrowserRouter([homeRoute])

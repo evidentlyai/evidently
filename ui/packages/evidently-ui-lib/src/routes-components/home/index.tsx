@@ -6,12 +6,18 @@ import 'dayjs/locale/en-gb'
 
 import type { loaderData } from './data'
 
-export const HomeComponentTemplate = ({ logoSrc }: { logoSrc: string }) => {
+export const HomeComponentTemplate = ({
+  logoSrc,
+  authComponent
+}: {
+  logoSrc: string
+  authComponent?: React.ReactNode
+}) => {
   const { version } = useLoaderData() as loaderData
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
-      <ServiceHeader version={version} logoSrc={logoSrc} />
+      <ServiceHeader authComponent={authComponent} version={version} logoSrc={logoSrc} />
       <NavigationProgress />
       <ScrollRestoration />
       <ServiceMainPage>

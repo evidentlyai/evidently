@@ -1,13 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Routes } from 'Routes'
+import { RouterProvider } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material'
 import { theme } from 'evidently-ui-lib/theme/v1'
-
-const router = createBrowserRouter(Routes)
+import { router } from 'Routes'
+import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
