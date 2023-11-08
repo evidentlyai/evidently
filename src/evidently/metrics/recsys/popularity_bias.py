@@ -1,3 +1,4 @@
+import logging
 from typing import List
 from typing import Optional
 
@@ -21,7 +22,6 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
-import logging
 
 
 class PopularityBiasResult(MetricResult):

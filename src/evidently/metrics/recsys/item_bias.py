@@ -4,18 +4,18 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.core import ColumnType
+from evidently.metric_results import Distribution
+from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
-from evidently.utils.visualizations import get_distribution_for_column
-from evidently.calculations.recommender_systems import get_prediciton_name
-from evidently.metric_results import Distribution
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
+from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_bias
-from evidently.metric_results import HistogramData
-from evidently.core import ColumnType
 
 
 class ItemBiasMetricResult(MetricResult):
@@ -43,7 +43,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
         reference_train_data = data.additional_datasets.get("reference_train_data")
         if current_train_data is None:
             raise ValueError(
-                """current_train_data should be presented in additional_datasets with key "current_train_data": 
+                """current_train_data should be presented in additional_datasets with key "current_train_data":
                 report.run(reference_data=reference_df, current_data=current_df, column_mapping=column_mapping,
                 additional_datasets={"current_train_data": current_train_df})"""
             )

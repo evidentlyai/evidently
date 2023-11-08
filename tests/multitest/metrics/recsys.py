@@ -26,7 +26,7 @@ def f_beta_top_k():
         "f_beta_top_k",
         FBetaTopKMetric(3),
         NoopOutcome(),
-        [DatasetTags.RECSYS],
+        include_tags=[DatasetTags.RECSYS],
     )
 
 

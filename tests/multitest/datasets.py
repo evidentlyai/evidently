@@ -64,7 +64,7 @@ def bcancer():
         "bcancer",
         bcancer_cur,
         bcancer_ref,
-        [
+        tags=[
             DatasetTags.CLASSIFICATION,
             DatasetTags.PROB_PREDICTIONS,
             DatasetTags.HAS_TARGET,
@@ -94,7 +94,7 @@ def bcancer_label():
         "bcancer_label",
         bcancer_label_cur,
         bcancer_label_ref,
-        [
+        tags=[
             DatasetTags.CLASSIFICATION,
             DatasetTags.HAS_TARGET,
             DatasetTags.BINARY_CLASSIFICATION,
@@ -113,7 +113,7 @@ def adult():
     adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
 
     adult_cur.iloc[:2000, 3:5] = np.nan
-    return TestDataset("adult", adult_cur, adult_ref, [])
+    return TestDataset("adult", adult_cur, adult_ref, tags=[])
 
 
 @dataset
@@ -130,7 +130,7 @@ def housing():
         "housing",
         housing_cur,
         housing_ref,
-        [DatasetTags.REGRESSION, DatasetTags.HAS_PREDICTION, DatasetTags.HAS_TARGET],
+        tags=[DatasetTags.REGRESSION, DatasetTags.HAS_PREDICTION, DatasetTags.HAS_TARGET],
     )
 
 
@@ -183,4 +183,4 @@ def recsys():
         }
     )
 
-    return TestDataset("recsys", df, df, [DatasetTags.RECSYS])
+    return TestDataset("recsys", df, df, tags=[DatasetTags.RECSYS])
