@@ -183,4 +183,4 @@ def recsys():
         }
     )
 
-    return TestDataset("recsys", df, df, tags=[DatasetTags.RECSYS])
+    return TestDataset("recsys", df, df, {"current_train_data": df}, tags=[DatasetTags.RECSYS])
