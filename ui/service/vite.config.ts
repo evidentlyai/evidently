@@ -20,7 +20,7 @@ export default defineConfig({
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             extType = 'img'
           }
-          return `static/${extType}/[name]-[hash][extname]`
+          return `static/${extType}/[name][extname]`
         },
         chunkFileNames: 'static/js/[name]-[hash].js',
         entryFileNames: 'static/js/[name]-[hash].js'
