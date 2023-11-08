@@ -23,6 +23,7 @@ from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
 import logging
 
+
 class PopularityBiasResult(MetricResult):
     k: int
     normalize_arp: bool
@@ -153,9 +154,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
 
             ref_gini = self.get_gini(self.k, reference_data, prediction_name, item_id)
         current_distr, reference_distr = get_distribution_for_column(
-            column_type="num",
-            current=current_distr_data,
-            reference=reference_distr_data
+            column_type="num", current=current_distr_data, reference=reference_distr_data
         )
 
         return PopularityBiasResult(

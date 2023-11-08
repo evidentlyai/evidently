@@ -89,9 +89,7 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
                 ref_interactions,
             )
         curr_distr, ref_distr = get_distribution_for_column(
-            column_type="num",
-            current=curr_distr_data,
-            reference=ref_distr_data
+            column_type="num", current=curr_distr_data, reference=ref_distr_data
         )
         return NoveltyMetricResult(
             k=self.k,

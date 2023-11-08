@@ -77,7 +77,7 @@ class TopKMetricRenderer(MetricRenderer):
             header_part = " No feedback users excluded."
 
         return [
-            header_text(label=self.header +  f' (top-{k}).' + header_part),
+            header_text(label=self.header + f" (top-{k})." + header_part),
             counter(counters=counters),
             plotly_figure(title="", figure=fig),
         ]

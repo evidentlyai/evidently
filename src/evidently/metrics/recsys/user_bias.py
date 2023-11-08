@@ -56,10 +56,8 @@ class UserBiasMetric(Metric[UserBiasMetricResult]):
         if column.column_type == ColumnType.Categorical:
             column_type = "cat"
         current_distr, current_train_distr = get_distribution_for_column(
-                column_type=column_type,
-                current=curr[column.column_name],
-                reference=curr_train[column.column_name]
-            )
+            column_type=column_type, current=curr[column.column_name], reference=curr_train[column.column_name]
+        )
         reference_train_distr: Optional[Distribution] = None
         reference_distr: Optional[Distribution] = None
         if data.reference_data is not None:
@@ -69,11 +67,9 @@ class UserBiasMetric(Metric[UserBiasMetricResult]):
                 if column.column_name not in reference_train_data.columns:
                     raise ValueError(f"{column.column_name} expected to be in reference_train_data")
                 ref_train = reference_train_data.drop_duplicates(subset=[col_user_id.column_name], keep="last")
-            
+
             reference_distr, reference_train_distr = get_distribution_for_column(
-                column_type=column_type,
-                current=ref[column.column_name],
-                reference=ref_train[column.column_name]
+                column_type=column_type, current=ref[column.column_name], reference=ref_train[column.column_name]
             )
         return UserBiasMetricResult(
             column_name=self.column_name,

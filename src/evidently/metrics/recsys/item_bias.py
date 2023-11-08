@@ -31,9 +31,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
     k: int
     column_name: str
 
-    def __init__(
-        self, k: int, column_name: str, options: AnyOptions = None
-    ) -> None:
+    def __init__(self, k: int, column_name: str, options: AnyOptions = None) -> None:
         self.k = k
         self.column_name = column_name
         super().__init__(options=options)
@@ -57,7 +55,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
         if column.column_type not in [ColumnType.Categorical, ColumnType.Numerical]:
             raise ValueError(f"{column.column_name} expected to be numerical or categorical")
 
-        curr_train = current_train_data.drop_duplicates(subset=[col_item_id.column_name], keep='last')
+        curr_train = current_train_data.drop_duplicates(subset=[col_item_id.column_name], keep="last")
         curr = data.current_data.copy()
         if recommendations_type == "score":
             curr[prediction_name] = curr.groupby(col_user_id.column_name)[prediction_name].transform(
@@ -71,9 +69,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
         if column.column_type == ColumnType.Categorical:
             column_type = "cat"
         current_distr, current_train_distr = get_distribution_for_column(
-            column_type=column_type,
-            current=curr[column.column_name],
-            reference=curr_train[column.column_name]
+            column_type=column_type, current=curr[column.column_name], reference=curr_train[column.column_name]
         )
         reference_train_distr: Optional[Distribution] = None
         reference_distr: Optional[Distribution] = None
@@ -88,11 +84,9 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
             if reference_train_data is not None:
                 if column.column_name not in reference_train_data.columns:
                     raise ValueError(f"{column.column_name} expected to be in reference_train_data")
-                ref_train = reference_train_data.drop_duplicates(subset=[col_user_id.column_name], keep='last')
+                ref_train = reference_train_data.drop_duplicates(subset=[col_user_id.column_name], keep="last")
             reference_distr, reference_train_distr = get_distribution_for_column(
-                column_type=column_type,
-                current=ref[column.column_name],
-                reference=ref_train[column.column_name]
+                column_type=column_type, current=ref[column.column_name], reference=ref_train[column.column_name]
             )
         return ItemBiasMetricResult(
             k=self.k,
@@ -113,7 +107,7 @@ class ItemBiasMetricRenderer(MetricRenderer):
             curr_train=HistogramData.from_distribution(metric_result.current_train_distr),
             ref=HistogramData.from_distribution(metric_result.reference_distr),
             ref_train=HistogramData.from_distribution(metric_result.reference_train_distr),
-            xaxis_name=metric_result.column_name
+            xaxis_name=metric_result.column_name,
         )
 
         return [

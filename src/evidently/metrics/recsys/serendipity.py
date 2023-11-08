@@ -128,9 +128,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
                 name_dict=name_dict,
             )
         curr_distr, ref_distr = get_distribution_for_column(
-            column_type="num",
-            current=curr_distr_data,
-            reference=ref_distr_data
+            column_type="num", current=curr_distr_data, reference=ref_distr_data
         )
         return SerendipityMetricResult(
             k=self.k,
