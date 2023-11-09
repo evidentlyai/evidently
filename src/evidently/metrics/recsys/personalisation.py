@@ -25,9 +25,9 @@ from evidently.renderers.html_widgets import widget_tabs
 class PersonalisationMetricResult(MetricResult):
     k: int
     current_value: float
-    current_table: Dict[Any, int]
+    current_table: Dict[str, int]
     reference_value: Optional[float] = None
-    reference_table: Optional[Dict[Any, int]] = None
+    reference_table: Optional[Dict[str, int]] = None
 
 
 class PersonalisationMetric(Metric[PersonalisationMetricResult]):
@@ -53,6 +53,7 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
         diversity_cumulative = all_user_couples_count - cooccurrences_cumulative / k
 
         diversity = diversity_cumulative / all_user_couples_count
+        recommended_counter.index = recommended_counter.index.astype(str)
         table = dict(recommended_counter[:10])
 
         return diversity, table
