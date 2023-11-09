@@ -10,7 +10,10 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
 
 
 class PairwiseDistanceResult(MetricResult):
@@ -63,3 +66,9 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
         return PairwiseDistanceResult(
             dist_matrix=pairwise_distances(all_items[self.item_features], metric="cosine"), name_dict=name_dict
         )
+
+
+@default_renderer(wrap_type=PairwiseDistance)
+class PairwiseDistanceRenderer(MetricRenderer):
+    def render_html(self, obj: PairwiseDistance) -> List[BaseWidgetInfo]:
+        return []
