@@ -231,12 +231,14 @@ class DashboardPanelPlot(DashboardPanel):
                         hovertemplate=hover,
                     )
                 else:
-                    plot = self.plot_type_cls(
+                    cls, args = self.plot_type_cls
+                    plot = cls(
                         x=[p[0] for p in pts],
                         y=[p[1] for p in pts],
                         name=val.legend,
                         legendgroup=val.legend,
                         hovertemplate=hover,
+                        **args,
                     )
                 fig.add_trace(plot)
         return plotly_figure(title=self.title, figure=fig, size=self.size)
@@ -244,11 +246,11 @@ class DashboardPanelPlot(DashboardPanel):
     @property
     def plot_type_cls(self):
         if self.plot_type == PlotType.SCATTER:
-            return go.Scatter
+            return go.Scatter, {"mode": "markers"}
         if self.plot_type == PlotType.BAR:
-            return go.Bar
+            return go.Bar, {}
         if self.plot_type == PlotType.LINE:
-            return go.Line
+            return go.Line, {}
         raise ValueError(f"Unsupported plot type {self.plot_type}")
 
 
