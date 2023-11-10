@@ -1,22 +1,7 @@
 import { RouteObject } from 'react-router-dom'
-import { injectAPI } from 'evidently-ui-lib/routes-components/snapshotId/data'
-import { api } from 'api/RemoteApi'
-
-const { loader } = injectAPI({ api })
+import SnapshotIdRoute from '../../_snapshotId'
 
 export default {
-  id: 'show-test-suite-by-id',
-  path: ':snapshotId',
-  lazy: async () => {
-    const { SnapshotTemplate, ...rest } = await import(
-      'evidently-ui-lib/routes-components/snapshotId'
-    )
-
-    const Component = () => {
-      return <SnapshotTemplate api={api} />
-    }
-
-    return { Component, ...rest }
-  },
-  loader
+  ...SnapshotIdRoute,
+  id: 'show-test-suite-by-id'
 } satisfies RouteObject
