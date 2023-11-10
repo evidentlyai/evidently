@@ -10,7 +10,9 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TextField
+  TableSortLabel,
+  TextField,
+  Typography
 } from '@mui/material'
 
 import {
@@ -23,13 +25,13 @@ import {
 } from 'react-router-dom'
 
 import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
-import { formatDate } from '~/utils'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
 import { crumbFunction } from '~/components/BreadCrumbs'
 import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import { loaderData } from './data'
+import dayjs from 'dayjs'
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (_, { pathname }) => ({
@@ -45,6 +47,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
 
   const [searchParams] = useSearchParams()
   const [selectedTags, setTags] = useState(() => searchParams.get('tags')?.split(',') || [])
+  const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
 
@@ -66,6 +69,23 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
 
     return selectedTags.every((candidate) => tags.includes(candidate))
   })
+
+  const sortedByTimestamp =
+    sortByTimestamp === undefined || showSnapshotByIdMatch
+      ? filteredSnapshots
+      : filteredSnapshots.sort((a, b) => {
+          const [first, second] = [Date.parse(a.timestamp), Date.parse(b.timestamp)]
+          const diff = first - second
+          if (sortByTimestamp === 'desc') {
+            return -diff
+          }
+
+          if (sortByTimestamp === 'asc') {
+            return diff
+          }
+
+          return 0
+        })
 
   if (showSnapshotByIdMatch) {
     return (
@@ -95,7 +115,6 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
           </Grid>
         </Grid>
       </Box>
-
       <Table>
         <TableHead>
           <TableRow>
@@ -107,13 +126,33 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                 : 'indefined'}
             </TableCell>
             <TableCell>Tags</TableCell>
-            <TableCell>Timestamp</TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={Boolean(sortByTimestamp)}
+                direction={sortByTimestamp}
+                onClick={() => {
+                  setSortByTimestamp((prev) => {
+                    if (prev === undefined) {
+                      return 'desc'
+                    }
+                    if (prev === 'desc') {
+                      return 'asc'
+                    }
+                    if (prev === 'asc') {
+                      return undefined
+                    }
+                  })
+                }}
+              >
+                Timestamp
+              </TableSortLabel>
+            </TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
           <TableRow></TableRow>
         </TableHead>
         <TableBody>
-          {filteredSnapshots.map((snapshot) => (
+          {sortedByTimestamp.map((snapshot) => (
             <TableRow key={`r-${snapshot.id}`}>
               <TableCell>
                 <TextWithCopyIcon showText={snapshot.id} copyText={snapshot.id} />
@@ -132,7 +171,11 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                   />
                 </Box>
               </TableCell>
-              <TableCell>{formatDate(new Date(Date.parse(snapshot.timestamp)))}</TableCell>
+              <TableCell>
+                <Typography variant="body2">
+                  {dayjs(snapshot.timestamp).locale('en-gb').format('llll')}
+                </Typography>
+              </TableCell>
               <TableCell>
                 <Link component={RouterLink} to={`${snapshot.id}`}>
                   <Button>View</Button>
