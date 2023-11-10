@@ -243,14 +243,7 @@ export interface ProjectDetails extends ProjectInfo {}
 
 type MetadataValueType = Record<string, string | string[] | Record<string, string>>
 
-export interface ReportInfo {
-  id: string
-  timestamp: string
-  tags: string[]
-  metadata: MetadataValueType
-}
-
-export interface TestSuiteInfo {
+export interface SnapshotInfo {
   id: string
   timestamp: string
   tags: string[]
@@ -282,9 +275,9 @@ export interface Api {
     to?: string | null
   ): Promise<DashboardInfo>
 
-  getReports(projectId: string): Promise<ReportInfo[]>
+  getReports(projectId: string): Promise<SnapshotInfo[]>
 
-  getTestSuites(projectId: string): Promise<TestSuiteInfo[]>
+  getTestSuites(projectId: string): Promise<SnapshotInfo[]>
 
   getProjects(): Promise<ProjectInfo[]>
 

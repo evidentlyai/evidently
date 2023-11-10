@@ -4,8 +4,7 @@ import {
   DashboardInfo,
   ProjectDetails,
   ProjectInfo,
-  ReportInfo,
-  TestSuiteInfo,
+  SnapshotInfo,
   VersionInfo,
   WidgetInfo
 } from './index'
@@ -37,7 +36,7 @@ export default class LocalApi implements Api {
       max_timestamp: new Date(Date.now()).toString()
     }
   }
-  async getReports(_projectId: string): Promise<ReportInfo[]> {
+  async getReports(_projectId: string): Promise<SnapshotInfo[]> {
     return [{ id: 'report_1', timestamp: new Date(Date.now()).toString(), tags: [], metadata: {} }]
   }
 
@@ -75,7 +74,7 @@ export default class LocalApi implements Api {
     return Promise.resolve(this.dashboard)
   }
 
-  getTestSuites(_projectId: string): Promise<TestSuiteInfo[]> {
+  getTestSuites(_projectId: string): Promise<SnapshotInfo[]> {
     return Promise.resolve([
       { id: 'test_suite1', timestamp: new Date(Date.now()).toString(), tags: [], metadata: {} }
     ])

@@ -6,8 +6,7 @@ import {
   DashboardInfo,
   ProjectDetails,
   ProjectInfo,
-  ReportInfo,
-  TestSuiteInfo,
+  SnapshotInfo,
   WidgetInfo,
   VersionInfo
 } from '~/api'
@@ -37,7 +36,7 @@ class NotImplementedApi implements Api {
     return Promise.reject('not implemented')
   }
 
-  getReports(): Promise<ReportInfo[]> {
+  getReports(): Promise<SnapshotInfo[]> {
     return Promise.reject('not implemented')
   }
 
@@ -45,7 +44,7 @@ class NotImplementedApi implements Api {
     return Promise.reject('not implemented')
   }
 
-  getTestSuites(): Promise<TestSuiteInfo[]> {
+  getTestSuites(): Promise<SnapshotInfo[]> {
     return Promise.resolve([])
   }
 

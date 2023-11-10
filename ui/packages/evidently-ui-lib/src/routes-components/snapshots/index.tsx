@@ -35,9 +35,9 @@ export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (_, { pathname }) => ({ to: pathname, linkText: 'Reports' })
 }
 
-export const Component = () => {
+export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) => {
   const { projectId } = useParams()
-  const reports = useLoaderData() as loaderData
+  const snapshots = useLoaderData() as loaderData
   const matches = useMatches()
 
   const [searchParams] = useSearchParams()
@@ -45,15 +45,15 @@ export const Component = () => {
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
 
-  const showReportByIdMatch = matches.find(({ id }) => id === 'show-report-by-id')
+  const showSnapshotByIdMatch = matches.find(({ id }) => id === `show-${type}-by-id`)
 
-  const ALL_TAGS = showReportByIdMatch
+  const ALL_TAGS = showSnapshotByIdMatch
     ? [] // skip calculation in this case
     : // calculate unique tags
-      Array.from(new Set(reports.flatMap(({ tags }) => tags)))
+      Array.from(new Set(snapshots.flatMap(({ tags }) => tags)))
 
-  const filteredReports = reports.filter(({ tags }) => {
-    if (showReportByIdMatch) {
+  const filteredSnapshots = snapshots.filter(({ tags }) => {
+    if (showSnapshotByIdMatch) {
       return false
     }
 
@@ -64,7 +64,7 @@ export const Component = () => {
     return selectedTags.every((candidate) => tags.includes(candidate))
   })
 
-  if (showReportByIdMatch) {
+  if (showSnapshotByIdMatch) {
     return (
       <Grid container>
         <Grid item xs={12}>
@@ -96,7 +96,13 @@ export const Component = () => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Report ID</TableCell>
+            <TableCell>
+              {type === 'report'
+                ? 'Report ID'
+                : type === 'test-suite'
+                ? 'Test Suite ID'
+                : 'indefined'}
+            </TableCell>
             <TableCell>Tags</TableCell>
             <TableCell>Timestamp</TableCell>
             <TableCell>Actions</TableCell>
@@ -104,10 +110,10 @@ export const Component = () => {
           <TableRow></TableRow>
         </TableHead>
         <TableBody>
-          {filteredReports.map((report) => (
-            <TableRow key={`r-${report.id}`}>
+          {filteredSnapshots.map((snapshot) => (
+            <TableRow key={`r-${snapshot.id}`}>
               <TableCell>
-                <TextWithCopyIcon showText={report.id} copyText={report.id} />
+                <TextWithCopyIcon showText={snapshot.id} copyText={snapshot.id} />
               </TableCell>
               <TableCell>
                 <Box maxWidth={250}>
@@ -119,16 +125,18 @@ export const Component = () => {
 
                       setTags([...selectedTags, clickedTag])
                     }}
-                    tags={report.tags}
+                    tags={snapshot.tags}
                   />
                 </Box>
               </TableCell>
-              <TableCell>{formatDate(new Date(Date.parse(report.timestamp)))}</TableCell>
+              <TableCell>{formatDate(new Date(Date.parse(snapshot.timestamp)))}</TableCell>
               <TableCell>
-                <Link component={RouterLink} to={`${report.id}`}>
+                <Link component={RouterLink} to={`${snapshot.id}`}>
                   <Button>View</Button>
                 </Link>
-                <DownloadButton downloadLink={`/api/projects/${projectId}/${report.id}/download`} />
+                <DownloadButton
+                  downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
+                />
               </TableCell>
             </TableRow>
           ))}

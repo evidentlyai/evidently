@@ -2,29 +2,28 @@ import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { DashboardContent } from '~/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
-import type { crumbFunction } from '~/components/BreadCrumbs'
+import { crumbFunction } from '~/components/BreadCrumbs'
 import { loaderData } from './data'
-import type { Api } from '~/api'
+import { Api } from '~/api'
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
-  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.reportId) })
+  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) })
 }
 
-export const ReportTemplate = ({ api }: { api: Api }) => {
-  const { projectId, reportId } = useParams()
+export const SnapshotTemplate = ({ api }: { api: Api }) => {
+  const { projectId, snapshotId } = useParams()
   invariant(projectId, 'missing projectId')
-  invariant(reportId, 'missing reportId')
+  invariant(snapshotId, 'missing snapshotId')
 
   const data = useLoaderData() as loaderData
-
   return (
     <>
       <DashboardContext.Provider
         value={CreateDashboardContextState({
           getAdditionGraphData: (graphId) =>
-            api.getAdditionalGraphData(projectId, reportId, graphId),
+            api.getAdditionalGraphData(projectId, snapshotId, graphId),
           getAdditionWidgetData: (widgetId) =>
-            api.getAdditionalWidgetData(projectId, reportId, widgetId)
+            api.getAdditionalWidgetData(projectId, snapshotId, widgetId)
         })}
       >
         <DashboardContent info={data} />

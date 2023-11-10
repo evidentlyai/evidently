@@ -6,11 +6,11 @@ export type loaderData = DashboardInfo
 
 export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
   loader: ({ params }) => {
-    const { projectId, reportId } = params
+    const { projectId, snapshotId } = params
 
     invariant(projectId, 'missing projectId')
-    invariant(reportId, 'missing reportId')
+    invariant(snapshotId, 'missing testSuiteId')
 
-    return api.getDashboard(projectId, reportId)
+    return api.getDashboard(projectId, snapshotId)
   }
 })

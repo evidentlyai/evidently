@@ -4,8 +4,7 @@ import {
   DashboardInfo,
   ProjectDetails,
   ProjectInfo,
-  ReportInfo,
-  TestSuiteInfo,
+  SnapshotInfo,
   VersionInfo,
   WidgetInfo
 } from './index'
@@ -95,7 +94,7 @@ export class RemoteApi implements Api {
   async getReports(projectId: string) {
     const resp = await fetch(`${this.endpoint}/projects/${projectId}/reports`)
     if (resp.ok) {
-      return new JsonParser().parse(await resp.text()) as ReportInfo[]
+      return new JsonParser().parse(await resp.text()) as SnapshotInfo[]
     }
 
     throw Error(`${resp.status}, ${resp.statusText}`)
@@ -104,7 +103,7 @@ export class RemoteApi implements Api {
   async getTestSuites(projectId: string) {
     const resp = await fetch(`${this.endpoint}/projects/${projectId}/test_suites`)
     if (resp.ok) {
-      return new JsonParser().parse(await resp.text()) as TestSuiteInfo[]
+      return new JsonParser().parse(await resp.text()) as SnapshotInfo[]
     }
 
     throw Error(`${resp.status}, ${resp.statusText}`)
