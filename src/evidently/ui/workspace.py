@@ -32,7 +32,7 @@ SNAPSHOTS = "snapshots"
 
 
 class ProjectSnapshot:
-    project: "Project"
+    project: "ProjectBase"
     id: uuid.UUID
     # todo: metadata
 
@@ -42,7 +42,7 @@ class ProjectSnapshot:
     _dashboard_info: Optional[DashboardInfo] = None
     _additional_graphs: Optional[Dict[str, DetailsInfo]] = None
 
-    def __init__(self, id: uuid.UUID, project: "Project", value: Optional[Snapshot] = None):
+    def __init__(self, id: uuid.UUID, project: "ProjectBase", value: Optional[Snapshot] = None):
         self.id = id
         self.project = project
         self.last_modified_data = None
@@ -78,7 +78,7 @@ class ProjectSnapshot:
         return os.path.join(self.project.path, SNAPSHOTS, str(self.id) + ".json")
 
     def load(self):
-        self._value = Snapshot.load(self.path)
+        self._value = self.project.load_snapshot(self.id)
         _, self._dashboard_info, self._additional_graphs = self.report._build_dashboard_info()
 
 
@@ -109,6 +109,9 @@ class ProjectBase(BaseModel, Generic[WST]):
         return self
 
     def save(self):
+        raise NotImplementedError
+
+    def load_snapshot(self, snapshot_id: uuid.UUID) -> Snapshot:
         raise NotImplementedError
 
 
@@ -146,24 +149,32 @@ class Project(ProjectBase["Workspace"]):
         with open(os.path.join(self.path, METADATA_PATH), "w") as f:
             return json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
-    def reload(self):
+    def load_snapshot(self, snapshot_id: uuid.UUID) -> Snapshot:
+        path = os.path.join(self.path, SNAPSHOTS, str(snapshot_id) + ".json")
+        return Snapshot.load(path)
+
+    def reload(self, reload_snapshots: bool = False):
         project = self.load(self.path).bind(self.workspace)
         self.__dict__.update(project.__dict__)
 
-    def _reload_snapshots(self, skip_errors=True):
+        if reload_snapshots:
+            self._reload_snapshots(force=True)
+
+    def _reload_snapshots(self, skip_errors: bool = True, force: bool = False):
         path = os.path.join(self.path, SNAPSHOTS)
+        if force:
+            self._snapshots = {}
         for file in os.listdir(path):
             snapshot_id = uuid.UUID(file[: -len(".json")])
             if snapshot_id in self._snapshots:
                 continue
             self.reload_snapshot(snapshot_id, skip_errors)
 
-    def reload_snapshot(self, snapshot_id: Union[str, uuid.UUID], skip_errors=True):
+    def reload_snapshot(self, snapshot_id: Union[str, uuid.UUID], skip_errors: bool = True):
         if isinstance(snapshot_id, str):
             snapshot_id = uuid.UUID(snapshot_id)
-        path = os.path.join(self.path, SNAPSHOTS, str(snapshot_id) + ".json")
         try:
-            suite = Snapshot.load(path)
+            suite = self.load_snapshot(snapshot_id)
             self._snapshots[snapshot_id] = ProjectSnapshot(snapshot_id, self, suite)
         except ValidationError:
             if not skip_errors:

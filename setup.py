@@ -87,6 +87,9 @@ setup_args = dict(
         ],
         "spark": [
             "pyspark"
+        ],
+        "fsspec": [
+            "fsspec[full]"
         ]
     },
     entry_points={
