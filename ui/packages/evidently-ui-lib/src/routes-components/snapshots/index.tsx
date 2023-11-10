@@ -32,7 +32,10 @@ import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQue
 import { loaderData } from './data'
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
-  crumb: (_, { pathname }) => ({ to: pathname, linkText: 'Reports' })
+  crumb: (_, { pathname }) => ({
+    to: pathname,
+    linkText: pathname.split('/').reverse()[0] === 'reports' ? 'Reports' : 'Test Suites'
+  })
 }
 
 export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) => {
