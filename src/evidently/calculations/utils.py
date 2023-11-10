@@ -56,7 +56,7 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
 
 def get_count_values(col1: pd.Series, col2: pd.Series, col1_name: str, col2_name: str):
     df = pd.DataFrame({col2_name: col2, col1_name: col1})
-    df = df.groupby([col2_name, col1_name]).size()
+    df = df.groupby([col2_name, col1_name], observed=False).size()
     df.name = "count_objects"
     df = df.reset_index()
     return df[df["count_objects"] > 0]
@@ -123,7 +123,8 @@ def prepare_box_data(
         names.append("reference")
     res = {}
     for df, name in zip(dfs, names):
-        df_for_plot = df.groupby(cat_feature_name)[num_feature_name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
+        data = df.groupby(cat_feature_name, observed=False)[num_feature_name]
+        df_for_plot = data.quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
         df_for_plot.columns = [cat_feature_name, "q", num_feature_name]
         res_df = {}
         values = df_for_plot[cat_feature_name].unique()

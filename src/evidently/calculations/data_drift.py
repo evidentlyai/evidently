@@ -239,9 +239,9 @@ def get_one_column_drift(
 
         for key in keys:
             if key not in reference_counts:
-                reference_counts.loc[key] = 0
+                reference_counts = pd.concat([reference_counts, pd.Series([0], index=[key])])
             if key not in current_counts:
-                current_counts.loc[key] = 0
+                current_counts = pd.concat([current_counts, pd.Series([0], index=[key])])
 
         reference_small_distribution = list(
             reversed(
