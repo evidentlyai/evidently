@@ -27,7 +27,7 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
-    content = requests.get("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip").content
+    content = requests.get("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip", verify=False).content
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         raw_data = pd.read_csv(
             arc.open("hour.csv"),
