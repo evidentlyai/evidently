@@ -28,6 +28,7 @@ class TestDataset:
     name: str = ""
     current: Any = None
     reference: Any = None
+    additional_datasets: Any = None
 
     tags: List[DatasetTags] = dataclasses.field(default_factory=list)
     column_mapping: Optional[ColumnMapping] = None
@@ -63,7 +64,7 @@ def bcancer():
         "bcancer",
         bcancer_cur,
         bcancer_ref,
-        [
+        tags=[
             DatasetTags.CLASSIFICATION,
             DatasetTags.PROB_PREDICTIONS,
             DatasetTags.HAS_TARGET,
@@ -93,7 +94,7 @@ def bcancer_label():
         "bcancer_label",
         bcancer_label_cur,
         bcancer_label_ref,
-        [
+        tags=[
             DatasetTags.CLASSIFICATION,
             DatasetTags.HAS_TARGET,
             DatasetTags.BINARY_CLASSIFICATION,
@@ -112,7 +113,7 @@ def adult():
     adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
 
     adult_cur.iloc[:2000, 3:5] = np.nan
-    return TestDataset("adult", adult_cur, adult_ref, [])
+    return TestDataset("adult", adult_cur, adult_ref, tags=[])
 
 
 @dataset
@@ -129,7 +130,7 @@ def housing():
         "housing",
         housing_cur,
         housing_ref,
-        [DatasetTags.REGRESSION, DatasetTags.HAS_PREDICTION, DatasetTags.HAS_TARGET],
+        tags=[DatasetTags.REGRESSION, DatasetTags.HAS_PREDICTION, DatasetTags.HAS_TARGET],
     )
 
 
@@ -166,6 +167,20 @@ def recsys():
     rank = [x + 1 for x in range(10)] * 10
     np.random.seed(0)
     true = np.random.choice([1, 0], 100, p=[0.1, 0.9])
-    df = pd.DataFrame({"user_id": users, "item_id": items, "prediction": rank, "target": true})
+    np.random.seed(1)
+    feature_1 = np.random.choice([1, 0], 100)
+    np.random.seed(2)
+    feature_2 = np.random.choice([1, 0], 100)
 
-    return TestDataset("recsys", df, df, [DatasetTags.RECSYS])
+    df = pd.DataFrame(
+        {
+            "user_id": users,
+            "item_id": items,
+            "prediction": rank,
+            "target": true,
+            "feature_1": feature_1,
+            "feature_2": feature_2,
+        }
+    )
+
+    return TestDataset("recsys", df, df, {"current_train_data": df}, tags=[DatasetTags.RECSYS])

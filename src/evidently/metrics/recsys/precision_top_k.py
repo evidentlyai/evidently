@@ -11,4 +11,4 @@ class PrecisionTopKMetric(TopKMetric):
 @default_renderer(wrap_type=PrecisionTopKMetric)
 class PrecisionTopKMetricRenderer(TopKMetricRenderer):
     yaxis_name = "precision@k"
-    header = "Precision@"
+    header = "Precision"

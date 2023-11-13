@@ -43,12 +43,19 @@ from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality.stability_metric import DataQualityStabilityMetric
 from .data_quality.text_descriptors_correlation_metric import TextDescriptorsCorrelationMetric
 from .data_quality.text_descriptors_distribution import TextDescriptorsDistribution
+from .recsys.diversity import DiversityMetric
 from .recsys.f_beta_top_k import FBetaTopKMetric
+from .recsys.item_bias import ItemBiasMetric
 from .recsys.map_k import MAPKMetric
 from .recsys.mar_k import MARKMetric
 from .recsys.ndcg_k import NDCGKMetric
+from .recsys.novelty import NoveltyMetric
+from .recsys.personalisation import PersonalisationMetric
+from .recsys.popularity_bias import PopularityBias
 from .recsys.precision_top_k import PrecisionTopKMetric
 from .recsys.recall_top_k import RecallTopKMetric
+from .recsys.serendipity import SerendipityMetric
+from .recsys.user_bias import UserBiasMetric
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
 from .regression_performance.error_bias_table import RegressionErrorBiasTable
 from .regression_performance.error_distribution import RegressionErrorDistribution
@@ -118,4 +125,11 @@ __all__ = [
     "MAPKMetric",
     "MARKMetric",
     "NDCGKMetric",
+    "DiversityMetric",
+    "PersonalisationMetric",
+    "NoveltyMetric",
+    "PopularityBias",
+    "UserBiasMetric",
+    "ItemBiasMetric",
+    "SerendipityMetric",
 ]
