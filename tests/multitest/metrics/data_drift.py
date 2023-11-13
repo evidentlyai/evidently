@@ -13,6 +13,7 @@ from evidently.metrics.data_drift.target_by_features_table import TargetByFeatur
 from evidently.metrics.data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
 from evidently.metrics.data_drift.text_domain_classifier_drift_metric import TextDomainClassifierDriftMetric
 from evidently.metrics.data_drift.text_metric import Comment
+from evidently.metrics.data_drift.feature_importance import FeatureImportanceMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from tests.multitest.conftest import AssertResultFields
 from tests.multitest.conftest import NoopOutcome
@@ -32,8 +33,18 @@ def comment():
 
 
 @metric
+def feature_importance():
+    return TestMetric(
+        "feature_importance",
+        FeatureImportanceMetric(),
+        NoopOutcome(),
+        dataset_names=["bcancer"]
+    )
+
+
+@metric
 def data_drift_table():
-    return TestMetric("data_drift_table", DataDriftTable(), NoopOutcome())
+    return TestMetric("data_drift_table", DataDriftTable(), NoopOutcome(), dataset_names=["adult"])
 
 
 @metric

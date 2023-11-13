@@ -27,6 +27,7 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_scatter_for_data_drift
+from evidently.metrics.data_drift.feature_importance import FeatureImportanceMetric
 
 
 class DataDriftTableResults(MetricResult):
@@ -39,10 +40,14 @@ class DataDriftTableResults(MetricResult):
     dataset_drift: bool
     drift_by_columns: Dict[str, ColumnDataDriftMetrics]
     dataset_columns: DatasetColumns
+    current_fi: Optional[Dict[str, float]] = None
+    reference_fi: Optional[Dict[str, float]] = None
 
 
 class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
     columns: Optional[List[str]]
+    feature_importance: Optional[bool]
+    _feature_importance_metric: Optional[FeatureImportanceMetric]
 
     def __init__(
         self,
@@ -58,6 +63,7 @@ class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
         options: AnyOptions = None,
+        feature_importance: Optional[bool] = False,
     ):
         self.columns = columns
         super().__init__(
@@ -72,6 +78,7 @@ class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
             text_stattest_threshold=text_stattest_threshold,
             per_column_stattest_threshold=per_column_stattest_threshold,
             options=options,
+            feature_importance=feature_importance,
         )
         self._drift_options = DataDriftOptions(
             all_features_stattest=stattest,
@@ -85,6 +92,10 @@ class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
             text_features_threshold=text_stattest_threshold,
             per_feature_threshold=per_column_stattest_threshold,
         )
+        if feature_importance:
+            self._feature_importance_metric = FeatureImportanceMetric()
+        else:
+            self._feature_importance_metric = None
 
     def get_parameters(self) -> tuple:
         return None if self.columns is None else tuple(self.columns), self.drift_options
@@ -107,6 +118,14 @@ class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
             columns=self.columns,
             agg_data=agg_data,
         )
+        current_fi: Optional[Dict[str, float]] = None
+        reference_fi: Optional[Dict[str, float]] = None
+
+        if self._feature_importance_metric is not None:
+            res = self._feature_importance_metric.get_result()
+            current_fi = res.current
+            reference_fi = res.reference
+
         return DataDriftTableResults(
             number_of_columns=result.number_of_columns,
             number_of_drifted_columns=result.number_of_drifted_columns,
@@ -114,13 +133,20 @@ class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
             dataset_drift=result.dataset_drift,
             drift_by_columns=result.drift_by_columns,
             dataset_columns=result.dataset_columns,
+            current_fi=current_fi,
+            reference_fi=reference_fi,
         )
 
 
 @default_renderer(wrap_type=DataDriftTable)
 class DataDriftTableRenderer(MetricRenderer):
     def _generate_column_params(
-        self, column_name: str, data: ColumnDataDriftMetrics, agg_data: bool
+        self,
+        column_name: str,
+        data: ColumnDataDriftMetrics,
+        agg_data: bool,
+        current_fi: Optional[Dict[str, float]] = None,
+        reference_fi: Optional[Dict[str, float]] = None,
     ) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if data.column_type == "text":
@@ -157,18 +183,13 @@ class DataDriftTableRenderer(MetricRenderer):
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
 
-            return RichTableDataRow(
-                details=details,
-                fields={
-                    "column_name": column_name,
-                    "column_type": data.column_type,
-                    "stattest_name": data.stattest_name,
-                    # "reference_distribution": {},
-                    # "current_distribution": {},
-                    "data_drift": data_drift,
-                    "drift_score": round(data.drift_score, 6),
-                },
-            )
+            fields = {
+                "column_name": column_name,
+                "column_type": data.column_type,
+                "stattest_name": data.stattest_name,
+                "data_drift": data_drift,
+                "drift_score": round(data.drift_score, 6),
+            }
 
         else:
             if (
@@ -221,24 +242,29 @@ class DataDriftTableRenderer(MetricRenderer):
             )
             distribution = plotly_figure(title="", figure=fig)
             details.with_part("DATA DISTRIBUTION", info=distribution)
-            return RichTableDataRow(
-                details=details,
-                fields={
-                    "column_name": column_name,
-                    "column_type": data.column_type,
-                    "stattest_name": data.stattest_name,
-                    "reference_distribution": {
-                        "x": list(ref_small_hist.x),
-                        "y": list(ref_small_hist.y),
-                    },
-                    "current_distribution": {
-                        "x": list(current_small_hist.x),
-                        "y": list(current_small_hist.y),
-                    },
-                    "data_drift": data_drift,
-                    "drift_score": round(data.drift_score, 6),
+            fields = {
+                "column_name": column_name,
+                "column_type": data.column_type,
+                "stattest_name": data.stattest_name,
+                "reference_distribution": {
+                    "x": list(ref_small_hist.x),
+                    "y": list(ref_small_hist.y),
                 },
-            )
+                "current_distribution": {
+                    "x": list(current_small_hist.x),
+                    "y": list(current_small_hist.y),
+                },
+                "data_drift": data_drift,
+                "drift_score": round(data.drift_score, 6),
+            }
+        if current_fi is not None:
+            fields["current_feature_importance"] = current_fi.get(column_name, "")
+        if reference_fi is not None:
+            fields["reference_feature_importance"] = reference_fi.get(column_name, "")
+        return RichTableDataRow(
+            details=details,
+            fields=fields
+        )
 
     def render_html(self, obj: DataDriftTable) -> List[BaseWidgetInfo]:
         results = obj.get_result()
@@ -268,45 +294,58 @@ class DataDriftTableRenderer(MetricRenderer):
         columns = columns + all_columns
 
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name], agg_data)
+            column_params = self._generate_column_params(
+                column_name,
+                results.drift_by_columns[column_name],
+                agg_data,
+                results.current_fi,
+                results.reference_fi,
+            )
 
             if column_params is not None:
                 params_data.append(column_params)
 
         drift_percents = round(results.share_of_drifted_columns * 100, 3)
+        table_columns = [
+            ColumnDefinition("Column", "column_name"),
+            ColumnDefinition("Type", "column_type"),
+        ]
+        if results.current_fi is not None:
+            table_columns.append(ColumnDefinition("Current feature importance", "current_feature_importance"))
+        if results.reference_fi is not None:
+            table_columns.append(ColumnDefinition("Reference feature importance", "reference_feature_importance"))
+        table_columns = table_columns + [
+            ColumnDefinition(
+                "Reference Distribution",
+                "reference_distribution",
+                ColumnType.HISTOGRAM,
+                options={
+                    "xField": "x",
+                    "yField": "y",
+                    "color": color_options.primary_color,
+                },
+            ),
+            ColumnDefinition(
+                "Current Distribution",
+                "current_distribution",
+                ColumnType.HISTOGRAM,
+                options={
+                    "xField": "x",
+                    "yField": "y",
+                    "color": color_options.primary_color,
+                },
+            ),
+            ColumnDefinition("Data Drift", "data_drift"),
+            ColumnDefinition("Stat Test", "stattest_name"),
+            ColumnDefinition("Drift Score", "drift_score"),
+        ]
 
         return [
             header_text(label="Data Drift Summary"),
             rich_table_data(
                 title=f"Drift is detected for {drift_percents}% of columns "
                 f"({results.number_of_drifted_columns} out of {results.number_of_columns}).",
-                columns=[
-                    ColumnDefinition("Column", "column_name"),
-                    ColumnDefinition("Type", "column_type"),
-                    ColumnDefinition(
-                        "Reference Distribution",
-                        "reference_distribution",
-                        ColumnType.HISTOGRAM,
-                        options={
-                            "xField": "x",
-                            "yField": "y",
-                            "color": color_options.primary_color,
-                        },
-                    ),
-                    ColumnDefinition(
-                        "Current Distribution",
-                        "current_distribution",
-                        ColumnType.HISTOGRAM,
-                        options={
-                            "xField": "x",
-                            "yField": "y",
-                            "color": color_options.primary_color,
-                        },
-                    ),
-                    ColumnDefinition("Data Drift", "data_drift"),
-                    ColumnDefinition("Stat Test", "stattest_name"),
-                    ColumnDefinition("Drift Score", "drift_score"),
-                ],
+                columns=table_columns,
                 data=params_data,
             ),
         ]
