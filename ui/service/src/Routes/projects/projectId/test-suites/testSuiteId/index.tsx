@@ -1,10 +1,7 @@
-import { RouteObject } from 'react-router'
-import { Component, handle, loader } from './Component'
+import { RouteObject } from 'react-router-dom'
+import SnapshotIdRoute from '../../_snapshotId'
 
 export default {
-  id: 'show-test-suite-by-id',
-  path: ':testSuiteId',
-  loader,
-  Component,
-  handle
+  ...SnapshotIdRoute,
+  id: 'show-test-suite-by-id'
 } satisfies RouteObject

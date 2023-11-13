@@ -3,9 +3,9 @@ name: UI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,28 +23,28 @@ jobs:
         node-version: [16, 18]
 
     steps:
-    - name: ⬇️ Checkout repo
-      uses: actions/checkout@v4
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
 
-    - uses: pnpm/action-setup@v2
-      with:
-        version: 8
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-        cache-dependency-path: ui/v2/pnpm-lock.yaml
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+          cache-dependency-path: ui/pnpm-lock.yaml
 
-    - name: 📥 Install dependencies
-      working-directory: ui/v2
-      run: pnpm i
+      - name: 📥 Install dependencies
+        working-directory: ui
+        run: pnpm i
 
-    - name: 🔬 Type check
-      working-directory: ui/v2
-      run: pnpm type-check
+      - name: 🔬 Type check
+        working-directory: ui
+        run: pnpm type-check
 
-    - name: 🔧 Build
-      working-directory: ui/v2
-      run: pnpm build
+      - name: 🔧 Build
+        working-directory: ui
+        run: pnpm build

@@ -1,10 +1,12 @@
 import { RouteObject } from 'react-router-dom'
-import { Component, errorElement, action, loader } from './Component'
+import { injectAPI } from 'evidently-ui-lib/routes-components/projectsList/data'
+import { api } from 'api/RemoteApi'
+
+const { loader, action } = injectAPI({ api })
 
 export default {
   index: true,
+  lazy: () => import('evidently-ui-lib/routes-components/projectsList'),
   loader,
-  action,
-  Component,
-  errorElement
+  action
 } satisfies RouteObject
