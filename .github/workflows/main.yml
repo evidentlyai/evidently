@@ -127,7 +127,7 @@ jobs:
       - name: Export examples
         run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
       - name: Download test data
-        run: curl https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
+        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
           unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
       - name: Run examples
         run: python example_test.py
