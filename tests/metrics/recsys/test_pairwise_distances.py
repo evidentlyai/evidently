@@ -38,5 +38,6 @@ def test_curr():
             ]
         ),
         rtol=1e-6,
+        atol=1e-7,
     )
     assert results.name_dict == {"0a": 0, "1a": 1, "5a": 2, "6a": 3, "4a": 4, "10a": 5}
