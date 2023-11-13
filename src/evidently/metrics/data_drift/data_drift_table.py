@@ -10,6 +10,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
 from evidently.metrics.data_drift.base import WithDriftOptions
+from evidently.metrics.data_drift.feature_importance import FeatureImportanceMetric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.options.data_drift import DataDriftOptions
@@ -27,7 +28,6 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.metrics.data_drift.feature_importance import FeatureImportanceMetric
 
 
 class DataDriftTableResults(MetricResult):
@@ -261,10 +261,7 @@ class DataDriftTableRenderer(MetricRenderer):
             fields["current_feature_importance"] = current_fi.get(column_name, "")
         if reference_fi is not None:
             fields["reference_feature_importance"] = reference_fi.get(column_name, "")
-        return RichTableDataRow(
-            details=details,
-            fields=fields
-        )
+        return RichTableDataRow(details=details, fields=fields)
 
     def render_html(self, obj: DataDriftTable) -> List[BaseWidgetInfo]:
         results = obj.get_result()

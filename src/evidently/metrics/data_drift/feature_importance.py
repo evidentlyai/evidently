@@ -2,19 +2,19 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import OrdinalEncoder
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import ColumnType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.core import ColumnType
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import OrdinalEncoder
 
 
 class FeatureImportanceMetricResult(MetricResult):
@@ -23,12 +23,11 @@ class FeatureImportanceMetricResult(MetricResult):
 
 
 class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
-
     def calculate(self, data: InputData) -> FeatureImportanceMetricResult:
         if data.additional_datasets.get("current_feature_importance") is not None:
             return FeatureImportanceMetricResult(
                 current=data.additional_datasets.get("current_feature_importance"),
-                reference=data.additional_datasets.get("reference_feature_importance")
+                reference=data.additional_datasets.get("reference_feature_importance"),
             )
         num_cols = data.data_definition.get_columns(filter_def=ColumnType.Numerical, features_only=True)
         cat_cols = data.data_definition.get_columns(filter_def=ColumnType.Categorical, features_only=True)
@@ -39,7 +38,7 @@ class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
             ref_sampled_data = data.reference_data.sample(min(5000, data.reference_data.shape[0]), random_state=0)
 
         for col in [x.column_name for x in cat_cols]:
-            enc = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=np.nan)
+            enc = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
             curr_sampled_data[col] = enc.fit_transform(curr_sampled_data[col].values.reshape(-1, 1))
             if ref_sampled_data is not None:
                 ref_sampled_data[col] = enc.fit_transform(ref_sampled_data[col].values.reshape(-1, 1))
@@ -47,33 +46,21 @@ class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
         task = data.data_definition.task
         target_column = data.data_definition.get_target_column()
         if target_column is None:
-            return FeatureImportanceMetricResult(
-                current=None,
-                reference=None
-            )
+            return FeatureImportanceMetricResult(current=None, reference=None)
         target_name = target_column.column_name
         if task == "regression":
             model = RandomForestRegressor(min_samples_leaf=10)
         else:
             model = RandomForestClassifier(min_samples_leaf=10)
 
-        model.fit(
-            curr_sampled_data[columns],
-            curr_sampled_data[target_name]
-        )
+        model.fit(curr_sampled_data[columns], curr_sampled_data[target_name])
         current_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
 
         reference_fi: Optional[Dict[str, float]] = None
         if ref_sampled_data is not None:
-            model.fit(
-                ref_sampled_data[columns],
-                ref_sampled_data[target_name]
-            )
+            model.fit(ref_sampled_data[columns], ref_sampled_data[target_name])
             reference_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
-        return FeatureImportanceMetricResult(
-            current=current_fi,
-            reference=reference_fi
-        )
+        return FeatureImportanceMetricResult(current=current_fi, reference=reference_fi)
 
 
 @default_renderer(wrap_type=FeatureImportanceMetric)
