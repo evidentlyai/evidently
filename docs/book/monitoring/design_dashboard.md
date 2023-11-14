@@ -277,6 +277,14 @@ project.dashboard.add_panel(
 )
 ```
 
+| Parameter | Description |
+|---|---|
+| `test_filters: List[TestFilter] = []`<br>`test_id: test_id`<br>`test_arg: List[str]`<br><br>*Usage*:<br>`test_filters=[TestFilter(test_id="TestNumberOfUniqueValues", test_args={"column_name.name": "1"})]`| Filters that help include the results only for specific Tests and/or columns.<br>If not specified, all logged tests will be considered. |
+| `statuses: List[statuses]`<br><br>**Available**:<br>`TestStatus.ERROR`, `TestStatus.FAIL`, `TestStatus.SUCCESS`, `TestStatus.WARNING`, `TestStatus.SKIPPED` <br><br>**Usage**: <br>`statuses=[TestStatus.ERROR, TestStatus.FAIL]` | Filters that help include only the test results with a specific status. <br>If not specified, tests with any status will be considered.  |
+| <br>`agg: CounterAgg`<br><br>**Available**:<br>SUM, LAST <br><br>**Usage**:<br>`agg=CounterAgg.LAST` | Applies to the `DashboardPanelTestSuiteCounter`.<br><br>Data aggregation options:<br>`SUM - sums the test results from multiple snapshots, considering the applied filters (if any).<br>`LAST` - shows the last available test result. |
+| `panel_type=TestSuitePanelType`<br><br>**Available**:<br>`TestSuitePanelType.DETAILED`<br>`TestSuitePanelType.AGGREGATE` <br><br>**Usage**: <br>`panel_type=TestSuitePanelType.DETAILED` | Applies to the `DashboardPanelTestSuite`.<br><br>You can use it to define the type of the plot:<br>Detailed (includes the individual test results)<br>Aggregate (default, includes only the total number of passed/failed tests) |
+| <br>`time_agg: Optional[str] = None`<br><br>**Available**:<br>`1H`, `1D`, `1W`, `1M` (see [period aliases](https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-period-aliases)<br><br>**Usage**:<br>`time_agg="1D"` | Applies to the `DashboardPanelTestSuite`.<br><br>Aggregation options to group the test results within a defined time period on a plot.|
+
 # Panel value 
 
 To add a numerical measurement to your panel, you must pass the `PanelValue`. For example, you can choose to display the number of drifting features, the share of empty columns, mean error, etc. 
