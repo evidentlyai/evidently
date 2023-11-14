@@ -152,6 +152,7 @@ def test_data_drift_metrics_with_options() -> None:
     result = json.loads(result_json)
     assert result["metrics"][0]["metric"] == "DataDriftTable"
     assert result["metrics"][0]["result"] == {
+        "current_fi": None,
         "dataset_drift": False,
         "drift_by_columns": {
             "category_feature": {
@@ -187,6 +188,7 @@ def test_data_drift_metrics_with_options() -> None:
         },
         "number_of_columns": 3,
         "number_of_drifted_columns": 1,
+        "reference_fi": None,
         "share_of_drifted_columns": 0.3333333333333333,
     }
 
@@ -212,6 +214,7 @@ def test_data_drift_metrics_json_output() -> None:
     result = json.loads(result_json)
     assert result["metrics"][0]["metric"] == "DataDriftTable"
     assert result["metrics"][0]["result"] == {
+        "current_fi": None,
         "dataset_drift": True,
         "drift_by_columns": {
             "category_feature": {
@@ -247,5 +250,6 @@ def test_data_drift_metrics_json_output() -> None:
         },
         "number_of_columns": 3,
         "number_of_drifted_columns": 3,
+        "reference_fi": None,
         "share_of_drifted_columns": 1,
     }
