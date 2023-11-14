@@ -322,13 +322,53 @@ value=PanelValue(
 ```
 In this example, you pass the complete field path inside the Metric.
 
-**Note**: you must always reference a metric_id, even if you used a Preset. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset in the [table](../reference/All-metrics.md).
+{% hint style="info" %}
+**Note**. You must always reference a metric_id, even if you used a Preset. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset in the [reference table](../reference/all-metrics.md).
+{% endhint %}
 
+**Example 3**. To display the mean values of target and prediction over time in a line plot.  
 
-**Example 2**. To include the `current.share_of_missing_values` available inside the `DatasetMissingValueMetric()`:  
+```python
+values=[
+    PanelValue(
+        metric_id="ColumnSummaryMetric",
+        field_path="current_characteristics.mean",
+        metric_args={"column_name.name": "cnt"},
+        legend="Target (daily mean)",
+    ),
+    PanelValue(
+        metric_id="ColumnSummaryMetric",
+        field_path="current_characteristics.mean",
+        metric_args={"column_name.name": "prediction"},
+        legend="Prediction (daily mean)",
+    ),
+]
+```
+In this example, you pass additional metric arguments to specify the column names.
 
+**Example 4**. To specify the drift detection method (when results for multiple methods logged inside a snapshot) using `metric_args`.
 
-**Note**: you must always reference a `metric_id`, even if you used a `Preset`. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset [here](../reference/all-metrics.md).
+```python
+values=[
+    PanelValue(
+        metric_id="EmbeddingsDriftMetric", 
+        metric_args={"drift_method.dist": "euclidean"}
+    )
+}
+```
+
+**Example 5**. To specify the text descriptor using `metric_args`. 
+
+```python
+values=[
+    PanelValue(
+        metric_id="ColumnSummaryMetric",
+        metric_args={"column_name": descriptors.OOV(display_name="OOV").for_column("Review_Text")},
+        field_path="current_characteristics.mean",
+        legend="OOV % (mean)",
+    ),
+]
+```
 
 ### How to find the field path?
 
