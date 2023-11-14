@@ -8,7 +8,7 @@ New dashboards are empty by default. You must define the dashboard composition i
 
 # Code example
 
-Refer to the ML Monitoring QuickStart for a complete Python script with multiple monitoring panels.
+Refer to the QuickStart Tutorial for a complete Python script with multiple monitoring panels.
 
 {% content-ref url="../get-started/tutorial-monitoring.md" %}
 [Get started tutorial](../get-started/tutorial-monitoring.md). 
