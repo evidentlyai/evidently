@@ -108,14 +108,14 @@ ADD IMAGE
 The panel displays a counter of failed or passed tests. 
 
 **Example**
-![](../.gitbook/assets/panel_tests_detailed_hover_example)
+![](../.gitbook/assets/monitoring/panel_tests_detailed_hover_example.png)
 
 ### 4. Test plot (`DashboardPanelTestSuite`)
 
 The panel displays failed and passed tests in time. You can choose a detailed view (shows the results of individual tests) or an aggregate (shows the total number of tests). 
 
 **Example - aggregate:**
-![](../.gitbook/assets/panel_tests_aggregated_hover_example)
+![](../.gitbook/assets/monitoring/panel_tests_aggregated_hover_example.png)
 
 **Example - detailed:**
 ADD IMAGE
