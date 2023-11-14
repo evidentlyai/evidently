@@ -68,7 +68,7 @@ project.dashboard.add_panel(
          ),
          text="share",
          agg=CounterAgg.LAST,
-         size=1,
+         size=WidgetSize.HALF,
     )
 )
 ```
@@ -129,11 +129,11 @@ This is a base class. The parameters below apply to all panel types. There are a
 | Parameter | Description  |
 |---|---|
 | `title: str`<br><br>**Usage:**<br>`title="My New Panel”` | The name of the panel. It will be visible at the header of a panel on a dashboard.  |
-| `filter: ReportFilter`<br><br>`metadata_values: Dict[str, str]`<br>`tag_values: List[str]`<br><br>**Usage**:<br>`filter=ReportFilter(metadata_values={}, tag_values=[])` | Filters allow you to choose a subset of snapshots from which to display values on the panel. <br><br>To use filtering, you must provide metadata or tags when you log Reports or Test Suites.When you create a panel, you can reference these `metadata_values` or `tag_values`.  |
-| `size: WidgetSize = WidgetSize.FULL`<br><br>**Available**: `1`, `2`<br><br>**Usage:**<br>`size=1` | Sets the size of the panel: <br>`1` for a half-width panel<br>`2` for a full-sized panel (Default)  |
+| `filter: ReportFilter`<br><br>`metadata_values: Dict[str, str]`<br>`tag_values: List[str]`<br>`include_test_suites=False`<br><br>**Usage**:<br>`filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)` | Filters help specify a subset of snapshots from which to display the values.<br>To use filtering, you must add metadata or tags when logging Reports or Test Suites. (See [docs](snapshots.md#add-tags)). You can then reference these `metadata_values` or `tag_values` when creating a panel.<br> To include data from Test Suites, you must set the `include_test_suites` parameter as `True` (default: `False`).|
+| `size: WidgetSize = WidgetSize.FULL`<br><br>**Available**: ` WidgetSize.FULL`, `WidgetSize.HALF`<br><br>**Usage:**<br>`size=WidgetSize.FULL` | Sets the size of the panel as half-width or full-sized (Default). |
 
-## Class DashboardPanelCounter
-`DashboardPanelCounter` allows you to add a Counter panel. You can also use this panel type to create text panels.
+## DashboardPanelCounter
+`DashboardPanelCounter` helps add metric counters or text panels. You can pull metric values from both Reports and Test Suites.
 
 **Example 1**. To create a panel with the dashboard title only:
 
@@ -161,7 +161,7 @@ project.dashboard.add_panel(
         ),
         text="count",
         agg=CounterAgg.SUM,
-        size=1,
+        size=WidgetSize.HALF,
     )
 )
 ```
@@ -170,10 +170,10 @@ project.dashboard.add_panel(
 |---|---|
 | `value: Optional[PanelValue] = None` | The value (**MetricResult**) to show in the Counter.<br><br>You can create a simple text panel if you do not pass the Value. <br><br>*See the section below on Panel Values for more examples.* |
 | `text: Optional[str] = None` | Supporting text to be shown on the Counter. |
-| `agg: CounterAgg`<br><br>**Available:**<br> `SUM`, `LAST`, `NONE` | Data aggregation options:<br>`SUM` - sums the values from different snapshots over time<br>`LAST` - shows the last available value<br>`NONE` - to be used for text panels  |
+| `agg: CounterAgg`<br><br>**Available:**<br> `SUM`, `LAST`, `NONE` | Data aggregation options:<br>`SUM` - sums the values from different snapshots over time considering the applied filters (if any).<br>`LAST` - shows the last available value<br>`NONE` - to be used for text panels  |
 
-## Class DashboardPanelPlot
-`DashboardPanelPlot` allows you to create scatter, bar, line, and histogram plots.
+## DashboardPanelPlot
+`DashboardPanelPlot` allows creating scatter, bar, line, and histogram plots with metric values. You can pull metric values from both Reports and Test Suites.
 
 **Example**. To plot MAPE over time in a line plot.
 
@@ -190,7 +190,7 @@ project.dashboard.add_panel(
         ),
     ],
     plot_type=PlotType.LINE,
-    size=1,
+    size=WidgetSize.HALF,
     )
 )
 ```
@@ -199,6 +199,83 @@ project.dashboard.add_panel(
 |---|---|
 | `values: List[PanelValue]` | You must pass at least one value (**MetricResult**). You can also pass multiple values as a list. They will appear together: for example, as separate lines on a Line plot, bars on a Bar Chart, or points on a Scatter Plot. If you use a Histogram, the values will be aggregated.<br><br>*See the section below on Panel Values for more examples.* |
 | `plot_type: PlotType`<br><br>**Available:** `SCATTER`, `BAR`, `LINE`, `HISTOGRAM` | Specifies the plot type. |
+
+## DashboardPanelTestSuiteCounter
+`DashboardPanelTestSuiteCounter` displays a counter of failed and passed tests. It applies to Test Suites only.
+
+**Example 1**. To display the result of the last test.
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuiteCounter(
+        title="Success of last",
+        agg=CounterAgg.LAST
+    )
+)
+```
+
+**Example 2**. To display the number of failed tests and errors in the uniqueness test results for a specific column.
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuiteCounter(
+        title="Success of 1",
+        test_filters=[TestFilter(test_id="TestNumberOfUniqueValues", test_args={"column_name.name": "1"})],
+        statuses=[TestStatus.ERROR, TestStatus.FAIL]
+    )
+)
+```
+
+See applicable parameters in the following section.
+
+## DashboardPanelTestSuite
+
+`DashboardPanelTestSuite` displays the results of failed and passed tests over time. It applies to Test Suites only.
+
+**Example 1**. To show the individual results of all individual tests over time, with daily level aggregation. 
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuite(
+        title="All tests: detailed",
+        filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+        size=WidgetSize.HALF,
+        panel_type=TestSuitePanelType.DETAILED,
+        time_agg="1D",
+    )
+)
+```
+
+**Example 2**. To show the individual test results over time, for specific tests and columns, with daily level aggregation.
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuite(
+        title="Column Drift tests for key features: detailed",
+        test_filters=[
+            TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "hours-per-week"}),
+            TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "capital-gain"}),
+        ],
+        filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+        size=WidgetSize.HALF,
+        panel_type=TestSuitePanelType.DETAILED,
+        time_agg="1D",
+    )
+)
+```
+
+**Example 3**. To show the total number of passed and failed test results over time, with daily level aggregation. 
+
+```
+project.dashboard.add_panel(
+    DashboardPanelTestSuite(
+        title="All tests: aggregated",
+        filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+        size=WidgetSize.HALF,
+        time_agg="1D",
+    )
+)
+```
 
 # Panel value 
 
