@@ -83,8 +83,8 @@ You can choose between the following panel types.
 
 | Panel Type| Example  |
 |---|---|
-|**Metric counter (`DashboardPanelCounter`)**<br>A counter panel shows a single number (a metric result from a Report or Test Suite) with supporting text. You can also create text-only panels, e.g. a title panel.|![](../.gitbook/assets/monitoring/panel_counter_example-min.png)|
-|**Metric plot (`DashboardPanelPlot`)**<br>The panel displays any measurement (a metric result from a Report or Test Suite) as a line plot, bar plot, scatter plot or histogram. |See below.|
+|**Metric counter (`DashboardPanelCounter`)**<br>A counter panel shows a measurement (a MetricResult from a Report or Test Suite) with supporting text. You can also create text-only panels, e.g. a title panel.|![](../.gitbook/assets/monitoring/panel_counter_example-min.png)|
+|**Metric plot (`DashboardPanelPlot`)**<br>The panel shows a measurement (a MetricResult from a Report or Test Suite) as a line plot, bar plot, scatter plot or histogram. |See below.|
 |Line plot (`plot_type=PlotType.LINE`)**|![](../.gitbook/assets/monitoring/panel_plot_example-min.png)|
 |Scatter plot (`plot_type=PlotType.SCATTER`)**| *add image* |
 |Bar plot (`plot_type=PlotType.BAR`)**| *add image* |
