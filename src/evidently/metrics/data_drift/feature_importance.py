@@ -15,6 +15,9 @@ from evidently.core import ColumnType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.utils.data_preprocessing import DataDefinition
+
+SAMPLE_SIZE = 5000
 
 
 class FeatureImportanceMetricResult(MetricResult):
@@ -29,38 +32,49 @@ class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
                 current=data.additional_datasets.get("current_feature_importance"),
                 reference=data.additional_datasets.get("reference_feature_importance"),
             )
-        num_cols = data.data_definition.get_columns(filter_def=ColumnType.Numerical, features_only=True)
-        cat_cols = data.data_definition.get_columns(filter_def=ColumnType.Categorical, features_only=True)
-        columns = [x.column_name for x in num_cols] + [x.column_name for x in cat_cols]
-        curr_sampled_data = data.current_data.sample(min(5000, data.current_data.shape[0]), random_state=0)
+
+        curr_sampled_data = data.current_data.sample(min(SAMPLE_SIZE, data.current_data.shape[0]), random_state=0)
         ref_sampled_data: Optional[pd.DataFrame] = None
         if data.reference_data is not None:
-            ref_sampled_data = data.reference_data.sample(min(5000, data.reference_data.shape[0]), random_state=0)
+            ref_sampled_data = data.reference_data.sample(
+                min(SAMPLE_SIZE, data.reference_data.shape[0]), random_state=0
+            )
 
-        for col in [x.column_name for x in cat_cols]:
-            enc = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
-            curr_sampled_data[col] = enc.fit_transform(curr_sampled_data[col].values.reshape(-1, 1))
-            if ref_sampled_data is not None:
-                ref_sampled_data[col] = enc.fit_transform(ref_sampled_data[col].values.reshape(-1, 1))
+        return get_feature_importance_from_samples(data.data_definition, curr_sampled_data, ref_sampled_data)
 
-        task = data.data_definition.task
-        target_column = data.data_definition.get_target_column()
-        if target_column is None:
-            return FeatureImportanceMetricResult(current=None, reference=None)
-        target_name = target_column.column_name
-        if task == "regression":
-            model = RandomForestRegressor(min_samples_leaf=10)
-        else:
-            model = RandomForestClassifier(min_samples_leaf=10)
 
-        model.fit(curr_sampled_data[columns], curr_sampled_data[target_name])
-        current_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
+def get_feature_importance_from_samples(
+    data_definition: DataDefinition, curr_sampled_data: pd.DataFrame, ref_sampled_data: Optional[pd.DataFrame]
+):
+    num_cols = data_definition.get_columns(filter_def=ColumnType.Numerical, features_only=True)
+    cat_cols = data_definition.get_columns(filter_def=ColumnType.Categorical, features_only=True)
 
-        reference_fi: Optional[Dict[str, float]] = None
+    columns = [x.column_name for x in num_cols] + [x.column_name for x in cat_cols]
+
+    for col in [x.column_name for x in cat_cols]:
+        enc = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
+        curr_sampled_data[col] = enc.fit_transform(curr_sampled_data[col].values.reshape(-1, 1))
         if ref_sampled_data is not None:
-            model.fit(ref_sampled_data[columns], ref_sampled_data[target_name])
-            reference_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
-        return FeatureImportanceMetricResult(current=current_fi, reference=reference_fi)
+            ref_sampled_data[col] = enc.fit_transform(ref_sampled_data[col].values.reshape(-1, 1))
+
+    task = data_definition.task
+    target_column = data_definition.get_target_column()
+    if target_column is None:
+        return FeatureImportanceMetricResult(current=None, reference=None)
+    target_name = target_column.column_name
+    if task == "regression":
+        model = RandomForestRegressor(min_samples_leaf=10)
+    else:
+        model = RandomForestClassifier(min_samples_leaf=10)
+
+    model.fit(curr_sampled_data[columns], curr_sampled_data[target_name])
+    current_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
+
+    reference_fi: Optional[Dict[str, float]] = None
+    if ref_sampled_data is not None:
+        model.fit(ref_sampled_data[columns], ref_sampled_data[target_name])
+        reference_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
+    return FeatureImportanceMetricResult(current=current_fi, reference=reference_fi)
 
 
 @default_renderer(wrap_type=FeatureImportanceMetric)
