@@ -287,13 +287,17 @@ project.dashboard.add_panel(
 
 # Panel value 
 
-To add a numerical measurement to your panel, you must pass the `PanelValue`. For example, you can choose to display the number of drifting features, the share of empty columns, mean error, etc. 
+To add a numerical measurement to the counter or a dashboard panel plot, you must pass the `PanelValue`. For example, you can display the number of drifting features, the share of empty columns, mean error, etc.
 
-To define which exact value to show on a specific panel, you must specify the following:
-* A `metric_id` that corresponds to the Evidently Metric logged in a `snapshot`.
-* A `field_path` that corresponds to the specific **MetricResult** (numerical measurement) computed as part of this Metric. You can pass either a complete field path or a `"field_name"`.
+**Parameters**. To define which values to show on a specific panel, you must specify:
 
-You can also pass the optional `legend` that will be visible on the plot.
+| Parameter | Description |
+|---|---|
+| `metric_id` | A metric ID that corresponds to the Evidently Metric logged inside the snapshots. You must specify the `metric_id` even if you use Test Suites.  |
+| `field_path` | The path that corresponds to the specific **MetricResult** (numerical measurement) computed as part of this Metric or Test. You can pass either a complete field path or a "field_name". |
+| `metric_args` (optional) | Additional arguments that specify the metrics parameters. This is applicable when multiple instances of the same metric are logged in a snapshot. For example: column name, text descriptor, drift detection method used, etc. |
+| `legend` (optional) | The legend that will be visible in the plot. |
+
 
 **Example 1**. To include the `share_of_drifted_columns` MetricResult, available inside the `DatasetDriftMetric()`: 
 
@@ -316,8 +320,13 @@ value=PanelValue(
     legend="Missing Values Share",
 )
 ```
+In this example, you pass the complete field path inside the Metric.
 
-In this example, you pass the complete field path inside the Metric
+**Note**: you must always reference a metric_id, even if you used a Preset. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset in the [table](../reference/All-metrics.md).
+
+
+**Example 2**. To include the `current.share_of_missing_values` available inside the `DatasetMissingValueMetric()`:  
+
 
 **Note**: you must always reference a `metric_id`, even if you used a `Preset`. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset [here](../reference/all-metrics.md).
 
