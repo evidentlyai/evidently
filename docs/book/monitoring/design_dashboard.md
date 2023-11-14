@@ -85,10 +85,10 @@ You can choose between the following panel types.
 |---|---|
 |**Metric counter (`DashboardPanelCounter`)**<br>A counter panel shows a measurement (a MetricResult from a Report or Test Suite) with supporting text. You can also create text-only panels, e.g. a title panel.|![](../.gitbook/assets/monitoring/panel_counter_example-min.png)|
 |**Metric plot (`DashboardPanelPlot`)**<br>The panel shows a measurement (a MetricResult from a Report or Test Suite) as a line plot, bar plot, scatter plot or histogram. |See below.|
-|Line plot (`plot_type=PlotType.LINE`)**|![](../.gitbook/assets/monitoring/panel_plot_example-min.png)|
-|Scatter plot (`plot_type=PlotType.SCATTER`)**| *add image* |
-|Bar plot (`plot_type=PlotType.BAR`)**| *add image* |
-|Histogram (`plot_type=PlotType.HISTOGRAM`)**| *add image* |
+|Line plot (`plot_type=PlotType.LINE`)|![](../.gitbook/assets/monitoring/panel_plot_example-min.png)|
+|Scatter plot (`plot_type=PlotType.SCATTER`)| *add image* |
+|Bar plot (`plot_type=PlotType.BAR`)| *add image* |
+|Histogram (`plot_type=PlotType.HISTOGRAM`)| *add image* |
 |**Test counter (`DashboardPanelTestSuiteCounter`)**<br>The panel displays a counter of failed or passed tests.|*add image*|
 |**Test plot (`DashboardPanelTestSuite`)**<br>The panel displays failed and passed tests in time. You can choose a detailed view (shows the results of individual tests) or an aggregate (shows the total number of tests).|See below.|
 |Detailed plot (`panel_type=TestSuitePanelType.DETAILED`)|![](../.gitbook/assets/monitoring/panel_tests_detailed_hover_example.png)|
