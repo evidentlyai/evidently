@@ -1,6 +1,7 @@
 import abc
 import datetime
 import traceback
+import typing
 import uuid
 from collections import Counter
 from collections import defaultdict
@@ -422,6 +423,53 @@ class DashboardPanelTestSuite(DashboardPanel):
         if self.time_agg is None:
             return timestamp
         return pd.Series([timestamp], name="dt").dt.to_period(self.time_agg)[0]
+
+
+class DashboardPanelTestSuiteCounter(DashboardPanel):
+    agg: CounterAgg = CounterAgg.NONE
+    filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
+    test_filters: List[TestFilter] = []
+    statuses: List[TestStatus] = [TestStatus.SUCCESS]
+
+    def _iter_statuses(self, reports: Iterable[ReportBase]):
+        for report in reports:
+            if not self.filter.filter(report):
+                continue
+            if not isinstance(report, TestSuite):
+                continue
+            if self.test_filters:
+                for test_filter in self.test_filters:
+                    yield report.timestamp, test_filter.get(report).values()
+            else:
+                yield report.timestamp, TestFilter().get(report).values()
+
+    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
+        if self.agg == CounterAgg.NONE:
+            statuses, postfix = self._build_none(reports)
+        elif self.agg == CounterAgg.LAST:
+            statuses, postfix = self._build_last(reports)
+        else:
+            raise ValueError(f"TestSuite Counter does not support agg {self.agg}")
+
+        total = sum(statuses.values())
+        value = sum(statuses[s] for s in self.statuses)
+        statuses_join = ", ".join(s.value for s in self.statuses)
+        return counter(counters=[CounterData(f"{value}/{total} {statuses_join}{postfix}", self.title)], size=self.size)
+
+    def _build_none(self, reports: Iterable[ReportBase]) -> Tuple[Counter, str]:
+        statuses: typing.Counter[TestStatus] = Counter()
+        for _, values in self._iter_statuses(reports):
+            statuses.update(values)
+        return statuses, ""
+
+    def _build_last(self, reports: Iterable[ReportBase]) -> Tuple[Counter, str]:
+        last_ts = None
+        statuses: typing.Counter[TestStatus] = Counter()
+        for ts, values in self._iter_statuses(reports):
+            if last_ts is None or ts > last_ts:
+                last_ts = ts
+                statuses = Counter(values)
+        return statuses, f" ({last_ts})"
 
 
 class DashboardConfig(BaseModel):
