@@ -27,7 +27,7 @@ client = CollectorClient("http://localhost:8001")
 
 
 def get_data():
-    cur = ref = pd.DataFrame([{"values1": 5., "values2": 0.} for _ in range(10)])
+    cur = ref = pd.DataFrame([{"values1": 5.0, "values2": 0.0} for _ in range(10)])
     return cur, ref
 
 
@@ -37,6 +37,7 @@ def setup_report():
     cur, ref = get_data()
     report.run(reference_data=ref, current_data=cur)
     return ReportConfig.from_report(report)
+
 
 def setup_test_suite():
     report = TestSuite(tests=[TestNumberOfOutRangeValues("values1", left=5)], tags=["quality"])
@@ -55,7 +56,9 @@ def setup_workspace():
             filter=ReportFilter(metadata_values={}, tag_values=["quality"]),
             values=[
                 PanelValue(metric_id="ColumnValueRangeMetric", field_path="current.share_in_range", legend="current"),
-                PanelValue(metric_id="ColumnValueRangeMetric", field_path="reference.share_in_range", legend="reference"),
+                PanelValue(
+                    metric_id="ColumnValueRangeMetric", field_path="reference.share_in_range", legend="reference"
+                ),
             ],
             plot_type=PlotType.LINE,
         )
@@ -66,12 +69,16 @@ def setup_workspace():
 def setup_config():
     ws = Workspace.create(WORKSPACE_PATH)
     project = ws.search_project(PROJECT_NAME)[0]
-    #conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_report(), project_id=str(project.id))
-    conf = CollectorConfig(trigger=RowsCountTrigger(rows_count=10), report_config=setup_report(), project_id=str(project.id))
+    # conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_report(), project_id=str(project.id))
+    conf = CollectorConfig(
+        trigger=RowsCountTrigger(rows_count=10), report_config=setup_report(), project_id=str(project.id)
+    )
     client.create_collector(id=COLLECTOR_ID, collector=conf)
 
-    #test_conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_test_suite(), project_id=str(project.id))
-    test_conf = CollectorConfig(trigger=RowsCountTrigger(rows_count=10), report_config=setup_test_suite(), project_id=str(project.id))
+    # test_conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_test_suite(), project_id=str(project.id))
+    test_conf = CollectorConfig(
+        trigger=RowsCountTrigger(rows_count=10), report_config=setup_test_suite(), project_id=str(project.id)
+    )
     client.create_collector(id=COLLECTOR_TEST_ID, collector=test_conf)
 
     _, ref = get_data()
@@ -81,7 +88,7 @@ def setup_config():
 
 def send_data():
     size = 1
-    data = pd.DataFrame([{"values1": 3. + datetime.datetime.now().minute % 5, "values2": 0.} for _ in range(size)])
+    data = pd.DataFrame([{"values1": 3.0 + datetime.datetime.now().minute % 5, "values2": 0.0} for _ in range(size)])
 
     client.send_data(COLLECTOR_ID, data)
     client.send_data(COLLECTOR_TEST_ID, data)
@@ -107,5 +114,5 @@ def main():
     start_sending_data()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
