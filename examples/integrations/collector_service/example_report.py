@@ -3,18 +3,22 @@ import os.path
 import time
 
 import pandas as pd
-
 from requests.exceptions import RequestException
 
 from evidently.collector.client import CollectorClient
-from evidently.collector.config import CollectorConfig, IntervalTrigger, RowsCountTrigger, ReportConfig
+from evidently.collector.config import CollectorConfig
+from evidently.collector.config import IntervalTrigger
+from evidently.collector.config import ReportConfig
+from evidently.collector.config import RowsCountTrigger
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.tests import TestNumberOfOutRangeValues
-from evidently.ui.dashboards import DashboardPanelPlot, PanelValue, PlotType, ReportFilter
+from evidently.ui.dashboards import DashboardPanelPlot
+from evidently.ui.dashboards import PanelValue
+from evidently.ui.dashboards import PlotType
+from evidently.ui.dashboards import ReportFilter
 from evidently.ui.workspace import Workspace
-
 
 COLLECTOR_ID = "default"
 COLLECTOR_TEST_ID = "default_test"
