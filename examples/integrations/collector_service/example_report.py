@@ -7,7 +7,7 @@ import pandas as pd
 from requests.exceptions import RequestException
 
 from evidently.collector.client import CollectorClient
-from evidently.collector.config import CollectorConfig, IntervalTrigger, ReportConfig
+from evidently.collector.config import CollectorConfig, IntervalTrigger, RowsCountTrigger, ReportConfig
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.report import Report
 from evidently.test_suite import TestSuite
@@ -21,7 +21,7 @@ COLLECTOR_TEST_ID = "default_test"
 
 PROJECT_NAME = "My Cool Project"
 
-WORKSACE_PATH = "workspace"
+WORKSPACE_PATH = "workspace"
 
 client = CollectorClient("http://localhost:8001")
 
@@ -47,7 +47,7 @@ def setup_test_suite():
 
 
 def setup_workspace():
-    ws = Workspace.create(WORKSACE_PATH)
+    ws = Workspace.create(WORKSPACE_PATH)
     project = ws.create_project(PROJECT_NAME)
     project.dashboard.add_panel(
         DashboardPanelPlot(
@@ -64,17 +64,19 @@ def setup_workspace():
 
 
 def setup_config():
-    ws = Workspace.create(WORKSACE_PATH)
+    ws = Workspace.create(WORKSPACE_PATH)
     project = ws.search_project(PROJECT_NAME)[0]
-    conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_report(), project_id=str(project.id))
-    client.create_collector(COLLECTOR_ID, conf)
+    #conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_report(), project_id=str(project.id))
+    conf = CollectorConfig(trigger=RowsCountTrigger(rows_count=10), report_config=setup_report(), project_id=str(project.id))
+    client.create_collector(id=COLLECTOR_ID, collector=conf)
 
-    test_conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_test_suite(), project_id=str(project.id))
-    client.create_collector(COLLECTOR_TEST_ID, test_conf)
+    #test_conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_test_suite(), project_id=str(project.id))
+    test_conf = CollectorConfig(trigger=RowsCountTrigger(rows_count=10), report_config=setup_test_suite(), project_id=str(project.id))
+    client.create_collector(id=COLLECTOR_TEST_ID, collector=test_conf)
 
     _, ref = get_data()
-    client.set_reference(COLLECTOR_ID, ref)
-    client.set_reference(COLLECTOR_TEST_ID, ref)
+    client.set_reference(id=COLLECTOR_ID, reference=ref)
+    client.set_reference(id=COLLECTOR_TEST_ID, reference=ref)
 
 
 def send_data():
@@ -97,7 +99,7 @@ def start_sending_data():
 
 
 def main():
-    if not os.path.exists(WORKSACE_PATH) or len(Workspace.create(WORKSACE_PATH).search_project(PROJECT_NAME)) == 0:
+    if not os.path.exists(WORKSPACE_PATH) or len(Workspace.create(WORKSPACE_PATH).search_project(PROJECT_NAME)) == 0:
         setup_workspace()
 
     setup_config()

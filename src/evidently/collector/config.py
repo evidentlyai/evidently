@@ -53,6 +53,22 @@ class IntervalTrigger(CollectorTrigger):
             self.last_triggered = now
             return True
         return False
+    
+
+class RowsCountTrigger(CollectorTrigger):
+    rows_count: int = 1
+
+    def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
+        print("---")
+        print("RowsCountTrigger")
+        print(f"rows_count: {self.rows_count}")
+        print(f"buffer length:{len(storage._buffers[config.id])}")
+        if len(storage._buffers[config.id]) > 0: 
+            if len(storage._buffers[config.id]) % self.rows_count == 0:
+                print("Creating snapshot")
+                return True
+        print("Not creating snapshot")
+        return False
 
 
 class ReportConfig(Config):
