@@ -26,7 +26,7 @@ export const SnapshotTemplate = ({ api }: { api: Api }) => {
             api.getAdditionalWidgetData(projectId, snapshotId, widgetId)
         })}
       >
-        <DashboardContent info={data} />
+        <DashboardContent widgets={data.widgets} />
       </DashboardContext.Provider>
     </>
   )
