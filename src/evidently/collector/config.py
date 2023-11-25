@@ -62,9 +62,10 @@ class RowsCountTrigger(CollectorTrigger):
         print("---")
         print("RowsCountTrigger")
         print(f"rows_count: {self.rows_count}")
-        print(f"buffer length:{len(storage._buffers[config.id])}")
-        if len(storage._buffers[config.id]) > 0: 
-            if len(storage._buffers[config.id]) % self.rows_count == 0:
+        buffer_size = storage.get_buffer_size(config.id)
+        print(f"buffer length:{buffer_size}")
+        if buffer_size > 0: 
+            if buffer_size % self.rows_count == 0:
                 print("Creating snapshot")
                 return True
         print("Not creating snapshot")
