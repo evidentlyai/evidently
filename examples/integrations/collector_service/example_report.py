@@ -75,13 +75,13 @@ def setup_config():
     project = ws.search_project(PROJECT_NAME)[0]
     # conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_report(), project_id=str(project.id))
     conf = CollectorConfig(
-        trigger=RowsCountTrigger(rows_count=10), report_config=setup_report(), project_id=str(project.id)
+        trigger=RowsCountTrigger(rows_count=5), report_config=setup_report(), project_id=str(project.id)
     )
     client.create_collector(id=COLLECTOR_ID, collector=conf)
 
     # test_conf = CollectorConfig(trigger=IntervalTrigger(interval=5), report_config=setup_test_suite(), project_id=str(project.id))
     test_conf = CollectorConfig(
-        trigger=RowsCountTrigger(rows_count=10), report_config=setup_test_suite(), project_id=str(project.id)
+        trigger=RowsCountTrigger(rows_count=5), report_config=setup_test_suite(), project_id=str(project.id)
     )
     client.create_collector(id=COLLECTOR_TEST_ID, collector=test_conf)
 
