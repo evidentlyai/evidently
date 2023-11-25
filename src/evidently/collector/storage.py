@@ -34,7 +34,7 @@ class CollectorStorage(PolymorphicModel):
     @abc.abstractmethod
     def append(self, id: str, data: Any):
         raise NotImplementedError
-    
+
     @abc.abstractmethod
     def get_buffer_size(self, id: str):
         raise NotImplementedError
