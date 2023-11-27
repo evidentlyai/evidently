@@ -51,27 +51,27 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
 
-  const showSnapshotByIdMatch = matches.find(({ id }) => id === `show-${type}-by-id`)
+  // @ts-ignore
+  const hideSnapshotsList = matches.find(({ handle }) => handle?.hide?.snapshotList === true)
 
-  const ALL_TAGS = showSnapshotByIdMatch
-    ? [] // skip calculation in this case
-    : // calculate unique tags
-      Array.from(new Set(snapshots.flatMap(({ tags }) => tags)))
+  if (hideSnapshotsList) {
+    return (
+      <Grid container>
+        <Grid item xs={12}>
+          <Outlet />
+        </Grid>
+      </Grid>
+    )
+  }
 
-  const filteredSnapshots = snapshots.filter(({ tags }) => {
-    if (showSnapshotByIdMatch) {
-      return false
-    }
+  const ALL_TAGS = Array.from(new Set(snapshots.flatMap(({ tags }) => tags)))
 
-    if (selectedTags.length === 0) {
-      return true
-    }
-
-    return selectedTags.every((candidate) => tags.includes(candidate))
-  })
+  const filteredSnapshots = snapshots.filter(({ tags }) =>
+    selectedTags.every((candidate) => tags.includes(candidate))
+  )
 
   const sortedByTimestamp =
-    sortByTimestamp === undefined || showSnapshotByIdMatch
+    sortByTimestamp === undefined
       ? filteredSnapshots
       : filteredSnapshots.sort((a, b) => {
           const [first, second] = [Date.parse(a.timestamp), Date.parse(b.timestamp)]
@@ -86,16 +86,6 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
 
           return 0
         })
-
-  if (showSnapshotByIdMatch) {
-    return (
-      <Grid container>
-        <Grid item xs={12}>
-          <Outlet />
-        </Grid>
-      </Grid>
-    )
-  }
 
   return (
     <>
