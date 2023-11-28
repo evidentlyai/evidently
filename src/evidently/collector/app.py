@@ -19,6 +19,7 @@ from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.storage import LogEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
+from evidently.ui.utils import NumpyJsonResponse
 from evidently.ui.utils import authenticated
 from evidently.ui.utils import set_secret
 
@@ -49,7 +50,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-collector_write_router = APIRouter(dependencies=[Depends(authenticated)])
+collector_write_router = APIRouter(dependencies=[Depends(authenticated)], default_response_class=NumpyJsonResponse)
 
 
 @collector_write_router.post("/{id}")
