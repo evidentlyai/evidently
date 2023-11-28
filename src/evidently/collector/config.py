@@ -60,9 +60,7 @@ class RowsCountTrigger(CollectorTrigger):
 
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
         buffer_size = storage.get_buffer_size(config.id)
-        if buffer_size > 0 and buffer_size >= self.rows_count:
-            return True
-        return False
+        return buffer_size > 0 and buffer_size >= self.rows_count
 
 
 class ReportConfig(Config):
