@@ -24,6 +24,10 @@ import {
   useSearchParams
 } from 'react-router-dom'
 
+import JsonView from 'react18-json-view'
+import 'react18-json-view/src/style.css'
+import './override-react18-json-view.css'
+
 import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
@@ -116,6 +120,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                 : 'indefined'}
             </TableCell>
             <TableCell>Tags</TableCell>
+            <TableCell>Metadata</TableCell>
             <TableCell>
               <TableSortLabel
                 active={Boolean(sortByTimestamp)}
@@ -160,6 +165,9 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                     tags={snapshot.tags}
                   />
                 </Box>
+              </TableCell>
+              <TableCell>
+                <JsonView src={snapshot.metadata} theme="atom" enableClipboard={false} />
               </TableCell>
               <TableCell>
                 <Typography variant="body2">
