@@ -49,7 +49,7 @@ def test_curr_rank():
     )
 
     results = metric.get_result()
-    assert np.isclose(results.current_value, 0.13673694725218632)
+    assert np.isclose(results.current_value, 0.8632630527478137)
 
 
 def test_curr_scores():
@@ -82,4 +82,4 @@ def test_curr_scores():
     )
 
     results = metric.get_result()
-    assert np.isclose(results.current_value, 0.13673694725218632)
+    assert np.isclose(results.current_value, 0.8632630527478137)

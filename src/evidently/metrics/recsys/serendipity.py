@@ -71,8 +71,8 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             user_df = df.loc[df[user_id] == user, item_id]
             res = 0
             for i, j in product(user_train, user_df):
-                res += dist_matrix[name_dict[i], name_dict[j]]
-            user_res.append(len(user_df) - res / len(user_train))
+                res += 1 - dist_matrix[name_dict[i], name_dict[j]]
+            user_res.append(1 - res / len(user_train))
         distr_data = pd.Series(user_res)
         value = np.mean(user_res)
         return distr_data, value
