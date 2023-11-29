@@ -122,7 +122,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
         is_critical: bool = True,
-        feature_importance: Optional[bool] = False
+        feature_importance: Optional[bool] = False,
     ):
         super().__init__(
             eq=eq,
