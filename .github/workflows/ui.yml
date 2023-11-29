@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   ui-build:
-    name: Check UI with node v${{ matrix.node-version }}
+    name: UI type-check and build with node v${{ matrix.node-version }}
     runs-on: ubuntu-20.04
     if: github.event.pull_request.draft == false
     strategy:
@@ -61,31 +61,18 @@ jobs:
           retention-days: 30
 
   ui-test:
-    name: Check UI with node v${{ matrix.node-version }}
+    name: Playwright tests
     runs-on: ubuntu-20.04
     if: github.event.pull_request.draft == false
-    strategy:
-      matrix:
-        node-version: [18]
 
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
-          cache-dependency-path: ui/pnpm-lock.yaml
-
-      - name: 📥 Install node dependencies
-        working-directory: ui
-        run: pnpm i
+          node-version: "18"
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -104,11 +91,11 @@ jobs:
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
-        run: pnpm wait-on tcp:127.0.0.1:8000 -t 300000
+        run: npx wait-on tcp:127.0.0.1:8000 -t 300000
 
       - name: Run Service Playwright tests
         working-directory: ui/service
-        run: pnpm test
+        run: npx playwright test
 
       - uses: actions/upload-artifact@v3
         if: always()
