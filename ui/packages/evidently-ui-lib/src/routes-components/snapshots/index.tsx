@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
   Box,
   Button,
+  FormControlLabel,
   Grid,
   Link,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -24,6 +26,10 @@ import {
   useSearchParams
 } from 'react-router-dom'
 
+import type { MetadataValueType } from '~/api'
+
+import { useLocalStorage } from '@uidotdev/usehooks'
+
 import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 import './override-react18-json-view.css'
@@ -34,8 +40,8 @@ import { HidedTags } from '~/components/HidedTags'
 import { crumbFunction } from '~/components/BreadCrumbs'
 import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
-import { loaderData } from './data'
 import dayjs from 'dayjs'
+import { loaderData } from './data'
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (_, { pathname }) => ({
@@ -44,19 +50,82 @@ export const handle: { crumb: crumbFunction<loaderData> } = {
   })
 }
 
+const metadataToOneString: (metadata: MetadataValueType) => string = (
+  metadata: MetadataValueType
+) =>
+  Object.values(metadata)
+    .map((value) => {
+      if (Array.isArray(value)) {
+        return value.join(' ')
+      }
+
+      if (typeof value === 'object') {
+        return metadataToOneString(value)
+      }
+
+      return value
+    })
+    .join(' ')
+
 export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) => {
   const { projectId } = useParams()
   const snapshots = useLoaderData() as loaderData
   const matches = useMatches()
 
   const [searchParams] = useSearchParams()
-  const [selectedTags, setTags] = useState(() => searchParams.get('tags')?.split(',') || [])
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
+  const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
+  const [selectedTags, setTags] = useState(() => searchParams.get('tags')?.split(',') || [])
+  const [metadataQuery, setMetadataQuery] = useState(() => searchParams.get('metadata-query') || '')
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
+  useUpdateQueryStringValueWithoutNavigation('metadata-query', String(metadataQuery))
 
   // @ts-ignore
   const hideSnapshotsList = matches.find(({ handle }) => handle?.hide?.snapshotList === true)
+
+  const ALL_TAGS = useMemo(
+    () => Array.from(new Set(snapshots.flatMap(({ tags }) => tags))),
+    [snapshots]
+  )
+
+  const filteredSnapshotsByTags = useMemo(
+    () =>
+      snapshots.filter(({ tags }) => selectedTags.every((candidate) => tags.includes(candidate))),
+    [snapshots, selectedTags]
+  )
+
+  const filteredSnapshotsByMetadata = useMemo(
+    () =>
+      filteredSnapshotsByTags.filter(({ metadata }) => {
+        if (metadataQuery === '') {
+          return true
+        }
+
+        return metadataToOneString(metadata).includes(metadataQuery)
+      }),
+    [filteredSnapshotsByTags, metadataQuery]
+  )
+
+  const resultSnapshots = useMemo(
+    () =>
+      sortByTimestamp === undefined
+        ? filteredSnapshotsByMetadata
+        : filteredSnapshotsByMetadata.sort((a, b) => {
+            const [first, second] = [Date.parse(a.timestamp), Date.parse(b.timestamp)]
+            const diff = first - second
+            if (sortByTimestamp === 'desc') {
+              return -diff
+            }
+
+            if (sortByTimestamp === 'asc') {
+              return diff
+            }
+
+            return 0
+          }),
+    [filteredSnapshotsByMetadata, sortByTimestamp]
+  )
 
   if (hideSnapshotsList) {
     return (
@@ -68,34 +137,11 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
     )
   }
 
-  const ALL_TAGS = Array.from(new Set(snapshots.flatMap(({ tags }) => tags)))
-
-  const filteredSnapshots = snapshots.filter(({ tags }) =>
-    selectedTags.every((candidate) => tags.includes(candidate))
-  )
-
-  const sortedByTimestamp =
-    sortByTimestamp === undefined
-      ? filteredSnapshots
-      : filteredSnapshots.sort((a, b) => {
-          const [first, second] = [Date.parse(a.timestamp), Date.parse(b.timestamp)]
-          const diff = first - second
-          if (sortByTimestamp === 'desc') {
-            return -diff
-          }
-
-          if (sortByTimestamp === 'asc') {
-            return diff
-          }
-
-          return 0
-        })
-
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Grid container>
-          <Grid item xs={12} md={6}>
+        <Grid container gap={6}>
+          <Grid item xs={12} md={4}>
             <Autocomplete
               multiple
               limitTags={2}
@@ -106,6 +152,30 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                 <TextField {...params} variant="standard" label="Filter by Tags" />
               )}
             />
+          </Grid>
+
+          <Grid item xs={12} md={7}>
+            <Box display={'flex'} alignItems={'center'} gap={2}>
+              <TextField
+                fullWidth
+                value={metadataQuery}
+                onChange={(event) => setMetadataQuery(event.target.value)}
+                variant="standard"
+                label="Search in Metadata"
+              />
+
+              <Box minWidth={220} display={'flex'} justifyContent={'center'}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isCollapsedJson}
+                      onChange={(event) => setIsCollapsedJson(event.target.checked)}
+                    ></Switch>
+                  }
+                  label="Hide Metadata"
+                />
+              </Box>
+            </Box>
           </Grid>
         </Grid>
       </Box>
@@ -130,9 +200,11 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                     if (prev === undefined) {
                       return 'desc'
                     }
+
                     if (prev === 'desc') {
                       return 'asc'
                     }
+
                     if (prev === 'asc') {
                       return undefined
                     }
@@ -147,7 +219,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
           <TableRow></TableRow>
         </TableHead>
         <TableBody>
-          {sortedByTimestamp.map((snapshot) => (
+          {resultSnapshots.map((snapshot) => (
             <TableRow key={`r-${snapshot.id}`}>
               <TableCell>
                 <TextWithCopyIcon showText={snapshot.id} copyText={snapshot.id} />
@@ -167,7 +239,12 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                 </Box>
               </TableCell>
               <TableCell>
-                <JsonView src={snapshot.metadata} theme="atom" enableClipboard={false} />
+                <JsonView
+                  collapsed={isCollapsedJson}
+                  src={snapshot.metadata}
+                  theme="atom"
+                  enableClipboard={false}
+                />
               </TableCell>
               <TableCell>
                 <Typography variant="body2">
