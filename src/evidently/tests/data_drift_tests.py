@@ -79,6 +79,7 @@ class ColumnsDriftParameters(ConditionTestParameters):
         )
 
     def to_dataframe(self) -> pd.DataFrame:
+
         return pd.DataFrame(
             [
                 {
@@ -97,6 +98,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
     group: ClassVar = DATA_DRIFT_GROUP.id
     _metric: DataDriftTable
     columns: Optional[List[str]]
+    feature_importance: Optional[bool]
 
     def __init__(
         self,
@@ -120,6 +122,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
         is_critical: bool = True,
+        feature_importance: Optional[bool] = False
     ):
         super().__init__(
             eq=eq,
@@ -142,6 +145,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
             num_stattest_threshold=num_stattest_threshold,
             text_stattest_threshold=text_stattest_threshold,
             per_column_stattest_threshold=per_column_stattest_threshold,
+            feature_importance=feature_importance,
         )
         self._metric = DataDriftTable(
             columns=self.columns,
@@ -155,6 +159,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
             num_stattest_threshold=self.num_stattest_threshold,
             text_stattest_threshold=self.text_stattest_threshold,
             per_column_stattest_threshold=self.per_column_stattest_threshold,
+            feature_importance=self.feature_importance,
         )
 
     @property
@@ -487,6 +492,17 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
         assert isinstance(parameters, ColumnsDriftParameters)
         df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
+        columns = ["Feature name"]
+        current_fi = obj.metric.get_result().current_fi
+        reference_fi = obj.metric.get_result().reference_fi
+        if current_fi is not None:
+            df["current_feature_importance"] = df["Feature name"].apply(lambda x: current_fi.get(x, ""))
+            columns.append("current_feature_importance")
+        if reference_fi is not None:
+            df["reference_feature_importance"] = df["Feature name"].apply(lambda x: reference_fi.get(x, ""))
+            columns.append("reference_feature_importance")
+        columns += ["Stattest", "Drift score", "Threshold", "Data Drift"]
+        df = df[columns]
         info.with_details(
             title="Drift Table",
             info=table_data(column_names=df.columns.to_list(), data=df.values),
@@ -502,9 +518,20 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
         if result.status == TestStatus.ERROR:
             return info
         parameters = result.parameters
+        current_fi = obj.metric.get_result().current_fi
+        reference_fi = obj.metric.get_result().reference_fi
         assert isinstance(parameters, ColumnsDriftParameters)
         df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
+        columns = ["Feature name"]
+        if current_fi is not None:
+            df["current_feature_importance"] = df["Feature name"].apply(lambda x: current_fi.get(x, ""))
+            columns.append("current_feature_importance")
+        if reference_fi is not None:
+            df["reference_feature_importance"] = df["Feature name"].apply(lambda x: reference_fi.get(x, ""))
+            columns.append("reference_feature_importance")
+        columns += ["Stattest", "Drift score", "Threshold", "Data Drift"]
+        df = df[columns]
         info.details = [
             DetailsInfo(
                 id="drift_table",
