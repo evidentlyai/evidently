@@ -20,5 +20,3 @@ __pycache__
 # see .devcontainer/devcontainer.json
 test-workspace
 workspace
-playwright-report
-test-results

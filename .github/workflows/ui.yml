@@ -14,7 +14,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  ui:
+  ui-build:
     name: Check UI with node v${{ matrix.node-version }}
     runs-on: ubuntu-20.04
     if: github.event.pull_request.draft == false
@@ -49,17 +49,55 @@ jobs:
         working-directory: ui
         run: pnpm build
 
+      - name: 🔬 Analyze deps
+        working-directory: ui/service
+        run: npx vite-bundle-visualizer -o vite-bundle-report/index.html
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: vite-bundle-visualizer-${{ matrix.node-version }}
+          path: ui/service/vite-bundle-report
+          retention-days: 30
+
+  ui-test:
+    name: Check UI with node v${{ matrix.node-version }}
+    runs-on: ubuntu-20.04
+    if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+          cache-dependency-path: ui/pnpm-lock.yaml
+
+      - name: 📥 Install node dependencies
+        working-directory: ui
+        run: pnpm i
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-          architecture: 'x64'
-          cache: 'pip'
+          python-version: "3.9"
+          architecture: "x64"
+          cache: "pip"
 
       - name: Install python dependencies
-        run: pip install -e .[dev,spark,fsspec]
+        run: pip install -e .
 
       - name: Run UI
         run: evidently ui --port 8000 --demo-projects all --workspace test-workspace &
@@ -68,13 +106,13 @@ jobs:
         working-directory: ui/service
         run: pnpm wait-on tcp:127.0.0.1:8000 -t 300000
 
-      - name: Run Playwright tests
+      - name: Run Service Playwright tests
         working-directory: ui/service
         run: pnpm test
 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report-node-v-${{ matrix.node-version }}
+          name: playwright-report
           path: ui/service/playwright-report/
           retention-days: 30
