@@ -39,7 +39,7 @@ jobs:
 
       - name: 📥 Install node dependencies
         working-directory: ui
-        run: pnpm i
+        run: pnpm i --frozen-lockfile
 
       - name: 🔬 Type check
         working-directory: ui
@@ -61,7 +61,7 @@ jobs:
           retention-days: 30
 
   ui-test:
-    name: Playwright tests
+    name: Playwright tests for Service
     runs-on: ubuntu-20.04
     if: github.event.pull_request.draft == false
 
@@ -69,10 +69,20 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18"
+          cache: "pnpm"
+          cache-dependency-path: ui/pnpm-lock.yaml
+
+      - name: 📥 Install node dependencies
+        working-directory: ui
+        run: pnpm i --frozen-lockfile
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -91,11 +101,11 @@ jobs:
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
-        run: npx wait-on tcp:127.0.0.1:8000 -t 300000
+        run: pnpm wait-on tcp:127.0.0.1:8000 -t 300000
 
       - name: Run Service Playwright tests
         working-directory: ui/service
-        run: npx playwright test
+        run: pnpm test
 
       - uses: actions/upload-artifact@v3
         if: always()
