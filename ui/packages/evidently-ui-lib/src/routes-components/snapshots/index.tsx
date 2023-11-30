@@ -140,7 +140,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Grid container gap={6}>
+        <Grid container gap={6} alignItems={'flex-end'}>
           <Grid item xs={12} md={4}>
             <Autocomplete
               multiple
@@ -155,7 +155,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
           </Grid>
 
           <Grid item xs={12} md={7}>
-            <Box display={'flex'} alignItems={'center'} gap={2}>
+            <Box display={'flex'} alignItems={'flex-end'} gap={2}>
               <TextField
                 fullWidth
                 value={metadataQuery}
