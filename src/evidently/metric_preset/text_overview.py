@@ -1,3 +1,4 @@
+from typing import Any
 from typing import Dict
 from typing import Optional
 
@@ -32,7 +33,7 @@ class TextOverviewPreset(MetricPreset):
         self.column_name = column_name
         self.descriptors = descriptors
 
-    def generate_metrics(self, data_definition: DataDefinition):
+    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         result = [
             ColumnSummaryMetric(column_name=self.column_name),
             TextDescriptorsDistribution(column_name=self.column_name, descriptors=self.descriptors),

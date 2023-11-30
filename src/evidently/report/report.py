@@ -116,7 +116,7 @@ class Report(ReportBase):
             elif isinstance(item, MetricPreset):
                 metrics = []
 
-                for metric_item in item.generate_metrics(data_definition):
+                for metric_item in item.generate_metrics(data_definition, additional_data=additional_data):
                     if isinstance(metric_item, BaseGenerator):
                         metrics.extend(metric_item.generate(data_definition))
 
