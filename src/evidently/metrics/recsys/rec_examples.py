@@ -56,8 +56,8 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         recommendations_type = data.column_mapping.recommendations_type
         user_id_column = data.data_definition.get_user_id_column()
         item_id_column = data.data_definition.get_item_id_column()
-        current_train_data = data.additional_datasets.get("current_train_data")
-        reference_train_data = data.additional_datasets.get("reference_train_data")
+        current_train_data = data.additional_data.get("current_train_data")
+        reference_train_data = data.additional_data.get("reference_train_data")
         current_train = {}
 
         if recommendations_type is None or user_id_column is None or item_id_column is None:

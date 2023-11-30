@@ -39,13 +39,13 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
     def calculate(self, data: InputData) -> ItemBiasMetricResult:
         column = data.data_definition.get_column(self.column_name)
         prediction_name = get_prediciton_name(data)
-        current_train_data = data.additional_datasets.get("current_train_data")
-        reference_train_data = data.additional_datasets.get("reference_train_data")
+        current_train_data = data.additional_data.get("current_train_data")
+        reference_train_data = data.additional_data.get("reference_train_data")
         if current_train_data is None:
             raise ValueError(
-                """current_train_data should be presented in additional_datasets with key "current_train_data":
+                """current_train_data should be presented in additional_data with key "current_train_data":
                 report.run(reference_data=reference_df, current_data=current_df, column_mapping=column_mapping,
-                additional_datasets={"current_train_data": current_train_df})"""
+                additional_data={"current_train_data": current_train_df})"""
             )
         col_item_id = data.data_definition.get_item_id_column()
         col_user_id = data.data_definition.get_user_id_column()
