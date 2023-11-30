@@ -34,7 +34,7 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
             None,
             data.column_mapping,
             data.data_definition,
-            additional_datasets=data.additional_datasets,
+            additional_data=data.additional_data,
         )
 
     def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):

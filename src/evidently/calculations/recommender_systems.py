@@ -19,7 +19,7 @@ def collect_dataset(
     if min_rel_score:
         df["target"] = (df["target"] >= min_rel_score).astype(int)
     if recommendations_type == "score":
-        df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False)
+        df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False).astype(int)
     if bin_data:
         df["target"] = (df["target"] > 0).astype(int)
     if not no_feedback_users:
@@ -39,11 +39,11 @@ def get_curr_and_ref_df(
     _, target_current, target_reference = data.get_data(target_column.column_name)
     recommendations_type = data.column_mapping.recommendations_type
     if recommendations_type is None:
-        recommendations_type = "scores"
-    if recommendations_type == "rank" and prediction.predicted_values is not None:
-        pred_name = prediction.predicted_values.column_name
-    elif prediction.prediction_probas is not None:
+        recommendations_type = "score"
+    if prediction.prediction_probas is not None:
         pred_name = prediction.prediction_probas[0].column_name
+    elif prediction.predicted_values is not None:
+        pred_name = prediction.predicted_values.column_name
     _, prediction_current, prediction_reference = data.get_data(pred_name)
     user_column = data.column_mapping.user_id
     if user_column is None:

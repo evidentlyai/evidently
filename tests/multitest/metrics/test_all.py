@@ -25,7 +25,7 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
                 reference_data=tdataset.reference,
                 current_data=tdataset.current,
                 column_mapping=tdataset.column_mapping,
-                additional_datasets=tdataset.additional_datasets,
+                additional_data=tdataset.additional_data,
             )
             report._inner_suite.raise_for_error()
             assert not report.show()
@@ -35,7 +35,7 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
         reference_data=tdataset.reference,
         current_data=tdataset.current,
         column_mapping=tdataset.column_mapping,
-        additional_datasets=tdataset.additional_datasets,
+        additional_data=tdataset.additional_data,
     )
     report._inner_suite.raise_for_error()
     assert report.show()

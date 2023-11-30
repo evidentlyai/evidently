@@ -14,10 +14,10 @@ from evidently.spark.engine import SparkMetricImplementation
 @metric_implementation(FeatureImportanceMetric)
 class SparkFeatureImportanceMetric(SparkMetricImplementation[FeatureImportanceMetric]):
     def calculate(self, context, data: SparkInputData) -> FeatureImportanceMetricResult:
-        if data.additional_datasets.get("current_feature_importance") is not None:
+        if data.additional_data.get("current_feature_importance") is not None:
             return FeatureImportanceMetricResult(
-                current=data.additional_datasets.get("current_feature_importance"),
-                reference=data.additional_datasets.get("reference_feature_importance"),
+                current=data.additional_data.get("current_feature_importance"),
+                reference=data.additional_data.get("reference_feature_importance"),
             )
 
         cur_count = data.current_data.count()
