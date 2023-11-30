@@ -1,3 +1,4 @@
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -76,7 +77,7 @@ class DataDriftTestPreset(TestPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_tests(self, data_definition: DataDefinition):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         embeddings_data = data_definition.embeddings()
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))

@@ -113,7 +113,7 @@ class TestSuite(ReportBase):
             column_mapping,
         )
         for preset in self._test_presets:
-            tests = preset.generate_tests(self._data_definition)
+            tests = preset.generate_tests(self._data_definition, additional_data=additional_data)
 
             for test in tests:
                 if isinstance(test, BaseGenerator):
