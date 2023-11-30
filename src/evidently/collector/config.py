@@ -55,6 +55,14 @@ class IntervalTrigger(CollectorTrigger):
         return False
 
 
+class RowsCountTrigger(CollectorTrigger):
+    rows_count: int = 1
+
+    def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
+        buffer_size = storage.get_buffer_size(config.id)
+        return buffer_size > 0 and buffer_size >= self.rows_count
+
+
 class ReportConfig(Config):
     metrics: List[Metric]
     tests: List[Test]
