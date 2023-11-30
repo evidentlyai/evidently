@@ -45,11 +45,11 @@ def test_curr_rank():
         reference_data=None,
         current_data=curr,
         column_mapping=column_mapping,
-        additional_datasets={"current_train_data": curr_train},
+        additional_data={"current_train_data": curr_train},
     )
 
     results = metric.get_result()
-    assert np.isclose(results.current_value, 0.13673694725218632)
+    assert np.isclose(results.current_value, 0.8632630527478137)
 
 
 def test_curr_scores():
@@ -78,8 +78,8 @@ def test_curr_scores():
         reference_data=None,
         current_data=curr,
         column_mapping=column_mapping,
-        additional_datasets={"current_train_data": curr_train},
+        additional_data={"current_train_data": curr_train},
     )
 
     results = metric.get_result()
-    assert np.isclose(results.current_value, 0.13673694725218632)
+    assert np.isclose(results.current_value, 0.8632630527478137)

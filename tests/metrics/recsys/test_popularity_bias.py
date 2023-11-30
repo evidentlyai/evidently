@@ -26,7 +26,7 @@ def test_curr_rank():
         reference_data=None,
         current_data=curr,
         column_mapping=column_mapping,
-        additional_datasets={"current_train_data": train},
+        additional_data={"current_train_data": train},
     )
 
     results = metric.get_result()
@@ -56,7 +56,7 @@ def test_curr_score():
         reference_data=None,
         current_data=curr,
         column_mapping=column_mapping,
-        additional_datasets={"current_train_data": train},
+        additional_data={"current_train_data": train},
     )
 
     results = metric.get_result()

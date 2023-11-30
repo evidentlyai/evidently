@@ -1,8 +1,10 @@
 from evidently.metrics.recsys.diversity import DiversityMetric
 from evidently.metrics.recsys.f_beta_top_k import FBetaTopKMetric
+from evidently.metrics.recsys.hit_rate_k import HitRateKMetric
 from evidently.metrics.recsys.item_bias import ItemBiasMetric
 from evidently.metrics.recsys.map_k import MAPKMetric
 from evidently.metrics.recsys.mar_k import MARKMetric
+from evidently.metrics.recsys.mrr import MRRKMetric
 from evidently.metrics.recsys.ndcg_k import NDCGKMetric
 from evidently.metrics.recsys.novelty import NoveltyMetric
 from evidently.metrics.recsys.pairwise_distance import PairwiseDistance
@@ -10,7 +12,9 @@ from evidently.metrics.recsys.personalisation import PersonalisationMetric
 from evidently.metrics.recsys.popularity_bias import PopularityBias
 from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
 from evidently.metrics.recsys.precision_top_k import PrecisionTopKMetric
+from evidently.metrics.recsys.rec_examples import RecCasesTable
 from evidently.metrics.recsys.recall_top_k import RecallTopKMetric
+from evidently.metrics.recsys.scores_distribution import ScoreDistribution
 from evidently.metrics.recsys.serendipity import SerendipityMetric
 from evidently.metrics.recsys.train_stats import TrainStats
 from evidently.metrics.recsys.user_bias import UserBiasMetric
@@ -18,6 +22,46 @@ from tests.multitest.conftest import NoopOutcome
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.metrics.conftest import TestMetric
 from tests.multitest.metrics.conftest import metric
+
+
+@metric
+def rec_cases_table():
+    return TestMetric(
+        "rec_cases_table",
+        RecCasesTable(),
+        NoopOutcome(),
+        include_tags=[DatasetTags.RECSYS],
+    )
+
+
+@metric
+def hit_rate_k_metric():
+    return TestMetric(
+        "hit_rate_k_metric",
+        HitRateKMetric(k=3),
+        NoopOutcome(),
+        include_tags=[DatasetTags.RECSYS],
+    )
+
+
+@metric
+def mrr_k_metric():
+    return TestMetric(
+        "mrr_k_metric",
+        MRRKMetric(k=3),
+        NoopOutcome(),
+        include_tags=[DatasetTags.RECSYS],
+    )
+
+
+@metric
+def score_distribution():
+    return TestMetric(
+        "score_distribution",
+        ScoreDistribution(k=3),
+        NoopOutcome(),
+        include_tags=[DatasetTags.RECSYS],
+    )
 
 
 @metric

@@ -27,10 +27,10 @@ class FeatureImportanceMetricResult(MetricResult):
 
 class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
     def calculate(self, data: InputData) -> FeatureImportanceMetricResult:
-        if data.additional_datasets.get("current_feature_importance") is not None:
+        if data.additional_data.get("current_feature_importance") is not None:
             return FeatureImportanceMetricResult(
-                current=data.additional_datasets.get("current_feature_importance"),
-                reference=data.additional_datasets.get("reference_feature_importance"),
+                current=data.additional_data.get("current_feature_importance"),
+                reference=data.additional_data.get("reference_feature_importance"),
             )
 
         curr_sampled_data = data.current_data.sample(min(SAMPLE_SIZE, data.current_data.shape[0]), random_state=0)
