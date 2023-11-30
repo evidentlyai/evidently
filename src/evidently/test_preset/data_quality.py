@@ -1,3 +1,5 @@
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -33,7 +35,7 @@ class DataQualityTestPreset(TestPreset):
         super().__init__()
         self.columns = columns
 
-    def generate_tests(self, data_definition: DataDefinition):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         return [
             TestAllColumnsShareOfMissingValues(columns=self.columns),
             TestAllColumnsMostCommonValueShare(columns=self.columns),
