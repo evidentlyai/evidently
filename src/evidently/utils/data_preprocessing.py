@@ -66,6 +66,7 @@ class DataDefinition:
     _task: Optional[str]
     _classification_labels: Optional[TargetNames]
     _reference_present: bool
+    _recommendations_type: Optional[str]
 
     def __init__(
         self,
@@ -80,6 +81,7 @@ class DataDefinition:
         task: Optional[str],
         classification_labels: Optional[TargetNames],
         reference_present: bool,
+        recommendations_type: Optional[str],
     ):
         self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
@@ -92,6 +94,7 @@ class DataDefinition:
         self._classification_labels = classification_labels
         self._embeddings = embeddings
         self._reference_present = reference_present
+        self._recommendations_type = recommendations_type
 
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self._columns[column_name]
@@ -148,6 +151,9 @@ class DataDefinition:
 
     def reference_present(self) -> bool:
         return self._reference_present
+
+    def recommendations_type(self) -> Optional[str]:
+        return self._recommendations_type
 
 
 def _process_column(
@@ -455,6 +461,10 @@ def create_data_definition(
         labels = list(data.current[target_column.column_name].unique())
         if data.reference is not None:
             labels = list(set(labels) | set(data.reference[target_column.column_name].unique()))
+    if mapping.recommendations_type == "rank":
+        recommendations_type = "rank"
+    else:
+        recommendations_type = "score"
 
     return DataDefinition(
         columns=[col for col in all_columns if col is not None],
@@ -468,6 +478,7 @@ def create_data_definition(
         classification_labels=mapping.target_names or labels,
         embeddings=embeddings,
         reference_present=reference_data is not None,
+        recommendations_type=recommendations_type,
     )
 
 

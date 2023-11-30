@@ -57,14 +57,12 @@ class DiversityMetric(Metric[DiversityMetricResult]):
         dist_matrix: np.ndarray,
         name_dict: Dict,
     ):
-        ascending = True
         if recommendations_type == "score":
-            ascending = False
-
+            df[predictions] = df.groupby(user_id)[predictions].transform("rank", ascending=False)
         ilds = []
         all_users = df[user_id].unique()
         for user in all_users:
-            rec_list = df[(df[user_id] == user)].sort_values(predictions, ascending=ascending)[item_id][:k]
+            rec_list = df[(df[user_id] == user) & (df[predictions] <= k)][item_id]
             user_res = 0
             for i, j in combinations(rec_list, 2):
                 user_res += dist_matrix[name_dict[i], name_dict[j]]

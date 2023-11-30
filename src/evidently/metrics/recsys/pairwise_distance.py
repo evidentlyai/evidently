@@ -53,16 +53,15 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
         all_items = all_items[[item_id.column_name] + self.item_features]
         if current_train_data is not None:
             if not np.in1d(self.item_features, current_train_data.columns).all():
-                raise ValueError("current_train_data must cotain item_features.")
+                raise ValueError("current_train_data must contain item_features.")
             all_items = pd.concat([all_items, current_train_data[[item_id.column_name] + self.item_features]])
         if reference_train_data is not None:
             if not np.in1d(self.item_features, reference_train_data.columns).all():
-                raise ValueError("reference_train_data must cotain item_features.")
+                raise ValueError("reference_train_data must contain item_features.")
             all_items = pd.concat([all_items, reference_train_data[[item_id.column_name] + self.item_features]])
 
         all_items.drop_duplicates(subset=[item_id.column_name], inplace=True)
         name_dict = {i: j for i, j in zip(all_items[item_id.column_name], range(all_items.shape[0]))}
-
         return PairwiseDistanceResult(
             dist_matrix=pairwise_distances(all_items[self.item_features], metric="cosine"), name_dict=name_dict
         )

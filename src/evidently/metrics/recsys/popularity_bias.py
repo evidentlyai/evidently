@@ -1,4 +1,3 @@
-import logging
 from typing import List
 from typing import Optional
 
@@ -118,9 +117,6 @@ class PopularityBias(Metric[PopularityBiasResult]):
             user_id,
             item_id,
         )
-        logging.warning(current_data[item_id].unique().dtype)
-        logging.warning(current_data[item_id].unique()[:5])
-        logging.warning(curr_user_interacted.index[:5])
         curr_coverage = len(np.intersect1d(current_data[item_id].unique(), curr_user_interacted.index)) / len(
             curr_user_interacted
         )

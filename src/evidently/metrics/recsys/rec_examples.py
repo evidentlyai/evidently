@@ -33,18 +33,18 @@ class RecCasesTableResults(MetricResult):
 
 class RecCasesTable(Metric[RecCasesTableResults]):
     user_ids: Optional[List[Union[int, str]]]
-    item_features: List[str]
+    display_features: Optional[List[str]]
     train_item_num: int
 
     def __init__(
         self,
         user_ids: Optional[List[Union[int, str]]] = None,
-        item_features: List[str] = [],
+        display_features: Optional[List[str]] = None,
         train_item_num: int = 10,
         options: AnyOptions = None,
     ) -> None:
         self.user_ids = user_ids
-        self.item_features = item_features
+        self.display_features = display_features
         self.train_item_num = train_item_num
         super().__init__(options=options)
 
@@ -59,12 +59,14 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         current_train_data = data.additional_data.get("current_train_data")
         reference_train_data = data.additional_data.get("reference_train_data")
         current_train = {}
+        display_features = self.display_features if self.display_features is not None else []
 
         if recommendations_type is None or user_id_column is None or item_id_column is None:
             raise ValueError("recommendations_type, user_id, item_id must be provided in the column mapping.")
 
         user_id = user_id_column.column_name
         item_id = item_id_column.column_name
+
         user_ids = self.user_ids
         if user_ids is None:
             if current_train_data is not None:
@@ -91,7 +93,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
             ascending = False
         curr = curr.sort_values(prediction_name, ascending=ascending)
         for user in user_ids:
-            res = curr.loc[curr[user_id] == user, [prediction_name, item_id] + self.item_features].astype(str)
+            res = curr.loc[curr[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
             current[str(user)] = res
 
         reference = {}
@@ -99,7 +101,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         if ref is not None:
             ref = ref.sort_values(prediction_name, ascending=ascending)
             for user in user_ids:
-                res = ref.loc[ref[user_id] == user, [prediction_name, item_id] + self.item_features].astype(str)
+                res = ref.loc[ref[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
                 reference[str(user)] = res
             if reference_train_data is not None:
                 if datetime_column is not None:
