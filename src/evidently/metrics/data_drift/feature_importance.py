@@ -53,9 +53,9 @@ def get_feature_importance_from_samples(
 
     for col in [x.column_name for x in cat_cols]:
         enc = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
-        curr_sampled_data[col] = enc.fit_transform(curr_sampled_data[col].values.reshape(-1, 1))
+        curr_sampled_data[col] = enc.fit_transform(curr_sampled_data[col].astype(str).values.reshape(-1, 1))
         if ref_sampled_data is not None:
-            ref_sampled_data[col] = enc.fit_transform(ref_sampled_data[col].values.reshape(-1, 1))
+            ref_sampled_data[col] = enc.fit_transform(ref_sampled_data[col].astype(str).values.reshape(-1, 1))
 
     task = data_definition.task
     target_column = data_definition.get_target_column()
@@ -67,12 +67,12 @@ def get_feature_importance_from_samples(
     else:
         model = RandomForestClassifier(min_samples_leaf=10)
 
-    model.fit(curr_sampled_data[columns], curr_sampled_data[target_name])
+    model.fit(curr_sampled_data[columns].fillna(0), curr_sampled_data[target_name])
     current_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
 
     reference_fi: Optional[Dict[str, float]] = None
     if ref_sampled_data is not None:
-        model.fit(ref_sampled_data[columns], ref_sampled_data[target_name])
+        model.fit(ref_sampled_data[columns].fillna(0), ref_sampled_data[target_name])
         reference_fi = {x: np.round(y, 3) for x, y in zip(columns, model.feature_importances_)}
     return FeatureImportanceMetricResult(current=current_fi, reference=reference_fi)
 
