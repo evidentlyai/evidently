@@ -3,13 +3,14 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import InputData
+from evidently.pipeline.column_mapping import RecomType
 
 
 def collect_dataset(
     users: pd.Series,
     target: pd.Series,
     preds: pd.Series,
-    recommendations_type: str,
+    recommendations_type: RecomType,
     min_rel_score: Optional[int],
     no_feedback_users: bool,
     bin_data: bool,
@@ -18,7 +19,7 @@ def collect_dataset(
     df.columns = ["users", "target", "preds"]
     if min_rel_score:
         df["target"] = (df["target"] >= min_rel_score).astype(int)
-    if recommendations_type == "score":
+    if recommendations_type == RecomType.SCORE:
         df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False).astype(int)
     if bin_data:
         df["target"] = (df["target"] > 0).astype(int)
@@ -37,9 +38,7 @@ def get_curr_and_ref_df(
     if target_column is None or prediction is None:
         raise ValueError("Target and prediction were not found in data.")
     _, target_current, target_reference = data.get_data(target_column.column_name)
-    recommendations_type = data.column_mapping.recommendations_type
-    if recommendations_type is None:
-        recommendations_type = "score"
+    recommendations_type = data.column_mapping.recommendations_type or RecomType.SCORE
     if prediction.prediction_probas is not None:
         pred_name = prediction.prediction_probas[0].column_name
     elif prediction.predicted_values is not None:

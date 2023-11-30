@@ -12,6 +12,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 
@@ -45,7 +46,7 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
         all_items = curr.copy()
         if ref is not None:
             all_items = pd.concat([curr, ref])
-        if recommendations_type == "score":
+        if recommendations_type == RecomType.SCORE:
             all_items[prediction_name] = all_items.groupby(user_id.column_name)[prediction_name].transform(
                 "rank", ascending=False
             )

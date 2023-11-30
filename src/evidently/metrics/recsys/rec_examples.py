@@ -13,6 +13,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
@@ -87,7 +88,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
                 res = user_df[-min(self.train_item_num, user_df.shape[0]) :][item_id].astype(str)
                 current_train[str(user)] = list(res)
         current = {}
-        if recommendations_type == "rank":
+        if recommendations_type == RecomType.RANK:
             ascending = True
         else:
             ascending = False

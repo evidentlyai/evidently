@@ -10,6 +10,7 @@ from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -57,7 +58,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
 
         curr_train = current_train_data.drop_duplicates(subset=[col_item_id.column_name], keep="last")
         curr = data.current_data.copy()
-        if recommendations_type == "score":
+        if recommendations_type == RecomType.SCORE:
             curr[prediction_name] = curr.groupby(col_user_id.column_name)[prediction_name].transform(
                 "rank", ascending=False
             )
@@ -76,7 +77,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
         if data.reference_data is not None:
             ref_train = curr_train
             ref = data.reference_data.copy()
-            if recommendations_type == "score":
+            if recommendations_type == RecomType.SCORE:
                 ref[prediction_name] = ref.groupby(col_user_id.column_name)[prediction_name].transform(
                     "rank", ascending=False
                 )
