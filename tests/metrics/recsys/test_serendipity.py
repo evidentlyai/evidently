@@ -3,6 +3,7 @@ import pandas as pd
 
 from evidently.metrics import SerendipityMetric
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pipeline.column_mapping import RecomType
 from evidently.report import Report
 
 
@@ -40,7 +41,7 @@ def test_curr_rank():
     )
     metric = SerendipityMetric(k=3, item_features=["item_f1", "item_f2"])
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recommendations_type="rank")
+    column_mapping = ColumnMapping(recommendations_type=RecomType.RANK)
     report.run(
         reference_data=None,
         current_data=curr,
@@ -73,7 +74,7 @@ def test_curr_scores():
     )
     metric = SerendipityMetric(k=3, item_features=["item_f1", "item_f2"])
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recommendations_type="score")
+    column_mapping = ColumnMapping(recommendations_type=RecomType.SCORE)
     report.run(
         reference_data=None,
         current_data=curr,
