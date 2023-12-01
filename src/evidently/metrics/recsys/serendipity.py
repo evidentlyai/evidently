@@ -71,8 +71,8 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             user_df = df.loc[df[user_id] == user, item_id]
             res = 0
             for i, j in product(user_train, user_df):
-                res += dist_matrix[name_dict[i], name_dict[j]]
-            user_res.append(len(user_df) - res / len(user_train))
+                res += 1 - dist_matrix[name_dict[i], name_dict[j]]
+            user_res.append(1 - res / len(user_train))
         distr_data = pd.Series(user_res)
         value = np.mean(user_res)
         return distr_data, value
@@ -87,13 +87,13 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         recommendations_type = data.column_mapping.recommendations_type
         if user_id is None or item_id is None or recommendations_type is None or target is None:
             raise ValueError("user_id, item_id, recommendations_type and target should be specified")
-        current_train_data = data.additional_datasets.get("current_train_data")
-        reference_train_data = data.additional_datasets.get("reference_train_data")
+        current_train_data = data.additional_data.get("current_train_data")
+        reference_train_data = data.additional_data.get("reference_train_data")
         if current_train_data is None:
             raise ValueError(
-                """current_train_data should be presented in additional_datasets with key "current_train_data":
+                """current_train_data should be presented in additional_data with key "current_train_data":
                 report.run(reference_data=reference_df, current_data=current_df, column_mapping=column_mapping,
-                additional_datasets={"current_train_data": current_train_df})"""
+                additional_data={"current_train_data": current_train_df})"""
             )
         prediction_name = get_prediciton_name(data)
         curr_distr_data, curr_value = self.get_serendipity(

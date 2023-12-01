@@ -246,7 +246,7 @@ export interface ProjectDetails extends ProjectInfo {
   dashboard: { tabs: DashboardTab[]; tab_id_to_panel_ids: Record<string, string[]> }
 }
 
-type MetadataValueType = Record<string, string | string[] | Record<string, string>>
+export type MetadataValueType = Record<string, string | string[] | Record<string, string>>
 
 export interface SnapshotInfo {
   id: string

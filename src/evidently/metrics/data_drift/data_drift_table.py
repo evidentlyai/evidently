@@ -98,7 +98,7 @@ class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
             self._feature_importance_metric = None
 
     def get_parameters(self) -> tuple:
-        return None if self.columns is None else tuple(self.columns), self.drift_options
+        return (None if self.columns is None else tuple(self.columns), self.feature_importance, self.drift_options)
 
     def calculate(self, data: InputData) -> DataDriftTableResults:
         if data.reference_data is None:

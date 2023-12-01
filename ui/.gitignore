@@ -1,2 +1,5 @@
 node_modules
 .tsc-dts
+playwright-report
+test-results
+vite-bundle-report

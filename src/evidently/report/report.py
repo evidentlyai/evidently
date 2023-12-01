@@ -77,7 +77,7 @@ class Report(ReportBase):
         current_data,
         column_mapping: Optional[ColumnMapping] = None,
         engine: Optional[Type[Engine]] = None,
-        additional_datasets: Dict[str, Any] = None,
+        additional_data: Dict[str, Any] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -116,7 +116,7 @@ class Report(ReportBase):
             elif isinstance(item, MetricPreset):
                 metrics = []
 
-                for metric_item in item.generate_metrics(data_definition):
+                for metric_item in item.generate_metrics(data_definition, additional_data=additional_data):
                     if isinstance(metric_item, BaseGenerator):
                         metrics.extend(metric_item.generate(data_definition))
 
@@ -139,7 +139,7 @@ class Report(ReportBase):
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
 
         data = GenericInputData(
-            reference_data, current_data, column_mapping, data_definition, additional_datasets=additional_datasets or {}
+            reference_data, current_data, column_mapping, data_definition, additional_data=additional_data or {}
         )
         self._inner_suite.run_calculate(data)
 

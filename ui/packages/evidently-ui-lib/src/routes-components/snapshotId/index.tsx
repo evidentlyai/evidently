@@ -6,8 +6,11 @@ import { crumbFunction } from '~/components/BreadCrumbs'
 import { loaderData } from './data'
 import { Api } from '~/api'
 
-export const handle: { crumb: crumbFunction<loaderData> } = {
-  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) })
+export const handle: { crumb: crumbFunction<loaderData>; hide: Record<string, Boolean> } = {
+  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
+  hide: {
+    snapshotList: true
+  }
 }
 
 export const SnapshotTemplate = ({ api }: { api: Api }) => {

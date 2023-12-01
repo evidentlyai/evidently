@@ -26,15 +26,15 @@ class TrainStats(Metric[TrainStatsResult]):
         super().__init__(options=options)
 
     def calculate(self, data: InputData) -> TrainStatsResult:
-        current_train_data = data.additional_datasets.get("current_train_data")
-        reference_train_data = data.additional_datasets.get("reference_train_data")
+        current_train_data = data.additional_data.get("current_train_data")
+        reference_train_data = data.additional_data.get("reference_train_data")
         user_id = data.column_mapping.user_id
         item_id = data.column_mapping.item_id
         if current_train_data is None:
             raise ValueError(
-                """current_train_data should be presented in additional_datasets with key "current_train_data":
+                """current_train_data should be presented in additional_data with key "current_train_data":
                 report.run(reference_data=reference_df, current_data=current_df, column_mapping=column_mapping,
-                additional_datasets={"current_train_data": current_train_df})"""
+                additional_data={"current_train_data": current_train_df})"""
             )
 
         curr_user_interacted = current_train_data.groupby(item_id)[user_id].nunique()
