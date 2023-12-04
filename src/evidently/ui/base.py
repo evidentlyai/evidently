@@ -26,9 +26,9 @@ from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
-from evidently.ui.dashboards.base import DashboardConfig
-from evidently.ui.dashboards.base import PanelValue
-from evidently.ui.dashboards.base import ReportFilter
+from evidently.ui.dashboard.base import DashboardConfig
+from evidently.ui.dashboard.base import PanelValue
+from evidently.ui.dashboard.base import ReportFilter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
@@ -172,7 +172,7 @@ class Project(BaseModel):
         self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
     ) -> DashboardInfo:
         reports_tmp = list(self.reports_and_test_suites.values())
-        from evidently.ui.dashboards.base import build_dashboard
+        from evidently.ui.dashboard.base import build_dashboard
 
         return build_dashboard(
             self.dashboard, self.project_manager.data, self.id, timestamp_start, timestamp_end, reports_tmp

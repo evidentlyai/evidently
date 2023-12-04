@@ -29,7 +29,7 @@ from evidently.report import Report
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import ReportBase
 from evidently.test_suite import TestSuite
-from evidently.ui.dashboards.utils import getattr_nested
+from evidently.ui.dashboard.utils import getattr_nested
 
 if TYPE_CHECKING:
     from evidently.ui.base import DataStorage

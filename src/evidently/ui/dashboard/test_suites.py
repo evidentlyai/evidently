@@ -25,14 +25,14 @@ from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
 from evidently.ui.base import DataStorage
-from evidently.ui.dashboards.base import DashboardPanel
-from evidently.ui.dashboards.base import ReportFilter
-from evidently.ui.dashboards.base import assign_panel_id
-from evidently.ui.dashboards.utils import TEST_COLORS
-from evidently.ui.dashboards.utils import CounterAgg
-from evidently.ui.dashboards.utils import TestSuitePanelType
-from evidently.ui.dashboards.utils import _get_test_hover
-from evidently.ui.dashboards.utils import getattr_nested
+from evidently.ui.dashboard.base import DashboardPanel
+from evidently.ui.dashboard.base import ReportFilter
+from evidently.ui.dashboard.base import assign_panel_id
+from evidently.ui.dashboard.utils import TEST_COLORS
+from evidently.ui.dashboard.utils import CounterAgg
+from evidently.ui.dashboard.utils import TestSuitePanelType
+from evidently.ui.dashboard.utils import _get_test_hover
+from evidently.ui.dashboard.utils import getattr_nested
 
 
 class TestFilter(BaseModel):

@@ -15,12 +15,12 @@ from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite
-from evidently.ui.dashboards.base import PanelValue
-from evidently.ui.dashboards.base import ReportFilter
-from evidently.ui.dashboards.reports import DashboardPanelCounter
-from evidently.ui.dashboards.reports import DashboardPanelPlot
-from evidently.ui.dashboards.utils import CounterAgg
-from evidently.ui.dashboards.utils import PlotType
+from evidently.ui.dashboards import CounterAgg
+from evidently.ui.dashboards import DashboardPanelCounter
+from evidently.ui.dashboards import DashboardPanelPlot
+from evidently.ui.dashboards import PanelValue
+from evidently.ui.dashboards import PlotType
+from evidently.ui.dashboards import ReportFilter
 from evidently.ui.demo_projects import DemoProject
 from evidently.ui.workspace.base import WorkspaceBase
 

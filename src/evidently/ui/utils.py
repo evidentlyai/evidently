@@ -110,4 +110,3 @@ def skip_jsonable_encoder(f):
         _skip_jsonable_encoder_cache[return_model] = new_return_model
     f.__annotations__["return"] = _skip_jsonable_encoder_cache[return_model]
     return f
-

@@ -15,12 +15,12 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.suite.base_suite import ReportBase
 from evidently.ui.base import DataStorage
-from evidently.ui.dashboards.base import DashboardPanel
-from evidently.ui.dashboards.base import PanelValue
-from evidently.ui.dashboards.base import assign_panel_id
-from evidently.ui.dashboards.utils import CounterAgg
-from evidently.ui.dashboards.utils import PlotType
-from evidently.ui.dashboards.utils import _get_metric_hover
+from evidently.ui.dashboard.base import DashboardPanel
+from evidently.ui.dashboard.base import PanelValue
+from evidently.ui.dashboard.base import assign_panel_id
+from evidently.ui.dashboard.utils import CounterAgg
+from evidently.ui.dashboard.utils import PlotType
+from evidently.ui.dashboard.utils import _get_metric_hover
 from evidently.ui.type_aliases import ProjectID
 
 
