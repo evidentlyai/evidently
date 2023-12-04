@@ -8,6 +8,7 @@ from watchdog.events import EVENT_TYPE_MOVED
 from watchdog.events import FileSystemEvent
 from watchdog.events import FileSystemEventHandler
 
+from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.local.base import METADATA_PATH
 from evidently.ui.storage.local.base import SNAPSHOTS
 from evidently.ui.storage.local.base import LocalState
@@ -51,7 +52,7 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         if project_id is None:
             return
         if event.event_type == EVENT_TYPE_MODIFIED:
-            project = load_project(self.state.location, project_id).bind(self.state.project_manager)
+            project = load_project(self.state.location, project_id).bind(self.state.project_manager, NO_USER.id)
             self.state.projects[project.id] = project
         if event.event_type == EVENT_TYPE_DELETED:
             pid = uuid.UUID(project_id)

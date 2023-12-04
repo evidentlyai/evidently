@@ -23,6 +23,7 @@ from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.dashboard.base import PanelValue
 from evidently.ui.dashboard.base import ReportFilter
+from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
@@ -92,7 +93,7 @@ class RemoteMetadataStorage(MetadataStorage):
 
     def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         return [
-            p.bind(self)
+            p.bind(self, NO_USER.id)
             for p in self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[Project])
         ]
 
