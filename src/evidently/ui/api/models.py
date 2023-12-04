@@ -6,13 +6,18 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
-from evidently.ui.workspace import Project
+from evidently.ui.base import Project
+from evidently.ui.base import Team
+from evidently.ui.base import User
+from evidently.ui.type_aliases import TeamID
+from evidently.ui.type_aliases import UserID
 
 
 class MetricModel(BaseModel):
@@ -82,3 +87,21 @@ class DashboardInfoModel(BaseModel):
         info = project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
 
         return cls(**dataclasses.asdict(info), **time_range)
+
+
+class TeamModel(BaseModel):
+    id: TeamID
+    name: str
+
+    @classmethod
+    def from_team(cls, team: Team):
+        return TeamModel(id=team.id, name=team.name)
+
+
+class UserModel(BaseModel):
+    id: UserID
+    name: str
+
+    @classmethod
+    def from_user(cls, user: User):
+        return TeamModel(id=user.id, name=user.name)

@@ -1,5 +1,6 @@
 import os.path
 import re
+import uuid
 
 from watchdog.events import EVENT_TYPE_DELETED
 from watchdog.events import EVENT_TYPE_MODIFIED
@@ -7,17 +8,18 @@ from watchdog.events import EVENT_TYPE_MOVED
 from watchdog.events import FileSystemEvent
 from watchdog.events import FileSystemEventHandler
 
-from evidently.ui.workspace import METADATA_PATH
-from evidently.ui.workspace import SNAPSHOTS
-from evidently.ui.workspace import Workspace
+from evidently.ui.storage.local.base import METADATA_PATH
+from evidently.ui.storage.local.base import SNAPSHOTS
+from evidently.ui.storage.local.base import LocalState
+from evidently.ui.storage.local.base import load_project
 
 uuid4hex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 
 
 class WorkspaceDirHandler(FileSystemEventHandler):
-    def __init__(self, workspace: Workspace):
-        self.workspace = workspace
-        self.path = os.path.abspath(self.workspace.path)
+    def __init__(self, state: LocalState):
+        self.state = state
+        self.path = state.location.path
 
     def dispatch(self, event):
         if self.is_project_event(event):
@@ -49,24 +51,29 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         if project_id is None:
             return
         if event.event_type == EVENT_TYPE_MODIFIED:
-            self.workspace.reload_project(project_id)
+            project = load_project(self.state.location, project_id).bind(self.state.project_manager)
+            self.state.projects[project.id] = project
         if event.event_type == EVENT_TYPE_DELETED:
-            self.workspace.delete_project(project_id)
+            pid = uuid.UUID(project_id)
+            del self.state.projects[pid]
+            del self.state.snapshots[pid]
 
     def on_snapshot_event(self, event):
         project_id, snapshot_id = self.parse_project_and_snapshot_id(event.src_path)
         if project_id is None or snapshot_id is None:
             return
-        project = self.workspace.get_project(project_id)
+        pid = uuid.UUID(project_id)
+        sid = uuid.UUID(snapshot_id)
+        project = self.state.projects.get(pid)
         if project is None:
             return
         if (event.event_type == EVENT_TYPE_MODIFIED or event.event_type == EVENT_TYPE_MOVED) and os.path.exists(
             event.src_path
         ):
-            project.reload_snapshot(snapshot_id)
+            self.state.reload_snapshot(project, sid)
         if (
             event.event_type == EVENT_TYPE_DELETED
             or event.event_type == EVENT_TYPE_MOVED
             and not os.path.exists(event.src_path)
         ):
-            project.delete_snapshot(snapshot_id)
+            del self.state.snapshots[pid][sid]

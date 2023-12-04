@@ -110,29 +110,14 @@ def create_test_suite(i: int, data):
 
 def create_project(workspace: WorkspaceBase, name: str):
     project = workspace.create_project(name)
-    project.description = "A toy demo project using Bike Demand forecasting dataset"
-
-    drift_tab = project.dashboard.create_tab("Data Drift")
-    quality_tab = project.dashboard.create_tab("Data Quality")
-
+    project.description = "Another toy demo project using Bike Demand forecasting dataset"
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             agg=CounterAgg.NONE,
-            title="Bike Rental Demand Forecast",
-        ),
-        tab=drift_tab,
+            title="Other Bike Rental Demand Forecast",
+        )
     )
-
-    project.dashboard.add_panel(
-        DashboardPanelCounter(
-            filter=ReportFilter(metadata_values={}, tag_values=[]),
-            agg=CounterAgg.NONE,
-            title="Bike Rental Demand Forecast",
-        ),
-        tab="Named Tab",
-    )
-
     project.dashboard.add_panel(
         DashboardPanelCounter(
             title="Model Calls",
@@ -145,10 +130,8 @@ def create_project(workspace: WorkspaceBase, name: str):
             text="count",
             agg=CounterAgg.SUM,
             size=WidgetSize.HALF,
-        ),
-        tab=quality_tab,
+        )
     )
-
     project.dashboard.add_panel(
         DashboardPanelCounter(
             title="Share of Drifted Features",
@@ -163,7 +146,6 @@ def create_project(workspace: WorkspaceBase, name: str):
             size=WidgetSize.HALF,
         )
     )
-
     project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Target and Prediction",
@@ -184,8 +166,7 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.FULL,
-        ),
-        tab=drift_tab,
+        )
     )
     project.dashboard.add_panel(
         DashboardPanelPlot(
@@ -200,10 +181,8 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.HALF,
-        ),
-        tab=quality_tab,
+        )
     )
-
     project.dashboard.add_panel(
         DashboardPanelPlot(
             title="MAPE",
@@ -217,10 +196,8 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.HALF,
-        ),
-        tab="Named Tab",
+        )
     )
-
     project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Features Drift (Wasserstein Distance)",
@@ -253,15 +230,14 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.FULL,
-        ),
-        tab="Named Tab",
+        )
     )
     project.save()
     return project
 
 
-bikes_demo_project = DemoProject(
-    name="Demo project - Bikes",
+other_bikes_demo_project = DemoProject(
+    name="Demo project - Other Bikes",
     create_data=create_data,
     create_report=create_report,
     create_project=create_project,
@@ -271,4 +247,4 @@ bikes_demo_project = DemoProject(
 
 if __name__ == "__main__":
     # create_demo_project("http://localhost:8080")
-    bikes_demo_project.create("workspace")
+    other_bikes_demo_project.create("workspace")
