@@ -24,15 +24,13 @@ report
 
 * The additional training dataset should have the following structure: 
 
-+------+------+--------+
 | user | item | target |
-+------+------+--------+
-| id1  | id1  |    1   |
-| id1  | id8  |    1   |
-| id2  | id3  |    1   |
-| id2  | i56  |    1   |
-| ...  | ...  |    ... |
-+------+------+--------+
+|---|---|---|
+| id1 | id1 | 1 |
+| id2 | id9 | 1 |
+| id3 | id2 | 1 |
+| id3 | id1 | 1 |
+| id4 | id6 | 1 |
 
 * The names of the columns with `user_id` and `item_id` should match the corresponding columns in the current (and optional reference) data.
 * The name of the column with the interaction result should match the name of the `target` column in the current (and optional reference) data.
