@@ -66,7 +66,8 @@ setup_args = dict(
         "typer>=0.3",
         "rich>=13",
         "iterative-telemetry>=0.0.5",
-        "pyarrow<11.0dev"
+        "pyarrow<15",
+        "fsspec>=2021.04.0"
     ],
     extras_require={
         "dev": [
