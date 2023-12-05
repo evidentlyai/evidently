@@ -1,9 +1,9 @@
 ---
-description: How to prepare data for evaluating recommender systems.
+description: How to pass additional data for ranking and recommendations.
 ---
 
 # Column mapping 
-You must define column mapping to run evaluations for recommender systems on your `current` and (optional) `reference data. Column mapping helps point to the columns with user ID, item ID, prediction, and target. 
+You must define column mapping to run evaluations for recommender or ranking systems on your `current` and (optional) `reference` data. Column mapping helps point to the columns with user ID, item ID, prediction, and target. 
 
 Check out the section on the [column mapping page](https://docs.evidentlyai.com/user-guide/input-data/column-mapping#recommender-systems).
 
