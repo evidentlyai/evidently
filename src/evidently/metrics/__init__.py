@@ -45,15 +45,19 @@ from .data_quality.text_descriptors_correlation_metric import TextDescriptorsCor
 from .data_quality.text_descriptors_distribution import TextDescriptorsDistribution
 from .recsys.diversity import DiversityMetric
 from .recsys.f_beta_top_k import FBetaTopKMetric
+from .recsys.hit_rate_k import HitRateKMetric
 from .recsys.item_bias import ItemBiasMetric
 from .recsys.map_k import MAPKMetric
 from .recsys.mar_k import MARKMetric
+from .recsys.mrr import MRRKMetric
 from .recsys.ndcg_k import NDCGKMetric
 from .recsys.novelty import NoveltyMetric
 from .recsys.personalisation import PersonalisationMetric
 from .recsys.popularity_bias import PopularityBias
 from .recsys.precision_top_k import PrecisionTopKMetric
+from .recsys.rec_examples import RecCasesTable
 from .recsys.recall_top_k import RecallTopKMetric
+from .recsys.scores_distribution import ScoreDistribution
 from .recsys.serendipity import SerendipityMetric
 from .recsys.user_bias import UserBiasMetric
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
@@ -132,4 +136,8 @@ __all__ = [
     "UserBiasMetric",
     "ItemBiasMetric",
     "SerendipityMetric",
+    "HitRateKMetric",
+    "ScoreDistribution",
+    "MRRKMetric",
+    "RecCasesTable",
 ]

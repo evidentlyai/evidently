@@ -28,7 +28,7 @@ class TestDataset:
     name: str = ""
     current: Any = None
     reference: Any = None
-    additional_datasets: Any = None
+    additional_data: Any = None
 
     tags: List[DatasetTags] = dataclasses.field(default_factory=list)
     column_mapping: Optional[ColumnMapping] = None

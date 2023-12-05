@@ -9,11 +9,7 @@ import {
   WidgetInfo
 } from './index'
 
-class JsonParser {
-  parse(rawJson: string) {
-    return JSON.parse(rawJson)
-  }
-}
+import { JsonParser } from './JsonParser'
 
 export class RemoteApi implements Api {
   private readonly endpoint: string

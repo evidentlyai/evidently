@@ -13,6 +13,7 @@ from evidently.metric_results import HistogramData
 from evidently.metrics.recsys.train_stats import TrainStats
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -42,9 +43,11 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
         self._train_stats = TrainStats()
         super().__init__(options=options)
 
-    def get_miuf(self, df, k, recommendations_type, user_name, item_name, prediction_name, interactions):
+    def get_miuf(
+        self, df, k, recommendations_type: Optional[RecomType], user_name, item_name, prediction_name, interactions
+    ):
         data = df.copy()
-        if recommendations_type == "score":
+        if recommendations_type == RecomType.SCORE:
             data[prediction_name] = data.groupby(user_name)[prediction_name].transform("rank", ascending=False)
         data = data[data[prediction_name] <= k]
         data["miuf"] = -np.log2(data[item_name].map(interactions)).replace([np.inf, -np.inf], np.nan)

@@ -1,3 +1,4 @@
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -69,7 +70,7 @@ class DataDriftPreset(MetricPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_metrics(self, data_definition: DataDefinition):
+    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         result = [
             DatasetDriftMetric(
                 columns=self.columns,

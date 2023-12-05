@@ -18,7 +18,8 @@ import type { loaderData } from './data'
 
 import EditIcon from '@mui/icons-material/Edit'
 
-import { useHover } from '~/hooks/useHover'
+import { useHover } from '@uidotdev/usehooks'
+
 import { ProjectInfo } from '~/api'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -139,7 +140,7 @@ interface projectProps {
 }
 
 const Project = ({ project }: projectProps) => {
-  const { hovered, hoverEventHandlers } = useHover()
+  const [ref, hovering] = useHover()
   const [isEditMode, setEditMode] = useState(false)
 
   const navigation = useNavigation()
@@ -151,14 +152,14 @@ const Project = ({ project }: projectProps) => {
   return (
     <Paper
       elevation={3}
-      {...hoverEventHandlers}
+      ref={ref}
       style={{
         margin: '5px',
         padding: '15px',
         position: 'relative'
       }}
     >
-      <Fade in={hovered}>
+      <Fade in={hovering}>
         <IconButton
           disabled={isDisabled}
           style={{ position: 'absolute', top: '3px', right: '3px' }}

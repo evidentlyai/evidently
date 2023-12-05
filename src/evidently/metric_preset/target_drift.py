@@ -1,3 +1,4 @@
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -64,7 +65,9 @@ class TargetDriftPreset(MetricPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_metrics(self, data_definition: DataDefinition) -> Sequence[Metric]:
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> Sequence[Metric]:
         target = data_definition.get_target_column()
         prediction = data_definition.get_prediction_columns()
         result: List[Metric] = []

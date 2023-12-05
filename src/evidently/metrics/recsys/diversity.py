@@ -15,6 +15,7 @@ from evidently.metric_results import HistogramData
 from evidently.metrics.recsys.pairwise_distance import PairwiseDistance
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -50,21 +51,19 @@ class DiversityMetric(Metric[DiversityMetricResult]):
         self,
         df: pd.DataFrame,
         k: int,
-        recommendations_type: str,
+        recommendations_type: RecomType,
         user_id: str,
         item_id: str,
         predictions: str,
         dist_matrix: np.ndarray,
         name_dict: Dict,
     ):
-        ascending = True
-        if recommendations_type == "score":
-            ascending = False
-
+        if recommendations_type == RecomType.SCORE:
+            df[predictions] = df.groupby(user_id)[predictions].transform("rank", ascending=False)
         ilds = []
         all_users = df[user_id].unique()
         for user in all_users:
-            rec_list = df[(df[user_id] == user)].sort_values(predictions, ascending=ascending)[item_id][:k]
+            rec_list = df[(df[user_id] == user) & (df[predictions] <= k)][item_id]
             user_res = 0
             for i, j in combinations(rec_list, 2):
                 user_res += dist_matrix[name_dict[i], name_dict[j]]

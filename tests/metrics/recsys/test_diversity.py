@@ -3,6 +3,7 @@ import pandas as pd
 
 from evidently.metrics import DiversityMetric
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pipeline.column_mapping import RecomType
 from evidently.report import Report
 
 
@@ -19,7 +20,7 @@ def test_curr_rank():
     )
     metric = DiversityMetric(k=4, item_features=["item_f1", "item_f2"])
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recommendations_type="rank")
+    column_mapping = ColumnMapping(recommendations_type=RecomType.RANK)
     report.run(reference_data=None, current_data=curr, column_mapping=column_mapping)
 
     results = metric.get_result()
@@ -39,7 +40,7 @@ def test_curr_scores():
     )
     metric = DiversityMetric(k=4, item_features=["item_f1", "item_f2"])
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recommendations_type="score")
+    column_mapping = ColumnMapping(recommendations_type=RecomType.SCORE)
     report.run(reference_data=None, current_data=curr, column_mapping=column_mapping)
 
     results = metric.get_result()
