@@ -15,6 +15,7 @@ from evidently.metric_results import HistogramData
 from evidently.metrics.recsys.pairwise_distance import PairwiseDistance
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -50,7 +51,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         self,
         k: int,
         df: pd.DataFrame,
-        recommendations_type: str,
+        recommendations_type: RecomType,
         train_df: pd.DataFrame,
         dist_matrix: np.ndarray,
         prediction_name: str,
@@ -60,7 +61,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         name_dict: Dict,
     ):
         df = df.copy()
-        if recommendations_type == "score":
+        if recommendations_type == RecomType.SCORE:
             df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
         df = df.loc[(df[target_name] > 0) & (df[prediction_name] <= k), [user_id, item_id]]
         all_users = df[user_id].unique()

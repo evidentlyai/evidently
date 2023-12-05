@@ -283,6 +283,7 @@ def create_data_definition_spark(
         classification_labels=mapping.target_names or labels,
         embeddings=embeddings,
         reference_present=reference_data is not None,
+        recommendations_type=mapping.recommendations_type,
     )
 
 

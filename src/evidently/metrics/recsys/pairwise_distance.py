@@ -12,6 +12,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 
@@ -45,7 +46,7 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
         all_items = curr.copy()
         if ref is not None:
             all_items = pd.concat([curr, ref])
-        if recommendations_type == "score":
+        if recommendations_type == RecomType.SCORE:
             all_items[prediction_name] = all_items.groupby(user_id.column_name)[prediction_name].transform(
                 "rank", ascending=False
             )
@@ -53,16 +54,15 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
         all_items = all_items[[item_id.column_name] + self.item_features]
         if current_train_data is not None:
             if not np.in1d(self.item_features, current_train_data.columns).all():
-                raise ValueError("current_train_data must cotain item_features.")
+                raise ValueError("current_train_data must contain item_features.")
             all_items = pd.concat([all_items, current_train_data[[item_id.column_name] + self.item_features]])
         if reference_train_data is not None:
             if not np.in1d(self.item_features, reference_train_data.columns).all():
-                raise ValueError("reference_train_data must cotain item_features.")
+                raise ValueError("reference_train_data must contain item_features.")
             all_items = pd.concat([all_items, reference_train_data[[item_id.column_name] + self.item_features]])
 
         all_items.drop_duplicates(subset=[item_id.column_name], inplace=True)
         name_dict = {i: j for i, j in zip(all_items[item_id.column_name], range(all_items.shape[0]))}
-
         return PairwiseDistanceResult(
             dist_matrix=pairwise_distances(all_items[self.item_features], metric="cosine"), name_dict=name_dict
         )

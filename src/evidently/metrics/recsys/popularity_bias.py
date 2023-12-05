@@ -1,4 +1,3 @@
-import logging
 from typing import List
 from typing import Optional
 
@@ -14,6 +13,7 @@ from evidently.metric_results import HistogramData
 from evidently.metrics.recsys.train_stats import TrainStats
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -104,7 +104,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
         item_id = col_item_id.column_name
 
         current_data = data.current_data.copy()
-        if recommendations_type == "score":
+        if recommendations_type == RecomType.SCORE:
             current_data[prediction_name] = current_data.groupby(user_id)[prediction_name].transform(
                 "rank", ascending=False
             )
@@ -118,9 +118,6 @@ class PopularityBias(Metric[PopularityBiasResult]):
             user_id,
             item_id,
         )
-        logging.warning(current_data[item_id].unique().dtype)
-        logging.warning(current_data[item_id].unique()[:5])
-        logging.warning(curr_user_interacted.index[:5])
         curr_coverage = len(np.intersect1d(current_data[item_id].unique(), curr_user_interacted.index)) / len(
             curr_user_interacted
         )
@@ -133,7 +130,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
         reference_distr_data: Optional[pd.Series] = None
         if data.reference_data is not None:
             reference_data = data.reference_data.copy()
-            if recommendations_type == "score":
+            if recommendations_type == RecomType.SCORE:
                 reference_data[prediction_name] = reference_data.groupby(user_id)[prediction_name].transform(
                     "rank", ascending=False
                 )

@@ -13,6 +13,7 @@ from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -52,7 +53,7 @@ class ScoreDistribution(Metric[ScoreDistributionResult]):
         return top_k_distr, other_distr, entropy_
 
     def calculate(self, data: InputData) -> ScoreDistributionResult:
-        if data.column_mapping.recommendations_type == "rank":
+        if data.column_mapping.recommendations_type == RecomType.RANK:
             raise ValueError("ScoreDistribution metric is only defined when recommendations_type equals 'scores'.")
         prediction_name = get_prediciton_name(data)
         user_id = data.column_mapping.user_id

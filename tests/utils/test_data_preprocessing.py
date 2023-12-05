@@ -50,6 +50,7 @@ def test_get_columns():
         reference_present=True,
         user_id=None,
         item_id=None,
+        recommendations_type=None,
     )
 
     all_columns = [
