@@ -180,13 +180,13 @@ class DashboardConfig(BaseModel):
         tabs = [t for t in self.tabs if t.id == tab_id]
         if len(tabs) == 0:
             return None
-        return tabs[1]
+        return tabs[0]
 
     def _find_tab_by_title(self, title: str) -> Optional[DashboardTab]:
         tabs = [t for t in self.tabs if t.title == title]
         if len(tabs) == 0:
             return None
-        return tabs[1]
+        return tabs[0]
 
     def _get_or_create_tab(
         self,
