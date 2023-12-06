@@ -51,7 +51,7 @@ setup_args = dict(
         "plotly>=5.5.0",
         "statsmodels>=0.12.2",
         "scikit-learn>=0.24.0",
-        "pandas>=1.3.5",
+        "pandas[parquet]>=1.3.5",
         "numpy>=1.19.5",
         "nltk>=3.6.7",
         "scipy>=1.5.4",
@@ -66,7 +66,6 @@ setup_args = dict(
         "typer>=0.3",
         "rich>=13",
         "iterative-telemetry>=0.0.5",
-        "pyarrow<11.0dev"
     ],
     extras_require={
         "dev": [
