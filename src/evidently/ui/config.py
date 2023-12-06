@@ -10,6 +10,7 @@ from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.ui.base import ProjectManager
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
 
@@ -28,13 +29,16 @@ class ServiceConfig(BaseModel):
 
 class SecurityService(EvidentlyBaseModel):
     @abstractmethod
-    def get_user_id_dependency(self) -> Callable[[...], Optional[UserID]]:
+    def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
         raise NotImplementedError
+
+    def get_org_id_dependency(self) -> Callable[..., Optional[OrgID]]:
+        return lambda: None
 
 
 class NoSecurityService(SecurityService):
-    def get_user_id_dependency(self) -> Callable[[...], Optional[UserID]]:
-        return lambda x: None
+    def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
+        return lambda: None
 
 
 class StorageConfig(EvidentlyBaseModel, ABC):

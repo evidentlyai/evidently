@@ -20,3 +20,7 @@ class UserNotFound(EntityNotFound):
 
 class NotEnoughPermissions(EvidentlyServiceError):
     pass
+
+
+class NotAuthorized(EvidentlyServiceError):
+    pass

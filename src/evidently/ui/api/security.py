@@ -62,3 +62,4 @@ def replace_dependency(app: FastAPI, dependency: Callable, new_dependency: Calla
 
 def setup_security(app: FastAPI, security: SecurityService):
     replace_dependency(app, get_user_id, security.get_user_id_dependency())
+    replace_dependency(app, get_org_id, security.get_org_id_dependency())

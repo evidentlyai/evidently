@@ -16,6 +16,7 @@ from evidently.ui.api.projects import project_api
 from evidently.ui.api.service import service_api
 from evidently.ui.config import init_configuration
 from evidently.ui.errors import EntityNotFound
+from evidently.ui.errors import NotAuthorized
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.utils import event_logger
 from evidently.ui.utils import set_secret
@@ -72,6 +73,14 @@ async def not_enough_permissions_exception_handler(request: Request, exc: NotEno
     return JSONResponse(
         status_code=403,
         content={"detail": "Not enough permissions"},
+    )
+
+
+@app.exception_handler(NotAuthorized)
+async def not_authorized_exception_handler(request: Request, exc: NotAuthorized):
+    return JSONResponse(
+        status_code=401,
+        content={"detail": "Not authorized"},
     )
 
 
