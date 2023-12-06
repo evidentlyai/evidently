@@ -5,11 +5,13 @@ from .bikes import bikes_demo_project
 from .other_bikes import other_bikes_demo_project
 from .reviews import reviews_demo_project
 from .simple import simple_demo_project
+from .adult import adult_demo_project
 
 DEMO_PROJECTS: Dict[str, DemoProject] = {
     "other_bikes": other_bikes_demo_project,
     "bikes": bikes_demo_project,
     "reviews": reviews_demo_project,
+    "adult": adult_demo_project
 }
 
 __all__ = [
@@ -19,4 +21,5 @@ __all__ = [
     "reviews_demo_project",
     "other_bikes_demo_project",
     "bikes_demo_project",
+    "adult_demo_project"
 ]
