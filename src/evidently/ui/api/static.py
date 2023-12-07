@@ -1,5 +1,4 @@
 import os
-import pathlib
 from typing import Callable
 
 from fastapi import Depends
@@ -11,8 +10,7 @@ from starlette.staticfiles import StaticFiles
 from evidently.ui.api.utils import event_logger
 
 
-def add_static(app: FastAPI):
-    ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
+def add_static(app: FastAPI, ui_path: str):
     static_path = os.path.join(ui_path, "static")
     environment_path = os.environ.get("UI_ENVIRONMENT_PATH", static_path)
     app.mount("/static", StaticFiles(directory=static_path), name="static")

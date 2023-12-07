@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 import uvicorn
 from fastapi import APIRouter
@@ -19,7 +20,8 @@ from evidently.ui.storage.local import LocalStorageConfig
 
 app = FastAPI()
 
-add_static(app)
+ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
+add_static(app, ui_path)
 
 api_router = APIRouter(prefix="/api")
 
