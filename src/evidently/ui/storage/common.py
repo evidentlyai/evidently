@@ -1,3 +1,4 @@
+import os
 import uuid
 from typing import Callable
 from typing import ClassVar
@@ -10,16 +11,20 @@ from fastapi import Header
 from fastapi.security import APIKeyHeader
 from pydantic.typing import Annotated
 
+from evidently.ui.api.utils import get_project_manager
 from evidently.ui.base import AuthManager
+from evidently.ui.base import ProjectManager
 from evidently.ui.base import ProjectPermission
 from evidently.ui.base import Team
 from evidently.ui.base import TeamPermission
 from evidently.ui.base import User
-from evidently.ui.config import SecurityService
+from evidently.ui.config import SecurityConfig
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
+
+EVIDENTLY_SECRET_ENV = "EVIDENTLY_SECRET"
 
 
 class NoUser(User):
@@ -83,7 +88,7 @@ class NoopAuthManager(AuthManager):
         return []
 
 
-class HeaderUserID(SecurityService):
+class HeaderUserID(SecurityConfig):
     def get_user_id_dependency(self) -> Callable[[...], Optional[UserID]]:
         def get_user_id(user_id: Annotated[UserID, Header(title="plain user_id")]) -> Optional[UserID]:
             return user_id
@@ -91,11 +96,33 @@ class HeaderUserID(SecurityService):
         return get_user_id
 
 
-class APIKeyHeaderUserID(SecurityService):
+class APIKeyHeaderUserID(SecurityConfig):
     def get_user_id_dependency(self) -> Callable[[...], Optional[UserID]]:
         key = APIKeyHeader(name="user_id")
 
         def get_user_id(user_id: str = Depends(key)):
             return uuid.UUID(user_id)
+
+        return get_user_id
+
+
+class SecretHeaderSecurity(SecurityConfig):
+    secret: Optional[str] = None
+    secret_env: str = EVIDENTLY_SECRET_ENV
+
+    def get_secret_value(self) -> Optional[str]:
+        if self.secret is not None:
+            return self.secret
+        return os.environ.get(self.secret_env)
+
+    def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
+        header = APIKeyHeader(name="evidently_secret", auto_error=False)
+
+        value = self.get_secret_value()
+
+        def get_user_id(secret: str = Depends(header), project_manager: ProjectManager = Depends(get_project_manager)):
+            if value is not None and secret == value:
+                return project_manager.auth.get_default_user()
+            return None
 
         return get_user_id

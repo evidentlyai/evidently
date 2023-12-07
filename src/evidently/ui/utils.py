@@ -1,53 +1,14 @@
 import json
-import os
 import urllib.parse
-from functools import partial
 from typing import Any
 from typing import Optional
 
 import requests
-from fastapi import Depends
-from fastapi import Header
-from fastapi import HTTPException
-from iterative_telemetry import IterativeTelemetryLogger
 from pydantic import BaseModel
 from pydantic import parse_obj_as
 from starlette.responses import JSONResponse
-from typing_extensions import Annotated
 
-import evidently
-from evidently.ui.config import Configuration
-from evidently.ui.config import get_configuration
 from evidently.utils import NumpyEncoder
-
-SECRET = os.environ.get("EVIDENTLY_SECRET", None)
-
-_event_logger = None
-
-
-def event_logger(
-    config: Configuration = Depends(get_configuration),
-):
-    global _event_logger
-    if _event_logger is None:
-        _event_logger = IterativeTelemetryLogger(
-            config.telemetry.tool_name,
-            evidently.__version__,
-            url=config.telemetry.url,
-            token=config.telemetry.token,
-            enabled=config.telemetry.enabled,
-        )
-    yield partial(_event_logger.send_event, config.telemetry.service_name)
-
-
-def set_secret(secret: Optional[str]):
-    global SECRET
-    SECRET = secret
-
-
-async def authenticated(evidently_secret: Annotated[Optional[str], Header()] = None):
-    if SECRET is not None and evidently_secret != SECRET:
-        raise HTTPException(403, "Not allowed")
 
 
 class RemoteClientBase:

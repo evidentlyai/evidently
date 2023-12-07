@@ -1,6 +1,5 @@
 import os
 import pathlib
-import sys
 from typing import Callable
 
 import uvicorn
@@ -13,13 +12,18 @@ from starlette.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from evidently.ui.api.projects import project_api
+from evidently.ui.api.security import setup_security
 from evidently.ui.api.service import service_api
-from evidently.ui.config import init_configuration
+from evidently.ui.api.utils import event_logger
+from evidently.ui.config import Configuration
+from evidently.ui.config import ServiceConfig
+from evidently.ui.config import read_configuration
 from evidently.ui.errors import EntityNotFound
 from evidently.ui.errors import NotAuthorized
 from evidently.ui.errors import NotEnoughPermissions
-from evidently.ui.utils import event_logger
-from evidently.ui.utils import set_secret
+from evidently.ui.storage.common import EVIDENTLY_SECRET_ENV
+from evidently.ui.storage.common import SecretHeaderSecurity
+from evidently.ui.storage.local import LocalStorageConfig
 
 app = FastAPI()
 
@@ -84,26 +88,32 @@ async def not_authorized_exception_handler(request: Request, exc: NotAuthorized)
     )
 
 
-def run_local(host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace", secret: str = None):
-    if secret is not None:
-        set_secret(secret)
-    # todo: config
-    # app.state.workspace = prepare_workspace(workspace)
-    uvicorn.run(app, host=host, port=port)
+def run(config: Configuration):
+    app.state.config = config
+    setup_security(app, config.security)
+    uvicorn.run(app, host=config.service.host, port=config.service.port)
+
+
+def run_local(
+    host: str = "0.0.0.0", port: int = 8000, workspace: str = "workspace", secret: str = None, conf_path: str = None
+):
+    if conf_path is not None:
+        config = read_configuration(conf_path)
+        if config is None:
+            raise ValueError(f"Config file not found at {conf_path}")
+    else:
+        config = Configuration(
+            service=ServiceConfig(host=host, port=port), storage=LocalStorageConfig(path=workspace, autorefresh=True)
+        )
+        secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)
+        if secret is not None:
+            config.security = SecretHeaderSecurity(secret=secret)
+    run(config)
 
 
 def main():
-    conf_path = "service.yaml"
-    # tmp
-    if len(sys.argv) > 1:
-        conf_path = sys.argv[1]
-        print(f"Loading conf from {conf_path}")
-    config = init_configuration(conf_path)
-
-    from evidently.ui.api.security import setup_security
-
-    setup_security(app, config.security)
-    uvicorn.run(app, host=config.service.host, port=config.service.port)
+    # conf_path = "service.yaml"
+    run_local()
 
 
 if __name__ == "__main__":

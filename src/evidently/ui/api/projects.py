@@ -23,6 +23,8 @@ from evidently.ui.api.models import ReportModel
 from evidently.ui.api.models import TestSuiteModel
 from evidently.ui.api.security import get_org_id
 from evidently.ui.api.security import get_user_id
+from evidently.ui.api.utils import authorized
+from evidently.ui.api.utils import event_logger
 from evidently.ui.api.utils import get_project_manager
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
@@ -31,18 +33,20 @@ from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 from evidently.ui.utils import NumpyJsonResponse
-from evidently.ui.utils import event_logger
 from evidently.ui.utils import skip_jsonable_encoder
 from evidently.utils import NumpyEncoder
 
-project_api = APIRouter(prefix="/projects")
+project_api = APIRouter()
+
+project_read_router = APIRouter(prefix="/projects")
+project_write_router = APIRouter(prefix="/projects", dependencies=[Depends(authorized)])
 
 PROJECT_ID = Path(title="id of the project")
 SNAPSHOT_ID = Path(title="id of the snapshot")
 GRAPH_ID = Path(title="id of snapshot graph")
 
 
-@project_api.get("")
+@project_read_router.get("")
 async def list_projects(
     project_manager: ProjectManager = Depends(get_project_manager),
     log_event: Callable = Depends(event_logger),
@@ -53,7 +57,7 @@ async def list_projects(
     return projects
 
 
-@project_api.get("/{project_id}/reports")
+@project_read_router.get("/{project_id}/reports")
 async def list_reports(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -68,7 +72,7 @@ async def list_reports(
     return reports
 
 
-@project_api.get("/{project_id}/info")
+@project_read_router.get("/{project_id}/info")
 async def get_project_info(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -82,7 +86,7 @@ async def get_project_info(
     return project
 
 
-@project_api.get("/search/{project_name}")
+@project_read_router.get("/search/{project_name}")
 async def search_projects(
     project_name: Annotated[str, "Name of the project to search"],
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -93,7 +97,7 @@ async def search_projects(
     return project_manager.search_project(user_id, project_name=project_name)
 
 
-@project_api.post("/{project_id}/info")
+@project_write_router.post("/{project_id}/info")
 async def update_project_info(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     data: Project,
@@ -114,7 +118,7 @@ async def update_project_info(
     return project
 
 
-@project_api.get("/{project_id}/reload")
+@project_read_router.get("/{project_id}/reload")
 async def reload_project_snapshots(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -129,7 +133,7 @@ async def reload_project_snapshots(
     return
 
 
-@project_api.get("/{project_id}/test_suites")
+@project_read_router.get("/{project_id}/test_suites")
 async def list_test_suites(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -143,7 +147,7 @@ async def list_test_suites(
     return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
 
 
-@project_api.get("/{project_id}/{snapshot_id}/graphs_data/{graph_id}")
+@project_read_router.get("/{project_id}/{snapshot_id}/graphs_data/{graph_id}")
 async def get_snapshot_graph_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     snapshot_id: Annotated[uuid.UUID, SNAPSHOT_ID],
@@ -165,7 +169,7 @@ async def get_snapshot_graph_data(
     return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
 
 
-@project_api.get("/{project_id}/{snapshot_id}/download")
+@project_read_router.get("/{project_id}/{snapshot_id}/download")
 async def get_snapshot_download(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     snapshot_id: Annotated[uuid.UUID, SNAPSHOT_ID],
@@ -189,7 +193,7 @@ async def get_snapshot_download(
     return Response(f"Unknown format {report_format}", status_code=400)
 
 
-@project_api.get("/{project_id}/{snapshot_id}/data", response_class=NumpyJsonResponse)
+@project_read_router.get("/{project_id}/{snapshot_id}/data", response_class=NumpyJsonResponse)
 @skip_jsonable_encoder
 async def get_snapshot_data(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
@@ -219,7 +223,7 @@ async def get_snapshot_data(
     return info
 
 
-@project_api.get("/{project_id}/dashboard/panels")
+@project_read_router.get("/{project_id}/dashboard/panels")
 async def list_project_dashboard_panels(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -233,7 +237,7 @@ async def list_project_dashboard_panels(
     return list(project.dashboard.panels)
 
 
-@project_api.get("/{project_id}/dashboard", response_class=NumpyJsonResponse)
+@project_read_router.get("/{project_id}/dashboard", response_class=NumpyJsonResponse)
 @skip_jsonable_encoder
 async def project_dashboard(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
@@ -254,7 +258,7 @@ async def project_dashboard(
     return info
 
 
-@project_api.post("/")
+@project_write_router.post("/")
 async def add_project(
     project: Project,
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -268,7 +272,7 @@ async def add_project(
     return p
 
 
-@project_api.delete("/{project_id}")
+@project_write_router.delete("/{project_id}")
 def delete_project(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     project_manager: ProjectManager = Depends(get_project_manager),
@@ -279,7 +283,7 @@ def delete_project(
     log_event("delete_project")
 
 
-@project_api.post("/{project_id}/snapshots")
+@project_write_router.post("/{project_id}/snapshots")
 async def add_snapshot(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     snapshot: Snapshot,
@@ -294,7 +298,7 @@ async def add_snapshot(
     log_event("add_snapshot")
 
 
-@project_api.delete("/{project_id}/{snapshot_id}")
+@project_write_router.delete("/{project_id}/{snapshot_id}")
 def delete_snapshot(
     project_id: Annotated[uuid.UUID, PROJECT_ID],
     snapshot_id: Annotated[uuid.UUID, SNAPSHOT_ID],
@@ -304,3 +308,7 @@ def delete_snapshot(
 ):
     project_manager.delete_snapshot(user_id, project_id, snapshot_id)
     log_event("delete_snapshot")
+
+
+project_api.include_router(project_read_router)
+project_api.include_router(project_write_router)

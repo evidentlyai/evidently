@@ -19,9 +19,8 @@ from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.storage import LogEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
+from evidently.ui.api.utils import authorized
 from evidently.ui.utils import NumpyJsonResponse
-from evidently.ui.utils import authenticated
-from evidently.ui.utils import set_secret
 
 COLLECTOR_INTERFACE = "collector"
 
@@ -50,7 +49,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-collector_write_router = APIRouter(dependencies=[Depends(authenticated)], default_response_class=NumpyJsonResponse)
+collector_write_router = APIRouter(dependencies=[Depends(authorized)], default_response_class=NumpyJsonResponse)
 
 
 @collector_write_router.post("/{id}")
@@ -136,8 +135,8 @@ app.include_router(collector_write_router)
 
 
 def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: str = None):
-    if secret is not None:
-        set_secret(secret)
+    # if secret is not None:
+    #     set_secret(secret)
     app.state.config_path = config_path
     uvicorn.run(app, host=host, port=port)
 

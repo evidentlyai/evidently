@@ -11,7 +11,7 @@ from fastapi.dependencies.models import Dependant
 from fastapi.dependencies.utils import get_param_sub_dependant
 from fastapi.routing import APIRoute
 
-from evidently.ui.config import SecurityService
+from evidently.ui.config import SecurityConfig
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
@@ -60,6 +60,6 @@ def replace_dependency(app: FastAPI, dependency: Callable, new_dependency: Calla
         )
 
 
-def setup_security(app: FastAPI, security: SecurityService):
+def setup_security(app: FastAPI, security: SecurityConfig):
     replace_dependency(app, get_user_id, security.get_user_id_dependency())
     replace_dependency(app, get_org_id, security.get_org_id_dependency())

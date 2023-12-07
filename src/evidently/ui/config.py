@@ -27,7 +27,7 @@ class ServiceConfig(BaseModel):
     port: int = 8000
 
 
-class SecurityService(EvidentlyBaseModel):
+class SecurityConfig(EvidentlyBaseModel):
     @abstractmethod
     def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
         raise NotImplementedError
@@ -36,7 +36,7 @@ class SecurityService(EvidentlyBaseModel):
         return lambda: None
 
 
-class NoSecurityService(SecurityService):
+class NoSecurityConfig(SecurityConfig):
     def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
         return lambda: None
 
@@ -57,26 +57,13 @@ class Configuration(BaseModel):
     service: ServiceConfig = Field(default_factory=ServiceConfig)
     telemetry: TelemetryConfig = Field(default_factory=TelemetryConfig)
     storage: StorageConfig = Field(default_factory=_default_storage)
-    security: SecurityService = NoSecurityService()
+    security: SecurityConfig = NoSecurityConfig()
 
 
-_configuration: Optional[Configuration] = None
-
-
-def init_configuration(path: str):
-    global _configuration
-
+def read_configuration(path: str) -> Optional[Configuration]:
     if not os.path.exists(path):
-        _configuration = Configuration()
-        return _configuration
+        return None
     with open(path) as f:
         dict_obj = yaml.load(f, yaml.SafeLoader)
         _configuration = Configuration.parse_obj(dict_obj)
     return _configuration
-
-
-def get_configuration() -> Configuration:
-    if _configuration is None:
-        raise ValueError("Configuration isn't loaded")
-
-    yield _configuration

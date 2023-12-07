@@ -1,11 +1,46 @@
+from functools import partial
 from typing import Callable
+from typing import Optional
 
 from fastapi import Depends
+from iterative_telemetry import IterativeTelemetryLogger
 from starlette.requests import Request
 
+import evidently
+from evidently.ui.api.security import get_user_id
 from evidently.ui.config import Configuration
-from evidently.ui.config import get_configuration
-from evidently.ui.utils import event_logger
+from evidently.ui.errors import NotEnoughPermissions
+from evidently.ui.type_aliases import UserID
+
+
+async def get_configuration(request: Request) -> Configuration:
+    state = request.app.state
+    if not hasattr(state, "config"):
+        raise ValueError("Configuration isn't loaded")
+    return state.config
+
+
+_event_logger = None
+
+
+def event_logger(
+    config: Configuration = Depends(get_configuration),
+):
+    global _event_logger
+    if _event_logger is None:
+        _event_logger = IterativeTelemetryLogger(
+            config.telemetry.tool_name,
+            evidently.__version__,
+            url=config.telemetry.url,
+            token=config.telemetry.token,
+            enabled=config.telemetry.enabled,
+        )
+    yield partial(_event_logger.send_event, config.telemetry.service_name)
+
+
+async def authorized(user_id: Optional[UserID] = Depends(get_user_id)):
+    if user_id is None:
+        raise NotEnoughPermissions()
 
 
 def get_project_manager(
