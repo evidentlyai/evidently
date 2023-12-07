@@ -23,12 +23,14 @@ from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.dashboard.base import PanelValue
 from evidently.ui.dashboard.base import ReportFilter
+from evidently.ui.dashboard.test_suites import TestFilter
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
+from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.workspace.view import WorkspaceView
 from evidently.utils import NumpyEncoder
 
@@ -120,7 +122,6 @@ class NoopBlobStorage(BlobStorage):
 
 
 class NoopDataStorage(DataStorage):
-
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
 
@@ -128,6 +129,10 @@ class NoopDataStorage(DataStorage):
                     timestamp_start: Optional[datetime.datetime],
                     timestamp_end: Optional[datetime.datetime]) -> DataPoints:
         return []
+
+    def load_test_results(self, project_id: ProjectID, filter: ReportFilter, test_filters: List[TestFilter], time_agg: Optional[str],
+                          timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]) -> TestResultPoints:
+        return {}
 
 
 class RemoteWorkspaceView(WorkspaceView):

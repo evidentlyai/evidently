@@ -6,7 +6,6 @@ from functools import wraps
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
-from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Union
@@ -15,7 +14,6 @@ from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import validator
 from evidently.base_metric import Metric
-from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EnumValueMixin
@@ -26,10 +24,10 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
 from evidently.report import Report
-from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import ReportBase
 from evidently.test_suite import TestSuite
 from evidently.ui.dashboard.utils import getattr_nested
+from evidently.ui.type_aliases import ProjectID
 
 if TYPE_CHECKING:
     from evidently.ui.base import DataStorage
@@ -112,18 +110,27 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     filter: ReportFilter
     size: WidgetSize = WidgetSize.FULL
 
-    # deprecated
-    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
-        raise NotImplementedError
-
     def build(
         self,
         data_storage: "DataStorage",
         project_id: uuid.UUID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
-    ):
+    ) -> BaseWidgetInfo:
         raise NotImplementedError
+
+    def safe_build(
+        self,
+        data_storage: "DataStorage",
+        project_id: uuid.UUID,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> BaseWidgetInfo:
+        try:
+            return self.build(data_storage, project_id, timestamp_start, timestamp_end)
+        except Exception as e:
+            traceback.print_exc()
+            return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
 
 
 class DashboardTab(BaseModel):
@@ -136,16 +143,6 @@ class DashboardConfig(BaseModel):
     panels: List[DashboardPanel]
     tabs: List[DashboardTab] = []
     tab_id_to_panel_ids: Dict[str, List[str]] = defaultdict(list)
-
-    def build_dashboard_info(self, reports: Iterable[ReportBase]) -> DashboardInfo:
-        return DashboardInfo(self.name, widgets=[self.build_widget(p, reports) for p in self.panels])
-
-    def build_widget(self, panel: DashboardPanel, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
-        try:
-            return panel.build_widget(reports)
-        except Exception as e:
-            traceback.print_exc()
-            return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
 
     def add_panel(
         self,
@@ -216,67 +213,13 @@ class DashboardConfig(BaseModel):
         self.tabs.append(to_create)
         return to_create
 
-
-class Dashboard(Display):
-    def __init__(self, config: DashboardConfig):
-        super().__init__()
-        self.reports: List[Report] = []
-        self.config = config
-
-    def add_report(self, report: Report):
-        self.reports.append(report)
-
-    def as_dict(
+    def build(
         self,
-        include_render: bool = False,
-        include: Dict[str, IncludeOptions] = None,
-        exclude: Dict[str, IncludeOptions] = None,
-        **kwargs,
-    ) -> dict:
-        raise NotImplementedError
+        data_storage: "DataStorage",
+        project_id: ProjectID,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ):
+        widgets = [p.safe_build(data_storage, project_id, timestamp_start, timestamp_end) for p in self.panels]
 
-    def _get_payload(self) -> BaseModel:
-        raise NotImplementedError
-
-    @classmethod
-    def _parse_payload(cls, payload: Dict):
-        raise NotImplementedError
-
-    def _build_dashboard_info(self):
-        return (
-            "er_" + str(uuid.uuid4()).replace("-", ""),
-            self.config.build_dashboard_info(self.reports),
-            {},
-        )
-
-
-def build_dashboard(
-    dashboard: DashboardConfig,
-    data_storage: "DataStorage",
-    project_id: uuid.UUID,
-    timestamp_start: Optional[datetime.datetime],
-    timestamp_end: Optional[datetime.datetime],
-    reports_tmp,
-) -> DashboardInfo:
-    widgets = [
-        build_panel_widget(p, data_storage, project_id, timestamp_start, timestamp_end)
-        if isinstance(p, DashboardPanel)
-        else p.build_widget(reports_tmp)
-        for p in dashboard.panels
-    ]
-
-    return DashboardInfo(name=dashboard.name, widgets=widgets)
-
-
-def build_panel_widget(
-    panel: DashboardPanel,
-    data_storage: "DataStorage",
-    project_id: uuid.UUID,
-    timestamp_start: Optional[datetime.datetime],
-    timestamp_end: Optional[datetime.datetime],
-) -> BaseWidgetInfo:
-    try:
-        return panel.build(data_storage, project_id, timestamp_start, timestamp_end)
-    except Exception as e:
-        traceback.print_exc()
-        return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
+        return DashboardInfo(name=self.name, widgets=widgets)

@@ -3,6 +3,7 @@ import datetime
 import json
 import posixpath
 import uuid
+from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -15,6 +16,9 @@ from pydantic import ValidationError
 from pydantic import parse_obj_as
 
 from evidently.suite.base_suite import Snapshot
+from evidently.test_suite import TestSuite
+from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestStatus
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
@@ -25,6 +29,8 @@ from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.dashboard.base import PanelValue
 from evidently.ui.dashboard.base import ReportFilter
+from evidently.ui.dashboard.test_suites import TestFilter
+from evidently.ui.dashboard.test_suites import to_period
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
@@ -32,6 +38,7 @@ from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
+from evidently.ui.type_aliases import TestResultPoints
 from evidently.utils import NumpyEncoder
 
 SNAPSHOTS = "snapshots"
@@ -259,4 +266,28 @@ class InMemoryDataStorage(DataStorage):
                     if metric not in points[i]:
                         points[i][metric] = []
                     points[i][metric].append((report.timestamp, metric_field_value))
+        return points
+
+    def load_test_results(
+        self,
+        project_id: ProjectID,
+        filter: ReportFilter,
+        test_filters: List[TestFilter],
+        time_agg: Optional[str],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> TestResultPoints:
+        points: Dict[datetime.datetime, Dict[Test, TestStatus]] = defaultdict(dict)
+        for report in (s.load().as_test_suite() for s in self.state.snapshots[project_id].values() if not s.is_report):
+            if not filter.filter(report):
+                continue
+            if not isinstance(report, TestSuite):
+                continue
+            ts = to_period(time_agg, report.timestamp)
+            if test_filters:
+                for test_filter in test_filters:
+                    points[ts].update(test_filter.get(report))
+            else:
+                points[ts].update(TestFilter().get(report))
+
         return points

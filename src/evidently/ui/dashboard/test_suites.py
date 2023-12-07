@@ -2,10 +2,8 @@ import datetime
 import typing
 import uuid
 from collections import Counter
-from collections import defaultdict
 from typing import Any
 from typing import Dict
-from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -20,11 +18,9 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.suite.base_suite import ReportBase
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
-from evidently.ui.base import DataStorage
 from evidently.ui.dashboard.base import DashboardPanel
 from evidently.ui.dashboard.base import ReportFilter
 from evidently.ui.dashboard.base import assign_panel_id
@@ -33,6 +29,10 @@ from evidently.ui.dashboard.utils import CounterAgg
 from evidently.ui.dashboard.utils import TestSuitePanelType
 from evidently.ui.dashboard.utils import _get_test_hover
 from evidently.ui.dashboard.utils import getattr_nested
+from evidently.ui.type_aliases import TestResultPoints
+
+if typing.TYPE_CHECKING:
+    from evidently.ui.base import DataStorage
 
 
 class TestFilter(BaseModel):
@@ -71,21 +71,17 @@ class DashboardPanelTestSuite(DashboardPanel):
     time_agg: Optional[str] = None
 
     @assign_panel_id
-    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
+    def build(
+        self,
+        data_storage: "DataStorage",
+        project_id: uuid.UUID,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> BaseWidgetInfo:
         self.filter.include_test_suites = True
-
-        points: Dict[datetime.datetime, Dict[Test, TestStatus]] = defaultdict(dict)
-        for report in reports:
-            if not self.filter.filter(report):
-                continue
-            if not isinstance(report, TestSuite):
-                continue
-            ts = self._to_period(report.timestamp)
-            if self.test_filters:
-                for test_filter in self.test_filters:
-                    points[ts].update(test_filter.get(report))
-            else:
-                points[ts].update(TestFilter().get(report))
+        points: TestResultPoints = data_storage.load_test_results(
+            project_id, self.filter, self.test_filters, self.time_agg, timestamp_start, timestamp_end
+        )
 
         if self.panel_type == TestSuitePanelType.AGGREGATE:
             fig = self._create_aggregate_fig(points)
@@ -143,10 +139,11 @@ class DashboardPanelTestSuite(DashboardPanel):
         )
         return fig
 
-    def _to_period(self, timestamp: datetime.datetime) -> datetime.datetime:
-        if self.time_agg is None:
-            return timestamp
-        return pd.Series([timestamp], name="dt").dt.to_period(self.time_agg)[0]
+
+def to_period(time_agg: Optional[str], timestamp: datetime.datetime) -> datetime.datetime:
+    if time_agg is None:
+        return timestamp
+    return pd.Series([timestamp], name="dt").dt.to_period(time_agg)[0]
 
 
 class DashboardPanelTestSuiteCounter(DashboardPanel):
@@ -155,24 +152,18 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
     test_filters: List[TestFilter] = []
     statuses: List[TestStatus] = [TestStatus.SUCCESS]
 
-    def _iter_statuses(self, reports: Iterable[ReportBase]):
-        for report in reports:
-            if not self.filter.filter(report):
-                continue
-            if not isinstance(report, TestSuite):
-                continue
-            if self.test_filters:
-                for test_filter in self.test_filters:
-                    yield report.timestamp, test_filter.get(report).values()
-            else:
-                yield report.timestamp, TestFilter().get(report).values()
-
     @assign_panel_id
-    def build_widget(self, reports: Iterable[ReportBase]) -> BaseWidgetInfo:
+    def build(
+        self,
+        data_storage: "DataStorage",
+        project_id: uuid.UUID,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> BaseWidgetInfo:
         if self.agg == CounterAgg.NONE:
-            statuses, postfix = self._build_none(reports)
+            statuses, postfix = self._build_none(data_storage, project_id, timestamp_start, timestamp_end)
         elif self.agg == CounterAgg.LAST:
-            statuses, postfix = self._build_last(reports)
+            statuses, postfix = self._build_last(data_storage, project_id, timestamp_start, timestamp_end)
         else:
             raise ValueError(f"TestSuite Counter does not support agg {self.agg}")
 
@@ -181,26 +172,34 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
         statuses_join = ", ".join(s.value for s in self.statuses)
         return counter(counters=[CounterData(f"{value}/{total} {statuses_join}{postfix}", self.title)], size=self.size)
 
-    def _build_none(self, reports: Iterable[ReportBase]) -> Tuple[Counter, str]:
-        statuses: typing.Counter[TestStatus] = Counter()
-        for _, values in self._iter_statuses(reports):
-            statuses.update(values)
-        return statuses, ""
-
-    def _build_last(self, reports: Iterable[ReportBase]) -> Tuple[Counter, str]:
-        last_ts = None
-        statuses: typing.Counter[TestStatus] = Counter()
-        for ts, values in self._iter_statuses(reports):
-            if last_ts is None or ts > last_ts:
-                last_ts = ts
-                statuses = Counter(values)
-        return statuses, f" ({last_ts})"
-
-    def build(
+    def _build_none(
         self,
         data_storage: "DataStorage",
         project_id: uuid.UUID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
-    ):
-        raise NotImplementedError
+    ) -> Tuple[Counter, str]:
+        points = data_storage.load_test_results(
+            project_id, self.filter, self.test_filters, None, timestamp_start, timestamp_end
+        )
+        statuses: typing.Counter[TestStatus] = Counter()
+        for _, values in points.values():
+            statuses.update(values)
+        return statuses, ""
+
+    def _build_last(
+        self,
+        data_storage: "DataStorage",
+        project_id: uuid.UUID,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> Tuple[Counter, str]:
+        points = data_storage.load_test_results(
+            project_id, self.filter, self.test_filters, None, timestamp_start, timestamp_end
+        )
+
+        if len(points) == 0:
+            return Counter(), "(no data)"
+        last_ts = max(points.keys())
+        statuses: typing.Counter[TestStatus] = Counter(points[last_ts].values())
+        return statuses, f" ({last_ts})"

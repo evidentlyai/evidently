@@ -29,6 +29,7 @@ from evidently.test_suite import TestSuite
 from evidently.ui.dashboard.base import DashboardConfig
 from evidently.ui.dashboard.base import PanelValue
 from evidently.ui.dashboard.base import ReportFilter
+from evidently.ui.dashboard.test_suites import TestFilter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
@@ -38,6 +39,7 @@ from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
+from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.type_aliases import UserID
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
@@ -171,12 +173,7 @@ class Project(BaseModel):
     def build_dashboard_info(
         self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
     ) -> DashboardInfo:
-        reports_tmp = list(self.reports_and_test_suites.values())
-        from evidently.ui.dashboard.base import build_dashboard
-
-        return build_dashboard(
-            self.dashboard, self.project_manager.data, self.id, timestamp_start, timestamp_end, reports_tmp
-        )
+        return self.dashboard.build(self.project_manager.data, self.id, timestamp_start, timestamp_end)
 
     def show_dashboard(
         self, timestamp_start: Optional[datetime.datetime] = None, timestamp_end: Optional[datetime.datetime] = None
@@ -280,6 +277,18 @@ class DataStorage(EvidentlyBaseModel, ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPoints:
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_test_results(
+        self,
+        project_id: ProjectID,
+        filter: ReportFilter,
+        test_filters: List[TestFilter],
+        time_agg: Optional[str],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> TestResultPoints:
         raise NotImplementedError
 
 
