@@ -60,6 +60,7 @@
 ## Reference
 * [All tests](reference/all-tests.md)
 * [All metrics](reference/all-metrics.md)
+  * [Ranking metrics](reference/ranking-metrics.md)
 * [Data drift algorithm](reference/data-drift-algorithm.md)
 * [API Reference](api-reference)
   * [evidently.calculations](api-reference/evidently.calculations.md)
