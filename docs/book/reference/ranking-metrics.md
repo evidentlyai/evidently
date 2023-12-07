@@ -32,7 +32,7 @@ $$\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{To
 
 ## F Beta at K
 
-**Evidently Metric**: `FBetaTopKMetric`
+**Evidently Metric**: `FBetaTopKMetric`.
 
 The F Beta score at K combines precision and recall into a single value, providing a balanced measure of a recommendation system's performance. 
 
