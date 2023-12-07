@@ -14,4 +14,4 @@ iterative-telemetry==0.0.5
 watchdog==3.0.0
 pyarrow<15
 pyspark==3.0.0
-fsspec==2023.12.1
+fsspec==2023.1.0
