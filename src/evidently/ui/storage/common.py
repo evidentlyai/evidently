@@ -62,7 +62,7 @@ class NoopAuthManager(AuthManager):
         return self.team
 
     def get_team(self, team_id: TeamID) -> Optional[Team]:
-        return Team(id=team_id)
+        return Team(id=team_id, name="")
 
     def get_default_team(self, user_id: UserID) -> Team:
         return self.team
