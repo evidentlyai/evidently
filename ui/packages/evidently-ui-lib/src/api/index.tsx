@@ -291,4 +291,6 @@ export interface Api {
   getVersion(): Promise<VersionInfo>
 
   editProjectInfo(project: ProjectDetails): Promise<Response>
+
+  reloadProject(projectId: string): Promise<Response>
 }
