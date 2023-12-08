@@ -5,7 +5,6 @@ import uuid
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -27,6 +26,10 @@ from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
+from evidently.ui.dashboards.base import DashboardConfig
+from evidently.ui.dashboards.base import PanelValue
+from evidently.ui.dashboards.base import ReportFilter
+from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
@@ -40,12 +43,6 @@ from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.type_aliases import UserID
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
-
-if TYPE_CHECKING:
-    from evidently.ui.dashboards.base import DashboardConfig
-    from evidently.ui.dashboards.base import PanelValue
-    from evidently.ui.dashboards.base import ReportFilter
-    from evidently.ui.dashboards.test_suites import TestFilter
 
 
 class SnapshotMetadata(BaseModel):

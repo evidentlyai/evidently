@@ -1,4 +1,5 @@
 import datetime
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
@@ -11,7 +12,6 @@ from evidently.base_metric import Metric
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.ui.base import DataStorage
 from evidently.ui.type_aliases import ProjectID
 
 from .base import DashboardPanel
@@ -21,6 +21,9 @@ from .utils import CounterAgg
 from .utils import PlotType
 from .utils import _get_metric_hover
 
+if TYPE_CHECKING:
+    from evidently.ui.base import DataStorage
+
 
 class DashboardPanelPlot(DashboardPanel):
     values: List[PanelValue]
@@ -29,7 +32,7 @@ class DashboardPanelPlot(DashboardPanel):
     @assign_panel_id
     def build(
         self,
-        data_storage: DataStorage,
+        data_storage: "DataStorage",
         project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
@@ -84,7 +87,7 @@ class DashboardPanelCounter(DashboardPanel):
     @assign_panel_id
     def build(
         self,
-        data_storage: DataStorage,
+        data_storage: "DataStorage",
         project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
