@@ -20,6 +20,9 @@ def add_static(app: FastAPI, ui_path: str):
     @app.get("/auth", include_in_schema=False)
     @app.get("/projects", include_in_schema=False)
     @app.get("/projects/{path:path}", include_in_schema=False)
+    @app.get("/teams", include_in_schema=False)
+    @app.get("/teams/{path:path}", include_in_schema=False)
+    @app.get("/token", include_in_schema=False)
     async def index(
         path=None,
         log_event: Callable = Depends(event_logger),
