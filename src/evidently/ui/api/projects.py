@@ -258,7 +258,7 @@ async def project_dashboard(
     return info
 
 
-@project_write_router.post("/")
+@project_write_router.post("")
 async def add_project(
     project: Project,
     project_manager: ProjectManager = Depends(get_project_manager),
