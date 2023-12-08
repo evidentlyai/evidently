@@ -142,7 +142,7 @@ class DashboardConfig(BaseModel):
     name: str
     panels: List[DashboardPanel]
     tabs: List[DashboardTab] = []
-    tab_id_to_panel_ids: Dict[str, List[str]] = defaultdict(list)
+    tab_id_to_panel_ids: Dict[str, List[str]] = {}
 
     def add_panel(
         self,
@@ -161,10 +161,11 @@ class DashboardConfig(BaseModel):
         tab_id_str = str(result_tab.id)
         panel_id_str = str(panel.id)
 
-        tab_panel_ids = self.tab_id_to_panel_ids[tab_id_str]
+        tab_panel_ids = self.tab_id_to_panel_ids.get(tab_id_str, [])
 
         if panel_id_str not in tab_panel_ids:
             tab_panel_ids.append(panel_id_str)
+        self.tab_id_to_panel_ids[tab_id_str] = tab_panel_ids
 
     def create_tab(self, title) -> DashboardTab:
         return self._get_or_create_tab(title)
