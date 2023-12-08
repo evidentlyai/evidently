@@ -7,6 +7,7 @@ from datetime import timedelta
 import pandas as pd
 import requests
 from dateutil.relativedelta import relativedelta
+from numpy import random
 from sklearn import ensemble
 
 from evidently import ColumnMapping
@@ -26,7 +27,10 @@ from evidently.ui.workspace.base import WorkspaceBase
 
 
 def create_data():
-    content = requests.get("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip").content
+    content = requests.get(
+        "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip",
+        verify=False,
+    ).content
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         raw_data = pd.read_csv(
             arc.open("hour.csv"),
@@ -65,8 +69,21 @@ def create_data():
     return current, reference, column_mapping
 
 
+TAGS = [
+    "production_critical",
+    "city_bikes_hourly",
+    "tabular_data",
+    "regression_batch_model",
+    "high_seasonality",
+    "numerical_features",
+    "categorical_features",
+    "no_missing_values",
+]
+
+
 def create_report(i: int, data):
     current, reference, column_mapping = data
+
     data_drift_report = Report(
         metrics=[
             metrics.RegressionQualityMetric(),
@@ -82,6 +99,9 @@ def create_report(i: int, data):
             metrics.ColumnSummaryMetric(column_name="prediction"),
         ],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
+        tags=list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
+        if random.uniform(0, 1) < 0.3
+        else [],
     )
     data_drift_report.set_batch_size("daily")
 
@@ -94,10 +114,14 @@ def create_report(i: int, data):
 
 
 def create_test_suite(i: int, data):
+
     current, reference, column_mapping = data
     data_drift_test_suite = TestSuite(
         tests=[DataDriftTestPreset()],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
+        tags=list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
+        if random.uniform(0, 1) < 0.3
+        else [],
     )
 
     data_drift_test_suite.run(
@@ -111,28 +135,13 @@ def create_test_suite(i: int, data):
 def create_project(workspace: WorkspaceBase, name: str):
     project = workspace.create_project(name)
     project.description = "A toy demo project using Bike Demand forecasting dataset"
-
-    drift_tab = project.dashboard.create_tab("Data Drift")
-    quality_tab = project.dashboard.create_tab("Data Quality")
-
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             agg=CounterAgg.NONE,
             title="Bike Rental Demand Forecast",
-        ),
-        tab=drift_tab,
+        )
     )
-
-    project.dashboard.add_panel(
-        DashboardPanelCounter(
-            filter=ReportFilter(metadata_values={}, tag_values=[]),
-            agg=CounterAgg.NONE,
-            title="Bike Rental Demand Forecast",
-        ),
-        tab="Named Tab",
-    )
-
     project.dashboard.add_panel(
         DashboardPanelCounter(
             title="Model Calls",
@@ -145,10 +154,8 @@ def create_project(workspace: WorkspaceBase, name: str):
             text="count",
             agg=CounterAgg.SUM,
             size=WidgetSize.HALF,
-        ),
-        tab=quality_tab,
+        )
     )
-
     project.dashboard.add_panel(
         DashboardPanelCounter(
             title="Share of Drifted Features",
@@ -163,7 +170,6 @@ def create_project(workspace: WorkspaceBase, name: str):
             size=WidgetSize.HALF,
         )
     )
-
     project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Target and Prediction",
@@ -184,8 +190,7 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.FULL,
-        ),
-        tab=drift_tab,
+        )
     )
     project.dashboard.add_panel(
         DashboardPanelPlot(
@@ -200,10 +205,8 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.HALF,
-        ),
-        tab=quality_tab,
+        )
     )
-
     project.dashboard.add_panel(
         DashboardPanelPlot(
             title="MAPE",
@@ -217,10 +220,8 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.HALF,
-        ),
-        tab="Named Tab",
+        )
     )
-
     project.dashboard.add_panel(
         DashboardPanelPlot(
             title="Features Drift (Wasserstein Distance)",
@@ -253,8 +254,7 @@ def create_project(workspace: WorkspaceBase, name: str):
             ],
             plot_type=PlotType.LINE,
             size=WidgetSize.FULL,
-        ),
-        tab="Named Tab",
+        )
     )
     project.save()
     return project

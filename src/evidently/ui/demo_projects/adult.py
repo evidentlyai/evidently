@@ -12,7 +12,7 @@ from evidently.ui.dashboards import ReportFilter
 from evidently.ui.dashboards import TestFilter
 from evidently.ui.dashboards import TestSuitePanelType
 from evidently.ui.demo_projects.base import DemoProject
-from evidently.ui.workspace.base import WorkspaceBase
+from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
