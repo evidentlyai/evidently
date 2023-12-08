@@ -79,6 +79,9 @@ class FSLocation:
     def rmtree(self, path: str):
         return self.fs.delete(posixpath.join(self.path, path), recursive=True)
 
+    def invalidate_cache(self, path):
+        self.fs.invalidate_cache(posixpath.join(self.path, path))
+
 
 class FSSpecBlobStorage(BlobStorage):
     base_path: str
@@ -120,6 +123,7 @@ class LocalState:
         self.project_manager = project_manager
         self.projects: Dict[ProjectID, Project] = {}
         self.snapshots: Dict[ProjectID, Dict[SnapshotID, SnapshotMetadata]] = {}
+        self.snapshot_data: Dict[ProjectID, Dict[SnapshotID, Snapshot]] = {}
         self.location = FSLocation(base_path=self.path)
 
     @classmethod
@@ -131,6 +135,7 @@ class LocalState:
         return state
 
     def reload(self, force: bool = False):
+        self.location.invalidate_cache("")
         projects = [
             load_project(self.location, p).bind(self.project_manager, NO_USER.id)
             for p in self.location.listdir("")
@@ -138,6 +143,7 @@ class LocalState:
         ]
         self.projects = {p.id: p for p in projects if p is not None}
         self.snapshots = {p: {} for p in self.projects}
+        self.snapshot_data = {p: {} for p in self.projects}
 
         for project_id in self.projects:
             self.reload_snapshots(project_id, force=force, skip_errors=False)
@@ -146,8 +152,10 @@ class LocalState:
         path = posixpath.join(str(project_id), SNAPSHOTS)
         if force:
             self.snapshots[project_id] = {}
+            self.snapshot_data[project_id] = {}
 
         project = self.projects[project_id]
+        self.location.invalidate_cache(path)
         for file in self.location.listdir(path):
             snapshot_id = uuid.UUID(posixpath.basename(file)[: -len(".json")])
             if snapshot_id in self.snapshots[project_id]:
@@ -161,6 +169,7 @@ class LocalState:
                 suite = parse_obj_as(Snapshot, json.load(f))
             snapshot = SnapshotMetadata.from_snapshot(suite, snapshot_path).bind(project)
             self.snapshots[project.id][snapshot_id] = snapshot
+            self.snapshot_data[project.id][snapshot_id] = suite
         except ValidationError as e:
             if not skip_errors:
                 raise ValueError(f"{snapshot_id} is malformed") from e
@@ -207,10 +216,12 @@ class JsonFileMetadataStorage(MetadataStorage):
         if project is None:
             raise ProjectNotFound()
         self.state.snapshots[project_id][snapshot.id] = SnapshotMetadata.from_snapshot(snapshot, blob_id).bind(project)
+        self.state.snapshot_data[project_id][snapshot.id] = snapshot
 
     def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
         if project_id in self.state.projects and snapshot_id in self.state.snapshots[project_id]:
             del self.state.snapshots[project_id][snapshot_id]
+            del self.state.snapshot_data[project_id][snapshot_id]
         path = posixpath.join(str(project_id), SNAPSHOTS, f"{snapshot_id}.json")
         if self.state.location.exists(path):
             self.state.location.rmtree(path)
@@ -233,6 +244,9 @@ class JsonFileMetadataStorage(MetadataStorage):
 
     def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
         return self.state.snapshots[project_id][snapshot_id]
+
+    def reload_snapshots(self, project_id: ProjectID):
+        self.state.reload_snapshots(project_id=project_id, force=True)
 
 
 class InMemoryDataStorage(DataStorage):
@@ -258,7 +272,7 @@ class InMemoryDataStorage(DataStorage):
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPoints:
         points: DataPoints = [{} for _ in range(len(values))]
-        for report in (s.load().as_report() for s in self.state.snapshots[project_id].values() if s.is_report):
+        for report in (s.as_report() for s in self.state.snapshot_data[project_id].values() if s.is_report):
             if not filter.filter(report):
                 continue
             for i, value in enumerate(values):
@@ -278,7 +292,7 @@ class InMemoryDataStorage(DataStorage):
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
         points: Dict[datetime.datetime, Dict[Test, TestStatus]] = defaultdict(dict)
-        for report in (s.load().as_test_suite() for s in self.state.snapshots[project_id].values() if not s.is_report):
+        for report in (s.as_test_suite() for s in self.state.snapshot_data[project_id].values() if not s.is_report):
             if not filter.filter(report):
                 continue
             if not isinstance(report, TestSuite):

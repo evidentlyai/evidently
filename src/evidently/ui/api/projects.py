@@ -67,7 +67,7 @@ async def list_reports(
     project = project_manager.get_project(user_id, project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
-    reports = [ReportModel.from_report(r) for r in project.reports.values()]
+    reports = [ReportModel.from_snapshot(s) for s in project.list_snapshots(include_test_suites=False) if s.is_report]
     log_event("list_reports", reports_count=len(reports))
     return reports
 
@@ -144,7 +144,7 @@ async def list_test_suites(
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
     log_event("list_test_suites")
-    return [TestSuiteModel.from_report(r) for r in project.test_suites.values()]
+    return [TestSuiteModel.from_snapshot(s) for s in project.list_snapshots(include_reports=False) if not s.is_report]
 
 
 @project_read_router.get("/{project_id}/{snapshot_id}/graphs_data/{graph_id}")

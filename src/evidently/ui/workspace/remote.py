@@ -108,6 +108,9 @@ class RemoteMetadataStorage(MetadataStorage):
     def update_project(self, project: Project) -> Project:
         return self._request(f"/api/projects/{project.id}/info", "POST", body=project.dict(), response_model=Project)
 
+    def reload_snapshots(self, project_id: ProjectID):
+        self._request(f"/api/projects/{project_id}/reload", "GET")
+
 
 class NoopBlobStorage(BlobStorage):
     @contextlib.contextmanager

@@ -58,6 +58,7 @@ class WorkspaceDirHandler(FileSystemEventHandler):
             pid = uuid.UUID(project_id)
             del self.state.projects[pid]
             del self.state.snapshots[pid]
+            del self.state.snapshot_data[pid]
 
     def on_snapshot_event(self, event):
         project_id, snapshot_id = self.parse_project_and_snapshot_id(event.src_path)
@@ -78,3 +79,4 @@ class WorkspaceDirHandler(FileSystemEventHandler):
             and not os.path.exists(event.src_path)
         ):
             del self.state.snapshots[pid][sid]
+            del self.state.snapshot_data[pid][sid]

@@ -23,10 +23,8 @@ class LocalStorageConfig(StorageConfig):
         state = LocalState.load(self.path, project_manager)
         project_manager.data._state = project_manager.metadata._state = state
 
-        if self.autorefresh:
-            fs = state.location.fs
-            if not isinstance(fs, LocalFileSystem):
-                raise ValueError("Autorefresh is only supported for local filesystem storage")
+        fs = state.location.fs
+        if self.autorefresh and isinstance(fs, LocalFileSystem):
             from watchdog.observers import Observer
 
             from evidently.ui.storage.local.watcher import WorkspaceDirHandler

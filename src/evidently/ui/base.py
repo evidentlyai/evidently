@@ -21,11 +21,9 @@ from evidently._pydantic_compat import Field
 from evidently.model.dashboard import DashboardInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.renderers.notebook_utils import determine_template
-from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
-from evidently.test_suite import TestSuite
 from evidently.ui.dashboards.base import DashboardConfig
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
@@ -153,26 +151,8 @@ class Project(BaseModel):
             snapshot_id = uuid.UUID(snapshot_id)
         self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)
 
-    @property
-    def reports(self) -> Dict[uuid.UUID, Report]:
-        return {
-            snapshot.id: snapshot.load().as_report()
-            for snapshot in self.project_manager.list_snapshots(self._user_id, self.id, include_test_suites=False)
-        }
-
-    @property
-    def test_suites(self) -> Dict[uuid.UUID, TestSuite]:
-        return {
-            snapshot.id: snapshot.load().as_test_suite()
-            for snapshot in self.project_manager.list_snapshots(self._user_id, self.id, include_reports=False)
-        }
-
-    @property
-    def reports_and_test_suites(self) -> Dict[uuid.UUID, ReportBase]:
-        return {
-            snapshot.id: snapshot.load().as_report() if snapshot.is_report else snapshot.load().as_test_suite()
-            for snapshot in self.project_manager.list_snapshots(self._user_id, self.id)
-        }
+    def list_snapshots(self, include_reports: bool = True, include_test_suites: bool = True) -> List[SnapshotMetadata]:
+        return self.project_manager.list_snapshots(self._user_id, self.id, include_reports, include_test_suites)
 
     def get_snapshot_metadata(self, id: uuid.UUID) -> SnapshotMetadata:
         return self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)
@@ -205,7 +185,7 @@ class Project(BaseModel):
         self.__dict__.update(project.__dict__)
 
         if reload_snapshots:
-            pass
+            self.project_manager.reload_snapshots(self._user_id, self.id)
 
 
 class MetadataStorage(EvidentlyBaseModel, ABC):
@@ -249,6 +229,10 @@ class MetadataStorage(EvidentlyBaseModel, ABC):
 
     @abstractmethod
     def update_project(self, project: Project) -> Project:
+        raise NotImplementedError
+
+    @abstractmethod
+    def reload_snapshots(self, project_id: ProjectID):
         raise NotImplementedError
 
 
@@ -530,3 +514,8 @@ class ProjectManager(EvidentlyBaseModel):
         meta = self.metadata.get_snapshot_metadata(project_id, snapshot_id)
         meta.project.bind(self, user_id)
         return meta
+
+    def reload_snapshots(self, user_id: UserID, project_id: UUID):
+        if not self.auth.check_project_permission(user_id, project_id, ProjectPermission.READ):
+            raise NotEnoughPermissions()
+        self.metadata.reload_snapshots(project_id)
