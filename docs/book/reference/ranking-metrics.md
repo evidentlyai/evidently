@@ -1,3 +1,7 @@
+---
+description: Open-source metrics for ranking and recommendations.
+---
+
 ## Recall 
 
 **Evidently Metric**: `RecallTopKMetric`. 
@@ -136,4 +140,16 @@ Example: if the first relevant item is at the top of the list - the reciprocal r
 * Calculate the **mean reciprocal rank** (MRR). Compute the average reciprocal rank across all users.
 $$\text{MRR} = \frac{1}{U} \sum_{u=1}^{U}\frac{1}{rank_i}$$
 Where *U* is the total number of users, and *rank(i)* is the rank of the first relevant item for user *u* in the top-K results.
+
+**Range**: 0 to 1, where 1 indicates that the first recommended item for every user is relevant.
+
+**Interpretation**: A higher MRR indicates that, on average, relevant items are positioned closer to the top of the recommended lists. 
+
+**Note**: Only a single top relevant item is considered in this metric, disregarding the position and relevance of other items in the list.
+
+## Diversity
+
+
+$$\text{Diversity} = \frac{1}{|M|} \sum_{u \in M} \frac{1}{\binom{N_r(u)}{2}} \sum_{i,j \in N_r(u),\, i<j} \text{Cosine Distance}(i,j)$$
+where *M* is the set of users and *N_r(u)* the set of recommendations for user *u*.
 
