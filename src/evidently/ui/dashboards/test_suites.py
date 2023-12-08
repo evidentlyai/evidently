@@ -21,15 +21,16 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
-from evidently.ui.dashboard.base import DashboardPanel
-from evidently.ui.dashboard.base import ReportFilter
-from evidently.ui.dashboard.base import assign_panel_id
-from evidently.ui.dashboard.utils import TEST_COLORS
-from evidently.ui.dashboard.utils import CounterAgg
-from evidently.ui.dashboard.utils import TestSuitePanelType
-from evidently.ui.dashboard.utils import _get_test_hover
-from evidently.ui.dashboard.utils import getattr_nested
 from evidently.ui.type_aliases import TestResultPoints
+
+from .base import DashboardPanel
+from .base import ReportFilter
+from .base import assign_panel_id
+from .utils import TEST_COLORS
+from .utils import CounterAgg
+from .utils import TestSuitePanelType
+from .utils import _get_test_hover
+from .utils import getattr_nested
 
 if typing.TYPE_CHECKING:
     from evidently.ui.base import DataStorage

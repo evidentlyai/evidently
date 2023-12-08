@@ -28,7 +28,7 @@ from evidently.ui.api.utils import event_logger
 from evidently.ui.api.utils import get_project_manager
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
-from evidently.ui.dashboard.base import DashboardPanel
+from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID

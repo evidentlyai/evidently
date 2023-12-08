@@ -21,9 +21,9 @@ from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
-from evidently.ui.dashboard.base import PanelValue
-from evidently.ui.dashboard.base import ReportFilter
-from evidently.ui.dashboard.test_suites import TestFilter
+from evidently.ui.dashboards.base import PanelValue
+from evidently.ui.dashboards.base import ReportFilter
+from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import BlobID

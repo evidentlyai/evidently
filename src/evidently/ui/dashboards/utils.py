@@ -15,7 +15,8 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
 
 if TYPE_CHECKING:
-    from evidently.ui.dashboard.base import PanelValue
+    from .base import PanelValue
+
 COLOR_DISCRETE_SEQUENCE = (
     "#ed0400",
     "#0a5f38",

@@ -5,6 +5,7 @@ import uuid
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -26,10 +27,6 @@ from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
-from evidently.ui.dashboard.base import DashboardConfig
-from evidently.ui.dashboard.base import PanelValue
-from evidently.ui.dashboard.base import ReportFilter
-from evidently.ui.dashboard.test_suites import TestFilter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
@@ -43,6 +40,12 @@ from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.type_aliases import UserID
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
+
+if TYPE_CHECKING:
+    from evidently.ui.dashboards.base import DashboardConfig
+    from evidently.ui.dashboards.base import PanelValue
+    from evidently.ui.dashboards.base import ReportFilter
+    from evidently.ui.dashboards.test_suites import TestFilter
 
 
 class SnapshotMetadata(BaseModel):
@@ -106,6 +109,12 @@ class User(BaseModel):
     name: str
 
 
+def _default_dashboard():
+    from evidently.ui.dashboards import DashboardConfig
+
+    return DashboardConfig(name="", panels=[])
+
+
 class Project(BaseModel):
     class Config:
         underscore_attrs_are_private = True
@@ -113,7 +122,8 @@ class Project(BaseModel):
     id: ProjectID = Field(default_factory=uuid.uuid4)
     name: str
     description: Optional[str] = None
-    dashboard: DashboardConfig = DashboardConfig(name="", panels=[])
+    dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
+
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
 
@@ -272,7 +282,7 @@ class DataStorage(EvidentlyBaseModel, ABC):
     def load_points(
         self,
         project_id: ProjectID,
-        filter: ReportFilter,
+        filter: "ReportFilter",
         values: List["PanelValue"],
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
@@ -283,8 +293,8 @@ class DataStorage(EvidentlyBaseModel, ABC):
     def load_test_results(
         self,
         project_id: ProjectID,
-        filter: ReportFilter,
-        test_filters: List[TestFilter],
+        filter: "ReportFilter",
+        test_filters: List["TestFilter"],
         time_agg: Optional[str],
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
@@ -434,6 +444,8 @@ class ProjectManager(EvidentlyBaseModel):
         team_id: TeamID = None,
         org_id: OrgID = None,
     ) -> Project:
+        from evidently.ui.dashboards import DashboardConfig
+
         project = self.add_project(
             Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[])),
             user_id,

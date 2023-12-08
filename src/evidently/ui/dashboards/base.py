@@ -1,7 +1,6 @@
 import datetime
 import traceback
 import uuid
-from collections import defaultdict
 from functools import wraps
 from typing import TYPE_CHECKING
 from typing import Any
@@ -26,8 +25,9 @@ from evidently.renderers.html_widgets import counter
 from evidently.report import Report
 from evidently.suite.base_suite import ReportBase
 from evidently.test_suite import TestSuite
-from evidently.ui.dashboard.utils import getattr_nested
 from evidently.ui.type_aliases import ProjectID
+
+from .utils import getattr_nested
 
 if TYPE_CHECKING:
     from evidently.ui.base import DataStorage

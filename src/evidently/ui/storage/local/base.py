@@ -27,10 +27,10 @@ from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
-from evidently.ui.dashboard.base import PanelValue
-from evidently.ui.dashboard.base import ReportFilter
-from evidently.ui.dashboard.test_suites import TestFilter
-from evidently.ui.dashboard.test_suites import to_period
+from evidently.ui.dashboards.base import PanelValue
+from evidently.ui.dashboards.base import ReportFilter
+from evidently.ui.dashboards.test_suites import TestFilter
+from evidently.ui.dashboards.test_suites import to_period
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER

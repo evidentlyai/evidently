@@ -1,5 +1,4 @@
 import os
-import uuid
 from typing import Callable
 from typing import ClassVar
 from typing import List
@@ -7,9 +6,7 @@ from typing import Optional
 from typing import Set
 
 from fastapi import Depends
-from fastapi import Header
 from fastapi.security import APIKeyHeader
-from pydantic.typing import Annotated
 
 from evidently.ui.base import AuthManager
 from evidently.ui.base import ProjectPermission
@@ -84,24 +81,6 @@ class NoopAuthManager(AuthManager):
 
     def _list_team_users(self, team_id: TeamID) -> List[User]:
         return []
-
-
-class HeaderUserID(SecurityConfig):
-    def get_user_id_dependency(self) -> Callable[[...], Optional[UserID]]:
-        def get_user_id(user_id: Annotated[UserID, Header(title="plain user_id")]) -> Optional[UserID]:
-            return user_id
-
-        return get_user_id
-
-
-class APIKeyHeaderUserID(SecurityConfig):
-    def get_user_id_dependency(self) -> Callable[[...], Optional[UserID]]:
-        key = APIKeyHeader(name="user_id")
-
-        def get_user_id(user_id: str = Depends(key)):
-            return uuid.UUID(user_id)
-
-        return get_user_id
 
 
 class SecretHeaderSecurity(SecurityConfig):
