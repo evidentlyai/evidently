@@ -149,7 +149,104 @@ Where *U* is the total number of users, and *rank(i)* is the rank of the first r
 
 ## Diversity
 
+**Evidently Metric**: `DiversityMetric`
 
-$$\text{Diversity} = \frac{1}{|M|} \sum_{u \in M} \frac{1}{\binom{N_r(u)}{2}} \sum_{i,j \in N_r(u),\, i<j} \text{Cosine Distance}(i,j)$$
-where *M* is the set of users and *N_r(u)* the set of recommendations for user *u*.
+**Recommendation diversity**: this metric measures the average intra-list diversity at K. It reflects the variety of items within the same user's recommendation list, averaged by all users. 
 
+**Implemented method**:
+* **Measure the difference between recommended items**. Calculate the Cosine distance for each pair of recommendations inside the top-K in each user's list. The cosine distance serves a measure of diversity between vectors representing recommended items, and is computed as:
+
+$$\text{Cosine distance} = 1 - \text{Cosine Similarity}$$
+
+Link: [Cosine Similarity on Wikipedia](https://en.wikipedia.org/wiki/Cosine_similarity). 
+
+* **Intra-list diversity**. Calculate intra-list diversity for each user by averaging the Cosine Distance between each pair of items in the user's top-K list.
+* **Overall diversity**. Calculate the overall diversity by averaging the intra-list diversity across all users.
+
+**Range**: The metric is based on Cosine distance, and can take values from 0 to 2. 
+**0:** identical recommendations in top-K.
+**2:** very diverse recommendations in top-K.
+
+**Interpretation**: the higher the value, the more varied items are shown to each user (e.g. inside a single recommendation block).
+
+**Requirements**: You must pass the `item_features` list to point to numerical columns or embeddings that describe the recommended items. For example, these could be encoded genres that represent each movie. This makes it possible to compare the degree of similarity between different items. 
+
+**Notes**: 
+* This metric does not consider relevance. A recommender system showing varied but irrelevant items will have high diversity.
+* This method performs many pairwise calculations between items and can take some time to compute.
+  
+## Novelty
+
+**Evidently Metric**: `NoveltyMetric`
+
+**Recommendation novelty**: this metric measures the average novelty of recommendations at K. It reflects how unusual top-K items are shown to each user, averaged by all users. 
+
+**Implemented method**:
+* Measure **novelty of recommended items**. The novelty of an item can be defined based on its popularity in the training set.
+$$\text{novelty}_i = -\log_2(p_i)$$
+where *p* represents the probability that item *i* is observed. It is calculated as the share of users that interacted with an item in the training set.
+$$\text{novelty}_i = -\log_2\left(\frac{\text{users who interacted with } i}{\text{number of users}}\right)$$
+High novelty corresponds to long-tail items that few users interacted with, and low novelty values correspond to popular items. If all users had interacted with an item, novelty is 0.
+* Measure **novelty by user**. For each user, compute the average item novelty at K, by summing up the novelty of all items and dividing by K.
+* **Overall novelty**. Average the novelty by user across all users.
+
+**Range**: 0 to infinity. 
+
+**Interpretation**: if the value is higher, the items shown to users are more unusual. If the value is lower, the recommended items are well-known.   
+
+**Notes**: 
+* This metric does not consider relevance. A recommender system showing many irrelevant but unexpected (long tail) items will have high novelty. 
+* It is not possible to define the novelty of an item absent in the training set. The evaluation only considers items that are present in training. 
+
+Further reading: [Castells, P., Vargas, S., & Wang, J. (2011). Novelty and Diversity Metrics for Recommender Systems: Choice, Discovery and Relevance](https://repositorio.uam.es/bitstream/handle/10486/666094/novelty_castells_DDR_2011.pdf)
+
+## Serendipity
+
+**Evidently Metric**: `SerendipityMetric`
+
+Recommendation serendipity: this metric measures how unusual the relevant recommendations are in K, averaged for all users. 
+
+Serendipity combines unexpectedness and relevance. It reflects the ability of a recommender system to show relevant items (that get a positive ranking or action) that are unexpected in the context of the user history (= are not similar to previous interactions). For example, a user that usually likes comedies gets recommended and upvotes a thriller.
+
+**Implemented method**. 
+* Measure the **unexpectedness** of relevant recommendations. The “unexpectedness” is measured using Cosine distance. For every relevant recommendation in top-K, we compute the distance between this item and the previous user interactions in the training set. Higher cosine distance indicates higher unexpectedness.
+* **Serendipity by user**. Calculate the average of the resulting distances for all relevant recommendations in the user list.  
+* **Overall serendipity**. Calculate the overall recommendation serendipity by averaging the results across all users.
+$$\text{serendipity}_i = \text{unexpectedness}_i\times\text{relevance}_i$$
+Where *relevance(i)* is equal to 1 if the item is relevant, and is 0 otherwise.
+
+**Range**: The metric is based on Cosine distance, and can take values from 0 to 2. 
+* **0**: only popular, expected relevant recommendations.
+* **2**: completely unexpected relevant recommendations.
+ 
+**Interpretation**: the higher the value, the better the ability of the system to “positively surprise” the user. 
+
+**Requirements**: You must pass the `item_features` list to point to the numerical columns or embeddings that describe the recommended items. This allows comparing the degree of similarity between recommended items.
+
+**Notes**: 
+* This metric is only computed for the users that are present in the training set. If there is no previous recommendation history, these users will be ignored. 
+* This metric only considers the unexpectedness of relevant items in top-K. Irrelevant recommendations, and their share, are not taken into account.
+
+Further reading: [Zhang, Y., Séaghdha, D., Quercia, D., Jambor, T. (2011). Auralist: introducing serendipity into music recommendation.]
+(http://www.cs.ucl.ac.uk/fileadmin/UCL-CS/research/Research_Notes/RN_11_21.pdf)
+
+## Personalization
+
+**Evidently Metric**: `PersonalisationMetric`
+
+Personalization of recommendations: this metric measures the average uniqueness of each user's recommendations in top-K.
+
+**Implemented method**:
+* For every two users, compute the **overlap between top-K recommended items**. (The number of common items in top-K between two lists, divided by K).
+* Calculate the **average overlap** across all pairs of users.
+* Calculate personalization as: 
+
+$$\text{Personalization} = 1 - \text{average overlap}$$
+ 
+The resulting metric reflects the average share of unique recommendations in each user’s list.
+
+**Range**: 0 to 1.
+* **0**: Identical recommendations for each user in top-K. 
+* **1**: Each user’s recommendations in top-K are unique.   
+
+**Interpretation**: the higher the value, the more personalized (= different from others) is each user’s list. The metric visualization also shows the top-10 most popular items.
