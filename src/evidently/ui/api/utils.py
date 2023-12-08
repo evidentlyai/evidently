@@ -1,16 +1,14 @@
 from functools import partial
 from typing import Callable
-from typing import Optional
 
 from fastapi import Depends
 from iterative_telemetry import IterativeTelemetryLogger
 from starlette.requests import Request
 
 import evidently
-from evidently.ui.api.security import get_user_id
+from evidently.ui.api.security import is_authorized
 from evidently.ui.config import Configuration
 from evidently.ui.errors import NotEnoughPermissions
-from evidently.ui.type_aliases import UserID
 
 
 async def get_configuration(request: Request) -> Configuration:
@@ -38,8 +36,8 @@ def event_logger(
     yield partial(_event_logger.send_event, config.telemetry.service_name)
 
 
-async def authorized(user_id: Optional[UserID] = Depends(get_user_id)):
-    if user_id is None:
+async def authorized(is_authorized_: bool = Depends(is_authorized)):
+    if not is_authorized_:
         raise NotEnoughPermissions()
 
 

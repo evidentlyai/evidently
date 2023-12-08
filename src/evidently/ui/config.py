@@ -35,10 +35,23 @@ class SecurityConfig(EvidentlyBaseModel):
     def get_org_id_dependency(self) -> Callable[..., Optional[OrgID]]:
         return lambda: None
 
+    def get_is_authorized_dependency(self) -> Callable[..., bool]:
+        get_user_id = self.get_user_id_dependency()
+
+        from fastapi import Depends
+
+        def is_authorized(user_id: Optional[UserID] = Depends(get_user_id)):
+            return user_id is not None
+
+        return is_authorized
+
 
 class NoSecurityConfig(SecurityConfig):
     def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
         return lambda: None
+
+    def get_is_authorized_dependency(self) -> Callable[..., bool]:
+        return lambda: True
 
 
 class StorageConfig(EvidentlyBaseModel, ABC):

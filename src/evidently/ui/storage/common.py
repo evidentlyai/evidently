@@ -11,9 +11,7 @@ from fastapi import Header
 from fastapi.security import APIKeyHeader
 from pydantic.typing import Annotated
 
-from evidently.ui.api.utils import get_project_manager
 from evidently.ui.base import AuthManager
-from evidently.ui.base import ProjectManager
 from evidently.ui.base import ProjectPermission
 from evidently.ui.base import Team
 from evidently.ui.base import TeamPermission
@@ -116,13 +114,14 @@ class SecretHeaderSecurity(SecurityConfig):
         return os.environ.get(self.secret_env)
 
     def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
+        return lambda: None
+
+    def get_is_authorized_dependency(self) -> Callable[..., bool]:
         header = APIKeyHeader(name="evidently_secret", auto_error=False)
 
         value = self.get_secret_value()
 
-        def get_user_id(secret: str = Depends(header), project_manager: ProjectManager = Depends(get_project_manager)):
-            if value is not None and secret == value:
-                return project_manager.auth.get_default_user()
-            return None
+        def is_authorized(secret: str = Depends(header)):
+            return value is not None and secret == value
 
-        return get_user_id
+        return is_authorized

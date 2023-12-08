@@ -24,6 +24,10 @@ async def get_org_id() -> Optional[OrgID]:
     return None
 
 
+async def is_authorized() -> bool:
+    return True
+
+
 _security_deps: Dict[Callable, List[Tuple[Dependant, int]]] = {}
 
 
@@ -63,3 +67,4 @@ def replace_dependency(app: FastAPI, dependency: Callable, new_dependency: Calla
 def setup_security(app: FastAPI, security: SecurityConfig):
     replace_dependency(app, get_user_id, security.get_user_id_dependency())
     replace_dependency(app, get_org_id, security.get_org_id_dependency())
+    replace_dependency(app, is_authorized, security.get_is_authorized_dependency())
