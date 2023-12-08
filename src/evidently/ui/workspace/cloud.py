@@ -1,12 +1,9 @@
 from typing import Optional
 from uuid import UUID
 
-import requests
 from pydantic import PrivateAttr
-from requests.models import HTTPError
 
 from evidently.ui.base import ProjectManager
-from evidently.ui.errors import NotAuthorized
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.workspace.remote import NoopBlobStorage
