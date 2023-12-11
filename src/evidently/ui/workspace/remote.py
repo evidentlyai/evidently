@@ -4,6 +4,7 @@ import io
 import json
 import urllib.parse
 import uuid
+from json import JSONDecodeError
 from typing import List
 from typing import Optional
 from typing import Set
@@ -13,6 +14,7 @@ import requests
 from pydantic import parse_obj_as
 
 from evidently.suite.base_suite import Snapshot
+from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
@@ -145,8 +147,9 @@ class NoopDataStorage(DataStorage):
 class RemoteWorkspaceView(WorkspaceView):
     def verify(self):
         try:
-            self.project_manager.metadata._request("/api/version", "GET").raise_for_status()
-        except HTTPError as e:
+            response = self.project_manager.metadata._request("/api/version", "GET")
+            assert response.json()["application"] == EVIDENTLY_APPLICATION_NAME
+        except (HTTPError, JSONDecodeError, KeyError, AssertionError) as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
 
     def __init__(self, base_url: str, secret: Optional[str] = None):

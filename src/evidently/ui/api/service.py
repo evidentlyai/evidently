@@ -10,10 +10,15 @@ service_api = APIRouter(prefix="")
 # todo: move to config
 DEV = True
 
+EVIDENTLY_APPLICATION_NAME = "Evidently UI"
+
 
 @service_api.get("/version")
 async def version():
-    result = {"version": evidently.__version__}
+    result = {
+        "application": EVIDENTLY_APPLICATION_NAME,
+        "version": evidently.__version__,
+    }
     if DEV:
         result["commit"] = get_git_revision_short_hash(os.path.dirname(evidently.__file__))
     return result
