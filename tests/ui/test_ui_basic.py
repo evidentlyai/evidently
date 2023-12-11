@@ -2,10 +2,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 from evidently.ui.app import app
+from evidently.ui.config import Configuration
 from evidently.ui.demo_projects import DEMO_PROJECTS
 from evidently.ui.workspace import Workspace
 
 client = TestClient(app)
+app.state.config = Configuration()  # todo: make it a fixture
 
 
 @pytest.fixture
