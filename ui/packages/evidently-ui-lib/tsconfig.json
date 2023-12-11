@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.ui",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": ".tsc-dts",
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": ["*"]
+    }
+  },
+  "include": ["src"]
+}

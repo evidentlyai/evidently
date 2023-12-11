@@ -1,16 +1,24 @@
-# IDE files
-.idea
-.vscode
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# JS/TS files and folders
 node_modules
-build
+dist
+dist-ssr
+*.local
 
-# MacOS files
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-
-# python
-venv
-*.pyc
-
-src/lib
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

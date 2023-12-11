@@ -1165,20 +1165,15 @@ def plot_top_error_contours(
 
 
 def choose_agg_period(current_date_column: pd.Series, reference_date_column: Optional[pd.Series]) -> Tuple[str, str]:
-    prefix_dict = {
-        "A": "year",
-        "Q": "quarter",
-        "M": "month",
-        "W": "week",
-        "D": "day",
-        "H": "hour",
-    }
+    prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour", "min": "minute"}
     datetime_feature = current_date_column
     if reference_date_column is not None:
         datetime_feature = pd.concat([datetime_feature, reference_date_column])
     days = (datetime_feature.max() - datetime_feature.min()).days
+    if days == 0:
+        days = (datetime_feature.max() - datetime_feature.min()).seconds / (3600 * 24)
     time_points = pd.Series(
-        index=["A", "Q", "M", "W", "D", "H"],
+        index=["A", "Q", "M", "W", "D", "H", "min"],
         data=[
             abs(OPTIMAL_POINTS - days / 365),
             abs(OPTIMAL_POINTS - days / 90),
@@ -1186,6 +1181,7 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
             abs(OPTIMAL_POINTS - days / 7),
             abs(OPTIMAL_POINTS - days),
             abs(OPTIMAL_POINTS - days * 24),
+            abs(OPTIMAL_POINTS - days * 24 * 60),
         ],
     )
     period_prefix = prefix_dict[time_points.idxmin()]
@@ -1385,4 +1381,123 @@ def plot_metric_k(curr_data: pd.Series, ref_data: Optional[pd.Series], yaxis_nam
         )
     fig.update_xaxes(title_text="k", tickformat=",d")
     fig.update_layout(yaxis_title=yaxis_name, showlegend=False)
+    return fig
+
+
+def plot_bias(
+    curr: Distribution,
+    curr_train: Distribution,
+    ref: Optional[Distribution],
+    ref_train: Optional[Distribution],
+    xaxis_name: str,
+):
+    color_options = ColorOptions()
+
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+    if ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Bar(
+        x=curr.x,
+        y=(curr.count / curr.count.sum()) * 100,
+        marker_color=color_options.get_current_data_color(),
+        name="recommendation",
+        legendgroup="recommendation",
+    )
+    fig.add_trace(trace, 1, 1)
+    trace = go.Bar(
+        x=curr_train.x,
+        y=(curr_train.count / curr_train.count.sum()) * 100,
+        marker_color=color_options.additional_data_color,
+        name="train",
+        legendgroup="train",
+    )
+    fig.add_trace(trace, 1, 1)
+    if ref is not None and ref_train is not None:
+        trace = go.Bar(
+            x=ref.x,
+            y=(ref.count / ref.count.sum()) * 100,
+            marker_color=color_options.get_current_data_color(),
+            name="recommendation",
+            legendgroup="recommendation",
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+        trace = go.Bar(
+            x=ref_train.x,
+            y=(ref_train.count / ref_train.count.sum()) * 100,
+            marker_color=color_options.additional_data_color,
+            name="train",
+            legendgroup="train",
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+    fig.update_layout(yaxis_title="percent")
+    fig.update_xaxes(title_text=xaxis_name)
+    return fig
+
+
+def plot_4_distr(
+    curr_1: Distribution,
+    curr_2: Optional[Distribution],
+    ref_1: Optional[Distribution],
+    ref_2: Optional[Distribution],
+    name_1: str,
+    name_2: str,
+    xaxis_name: str,
+    color_2: str = "additional",
+):
+    color_options = ColorOptions()
+    if color_2 == "additional":
+        color_2 = color_options.additional_data_color
+    else:
+        color_2 = color_options.secondary_color
+
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+    if ref_1 is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Bar(
+        x=curr_1.x,
+        y=(curr_1.count / curr_1.count.sum()) * 100,
+        marker_color=color_options.get_current_data_color(),
+        name=name_1,
+        legendgroup=name_1,
+    )
+    fig.add_trace(trace, 1, 1)
+    if curr_2 is not None:
+        trace = go.Bar(
+            x=curr_2.x,
+            y=(curr_2.count / curr_2.count.sum()) * 100,
+            marker_color=color_2,
+            name=name_2,
+            legendgroup=name_2,
+        )
+        fig.add_trace(trace, 1, 1)
+    if ref_1 is not None:
+        trace = go.Bar(
+            x=ref_1.x,
+            y=(ref_1.count / ref_1.count.sum()) * 100,
+            marker_color=color_options.get_current_data_color(),
+            name=name_1,
+            legendgroup=name_1,
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+    if ref_2 is not None:
+        trace = go.Bar(
+            x=ref_2.x,
+            y=(ref_2.count / ref_2.count.sum()) * 100,
+            marker_color=color_2,
+            name=name_2,
+            legendgroup=name_2,
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+    fig.update_layout(yaxis_title="percent")
+    fig.update_xaxes(title_text=xaxis_name)
     return fig

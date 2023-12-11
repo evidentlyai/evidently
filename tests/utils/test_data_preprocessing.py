@@ -48,6 +48,9 @@ def test_get_columns():
         classification_labels=["class_1", "class_2", "class_3"],
         embeddings=None,
         reference_present=True,
+        user_id=None,
+        item_id=None,
+        recommendations_type=None,
     )
 
     all_columns = [

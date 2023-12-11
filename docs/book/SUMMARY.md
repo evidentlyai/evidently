@@ -36,6 +36,7 @@
   * [Pre-built test suites](tests-and-reports/run-tests.md)
   * [Create a custom test suite](tests-and-reports/custom-test-suite.md)
   * [Generate multiple test or metrics](tests-and-reports/test-metric-generator.md)
+  * [Run Evidently on Spark](tests-and-reports/spark.md)
 * [Monitoring](monitoring/README.md)
   * [Monitoring overview](monitoring/monitoring_overview.md)
   * [Add workspace and project](monitoring/workspace_project.md)

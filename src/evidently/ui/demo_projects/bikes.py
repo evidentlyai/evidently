@@ -23,11 +23,14 @@ from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
 from evidently.ui.demo_projects import DemoProject
-from evidently.ui.workspace import WorkspaceBase
+from evidently.ui.workspace.base import WorkspaceBase
 
 
 def create_data():
-    content = requests.get("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip").content
+    content = requests.get(
+        "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip",
+        verify=False,
+    ).content
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         raw_data = pd.read_csv(
             arc.open("hour.csv"),

@@ -1,8 +1,10 @@
 from typing import Dict
 
 import pytest
+from pydantic import parse_obj_as
 
 from evidently.base_metric import MetricResult
+from evidently.pydantic_utils import PolymorphicModel
 
 
 class MockMetricResultField(MetricResult):
@@ -34,3 +36,33 @@ def test_field_path_with_dict():
     assert MockMetricResultWithDict.fields.d.lol.list_fields() == ["type", "nested_field"]
 
     assert str(MockMetricResultWithDict.fields.d.lol.nested_field) == "d.lol.nested_field"
+
+
+def test_not_allowed_prefix():
+    class SomeModel(PolymorphicModel):
+        pass
+
+    with pytest.raises(ValueError):
+        parse_obj_as(SomeModel, {"type": "external.Class"})
+
+
+def test_type_alias():
+    class SomeModel(PolymorphicModel):
+        class Config:
+            type_alias = "somemodel"
+
+    class SomeModelSubclass(SomeModel):
+        pass
+
+    class SomeOtherSubclass(SomeModel):
+        class Config:
+            type_alias = "othersubclass"
+
+    obj = parse_obj_as(SomeModel, {"type": "somemodel"})
+    assert obj.__class__ == SomeModel
+
+    obj = parse_obj_as(SomeModel, {"type": SomeModelSubclass.__get_type__()})
+    assert obj.__class__ == SomeModelSubclass
+
+    obj = parse_obj_as(SomeModel, {"type": "othersubclass"})
+    assert obj.__class__ == SomeOtherSubclass

@@ -38,6 +38,7 @@ class ColorOptions(Option):
     secondary_color: str = GREY
     current_data_color: Optional[str] = None
     reference_data_color: Optional[str] = None
+    additional_data_color: str = "#0a5f38"
     color_sequence: Sequence[str] = COLOR_DISCRETE_SEQUENCE
     fill_color: str = "LightGreen"
     zero_line_color: str = "green"
@@ -60,6 +61,7 @@ SOLARIZED_COLOR_OPTIONS = ColorOptions(
     secondary_color="#073642",
     current_data_color="#268bd2",
     reference_data_color="#073642",
+    additional_data_color="",
     color_sequence=(
         "#268bd2",
         "#2aa198",

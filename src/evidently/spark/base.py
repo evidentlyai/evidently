@@ -272,6 +272,8 @@ def create_data_definition_spark(
             labels = list(set(labels) | set(ref_labels))
 
     return DataDefinition(
+        user_id=ColumnDefinition(mapping.user_id, ColumnType.Id) if mapping.user_id is not None else None,
+        item_id=ColumnDefinition(mapping.item_id, ColumnType.Id) if mapping.item_id is not None else None,
         columns=[col for col in all_columns if col is not None],
         id_column=id_column,
         datetime_column=datetime_column,
@@ -281,6 +283,7 @@ def create_data_definition_spark(
         classification_labels=mapping.target_names or labels,
         embeddings=embeddings,
         reference_present=reference_data is not None,
+        recommendations_type=mapping.recommendations_type,
     )
 
 

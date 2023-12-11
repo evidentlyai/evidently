@@ -1,5 +1,8 @@
-import { RouteObject } from 'react-router'
-import { Component, handle, loader } from './Component'
+import { RouteObject } from 'react-router-dom'
+import { injectAPI } from 'evidently-ui-lib/routes-components/projectId/data'
+import { api } from 'api/RemoteApi'
+
+const { loader } = injectAPI({ api })
 
 ////////////////////
 // children routes
@@ -12,8 +15,7 @@ import TestSuitesOldRoute from './test_suites'
 
 export default {
   path: 'projects/:projectId',
+  lazy: () => import('evidently-ui-lib/routes-components/projectId'),
   loader,
-  Component,
-  handle,
   children: [DashboardRoute, ReportsRoute, TestSuitesRoute, TestSuitesOldRoute]
 } satisfies RouteObject

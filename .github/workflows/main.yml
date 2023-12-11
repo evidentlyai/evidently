@@ -9,6 +9,11 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -68,7 +73,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-        run: pip install -e .[dev,spark]
+        run: pip install -e .[dev,spark,fsspec]
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
       - name: Run Tests
@@ -95,7 +100,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-        run: pip install -e .[dev,spark]
+        run: pip install -e .[dev,spark,fsspec]
       - name: Run Tests
         run: python -m pytest --durations=50
 
@@ -118,7 +123,7 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
       - name: Install package
-        run: pip install -e .[dev]
+        run: pip install -e .[dev,spark,fsspec]
       - name: Install minimal reqs
         if: matrix.minimal
         run: pip install -r requirements.min.txt
@@ -127,7 +132,7 @@ jobs:
       - name: Export examples
         run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
       - name: Download test data
-        run: curl https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
+        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
           unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
       - name: Run examples
         run: python example_test.py

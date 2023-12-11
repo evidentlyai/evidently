@@ -1,3 +1,5 @@
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -38,7 +40,7 @@ class ClassificationPreset(MetricPreset):
         self.probas_threshold = probas_threshold
         self.k = k
 
-    def generate_metrics(self, data_definition: DataDefinition):
+    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         result = [
             ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k),
             ClassificationClassBalance(),
