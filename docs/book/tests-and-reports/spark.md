@@ -51,7 +51,3 @@ spark_report_table.run(reference_data=reference, current_data=current, engine=Sp
 
 spark_report_table.show()  # OR spark_report_table.show(mode='inline')
 ```
-Notebook example on setting Test criticality:
-
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_specify_test_criticality.ipynb" %} 
-
