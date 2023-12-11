@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from pydantic import parse_obj_as
 from starlette.responses import JSONResponse
 
+from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.utils import NumpyEncoder
 
 
@@ -25,7 +26,7 @@ class RemoteClientBase:
         response_model=None,
     ):
         # todo: better encoding
-        headers = {"evidently-secret": self.secret}
+        headers = {SECRET_HEADER_NAME: self.secret}
         data = None
         if body is not None:
             headers["Content-Type"] = "application/json"

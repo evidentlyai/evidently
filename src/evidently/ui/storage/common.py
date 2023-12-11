@@ -83,6 +83,9 @@ class NoopAuthManager(AuthManager):
         return []
 
 
+SECRET_HEADER_NAME = "evidently-secret"
+
+
 class SecretHeaderSecurity(SecurityConfig):
     secret: Optional[str] = None
     secret_env: str = EVIDENTLY_SECRET_ENV
@@ -96,7 +99,7 @@ class SecretHeaderSecurity(SecurityConfig):
         return lambda: None
 
     def get_is_authorized_dependency(self) -> Callable[..., bool]:
-        header = APIKeyHeader(name="evidently_secret", auto_error=False)
+        header = APIKeyHeader(name=SECRET_HEADER_NAME, auto_error=False)
 
         value = self.get_secret_value()
 

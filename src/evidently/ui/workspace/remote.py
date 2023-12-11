@@ -25,6 +25,7 @@ from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.storage.common import NO_USER
+from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
@@ -37,6 +38,7 @@ from evidently.utils import NumpyEncoder
 
 class RemoteMetadataStorage(MetadataStorage):
     base_url: str
+    secret: Optional[str] = None
 
     def _request(
             self,
@@ -49,6 +51,8 @@ class RemoteMetadataStorage(MetadataStorage):
     ):
         # todo: better encoding
         headers = {}
+        if self.secret is not None:
+            headers[SECRET_HEADER_NAME] = self.secret
         data = None
         if body is not None:
             headers["Content-Type"] = "application/json"
@@ -145,10 +149,11 @@ class RemoteWorkspaceView(WorkspaceView):
         except HTTPError as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
 
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, secret: Optional[str] = None):
         self.base_url = base_url
+        self.secret = secret
         pm = ProjectManager(
-            metadata=(RemoteMetadataStorage(base_url=self.base_url)),
+            metadata=(RemoteMetadataStorage(base_url=self.base_url, secret=self.secret)),
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
             auth=(NoopAuthManager())

@@ -126,8 +126,7 @@ class CollectorConfig(Config):
     @property
     def workspace(self) -> RemoteWorkspace:
         if self._workspace is None:
-            # todo: token
-            self._workspace = RemoteWorkspace(base_url=self.api_url)
+            self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
         return self._workspace
 
     def _read_reference(self):
