@@ -138,4 +138,14 @@ export class RemoteApi implements Api {
 
     return response
   }
+
+  async reloadProject(projectId: string) {
+    const response = await fetch(`${this.endpoint}/projects/${projectId}/reload`)
+
+    if (!response.ok) {
+      throw response
+    }
+
+    return response
+  }
 }
