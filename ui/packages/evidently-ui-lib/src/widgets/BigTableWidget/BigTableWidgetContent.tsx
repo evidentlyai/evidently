@@ -123,9 +123,9 @@ const BigTableWidgetContent: React.FunctionComponent<BigTableWidgetProps> = (pro
   const options = {
     search: true,
     showTitle: false,
-    minBodyHeight: '10vh',
     pageSize: props.rowsPerPage ?? 5,
-    detailPanelColumnStyle: { minWidth: 42 }
+    detailPanelColumnStyle: { minWidth: 42 },
+    emptyRowsWhenPaging: false
   } as Options<any>
   return (
     <React.Fragment>
