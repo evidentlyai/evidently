@@ -12,12 +12,11 @@ from typing import Set
 from typing import Union
 from uuid import UUID
 
-from pydantic import UUID4
-from pydantic import PrivateAttr
-from pydantic import parse_obj_as
-
+from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import parse_obj_as
 from evidently.model.dashboard import DashboardInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.renderers.notebook_utils import determine_template

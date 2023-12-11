@@ -11,8 +11,8 @@ from typing import Set
 from urllib.error import HTTPError
 
 import requests
-from pydantic import parse_obj_as
 
+from evidently._pydantic_compat import parse_obj_as
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.ui.base import BlobStorage

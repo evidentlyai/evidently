@@ -1,8 +1,7 @@
 from typing import Optional
 from uuid import UUID
 
-from pydantic import PrivateAttr
-
+from evidently._pydantic_compat import PrivateAttr
 from evidently.ui.base import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID

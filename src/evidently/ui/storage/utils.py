@@ -3,8 +3,7 @@ from typing import Iterator
 from typing import List
 from typing import Tuple
 
-from pydantic import BaseModel
-
+from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import MetricResult
 
 
