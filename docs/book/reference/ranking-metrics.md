@@ -4,6 +4,8 @@ description: Open-source metrics for ranking and recommendations.
 
 ## Recall 
 
+![](../.gitbook/assets/reports/metric_recall-min.png)
+
 **Evidently Metric**: `RecallTopKMetric`. 
 
 Recall at K reflects the ability of the recommender or ranking system to retrieve all relevant items within the top K results. 
@@ -21,6 +23,8 @@ $$\text{Recall at } K = \frac{\text{Number of relevant items in } K}{\text{Total
 
 ## Precision 
 
+![](../.gitbook/assets/reports/metric_precision-min.png)
+
 **Evidently Metric**: `PrecisionTopKMetric`. 
 
 Precision at K reflects the ability of the system to suggest items that are truly relevant to the users’ preferences. 
@@ -35,6 +39,8 @@ $$\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{To
 **Interpretation**: a higher precision at K indicates that a larger proportion of the top results are relevant, which is generally desirable.
 
 ## F Beta
+
+![](../.gitbook/assets/reports/metric_fbeta-min.png)
 
 **Evidently Metric**: `FBetaTopKMetric`.
 
@@ -51,6 +57,8 @@ If `Beta` = 1 (default), it is a traditional F1 score that provides a harmonic m
 **Interpretation**: Higher F Beta at K values indicate better overall performance.
 
 ## Mean average precision (MAP) 
+
+![](../.gitbook/assets/reports/metric_map-min.png)
 
 **Evidently Metric**: `MAPKMetric`.
 
@@ -96,6 +104,8 @@ Where *U* is the total number of users or queries in the dataset, and *AR* is th
 
 **Evidently Metric**: `NDCGKMetric`.
 
+![](../.gitbook/assets/reports/metric_ndcg-min.png)
+
 NDCG (Normalized Discounted Cumulative Gain) at K reflects the ranking quality, compared to an ideal order where all relevant items for each user are placed at the top of the list.
 
 **Implemented method**:
@@ -112,6 +122,8 @@ This way, it is possible to compare NDCG values across different use cases. The 
 **Interpretation**: Higher NDCG at K indicates a better ability of the system to place more relevant items higher up in the ranking.
 
 ## Hit Rate
+
+![](../.gitbook/assets/reports/metric_hitrate-min.png)
 
 **Evidently Metric**: `HitRateKMetric`.
 
@@ -131,6 +143,8 @@ Hit Rate at K calculates the share of users for which at least one relevant item
 
 **Evidently Metric**: `MRRKMetric`
 
+![](../.gitbook/assets/reports/metric_mrr-min.png)
+
 Mean Reciprocal Rank (MRR) measures the ranking quality considering the position of the first relevant item in the list of recommendations.
 
 **Implemented method:**
@@ -148,6 +162,8 @@ Where *U* is the total number of users, and *rank(i)* is the rank of the first r
 **Note**: Only a single top relevant item is considered in this metric, disregarding the position and relevance of other items in the list.
 
 ## Diversity
+
+![](../.gitbook/assets/reports/metric_diversity-min.png)
 
 **Evidently Metric**: `DiversityMetric`
 
@@ -177,6 +193,8 @@ Link: [Cosine Similarity on Wikipedia](https://en.wikipedia.org/wiki/Cosine_simi
   
 ## Novelty
 
+![](../.gitbook/assets/reports/metric_novelty-min.png)
+
 **Evidently Metric**: `NoveltyMetric`
 
 **Recommendation novelty**: this metric measures the average novelty of recommendations at K. It reflects how unusual top-K items are shown to each user, averaged by all users. 
@@ -201,6 +219,8 @@ High novelty corresponds to long-tail items that few users interacted with, and 
 Further reading: [Castells, P., Vargas, S., & Wang, J. (2011). Novelty and Diversity Metrics for Recommender Systems: Choice, Discovery and Relevance](https://repositorio.uam.es/bitstream/handle/10486/666094/novelty_castells_DDR_2011.pdf)
 
 ## Serendipity
+
+![](../.gitbook/assets/reports/metric_serendipity-min.png)
 
 **Evidently Metric**: `SerendipityMetric`
 
@@ -231,6 +251,8 @@ Further reading: [Zhang, Y., Séaghdha, D., Quercia, D., Jambor, T. (2011). Aura
 (http://www.cs.ucl.ac.uk/fileadmin/UCL-CS/research/Research_Notes/RN_11_21.pdf)
 
 ## Personalization
+
+![](../.gitbook/assets/reports/metric_personalization-min.png)
 
 **Evidently Metric**: `PersonalisationMetric`
 
