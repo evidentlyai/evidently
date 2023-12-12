@@ -12,6 +12,7 @@ Recall at K reflects the ability of the recommender or ranking system to retriev
 
 **Implemented method:**
 * **Compute recall at K by user**. Compute the recall at K for each individual user, by measuring the share of all relevant items in the dataset (e.g. that a given user liked or interacted with) that appear in the top K results.
+
 $$\text{Recall at } K = \frac{\text{Number of relevant items in } K}{\text{Total number of relevant items}}$$
 * **Compute overall recall**. Average the results across all users in the dataset. 
 
@@ -31,6 +32,7 @@ Precision at K reflects the ability of the system to suggest items that are trul
 
 **Implemented method:**
 * **Compute precision at K by user**. Compute the precision at K for each user by measuring the share of the relevant results within the top K (e.g. that the user liked or interacted with). 
+
 $$\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{Total number of items in }K}$$
 * **Compute overall precision**. Average the results across all users in the dataset. 
 
@@ -68,13 +70,18 @@ Compared to precision at K, MAP at K is rank-aware. It penalizes the system for 
 
 **Implemented method:**
 * **Compute Average Precision (AP) at K by user**. The Average Precision at K is computed for each user as an average of precision values at each relevant item position within the top K. To do that, we sum up precision at all values of K when the item is relevant (e.g., Precision @1, Precision@2..), and divide it by the total number of relevant items in K.
+
 $$\text{AP@K} = \frac{1}{N} \sum_{k=1}^{K} Precision(k) \times rel(k)$$
+
 Where *N* is the total number of relevant items at K, and *rel(k)* is equal to 1 if the item is relevant, and is 0 otherwise.
 
 Example: if K = 10, and items in positions 1, 2, and 10 are relevant, the formula will look as:
+
 $$AP@10 = \frac{Precision@1+Precision@2+Precision@10}{3}$$
 * **Compute Mean Average Precision (MAP) at K**. Average the results across all users in the dataset.
+
 $$\text{MAP@K} = \frac{1}{U} \sum_{u=1}^{U} \text{AP@K}_u$$
+
 Where *U* is the total number of users or queries in the dataset, and *AP* is the average precision for a given list.
 
 **Range**: 0 to 1.
@@ -89,11 +96,16 @@ MAR (Mean Average Recall) at K assesses the ability of a recommendation system t
 
 **Implemented method:**
 * **Compute the average recall at K by user**. Compute and average the recall at each relevant position within the top K for every user. To do that, we sum up the recall at all values of K when the item is relevant (e.g. Recall @1, Recall@2..), and divide it by the total number of relevant recommendations in K.
+
 $$\text{AR@K} = \frac{1}{N} \sum_{k=1}^{K} Recall(k) \times rel(k)$$
+
 Example: if K = 10, and items in positions 1, 2, and 10 are relevant, the formula will look as:
+
 $$\text{AR@10} = \frac{Recall@1+Recall@2+Recall@10}{3}$$
 * **Compute mean average recall at K**. Average the results across all users.
+
 $$\text{MAR@K} = \frac{1}{U} \sum_{u=1}^{U} \text{AR@K}_u$$
+
 Where *U* is the total number of users or queries in the dataset, and *AR* is the average recall for a given list.
 
 **Range**: 0 to 1.
@@ -111,10 +123,14 @@ NDCG (Normalized Discounted Cumulative Gain) at K reflects the ranking quality, 
 **Implemented method**:
 * **Provide the item relevance score**. You can assign a relevance score for each item in each user’s top-K list. Depending on the model type, it can be a binary outcome (1 is relevant, 0 is not) or a score.  
 * **Compute the discounted cumulative gain (DCG)** at K by the user. DCG at K measures the quality of the ranking (= total relevance) for a list of top-K items. We add a logarithmic discount to account for diminishing returns from each following item being lower on the list. To get the resulting DCG, you can compute a weighted sum of the relevance scores for all items from the top of the list to K with an applied discount.
+
 $$\text{DCG@K} = \sum_{k=1}^{K} \frac{rel_i}{\log_2(i + 1)}$$
+
 Where *Rel(i)* is the relevance score of the item at rank *i*. 
 * **Compute the normalized DCG (NDCG)**. To normalize the metric, we divide the resulting DCG by the ideal DCG (IDCG) at K. Ideal DCG at K represents the maximum achievable DCG for a user when the items are perfectly ranked in descending order of relevance. 
+
 $$\text{NDCG@K} = \frac{DCG@K}{IDCG@K}$$
+
 This way, it is possible to compare NDCG values across different use cases. The resulting NDCG values for all users are averaged to measure the overall performance of a model. 
 
 **Range**: 0 to 1, where 1 indicates perfect ranking.
@@ -152,7 +168,9 @@ Mean Reciprocal Rank (MRR) measures the ranking quality considering the position
 * Calculate the **reciprocal rank**, taking the reciprocal of the position of the first relevant item for each user (i.e., 1/position). 
 Example: if the first relevant item is at the top of the list - the reciprocal rank is 1, if it is on the 2nd position - the reciprocal rank ½, if on the 3rd - ⅓, etc.
 * Calculate the **mean reciprocal rank** (MRR). Compute the average reciprocal rank across all users.
+
 $$\text{MRR} = \frac{1}{U} \sum_{u=1}^{U}\frac{1}{rank_i}$$
+
 Where *U* is the total number of users, and *rank(i)* is the rank of the first relevant item for user *u* in the top-K results.
 
 **Range**: 0 to 1, where 1 indicates that the first recommended item for every user is relevant.
@@ -201,9 +219,13 @@ Link: [Cosine Similarity on Wikipedia](https://en.wikipedia.org/wiki/Cosine_simi
 
 **Implemented method**:
 * Measure **novelty of recommended items**. The novelty of an item can be defined based on its popularity in the training set.
+
 $$\text{novelty}_i = -\log_2(p_i)$$
+
 where *p* represents the probability that item *i* is observed. It is calculated as the share of users that interacted with an item in the training set.
+
 $$\text{novelty}_i = -\log_2\left(\frac{\text{users who interacted with } i}{\text{number of users}}\right)$$
+
 High novelty corresponds to long-tail items that few users interacted with, and low novelty values correspond to popular items. If all users had interacted with an item, novelty is 0.
 * Measure **novelty by user**. For each user, compute the average item novelty at K, by summing up the novelty of all items and dividing by K.
 * **Overall novelty**. Average the novelty by user across all users.
@@ -232,7 +254,9 @@ Serendipity combines unexpectedness and relevance. It reflects the ability of a 
 * Measure the **unexpectedness** of relevant recommendations. The “unexpectedness” is measured using Cosine distance. For every relevant recommendation in top-K, we compute the distance between this item and the previous user interactions in the training set. Higher cosine distance indicates higher unexpectedness.
 * **Serendipity by user**. Calculate the average of the resulting distances for all relevant recommendations in the user list.  
 * **Overall serendipity**. Calculate the overall recommendation serendipity by averaging the results across all users.
+
 $$\text{serendipity}_i = \text{unexpectedness}_i\times\text{relevance}_i$$
+
 Where *relevance(i)* is equal to 1 if the item is relevant, and is 0 otherwise.
 
 **Range**: The metric is based on Cosine distance, and can take values from 0 to 2. 
@@ -247,8 +271,7 @@ Where *relevance(i)* is equal to 1 if the item is relevant, and is 0 otherwise.
 * This metric is only computed for the users that are present in the training set. If there is no previous recommendation history, these users will be ignored. 
 * This metric only considers the unexpectedness of relevant items in top-K. Irrelevant recommendations, and their share, are not taken into account.
 
-Further reading: [Zhang, Y., Séaghdha, D., Quercia, D., Jambor, T. (2011). Auralist: introducing serendipity into music recommendation.]
-(http://www.cs.ucl.ac.uk/fileadmin/UCL-CS/research/Research_Notes/RN_11_21.pdf)
+Further reading: [Zhang, Y., Séaghdha, D., Quercia, D., Jambor, T. (2011). Auralist: introducing serendipity into music recommendation.](http://www.cs.ucl.ac.uk/fileadmin/UCL-CS/research/Research_Notes/RN_11_21.pdf)
 
 ## Personalization
 
