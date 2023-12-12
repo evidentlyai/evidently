@@ -48,6 +48,7 @@
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)
+  * [Feature importance in data drift](customization/feature-importance.md)
   * [Text descriptors parameters](customization/text-descriptors-parameters.md)
   * [Customize JSON output](customization/json-dict-output.md)
   * [Show raw data in Reports](customization/report-data-aggregation.md)
