@@ -24,7 +24,7 @@ report = Report(metrics = [
 ])
 ```
 
-If you do not specify anything else, Evidently will train a model using the provided dataset and derive the feature importances. 
+If you do not specify anything else, Evidently will train a random forest model using the provided dataset and derive the feature importances. 
 
 **Notes**: 
 * This is only possible if your dataset contains the `target` column.
