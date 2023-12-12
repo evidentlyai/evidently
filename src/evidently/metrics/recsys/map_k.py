@@ -9,6 +9,6 @@ class MAPKMetric(TopKMetric):
 
 
 @default_renderer(wrap_type=MAPKMetric)
-class PrecisionTopKMetricRenderer(TopKMetricRenderer):
+class MAPKMetricRenderer(TopKMetricRenderer):
     yaxis_name = "map@k"
-    header = "MAP@"
+    header = "MAP"

@@ -3,13 +3,14 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import InputData
+from evidently.pipeline.column_mapping import RecomType
 
 
 def collect_dataset(
     users: pd.Series,
     target: pd.Series,
     preds: pd.Series,
-    recommendations_type: str,
+    recommendations_type: RecomType,
     min_rel_score: Optional[int],
     no_feedback_users: bool,
     bin_data: bool,
@@ -18,8 +19,8 @@ def collect_dataset(
     df.columns = ["users", "target", "preds"]
     if min_rel_score:
         df["target"] = (df["target"] >= min_rel_score).astype(int)
-    if recommendations_type == "score":
-        df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False)
+    if recommendations_type == RecomType.SCORE:
+        df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False).astype(int)
     if bin_data:
         df["target"] = (df["target"] > 0).astype(int)
     if not no_feedback_users:
@@ -37,13 +38,11 @@ def get_curr_and_ref_df(
     if target_column is None or prediction is None:
         raise ValueError("Target and prediction were not found in data.")
     _, target_current, target_reference = data.get_data(target_column.column_name)
-    recommendations_type = data.column_mapping.recommendations_type
-    if recommendations_type is None:
-        recommendations_type = "scores"
-    if recommendations_type == "rank" and prediction.predicted_values is not None:
-        pred_name = prediction.predicted_values.column_name
-    elif prediction.prediction_probas is not None:
+    recommendations_type = data.column_mapping.recommendations_type or RecomType.SCORE
+    if prediction.prediction_probas is not None:
         pred_name = prediction.prediction_probas[0].column_name
+    elif prediction.predicted_values is not None:
+        pred_name = prediction.predicted_values.column_name
     _, prediction_current, prediction_reference = data.get_data(pred_name)
     user_column = data.column_mapping.user_id
     if user_column is None:
@@ -72,3 +71,20 @@ def get_curr_and_ref_df(
         )
 
     return curr, ref
+
+
+def get_prediciton_name(data: InputData):
+    if isinstance(data.column_mapping.prediction, str):
+        return data.column_mapping.prediction
+    if "prediction" in data.current_data.columns and (
+        (data.reference_data is not None and "prediction" in data.reference_data.columns)
+        or (data.reference_data is None)
+    ):
+        return "prediction"
+    raise ValueError("Prediction should be presented and must be one column")
+
+
+def get_stats_novelty(train_data: pd.DataFrame, item_id: str, user_id: str):
+    user_interacted = train_data.groupby(item_id)[user_id].nunique()
+    interactions = user_interacted / user_interacted.shape[0]
+    return interactions

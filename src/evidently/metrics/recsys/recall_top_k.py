@@ -11,4 +11,4 @@ class RecallTopKMetric(TopKMetric):
 @default_renderer(wrap_type=RecallTopKMetric)
 class RecallTopKMetricRenderer(TopKMetricRenderer):
     yaxis_name = "recall@k"
-    header = "Recall@"
+    header = "Recall"

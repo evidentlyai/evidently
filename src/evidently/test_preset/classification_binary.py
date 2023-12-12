@@ -1,3 +1,5 @@
+from typing import Any
+from typing import Dict
 from typing import Optional
 
 from evidently.calculations.stattests import PossibleStatTestType
@@ -38,7 +40,7 @@ class BinaryClassificationTestPreset(TestPreset):
         self.stattest_threshold = stattest_threshold
         self.probas_threshold = probas_threshold
 
-    def generate_tests(self, data_definition: DataDefinition):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         target = data_definition.get_target_column()
 
         if target is None:

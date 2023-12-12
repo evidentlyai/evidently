@@ -2,21 +2,21 @@
 description: How to add and configure monitoring panels.
 ---   
 
-By default, the monitoring dashboard for each new project is empty. You must define the dashboard composition in the code and select which metrics and test results to show. You can add multiple panels to the dashboard for each project.
-
-**Note**: we plan to add the ability to add panels from the interface in the next releases. 
+New dashboards are empty by default. You must define the dashboard composition in the code. You can choose which values or test results to display and select from several monitoring panel types. 
 
 # Code example
 
-Refer to the ML Monitoring QuickStart for a complete Python script that shows how to add several monitoring panels for a toy dataset. 
+Refer to the QuickStart Tutorial for a complete Python script with multiple monitoring panels.
 
 {% content-ref url="../get-started/tutorial-monitoring.md" %}
 [Get started tutorial](../get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
 
+You can also explore [live demo dashboards](https://demo.evidentlyai.com/) and the corresponding [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects). 
+
 # How it works 
 
-Evidently `snapshots` contain multiple measurements. For example, when you log the `DataDriftTable()` Metric in a `snapshot`, it will contain the dataset drift summary, like this: 
+Evidently `snapshots` contain multiple measurements. For example, when you log the `DataDriftTable()` Metric in a `snapshot`, it will contain the dataset drift summary, similar to this:
 
 ```python
 'number_of_columns': 15,
@@ -36,13 +36,24 @@ It will also contain data on individual column drift. Here is a partial example:
 'drift_detected': True,
 ```
 
-You can visualize any individual measurements over time as long as you capture them inside `snapshots`. To do that, you must add `panels` to a monitoring dashboard inside a specific `project`. You must pass the chosen `value` (the **MetricResult** contained inside the logged `snapshot`) to specify what to plot. 
+The same logic applies to other Metrics and Tests.
 
-For example, you might want to plot the `share_of_drifted_columns`, `number_of_drifted_columns`, or a `drift_score` for a specific column: all these measurements are available as a **MetricResult** inside the `DataDriftTable()` metric.
+You can visualize any measurement captured in the `snapshots` over time. To do that, you must add a `panel` to a monitoring `dashboard` of a specific `project` and specify the value you'd like to plot. 
+
+For example, if you logged the `DataDriftTable()` metric, you may later choose to plot measurements like:
+* `share_of_drifted_columns`
+* `number_of_drifted_columns`
+* `drift_score` for a specific column. 
+
+All these measurements will be available as **MetricResults** inside the `snapshot`.
+
+To create a monitoring panel, you will also need to specify other parameters, such as panel type, width, title and legend. This docs section explains how.
 
 # Add panel
 
-To add a new `panel` to an existing `project`, use the `add_panel()` method. Here is an example of adding a new Counter type `panel` to show the share of drifting columns. 
+To add a new `panel` to an existing `dashboard`, use the `add_panel()` method. 
+
+**Example**. To add a new Counter `panel` showing the share of drifting columns:
 
 ```python
 project.dashboard.add_panel(
@@ -56,46 +67,46 @@ project.dashboard.add_panel(
          ),
          text="share",
          agg=CounterAgg.LAST,
-         size=1,
+         size=WidgetSize.HALF,
     )
 )
 ```
 
 *Note: `project.dashboard` is an exemplar of the `DashboardConfig` class.*
 
-You can add multiple panels to the same project dashboard. They will appear in the order listed in the project. 
- 
-## Panel parameters
+You can add multiple panels to a project dashboard. They will appear in the order listed in the project. 
 
-When you add a panel, you must specify its type and properties, such as width, title, etc. To define which measurements to visualize on a given panel, you will use the `value` parameter.  
-
-The sections below explains the available panel types and parameters. 
-
-## Panel types
+# Panel types
 
 You can choose between the following panel types.
- 
-* `DashboardPanelCounter`. It can include a single number with text or any custom text (this is a way to add a title to your dashboard). 
 
-![](../.gitbook/assets/monitoring/panel_counter_example-min.png)
+| Panel Type| Example  |
+|---|---|
+|**Metric counter (`DashboardPanelCounter`)**<br>Shows a measurement (a MetricResult from a Report or Test Suite) with supporting text. Also works as a text-only panel, e.g. a title panel.|![](../.gitbook/assets/monitoring/panel_counter_example-min.png)|
+|**Metric plot (`DashboardPanelPlot`)**<br>Shows a measurement (a MetricResult from a Report or Test Suite) as a line plot, bar plot, scatter plot or histogram. |See below.|
+|Line plot (`PlotType.LINE`)|![](../.gitbook/assets/monitoring/panel_line_plot_example.png)|
+|Scatter plot (`PlotType.SCATTER`)|![](../.gitbook/assets/monitoring/panel_scatter_plot_example.png) |
+|Bar plot (`PlotType.BAR`)| ![](../.gitbook/assets/monitoring/panel_bar_plot_example.png) |
+|Histogram (`PlotType.HISTOGRAM`)| ![](../.gitbook/assets/monitoring/panel_hist_example.png) |
+|**Test counter (`DashboardPanelTestSuiteCounter`)**<br>Shows a counter of failed or passed tests.|![](../.gitbook/assets/monitoring/panel_tests_counter_example.png)||
+|**Test plot (`DashboardPanelTestSuite`)**<br>Shows failed and passed tests in time. You can choose a detailed view (with individual test results) or aggregate (with the total number of tests).|See below.|
+|Detailed plot (`TestSuitePanelType.DETAILED`)|![](../.gitbook/assets/monitoring/panel_tests_detailed_hover_example.png)|
+|Aggregate plot (`TestSuitePanelType.AGGREGATE`)|![](../.gitbook/assets/monitoring/panel_tests_aggregated_hover_example.png)|
 
-* `DashboardPanelPlot`. Displays any measurement as a line plot, bar plot, scatter plot or histogram. Here is the line plot example:
-
-![](../.gitbook/assets/monitoring/panel_plot_example-min.png)
+# Panel parameters
 
 ## Class DashboardPanel
 
-This is a base class for `DashboardPanelPlot` and `DashboardPanelCounter`. The parameters below apply to both types of panels.
+This is a base class. The parameters below apply to all panel types. There are also panel-specific parameters explained in the following sections.
 
 | Parameter | Description  |
 |---|---|
-| `id: uuid.UUID = uuid.uuid4()` | Unique ID of the panel. Assigned automatically. |
 | `title: str`<br><br>**Usage:**<br>`title="My New Panel”` | The name of the panel. It will be visible at the header of a panel on a dashboard.  |
-| `filter: ReportFilter`<br><br>`metadata_values: Dict[str, str]`<br>`tag_values: List[str]`<br><br>**Usage**:<br>`filter=ReportFilter(metadata_values={}, tag_values=[])` | Filters allow you to choose a subset of snapshots from which to display values on the panel. <br><br>To use filtering, you must provide metadata or tags when you log Reports or Test Suites.When you create a panel, you can reference these `metadata_values` or `tag_values`.  |
-| `size: WidgetSize = WidgetSize.FULL`<br><br>**Available**: `1`, `2`<br><br>**Usage:**<br>`size=1` | Sets the size of the panel: <br>`1` for a half-width panel<br>`2` for a full-sized panel (Default)  |
+| `filter: ReportFilter`<br><br>`metadata_values: Dict[str, str]`<br>`tag_values: List[str]`<br>`include_test_suites=False`<br><br>**Usage**:<br>`filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)` | Filters help specify a subset of snapshots from which to display the values. <ul><li>To use filtering, you must add metadata or tags when logging Reports or Test Suites. (See [docs](snapshots.md#add-tags)). You can then reference these `metadata_values` or `tag_values` when creating a panel.</li><li>To include data from Test Suites, you must set the `include_test_suites` parameter as `True` (default: `False`).</li></ul>|
+| `size: WidgetSize = WidgetSize.FULL`<br><br>**Available**: ` WidgetSize.FULL`, `WidgetSize.HALF`<br><br>**Usage:**<br>`size=WidgetSize.FULL` | Sets the size of the panel as half-width or full-sized (Default). |
 
-## Class DashboardPanelCounter
-`DashboardPanelCounter` allows you to add a Counter panel. You can also use this panel type to create text panels.
+## DashboardPanelCounter
+`DashboardPanelCounter` helps add metric counters or text panels. You can pull metric values from both Reports and Test Suites.
 
 **Example 1**. To create a panel with the dashboard title only:
 
@@ -123,7 +134,7 @@ project.dashboard.add_panel(
         ),
         text="count",
         agg=CounterAgg.SUM,
-        size=1,
+        size=WidgetSize.HALF,
     )
 )
 ```
@@ -132,10 +143,10 @@ project.dashboard.add_panel(
 |---|---|
 | `value: Optional[PanelValue] = None` | The value (**MetricResult**) to show in the Counter.<br><br>You can create a simple text panel if you do not pass the Value. <br><br>*See the section below on Panel Values for more examples.* |
 | `text: Optional[str] = None` | Supporting text to be shown on the Counter. |
-| `agg: CounterAgg`<br><br>**Available:**<br> `SUM`, `LAST`, `NONE` | Data aggregation options:<br>`SUM` - sums the values from different snapshots over time<br>`LAST` - shows the last available value<br>`NONE` - to be used for text panels  |
+| `agg: CounterAgg`<br><br>**Available:**<br> `SUM`, `LAST`, `NONE` | Data aggregation options:<br>`SUM` - sums the values from different snapshots over time considering the applied filters (if any).<br>`LAST` - shows the last available value<br>`NONE` - to be used for text panels  |
 
-## Class DashboardPanelPlot
-`DashboardPanelPlot` allows you to create scatter, bar, line, and histogram plots.
+## DashboardPanelPlot
+`DashboardPanelPlot` allows creating scatter, bar, line, and histogram plots with metric values. You can pull metric values from both Reports and Test Suites.
 
 **Example**. To plot MAPE over time in a line plot.
 
@@ -152,7 +163,7 @@ project.dashboard.add_panel(
         ),
     ],
     plot_type=PlotType.LINE,
-    size=1,
+    size=WidgetSize.HALF,
     )
 )
 ```
@@ -162,15 +173,104 @@ project.dashboard.add_panel(
 | `values: List[PanelValue]` | You must pass at least one value (**MetricResult**). You can also pass multiple values as a list. They will appear together: for example, as separate lines on a Line plot, bars on a Bar Chart, or points on a Scatter Plot. If you use a Histogram, the values will be aggregated.<br><br>*See the section below on Panel Values for more examples.* |
 | `plot_type: PlotType`<br><br>**Available:** `SCATTER`, `BAR`, `LINE`, `HISTOGRAM` | Specifies the plot type. |
 
+## DashboardPanelTestSuiteCounter
+`DashboardPanelTestSuiteCounter` displays a counter of failed and passed tests. It applies to Test Suites only.
+
+**Example 1**. To display the result of the last test.
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuiteCounter(
+        title="Success of last",
+        agg=CounterAgg.LAST
+    )
+)
+```
+
+**Example 2**. To display the number of failed tests and errors in the test results for a specific column.
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuiteCounter(
+        title="Success of 1",
+        test_filters=[TestFilter(test_id="TestNumberOfUniqueValues", test_args={"column_name.name": "1"})],
+        statuses=[TestStatus.ERROR, TestStatus.FAIL]
+    )
+)
+```
+
+See applicable parameters in the following section.
+
+## DashboardPanelTestSuite
+
+`DashboardPanelTestSuite` displays the results of failed and passed tests over time. It applies to Test Suites only.
+
+**Example 1**. To show the results of all individual tests over time, with daily level aggregation. 
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuite(
+        title="All tests: detailed",
+        filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+        size=WidgetSize.HALF,
+        panel_type=TestSuitePanelType.DETAILED,
+        time_agg="1D",
+    )
+)
+```
+
+**Example 2**. To show the results of individual tests for specific columns, with daily aggregation.
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuite(
+        title="Column Drift tests for key features: detailed",
+        test_filters=[
+            TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "hours-per-week"}),
+            TestFilter(test_id="TestColumnDrift", test_args={"column_name.name": "capital-gain"}),
+        ],
+        filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+        size=WidgetSize.HALF,
+        panel_type=TestSuitePanelType.DETAILED,
+        time_agg="1D",
+    )
+)
+```
+
+**Example 3**. To show the number of passed and failed tests, with daily level aggregation. 
+
+```
+project.dashboard.add_panel(
+    DashboardPanelTestSuite(
+        title="All tests: aggregated",
+        filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+        size=WidgetSize.HALF,
+        time_agg="1D",
+    )
+)
+```
+
+| Parameter | Description |
+|---|---|
+| `test_filters: List[TestFilter]=[]`<br>`test_id: test_id`<br>`test_arg: List[str]`<br><br>**Usage**:<br>`test_filters=[TestFilter(test_id="TestNumberOfUniqueValues", test_args={"column_name.name": "1"})]`| Filters that help include the results only for specific Tests and/or columns.<br>If not specified, all logged tests will be considered. |
+| `statuses: List[statuses]`<br><br>**Available**:<br>`TestStatus.ERROR`, `TestStatus.FAIL`, `TestStatus.SUCCESS`, `TestStatus.WARNING`, `TestStatus.SKIPPED` <br><br>**Usage**: <br>`statuses=[TestStatus.ERROR, TestStatus.FAIL]` | Filters that help include only the test results with a specific status. <br>If not specified, tests with any status will be considered.  |
+| <br>`agg: CounterAgg`<br><br>**Available**:<br>SUM, LAST <br><br>**Usage**:<br>`agg=CounterAgg.LAST` | Applies to the `DashboardPanelTestSuiteCounter`.<br><br>Data aggregation options:<br>`SUM` - sums the test results from multiple snapshots, considering the applied filters (if any).<br>`LAST` - shows the last available test result. |
+| `panel_type=TestSuitePanelType`<br><br>**Available**:<br>`TestSuitePanelType.DETAILED`<br>`TestSuitePanelType.AGGREGATE` <br><br>**Usage**: <br>`panel_type=TestSuitePanelType.DETAILED` | Applies to the `DashboardPanelTestSuite`.<br><br>You can use it to define the type of the plot:<br>Detailed (includes the individual test results)<br>Aggregate (default, includes only the total number of passed/failed tests) |
+| <br>`time_agg: Optional[str] = None`<br><br>**Available**:<br>`1H`, `1D`, `1W`, `1M` (see [period aliases](https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-period-aliases))<br><br>**Usage**:<br>`time_agg="1D"` | Applies to the `DashboardPanelTestSuite`.<br><br>Aggregation options to group the test results within a defined time period on a plot.|
+
 # Panel value 
 
-To add a numerical measurement to your panel, you must pass the `PanelValue`. For example, you can choose to display the number of drifting features, the share of empty columns, mean error, etc. 
+To add a numerical measurement to the plot, you must pass the `PanelValue`. For example, you can display the number of drifting features, the share of empty columns, mean error, etc.
 
-To define which exact value to show on a specific panel, you must specify the following:
-* A `metric_id` that corresponds to the Evidently Metric logged in a `snapshot`.
-* A `field_path` that corresponds to the specific **MetricResult** (numerical measurement) computed as part of this Metric. You can pass either a complete field path or a `"field_name"`.
+**Parameters**. To define which values to show on a specific panel, you must specify:
 
-You can also pass the optional `legend` that will be visible on the plot.
+| Parameter | Description |
+|---|---|
+| `metric_id` | A metric ID that corresponds to the Evidently Metric logged inside the snapshots. You must specify the `metric_id` even if you use Test Suites.  |
+| `field_path` | The path that corresponds to the specific **MetricResult** computed as part of this Metric or Test. You can pass either a complete field path or a "field_name". |
+| `metric_args` (optional) | Additional arguments that specify the metrics parameters. This is applicable when multiple instances of the same metric are logged in a snapshot. For example: column name, text descriptor, drift detection method used, etc. |
+| `legend` (optional) | The legend that will be visible in the plot. |
+
 
 **Example 1**. To include the `share_of_drifted_columns` MetricResult, available inside the `DatasetDriftMetric()`: 
 
@@ -193,10 +293,55 @@ value=PanelValue(
     legend="Missing Values Share",
 )
 ```
+In this example, you pass the complete field path inside the Metric.
 
-In this example, you pass the complete field path inside the Metric
+{% hint style="info" %}
+**Note**. You must always reference a metric_id, even if you used a Preset. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset in the [reference table](../reference/all-metrics.md).
+{% endhint %}
 
-**Note**: you must always reference a `metric_id`, even if you used a `Preset`. For example, if you used a `DataDriftPreset()`, you can reference either of the Metrics it contains (`DataDriftTable()` or `DatasetDriftMetric()`). You can verify the Metrics included in each Preset [here](../reference/all-metrics.md).
+**Example 3**. To display the mean values of target and prediction over time in a line plot.  
+
+```python
+values=[
+    PanelValue(
+        metric_id="ColumnSummaryMetric",
+        field_path="current_characteristics.mean",
+        metric_args={"column_name.name": "cnt"},
+        legend="Target (daily mean)",
+    ),
+    PanelValue(
+        metric_id="ColumnSummaryMetric",
+        field_path="current_characteristics.mean",
+        metric_args={"column_name.name": "prediction"},
+        legend="Prediction (daily mean)",
+    ),
+]
+```
+In this example, you pass additional metric arguments to specify the column names.
+
+**Example 4**. To specify the drift detection method (when results for multiple methods logged inside a snapshot) using `metric_args`.
+
+```python
+values=[
+    PanelValue(
+        metric_id="EmbeddingsDriftMetric", 
+        metric_args={"drift_method.dist": "euclidean"}
+    )
+}
+```
+
+**Example 5**. To specify the text descriptor using `metric_args`. 
+
+```python
+values=[
+    PanelValue(
+        metric_id="ColumnSummaryMetric",
+        metric_args={"column_name": descriptors.OOV(display_name="OOV").for_column("Review_Text")},
+        field_path="current_characteristics.mean",
+        legend="OOV % (mean)",
+    ),
+]
+```
 
 ### How to find the field path?
 
@@ -215,6 +360,3 @@ To look at all available measurements, you can also:
 * Generate a Report or a Test Suite, include the selected Metric or Test, and get the output as a Python dictionary. You can then explore the keys that contain the metric field names. 
 
 Once you identify the specific name of the field you would like to add to a panel, you can pass it as the `field_path` to the `PanelValue` parameter.
-
-**Note**: in one of the next releases, we plan to add the ability to create panels from the visual interface and pre-built tabs with a fixed dashboard design. This will minimize the need to define the path to the metric values manually. If you need any help right now - ask in [Discord](https://discord.com/invite/xZjKRaNp8b)! 
-

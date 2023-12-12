@@ -22,13 +22,21 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     if isinstance(outcome, Error):
         with pytest.raises(outcome.exception_type, match=outcome.match):
             report.run(
-                reference_data=tdataset.reference, current_data=tdataset.current, column_mapping=tdataset.column_mapping
+                reference_data=tdataset.reference,
+                current_data=tdataset.current,
+                column_mapping=tdataset.column_mapping,
+                additional_data=tdataset.additional_data,
             )
             report._inner_suite.raise_for_error()
             assert not report.show()
         return
 
-    report.run(reference_data=tdataset.reference, current_data=tdataset.current, column_mapping=tdataset.column_mapping)
+    report.run(
+        reference_data=tdataset.reference,
+        current_data=tdataset.current,
+        column_mapping=tdataset.column_mapping,
+        additional_data=tdataset.additional_data,
+    )
     report._inner_suite.raise_for_error()
     assert report.show()
     assert report.json()

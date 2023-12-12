@@ -5,6 +5,7 @@ import json
 import logging
 import uuid
 from datetime import datetime
+from typing import IO
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -179,7 +180,7 @@ class Display:
         )
         return self._render(determine_template("inline"), template_params)
 
-    def save_html(self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
+    def save_html(self, filename: Union[str, IO], mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         if isinstance(mode, str):
             _mode = SaveModeMap.get(mode)
@@ -192,9 +193,15 @@ class Display:
                 dashboard_info=dashboard_info,
                 additional_graphs=graphs,
             )
-            with open(filename, "w", encoding="utf-8") as out_file:
-                out_file.write(self._render(determine_template("inline"), template_params))
+            render = self._render(determine_template("inline"), template_params)
+            if isinstance(filename, str):
+                with open(filename, "w", encoding="utf-8") as out_file:
+                    out_file.write(render)
+            else:
+                filename.write(render)
         else:
+            if not isinstance(filename, str):
+                raise ValueError("Only singlefile save mode supports streams")
             font_file, lib_file = save_lib_files(filename, mode)
             data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, graphs)
             template_params = TemplateParams(

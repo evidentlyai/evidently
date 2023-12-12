@@ -194,6 +194,7 @@ export interface TestSuiteWidgetParams {
 }
 
 export interface WidgetInfo {
+  id: string
   type: string
   title: string
   size: WidgetSize
@@ -217,6 +218,8 @@ export interface WidgetInfo {
 
 export type AdditionalGraphInfo = BigGraphWidgetParams
 
+type DashboardTab = { id: string; title: string }
+
 export interface DashboardInfo {
   name: string
   widgets: WidgetInfo[]
@@ -239,9 +242,11 @@ export interface ProjectInfo {
   date_to?: string
 }
 
-export interface ProjectDetails extends ProjectInfo {}
+export interface ProjectDetails extends ProjectInfo {
+  dashboard: { tabs: DashboardTab[]; tab_id_to_panel_ids: Record<string, string[]> }
+}
 
-type MetadataValueType = Record<string, string | string[] | Record<string, string>>
+export type MetadataValueType = Record<string, string | string[] | Record<string, string>>
 
 export interface SnapshotInfo {
   id: string
@@ -286,4 +291,6 @@ export interface Api {
   getVersion(): Promise<VersionInfo>
 
   editProjectInfo(project: ProjectDetails): Promise<Response>
+
+  reloadProject(projectId: string): Promise<Response>
 }

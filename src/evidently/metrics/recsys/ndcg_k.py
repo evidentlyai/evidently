@@ -59,4 +59,4 @@ class NDCGKMetric(Metric[TopKMetricResult]):
 @default_renderer(wrap_type=NDCGKMetric)
 class NDCGKMetricRenderer(TopKMetricRenderer):
     yaxis_name = "ndcg@k"
-    header = "NDCG@"
+    header = "NDCG"

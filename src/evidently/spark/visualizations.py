@@ -36,7 +36,7 @@ def prepare_df_for_time_index_plot(
             period_col = sf.date_format(date_col, pattern).alias(PERIOD_COL)
         plot_df = (
             df.select(column_name, period_col)
-            .groupby(period_col)
+            .groupby(PERIOD_COL)
             .agg(sf.mean(column_name).alias("mean"), sf.stddev_pop(column_name).alias("std"))
         )
         if pattern == "week":
@@ -44,8 +44,8 @@ def prepare_df_for_time_index_plot(
             week = split.getItem(1)
             year = sf.to_timestamp(split.getItem(0), "y")
             week_start_diff = sf.date_format(year, "F")
-            plot_df = plot_df.select("*", sf.date_add(year, week * 7 - week_start_diff).alias(PERIOD_COL)).toPandas()
-        return plot_df, prefix
+            plot_df = plot_df.select("*", sf.date_add(year, week * 7 - week_start_diff).alias(PERIOD_COL))
+        return plot_df.toPandas(), prefix
     ptp = df.count() - 1
 
     schema = StructType(fields=[StructField("_1", dataType=df.schema), StructField("_2", dataType=LongType())])

@@ -7,7 +7,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import MetricResult
 from evidently.descriptors import OOV
 from evidently.ui.dashboards import PanelValue
-from evidently.ui.dashboards import getattr_nested
+from evidently.ui.dashboards.utils import getattr_nested
 
 
 class A(MetricResult):

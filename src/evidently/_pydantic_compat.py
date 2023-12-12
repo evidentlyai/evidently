@@ -12,6 +12,7 @@ if v == 2:
     from pydantic.v1 import BaseConfig
     from pydantic.v1 import BaseModel
     from pydantic.v1 import Field
+    from pydantic.v1 import PrivateAttr
     from pydantic.v1 import ValidationError
     from pydantic.v1 import parse_obj_as
     from pydantic.v1 import validator
@@ -35,6 +36,7 @@ else:
     from pydantic import BaseConfig
     from pydantic import BaseModel
     from pydantic import Field
+    from pydantic import PrivateAttr
     from pydantic import ValidationError
     from pydantic import parse_obj_as
     from pydantic import validator
@@ -74,4 +76,5 @@ __all__ = [
     "MappingIntStrAny",
     "AbstractSetIntStr",
     "DictStrAny",
+    "PrivateAttr",
 ]

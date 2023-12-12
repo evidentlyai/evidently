@@ -36,6 +36,10 @@ class CollectorStorage(PolymorphicModel):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_buffer_size(self, id: str):
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_and_flush(self, id: str):
         raise NotImplementedError
 
@@ -61,6 +65,9 @@ class InMemoryStorage(CollectorStorage):
 
     def append(self, id: str, data: Any):
         self._buffers[id].append(data)
+
+    def get_buffer_size(self, id: str):
+        return len(self._buffers[id])
 
     def get_and_flush(self, id: str):
         if id not in self._buffers or len(self._buffers[id]) == 0:
