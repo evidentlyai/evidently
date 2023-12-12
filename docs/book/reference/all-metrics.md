@@ -127,13 +127,25 @@ All metrics are dataset-level.
 
 Optional shared parameters for multiple metrics:
 * `no_feedback_users: bool = False`. Specifies whether to include the users who did not select any of the items, when computing the quality metric. Default: False.
-* `min_rel_score: Optional[int] = None`. Specifies the minimum relevance score to consider relevant when calculating the quality metrics. 
+* `min_rel_score: Optional[int] = None`. Specifies the minimum relevance score to consider relevant when calculating the quality metrics for non-binary targets (e.g., if a target is a rating or a custom score).
 
 | Metric name | Description | Parameters |
 |---|---|---|
-| **RecallTopKMetric()** | Calculates the recall at top 'k'. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **PrecisionTopKMetric()** | Calculates the precision at top 'k'.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **FBetaTopKMetric()** | Calculates the F-measure at top 'k'.| **Required**:<ul><li>`beta`(default = 1)</li><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **MAPKMetric()** | Calculates the Mean Average Precision (MAP) at 'k'.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **RecallTopKMetric()** | Calculates the recall at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **PrecisionTopKMetric()** | Calculates the precision at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **FBetaTopKMetric()** | Calculates the F-measure at `k`.| **Required**:<ul><li>`beta`(default = 1)</li><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **MAPKMetric()** | Calculates the Mean Average Precision (MAP) at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
 | **MARKMetric()** | Calculates the Mean Average Recall (MAR) at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
 | **NDCGKMetric()** | Calculates the Normalized Discounted Cumulative Gain at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **MRRKMetric()** | Calculates the Mean Reciprocal Rank (MRR) at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`min_rel_score`</li><li>`no_feedback_users`</li></ul> |
+| **HitRateKMetric()** | Calculates the hit rate at `k`: a share of users for which at least one relevant item is included in the K. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`min_rel_score`</li><li>`no_feedback_users`</li></ul> |
+| **DiversityMetric()** | Calculates intra-list Diversity at `k`: diversity of recommendations shown to each user in top-K recommendations, averaged by all users.  | **Required**:<ul><li>`k`</li><li>`item_features: List`</li></ul>**Optional:**<ul><li>-</li></ul> |
+| **NoveltyMetric()** | Calculates novelty at `k`: novelty of recommendations shown to each user in top-K recommendations, averaged by all users.<br><br>Requires a training dataset.| **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **SerendipityMetric()** | Calculates serendipity at `k`: how unusual the relevant recommendations are in top-K, averaged by all users.<br><br>Requires a training dataset.| **Required**:<ul><li>`k`</li><li>`item_features: List`</li></ul>**Optional**:<ul><li>`min_rel_score`</li></ul> |
+| **PersonalisationMetric()** | Measures the average uniqueness of each user's top-K recommendations.<br><br> | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **PopularityBias()** | Evaluates the popularity bias in recommendations by computing ARP (average recommendation popularity), Gini index, and coverage. <br><br>Requires a training dataset | **Required**:<ul><li>`K`</li><li>`normalize_arp (default: False)` - whether to normalize ARP calculation by the most popular item in training</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **ItemBiasMetric()** | Visualizes the distribution of recommendations by a chosen dimension (column), сomparative to its distribution in the training set.<br><br>Requires a training dataset. | **Required**:<ul><li>`k`</li><li>`column_name`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **UserBiasMetric()** | Visualizes the distribution of the chosen category (e.g. user characteristic), comparative to its distribution in the training dataset.<br><br>Requires a training dataset. | **Required**:<ul><li>`k`</li><li>`column_name`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **ScoreDistribution()** | Visualizes the distribution of the predicted scores at `k` (and all scores, if available).<br><br>Applies only when the `recommendations_type` is a `score`. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **RecCasesTable()** | Shows the list of recommendations for specific user IDs (or 5 random if not specified).  | **Required**:<ul><li>-</li></ul>**Optional**:<ul><li>`display_features: List`</li><li>`user_ids: List`</li><li>`train_item_num: int`</li></ul> |
+

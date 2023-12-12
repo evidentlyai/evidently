@@ -1482,16 +1482,16 @@ class TestListValuesRenderer(TestRenderer):
         values = metric_result.values
         curr_df = pd.concat(
             [
-                pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"]),
-                pd.DataFrame(metric_result.current.values_not_in_list.items(), columns=["x", "count"]),
+                pd.DataFrame(metric_result.current.values_in_list, columns=["x", "count"]),
+                pd.DataFrame(metric_result.current.values_not_in_list, columns=["x", "count"]),
             ]
         )
 
         if metric_result.reference is not None:
             ref_df = pd.concat(
                 [
-                    pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"]),
-                    pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"]),
+                    pd.DataFrame(metric_result.reference.values_in_list, columns=["x", "count"]),
+                    pd.DataFrame(metric_result.reference.values_in_list, columns=["x", "count"]),
                 ]
             )
 
