@@ -2,6 +2,12 @@
 description: How to show feature importance in Data Drift evaluations.
 ---
 
+You can add feature importances to the dataset-level data drift Tests, Metrics and Reports:
+* `DataDriftTable`
+* `DataDriftPreset`
+* `DataDriftTestPreset`
+* `TestShareOfDriftedColumns`
+
 # Code example
 
 Notebook example on showing feature importance:
