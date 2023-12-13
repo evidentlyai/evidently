@@ -6,6 +6,7 @@ from .reports import DashboardPanelCounter
 from .reports import DashboardPanelPlot
 from .reports import PlotType
 from .test_suites import DashboardPanelTestSuite
+from .test_suites import DashboardPanelTestSuiteCounter
 from .test_suites import TestFilter
 from .test_suites import TestSuitePanelType
 
@@ -13,6 +14,7 @@ __all__ = [
     "DashboardPanelPlot",
     "DashboardConfig",
     "DashboardPanelTestSuite",
+    "DashboardPanelTestSuiteCounter",
     "TestSuitePanelType",
     "TestFilter",
     "ReportFilter",
