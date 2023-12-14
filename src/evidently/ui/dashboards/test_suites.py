@@ -184,8 +184,8 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
             project_id, self.filter, self.test_filters, None, timestamp_start, timestamp_end
         )
         statuses: typing.Counter[TestStatus] = Counter()
-        for _, values in points.values():
-            statuses.update(values)
+        for values in points.values():
+            statuses.update(values.values())
         return statuses, ""
 
     def _build_last(
