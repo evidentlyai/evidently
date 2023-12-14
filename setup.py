@@ -71,7 +71,8 @@ setup_args = dict(
     extras_require={
         "dev": [
             "wheel==0.35.1",
-            "setuptools==50.3.2",
+            "setuptools==50.3.2; python_version < '3.12'",
+            "setuptools==68.2.2; python_version >= '3.12'",
             "flake8==4.0.1",
             "jupyter==1.0.0",
             "mypy==0.910",
