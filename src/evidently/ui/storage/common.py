@@ -43,7 +43,7 @@ class NoopAuthManager(AuthManager):
     def get_available_project_ids(self, user_id: UserID) -> Optional[Set[ProjectID]]:
         return None
 
-    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: TeamPermission):
+    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: TeamPermission) -> bool:
         return True
 
     def check_project_permission(self, user_id: UserID, project_id: ProjectID, permission: ProjectPermission) -> bool:

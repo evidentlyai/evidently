@@ -118,6 +118,8 @@ class Project(BaseModel):
     description: Optional[str] = None
     dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
 
+    team_id: Optional[TeamID]
+
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
 
@@ -307,7 +309,7 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     @abstractmethod
-    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: TeamPermission):
+    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: TeamPermission) -> bool:
         raise NotImplementedError
 
     @abstractmethod
@@ -427,7 +429,9 @@ class ProjectManager(EvidentlyBaseModel):
         from evidently.ui.dashboards import DashboardConfig
 
         project = self.add_project(
-            Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[])),
+            Project(
+                name=name, description=description, dashboard=DashboardConfig(name=name, panels=[]), team_id=team_id
+            ),
             user_id,
             team_id,
             org_id,
@@ -439,6 +443,7 @@ class ProjectManager(EvidentlyBaseModel):
     ) -> Project:
         user = self.auth.get_or_default_user(user_id)
         team = self.auth.get_or_default_team(team_id, user.id)
+        project.team_id = team_id
         return self.metadata.add_project(project, user, team).bind(self, user.id)
 
     def update_project(self, user_id: Optional[UserID], project: Project):
