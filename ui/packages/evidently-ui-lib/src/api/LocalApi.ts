@@ -81,7 +81,11 @@ export default class LocalApi implements Api {
   }
 
   getProjectInfo(_projectId: string): Promise<ProjectDetails> {
-    return Promise.resolve({ id: 'project1', name: 'Project #1' })
+    return Promise.resolve({
+      id: 'project1',
+      name: 'Project #1',
+      dashboard: { tabs: [], tab_id_to_panel_ids: {} }
+    })
   }
 
   getVersion(): Promise<VersionInfo> {
@@ -90,5 +94,9 @@ export default class LocalApi implements Api {
 
   editProjectInfo(_project: ProjectDetails) {
     return Promise.resolve(new Response('ok', { status: 200 }))
+  }
+
+  reloadProject(_projectId: string): Promise<Response> {
+    return Promise.resolve(new Response(null, { status: 200 }))
   }
 }

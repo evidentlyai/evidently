@@ -3,6 +3,7 @@ import pandas as pd
 
 from evidently.metrics import MAPKMetric
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pipeline.column_mapping import RecomType
 from evidently.report import Report
 
 
@@ -17,7 +18,7 @@ def test_map_value():
 
     metric = MAPKMetric(k=2)
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recommendations_type="rank")
+    column_mapping = ColumnMapping(recommendations_type=RecomType.RANK)
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()
@@ -38,7 +39,7 @@ def test_map_value_judged_only():
 
     metric = MAPKMetric(k=3, no_feedback_users=True)
     report = Report(metrics=[metric])
-    column_mapping = ColumnMapping(recommendations_type="rank")
+    column_mapping = ColumnMapping(recommendations_type=RecomType.RANK)
     report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
 
     results = metric.get_result()

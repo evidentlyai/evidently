@@ -9,11 +9,7 @@ import {
   WidgetInfo
 } from './index'
 
-class JsonParser {
-  parse(rawJson: string) {
-    return JSON.parse(rawJson)
-  }
-}
+import { JsonParser } from './JsonParser'
 
 export class RemoteApi implements Api {
   private readonly endpoint: string
@@ -138,6 +134,16 @@ export class RemoteApi implements Api {
 
     if (!response.ok) {
       throw Error(`${response.status}, ${response.statusText}`)
+    }
+
+    return response
+  }
+
+  async reloadProject(projectId: string) {
+    const response = await fetch(`${this.endpoint}/projects/${projectId}/reload`)
+
+    if (!response.ok) {
+      throw response
     }
 
     return response

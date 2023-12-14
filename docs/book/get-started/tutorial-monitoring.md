@@ -45,12 +45,12 @@ conda install -c conda-forge evidently
 
 ## 3. Run demo project
 
-To launch the Evidently service with the demo project, run: 
+To launch the Evidently service with the demo projects, run: 
 
 ```
-evidently ui --demo-project
+evidently ui --demo-projects all
 ```
- 
+
 ## 4. View the project
 
 To view the Evidently interface, go to URL http://localhost:8000 in your web browser.
@@ -277,10 +277,10 @@ Finally, launch the user interface that will include the defined project.
 evidently ui 
 ```
 
-**4.2**. If you want to see both your new project and a standard demo project, run:
+**4.2**. If you want to see both your new project and a standard demo projects, run:
 
 ```
-evidently ui –-demo-project
+evidently ui --demo-projects all
 ```
 
 **Note**: If you already launched a demo project previously, it will remain in the workspace. There is no need to add it the second time.
@@ -293,10 +293,17 @@ evidently ui –-demo-project
 evidently ui --workspace ./workspace --port 8080
 ```
 
-**4.4**. If you want to see both your project and demo project in the specified workspace and run the UI service at the specific port:
+**4.4**. If you want to see both your project and demo projects in the specified workspace and run the UI service at the specific port:
 
-``` 
-evidently ui --workspace ./workspace --port 8080 –-demo-project
+```
+evidently ui --workspace ./workspace --port 8080 --demo-projects all
+```
+
+**All flags**
+
+To see all possible flags you can run evidently ui with the ```--help``` flag:
+```
+evidently ui --help
 ```
 
 **Note**: Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.

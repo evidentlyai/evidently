@@ -1,3 +1,5 @@
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -35,7 +37,7 @@ class DataStabilityTestPreset(TestPreset):
         super().__init__()
         self.columns = columns
 
-    def generate_tests(self, data_definition: DataDefinition):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         return [
             TestNumberOfRows(),
             TestNumberOfColumns(),

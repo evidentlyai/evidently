@@ -178,9 +178,9 @@ virtualenv venv
 source venv/bin/activate
 ```
 
-After installing Evidently (`pip install evidently`), run the Evidently UI with the demo project:
+After installing Evidently (`pip install evidently`), run the Evidently UI with the demo projects:
 ```
-evidently ui --demo-project
+evidently ui --demo-projects all
 ```
  
 Access Evidently UI service in your browser. Go to the **localhost:8000**.

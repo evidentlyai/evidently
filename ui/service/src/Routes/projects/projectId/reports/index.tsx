@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router-dom'
 import { injectReportsAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { api } from 'api/RemoteApi'
 
-const { loader } = injectReportsAPI({ api })
+const { loader, action } = injectReportsAPI({ api })
 
 ////////////////////
 // children routes
@@ -23,5 +23,6 @@ export default {
     return { ...rest, Component }
   },
   loader,
+  action,
   children: [ReportRoute]
 } satisfies RouteObject

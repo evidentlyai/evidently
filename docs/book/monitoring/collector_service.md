@@ -64,9 +64,11 @@ report_config = ReportConfig.from_test_suite(test_suite)
 
 ## CollectorTrigger
 
-Currently, there is one option available: `IntervalTrigger`. It triggers the snapshot calculation each interval seconds. 
+Currently, there are two options available: 
+* `IntervalTrigger`: triggers the snapshot calculation each interval seconds 
+* `RowsCountTrigger`: triggers the snapshot calculation every time the configured amount of rows have been sent to the collector service
 
-**Note**: we are also working on `CronTrigger` and `RowsCountTrigger`. Would you like to see additional scenarios? Please open a GitHub issue with your suggestions.
+**Note**: we are also working on `CronTrigger` and other triggers. Would you like to see additional scenarios? Please open a GitHub issue with your suggestions.
 
 ## Setup via file
 

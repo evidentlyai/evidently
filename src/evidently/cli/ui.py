@@ -20,7 +20,7 @@ def ui(
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
     """Start Evidently UI service"""
-    from evidently.ui.app import run
+    from evidently.ui.app import run_local
     from evidently.ui.demo_projects import DEMO_PROJECTS
     from evidently.ui.workspace import Workspace
 
@@ -40,4 +40,4 @@ def ui(
             if not has_demo_project:
                 echo(f"Generating demo project '{dp.name}'...")
                 dp.create(workspace)
-    run(host, port, workspace, secret)
+    run_local(host, port, workspace, secret)

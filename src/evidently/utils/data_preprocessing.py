@@ -13,6 +13,7 @@ import pandas as pd
 
 from evidently.core import ColumnType
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pipeline.column_mapping import RecomType
 from evidently.pipeline.column_mapping import TargetNames
 from evidently.pipeline.column_mapping import TaskType
 
@@ -66,6 +67,7 @@ class DataDefinition:
     _task: Optional[str]
     _classification_labels: Optional[TargetNames]
     _reference_present: bool
+    _recommendations_type: Optional[RecomType]
 
     def __init__(
         self,
@@ -80,6 +82,7 @@ class DataDefinition:
         task: Optional[str],
         classification_labels: Optional[TargetNames],
         reference_present: bool,
+        recommendations_type: Union[RecomType, str, None],
     ):
         self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
@@ -92,6 +95,9 @@ class DataDefinition:
         self._classification_labels = classification_labels
         self._embeddings = embeddings
         self._reference_present = reference_present
+        self._recommendations_type = (
+            recommendations_type if not isinstance(recommendations_type, str) else RecomType(recommendations_type)
+        )
 
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self._columns[column_name]
@@ -149,6 +155,9 @@ class DataDefinition:
     def reference_present(self) -> bool:
         return self._reference_present
 
+    def recommendations_type(self) -> Optional[RecomType]:
+        return self._recommendations_type
+
 
 def _process_column(
     column_name: Optional[str],
@@ -200,9 +209,13 @@ def _prediction_column(
                 raise ValueError("Prediction type is categorical but task is regression")
             if prediction_type == ColumnType.Numerical:
                 return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
-        if mapping is not None and mapping.recommendations_type == "rank":
+        if mapping is not None and mapping.recommendations_type == RecomType.RANK:
             return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
-        if task == TaskType.RECOMMENDER_SYSTEMS and mapping is not None and mapping.recommendations_type == "score":
+        if (
+            task == TaskType.RECOMMENDER_SYSTEMS
+            and mapping is not None
+            and mapping.recommendations_type == RecomType.SCORE
+        ):
             return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
         if task is None:
             if prediction_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
@@ -455,6 +468,7 @@ def create_data_definition(
         labels = list(data.current[target_column.column_name].unique())
         if data.reference is not None:
             labels = list(set(labels) | set(data.reference[target_column.column_name].unique()))
+    recommendations_type = mapping.recommendations_type or RecomType.SCORE
 
     return DataDefinition(
         columns=[col for col in all_columns if col is not None],
@@ -468,6 +482,7 @@ def create_data_definition(
         classification_labels=mapping.target_names or labels,
         embeddings=embeddings,
         reference_present=reference_data is not None,
+        recommendations_type=recommendations_type,
     )
 
 

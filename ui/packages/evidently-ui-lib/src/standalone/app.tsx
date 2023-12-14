@@ -1,17 +1,11 @@
-import { Grid } from '@mui/material'
-
 import { Api, DashboardInfo } from '~/api'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
 import LoadableView from '~/components/LoadableVIew'
-import { DashboardContent } from '~/components/DashboardContent'
 import ApiContext from '~/contexts/ApiContext'
+import { DashboardWidgets } from '~/components/DashboardWidgets'
 
 export function Report(props: { params: DashboardInfo }) {
-  return (
-    <Grid container spacing={3} direction="row" alignItems="stretch">
-      <DashboardContent info={props.params} />
-    </Grid>
-  )
+  return <DashboardWidgets widgets={props.params.widgets} />
 }
 
 export const ProjectDashboard = (props: { projectId: string; from?: string; to?: string }) => {

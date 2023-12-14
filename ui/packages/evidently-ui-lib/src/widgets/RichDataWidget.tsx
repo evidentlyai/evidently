@@ -35,18 +35,17 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell />
-                {props.metricsValuesHeaders.map((header) => (
-                  <TableCell>{header}</TableCell>
+                {props.metricsValuesHeaders.map((header, index) => (
+                  <TableCell key={header + index}>{header}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.metrics.map((metric) => (
-                <TableRow>
+              {props.metrics.map((metric, index) => (
+                <TableRow key={metric.label + index}>
                   <TableCell>{metric.label}</TableCell>
-                  {metric.values.map((value) => (
-                    <TableCell>{value}</TableCell>
+                  {metric.values.map((value, index) => (
+                    <TableCell key={String(value) + index}>{value}</TableCell>
                   ))}
                 </TableRow>
               ))}

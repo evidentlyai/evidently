@@ -38,7 +38,7 @@ const SummaryView: React.FunctionComponent<SummaryViewProps> = (props) => {
             </Button>
           </Box>
         </Grid>
-        <DashboardContent info={props.dashboardInfo} />
+        <DashboardContent widgets={props.dashboardInfo.widgets} />
       </Grid>
     </Box>
   )
