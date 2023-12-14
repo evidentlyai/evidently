@@ -30,6 +30,7 @@
   * [Data requirements](input-data/data-requirements.md)
   * [Column mapping](input-data/column-mapping.md)
   * [Load data to pandas](input-data/load-data-to-pandas.md)
+  * [Data for recommendations](input-data/recsys_data.md)
 * [Tests and reports](tests-and-reports/README.md)
   * [Pre-built reports](tests-and-reports/get-reports.md)
   * [Create a custom report](tests-and-reports/custom-report.md)

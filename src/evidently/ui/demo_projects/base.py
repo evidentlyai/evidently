@@ -10,10 +10,10 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.test_suite import TestSuite
-from evidently.ui.remote import RemoteWorkspace
-from evidently.ui.workspace import Project
+from evidently.ui.base import Project
 from evidently.ui.workspace import Workspace
 from evidently.ui.workspace import WorkspaceBase
+from evidently.ui.workspace.remote import RemoteWorkspace
 
 DemoData = Tuple[pd.DataFrame, pd.DataFrame, ColumnMapping]
 

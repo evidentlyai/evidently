@@ -95,4 +95,8 @@ export default class LocalApi implements Api {
   editProjectInfo(_project: ProjectDetails) {
     return Promise.resolve(new Response('ok', { status: 200 }))
   }
+
+  reloadProject(_projectId: string): Promise<Response> {
+    return Promise.resolve(new Response(null, { status: 200 }))
+  }
 }

@@ -12,7 +12,12 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
-from evidently.ui.workspace import Project
+from evidently.ui.base import Project
+from evidently.ui.base import SnapshotMetadata
+from evidently.ui.base import Team
+from evidently.ui.base import User
+from evidently.ui.type_aliases import TeamID
+from evidently.ui.type_aliases import UserID
 
 
 class MetricModel(BaseModel):
@@ -40,6 +45,16 @@ class ReportModel(BaseModel):
             tags=report.tags,
         )
 
+    @classmethod
+    def from_snapshot(cls, snapshot: SnapshotMetadata):
+        return cls(
+            id=snapshot.id,
+            timestamp=snapshot.timestamp,
+            metrics=[],
+            metadata=snapshot.metadata,
+            tags=snapshot.tags,
+        )
+
 
 class TestSuiteModel(BaseModel):
     id: uuid.UUID
@@ -50,6 +65,15 @@ class TestSuiteModel(BaseModel):
     @classmethod
     def from_report(cls, report: TestSuite):
         return cls(id=report.id, timestamp=report.timestamp, metadata=report.metadata, tags=report.tags)
+
+    @classmethod
+    def from_snapshot(cls, snapshot: SnapshotMetadata):
+        return cls(
+            id=snapshot.id,
+            timestamp=snapshot.timestamp,
+            metadata=snapshot.metadata,
+            tags=snapshot.tags,
+        )
 
 
 class DashboardInfoModel(BaseModel):
@@ -70,15 +94,33 @@ class DashboardInfoModel(BaseModel):
         timestamp_end: Optional[datetime.datetime] = None,
     ):
         time_range: Dict[str, Optional[datetime.datetime]]
-        reports = project.reports_and_test_suites
-        if len(reports) == 0:
+        snapshots = project.list_snapshots()
+        if len(snapshots) == 0:
             time_range = {"min_timestamp": None, "max_timestamp": None}
         else:
             time_range = dict(
-                min_timestamp=min(r.timestamp for r in reports.values()),
-                max_timestamp=max(r.timestamp for r in reports.values()),
+                min_timestamp=min(r.timestamp for r in snapshots),
+                max_timestamp=max(r.timestamp for r in snapshots),
             )
 
         info = project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
 
         return cls(**dataclasses.asdict(info), **time_range)
+
+
+class TeamModel(BaseModel):
+    id: TeamID
+    name: str
+
+    @classmethod
+    def from_team(cls, team: Team):
+        return TeamModel(id=team.id, name=team.name)
+
+
+class UserModel(BaseModel):
+    id: UserID
+    name: str
+
+    @classmethod
+    def from_user(cls, user: User):
+        return TeamModel(id=user.id, name=user.name)

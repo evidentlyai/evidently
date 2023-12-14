@@ -1,7 +1,7 @@
 from typing import Any
-from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import pandas as pd
 
@@ -26,8 +26,8 @@ class ValueListStat(MetricResult):
     number_not_in_list: int
     share_in_list: float
     share_not_in_list: float
-    values_in_list: Dict[Any, int]
-    values_not_in_list: Dict[Any, int]
+    values_in_list: List[Tuple[Any, int]]
+    values_not_in_list: List[Tuple[Any, int]]
     rows_count: int
 
 
@@ -85,8 +85,8 @@ class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
             number_not_in_list=number_not_in_list,
             share_in_list=share_in_list,
             share_not_in_list=share_not_in_list,
-            values_in_list=values_in_list,
-            values_not_in_list=values_not_in_list,
+            values_in_list=[(k, v) for k, v in values_in_list.items()],
+            values_not_in_list=[(k, v) for k, v in values_not_in_list.items()],
             rows_count=rows_count,
         )
 
@@ -137,7 +137,7 @@ class ColumnValueListMetricRenderer(MetricRenderer):
                 widget=table_data(
                     title="",
                     column_names=matched_stat_headers,
-                    data=[(k, v) for k, v in stats.values_in_list.items() if v > 0][:10],
+                    data=[(k, v) for k, v in stats.values_in_list if v > 0][:10],
                 ),
             ),
             TabData(
@@ -145,7 +145,7 @@ class ColumnValueListMetricRenderer(MetricRenderer):
                 widget=table_data(
                     title="",
                     column_names=matched_stat_headers,
-                    data=[(k, v) for k, v in stats.values_in_list.items() if v <= 0][:10],
+                    data=[(k, v) for k, v in stats.values_in_list if v <= 0][:10],
                 ),
             ),
             TabData(
@@ -153,7 +153,7 @@ class ColumnValueListMetricRenderer(MetricRenderer):
                 widget=table_data(
                     title="",
                     column_names=matched_stat_headers,
-                    data=list(stats.values_not_in_list.items())[:10],
+                    data=list(stats.values_not_in_list)[:10],
                 ),
             ),
         ]
