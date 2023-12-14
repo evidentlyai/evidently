@@ -13,7 +13,6 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
-from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
@@ -35,6 +34,7 @@ class RecCasesTableResults(MetricResult):
 class RecCasesTable(Metric[RecCasesTableResults]):
     user_ids: Optional[List[Union[int, str]]]
     display_features: Optional[List[str]]
+    item_num: Optional[int]
     train_item_num: int
 
     def __init__(
@@ -42,10 +42,12 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         user_ids: Optional[List[Union[int, str]]] = None,
         display_features: Optional[List[str]] = None,
         train_item_num: int = 10,
+        item_num: Optional[int] = None,
         options: AnyOptions = None,
     ) -> None:
         self.user_ids = user_ids
         self.display_features = display_features
+        self.item_num = item_num
         self.train_item_num = train_item_num
         super().__init__(options=options)
 
@@ -88,13 +90,15 @@ class RecCasesTable(Metric[RecCasesTableResults]):
                 res = user_df[-min(self.train_item_num, user_df.shape[0]) :][item_id].astype(str)
                 current_train[str(user)] = list(res)
         current = {}
-        if recommendations_type == RecomType.RANK:
+        if recommendations_type == 'rank':
             ascending = True
         else:
             ascending = False
         curr = curr.sort_values(prediction_name, ascending=ascending)
         for user in user_ids:
             res = curr.loc[curr[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
+            if self.item_num is not None:
+                res = res[:self.item_num]
             current[str(user)] = res
 
         reference = {}
@@ -110,6 +114,8 @@ class RecCasesTable(Metric[RecCasesTableResults]):
                 for user in user_ids:
                     user_df = reference_train_data[reference_train_data[user_id] == user]
                     res = user_df[-min(self.train_item_num, user_df.shape[0]) :][item_id].astype(str)
+                    if self.item_num is not None:
+                        res = res[:self.item_num]
                     reference_train[str(user)] = list(res)
         return RecCasesTableResults(
             user_ids=[str(x) for x in user_ids],
