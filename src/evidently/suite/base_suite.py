@@ -487,4 +487,8 @@ class ReportBase(Display):
         return cls._parse_snapshot(Snapshot.load(filename))
 
     def to_snapshot(self):
+        try:
+            self._inner_suite.raise_for_error()
+        except Exception as e:
+            raise ValueError("Cannot create snapshot because of calculation error") from e
         return self._get_snapshot()
