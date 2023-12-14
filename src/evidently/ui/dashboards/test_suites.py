@@ -204,3 +204,4 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
         last_ts = max(points.keys())
         statuses: typing.Counter[TestStatus] = Counter(points[last_ts].values())
         return statuses, f" ({last_ts})"
+
