@@ -13,7 +13,7 @@ from evidently.metrics import MAPKMetric
 from evidently.metrics import MRRKMetric
 from evidently.metrics import NDCGKMetric
 from evidently.metrics import NoveltyMetric
-from evidently.metrics import PersonalisationMetric
+from evidently.metrics import PersonalizationMetric
 from evidently.metrics import PopularityBias
 from evidently.metrics import PrecisionTopKMetric
 from evidently.metrics import RecallTopKMetric
@@ -39,7 +39,7 @@ class RecsysPreset(MetricPreset):
     - PopularityBias
     - RecCasesTable
     - ScoreDistribution
-    - PersonalisationMetric
+    - PersonalizationMetric
     - DiversityMetric
     - SerendipityMetric
     - NoveltyMetric
@@ -98,7 +98,7 @@ class RecsysPreset(MetricPreset):
         metrics.append(RecCasesTable(user_ids=self.user_ids, display_features=self.display_features))
         if data_definition.recommendations_type == RecomType.RANK:
             metrics.append(ScoreDistribution(k=self.k))
-        metrics.append(PersonalisationMetric(k=self.k))
+        metrics.append(PersonalizationMetric(k=self.k))
         if self.item_features is not None:
             metrics.append(DiversityMetric(k=self.k, item_features=self.item_features))
         if self.item_features is not None and is_train_data:

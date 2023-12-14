@@ -40,10 +40,14 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
     _pairwise_distance: PairwiseDistance
     k: int
     item_features: List[str]
+    min_rel_score: Optional[int]
 
-    def __init__(self, k: int, item_features: List[str], options: AnyOptions = None) -> None:
+    def __init__(
+        self, k: int, item_features: List[str], min_rel_score: Optional[int] = None, options: AnyOptions = None
+    ) -> None:
         self.k = k
         self.item_features = item_features
+        self.min_rel_score = min_rel_score
         self._pairwise_distance = PairwiseDistance(k=k, item_features=item_features)
         super().__init__(options=options)
 
@@ -59,8 +63,11 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         user_id: str,
         item_id: str,
         name_dict: Dict,
+        min_rel_score: Optional[int],
     ):
         df = df.copy()
+        if min_rel_score is not None:
+            df[target_name] = (df[target_name] >= min_rel_score).astype(int)
         if recommendations_type == RecomType.SCORE:
             df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
         df = df.loc[(df[target_name] > 0) & (df[prediction_name] <= k), [user_id, item_id]]
@@ -108,6 +115,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             target_name=target.column_name,
             dist_matrix=dist_matrix,
             name_dict=name_dict,
+            min_rel_score=self.min_rel_score,
         )
 
         ref_distr_data: Optional[pd.Series] = None
@@ -127,6 +135,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
                 target_name=target.column_name,
                 dist_matrix=dist_matrix,
                 name_dict=name_dict,
+                min_rel_score=self.min_rel_score,
             )
         curr_distr, ref_distr = get_distribution_for_column(
             column_type="num", current=curr_distr_data, reference=ref_distr_data

@@ -23,7 +23,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-class PersonalisationMetricResult(MetricResult):
+class PersonalizationMetricResult(MetricResult):
     k: int
     current_value: float
     current_table: Dict[str, int]
@@ -31,7 +31,7 @@ class PersonalisationMetricResult(MetricResult):
     reference_table: Optional[Dict[str, int]] = None
 
 
-class PersonalisationMetric(Metric[PersonalisationMetricResult]):
+class PersonalizationMetric(Metric[PersonalizationMetricResult]):
     """Mean Inter List"""
 
     k: int
@@ -65,7 +65,7 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
 
         return diversity, table
 
-    def calculate(self, data: InputData) -> PersonalisationMetricResult:
+    def calculate(self, data: InputData) -> PersonalizationMetricResult:
         prediction_name = get_prediciton_name(data)
         user_id = data.data_definition.get_user_id_column()
         item_id = data.data_definition.get_item_id_column()
@@ -92,7 +92,7 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
                 k=self.k,
                 recommendations_type=recommendations_type,
             )
-        return PersonalisationMetricResult(
+        return PersonalizationMetricResult(
             k=self.k,
             current_value=curr_value,
             current_table=curr_table,
@@ -101,8 +101,8 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
         )
 
 
-@default_renderer(wrap_type=PersonalisationMetric)
-class PersonalisationMetricRenderer(MetricRenderer):
+@default_renderer(wrap_type=PersonalizationMetric)
+class PersonalizationMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_table_stat(dataset_name: str, curr_table: dict, ref_table: Optional[dict]) -> BaseWidgetInfo:
         matched_stat_headers = ["Value", "Count"]
@@ -129,7 +129,7 @@ class PersonalisationMetricRenderer(MetricRenderer):
             )
         return widget_tabs(title="", tabs=tabs)
 
-    def render_html(self, obj: PersonalisationMetric) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: PersonalizationMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
 
         counters = [CounterData.float(label="current", value=metric_result.current_value, precision=4)]
@@ -139,7 +139,7 @@ class PersonalisationMetricRenderer(MetricRenderer):
         result = [
             header_text(label=f"Personalization (top-{metric_result.k})"),
             counter(counters=counters),
-            self._get_table_stat("current", metric_result.current_table, metric_result.reference_table),
+            self._get_table_stat("", metric_result.current_table, metric_result.reference_table),
         ]
 
         return result
