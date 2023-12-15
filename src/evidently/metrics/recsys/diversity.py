@@ -33,7 +33,7 @@ class DiversityMetricResult(MetricResult):
     reference_value: Optional[float] = None
     reference_distr: Optional[Distribution] = None
 
-
+import logging
 class DiversityMetric(Metric[DiversityMetricResult]):
     """Intra list diversity"""
 
@@ -58,7 +58,10 @@ class DiversityMetric(Metric[DiversityMetricResult]):
         dist_matrix: np.ndarray,
         name_dict: Dict,
     ):
+        logging.warning(RecomType.SCORE)
+        logging.warning(recommendations_type)
         if recommendations_type == RecomType.SCORE:
+            logging.warning('hi')
             df[predictions] = df.groupby(user_id)[predictions].transform("rank", ascending=False)
         ilds = []
         all_users = df[user_id].unique()
@@ -78,7 +81,7 @@ class DiversityMetric(Metric[DiversityMetricResult]):
         name_dict = result.name_dict
         user_id = data.data_definition.get_user_id_column()
         item_id = data.data_definition.get_item_id_column()
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         if user_id is None or item_id is None or recommendations_type is None:
             raise ValueError("user_id and item_id and recommendations_type should be specified")
         prediction_name = get_prediciton_name(data)

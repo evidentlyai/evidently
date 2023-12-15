@@ -92,7 +92,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         target = data.data_definition.get_target_column()
         user_id = data.data_definition.get_user_id_column()
         item_id = data.data_definition.get_item_id_column()
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         if user_id is None or item_id is None or recommendations_type is None or target is None:
             raise ValueError("user_id, item_id, recommendations_type and target should be specified")
         current_train_data = data.additional_data.get("current_train_data")

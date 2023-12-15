@@ -50,6 +50,7 @@ class PersonalizationMetric(Metric[PersonalizationMetricResult]):
         recommendations_type: RecomType,
     ):
         df = df.copy()
+        table = dict(df[item_id].value_counts()[:10])
         if recommendations_type == RecomType.SCORE:
             df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
         df = df[df[prediction_name] <= k]
@@ -61,15 +62,13 @@ class PersonalizationMetric(Metric[PersonalizationMetricResult]):
 
         diversity = diversity_cumulative / all_user_couples_count
         recommended_counter.index = recommended_counter.index.astype(str)
-        table = dict(recommended_counter[:10])
-
         return diversity, table
 
     def calculate(self, data: InputData) -> PersonalizationMetricResult:
         prediction_name = get_prediciton_name(data)
         user_id = data.data_definition.get_user_id_column()
         item_id = data.data_definition.get_item_id_column()
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         if user_id is None or item_id is None or recommendations_type is None:
             raise ValueError("user_id and item_id and recommendations_type should be specified")
         curr_value, curr_table = self.get_diversity(

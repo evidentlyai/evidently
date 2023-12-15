@@ -53,7 +53,7 @@ class ScoreDistribution(Metric[ScoreDistributionResult]):
         return top_k_distr, other_distr, entropy_
 
     def calculate(self, data: InputData) -> ScoreDistributionResult:
-        if data.column_mapping.recommendations_type == RecomType.RANK:
+        if data.column_mapping.recom_type == RecomType.RANK:
             raise ValueError("ScoreDistribution metric is only defined when recommendations_type equals 'scores'.")
         prediction_name = get_prediciton_name(data)
         user_id = data.column_mapping.user_id

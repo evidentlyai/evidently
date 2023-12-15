@@ -21,6 +21,7 @@ from evidently.renderers.html_widgets import RowDetails
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.html_widgets import table_data
+from evidently.pipeline.column_mapping import RecomType
 
 
 class RecCasesTableResults(MetricResult):
@@ -56,7 +57,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         ref = data.reference_data
         datetime_column = data.data_definition.get_datetime_column()
         prediction_name = get_prediciton_name(data)
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         user_id_column = data.data_definition.get_user_id_column()
         item_id_column = data.data_definition.get_item_id_column()
         current_train_data = data.additional_data.get("current_train_data")
@@ -90,7 +91,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
                 res = user_df[-min(self.train_item_num, user_df.shape[0]) :][item_id].astype(str)
                 current_train[str(user)] = list(res)
         current = {}
-        if recommendations_type == 'rank':
+        if recommendations_type == RecomType.RANK:
             ascending = True
         else:
             ascending = False
@@ -107,6 +108,8 @@ class RecCasesTable(Metric[RecCasesTableResults]):
             ref = ref.sort_values(prediction_name, ascending=ascending)
             for user in user_ids:
                 res = ref.loc[ref[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
+                if self.item_num is not None:
+                    res = res[:self.item_num]
                 reference[str(user)] = res
             if reference_train_data is not None:
                 if datetime_column is not None:
@@ -114,8 +117,6 @@ class RecCasesTable(Metric[RecCasesTableResults]):
                 for user in user_ids:
                     user_df = reference_train_data[reference_train_data[user_id] == user]
                     res = user_df[-min(self.train_item_num, user_df.shape[0]) :][item_id].astype(str)
-                    if self.item_num is not None:
-                        res = res[:self.item_num]
                     reference_train[str(user)] = list(res)
         return RecCasesTableResults(
             user_ids=[str(x) for x in user_ids],
