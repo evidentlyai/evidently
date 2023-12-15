@@ -600,7 +600,7 @@ class TestPopularityBiasRenderer(TestRenderer):
 
 class TestEntropyScore(BaseCheckValueTest):
     group: ClassVar = RECSYS_GROUP.id
-    name: ClassVar = "Score Entropy  (top k)"
+    name: ClassVar = "Score Entropy (top k)"
     k: int
     _metric: ScoreDistribution
 
@@ -644,7 +644,7 @@ class TestEntropyScore(BaseCheckValueTest):
         return self.metric.get_result().current_entropy
 
     def get_description(self, value: Numeric) -> str:
-        return f"Coverage (top {self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
+        return f"Score Entropy (top {self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
 
     @property
     def metric(self):
