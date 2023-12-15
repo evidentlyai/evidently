@@ -21,7 +21,13 @@ from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
 
-List.__getitem__.__closure__[0].cell_contents.cache_clear()  # type: ignore[attr-defined]
+try:
+    List.__getitem__.__closure__[0].cell_contents.cache_clear()  # type: ignore[attr-defined]
+except AttributeError:  # since python 3.12
+    from typing import _caches  # type: ignore[attr-defined]
+
+    _caches[List.__getitem__.__wrapped__].cache_clear()  # type: ignore[attr-defined]
+
 LabelList = List[Label]
 
 

@@ -48,6 +48,7 @@
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)
+  * [Feature importance in data drift](customization/feature-importance.md)
   * [Text descriptors parameters](customization/text-descriptors-parameters.md)
   * [Customize JSON output](customization/json-dict-output.md)
   * [Show raw data in Reports](customization/report-data-aggregation.md)
@@ -60,6 +61,7 @@
 ## Reference
 * [All tests](reference/all-tests.md)
 * [All metrics](reference/all-metrics.md)
+  * [Ranking metrics](reference/ranking-metrics.md)
 * [Data drift algorithm](reference/data-drift-algorithm.md)
 * [API Reference](api-reference)
   * [evidently.calculations](api-reference/evidently.calculations.md)

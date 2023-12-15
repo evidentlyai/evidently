@@ -4,7 +4,6 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "postinstall": "pnpm build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "exports": {
