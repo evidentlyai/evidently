@@ -50,7 +50,7 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
             all_items[prediction_name] = all_items.groupby(user_id.column_name)[prediction_name].transform(
                 "rank", ascending=False
             )
-        all_items = all_items[all_items[prediction_name] <= self.k]
+        all_items = all_items[all_items[prediction_name] <= self.k + 1]
         all_items = all_items[[item_id.column_name] + self.item_features]
         if current_train_data is not None:
             if not np.in1d(self.item_features, current_train_data.columns).all():

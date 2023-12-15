@@ -117,7 +117,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             name_dict=name_dict,
             min_rel_score=self.min_rel_score,
         )
-
+        
         ref_distr_data: Optional[pd.Series] = None
         ref_value: Optional[float] = None
         if data.reference_data is not None:

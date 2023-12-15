@@ -33,7 +33,7 @@ class DiversityMetricResult(MetricResult):
     reference_value: Optional[float] = None
     reference_distr: Optional[Distribution] = None
 
-import logging
+
 class DiversityMetric(Metric[DiversityMetricResult]):
     """Intra list diversity"""
 
@@ -58,10 +58,8 @@ class DiversityMetric(Metric[DiversityMetricResult]):
         dist_matrix: np.ndarray,
         name_dict: Dict,
     ):
-        logging.warning(RecomType.SCORE)
-        logging.warning(recommendations_type)
+        df = df.copy()
         if recommendations_type == RecomType.SCORE:
-            logging.warning('hi')
             df[predictions] = df.groupby(user_id)[predictions].transform("rank", ascending=False)
         ilds = []
         all_users = df[user_id].unique()
