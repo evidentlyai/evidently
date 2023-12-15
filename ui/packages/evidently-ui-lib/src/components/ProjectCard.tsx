@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
 
-import { Box, Button, Fade, IconButton, Link, Paper, TextField, Typography } from '@mui/material'
+import { Box, Button, Fade, IconButton, Link, TextField, Typography } from '@mui/material'
 
 import EditIcon from '@mui/icons-material/Edit'
 
