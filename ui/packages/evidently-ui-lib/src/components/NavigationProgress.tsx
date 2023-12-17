@@ -6,7 +6,7 @@ export const NavigationProgress = () => {
   const isNavigation = navigation.state !== 'idle'
 
   if (isNavigation) {
-    return <LinearProgress sx={{ height: 4, position: 'sticky', top: 0 }} />
+    return <LinearProgress sx={{ height: 4, position: 'sticky', top: 0, left: 0 }} />
   }
 
   return <Box sx={{ height: 4 }} />
