@@ -132,7 +132,7 @@ class BaseTopkRecsysRenderer(TestRenderer):
 
 
 class TestPrecisionTopK(BaseTopkRecsysTest):
-    name: ClassVar = "Precision (top k)"
+    name: ClassVar = "Precision (top-k)"
     header: str = "Precision"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -145,7 +145,7 @@ class TestPrecisionTopKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestRecallTopK(BaseTopkRecsysTest):
-    name: ClassVar = "Recall (top k)"
+    name: ClassVar = "Recall (top-k)"
     header: str = "Recall"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -158,7 +158,7 @@ class TestRecallTopKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestFBetaTopK(BaseTopkRecsysTest):
-    name: ClassVar = "F_beta (top k)"
+    name: ClassVar = "F_beta (top-k)"
     header: str = "F_beta"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -171,7 +171,7 @@ class TestFBetaTopKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestMAPK(BaseTopkRecsysTest):
-    name: ClassVar = "MAP (top k)"
+    name: ClassVar = "MAP (top-k)"
     header: str = "MAP"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -184,7 +184,7 @@ class TestMAPKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestMARK(BaseTopkRecsysTest):
-    name: ClassVar = "MAR (top k)"
+    name: ClassVar = "MAR (top-k)"
     header: str = "MAR"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -197,7 +197,7 @@ class TestMARKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestNDCGK(BaseTopkRecsysTest):
-    name: ClassVar = "NDCG (top k)"
+    name: ClassVar = "NDCG (top-k)"
     header: str = "NDCG"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -210,7 +210,7 @@ class TestNDCGKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestHitRateK(BaseTopkRecsysTest):
-    name: ClassVar = "Hit Rate (top k)"
+    name: ClassVar = "Hit Rate (top-k)"
     header: str = "Hit Rate"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -223,7 +223,7 @@ class TestHitRateKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestMRRK(BaseTopkRecsysTest):
-    name: ClassVar = "MRR (top k)"
+    name: ClassVar = "MRR (top-k)"
     header: str = "MRR"
 
     def get_metric(self, k, min_rel_score, no_feedback_users) -> BaseTopKRecsysType:
@@ -330,7 +330,7 @@ class BaseNotRankRecsysTestRenderer(TestRenderer):
 
 
 class TestNovelty(BaseNotRankRecsysTest):
-    name: ClassVar = "Novelty (top k)"
+    name: ClassVar = "Novelty (top-k)"
     header: str = "Novelty"
 
     def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
@@ -343,7 +343,7 @@ class TestNoveltyRenderer(BaseNotRankRecsysTestRenderer):
 
 
 class TestDiversity(BaseNotRankRecsysTest):
-    name: ClassVar = "Diversity (top k)"
+    name: ClassVar = "Diversity (top-k)"
     header: str = "Diversity"
 
     def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
@@ -356,7 +356,7 @@ class TestDiversityRenderer(BaseNotRankRecsysTestRenderer):
 
 
 class TestSerendipity(BaseNotRankRecsysTest):
-    name: ClassVar = "Serendipity (top k)"
+    name: ClassVar = "Serendipity (top-k)"
     header: str = "Serendipity"
 
     def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
@@ -369,7 +369,7 @@ class TestSerendipityRenderer(BaseNotRankRecsysTestRenderer):
 
 
 class TestPersonalization(BaseNotRankRecsysTest):
-    name: ClassVar = "Personalization (top k)"
+    name: ClassVar = "Personalization (top-k)"
     header: str = "Personalization"
 
     def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
@@ -413,7 +413,7 @@ class TestPersonalizationRenderer(TestRenderer):
 
 class TestARP(BaseCheckValueTest):
     group: ClassVar = RECSYS_GROUP.id
-    name: ClassVar = "ARP (top k)"
+    name: ClassVar = "ARP (top-k)"
     k: int
     normalize_arp: bool
     _metric: PopularityBias
@@ -460,7 +460,7 @@ class TestARP(BaseCheckValueTest):
         return self.metric.get_result().current_apr
 
     def get_description(self, value: Numeric) -> str:
-        return f"ARP (top {self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
+        return f"ARP (top-{self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
 
     @property
     def metric(self):
@@ -469,7 +469,7 @@ class TestARP(BaseCheckValueTest):
 
 class TestGiniIndex(BaseCheckValueTest):
     group: ClassVar = RECSYS_GROUP.id
-    name: ClassVar = "Gini Index (top k)"
+    name: ClassVar = "Gini Index (top-k)"
     k: int
     _metric: PopularityBias
 
@@ -507,13 +507,13 @@ class TestGiniIndex(BaseCheckValueTest):
         ref_value = metric_result.reference_gini
         if ref_value is not None:
             return TestValueCondition(eq=approx(ref_value, relative=0.1))
-        return TestValueCondition(gt=0)
+        return TestValueCondition(lt=1)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_gini
 
     def get_description(self, value: Numeric) -> str:
-        return f"Gini index (top {self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
+        return f"Gini index (top-{self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
 
     @property
     def metric(self):
@@ -522,7 +522,7 @@ class TestGiniIndex(BaseCheckValueTest):
 
 class TestCoverage(BaseCheckValueTest):
     group: ClassVar = RECSYS_GROUP.id
-    name: ClassVar = "Coverage (top k)"
+    name: ClassVar = "Coverage (top-k)"
     k: int
     _metric: PopularityBias
 
@@ -566,7 +566,7 @@ class TestCoverage(BaseCheckValueTest):
         return self.metric.get_result().current_coverage
 
     def get_description(self, value: Numeric) -> str:
-        return f"Coverage (top {self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
+        return f"Coverage (top-{self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
 
     @property
     def metric(self):
@@ -598,9 +598,9 @@ class TestPopularityBiasRenderer(TestRenderer):
         return info
 
 
-class TestEntropyScore(BaseCheckValueTest):
+class TestScoreEntropy(BaseCheckValueTest):
     group: ClassVar = RECSYS_GROUP.id
-    name: ClassVar = "Score Entropy (top k)"
+    name: ClassVar = "Score Entropy (top-k)"
     k: int
     _metric: ScoreDistribution
 
@@ -644,16 +644,16 @@ class TestEntropyScore(BaseCheckValueTest):
         return self.metric.get_result().current_entropy
 
     def get_description(self, value: Numeric) -> str:
-        return f"Score Entropy (top {self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
+        return f"Score Entropy (top-{self.k}) is {value:.3}. The test threshold is {self.get_condition()}"
 
     @property
     def metric(self):
         return self._metric
 
 
-@default_renderer(wrap_type=TestEntropyScore)
-class TestEntropyScoreRenderer(TestRenderer):
-    def render_html(self, obj: TestEntropyScore) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestScoreEntropy)
+class TestScoreEntropyRenderer(TestRenderer):
+    def render_html(self, obj: TestScoreEntropy) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         distr_fig = plot_4_distr(

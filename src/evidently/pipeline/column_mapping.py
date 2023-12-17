@@ -39,7 +39,7 @@ class ColumnMapping:
     user_id: Optional[str] = "user_id"
     item_id: Optional[str] = "item_id"
     recommendations_type: Union[RecomType, str] = RecomType.SCORE
-    
+
     @property
     def recom_type(self) -> RecomType:
         if isinstance(self.recommendations_type, str):

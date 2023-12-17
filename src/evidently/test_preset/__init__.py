@@ -6,8 +6,8 @@ from .data_drift import DataDriftTestPreset
 from .data_quality import DataQualityTestPreset
 from .data_stability import DataStabilityTestPreset
 from .no_target_performance import NoTargetPerformanceTestPreset
-from .regression import RegressionTestPreset
 from .recsys import RecsysTestPreset
+from .regression import RegressionTestPreset
 
 __all__ = [
     BinaryClassificationTestPreset.__name__,

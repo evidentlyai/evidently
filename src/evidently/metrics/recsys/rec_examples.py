@@ -13,6 +13,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
+from evidently.pipeline.column_mapping import RecomType
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
@@ -21,7 +22,6 @@ from evidently.renderers.html_widgets import RowDetails
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.html_widgets import table_data
-from evidently.pipeline.column_mapping import RecomType
 
 
 class RecCasesTableResults(MetricResult):
@@ -99,7 +99,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         for user in user_ids:
             res = curr.loc[curr[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
             if self.item_num is not None:
-                res = res[:self.item_num]
+                res = res[: self.item_num]
             current[str(user)] = res
 
         reference = {}
@@ -109,7 +109,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
             for user in user_ids:
                 res = ref.loc[ref[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
                 if self.item_num is not None:
-                    res = res[:self.item_num]
+                    res = res[: self.item_num]
                 reference[str(user)] = res
             if reference_train_data is not None:
                 if datetime_column is not None:
