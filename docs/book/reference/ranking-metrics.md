@@ -252,12 +252,19 @@ Serendipity combines unexpectedness and relevance. It reflects the ability of a 
 
 **Implemented method**. 
 * Measure the **unexpectedness** of relevant recommendations. The “unexpectedness” is measured using Cosine distance. For every relevant recommendation in top-K, we compute the distance between this item and the previous user interactions in the training set. Higher cosine distance indicates higher unexpectedness.
-* **Serendipity by user**. Calculate the average of the resulting distances for all relevant recommendations in the user list.  
-* **Overall serendipity**. Calculate the overall recommendation serendipity by averaging the results across all users.
 
 $$\text{serendipity}_i = \text{unexpectedness}_i\times\text{relevance}_i$$
 
 Where *relevance(i)* is equal to 1 if the item is relevant, and is 0 otherwise.
+* **Serendipity by user**. Calculate the average of the resulting distances for all relevant recommendations in the user list.  
+* **Overall serendipity**. Calculate the overall recommendation serendipity by averaging the results across all users.
+
+\text{Serendipity} = 1 - \sum_{u \in S} \frac{1}{|S| |H_u|} \sum_{h \in H_u} \frac{\sum_{i \in R_{u,k}} \text{CosSim}(i, h)}{k}
+
+Where
+* *S* is the set of all users.
+* *H(u)* is the item history of user *u*.
+* *R(u)* Top-K function, where *R(u,k)* gives the top *k recommended items for user *u*.
 
 **Range**: The metric is based on Cosine distance, and can take values from 0 to 2. 
 * **0**: only popular, expected relevant recommendations.
