@@ -240,6 +240,7 @@ export interface ProjectInfo {
   description?: string
   date_from?: string
   date_to?: string
+  team_id?: string
 }
 
 export interface ProjectDetails extends ProjectInfo {
