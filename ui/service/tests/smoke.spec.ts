@@ -154,3 +154,23 @@ test('Altering project title and description', async ({ page }) => {
 
   await page.waitForLoadState('domcontentloaded')
 })
+
+test('Check header of ColumnSummaryMetric', async ({ page }) => {
+  const expectedHeaderCells = ['', 'current', 'reference']
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'Home' }).click()
+  await page.getByRole('link', { name: 'Demo project - Reviews' }).click()
+  await page.getByRole('tab', { name: 'reports' }).click()
+  await page.getByRole('button', { name: 'View' }).first().click()
+  const graph = await page.getByText('OOVnumcurrentreference')
+  await expect(graph).toBeVisible()
+
+  const actualHeaderCells = await graph.locator('thead tr th').allInnerTexts()
+
+  for (let i = 0; i < expectedHeaderCells.length; i++) {
+    expect(expectedHeaderCells[i] === actualHeaderCells[i], {
+      message: `expected: "${expectedHeaderCells[i]}", actual: "${actualHeaderCells[i]}"`
+    }).toBeTruthy()
+  }
+})
