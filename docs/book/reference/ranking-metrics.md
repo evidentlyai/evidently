@@ -2,7 +2,7 @@
 description: Open-source metrics for ranking and recommendations.
 ---
 
-## Recall 
+# Recall 
 
 ![](../.gitbook/assets/reports/metric_recall-min.png)
 
@@ -22,7 +22,7 @@ $$\text{Recall at } K = \frac{\text{Number of relevant items in } K}{\text{Total
 
 **Notes**: if the total number of relevant items is greater than K, it's impossible to recall all of them within the top K results (making 100% recall impossible).
 
-## Precision 
+# Precision 
 
 ![](../.gitbook/assets/reports/metric_precision-min.png)
 
@@ -58,7 +58,7 @@ If `Beta` = 1 (default), it is a traditional F1 score that provides a harmonic m
 
 **Interpretation**: Higher F Beta at K values indicate better overall performance.
 
-## Mean average precision (MAP) 
+# Mean average precision (MAP) 
 
 ![](../.gitbook/assets/reports/metric_map-min.png)
 
@@ -88,7 +88,7 @@ Where *U* is the total number of users or queries in the dataset, and *AP* is th
 
 **Interpretation**: Higher MAP at K values indicates a better ability of the system to place relevant items high in the list. 
 
-## Mean average recall (MAR) 
+# Mean average recall (MAR) 
 
 **Evidently Metric**: `MARKMetric`.
 
@@ -112,7 +112,7 @@ Where *U* is the total number of users or queries in the dataset, and *AR* is th
 
 **Interpretation**: Higher MAR at K values indicates a better ability of the system to retrieve relevant items across all users.  
 
-## Normalized Discounted Cumulative Gain (NDCG)
+# Normalized Discounted Cumulative Gain (NDCG)
 
 **Evidently Metric**: `NDCGKMetric`.
 
@@ -137,7 +137,7 @@ This way, it is possible to compare NDCG values across different use cases. The 
 
 **Interpretation**: Higher NDCG at K indicates a better ability of the system to place more relevant items higher up in the ranking.
 
-## Hit Rate
+# Hit Rate
 
 ![](../.gitbook/assets/reports/metric_hitrate-min.png)
 
@@ -155,7 +155,7 @@ Hit Rate at K calculates the share of users for which at least one relevant item
 
 **Note**: the Hit Rate will typically increase for higher values of K (since there is a higher chance that a relevant item will be recommended in a longer list).
 
-## Mean Reciprocal Rank (MRR)
+# Mean Reciprocal Rank (MRR)
 
 **Evidently Metric**: `MRRKMetric`
 
@@ -179,7 +179,7 @@ Where *U* is the total number of users, and *rank(i)* is the rank of the first r
 
 **Note**: Only a single top relevant item is considered in this metric, disregarding the position and relevance of other items in the list.
 
-## Diversity
+# Diversity
 
 ![](../.gitbook/assets/reports/metric_diversity-min.png)
 
@@ -209,7 +209,7 @@ Link: [Cosine Similarity on Wikipedia](https://en.wikipedia.org/wiki/Cosine_simi
 * This metric does not consider relevance. A recommender system showing varied but irrelevant items will have high diversity.
 * This method performs many pairwise calculations between items and can take some time to compute.
   
-## Novelty
+# Novelty
 
 ![](../.gitbook/assets/reports/metric_novelty-min.png)
 
@@ -240,7 +240,7 @@ High novelty corresponds to long-tail items that few users interacted with, and 
 
 Further reading: [Castells, P., Vargas, S., & Wang, J. (2011). Novelty and Diversity Metrics for Recommender Systems: Choice, Discovery and Relevance](https://repositorio.uam.es/bitstream/handle/10486/666094/novelty_castells_DDR_2011.pdf)
 
-## Serendipity
+# Serendipity
 
 ![](../.gitbook/assets/reports/metric_serendipity-min.png)
 
@@ -273,7 +273,7 @@ Where *relevance(i)* is equal to 1 if the item is relevant, and is 0 otherwise.
 
 Further reading: [Zhang, Y., Séaghdha, D., Quercia, D., Jambor, T. (2011). Auralist: introducing serendipity into music recommendation.](http://www.cs.ucl.ac.uk/fileadmin/UCL-CS/research/Research_Notes/RN_11_21.pdf)
 
-## Personalization
+# Personalization
 
 ![](../.gitbook/assets/reports/metric_personalization-min.png)
 
@@ -295,3 +295,80 @@ The resulting metric reflects the average share of unique recommendations in eac
 * **1**: Each user’s recommendations in top-K are unique.   
 
 **Interpretation**: the higher the value, the more personalized (= different from others) is each user’s list. The metric visualization also shows the top-10 most popular items.
+
+# Popularity Bias 
+
+![](../.gitbook/assets/reports/metric_popularity_bias-min.png)
+
+**Evidently Metric**: `PopularityBias`
+
+The recommendation popularity bias is a tendency of favoring a few popular items. This metric includes several measurements: ARP, Coverage and Gini index.
+
+## Average Recommendation Popularity (ARP)
+
+ARP reflects the average popularity of the items recommended to the users. 
+
+**Implementation**.
+* Compute the item popularity as the number of times each item was seen in training. 
+* Compute the average popularity for each user’s list as a sum of all items’ popularity divided by the number of recommended items.
+* Compute the average popularity for all users by averaging the results across all users.
+
+$$ARP = \frac{1}{|U|} \sum_{u \in U} \frac{1}{|L_u|} \sum_{i \in L_u} \phi(i) \$$
+
+Where:
+* *U* is the total number of users.
+* *L(u)* is the list of items recommended for the user *u*.
+* *ϕ(i)* is the number of times item *i* was rated in the training set (popularity of item *i*)
+
+**Range**: 0 to infinity 
+
+**Interpretation**: the higher the value, the more popular on average the recommendations are in top-K.  
+
+**Note**: This metric is not normalized and depends on the number of recommendations in the training set.
+
+Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Malthouse, E. (2021). User-centered Evaluation of Popularity Bias in Recommender Systems](https://dl.acm.org/doi/fullHtml/10.1145/3450613.3456821)
+
+## Coverage
+
+Coverage reflects the item coverage as a proportion of items that has been recommended by the system.
+
+**Implementation**: compute the share of items recommended to the users out of the total number of potential items (as seen in the training dataset).
+
+$$\text{Coverage} = \frac{\text{Number of unique items recommended} K}{\text{Total number of unique items}}$$
+
+**Range**: 0 to 1, where 1 means that 100% of items have been recommended to users. 
+
+**Interpretation**: the higher the value (usually preferable), the larger the share of items represented in the recommendations. Popularity-based recommenders that only recommend a limited number of popular items will have a low coverage.
+
+## Gini index 
+
+Coverage reflects the item coverage as a proportion of items that has been recommended by the system.
+
+**Implementation**: compare the actual distribution of the recommended items to a perfectly equal distribution. 
+
+$$ Gini(L) = 1 - \frac{1}{|I| - 1} \sum_{k=1}^{|I|} (2k - |I| - 1) p(i_k | L) \$$
+
+Where 
+* *L* is the combined list of all recommendation lists given to different users (note that an item may appear multiple times in L, if recommended for more than one user).
+* *p(i|L)* is the ratio of occurrence of item *i* in *L*.
+* *I* is the set of all items in the catalog.
+
+**Range**: 0 to 1, where 0 represents the perfect equality (recommended items are evenly distributed among users), and 1 is complete inequality (the recommendations are concentrated on a single item).
+
+**Interpretation**: the lower the value (usually preferable), the more equal is the item distribution in recommendations. If the value is high, it means that a few items are being frequently recommended to many users, while others are ignored.
+
+Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Malthouse, E. (2021). User-centered Evaluation of Popularity Bias in Recommender Systems](https://dl.acm.org/doi/fullHtml/10.1145/3450613.3456821)
+
+# Recommendation examples
+
+**Evidently Metric**: `RecCasesTable`
+
+This visual Metric shows the list of recommendations for the specified user IDs ('user_ids: List'). If you do not pass the list of IDs, Evidently will choose 5 random ones.
+
+You can optionally specify:
+* The number of training items in the user history to display ('train_item_num')
+* Whether you’d like to additionally include the values of specific features in the table ('display_features: List')
+* The number of items recommended for user to display ('item_num')
+
+
+
