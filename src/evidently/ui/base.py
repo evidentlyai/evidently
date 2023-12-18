@@ -124,7 +124,7 @@ class Project(BaseModel):
     _project_manager: "ProjectManager" = PrivateAttr(None)
     _user_id: UserID = PrivateAttr(None)
 
-    def bind(self, project_manager: "ProjectManager", user_id: UserID):
+    def bind(self, project_manager: Optional["ProjectManager"], user_id: Optional[UserID]):
         self._project_manager = project_manager
         self._user_id = user_id
         return self
