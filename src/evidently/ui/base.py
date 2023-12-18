@@ -52,6 +52,8 @@ class SnapshotMetadata(BaseModel):
     blob_id: BlobID
 
     _project: "Project" = PrivateAttr(None)
+    _dashboard_info: "DashboardInfo" = PrivateAttr(None)
+    _additional_graphs: Dict[str, dict] = PrivateAttr(None)
 
     @property
     def project(self):
@@ -82,15 +84,15 @@ class SnapshotMetadata(BaseModel):
 
     @property
     def dashboard_info(self):
-        # todo
-        _, _dashboard_info, _additional_graphs = self.as_report_base()._build_dashboard_info()
-        return _dashboard_info
+        if self._dashboard_info is None:
+            _, self._dashboard_info, self._additional_graphs = self.as_report_base()._build_dashboard_info()
+        return self._dashboard_info
 
     @property
     def additional_graphs(self):
-        # todo
-        _, _dashboard_info, _additional_graphs = self.as_report_base()._build_dashboard_info()
-        return _additional_graphs
+        if self._additional_graphs is None:
+            _, self._dashboard_info, self._additional_graphs = self.as_report_base()._build_dashboard_info()
+        return self._additional_graphs
 
 
 class Team(BaseModel):
@@ -125,8 +127,9 @@ class Project(BaseModel):
     _user_id: UserID = PrivateAttr(None)
 
     def bind(self, project_manager: Optional["ProjectManager"], user_id: Optional[UserID]):
-        self._project_manager = project_manager
-        self._user_id = user_id
+        # todo: better typing (add optional or forbid optional)
+        self._project_manager = project_manager  # type: ignore[assignment]
+        self._user_id = user_id  # type: ignore[assignment]
         return self
 
     @property
