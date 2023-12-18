@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
 
@@ -125,9 +125,10 @@ const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
 
 interface projectProps {
   project: ProjectInfo
+  children?: React.ReactNode
 }
 
-export const ProjectCard = ({ project }: projectProps) => {
+export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
   const [ref, hovering] = useHover()
   const [isEditMode, setEditMode] = useState(false)
 
@@ -148,6 +149,8 @@ export const ProjectCard = ({ project }: projectProps) => {
           <EditIcon />
         </IconButton>
       </Fade>
+
+      {children}
 
       {isEditMode ? (
         <EditProjectInfoForm project={project} disabled={isDisabled} />
