@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
 
-import { Box, Button, Fade, IconButton, Link, TextField, Typography } from '@mui/material'
+import { Box, Button, Fade, IconButton, Link, Paper, TextField, Typography } from '@mui/material'
 
 import EditIcon from '@mui/icons-material/Edit'
 
@@ -139,7 +139,7 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
   useEffect(() => setEditMode(false), [project])
 
   return (
-    <Box ref={ref}>
+    <Paper ref={ref} elevation={3} sx={{ m: 1, p: 2, position: 'relative' }}>
       <Fade in={hovering}>
         <IconButton
           disabled={isDisabled}
@@ -157,6 +157,6 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
       ) : (
         <ProjectInfoCard project={project} />
       )}
-    </Box>
+    </Paper>
   )
 }

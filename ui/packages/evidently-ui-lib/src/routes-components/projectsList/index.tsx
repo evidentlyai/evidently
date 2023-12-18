@@ -16,9 +16,7 @@ export const Component = () => {
         <Grid container direction="column" justifyContent="center" alignItems="stretch">
           {projects.map((project) => (
             <React.Fragment key={project.id}>
-              <Paper elevation={3} sx={{ m: 1, p: 2, position: 'relative' }}>
-                <ProjectCard project={project} />
-              </Paper>
+              <ProjectCard project={project} />
             </React.Fragment>
           ))}
         </Grid>
