@@ -109,7 +109,7 @@ class FSSpecBlobStorage(BlobStorage):
         return path
 
 
-def load_project(location: FSLocation, path: str):
+def load_project(location: FSLocation, path: str) -> Optional[Project]:
     try:
         with location.open(posixpath.join(path, METADATA_PATH)) as f:
             return parse_obj_as(Project, json.load(f))
@@ -136,12 +136,8 @@ class LocalState:
 
     def reload(self, force: bool = False):
         self.location.invalidate_cache("")
-        projects = [
-            load_project(self.location, p).bind(self.project_manager, NO_USER.id)
-            for p in self.location.listdir("")
-            if self.location.isdir(p)
-        ]
-        self.projects = {p.id: p for p in projects if p is not None}
+        projects = [load_project(self.location, p) for p in self.location.listdir("") if self.location.isdir(p)]
+        self.projects = {p.id: p.bind(self.project_manager, NO_USER.id) for p in projects if p is not None}
         self.snapshots = {p: {} for p in self.projects}
         self.snapshot_data = {p: {} for p in self.projects}
 

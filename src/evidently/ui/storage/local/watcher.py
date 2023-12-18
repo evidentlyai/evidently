@@ -52,8 +52,10 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         if project_id is None:
             return
         if event.event_type == EVENT_TYPE_MODIFIED:
-            project = load_project(self.state.location, project_id).bind(self.state.project_manager, NO_USER.id)
-            self.state.projects[project.id] = project
+            project = load_project(self.state.location, project_id)
+            if project is None:
+                return
+            self.state.projects[project.id] = project.bind(self.state.project_manager, NO_USER.id)
         if event.event_type == EVENT_TYPE_DELETED:
             pid = uuid.UUID(project_id)
             del self.state.projects[pid]
