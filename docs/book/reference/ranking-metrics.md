@@ -359,7 +359,9 @@ Where
 
 Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Malthouse, E. (2021). User-centered Evaluation of Popularity Bias in Recommender Systems](https://dl.acm.org/doi/fullHtml/10.1145/3450613.3456821)
 
-# Recommendation examples
+# Recommendation table
+
+![](../.gitbook/assets/reports/metric_recsys_table-min.png)
 
 **Evidently Metric**: `RecCasesTable`
 
@@ -370,5 +372,43 @@ You can optionally specify:
 * Whether you’d like to additionally include the values of specific features in the table ('display_features: List')
 * The number of items recommended for user to display ('item_num')
 
+# Score Distribution (Entropy)
 
+![](../.gitbook/assets/reports/metric_score_distribution-min.png)
+
+**Evidently Metric**: `ScoreDistribution`
+
+This metric computes the predicted score entropy. It applies only when the recommendations_type is a score.
+
+**Implementation**:
+* Apply softmax transformation for top-K scores for all users.
+* Compute the KL divergence (relative entropy in [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.entropy.html)). 
+
+The visualization shows the distribution of the predicted scores at K (and all scores, if available). 
+
+# Item Bias 
+
+![](../.gitbook/assets/reports/metric_itembias_2-min.png)
+
+**Evidently Metric**: `ItemBiasMetric`
+
+This visual metric shows the distribution of recommendations by a specified category or numerical value (`column_name`) compared to its distribution in the training set.
+
+This helps compare the model recommendations against what could have been a random classifier that follows the observed distribution of items by a chosen characteristic.
+
+The visualization shows:
+* The distribution of items in the training set for the defined column_name (with duplicates dropped). This represents the item catalog by this dimension. 
+* The distribution of the recommended items for the defined column_name in the current and reference (if available) datasets. 
+
+This visualization helps see the patterns in the model recommendations. In a simplified example, you might observe that the training data contains 3x comedies compared to dramas, but the model recommends dramas 10x more often. 
+
+# UserBiasMetric
+
+![](../.gitbook/assets/reports/metric_userbias_1-min.png)
+
+This visual metric shows the distribution of a specified category or numerical value (`column_name`) compared to its distribution in the training set.
+
+This helps evaluate the distribution of users by a specific category (e.g., age, gender, etc.) in production data compared to training. Before visualization, we drop duplicates in training and current (reference) data.
+
+For example, exploring this metric might help notice that a particular user group is underrepresented in training but is prevalent in production, or vice versa.
 
