@@ -227,9 +227,9 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         for feature_name in columns:
             # add data for table in params
             parts = []
-
+            target_values_graph_id = self.graph_id_generator.get_id()
             if target_name is not None:
-                parts.append({"title": "Target", "id": feature_name + "_target_values"})
+                parts.append({"title": "Target", "id": target_values_graph_id})
                 if task == "regression":
                     target_fig = self._get_regression_fig(feature_name, target_name, current_data, reference_data)
                 else:
@@ -239,7 +239,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_target_values",
+                        target_values_graph_id,
                         {
                             "data": target_fig_json["data"],
                             "layout": target_fig_json["layout"],
@@ -248,7 +248,8 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 )
 
             if curr_predictions is not None:
-                parts.append({"title": "Prediction", "id": feature_name + "_prediction_values"})
+                pred_values_graph_id = self.graph_id_generator.get_id()
+                parts.append({"title": "Prediction", "id": pred_values_graph_id})
                 if task == "regression":
                     preds_fig = self._get_regression_fig(
                         feature_name, "prediction_labels", current_data, reference_data
@@ -261,7 +262,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_prediction_values",
+                        pred_values_graph_id,
                         {
                             "data": preds_fig_json["data"],
                             "layout": preds_fig_json["layout"],
