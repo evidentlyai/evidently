@@ -50,7 +50,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
             )
         col_item_id = data.data_definition.get_item_id_column()
         col_user_id = data.data_definition.get_user_id_column()
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         if col_item_id is None or recommendations_type is None or col_user_id is None:
             raise ValueError("item_id, user_id and recommendations_type should be specified")
         if column.column_type not in [ColumnType.Categorical, ColumnType.Numerical]:

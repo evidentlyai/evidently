@@ -35,6 +35,7 @@ class RecCasesTableResults(MetricResult):
 class RecCasesTable(Metric[RecCasesTableResults]):
     user_ids: Optional[List[Union[int, str]]]
     display_features: Optional[List[str]]
+    item_num: Optional[int]
     train_item_num: int
 
     def __init__(
@@ -42,10 +43,12 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         user_ids: Optional[List[Union[int, str]]] = None,
         display_features: Optional[List[str]] = None,
         train_item_num: int = 10,
+        item_num: Optional[int] = None,
         options: AnyOptions = None,
     ) -> None:
         self.user_ids = user_ids
         self.display_features = display_features
+        self.item_num = item_num
         self.train_item_num = train_item_num
         super().__init__(options=options)
 
@@ -54,7 +57,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         ref = data.reference_data
         datetime_column = data.data_definition.get_datetime_column()
         prediction_name = get_prediciton_name(data)
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         user_id_column = data.data_definition.get_user_id_column()
         item_id_column = data.data_definition.get_item_id_column()
         current_train_data = data.additional_data.get("current_train_data")
@@ -95,6 +98,8 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         curr = curr.sort_values(prediction_name, ascending=ascending)
         for user in user_ids:
             res = curr.loc[curr[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
+            if self.item_num is not None:
+                res = res[: self.item_num]
             current[str(user)] = res
 
         reference = {}
@@ -103,6 +108,8 @@ class RecCasesTable(Metric[RecCasesTableResults]):
             ref = ref.sort_values(prediction_name, ascending=ascending)
             for user in user_ids:
                 res = ref.loc[ref[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
+                if self.item_num is not None:
+                    res = res[: self.item_num]
                 reference[str(user)] = res
             if reference_train_data is not None:
                 if datetime_column is not None:

@@ -52,7 +52,7 @@ from .recsys.mar_k import MARKMetric
 from .recsys.mrr import MRRKMetric
 from .recsys.ndcg_k import NDCGKMetric
 from .recsys.novelty import NoveltyMetric
-from .recsys.personalisation import PersonalisationMetric
+from .recsys.personalisation import PersonalizationMetric
 from .recsys.popularity_bias import PopularityBias
 from .recsys.precision_top_k import PrecisionTopKMetric
 from .recsys.rec_examples import RecCasesTable
@@ -130,7 +130,7 @@ __all__ = [
     "MARKMetric",
     "NDCGKMetric",
     "DiversityMetric",
-    "PersonalisationMetric",
+    "PersonalizationMetric",
     "NoveltyMetric",
     "PopularityBias",
     "UserBiasMetric",

@@ -6,6 +6,7 @@ from .data_drift import DataDriftTestPreset
 from .data_quality import DataQualityTestPreset
 from .data_stability import DataStabilityTestPreset
 from .no_target_performance import NoTargetPerformanceTestPreset
+from .recsys import RecsysTestPreset
 from .regression import RegressionTestPreset
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     DataStabilityTestPreset.__name__,
     NoTargetPerformanceTestPreset.__name__,
     RegressionTestPreset.__name__,
+    RecsysTestPreset.__name__,
 ]

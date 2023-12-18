@@ -73,6 +73,22 @@ from .data_quality_tests import TestTargetPredictionCorrelation
 from .data_quality_tests import TestUniqueValuesShare
 from .data_quality_tests import TestValueList
 from .data_quality_tests import TestValueRange
+from .recsys_tests import TestARP
+from .recsys_tests import TestCoverage
+from .recsys_tests import TestDiversity
+from .recsys_tests import TestFBetaTopK
+from .recsys_tests import TestGiniIndex
+from .recsys_tests import TestHitRateK
+from .recsys_tests import TestMAPK
+from .recsys_tests import TestMARK
+from .recsys_tests import TestMRRK
+from .recsys_tests import TestNDCGK
+from .recsys_tests import TestNovelty
+from .recsys_tests import TestPersonalization
+from .recsys_tests import TestPrecisionTopK
+from .recsys_tests import TestRecallTopK
+from .recsys_tests import TestScoreEntropy
+from .recsys_tests import TestSerendipity
 from .regression_performance_tests import TestValueAbsMaxError
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
@@ -157,4 +173,20 @@ __all__ = [
     "TestValueMeanError",
     "TestValueR2Score",
     "TestValueRMSE",
+    "TestFBetaTopK",
+    "TestHitRateK",
+    "TestMAPK",
+    "TestMRRK",
+    "TestMARK",
+    "TestNDCGK",
+    "TestPrecisionTopK",
+    "TestRecallTopK",
+    "TestNovelty",
+    "TestPersonalization",
+    "TestSerendipity",
+    "TestDiversity",
+    "TestARP",
+    "TestGiniIndex",
+    "TestCoverage",
+    "TestScoreEntropy",
 ]
