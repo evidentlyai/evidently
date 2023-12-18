@@ -179,6 +179,7 @@ class DataDriftTableRenderer(MetricRenderer):
                     line_name="reference (mean)",
                 )
             scatter = plotly_figure(title="", figure=scatter_fig)
+            scatter.id = self.graph_id_generator.get_id()
             details.with_part("DATA DRIFT", info=scatter)
             fig = plot_distr_with_perc_button(
                 hist_curr=HistogramData.from_distribution(data.current.distribution),
@@ -192,6 +193,7 @@ class DataDriftTableRenderer(MetricRenderer):
                 to_json=False,
             )
             distribution = plotly_figure(title="", figure=fig)
+            distribution.id = self.graph_id_generator.get_id()
             details.with_part("DATA DISTRIBUTION", info=distribution)
             return RichTableDataRow(
                 details=details,
