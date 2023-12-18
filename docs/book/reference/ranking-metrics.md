@@ -259,7 +259,7 @@ Where *relevance(i)* is equal to 1 if the item is relevant, and is 0 otherwise.
 * **Serendipity by user**. Calculate the average of the resulting distances for all relevant recommendations in the user list.  
 * **Overall serendipity**. Calculate the overall recommendation serendipity by averaging the results across all users.
 
-$$\text{Serendipity} = 1 - \sum_{u \in S} \frac{1}{|S| |H_u|} \sum_{h \in H_u} \frac{\sum_{i \in R_{u,k}} \text{CosSim}(i, h)}{k}$$
+$$\text{Serendipity} = 1 - \sum_{u \in S} \frac{1}{|S| |H_u|} \sum_{h \in H_u} \sum_{i \in R_{u,k}} \frac{\text{CosSim}(i, h)}{k}$$
 
 Where
 * *S* is the set of all users.
