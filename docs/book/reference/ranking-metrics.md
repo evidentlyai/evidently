@@ -277,7 +277,7 @@ Further reading: [Zhang, Y., Séaghdha, D., Quercia, D., Jambor, T. (2011). Aura
 
 ![](../.gitbook/assets/reports/metric_personalization-min.png)
 
-**Evidently Metric**: `PersonalisationMetric`
+**Evidently Metric**: `PersonalizationMetric`
 
 Personalization of recommendations: this metric measures the average uniqueness of each user's recommendations in top-K.
 
