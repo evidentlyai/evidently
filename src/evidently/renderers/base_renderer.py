@@ -41,9 +41,6 @@ class BaseRenderer:
         else:
             self.color_options = color_options
 
-    def graph_id_generator(self) -> GraphIdGenerator:
-        return self.graph_id_generator
-
 
 class MetricRenderer(BaseRenderer):
     def render_pandas(self, obj: "Metric[TResult]") -> pd.DataFrame:
