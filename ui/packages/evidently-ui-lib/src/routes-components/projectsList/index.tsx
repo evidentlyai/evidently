@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import { loaderData } from './data'
 import { useLoaderData } from 'react-router-dom'
 import { ProjectCard } from '~/components/ProjectCard'
