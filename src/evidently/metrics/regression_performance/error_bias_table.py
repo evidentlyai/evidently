@@ -366,16 +366,14 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 if result.error_bias is None:
                     raise ValueError("RegressionErrorBiasTableRenderer got no error_bias value")
 
-                segm_graph_id = self.graph_id_generator.get_id()
-                hist_graph_id = self.graph_id_generator.get_id()
                 params_data.append(
                     {
                         "details": {
                             "parts": [
-                                {"title": "Error bias", "id": hist_graph_id},
+                                {"title": "Error bias", "id": feature_name + "_hist"},
                                 {
                                     "title": "Predicted vs Actual",
-                                    "id": segm_graph_id,
+                                    "id": feature_name + "_segm",
                                 },
                             ],
                             "insights": [],
@@ -395,7 +393,7 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        hist_graph_id,
+                        feature_name + "_hist",
                         {
                             "data": feature_hist_json["data"],
                             "layout": feature_hist_json["layout"],
@@ -405,7 +403,7 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        segm_graph_id,
+                        feature_name + "_segm",
                         {
                             "data": segment_json["data"],
                             "layout": segment_json["layout"],
@@ -443,16 +441,14 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 if result.error_bias is None:
                     raise ValueError("RegressionErrorBiasTableRenderer got no error_bias value")
 
-                segment_graph_id = self.graph_id_generator.get_id()
-                hist_graph_id = self.graph_id_generator.get_id()
                 params_data.append(
                     {
                         "details": {
                             "parts": [
-                                {"title": "Error bias", "id": hist_graph_id},
+                                {"title": "Error bias", "id": feature_name + "_hist"},
                                 {
                                     "title": "Predicted vs Actual",
-                                    "id": segment_graph_id,
+                                    "id": feature_name + "_segm",
                                 },
                             ],
                             "insights": [],
@@ -472,7 +468,7 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        hist_graph_id,
+                        feature_name + "_hist",
                         {
                             "data": feature_hist_json["data"],
                             "layout": feature_hist_json["layout"],
@@ -482,7 +478,7 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        segment_graph_id,
+                        feature_name + "_segm",
                         {
                             "data": segment_json["data"],
                             "layout": segment_json["layout"],

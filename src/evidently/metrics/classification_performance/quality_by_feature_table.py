@@ -191,13 +191,13 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         additional_graphs_data = []
         params_data = []
         for feature_name in columns:
-            graph_id_all = self.graph_id_generator.get_id()
-            label_graph_id = {label: self.graph_id_generator.get_id() for label in labels}
+            # add data for table in params
+
             params_data.append(
                 {
                     "details": {
-                        "parts": [{"title": "All", "id": graph_id_all}]
-                        + [{"title": str(label), "id": gid} for (label, gid) in label_graph_id.items()],
+                        "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
+                        + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
                         "insights": [],
                     },
                     "f1": feature_name,
@@ -230,7 +230,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
             # write plot data in table as additional data
             additional_graphs_data.append(
                 AdditionalGraphInfo(
-                    graph_id_all,
+                    "All" + "_" + str(feature_name),
                     {"data": fig_json["data"], "layout": fig_json["layout"]},
                 )
             )
@@ -350,7 +350,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     # write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            label_graph_id[label],
+                            feature_name + "_" + str(label),
                             {"data": fig_json["data"], "layout": fig_json["layout"]},
                         )
                     )
@@ -377,7 +377,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     # write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            label_graph_id[label],
+                            feature_name + "_" + str(label),
                             {"data": fig_json["data"], "layout": fig_json["layout"]},
                         )
                     )

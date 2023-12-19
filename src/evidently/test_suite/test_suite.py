@@ -19,7 +19,6 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.renderers.base_renderer import GraphIdGenerator
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
@@ -202,15 +201,11 @@ class TestSuite(ReportBase):
         by_status = {}
         color_options = self.options.color_options
 
-        test_index = 0
         for test, test_result in self._inner_suite.context.test_results.items():
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             renderer.color_options = color_options
-            renderer.graph_id_generator = GraphIdGenerator(f"{self.id}-{test_index}")
-            test_index += 1
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             test_results.append(renderer.render_html(test))
-            renderer.graph_id_generator = None
 
         summary_widget = BaseWidgetInfo(
             title="",
