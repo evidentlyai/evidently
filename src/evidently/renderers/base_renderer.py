@@ -89,14 +89,14 @@ class TestRenderer(BaseRenderer):
     def json_description(self, obj: "Test"):
         return obj.get_result().description
 
-    def render_html(self, obj) -> TestHtmlInfo:
+    def render_html(self, obj: "Test") -> TestHtmlInfo:
         result = obj.get_result()
         return TestHtmlInfo(
             name=result.name,
             description=self.html_description(obj),
             status=result.status.value,
             details=[],
-            groups=result.groups,
+            groups=obj.get_groups(),
             graph_id_generator=self.graph_id_generator,
         )
 
