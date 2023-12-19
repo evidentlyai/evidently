@@ -155,16 +155,17 @@ def replace_widget_ids(widget: BaseWidgetInfo, generator: WidgetIdGenerator):
             raise ValueError(f"Unknown add graph type {add_graph.__class__.__name__}")
 
     parts = []
-    if "data" in widget.params:
-        data = widget.params["data"]
-        for item in data:
-            if "details" in item and "parts" in item["details"]:
-                parts.extend(item["details"]["parts"])
+    if isinstance(widget.params, dict):
+        if "data" in widget.params:
+            data = widget.params["data"]
+            for item in data:
+                if "details" in item and "parts" in item["details"]:
+                    parts.extend(item["details"]["parts"])
 
-    if "details" in widget.params:
-        details = widget.params["details"]
-        if "parts" in details:
-            parts.extend(details["parts"])
+        if "details" in widget.params:
+            details = widget.params["details"]
+            if "parts" in details:
+                parts.extend(details["parts"])
 
     for part in parts:
         if "id" in part:
