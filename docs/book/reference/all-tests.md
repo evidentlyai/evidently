@@ -34,6 +34,10 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 # Test Presets
 
+<details>
+
+<summary>Test Preset Composition</summary>
+
 Default conditions for each Test in the Preset match the Test's defaults. You can see them in the tables below. The listed Preset parameters apply to the relevant individual Tests inside the Preset.
 
 | Preset name and Description | Parameters |
@@ -46,6 +50,9 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | **`MulticlassClassificationTestPreset`**<br> <ul><li>`TestAccuracyScore()`</li><li>`TestF1Score()`</li><li>`TestPrecisionByClass()`</li><li>`TestRecallByClass()`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestNumberOfRows()`</li></ul>If probabilistic classification, also: <ul><li>`TestLogLoss()`</li><li>`TestRocAuc()`</li></ul>| **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md).  |
 | **`BinaryClassificationTopKTestPreset`**<br> <ul><li>`TestAccuracyScore(k=k)`</li><li>`TestPrecisionScore(k=k)`</li><li>`TestRecallScore(k=k)`</li><li>`TestF1Score(k=k)`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestRocAuc()`</li><li>`TestLogLoss()`</li></ul> |**Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
 | **`BinaryClassificationTestPreset`** <br><ul><li>`TestColumnDrift(column_name=target)`</li><li>`TestPrecisionScore()`</li><li>`TestRecallScore()`</li><li>`TestF1Score()`</li><li>`TestAccuracyScore()`</li></ul>If probabilistic classification, also:<ul><li>`TestRocAuc()`</li></ul> | **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)|
+| **`RecsysTestPreset`** <br><ul><li>`TestPrecisionTopK()`</li><li>`TestRecallTopK()`</li><li>`TestMAPK()`</li><li>`TestNDCGK()`</li><li>`TestHitRateK()`</li></ul> | **Required:**<ul><li>`k`</li></ul> **Optional:**<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li></ul>
+
+</details>
 
 # Data Integrity
 
@@ -163,6 +170,8 @@ You can apply the tests for non-probabilistic, probabilistic classification, and
 |  **TestLogLoss()** | Dataset-level. <br><br>Applies to probabilistic classification. <br><br> Computes the LogLoss and compares it to the reference or against a defined condition. | **Required**:<br>N/A<br><br> **Optional:**<br>N/A<br><br>**Test conditions**: <ul><li>*standard parameters*</li></ul> | Expects +/-20% or better than a dummy model.<br><br>**With reference**: the test fails if the LogLoss is over 20% higher or lower than in the reference. <br><br>**No reference**: the test fails if LogLoss is higher than the LogLoss of the dummy model (equals 0.5 for a constant model). |
 
 # Ranking and Recommendations 
+
+Check individual metric descriptions [here](ranking-metrics.md).
 
 Optional shared parameters:
 * `no_feedback_users: bool = False`. Specifies whether to include the users who did not select any of the items, when computing the quality metrics. Default: False.
