@@ -4,10 +4,13 @@ from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 
+from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import PlotlyGraphInfo
 from evidently.options import ColorOptions
 
 if TYPE_CHECKING:
@@ -111,3 +114,64 @@ def default_renderer(wrap_type):
 
 
 DEFAULT_RENDERERS = RenderersDefinitions(default_html_test_renderer=TestRenderer())
+
+
+class WidgetIdGenerator:
+    def __init__(self, base_id: str):
+        self.base_id = base_id
+        self.counter = 0
+
+    def get_id(self, postfix: str = None) -> str:
+        val = f"{self.base_id}-{self.counter}"
+        if postfix is not None:
+            val = f"{val}-{postfix}"
+        self.counter += 1
+        return val
+
+
+def replace_widgets_ids(widgets: List[BaseWidgetInfo], generator: WidgetIdGenerator):
+    for widget in widgets:
+        replace_widget_ids(widget, generator)
+
+
+def replace_test_widget_ids(widget: TestHtmlInfo, generator: WidgetIdGenerator):
+    for detail in widget.details:
+        detail.id = generator.get_id()
+        replace_widget_ids(detail.info, generator)
+
+
+def replace_widget_ids(widget: BaseWidgetInfo, generator: WidgetIdGenerator):
+    widget.id = generator.get_id()
+
+    add_graph_id_mapping: Dict[str, Union[BaseWidgetInfo, AdditionalGraphInfo, PlotlyGraphInfo]] = {}
+    for add_graph in widget.additionalGraphs:
+        if isinstance(add_graph, BaseWidgetInfo):
+            add_graph_id_mapping[add_graph.id] = add_graph
+            replace_widget_ids(add_graph, generator)
+        elif isinstance(add_graph, (AdditionalGraphInfo, PlotlyGraphInfo)):
+            add_graph_id_mapping[add_graph.id] = add_graph
+            add_graph.id = generator.get_id(add_graph.id.replace(" ", "-"))
+        else:
+            raise ValueError(f"Unknown add graph type {add_graph.__class__.__name__}")
+
+    parts = []
+    if isinstance(widget.params, dict):
+        if "data" in widget.params:
+            data = widget.params["data"]
+            for item in data:
+                if "details" in item and "parts" in item["details"]:
+                    parts.extend(item["details"]["parts"])
+
+        if "details" in widget.params:
+            details = widget.params["details"]
+            if "parts" in details:
+                parts.extend(details["parts"])
+
+    for part in parts:
+        if "id" in part:
+            widget_id = part["id"]
+            if widget_id in add_graph_id_mapping:
+                part["id"] = add_graph_id_mapping[widget_id].id
+
+    for w in widget.widgets:
+        replace_widget_ids(w, generator)

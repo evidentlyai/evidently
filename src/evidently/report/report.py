@@ -23,6 +23,8 @@ from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import WidgetIdGenerator
+from evidently.renderers.base_renderer import replace_widgets_ids
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
@@ -197,11 +199,14 @@ class Report(ReportBase):
 
         color_options = self.options.color_options
 
+        id_generator = WidgetIdGenerator("")
         for test in self._first_level_metrics:
+            id_generator.base_id = test.get_id()
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
             # set the color scheme from the report for each render
             renderer.color_options = color_options
             html_info = renderer.render_html(test)
+            replace_widgets_ids(html_info, id_generator)
 
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():
