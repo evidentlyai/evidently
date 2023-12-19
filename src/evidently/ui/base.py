@@ -52,6 +52,8 @@ class SnapshotMetadata(BaseModel):
     blob_id: BlobID
 
     _project: "Project" = PrivateAttr(None)
+    _dashboard_info: "DashboardInfo" = PrivateAttr(None)
+    _additional_graphs: Dict[str, dict] = PrivateAttr(None)
 
     @property
     def project(self):
@@ -82,15 +84,15 @@ class SnapshotMetadata(BaseModel):
 
     @property
     def dashboard_info(self):
-        # todo
-        _, _dashboard_info, _additional_graphs = self.as_report_base()._build_dashboard_info()
-        return _dashboard_info
+        if self._dashboard_info is None:
+            _, self._dashboard_info, self._additional_graphs = self.as_report_base()._build_dashboard_info()
+        return self._dashboard_info
 
     @property
     def additional_graphs(self):
-        # todo
-        _, _dashboard_info, _additional_graphs = self.as_report_base()._build_dashboard_info()
-        return _additional_graphs
+        if self._additional_graphs is None:
+            _, self._dashboard_info, self._additional_graphs = self.as_report_base()._build_dashboard_info()
+        return self._additional_graphs
 
 
 class Team(BaseModel):
@@ -118,15 +120,18 @@ class Project(BaseModel):
     description: Optional[str] = None
     dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
 
+    team_id: Optional[TeamID]
+
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
 
     _project_manager: "ProjectManager" = PrivateAttr(None)
     _user_id: UserID = PrivateAttr(None)
 
-    def bind(self, project_manager: "ProjectManager", user_id: UserID):
-        self._project_manager = project_manager
-        self._user_id = user_id
+    def bind(self, project_manager: Optional["ProjectManager"], user_id: Optional[UserID]):
+        # todo: better typing (add optional or forbid optional)
+        self._project_manager = project_manager  # type: ignore[assignment]
+        self._user_id = user_id  # type: ignore[assignment]
         return self
 
     @property
@@ -307,7 +312,7 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     @abstractmethod
-    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: TeamPermission):
+    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: TeamPermission) -> bool:
         raise NotImplementedError
 
     @abstractmethod
@@ -427,7 +432,9 @@ class ProjectManager(EvidentlyBaseModel):
         from evidently.ui.dashboards import DashboardConfig
 
         project = self.add_project(
-            Project(name=name, description=description, dashboard=DashboardConfig(name=name, panels=[])),
+            Project(
+                name=name, description=description, dashboard=DashboardConfig(name=name, panels=[]), team_id=team_id
+            ),
             user_id,
             team_id,
             org_id,
@@ -439,6 +446,7 @@ class ProjectManager(EvidentlyBaseModel):
     ) -> Project:
         user = self.auth.get_or_default_user(user_id)
         team = self.auth.get_or_default_team(team_id, user.id)
+        project.team_id = team_id
         return self.metadata.add_project(project, user, team).bind(self, user.id)
 
     def update_project(self, user_id: Optional[UserID], project: Project):

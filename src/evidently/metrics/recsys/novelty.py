@@ -70,7 +70,7 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
         curr_distr_data, curr_value = self.get_miuf(
             data.current_data,
             self.k,
-            data.column_mapping.recommendations_type,
+            data.column_mapping.recom_type,
             user_id,
             item_id,
             prediction_name,
@@ -85,7 +85,7 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
             ref_distr_data, ref_value = self.get_miuf(
                 data.reference_data,
                 self.k,
-                data.column_mapping.recommendations_type,
+                data.column_mapping.recom_type,
                 user_id,
                 item_id,
                 prediction_name,

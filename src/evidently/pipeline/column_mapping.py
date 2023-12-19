@@ -38,7 +38,13 @@ class ColumnMapping:
     embeddings: Optional[Embeddings] = None
     user_id: Optional[str] = "user_id"
     item_id: Optional[str] = "item_id"
-    recommendations_type: Optional[RecomType] = RecomType.SCORE
+    recommendations_type: Union[RecomType, str] = RecomType.SCORE
+
+    @property
+    def recom_type(self) -> RecomType:
+        if isinstance(self.recommendations_type, str):
+            return RecomType(self.recommendations_type)
+        return self.recommendations_type
 
     def is_classification_task(self) -> bool:
         return self.task == TaskType.CLASSIFICATION_TASK

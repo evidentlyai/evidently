@@ -533,7 +533,6 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
-        column_name_escaped = str(column_name).lower().replace(" ", "_")
         # main plot
         bins_for_hist: Optional[Histogram] = metric_result.plot_data.bins_for_hist
         if bins_for_hist is not None:
@@ -598,16 +597,17 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 )
             else:
                 raise ValueError(f"Unsupported column type '{column_type}'")
+            in_time_graph_id = self.graph_id_generator.get_id()
             additional_graphs.append(
                 AdditionalGraphInfo(
-                    column_name_escaped + "_in_time",
+                    in_time_graph_id,
                     {
                         "data": feature_in_time_figure["data"],
                         "layout": feature_in_time_figure["layout"],
                     },
                 )
             )
-            parts.append({"title": column_name + " in time", "id": column_name_escaped + "_in_time"})
+            parts.append({"title": column_name + " in time", "id": in_time_graph_id})
         if metric_result.plot_data.data_by_target is not None:
             target_type = metric_result.plot_data.data_by_target.target_type
             target_name = metric_result.plot_data.data_by_target.target_name
@@ -662,16 +662,17 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     )
 
             if feature_by_target_figure is not None:
+                by_target_graph_id = self.graph_id_generator.get_id()
                 additional_graphs.append(
                     AdditionalGraphInfo(
-                        column_name_escaped + "_by_target",
+                        by_target_graph_id,
                         {
                             "data": feature_by_target_figure["data"],
                             "layout": feature_by_target_figure["layout"],
                         },
                     )
                 )
-                parts.append({"title": column_name + " by target", "id": column_name_escaped + "_by_target"})
+                parts.append({"title": column_name + " by target", "id": by_target_graph_id})
             else:
                 warnings.warn(f"No feature by target figure for {column_name} in {self.__class__.__name__}")
         if column_type == "text":
