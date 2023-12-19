@@ -264,7 +264,7 @@ $$\text{Serendipity} = 1 - \sum_{u \in S} \frac{1}{|S| |H_u|} \sum_{h \in H_u} \
 Where
 * *S* is the set of all users.
 * *H(u)* is the item history of user *u*.
-* *R(u)* Top-K function, where *R(u,k)* gives the top *k recommended items for user *u*.
+* *R(u)* Top-K function, where *R(u,k)* gives the top *k* recommended items for user *u*.
 
 **Range**: The metric is based on Cosine distance, and can take values from 0 to 2. 
 * **0**: only popular, expected relevant recommendations.
@@ -349,9 +349,9 @@ $$\text{Coverage} = \frac{\text{Number of unique items recommended} K}{\text{Tot
 
 ## Gini index 
 
-Coverage reflects the item coverage as a proportion of items that has been recommended by the system.
+Gini index: reflects the inequality in the distribution of recommended items shown to different users, as compared to a perfectly equal distribution. 
 
-**Implementation**: compare the actual distribution of the recommended items to a perfectly equal distribution. 
+**Implementation**:  
 
 $$ Gini(L) = 1 - \frac{1}{|I| - 1} \sum_{k=1}^{|I|} (2k - |I| - 1) p(i_k | L) \$$
 
