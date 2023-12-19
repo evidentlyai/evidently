@@ -144,7 +144,6 @@ class RecCasesTableRenderer(MetricRenderer):
             column_names=curr_user_rec.columns,
             data=curr_user_rec.values,
         )
-        curr.id = self.graph_id_generator.get_id()
         details.with_part("current", info=curr)
         if ref_user_rec is not None:
             ref = table_data(
@@ -152,7 +151,6 @@ class RecCasesTableRenderer(MetricRenderer):
                 column_names=ref_user_rec.columns,
                 data=ref_user_rec.values,
             )
-            ref.id = self.graph_id_generator.get_id()
             details.with_part("reference", info=ref)
 
         fields = {

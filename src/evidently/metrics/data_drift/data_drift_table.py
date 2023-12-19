@@ -161,28 +161,24 @@ class DataDriftTableRenderer(MetricRenderer):
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.characteristic_words],
                 )
-                current_table_words.id = self.graph_id_generator.get_id()
                 details.with_part("current: characteristic words", info=current_table_words)
                 reference_table_words = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.characteristic_words],
                 )
-                reference_table_words.id = self.graph_id_generator.get_id()
                 details.with_part("reference: characteristic words", info=reference_table_words)
                 current_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.current.characteristic_examples],
                 )
-                current_table_examples.id = self.graph_id_generator.get_id()
                 details.with_part("current: characteristic examples", info=current_table_examples)
                 reference_table_examples = table_data(
                     title="",
                     column_names=["", ""],
                     data=[[el, ""] for el in data.reference.characteristic_examples],
                 )
-                reference_table_examples.id = self.graph_id_generator.get_id()
                 details.with_part("reference: characteristic examples", info=reference_table_examples)
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
@@ -232,7 +228,6 @@ class DataDriftTableRenderer(MetricRenderer):
                         line_name="reference (mean)",
                     )
                 scatter = plotly_figure(title="", figure=scatter_fig)
-                scatter.id = self.graph_id_generator.get_id()
                 details.with_part("DATA DRIFT", info=scatter)
             fig = plot_distr_with_perc_button(
                 hist_curr=HistogramData.from_distribution(data.current.distribution),
@@ -246,7 +241,6 @@ class DataDriftTableRenderer(MetricRenderer):
                 to_json=False,
             )
             distribution = plotly_figure(title="", figure=fig)
-            distribution.id = self.graph_id_generator.get_id()
             details.with_part("DATA DISTRIBUTION", info=distribution)
             fields = {
                 "column_name": column_name,

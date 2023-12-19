@@ -17,22 +17,10 @@ if TYPE_CHECKING:
     from evidently.tests.base_test import Test
 
 
-class GraphIdGenerator:
-    def __init__(self, base_id: str):
-        self.base_id = base_id
-        self.counter = 0
-
-    def get_id(self) -> str:
-        val = f"{self.base_id}-{self.counter}"
-        self.counter += 1
-        return val
-
-
 class BaseRenderer:
     """Base class for all renderers"""
 
     color_options: ColorOptions
-    graph_id_generator: GraphIdGenerator
 
     def __init__(self, color_options: Optional[ColorOptions] = None) -> None:
         if color_options is None:
@@ -75,10 +63,8 @@ class TestHtmlInfo:
     details: List[DetailsInfo]
     groups: Dict[str, str]
 
-    graph_id_generator: GraphIdGenerator
-
     def with_details(self, title: str, info: BaseWidgetInfo):
-        self.details.append(DetailsInfo(title, info, id=self.graph_id_generator.get_id()))
+        self.details.append(DetailsInfo(title, info))
         return self
 
 
@@ -97,7 +83,6 @@ class TestRenderer(BaseRenderer):
             status=result.status.value,
             details=[],
             groups=result.groups,
-            graph_id_generator=self.graph_id_generator,
         )
 
     def render_json(
