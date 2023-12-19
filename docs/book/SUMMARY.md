@@ -15,6 +15,7 @@
   * [Classification Performance](presets/class-performance.md)
   * [NoTargetPerformance](presets/no-target-performance.md)
   * [Text Overview](presets/text-overview.md)
+  * [Recommender System](presets/recsys.md)
 * [Examples](examples/examples.md)
 * [Integrations](integrations/README.md)
   * [Evidently integrations](integrations/evidently-integrations.md) 
