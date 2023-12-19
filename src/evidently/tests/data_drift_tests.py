@@ -647,6 +647,9 @@ class TestEmbeddingsDrift(Test):
             group=self.group,
         )
 
+    def groups(self) -> Dict[str, str]:
+        return {}
+
 
 @default_renderer(wrap_type=TestEmbeddingsDrift)
 class TestEmbeddingsDriftRenderer(TestRenderer):
