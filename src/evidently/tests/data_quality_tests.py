@@ -123,6 +123,9 @@ class TestConflictTarget(Test):
 
         return TestResult(name=self.name, description=description, status=test_result, group=self.group)
 
+    def groups(self) -> Dict[str, str]:
+        return {}
+
 
 class TestConflictPrediction(Test):
     group: ClassVar = DATA_QUALITY_GROUP.id
@@ -153,6 +156,9 @@ class TestConflictPrediction(Test):
             description = "Prediction is stable"
 
         return TestResult(name=self.name, description=description, status=test_result, group=self.group)
+
+    def groups(self) -> Dict[str, str]:
+        return {}
 
 
 class BaseDataQualityCorrelationsMetricsValueTest(ConditionFromReferenceMixin[DatasetCorrelation], ABC):
@@ -910,10 +916,12 @@ class TestMeanInNSigmas(Test):
             name=self.name,
             description=description,
             status=test_result,
-            groups={GroupingTypes.ByFeature.id: self.column_name.display_name},
             parameters=parameters,
             group=self.group,
         )
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
 
 
 @default_renderer(wrap_type=TestMeanInNSigmas)
@@ -1032,9 +1040,11 @@ class TestValueRange(Test):
             name=self.name,
             description=description,
             status=test_result,
-            groups={GroupingTypes.ByFeature.id: self.column_name.display_name},
             group=self.group,
         )
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name.display_name}
 
 
 @default_renderer(wrap_type=TestValueRange)
@@ -1257,12 +1267,14 @@ class TestValueList(Test):
             name=self.name,
             description=description,
             status=test_result,
-            groups={GroupingTypes.ByFeature.id: self.column_name},
             group=self.group,
             parameters=ColumnValueListParameters(
                 value=metric_result.current.number_not_in_list, values=self.values, column_name=self.column_name
             ),
         )
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name}
 
 
 class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):

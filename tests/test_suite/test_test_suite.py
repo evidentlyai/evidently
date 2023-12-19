@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -51,6 +52,9 @@ class ErrorTest(Test):
 
     def check(self):
         raise ValueError("Test Exception")
+
+    def groups(self) -> Dict[str, str]:
+        return {}
 
 
 @pytest.fixture
