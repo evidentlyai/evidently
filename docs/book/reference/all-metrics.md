@@ -133,7 +133,7 @@ All metrics are dataset-level.
 
 # Ranking and Recommendations 
 
-All metrics are dataset-level.
+All metrics are dataset-level. Check individual metric descriptions [here](ranking-metrics.md).
 
 Optional shared parameters for multiple metrics:
 * `no_feedback_users: bool = False`. Specifies whether to include the users who did not select any of the items, when computing the quality metric. Default: False.
