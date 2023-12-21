@@ -35,11 +35,17 @@ jobs:
             evidently_ui_python:
               - src/evidently/ui/**
 
-      - name: Run step if UI file(s) change
+      - name: Run step if UI file(s) changed
         if: steps.changed-files.outputs.ui_any_changed == 'true'
         run: |
           echo "One or more ui file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_all_changed_files }}"
+
+      - name: Run step if Playwright file(s) changed
+        if: steps.changed-files.outputs.evidently_ui_python_any_changed == 'true'
+        run: |
+          echo "One or more evidently_ui_python file(s) has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_ui_python_all_changed_files }}"
 
   ui-build:
     name: UI type-check and build with node v${{ matrix.node-version }}
