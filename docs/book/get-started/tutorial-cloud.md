@@ -45,7 +45,7 @@ You can also open the "Reports" and "Test Suites" tabs to see the individual `sn
 
 Now, let's see how you can create something similar for your project!
 
-# Part 2. Add new project
+# Part 2. Add a new project
 
 You will now create a dashboard to monitor data quality and drift, using a toy dataset to imitate a production ML model.
 
