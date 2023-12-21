@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest # windows-latest || macos-latest
     name: Changed-files
     outputs:
-      evidently_any_changed: ${{ steps.changed-files.outputs.evidently_tests_any_changed == true && steps.changed-files.outputs.evidently_python_any_changed == true }}
+      evidently_any_changed: ${{ steps.changed-files.outputs.evidently_tests_any_changed == true || steps.changed-files.outputs.evidently_python_any_changed == true }}
     steps:
       - uses: actions/checkout@v4
         with:
