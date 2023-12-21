@@ -8,11 +8,13 @@ It will take 3 minutes to launch a demo dashboard and 10 minutes to complete the
 
 Evidently Cloud is currently in private beta. Once you get the registration link from us, create your login credentials and confirm the email.
 
-To request a free trial, fill out [this form](https://www.evidentlyai.com/cloud-signup).
+{% hint style="success" %}
+**Can I try Evidently Cloud?** To request a free trial, fill out [this form](https://www.evidentlyai.com/cloud-signup).
+{% endhint %}
 
 <details>
 
-<summary>What can you do with Evidently Cloud?</summary>
+<summary>What can I do with Evidently Cloud?</summary>
 
 In Evidently Cloud, you can:
 
