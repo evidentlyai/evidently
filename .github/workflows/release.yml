@@ -41,10 +41,40 @@ jobs:
       - name: Run Mypy
         run: mypy
 
+  test:
+    # The type of runner that the job will run on
+    name: Test ${{ matrix.os }} with py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        python: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12" ]
+        exclude:
+          - os: macos-latest
+            python: "3.7"
+          - os: windows-latest
+            python: "3.12"
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: 'x64'
+          cache: 'pip'
+      - name: Install package
+        run: pip install -e .[dev,spark,fsspec]
+      - name: Run Tests
+        run: python -m pytest --durations=50
+
+
   publish_to_pypi:
     name: Build and publish Python distributions to PyPI and TestPyPI
     runs-on: [ ubuntu-latest ]
-    needs: [ linter ]
+    needs:
+      - linter
+      - test
     steps:
       - uses: actions/checkout@master
       - name: Set up Python 3.9
@@ -62,7 +92,9 @@ jobs:
 
   build_and_pub_docker:
     runs-on: [ ubuntu-latest ]
-    needs: [ linter ]
+    needs:
+      - linter
+      - test
     steps:
       - name: Login to docker.io
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
