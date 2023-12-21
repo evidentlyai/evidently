@@ -26,7 +26,7 @@ concurrency:
 jobs:
   changed_files:
     runs-on: ubuntu-latest # windows-latest || macos-latest
-    name: Changed-files
+    name: 👀 Changed Files
     outputs:
       evidently_any_changed: ${{ steps.changed-files.outputs.evidently_tests_any_changed == 'true' || steps.changed-files.outputs.evidently_python_any_changed == 'true' }}
     steps:
