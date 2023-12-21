@@ -6,7 +6,7 @@ It will take 3 minutes to launch a demo dashboard and 10 minutes to complete the
 
 ## 1. Create an account
 
-Evidently Cloud is currently in private beta. Once you get the registration link from us, create your login credentials and confirm the email.
+Evidently Cloud is in private beta. Once you get the registration link from us, create your account and confirm the email.
 
 {% hint style="success" %}
 **Can I try Evidently Cloud?** To request a free trial, fill out [this form](https://www.evidentlyai.com/cloud-signup).
@@ -20,7 +20,7 @@ In Evidently Cloud, you can:
 
 * Monitor data quality, feature, and prediction drift over time.
 * Track ML model quality for classification, regression, ranking, and recommendations. This includes assessing models in champion/challenger and shadow mode.
-* Keep an eye on text data (e.g., sentiment, drift, trigger words) for NLP and LLM models by tracking inputs and output properties.
+* Monitor changes in text data (e.g., sentiment, drift, trigger words) for NLP and LLM models.
 * Monitor embeddings drift.
 * Track the results of test suites that include multiple evaluations.
 
@@ -37,7 +37,7 @@ After you log in, you will see an empty dashboard. Click on "Generate Demo Proje
 
 ![](../.gitbook/assets/cloud/generate_demo_project.png)
 
-It will take a few moments to generate sample data and load the project. You can then see a sample dashboard wih different tabs and panels that show data quality, data drift and model quality for a regression model. You can customize your choice of panels - this is just an example.
+It will take a few moments to load the data and populate the project. You can then see a sample dashboard wih different tabs and panels that show data quality, data drift and model quality for a regression model. You can customize your choice of panels - this is just an example.
 
 ![](../.gitbook/assets/cloud/demo_dashboard.gif)
 
@@ -148,7 +148,7 @@ Now, let's start monitoring!
 
 **Get the API token**. To send snapshots to Evidently Cloud, you need an access token. Click your username in the top right corner of the web app, select "personal token," and click "generate token." Copy and paste it into a temporary file as it won't be visible once you leave the page.
 
-Connect to the Evidently Cloud workspace:
+To connect to the Evidently Cloud workspace, run:
 
 ```python
 ws = CloudWorkspace(
@@ -163,7 +163,7 @@ project.description = "My your project description"
 ```
 
 {% hint style="info" %}
-**What is a Project?** A Project refers to any machine learning model, dataset, and data stream you wish to monitor. You can also group multiple ML models within a single Project, using tags to distinguish between them. For example, you can log data for shadow and production models or multiple models of the same type (e.g., models for different locations) together.
+**What is a Project?** A Project is any machine learning model, dataset, and data stream you wish to monitor. You can also group multiple ML models in a single Project, using tags to distinguish between them. For example, you can log data for shadow and production models or multiple models of the same type (e.g., models for different locations) together.
 {% endhint %}
 
 <details>
@@ -181,7 +181,7 @@ To add project to a team, reference the `team_id`:
 
 ## 4. Send snapshots
 
-To capture data and model metrics in JSON `snapshots`, you must create a Report and/or Test Suite object and list the selected metrics or tests. You can  pass optional parameters, such as a specific data drift detection method.
+To capture data and model metrics in JSON `snapshots`, you must create a Report or a Test Suite object and list the selected metrics or tests. You can pass optional parameters, such as a chosen data drift detection method.
 
 {% hint style="info" %}
 **New to Evidently?** Check out this [ Quickstart for Tests and Reports](https://docs.evidentlyai.com/get-started/tutorial). A `snapshot` is simply a "JSON version" of a Report or Test Suite. You can preview any snapshot using the open-source Evidently Python library. 
@@ -217,7 +217,7 @@ Once you run this script, you will compute 10 snapshots and send them to the Evi
 
 <summary>What happens in this code?</summary>
 
-* You create a `Report` with two preset metric combinations. The **[Data Quality](https://docs.evidentlyai.com/presets/data-quality)** preset includes summary statistics like nulls, min-max, etc. The **[Data Drift](https://docs.evidentlyai.com/presets/data-drift)** preset compares new data to reference, using the PSI test ([optional parameter](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests)).
+* You create a `Report` with two preset metric combinations. The **[Data Quality](https://docs.evidentlyai.com/presets/data-quality)** preset includes summary statistics like nulls, min-max, etc. The **[Data Drift](https://docs.evidentlyai.com/presets/data-drift)** preset compares new data to reference, using the Population Stability Index (PSI) test ([optional parameter](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests)).
 * You add a **timestamp** to each `Report`: `datetime.now` for the first data batch, and the next day's date for subsequent batches.
 * You compute each `Report` changing the `current_data` and keeping the `reference_data` static. For current data, you pass 100 new rows for `i` days to simulate batch inference.
 * The `add_report` method computes the Report in the JSON snapshot format and sends it to the workspace `ws` (which is Evidently Cloud).
@@ -228,8 +228,8 @@ Once you run this script, you will compute 10 snapshots and send them to the Evi
 
 <summary>How to modify it for your data later?</summary>
 
-* **Run `Reports` sequentially**. In production, simply pass the `current` data for each run. This will automatically assign the `datetime.now` timestamp (or you can set a custom one). Learn more about [timestamps](https://docs.evidentlyai.com/user-guide/monitoring/snapshots).
-* **Choose evaluations**. Pick any available checks to include in Report - data quality, integrity, drift (tabular, text, embeddings), or model quality (classification, regression, ranking, recommendations). Explore available [Presets](https://docs.evidentlyai.com/presets), [Metrics](https://docs.evidentlyai.com/reference/all-metrics), and [Tests](https://docs.evidentlyai.com/reference/all-tests).
+* **Run `Reports` sequentially**. In production, simply pass the `current` data for each run. Evidently will automatically assign the `datetime.now` timestamp (or you can set a custom one). Learn more about [timestamps](https://docs.evidentlyai.com/user-guide/monitoring/snapshots).
+* **Choose evaluations**. Pick any available Metrics to include in Report - data quality, integrity, drift (tabular, text, embeddings), or model quality (classification, regression, ranking, recommendations). Explore available [Presets](https://docs.evidentlyai.com/presets), [Metrics](https://docs.evidentlyai.com/reference/all-metrics), and [Tests](https://docs.evidentlyai.com/reference/all-tests).
 * **Use Column Mapping**. You might need a [ColumnMapping object](https://docs.evidentlyai.com/user-guide/input-data/column-mapping) to define data structure: like pointing to columns with encoded categorical features, prediction or target column, etc.
 * **Include Tags**: Optionally, add metadata or tags to your snapshot. For example, you can indicate whether a Report refers to a shadow or production model. Learn more about [tags](https://docs.evidentlyai.com/user-guide/monitoring/snapshots).
 
@@ -256,7 +256,7 @@ To start, we will keep it simple and add three panels to a single "Summary" tab.
 **Coming soon**: Adding panels from the web app, and new templates.
 {% endhint %}
 
-Use `add_panel` method to add panels to a dashboard. You can specify the metric name, legend, plot type, tab, etc. After implementing the changes, save the configuration with `project.save()`. Here is an example:
+Use `add_panel` method to add panels to a dashboard. You can specify the panel name, legend, plot type, tab, etc. After implementing the changes, save the configuration with `project.save()`. Here is an example:
 
 ```python
 project.dashboard.add_panel(
@@ -324,8 +324,8 @@ ADD GIF
 ## 8. (Optional) Monitor Test results
 
 Earlier, you used a `Report` to compute metrics. Another option is a `Test Suite`. Each Test checks a specific condition and returns:
-* A metric value (e.g., share of nulls).
-* The conditions (e.g., should be less than 10%).
+* The metric value (e.g., share of nulls).
+* The condition (e.g., should be less than 10%).
 * The result (e.g., "pass" or "fail").
 You can perform column- or dataset-level tests.
 
@@ -334,10 +334,10 @@ You can perform column- or dataset-level tests.
 {% endhint %}
 
 Let's generate a Test Suite that includes the following:
-* **A Data Drift preset**. Each column drift check will be a Test in a suite. You do not select a method this time, so the [defaults](https://docs.evidentlyai.com/reference/data-drift-algorithm) - Jensen Shennen divergence and Wasserstein distance - will apply. However, you set a custom drift detection threshold for both at 0.3. If the values of distance or divergence are above 0.3, column drift is detected.
-* **Several quality tests**. You can pick any individual tests available in the library and set test conditions using parameters like `eq` (equal), `lte` (less than or equal), etc. If no condition is set, Evidently will generate them based on the reference data and heuristics. In the code below, we pick a few tests related to duplicates, constants, and missing values.
+* **A Data Drift preset**. Each column drift check will be a Test in a suite. You do not select a method this time, so the [defaults](https://docs.evidentlyai.com/reference/data-drift-algorithm) - Jensen Shennen divergence and Wasserstein distance - will apply. However, you set a custom drift detection threshold at 0.3. If the values of distance or divergence are above 0.3, column drift is detected.
+* **Several quality tests**. You can pick any individual Tests available in the library and set conditions using parameters like `eq` (equal), `lte` (less than or equal), etc. If no condition is set, Evidently will generate them based on the reference data and heuristics. In the code below, we pick a few Tests related to duplicates, constants, and missing values.
 
-Here is the script that follows the same logic as above to imitate batch inference:
+Here is the script that follows the same logic to imitate batch inference:
 
 ```python
 def create_tests(i: int):
@@ -357,7 +357,7 @@ def create_tests(i: int):
     return drift_tests
 ```
 
-To send Test Suites to Evidently cloud, use `add_test_suite` method.
+To send Test Suites to Evidently cloud, use the `add_test_suite` method.
 
 ```python
 for i in range(0, 10):
@@ -365,7 +365,7 @@ for i in range(0, 10):
         ws.add_test_suite(project.id, test_suite)
 ```
 
-To visualize the results, add a new dashboard tab ("Data tests") and a couple of test-specific monitoring panels. One will display all column drift checks over time, and another will group the selected data quality checks (missing values, empty rows, columns, duplicates, constant columns).
+To visualize the results, add a new dashboard tab ("Data tests") and a couple of Test-specific monitoring panels. One will display all column drift checks over time, and another will group the selected data quality checks (missing values, empty rows, columns, duplicates, constant columns).
 
 ```python
 project.dashboard.add_panel(
