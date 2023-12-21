@@ -34,8 +34,6 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 # Test Presets
 
-<details>
-
 Default conditions for each Test in the Preset match the Test's defaults. You can see them in the tables below. The listed Preset parameters apply to the relevant individual Tests inside the Preset.
 
 | Preset name and Description | Parameters |
