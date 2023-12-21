@@ -16,7 +16,7 @@ concurrency:
 jobs:
   changed_files:
     runs-on: ubuntu-latest # windows-latest || macos-latest
-    name: 👀 Changed Evidently UI Files
+    name: 👀 List Changed UI Files
     outputs:
       ui_any_changed: ${{ steps.changed-files.outputs.ui_any_changed == 'true' }}
     steps:
