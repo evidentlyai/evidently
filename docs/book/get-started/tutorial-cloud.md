@@ -47,7 +47,7 @@ Now, let's see how you can create something similar for your project!
 
 # Part 2. Add new project
 
-You will now create a dashboard to monitor data quality and drift. You will use a toy dataset to imitate a production ML model.
+You will now create a dashboard to monitor data quality and drift, using a toy dataset to imitate a production ML model.
 
 You will go through the following steps:
 * Prepare the tabular dataset.
