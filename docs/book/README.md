@@ -18,12 +18,12 @@ Want an ML monitoring dashboard to track metrics over time?
 
 Self-host an ML monitoring dashboard: 
 {% content-ref url="get-started/tutorial-monitoring.md" %}
-[Get started tutorial](get-started/tutorial-cloud.md). 
+[Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
 
 Get started with Evidently Cloud: 
-{% content-ref url="get-started/tutorial-monitoring.md" %}
-[Get started tutorial](get-started/tutorial-monitoring.md). 
+{% content-ref url="get-started/tutorial-cloud.md" %}
+[Get started tutorial](get-started/tutorial-cloud.md). 
 {% endcontent-ref %}
 
 You can explore more code [examples](examples/examples.md). 
