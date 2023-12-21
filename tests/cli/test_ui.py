@@ -6,9 +6,6 @@ from evidently.cli import app
 from evidently.ui.demo_projects import DEMO_PROJECTS
 
 
-# trigger CI due to this file was changed
-
-
 @pytest.fixture()
 def ui_command():
     command = [c for c in app.registered_commands if c.name == "ui"][0]
