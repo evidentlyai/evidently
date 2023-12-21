@@ -26,6 +26,7 @@ You can use the menu on the right to navigate the sections. We organize individu
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
  
 **Test visualizations**. Each test also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../examples/examples.md).
+
 </details>
 
 {% hint style="info" %} 
