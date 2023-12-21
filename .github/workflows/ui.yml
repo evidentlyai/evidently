@@ -19,6 +19,7 @@ jobs:
     name: 👀 List Changed UI Files
     outputs:
       ui_any_changed: ${{ steps.changed-files.outputs.ui_any_changed == 'true' }}
+      evidently_ui_python_any_changed: ${{ steps.changed-files.outputs.evidently_ui_python_any_changed == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +32,8 @@ jobs:
           files_yaml: |
             ui:
               - ui/**
+            evidently_ui_python:
+              - src/evidently/ui/**
 
       - name: Run step if UI file(s) change
         if: steps.changed-files.outputs.ui_any_changed == 'true'
@@ -88,7 +91,8 @@ jobs:
   ui-test:
     name: Playwright tests for Service
     runs-on: ubuntu-20.04
-    if: github.event.pull_request.draft == false
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_ui_python_any_changed == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
