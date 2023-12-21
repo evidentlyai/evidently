@@ -28,11 +28,6 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 # Metric Presets
 
-<details>
-
-<summary>Metric Preset composition</summary>
-
-
 **Defaults**: each Metric in a Preset uses the default parameters for this Metric. You can see them in the tables below. 
 
 | Preset name and Description | Parameters |
@@ -46,8 +41,6 @@ If regression:<ul><li>`ColumnValuePlot(column_name=target, prediction)`</li></ul
  | **Optional**:<ul><li>`columns`</li><li>`probas_threshold`</li><li>`k`</li></ul> |
 |**`TextOverviewPreset(column_name=”text”)`** <br>Evaluates data drift and descriptive statistics for text data. <br><br>Input features (text) are required.<br><br>**Contents**:<ul><li>`ColumnSummaryMetric()`</li><li>`TextDescriptorsDistribution()`</li><li>`TextDescriptorsCorrelation()`</li></ul>If reference data is provided, also:<ul><li> `ColumnDriftMetric()`</li><li>`TextDescriptorsDriftMetric()`</li></ul>| **Required**:<br>`column_name` | 
 |**`RecsysPreset`** <br>Evaluates the quality of the recommender system. <br><br>Recommendations and true relevance scores are required. For some metrics, training data and item features are required. <br><br>**Contents**:<ul><li>`PrecisionTopKMetric()`</li><li>`RecallTopKMetric()`</li><li>`FBetaTopKMetric()`</li><li>`MAPKMetric()`</li><li>`NDCGKMetric()`</li><li>`MRRKMetric()`</li><li>`HitRateKMetric()`</li><li>`PersonalizationMetric()`</li><li>`PopularityBias()` </li><li>`RecCasesTable()`</li><li>`ScoreDistribution()`</li><li>`DiversityMetric()`</li><li>`SerendipityMetric()`</li><li>`NoveltyMetric()`</li><li>`ItemBiasMetric()` (pass column as a parameter)</li><li>`UserBiasMetric()`(pass column as a parameter)</li></ul>| **Required**:<br>`k` <br> **Optional**:<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li><li>`normalize_arp: bool`</li><li>`user_ids: Optional[List[Union[int, str]]]`</li><li>`display_features: Optional[List[str]]`</li><li>`item_features: Optional[List[str]]`</li><li>`user_bias_columns: Optional[List[str]]`</li><li>`item_bias_columns: Optional[List[str]]`</li></ul>
-
-</details>
 
 # Data Integrity
 
