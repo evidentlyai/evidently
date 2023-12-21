@@ -6,7 +6,7 @@ from evidently.cli import app
 from evidently.ui.demo_projects import DEMO_PROJECTS
 
 
-# trigger tests due to this file was changed
+# trigger CI due to this file was changed
 
 
 @pytest.fixture()

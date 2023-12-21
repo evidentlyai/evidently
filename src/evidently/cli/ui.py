@@ -7,6 +7,9 @@ from typer import echo
 from evidently.cli.main import app
 
 
+# trigger CI due to this file was changed
+
+
 @app.command("ui")
 def ui(
     host: str = Option("0.0.0.0", help="Service host"),
