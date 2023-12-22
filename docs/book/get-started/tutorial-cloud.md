@@ -319,7 +319,7 @@ project.save()
 
 Return to the Evidently Cloud web app to view the dashboards you created. Refresh the page if necessary.
 
-![](../.gitbook/assets/cloud/toy_metric_dashboard-min.png)
+![](../.gitbook/assets/cloud/toy_metrics_dashboard-min.png)
 
 ## 8. (Optional) Monitor Test results
 
