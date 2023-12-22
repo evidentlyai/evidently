@@ -1,6 +1,6 @@
 In this tutorial, you will monitor a toy ML model using Evidently Cloud. 
 
-It will take 3 minutes to launch a demo dashboard and 10 minutes to complete the tutorial for a new dataset. You must have basic knowledge of Python. 
+It will take 1 minute to launch a demo dashboard and 10 minutes to complete the tutorial for a new dataset. You must have basic knowledge of Python to work with Evidently Cloud using the API. 
 
 # Part 1. Demo dashboard
 
@@ -37,7 +37,9 @@ After you log in, you will see an empty dashboard. Click on "Generate Demo Proje
 
 ![](../.gitbook/assets/cloud/generate_demo_project.png)
 
-It will take a few moments to load the data and populate the project. You can then see a sample dashboard wih different tabs and panels that show data quality, data drift and model quality for a regression model. You can customize your choice of panels - this is just an example.
+It will take a few moments to load the data and populate the project. You can then see a sample dashboard wih different tabs and panels that show data quality, data drift and model quality for a regression model that forecasts bike demand.
+
+You can customize your choice of panels - this is just an example.
 
 ![](../.gitbook/assets/cloud/demo_dashboard.gif)
 
@@ -239,7 +241,7 @@ Once you run this script, you will compute 10 snapshots and send them to the Evi
 
 You can now view the snapshots in the Evidently Cloud web app! Navigate to the "Reports" section in the UI. You can click "view" to see each daily Report. You can even download them as an HTML or JSON.
 
-ADD GIF
+![](../.gitbook/assets/cloud/view-reports-min.gif)
 
 However, each such Report is static. To see trends over time, you need a monitoring dashboard!
 
@@ -318,6 +320,8 @@ project.save()
 ## 7. View the dashboard
 
 Return to the Evidently Cloud web app to view the dashboards you created. Refresh the page if necessary.
+
+You will now see a set of panels that show metric values over time (each pulled from a corresponding snapshot).
 
 ![](../.gitbook/assets/cloud/toy_metrics_dashboard-min.png)
 
@@ -401,9 +405,13 @@ project.dashboard.add_panel(
 project.save()
 ```
 
-You can now view the results in the UI.
+You can now view the dashboards with test results over time in the UI.
 
 ![](../.gitbook/assets/cloud/toy_test_dashboard-min.png)
+
+You can also easily explore individual failed Tests in a Test Suite:
+
+![](../.gitbook/assets/cloud/view-reports-min.gif)
 
 <details>
 
