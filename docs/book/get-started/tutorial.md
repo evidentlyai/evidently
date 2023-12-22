@@ -1,8 +1,8 @@
-In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift** on tabular data. You will run batch checks on a toy dataset and generate visual Reports and Test Suites.
+In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift** on tabular data. You will run batch checks on a toy dataset and generate visual Reports and Test Suites in your Python environment.
 
-We recommend going through this tutorial once to understand the basic functionality. You can then explore more advanced workflows, like adjusting test parameters, adding custom metrics or hosting an [ML monitoring dashboard](tutorial-monitoring.md) to track the model or data quality over time.
+We recommend going through this tutorial once to understand the basic functionality. Once you complete it, you will be ready to use all Evidently evaluations, including checks for ML model quality or text data.  
 
-After going through this tutorial, you will be ready to use all Evidently evaluations, including checks for model quality or text data.  
+You can run the Evidently Reports and Test Suites separately or use them as a logging layer for Evidently ML Monitoring. You can later self-host an [ML monitoring dashboard](tutorial-monitoring.md) or send the Reports and Test Suite to [Evidently Cloud platform](tutorial-cloud.md) to monitor metrics over time.  
 
 To complete the tutorial, you need basic knowledge of Python. You should be able to complete it in **about 15 minutes**.
 
