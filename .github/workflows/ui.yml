@@ -19,7 +19,7 @@ jobs:
     name: 👀 List Changed UI Files
     outputs:
       ui_any_changed: ${{ steps.changed-files.outputs.ui_any_changed == 'true' }}
-      evidently_ui_python_any_changed: ${{ steps.changed-files.outputs.evidently_ui_python_any_changed == 'true' }}
+      evidently_python_any_changed: ${{ steps.changed-files.outputs.evidently_python_any_changed == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,8 +32,8 @@ jobs:
           files_yaml: |
             ui:
               - ui/**
-            evidently_ui_python:
-              - src/evidently/ui/**
+            evidently_python:
+              - src/evidently/**
 
       - name: Run step if UI file(s) changed
         if: steps.changed-files.outputs.ui_any_changed == 'true'
@@ -42,10 +42,10 @@ jobs:
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_all_changed_files }}"
 
       - name: Run step if Playwright file(s) changed
-        if: steps.changed-files.outputs.evidently_ui_python_any_changed == 'true'
+        if: steps.changed-files.outputs.evidently_python_any_changed == 'true'
         run: |
-          echo "One or more evidently_ui_python file(s) has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_ui_python_all_changed_files }}"
+          echo "One or more evidently_python file(s) has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_files }}"
 
   ui-build:
     name: UI type-check and build with node v${{ matrix.node-version }}
@@ -98,7 +98,7 @@ jobs:
     name: Playwright tests for Service
     runs-on: ubuntu-20.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_ui_python_any_changed == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_changed == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
