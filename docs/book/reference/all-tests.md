@@ -26,6 +26,7 @@ You can use the menu on the right to navigate the sections. We organize individu
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
  
 **Test visualizations**. Each test also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../examples/examples.md).
+
 </details>
 
 {% hint style="info" %} 
@@ -33,10 +34,6 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 {% endhint %}
 
 # Test Presets
-
-<details>
-
-<summary>Test Preset Composition</summary>
 
 Default conditions for each Test in the Preset match the Test's defaults. You can see them in the tables below. The listed Preset parameters apply to the relevant individual Tests inside the Preset.
 
@@ -51,8 +48,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | **`BinaryClassificationTopKTestPreset`**<br> <ul><li>`TestAccuracyScore(k=k)`</li><li>`TestPrecisionScore(k=k)`</li><li>`TestRecallScore(k=k)`</li><li>`TestF1Score(k=k)`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestRocAuc()`</li><li>`TestLogLoss()`</li></ul> |**Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
 | **`BinaryClassificationTestPreset`** <br><ul><li>`TestColumnDrift(column_name=target)`</li><li>`TestPrecisionScore()`</li><li>`TestRecallScore()`</li><li>`TestF1Score()`</li><li>`TestAccuracyScore()`</li></ul>If probabilistic classification, also:<ul><li>`TestRocAuc()`</li></ul> | **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)|
 | **`RecsysTestPreset`** <br><ul><li>`TestPrecisionTopK()`</li><li>`TestRecallTopK()`</li><li>`TestMAPK()`</li><li>`TestNDCGK()`</li><li>`TestHitRateK()`</li></ul> | **Required:**<ul><li>`k`</li></ul> **Optional:**<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li></ul>
-
-</details>
 
 # Data Integrity
 

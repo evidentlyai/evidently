@@ -9,19 +9,26 @@ Have only 1 minute? Check out this example:
 ["Hello world" example](get-started/hello-world.md). 
 {% endcontent-ref %}
 
-New to Evidently? This tutorial shows how to run ad hoc data and model checks. (15 min).
+New to Evidently? Learn how to run data and model checks. (15 min).
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Want a dashboard to track metrics over time? (2 min to launch a demo, 15 to complete).
+Want an ML monitoring dashboard to track metrics over time? 
+
+Self-host an ML monitoring dashboard: 
 {% content-ref url="get-started/tutorial-monitoring.md" %}
 [Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
 
-You can explore mode code [examples](examples/examples.md). 
+Get started with Evidently Cloud: 
+{% content-ref url="get-started/tutorial-cloud.md" %}
+[Get started tutorial](get-started/tutorial-cloud.md). 
+{% endcontent-ref %}
 
-Don't want to self-host? Sign up for the [Evidently Cloud Waitlist](https://www.evidentlyai.com/product/cloud)!
+You can explore more code [examples](examples/examples.md). 
+
+Don't want to self-host? Sign up for the [Evidently Cloud](https://www.evidentlyai.com/cloud-signup)!
 
 # How it works 
 
