@@ -64,7 +64,7 @@ This shows a simple batch workflow. You can later explore more advanced workflow
 
 <details>
 
-<summary>How does the data collection work?e</summary>
+<summary>How does the data collection work?</summary>
 
 Evidently Cloud does not store raw data or model inferences. Instead, you will use the Evidently open-source library to compute JSON `snapshots` locally and send them to the Evidently Cloud.
 
@@ -444,28 +444,28 @@ You can continue using Evidently Cloud API to make changes to an existing Projec
 **Connect to an existing Project**. Use the `get_project` method. You can copy the Project ID directly from the UI: it appears above the monitoring dashboard.
 
 ```python
-# project = ws.get_project("PROJECT_ID")
+project = ws.get_project("PROJECT_ID")
 ```
 
 **Send new snapshots**. For example, to add a new report with data summaries for the `cur` data batch (without reference), with an automatically assigned current timestamp:
 
 ```python
-# data_report = Report(
-#        metrics=[
-#            DataQualityPreset(),
-#        ],
-#     )
-# data_report.run(reference_data=None, current_data=cur)
-# ws.add_report(project.id, data_report)
+data_report = Report(
+       metrics=[
+           DataQualityPreset(),
+       ],
+    )
+data_report.run(reference_data=None, current_data=cur)
+ws.add_report(project.id, data_report)
 ```
 
 **Add new monitoring panels and tabs**. Use the `add_panel` method as shown above, and run `project.save()` to update the config after you make the changes. New panels and tabs will be added to existing ones.
 
-**Clean up panels**. To delete the existing panels (**not** the snapshots):
+**Clean up panels**. To delete the existing monitoring panels (**not** the snapshots):
 
 ```python
-# project.dashboard.panels = []
-# project.save()
+project.dashboard.panels = []
+project.save()
 ```
 
 **[DANGER]. Delete the project.** To delete the project and all the data.
