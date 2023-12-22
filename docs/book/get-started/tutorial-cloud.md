@@ -319,7 +319,7 @@ project.save()
 
 Return to the Evidently Cloud web app to view the dashboards you created. Refresh the page if necessary.
 
-ADD GIF
+![](../.gitbook/assets/cloud/toy_metric_dashboard-min.png)
 
 ## 8. (Optional) Monitor Test results
 
@@ -403,7 +403,7 @@ project.save()
 
 You can now view the results in the UI.
 
-ADD GIF
+![](../.gitbook/assets/cloud/toy_test_dashboard-min.png)
 
 <details>
 
