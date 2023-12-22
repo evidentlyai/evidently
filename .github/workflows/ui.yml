@@ -34,7 +34,11 @@ jobs:
               - ui/**
             evidently_python:
               - src/evidently/**
-
+              - requirements.dev.txt
+              - requirements.min.txt
+              - setup.py
+              - setup.cfg
+              - setupbase.py
       - name: Run step if UI file(s) changed
         if: steps.changed-files.outputs.ui_any_changed == 'true'
         run: |
