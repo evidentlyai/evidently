@@ -4,31 +4,23 @@ It helps evaluate, test, and monitor data and ML models from validation to produ
 
 # Quick Start
 
-Have only 1 minute? Check out this example:
-{% content-ref url="get-started/hello-world.md" %}
-["Hello world" example](get-started/hello-world.md). 
-{% endcontent-ref %}
+New to Evidently? Check out the ["Hello world"](get-started/hello-world.md) example (1 minute) or go through the Tutorial (15 minutes).
 
-New to Evidently? Learn how to run data and model checks. (15 min).
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Want an ML monitoring dashboard to track metrics over time? 
-
-Self-host an ML monitoring dashboard: 
+Want an ML monitoring dashboard to track metrics over time? You can self-host an ML monitoring dashboard: 
 {% content-ref url="get-started/tutorial-monitoring.md" %}
 [Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
 
-Get started with Evidently Cloud: 
+Or Get Started with [Evidently Cloud](https://www.evidentlyai.com/cloud-signup): 
 {% content-ref url="get-started/tutorial-cloud.md" %}
 [Get started tutorial](get-started/tutorial-cloud.md). 
 {% endcontent-ref %}
 
 You can explore more code [examples](examples/examples.md). 
-
-Don't want to self-host? Sign up for the [Evidently Cloud](https://www.evidentlyai.com/cloud-signup)!
 
 # How it works 
 
