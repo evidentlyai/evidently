@@ -43,6 +43,14 @@ jobs:
               - src/evidently/**
               - '!src/evidently/ui/ui/**'
               - '!src/evidently/nbextension/**'
+              - example_test.py
+              - examples/**.ipynb
+              - requirements.dev.txt
+              - requirements.min.txt
+              - setup.py
+              - setup.cfg
+              - setupbase.py
+              - pylintrc
             evidently_tests:
               - tests/**
 
