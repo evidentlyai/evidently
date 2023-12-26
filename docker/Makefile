@@ -1,3 +1,4 @@
+SHELL = sh -xv
 default: build
 
 # Build Docker image
