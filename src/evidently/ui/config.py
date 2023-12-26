@@ -76,6 +76,7 @@ class Configuration(BaseModel):
     def read(cls, path: str) -> Optional["Configuration"]:
         return read_configuration(path)
 
+
 def read_configuration(path: str) -> Optional[Configuration]:
     if not os.path.exists(path):
         return None
