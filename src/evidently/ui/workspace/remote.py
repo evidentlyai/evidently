@@ -5,6 +5,7 @@ import json
 import urllib.parse
 import uuid
 from json import JSONDecodeError
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
@@ -49,10 +50,11 @@ class RemoteMetadataStorage(MetadataStorage):
             query_params: Optional[dict] = None,
             body: Optional[dict] = None,
             response_model=None,
-            cookies=None
+            cookies=None,
+            headers: Dict[str, str] = None
     ):
         # todo: better encoding
-        headers = {}
+        headers = headers or {}
         if self.secret is not None:
             headers[SECRET_HEADER_NAME] = self.secret
         data = None
