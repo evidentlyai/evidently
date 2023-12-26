@@ -19,7 +19,7 @@ class TelemetryConfig(BaseModel):
     tool_name: str = "evidently"
     service_name: str = "service"
     token: str = "s2s.5xmxpip2ax4ut5rrihfjhb.uqcoh71nviknmzp77ev6rd"
-    enabled: bool = False
+    enabled: bool = True
 
 
 class ServiceConfig(BaseModel):
@@ -71,6 +71,10 @@ class Configuration(BaseModel):
     telemetry: TelemetryConfig = Field(default_factory=TelemetryConfig)
     storage: StorageConfig = Field(default_factory=_default_storage)
     security: SecurityConfig = NoSecurityConfig()
+
+    @classmethod
+    def read(cls, path: str) -> Optional["Configuration"]:
+        return read_configuration(path)
 
 
 def read_configuration(path: str) -> Optional[Configuration]:
