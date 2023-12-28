@@ -40,7 +40,7 @@ $$\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{To
 
 **Interpretation**: a higher precision at K indicates that a larger proportion of the top results are relevant, which is generally desirable.
 
-## F Beta
+# F Beta
 
 ![](../.gitbook/assets/reports/metric_fbeta-min.png)
 
@@ -311,7 +311,7 @@ The resulting metric reflects the average share of unique recommendations in eac
 
 The recommendation popularity bias is a tendency of favoring a few popular items. This metric includes several measurements: ARP, Coverage and Gini index.
 
-## Average Recommendation Popularity (ARP)
+## 1. Average Recommendation Popularity (ARP)
 
 ARP reflects the average popularity of the items recommended to the users. 
 
@@ -335,7 +335,7 @@ Where:
 
 Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Malthouse, E. (2021). User-centered Evaluation of Popularity Bias in Recommender Systems](https://dl.acm.org/doi/fullHtml/10.1145/3450613.3456821)
 
-## Coverage
+## 2. Coverage
 
 Coverage reflects the item coverage as a proportion of items that has been recommended by the system.
 
@@ -347,7 +347,7 @@ $$\text{Coverage} = \frac{\text{Number of unique items recommended} K}{\text{Tot
 
 **Interpretation**: the higher the value (usually preferable), the larger the share of items represented in the recommendations. Popularity-based recommenders that only recommend a limited number of popular items will have a low coverage.
 
-## Gini index 
+## 3. Gini index 
 
 Gini index: reflects the inequality in the distribution of recommended items shown to different users, as compared to a perfectly equal distribution. 
 
@@ -372,12 +372,12 @@ Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Ma
 
 **Evidently Metric**: `RecCasesTable`
 
-This visual Metric shows the list of recommendations for the specified user IDs ('user_ids: List'). If you do not pass the list of IDs, Evidently will choose 5 random ones.
+This visual Metric shows the list of recommendations for the specified user IDs (`user_ids: List`). If you do not pass the list of IDs, Evidently will choose 5 random ones.
 
 You can optionally specify:
-* The number of training items in the user history to display ('train_item_num')
-* Whether you’d like to additionally include the values of specific features in the table ('display_features: List')
-* The number of items recommended for user to display ('item_num')
+* The number of training items in the user history to display (`train_item_num`)
+* Whether you’d like to additionally include the values of specific features in the table (`display_features: List`)
+* The number of items recommended for user to display (`item_num`)
 
 # Score Distribution (Entropy)
 
@@ -404,8 +404,8 @@ This visual metric shows the distribution of recommendations by a specified cate
 This helps compare the model recommendations against what could have been a random classifier that follows the observed distribution of items by a chosen characteristic.
 
 The visualization shows:
-* The distribution of items in the training set for the defined column_name (with duplicates dropped). This represents the item catalog by this dimension. 
-* The distribution of the recommended items for the defined column_name in the current and reference (if available) datasets. 
+* The distribution of items in the training set for the defined `column_name` (with duplicates dropped). This represents the item catalog by this dimension. 
+* The distribution of the recommended items for the defined `column_name` in the current and reference (if available) datasets. 
 
 This visualization helps see the patterns in the model recommendations. In a simplified example, you might observe that the training data contains 3x comedies compared to dramas, but the model recommends dramas 10x more often. 
 
