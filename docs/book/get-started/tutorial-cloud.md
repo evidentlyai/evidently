@@ -89,9 +89,9 @@ You can optionally install Evidently from Conda:
 conda install -c conda-forge evidently
 ```
 
-You will need to import several components to complete the tutorial.
+You must import several components to complete the tutorial.
 
-Imports required to prepare the toy data.
+Import the components to prepare the toy data:
 
 ```python
 import pandas as pd
@@ -114,7 +114,7 @@ from evidently.test_preset import DataDriftTestPreset
 from evidently.tests.base_test import TestResult, TestStatus
 ```
 
-Import the components to create monitoring panels. You only need this to design the monitoring panels via API, for example, during the initial setup.
+Import the components to create the monitoring panels. You only need this to design the monitoring panels via API, for example, during the initial setup.
 
 ```python
 from evidently.ui.dashboards import DashboardPanelPlot
@@ -141,7 +141,7 @@ adult_prod = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"]
 ```
 
 {% hint style="info" %}
-**What is a reference dataset?** You always need a `reference` to compute data drift. For example, you can use data from model validation phase or past production batch. It will serve as a baseline for distribution comparison. For metrics like descriptive statistics, the reference dataset is optional. You only need to pass the `current` data. However, you can optionally use `reference` to generate test conditions. For example, it can help automatically derive min-max ranges for features in out-of-range data quality tests.
+**What is a reference dataset?** You always need a `reference` to compute data drift. It will serve as a baseline for distribution comparison. For example, you can use the data from model validation or a past production batch. The reference dataset is optional for other metrics (e.g., descriptive statistics). You only need to pass the `current` data. However, you can optionally use `reference` to generate test conditions. For example, it can help automatically derive min-max ranges for features in out-of-range data quality tests.
 {% endhint %}
 
 ## 3. Create a Project
@@ -161,7 +161,7 @@ url="https://app.evidently.cloud")
 Use the `create_project` command to create a new Project. Add a name and description. (You can edit them later).
 ```python
 project = ws.create_project("My project name")
-project.description = "My your project description"
+project.description = "My project description"
 ```
 
 {% hint style="info" %}
@@ -224,7 +224,7 @@ Once you run this script, you will compute 10 snapshots and send them to the Evi
 * You compute each `Report` changing the `current_data` and keeping the `reference_data` static. For current data, you pass 100 new rows for `i` days to simulate batch inference.
 * The `add_report` method computes the Report in the JSON snapshot format and sends it to the workspace `ws` (which is Evidently Cloud).
 
-* </details>
+</details>
 
 <details>
 
@@ -331,6 +331,7 @@ Earlier, you used a `Report` to compute metrics. Another option is a `Test Suite
 * The metric value (e.g., share of nulls).
 * The condition (e.g., should be less than 10%).
 * The result (e.g., "pass" or "fail").
+
 You can perform column- or dataset-level tests.
 
 {% hint style="info" %}
@@ -338,8 +339,8 @@ You can perform column- or dataset-level tests.
 {% endhint %}
 
 Let's generate a Test Suite that includes the following:
-* **A Data Drift preset**. Each column drift check will be a Test in a suite. You do not select a method this time, so the [defaults](https://docs.evidentlyai.com/reference/data-drift-algorithm) - Jensen Shennen divergence and Wasserstein distance - will apply. However, you set a custom drift detection threshold at 0.3. If the values of distance or divergence are above 0.3, column drift is detected.
-* **Several quality tests**. You can pick any individual Tests available in the library and set conditions using parameters like `eq` (equal), `lte` (less than or equal), etc. If no condition is set, Evidently will generate them based on the reference data and heuristics. In the code below, we pick a few Tests related to duplicates, constants, and missing values.
+* **A Data Drift Test Preset**. It contains individual column drift checks. We do not select a data drift method this time, so the [defaults](https://docs.evidentlyai.com/reference/data-drift-algorithm) (Jensen Shennen divergence and Wasserstein distance) apply. However, we set a custom drift detection threshold at 0.3: if the drift score is above 0.3, column drift is detected.
+* **Several quality tests**. We picked a few individual Tests related to duplicates, constants, and missing values. You can pick any individual Tests available in the library and set conditions using parameters like `eq` (equal), `lte` (less than or equal), etc. If no condition is set, Evidently will generate them based on the reference data and heuristics. 
 
 Here is the script that follows the same logic to imitate batch inference:
 
@@ -411,7 +412,7 @@ You can now view the dashboards with test results over time in the UI.
 
 You can also easily explore individual failed Tests in a Test Suite:
 
-![](../.gitbook/assets/cloud/view-reports-min.gif)
+![](../.gitbook/assets/cloud/view-tests-min.gif)
 
 <details>
 
