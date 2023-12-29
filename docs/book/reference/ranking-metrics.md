@@ -18,7 +18,7 @@ $$\text{Recall at } K = \frac{\text{Number of relevant items in } K}{\text{Total
 
 **Range**: 0 to 1.
 
-**Interpretation**: a higher recall at K indicates that the model is able to retrieve a higher proportion of relevant items, which is generally desirable. 
+**Interpretation**: a higher recall at K indicates that the model can retrieve a higher proportion of relevant items, which is generally desirable. 
 
 **Notes**: if the total number of relevant items is greater than K, it's impossible to recall all of them within the top K results (making 100% recall impossible).
 
@@ -40,7 +40,7 @@ $$\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{To
 
 **Interpretation**: a higher precision at K indicates that a larger proportion of the top results are relevant, which is generally desirable.
 
-## F Beta
+# F Beta
 
 ![](../.gitbook/assets/reports/metric_fbeta-min.png)
 
@@ -188,7 +188,7 @@ Where *U* is the total number of users, and *rank(i)* is the rank of the first r
 **Recommendation diversity**: this metric measures the average intra-list diversity at K. It reflects the variety of items within the same user's recommendation list, averaged by all users. 
 
 **Implemented method**:
-* **Measure the difference between recommended items**. Calculate the Cosine distance for each pair of recommendations inside the top-K in each user's list. The cosine distance serves a measure of diversity between vectors representing recommended items, and is computed as:
+* **Measure the difference between recommended items**. Calculate the Cosine distance for each pair of recommendations inside the top-K in each user's list. The cosine distance serves as a measure of diversity between vectors representing recommended items, and is computed as:
 
 $$\text{Cosine distance} = 1 - \text{Cosine Similarity}$$
 
@@ -248,7 +248,7 @@ Further reading: [Castells, P., Vargas, S., & Wang, J. (2011). Novelty and Diver
 
 Recommendation serendipity: this metric measures how unusual the relevant recommendations are in K, averaged for all users. 
 
-Serendipity combines unexpectedness and relevance. It reflects the ability of a recommender system to show relevant items (that get a positive ranking or action) that are unexpected in the context of the user history (= are not similar to previous interactions). For example, a user that usually likes comedies gets recommended and upvotes a thriller.
+Serendipity combines unexpectedness and relevance. It reflects the ability of a recommender system to show relevant items (that get a positive ranking or action) that are unexpected in the context of the user history (= are not similar to previous interactions). For example, a user who usually likes comedies gets recommended and upvotes a thriller.
 
 **Implemented method**. 
 * Measure the **unexpectedness** of relevant recommendations. The “unexpectedness” is measured using Cosine distance. For every relevant recommendation in top-K, we compute the distance between this item and the previous user interactions in the training set. Higher cosine distance indicates higher unexpectedness.
@@ -309,9 +309,9 @@ The resulting metric reflects the average share of unique recommendations in eac
 
 **Evidently Metric**: `PopularityBias`
 
-The recommendation popularity bias is a tendency of favoring a few popular items. This metric includes several measurements: ARP, Coverage and Gini index.
+The recommendation popularity bias is a tendency to favor a few popular items. This metric includes several measurements: ARP, Coverage and Gini index.
 
-## Average Recommendation Popularity (ARP)
+## 1. Average Recommendation Popularity (ARP)
 
 ARP reflects the average popularity of the items recommended to the users. 
 
@@ -335,7 +335,7 @@ Where:
 
 Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Malthouse, E. (2021). User-centered Evaluation of Popularity Bias in Recommender Systems](https://dl.acm.org/doi/fullHtml/10.1145/3450613.3456821)
 
-## Coverage
+## 2. Coverage
 
 Coverage reflects the item coverage as a proportion of items that has been recommended by the system.
 
@@ -345,9 +345,9 @@ $$\text{Coverage} = \frac{\text{Number of unique items recommended} K}{\text{Tot
 
 **Range**: 0 to 1, where 1 means that 100% of items have been recommended to users. 
 
-**Interpretation**: the higher the value (usually preferable), the larger the share of items represented in the recommendations. Popularity-based recommenders that only recommend a limited number of popular items will have a low coverage.
+**Interpretation**: the higher the value (usually preferable), the larger the share of items represented in the recommendations. Popularity-based recommenders that only recommend a limited number of popular items will have low coverage.
 
-## Gini index 
+## 3. Gini index 
 
 Gini index: reflects the inequality in the distribution of recommended items shown to different users, as compared to a perfectly equal distribution. 
 
@@ -362,7 +362,7 @@ Where
 
 **Range**: 0 to 1, where 0 represents the perfect equality (recommended items are evenly distributed among users), and 1 is complete inequality (the recommendations are concentrated on a single item).
 
-**Interpretation**: the lower the value (usually preferable), the more equal is the item distribution in recommendations. If the value is high, it means that a few items are being frequently recommended to many users, while others are ignored.
+**Interpretation**: the lower the value (usually preferable), the more equal the item distribution in recommendations. If the value is high, a few items are frequently recommended to many users while others are ignored.
 
 Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Malthouse, E. (2021). User-centered Evaluation of Popularity Bias in Recommender Systems](https://dl.acm.org/doi/fullHtml/10.1145/3450613.3456821)
 
@@ -372,12 +372,12 @@ Further reading: [Abdollahpouri, H., Mansoury, M., Burke, R., Mobasher, B., & Ma
 
 **Evidently Metric**: `RecCasesTable`
 
-This visual Metric shows the list of recommendations for the specified user IDs ('user_ids: List'). If you do not pass the list of IDs, Evidently will choose 5 random ones.
+This visual Metric shows the list of recommendations for the specified user IDs (`user_ids: List`). If you do not pass the list of IDs, Evidently will choose 5 random ones.
 
 You can optionally specify:
-* The number of training items in the user history to display ('train_item_num')
-* Whether you’d like to additionally include the values of specific features in the table ('display_features: List')
-* The number of items recommended for user to display ('item_num')
+* The number of training items in the user history to display (`train_item_num`)
+* Whether you’d like to additionally include the values of specific features in the table (`display_features: List`)
+* The number of items recommended for user to display (`item_num`)
 
 # Score Distribution (Entropy)
 
@@ -385,7 +385,7 @@ You can optionally specify:
 
 **Evidently Metric**: `ScoreDistribution`
 
-This metric computes the predicted score entropy. It applies only when the recommendations_type is a score.
+This metric computes the predicted score entropy. It applies only when the `recommendations_type` is a score.
 
 **Implementation**:
 * Apply softmax transformation for top-K scores for all users.
@@ -404,8 +404,8 @@ This visual metric shows the distribution of recommendations by a specified cate
 This helps compare the model recommendations against what could have been a random classifier that follows the observed distribution of items by a chosen characteristic.
 
 The visualization shows:
-* The distribution of items in the training set for the defined column_name (with duplicates dropped). This represents the item catalog by this dimension. 
-* The distribution of the recommended items for the defined column_name in the current and reference (if available) datasets. 
+* The distribution of items in the training set for the defined `column_name` (with duplicates dropped). This represents the item catalog by this dimension. 
+* The distribution of the recommended items for the defined `column_name` in the current and reference (if available) datasets. 
 
 This visualization helps see the patterns in the model recommendations. In a simplified example, you might observe that the training data contains 3x comedies compared to dramas, but the model recommends dramas 10x more often. 
 

@@ -2,7 +2,7 @@ In this tutorial, you will use the Evidently open-source Python library to evalu
 
 We recommend going through this tutorial once to understand the basic functionality. Once you complete it, you will be ready to use all Evidently evaluations, including checks for ML model quality or text data.  
 
-You can run the Evidently Reports and Test Suites separately or use them as a logging layer for Evidently ML Monitoring. You can later self-host an [ML monitoring dashboard](tutorial-monitoring.md) or send the Reports and Test Suite to [Evidently Cloud platform](tutorial-cloud.md) to monitor metrics over time.  
+You can later run the Evidently Reports and Test Suites independently or use them as a logging layer for Evidently ML Monitoring. You can choose between self-hosting [ML monitoring dashboard](tutorial-monitoring.md) or sending the Reports and Test Suite to [Evidently Cloud platform](tutorial-cloud.md) to monitor metrics over time.  
 
 To complete the tutorial, you need basic knowledge of Python. You should be able to complete it in **about 15 minutes**.
 
@@ -349,21 +349,21 @@ suite.save("snapshot.json")
 
 In this tutorial, you explored some of the data quality and data drift checks on tabular data. Evidently also support evaluations on text data and model quality checks. 
 
-The easiest way to understand what else is there is to look at **Presets**. Both Tests and Reports have multiple Presets. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run Presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
+The easiest way to understand what else is there is to look at **Presets**. Both Tests and Reports have multiple Presets. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run Presets like **Regression Performance**, **Ranking Performance** and **Classification Performance** to evaluate the model quality and errors. 
 
 To understand the contents of each Preset, head to the [Preset overview](../presets/all-presets.md). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../examples/examples.md) section. You can also design custom Reports and Test Suites from individual Metrics and Tests. 
 
 * **Learn how to get a Monitoring Dashboard**
  
-If you want to track the results of different checks over time, you can self-host an ML monitoring dashboard. Go through this [Quick Start tutorial](tutorial-monitoring.MD).
+If you want to track the results of different checks over time, you get an ML monitoring dashboard. Go through the [ML monitoring quickstart (Self-hosting)](tutorial-monitoring.md) or [ML monitoring quickstart (Evidently Cloud)](tutorial-cloud.md) to monitor metrics over time.  
 
 * **Explore available integrations**
 
-To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). For example, if you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlflow.md) and [Airflow](../integrations/evidently-and-airflow.md).
+To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). For example, if you run predictions in batches, you can use a tool like [Airflow](../integrations/evidently-and-airflow.md) to orchestrate the process.
 
 * **Go through the steps in more detail**
 
-To understand working with Reports and Test Suites in more detail, refer to the **User Guide** section of the docs. A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/custom-test-suite.md).  
+To better understand working with Reports and Test Suites, refer to the **User Guide** section of the docs. A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/custom-test-suite.md).  
 
 ## Join our Community!
 

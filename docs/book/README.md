@@ -4,7 +4,7 @@ It helps evaluate, test, and monitor data and ML models from validation to produ
 
 # Quick Start
 
-New to Evidently? Check out the ["Hello world"](get-started/hello-world.md) example (1 minute) or go through the Tutorial (15 minutes).
+New to Evidently? Check out the ["Hello world"](get-started/hello-world.md) example (1 min) or go through the Tutorial (15 min):
 
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
