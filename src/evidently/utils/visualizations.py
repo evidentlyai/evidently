@@ -698,9 +698,13 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
 
 def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
     value_counts = column.value_counts(normalize=normalize, dropna=False)
+
+    # filter out na values if it amount == 0
+    new_values = [(k, v) for k, v in value_counts.items() if (not pd.isna(k) or v > 0)]
+
     return Distribution(
-        x=value_counts.index.values,
-        y=value_counts.values,
+        x=[x[0] for x in new_values],
+        y=[x[1] for x in new_values],
     )
 
 

@@ -47,6 +47,11 @@ class NumpyEncoder(json.JSONEncoder):
 
         If we cannot convert the object, leave the default `JSONEncoder` behaviour - raise a TypeError exception.
         """
+        # explicit check pandas null
+        if pd.isnull(o):
+            return None
+
+        # check mapping rules
         for types_list, python_type in _TYPES_MAPPING:
             if isinstance(o, types_list):
                 return python_type(o)
