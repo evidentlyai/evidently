@@ -52,7 +52,8 @@ def test_calculate_metrics():
     assert actual_result.roc_auc == pytest.approx(0.64)
     assert actual_result.log_loss == pytest.approx(0.6884817487155065)
 
-    assert actual_result.rate_plots_data.thrs == [pytest.approx(v) for v in [np.inf, 0.91, 0.73, 0.46, 0.37, 0.28, 0.0]]
+    # In `thrs` the 1st elem can be 1.91 or inf depending on version
+    assert actual_result.rate_plots_data.thrs[1:] == [pytest.approx(v) for v in [0.91, 0.73, 0.46, 0.37, 0.28, 0.0]]
     assert actual_result.rate_plots_data.tpr == [pytest.approx(v) for v in [0.0, 0.2, 0.2, 0.8, 0.8, 1.0, 1.0]]
     assert actual_result.rate_plots_data.fpr == [pytest.approx(v) for v in [0.0, 0.0, 0.4, 0.4, 0.6, 0.6, 1.0]]
     assert actual_result.rate_plots_data.fnr == [pytest.approx(v) for v in [1.0, 0.8, 0.8, 0.2, 0.2, 0.0, 0.0]]
