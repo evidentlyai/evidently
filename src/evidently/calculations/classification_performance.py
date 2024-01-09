@@ -383,20 +383,9 @@ def calculate_metrics(
         log_loss = metrics.log_loss(binaraized_target, prediction_probas_array)
         plot_data = collect_plot_data(prediction.prediction_probas)
     if len(prediction.labels) == 2 and prediction.prediction_probas is not None:
-        trues = target == pos_label
-        preds = prediction.prediction_probas[pos_label]
-        preds_inv = 1 - preds
-        fprs, tprs, thrs = metrics.roc_curve(trues, preds)
-        # To get TNRs and FNRs let's swap positive and negative classes in predictions.
-        # `metrics.roc_curve` by default drops intermediate useless points,
-        # but we need the same points here as in the previous call,
-        # so we will select them manually later
-        tnrs_all, fnrs_all, thrs_inv_all = metrics.roc_curve(trues, preds_inv, drop_intermediate=False)
-        thrs_all = 1 - thrs_inv_all[1:]
-        eps = np.finfo(thrs_all.dtype).resolution  # Need this in case of "even" thresholds like `0.2` or `0.325`
-        optimal_ids = np.searchsorted(thrs_all + eps, thrs)  # Get indices of thresholds. They also revert the order
-        tnrs = tnrs_all[optimal_ids]
-        fnrs = fnrs_all[optimal_ids]
+        fprs, tprs, thrs = metrics.roc_curve(target == pos_label, prediction.prediction_probas[pos_label])
+        tnrs = 1 - fprs
+        fnrs = 1 - tprs
         rate_plots_data = RatesPlotData(
             thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs.tolist(), tnr=tnrs.tolist()
         )
