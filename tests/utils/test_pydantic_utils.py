@@ -1,8 +1,8 @@
 from typing import Dict
 
 import pytest
-from pydantic import parse_obj_as
 
+from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import MetricResult
 from evidently.pydantic_utils import PolymorphicModel
 
