@@ -1,5 +1,6 @@
 import datetime
 import json
+import typing
 import uuid
 from typing import Callable
 from typing import Tuple
@@ -47,8 +48,14 @@ class NumpyEncoder(json.JSONEncoder):
 
         If we cannot convert the object, leave the default `JSONEncoder` behaviour - raise a TypeError exception.
         """
+
+        # check mapping rules
         for types_list, python_type in _TYPES_MAPPING:
             if isinstance(o, types_list):
                 return python_type(o)
+
+        # explicit check pandas null
+        if not isinstance(o, typing.Sequence) and pd.isnull(o):
+            return None
 
         return json.JSONEncoder.default(self, o)
