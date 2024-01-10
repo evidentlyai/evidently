@@ -13,6 +13,7 @@ from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
 
 
@@ -23,13 +24,21 @@ class CustomCallableMetricResult(MetricResult):
 CustomCallableType = Callable[[InputData], float]
 
 
-class CustomCallableMetric(Metric[CustomCallableMetricResult]):
+class CustomValueMetric(Metric[CustomCallableMetricResult]):
     func: str
     title: Optional[str] = None
+    size: Optional[WidgetSize] = None
 
     _func: Optional[CustomCallableType] = PrivateAttr(None)
 
-    def __init__(self, func: Union[CustomCallableType, str], title: str = None, options: AnyOptions = None, **data):
+    def __init__(
+            self,
+            func: Union[CustomCallableType, str],
+            title: str = None,
+            size: Optional[WidgetSize] = None,
+            options: AnyOptions = None,
+            **data,
+    ):
         if callable(func):
             self._func = func
             self.func = f"{func.__module__}.{func.__name__}"
@@ -37,6 +46,7 @@ class CustomCallableMetric(Metric[CustomCallableMetricResult]):
             self._func = None
             self.func = func
         self.title = title
+        self.size = size
         super().__init__(options, **data)
 
     def calculate(self, data: InputData) -> CustomCallableMetricResult:
@@ -45,7 +55,11 @@ class CustomCallableMetric(Metric[CustomCallableMetricResult]):
         return CustomCallableMetricResult(value=self._func(data))
 
 
-@default_renderer(wrap_type=CustomCallableMetric)
-class CustomCallableMetricRenderer(MetricRenderer):
-    def render_html(self, obj: CustomCallableMetric) -> List[BaseWidgetInfo]:
-        return [counter(counters=[CounterData.float("", obj.get_result().value, 2)], title=obj.title or "")]
+@default_renderer(wrap_type=CustomValueMetric)
+class CustomValueMetricRenderer(MetricRenderer):
+    def render_html(self, obj: CustomValueMetric) -> List[BaseWidgetInfo]:
+        return [counter(
+            counters=[CounterData.float("", obj.get_result().value, 2)],
+            title=obj.title or "",
+            size=WidgetSize.HALF if obj.size == WidgetSize.HALF else WidgetSize.FULL,
+        )]
