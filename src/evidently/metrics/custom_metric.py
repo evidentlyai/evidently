@@ -32,12 +32,12 @@ class CustomValueMetric(Metric[CustomCallableMetricResult]):
     _func: Optional[CustomCallableType] = PrivateAttr(None)
 
     def __init__(
-            self,
-            func: Union[CustomCallableType, str],
-            title: str = None,
-            size: Optional[WidgetSize] = None,
-            options: AnyOptions = None,
-            **data,
+        self,
+        func: Union[CustomCallableType, str],
+        title: str = None,
+        size: Optional[WidgetSize] = None,
+        options: AnyOptions = None,
+        **data,
     ):
         if callable(func):
             self._func = func
@@ -58,8 +58,10 @@ class CustomValueMetric(Metric[CustomCallableMetricResult]):
 @default_renderer(wrap_type=CustomValueMetric)
 class CustomValueMetricRenderer(MetricRenderer):
     def render_html(self, obj: CustomValueMetric) -> List[BaseWidgetInfo]:
-        return [counter(
-            counters=[CounterData.float("", obj.get_result().value, 2)],
-            title=obj.title or "",
-            size=WidgetSize.HALF if obj.size == WidgetSize.HALF else WidgetSize.FULL,
-        )]
+        return [
+            counter(
+                counters=[CounterData.float("", obj.get_result().value, 2)],
+                title=obj.title or "",
+                size=WidgetSize.HALF if obj.size == WidgetSize.HALF else WidgetSize.FULL,
+            ),
+        ]
