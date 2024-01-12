@@ -30,7 +30,7 @@ export const SnapshotTemplate = ({ api }: { api: Api }) => {
             api.getAdditionalWidgetData(projectId, snapshotId, widgetId)
         })}
       >
-        <Grid container>
+        <Grid container spacing={3} direction="row" alignItems="stretch">
           <DashboardContentWidgets widgets={data.widgets} />
         </Grid>
       </DashboardContext.Provider>
