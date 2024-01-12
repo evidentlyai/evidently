@@ -133,13 +133,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
   )
 
   if (hideSnapshotsList) {
-    return (
-      <Grid container>
-        <Grid item xs={12}>
-          <Outlet />
-        </Grid>
-      </Grid>
-    )
+    return <Outlet />
   }
 
   return (
