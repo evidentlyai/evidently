@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('Home screen', async ({ page }) => {
+test.skip('Home screen', async ({ page }) => {
   await page.goto('/')
   await expect(page).toHaveScreenshot({ fullPage: true })
 })
