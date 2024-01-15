@@ -32,6 +32,8 @@ const goToFirstSnapshotAndExpanSomeWidgets = async ({
     await Details.last().click()
     await page.waitForLoadState('networkidle')
   }
+
+  await page.waitForTimeout(1000)
 }
 
 const VisualTestSnapshot = async ({
