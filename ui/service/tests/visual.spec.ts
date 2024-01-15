@@ -78,3 +78,7 @@ test(`${BikesDemoProjectName}: Report`, async ({ page }) => {
 test(`${BikesDemoProjectName}: Test Suite`, async ({ page }) => {
   await VisualTestSnapshot({ page, projectName: BikesDemoProjectName, isTestSuite: true })
 })
+
+test(`${ReviewsDemoProjectName}: Report`, async ({ page }) => {
+  await VisualTestSnapshot({ page, projectName: ReviewsDemoProjectName, isTestSuite: false })
+})
