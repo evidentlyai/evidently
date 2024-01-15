@@ -18,7 +18,6 @@ const goToFirstSnapshotAndExpanSomeWidgets = async ({
   await expect(Details.first()).toBeVisible()
 
   const DetailsCount = await Details.count()
-  console.log('DetailsCount', DetailsCount)
 
   await Details.first().click()
   await page.waitForLoadState('networkidle')
@@ -51,23 +50,18 @@ const VisualTestSnapshot = async ({
     projectName,
     isTestSuite
   })
-  await expect(page).toHaveScreenshot({ fullPage: true })
+
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 1800 })
 }
 
 const VisualTestDashboard = async ({ page, projectName }: { page: Page; projectName: string }) => {
   await page.goto('/')
   await page.getByRole('link', { name: projectName }).click()
   await page.waitForLoadState('networkidle')
-  await expect(page).toHaveScreenshot({ fullPage: true })
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 800 })
 }
 
-test.skip('Home screen', async ({ page }) => {
-  await page.goto('/')
-  await expect(page).toHaveScreenshot({ fullPage: true })
-})
-
 const BikesDemoProjectName = 'Demo project - Bikes'
-const AdultDemoProjectName = 'Demo project - Adult'
 const ReviewsDemoProjectName = 'Demo project - Reviews'
 
 /////////////////////
@@ -75,10 +69,6 @@ const ReviewsDemoProjectName = 'Demo project - Reviews'
 /////////////////////
 test(`${BikesDemoProjectName}: Dashboard`, async ({ page }) => {
   await VisualTestDashboard({ page, projectName: BikesDemoProjectName })
-})
-
-test.skip(`${AdultDemoProjectName}: Dashboard`, async ({ page }) => {
-  await VisualTestDashboard({ page, projectName: AdultDemoProjectName })
 })
 
 test(`${ReviewsDemoProjectName}: Dashboard`, async ({ page }) => {

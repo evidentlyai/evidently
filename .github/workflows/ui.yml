@@ -97,7 +97,7 @@ jobs:
         run: pip install -e .
 
       - name: Run UI
-        run: evidently ui --port 8000 --demo-projects all --workspace test-workspace &
+        run: evidently ui --port 8000 --demo-projects bikes,reviews --workspace test-workspace &
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
