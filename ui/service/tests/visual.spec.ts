@@ -14,7 +14,9 @@ const goToFirstSnapshotAndExpanSomeWidgets = async ({
   await page.getByRole('button', { name: 'View' }).first().click()
   await page.waitForLoadState('networkidle')
   await page.getByRole('button', { name: 'Details' }).first().click()
+  await page.waitForLoadState('networkidle')
   await page.getByRole('button', { name: 'Details' }).nth(1).click()
+  await page.waitForLoadState('networkidle')
   await page.getByRole('button', { name: 'Details' }).last().click()
   await page.waitForLoadState('networkidle')
 }
