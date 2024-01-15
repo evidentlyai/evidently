@@ -47,8 +47,8 @@ export default defineConfig({
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] }
     // }
-  ],
-  expect: {
-    toHaveScreenshot: { maxDiffPixels: 2000 }
-  }
+  ]
+  // expect: {
+  //   toHaveScreenshot: { maxDiffPixels: 2000 }
+  // }
 })
