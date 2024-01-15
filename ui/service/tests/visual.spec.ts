@@ -49,15 +49,28 @@ test.skip('Home screen', async ({ page }) => {
   await expect(page).toHaveScreenshot({ fullPage: true })
 })
 
-/////////////////////
-///     BIKES
-/////////////////////
 const BikesDemoProjectName = 'Demo project - Bikes'
+const AdultDemoProjectName = 'Demo project - Adult'
+const ReviewsDemoProjectName = 'Demo project - Reviews'
 
+/////////////////////
+///   Dashboards
+/////////////////////
 test(`${BikesDemoProjectName}: Dashboard`, async ({ page }) => {
   await VisualTestDashboard({ page, projectName: BikesDemoProjectName })
 })
 
+test(`${AdultDemoProjectName}: Dashboard`, async ({ page }) => {
+  await VisualTestDashboard({ page, projectName: AdultDemoProjectName })
+})
+
+test(`${ReviewsDemoProjectName}: Dashboard`, async ({ page }) => {
+  await VisualTestDashboard({ page, projectName: ReviewsDemoProjectName })
+})
+
+/////////////////////
+///   Snapshots
+/////////////////////
 test(`${BikesDemoProjectName}: Report`, async ({ page }) => {
   await VisualTestSnapshot({ page, projectName: BikesDemoProjectName, isTestSuite: false })
 })
