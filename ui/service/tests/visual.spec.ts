@@ -19,6 +19,11 @@ test('Bikes Report', async ({ page }) => {
   await page.getByRole('button', { name: 'View' }).first().click()
   await page.waitForLoadState('networkidle')
   await expect(page).toHaveScreenshot({ fullPage: true })
+  const first_details = page.getByRole('button', { name: 'Details' }).first()
+  await first_details.scrollIntoViewIfNeeded()
+  await first_details.click()
+  await page.waitForLoadState('networkidle')
+  await expect(page).toHaveScreenshot()
 })
 
 test('Bikes Test Suite', async ({ page }) => {
