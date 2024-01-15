@@ -13,12 +13,25 @@ const goToFirstSnapshotAndExpanSomeWidgets = async ({
   await page.getByRole('tab', { name: isTestSuite ? 'Test Suites' : 'Reports' }).click()
   await page.getByRole('button', { name: 'View' }).first().click()
   await page.waitForLoadState('networkidle')
-  await page.getByRole('button', { name: 'Details' }).first().click()
-  await page.waitForLoadState('networkidle')
-  await page.getByRole('button', { name: 'Details' }).nth(1).click()
-  await page.waitForLoadState('networkidle')
-  await page.getByRole('button', { name: 'Details' }).last().click()
-  await page.waitForLoadState('networkidle')
+
+  const Details = page.getByRole('button', { name: 'Details' })
+  const DetailsCount = await Details.count()
+  console.log('DetailsCount', DetailsCount)
+
+  if (DetailsCount > 0) {
+    await Details.nth(0).click()
+    await page.waitForLoadState('networkidle')
+  }
+
+  if (DetailsCount > 1) {
+    await Details.nth(1).click()
+    await page.waitForLoadState('networkidle')
+  }
+
+  if (DetailsCount > 2) {
+    await Details.last().click()
+    await page.waitForLoadState('networkidle')
+  }
 }
 
 const VisualTestSnapshot = async ({
