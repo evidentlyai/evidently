@@ -82,7 +82,7 @@ jobs:
 
       - name: 📥 Install node dependencies
         working-directory: ui
-        run: pnpm i --frozen-lockfile
+        run: pnpm i --frozen-lockfile --ignore-scripts
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
