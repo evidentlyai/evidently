@@ -35,8 +35,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
           <Table>
             <TableHead>
               <TableRow>
-                {/* <TableCell /> */}
-                {/* Check test fail */}
+                <TableCell />
                 {props.metricsValuesHeaders.map((header, index) => (
                   <TableCell key={header + index}>{header}</TableCell>
                 ))}
