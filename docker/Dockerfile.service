@@ -16,6 +16,7 @@ LABEL maintainer="mike0sv@evidentlyai.com"
 WORKDIR /src
 COPY setup.py .
 COPY setupbase.py .
+COPY README.md .
 COPY src ./src
 RUN apt-get update && \
     apt-get install -y \

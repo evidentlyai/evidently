@@ -20,6 +20,12 @@ report.run(reference_data=ref, current_data=cur, column_mapping=column_mapping, 
 report
 ```
 
+# Code example
+
+Notebook example on using column mapping and additional data for recommender systems:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_run_recsys_metrics.ipynb" %}
+
 ## Requirements:
 
 * The additional training dataset should have the following structure: 

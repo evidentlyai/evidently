@@ -22,4 +22,5 @@ __all__ = [
     "PanelValue",
     "CounterAgg",
     "PlotType",
+    "DashboardPanelTestSuiteCounter",
 ]

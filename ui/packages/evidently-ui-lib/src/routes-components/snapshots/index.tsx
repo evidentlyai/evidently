@@ -133,19 +133,25 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
   )
 
   if (hideSnapshotsList) {
-    return (
-      <Grid container>
-        <Grid item xs={12}>
-          <Outlet />
-        </Grid>
-      </Grid>
-    )
+    return <Outlet />
   }
 
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Grid container gap={6} alignItems={'flex-end'}>
+        <Grid container gap={2} alignItems={'flex-end'}>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                onClick={() => submit(null, { method: 'post' })}
+                color="primary"
+                disabled={isNavigation}
+              >
+                Refresh {`${type.toLocaleUpperCase()}S`}
+              </Button>
+            </Box>
+          </Grid>
           <Grid item xs={12} md={4}>
             <Autocomplete
               multiple
@@ -180,19 +186,6 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                   label="Hide Metadata"
                 />
               </Box>
-            </Box>
-          </Grid>
-
-          <Grid item flexGrow={2}>
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                variant="outlined"
-                onClick={() => submit(null, { method: 'post' })}
-                color="primary"
-                disabled={isNavigation}
-              >
-                Refresh {`${type.toLocaleUpperCase()}S`}
-              </Button>
             </Box>
           </Grid>
         </Grid>

@@ -102,7 +102,7 @@ def generate_dataset_outcome(m: TestMetric):
 
 
 def load_test_metrics():
-    for module in ["classification", "data_integrity", "data_drift", "data_quality", "recsys", "regression"]:
+    for module in ["classification", "data_integrity", "data_drift", "data_quality", "recsys", "regression", "custom"]:
         import_module(f"tests.multitest.metrics.{module}")
 
 

@@ -1,3 +1,4 @@
+SHELL = sh -xv
 default: build
 
 # Build Docker image
@@ -17,7 +18,7 @@ GIT_COMMIT = $(strip $(shell git rev-parse HEAD))
 GIT_COMMIT_SHORT = $(strip $(shell git rev-parse --short HEAD))
 
 # Get the version number from the code
-CODE_VERSION = $(strip $(shell python -c "from evidently import __version__; print(__version__)" || cat ../src/evidently/_version.py | grep "version_info = " | grep -Po "\d+" |  tr '\n' . | cut -c 1-5))
+CODE_VERSION = $(strip $(shell python -c "from evidently import __version__; print(__version__)" || cat ../src/evidently/_version.py | grep "version_info = " | grep -Po "\d+" | head -c -1 | tr "\n" .))
 
 # Find out if the working directory is clean
 GIT_NOT_CLEAN_CHECK = $(shell git status --porcelain)

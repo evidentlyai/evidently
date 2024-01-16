@@ -110,7 +110,6 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
     status: TestStatus
     # grouping parameters
     group: str
-    groups: Dict[str, str] = Field(default_factory=dict, exclude=True)
     parameters: Optional[TestParameters]
     _exception: Optional[BaseException] = None
 
@@ -167,6 +166,20 @@ class Test(WithTestAndMetricDependencies):
 
     def get_id(self) -> str:
         return self.__class__.__name__
+
+    @abc.abstractmethod
+    def groups(self) -> Dict[str, str]:
+        raise NotImplementedError
+
+    def get_groups(self) -> Dict[str, str]:
+        groups = self.groups()
+        groups.update(
+            {
+                GroupingTypes.TestGroup.id: self.group,
+                GroupingTypes.TestType.id: self.name,
+            }
+        )
+        return groups
 
 
 class ValueSource(Enum):
@@ -371,7 +384,6 @@ class BaseCheckValueTest(BaseConditionsTest):
         except ValueError:
             result.mark_as_error("Cannot calculate the condition")
 
-        result.groups.update(self.groups())
         return result
 
 

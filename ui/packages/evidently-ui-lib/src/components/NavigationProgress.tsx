@@ -5,5 +5,9 @@ export const NavigationProgress = () => {
   const navigation = useNavigation()
   const isNavigation = navigation.state !== 'idle'
 
-  return isNavigation ? <LinearProgress sx={{ height: 4 }} /> : <Box sx={{ height: 4 }} />
+  if (isNavigation) {
+    return <LinearProgress sx={{ height: 4, position: 'sticky', top: 0, left: 0, zIndex: 999 }} />
+  }
+
+  return <Box sx={{ height: 4 }} />
 }

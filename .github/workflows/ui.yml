@@ -39,7 +39,7 @@ jobs:
 
       - name: 📥 Install node dependencies
         working-directory: ui
-        run: pnpm i --frozen-lockfile
+        run: pnpm i --frozen-lockfile --ignore-scripts
 
       - name: 🔬 Type check
         working-directory: ui

@@ -273,11 +273,13 @@ class TestColumnDrift(Test):
             description=description,
             status=result_status,
             group=self.group,
-            groups={
-                GroupingTypes.ByFeature.id: self.column_name.display_name,
-            },
             parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name.display_name),
         )
+
+    def groups(self) -> Dict[str, str]:
+        return {
+            GroupingTypes.ByFeature.id: self.column_name.display_name,
+        }
 
 
 class TestAllFeaturesValueDrift(BaseGenerator):
@@ -644,6 +646,9 @@ class TestEmbeddingsDrift(Test):
             status=result_status,
             group=self.group,
         )
+
+    def groups(self) -> Dict[str, str]:
+        return {}
 
 
 @default_renderer(wrap_type=TestEmbeddingsDrift)

@@ -38,7 +38,7 @@ def get_curr_and_ref_df(
     if target_column is None or prediction is None:
         raise ValueError("Target and prediction were not found in data.")
     _, target_current, target_reference = data.get_data(target_column.column_name)
-    recommendations_type = data.column_mapping.recommendations_type or RecomType.SCORE
+    recommendations_type = data.column_mapping.recom_type or RecomType.SCORE
     if prediction.prediction_probas is not None:
         pred_name = prediction.prediction_probas[0].column_name
     elif prediction.predicted_values is not None:
