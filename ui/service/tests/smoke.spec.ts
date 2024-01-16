@@ -6,7 +6,8 @@ test('Has title', async ({ page }) => {
   await expect(page).toHaveTitle(/Evidently/)
 })
 
-test('Can view Snapshot', async ({ page }) => {
+// We don't need this since visual testing enabled
+test.skip('Can view Snapshot', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('link', { name: 'Demo project - Bikes' }).click()
   await page.getByText('Bike Rental Demand Forecast').click()
