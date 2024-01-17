@@ -1,7 +1,4 @@
 [core]
     remote = gs
-['remote "local-minio"']
-    url = s3://test-bucket
-    endpointurl = http://127.0.0.1:9001
 ['remote "gs"']
     url = gs://evidently-service-visual-testing
