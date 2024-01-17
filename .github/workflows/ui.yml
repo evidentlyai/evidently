@@ -75,8 +75,11 @@ jobs:
           architecture: "x64"
           cache: "pip"
 
-      - name: Install python dependencies
-        run: pip install -e . && pip install dvc[gs]
+      - name: Install Evidently
+        run: pip install -e .
+
+      - name: Install dvc
+        run: pip install dvc
 
       - name: Pull data
         run: dvc pull
