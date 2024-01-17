@@ -67,7 +67,7 @@ const ReviewsDemoProjectName = 'Demo project - Reviews'
 /////////////////////
 ///   Home
 /////////////////////
-test(`Home:`, async ({ page }) => {
+test(`Home`, async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
   await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
