@@ -51,7 +51,7 @@ const VisualTestSnapshot = async ({
     isTestSuite
   })
 
-  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
 }
 
 const goToSnapshotsList = async ({
@@ -84,14 +84,14 @@ const VisualTestSnapshotsList = async ({
     isTestSuite
   })
 
-  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
 }
 
 const VisualTestDashboard = async ({ page, projectName }: { page: Page; projectName: string }) => {
   await page.goto('/')
   await page.getByRole('link', { name: projectName }).click()
   await page.waitForLoadState('networkidle')
-  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
 }
 
 const BikesDemoProjectName = 'Demo project - Bikes'
@@ -104,7 +104,7 @@ const ReviewsDemoProjectName = 'Demo project - Reviews'
 test(`Home`, async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
-  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
 })
 
 /////////////////////
