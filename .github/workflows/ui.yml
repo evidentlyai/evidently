@@ -108,7 +108,7 @@ jobs:
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
-        run: pnpm wait-on tcp:127.0.0.1:8000 -t 300000
+        run: pnpm wait-on tcp:127.0.0.1:8000 -t 10000
 
       - name: Run Service Playwright tests
         working-directory: ui/service
