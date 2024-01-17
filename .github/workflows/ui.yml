@@ -79,7 +79,7 @@ jobs:
         run: pip install -e .
 
       - name: Install dvc
-        run: pip install dvc
+        run: pip install dvc[gs]
 
       - name: Pull data
         run: dvc pull
