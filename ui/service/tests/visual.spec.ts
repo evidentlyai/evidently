@@ -63,12 +63,19 @@ const VisualTestDashboard = async ({ page, projectName }: { page: Page; projectN
 
 const BikesDemoProjectName = 'Demo project - Bikes'
 const ReviewsDemoProjectName = 'Demo project - Reviews'
-const AdultDemoProjectName = 'Demo project - Adult'
 
+/////////////////////
+///   Home
+/////////////////////
+test(`Home:`, async ({ page }) => {
+  await page.goto('/')
+  await page.waitForLoadState('networkidle')
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
+})
 /////////////////////
 ///   Dashboards
 /////////////////////
-for (const project of [BikesDemoProjectName, ReviewsDemoProjectName, AdultDemoProjectName]) {
+for (const project of [BikesDemoProjectName, ReviewsDemoProjectName]) {
   test(`Dashboard: ${project}`, async ({ page }) => {
     await VisualTestDashboard({ page, projectName: project })
   })
