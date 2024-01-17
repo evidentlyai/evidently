@@ -51,14 +51,14 @@ const VisualTestSnapshot = async ({
     isTestSuite
   })
 
-  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 1800 })
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
 }
 
 const VisualTestDashboard = async ({ page, projectName }: { page: Page; projectName: string }) => {
   await page.goto('/')
   await page.getByRole('link', { name: projectName }).click()
   await page.waitForLoadState('networkidle')
-  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 800 })
+  await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 50 })
 }
 
 const BikesDemoProjectName = 'Demo project - Bikes'
