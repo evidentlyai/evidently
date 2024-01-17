@@ -63,29 +63,27 @@ const VisualTestDashboard = async ({ page, projectName }: { page: Page; projectN
 
 const BikesDemoProjectName = 'Demo project - Bikes'
 const ReviewsDemoProjectName = 'Demo project - Reviews'
+const AdultDemoProjectName = 'Demo project - Adult'
 
 /////////////////////
 ///   Dashboards
 /////////////////////
-test(`${BikesDemoProjectName}: Dashboard`, async ({ page }) => {
-  await VisualTestDashboard({ page, projectName: BikesDemoProjectName })
-})
-
-test(`${ReviewsDemoProjectName}: Dashboard`, async ({ page }) => {
-  await VisualTestDashboard({ page, projectName: ReviewsDemoProjectName })
-})
+for (const project of [BikesDemoProjectName, ReviewsDemoProjectName, AdultDemoProjectName]) {
+  test(`Dashboard: ${project}`, async ({ page }) => {
+    await VisualTestDashboard({ page, projectName: project })
+  })
+}
 
 /////////////////////
 ///   Snapshots
 /////////////////////
-test(`${BikesDemoProjectName}: Report`, async ({ page }) => {
-  await VisualTestSnapshot({ page, projectName: BikesDemoProjectName, isTestSuite: false })
-})
 
-test(`${BikesDemoProjectName}: Test Suite`, async ({ page }) => {
+for (const project of [BikesDemoProjectName, ReviewsDemoProjectName]) {
+  test(`Report: ${project}`, async ({ page }) => {
+    await VisualTestSnapshot({ page, projectName: project, isTestSuite: false })
+  })
+}
+
+test(`Test Suite: ${BikesDemoProjectName}`, async ({ page }) => {
   await VisualTestSnapshot({ page, projectName: BikesDemoProjectName, isTestSuite: true })
-})
-
-test(`${ReviewsDemoProjectName}: Report`, async ({ page }) => {
-  await VisualTestSnapshot({ page, projectName: ReviewsDemoProjectName, isTestSuite: false })
 })
