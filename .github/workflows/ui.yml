@@ -69,6 +69,15 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+          cache: "pip"
+
+      - name: Install python dependencies
+        run: pip install -e .
+
       - uses: pnpm/action-setup@v2
         with:
           version: 8
@@ -82,19 +91,11 @@ jobs:
 
       - name: 📥 Install node dependencies
         working-directory: ui
-        run: pnpm i --frozen-lockfile
+        run: pnpm i --frozen-lockfile --ignore-scripts
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-          architecture: "x64"
-          cache: "pip"
-
-      - name: Install python dependencies
-        run: pip install -e .
+        working-directory: ui
+        run: pnpm dlx playwright@1.41.0 install --with-deps
 
       - name: Run UI
         run: evidently ui --port 8000 --demo-projects all --workspace test-workspace &
