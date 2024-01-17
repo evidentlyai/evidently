@@ -97,6 +97,12 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+      - id: generate-tag
+        name: Santize branch name the same way normalize function of argo-cd works
+        run: |
+          tag_name=${GITHUB_REF_NAME#v}
+          echo "generated-tag=$tag_name" >> "$GITHUB_OUTPUT"
+
       - id: docker-push-tagged
         name: Tag Docker image and push to DockerHub
         uses: docker/build-push-action@v5
@@ -104,7 +110,7 @@ jobs:
           file: docker/Dockerfile.service
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: evidently/evidently-service:${{ github.ref_name }},evidently/evidently-service:latest
+          tags: evidently/evidently-service:${{ steps.generate-tag.outputs.generated-tag }},evidently/evidently-service:latest
 
   create_release:
     name: Create release for the Tag

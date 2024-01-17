@@ -20,7 +20,7 @@
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.39.0",
+    "@playwright/test": "^1.41.0",
     "wait-on": "^7.1.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

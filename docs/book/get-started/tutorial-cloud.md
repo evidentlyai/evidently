@@ -117,6 +117,7 @@ from evidently.tests.base_test import TestResult, TestStatus
 Import the components to create the monitoring panels. You only need this to design the monitoring panels via API, for example, during the initial setup.
 
 ```python
+from evidently import metrics
 from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import DashboardPanelTestSuite
 from evidently.ui.dashboards import PanelValue
