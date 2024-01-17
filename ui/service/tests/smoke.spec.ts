@@ -107,11 +107,11 @@ test('Filter Reports and Test Suites by tags', async ({ page }) => {
 
     const rowsNumberAfterFiltration = await page.getByRole('row').count()
 
-    console.log(
-      'rowsNumberBeforeFiltration, rowsNumberAfterFiltration',
-      rowsNumberBeforeFiltration,
-      rowsNumberAfterFiltration
-    )
+    // console.log(
+    //   'rowsNumberBeforeFiltration, rowsNumberAfterFiltration',
+    //   rowsNumberBeforeFiltration,
+    //   rowsNumberAfterFiltration
+    // )
 
     expect(rowsNumberBeforeFiltration).toBeGreaterThan(rowsNumberAfterFiltration)
   }
