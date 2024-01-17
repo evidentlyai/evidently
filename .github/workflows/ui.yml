@@ -98,7 +98,7 @@ jobs:
         run: pnpm dlx playwright@1.41.0 install --with-deps
 
       - name: Run UI
-        run: evidently ui --port 8000 --demo-projects all --workspace test-workspace &
+        run: evidently ui --port 8000 --demo-projects bikes,reviews --workspace test-workspace &
 
       - name: Wait UI to be ready to test
         working-directory: ui/service

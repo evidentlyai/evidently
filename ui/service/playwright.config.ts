@@ -10,6 +10,8 @@ import { defineConfig, devices } from '@playwright/test'
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
+  timeout: 1000 * 15,
+  /* timeout 15 seconds */
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: false,
@@ -46,4 +48,7 @@ export default defineConfig({
     //   use: { ...devices['Desktop Safari'] }
     // }
   ]
+  // expect: {
+  //   toHaveScreenshot: { maxDiffPixels: 2000 }
+  // }
 })

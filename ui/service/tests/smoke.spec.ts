@@ -6,7 +6,8 @@ test('Has title', async ({ page }) => {
   await expect(page).toHaveTitle(/Evidently/)
 })
 
-test('Can view Snapshot', async ({ page }) => {
+// We don't need this since visual testing enabled
+test.skip('Can view Snapshot', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('link', { name: 'Demo project - Bikes' }).click()
   await page.getByText('Bike Rental Demand Forecast').click()
@@ -77,7 +78,8 @@ test('Download test suites', async ({ page }) => {
   }
 })
 
-test('We expect to see at least 3 plotly graphs', async ({ page }) => {
+// We don't need this since visual testing enabled
+test.skip('We expect to see at least 3 plotly graphs', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('link', { name: 'Demo project - Bikes' }).click()
   for (let index = 0; index < 3; index++) {
@@ -155,7 +157,8 @@ test('Altering project title and description', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded')
 })
 
-test('Check header of ColumnSummaryMetric', async ({ page }) => {
+// We don't need this since visual testing enabled
+test.skip('Check header of ColumnSummaryMetric', async ({ page }) => {
   const expectedHeaderCells = ['', 'current', 'reference']
 
   await page.goto('/')
