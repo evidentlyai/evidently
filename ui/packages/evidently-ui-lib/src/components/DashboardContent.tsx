@@ -6,6 +6,7 @@ export interface DashboardContentProps {
   widgets: WidgetInfo[]
 }
 
-export const DashboardContentWidgets: FunctionComponent<DashboardContentProps> = ({ widgets }) => (
-  <React.Fragment>{widgets.map((wi, idx) => WidgetRenderer(`wi_${idx}`, wi))}</React.Fragment>
-)
+export const DashboardContentWidgets: FunctionComponent<DashboardContentProps> = ({ widgets }) =>
+  widgets.map((wi, idx) => (
+    <React.Fragment key={wi.id}>{WidgetRenderer(`wi_${idx}`, wi)}</React.Fragment>
+  ))
