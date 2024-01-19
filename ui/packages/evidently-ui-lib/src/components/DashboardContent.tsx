@@ -10,7 +10,11 @@ export interface DashboardContentProps {
 export const DashboardContentWidgets: FunctionComponent<DashboardContentProps> = ({
   widgets,
   ItemWrapper
-}) =>
-  widgets.map((wi, idx) => (
-    <React.Fragment key={wi.id}>{WidgetRenderer(`wi_${idx}`, wi, ItemWrapper)}</React.Fragment>
-  ))
+}) => (
+  <>
+    {widgets.length > 0 &&
+      widgets.map((wi, idx) => (
+        <React.Fragment key={wi.id}>{WidgetRenderer(`wi_${idx}`, wi, ItemWrapper)}</React.Fragment>
+      ))}
+  </>
+)
