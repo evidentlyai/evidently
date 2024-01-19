@@ -62,7 +62,7 @@ function Sizes(size: number): sizes {
 const Widget = (props: WidgetProps) => {
   const { size } = props
   const alertsPosition = props.children.alertsPosition ?? 'row'
-  const { title, details, content, alerts, alertStats, insights } = props.children
+  const { id, title, details, content, alerts, alertStats, insights } = props.children
   const isAlertsExists = alerts === undefined ? false : alerts.length > 0
   const isInsightsExists = insights === undefined ? false : insights.length > 0
   // const classes = useStyles();
@@ -74,6 +74,7 @@ const Widget = (props: WidgetProps) => {
     >
       <Card
         // className={classes.widgetInner}
+        id={id}
         square
         elevation={2}
       >
