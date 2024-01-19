@@ -59,50 +59,76 @@ function Sizes(size: number): sizes {
   }
 }
 
-const Widget = (props: WidgetProps) => {
-  const { size } = props
+const Widget = (
+  props: WidgetProps & {
+    ItemWrapper?: ({ id, children }: { id: string; children: React.ReactNode }) => React.ReactNode
+  }
+) => {
+  const { size, ItemWrapper } = props
   const alertsPosition = props.children.alertsPosition ?? 'row'
   const { id, title, details, content, alerts, alertStats, insights } = props.children
   const isAlertsExists = alerts === undefined ? false : alerts.length > 0
   const isInsightsExists = insights === undefined ? false : insights.length > 0
-  // const classes = useStyles();
-  return (
-    <Grid
-      item
-      {...Sizes(size)}
-      // className={classes.widget}
-    >
-      <Card
-        // className={classes.widgetInner}
-        id={id}
-        square
-        elevation={2}
-      >
-        <CardContent
-        // className={classes.cardContentOverride}
-        >
-          <Grid container spacing={1} direction={'column'}>
-            {alertsPosition === 'row' ? (
-              <Grid container spacing={1} item>
-                <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
-                  {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
-                  <div>{content}</div>
-                  {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
+  const Component = (
+    <Card square elevation={2}>
+      <CardContent>
+        <Grid container spacing={1} direction={'column'}>
+          {alertsPosition === 'row' ? (
+            <Grid container spacing={1} item>
+              <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
+                {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
+                <div>{content}</div>
+                {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
+              </Grid>
+              {isAlertsExists ? (
+                <Grid
+                  container
+                  spacing={1}
+                  direction={'column'}
+                  justifyContent={'center'}
+                  item
+                  xs={3}
+                >
+                  {alerts ? (
+                    <React.Fragment>
+                      {alertStats ? (
+                        <Grid item>
+                          <AlertStatBlock
+                            alertStats={alertStats}
+                            // classes={classes}
+                          />
+                        </Grid>
+                      ) : (
+                        <div />
+                      )}
+                      {alerts.map((alert) => (
+                        <Grid item>
+                          <AlertBlock data={alert} />
+                        </Grid>
+                      ))}
+                    </React.Fragment>
+                  ) : (
+                    <div />
+                  )}
                 </Grid>
-                {isAlertsExists ? (
-                  <Grid
-                    container
-                    spacing={1}
-                    direction={'column'}
-                    justifyContent={'center'}
-                    item
-                    xs={3}
-                    // className={classes.alertArea}
-                  >
+              ) : (
+                <div />
+              )}
+            </Grid>
+          ) : (
+            <React.Fragment>
+              <Grid item>
+                {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
+                <div>{content}</div>
+                {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
+              </Grid>
+              {isAlertsExists ? (
+                <Grid item xs>
+                  <Grid container direction={'row'} spacing={1}>
                     {alerts ? (
                       <React.Fragment>
                         {alertStats ? (
-                          <Grid item>
+                          <Grid item xs>
                             <AlertStatBlock
                               alertStats={alertStats}
                               // classes={classes}
@@ -112,7 +138,7 @@ const Widget = (props: WidgetProps) => {
                           <div />
                         )}
                         {alerts.map((alert) => (
-                          <Grid item>
+                          <Grid item xs>
                             <AlertBlock data={alert} />
                           </Grid>
                         ))}
@@ -121,60 +147,29 @@ const Widget = (props: WidgetProps) => {
                       <div />
                     )}
                   </Grid>
-                ) : (
-                  <div />
-                )}
+                </Grid>
+              ) : (
+                <div />
+              )}
+            </React.Fragment>
+          )}
+          {isInsightsExists ? (
+            insights!.map((insight) => (
+              <Grid item xs sm md>
+                <InsightBlock data={insight} />
               </Grid>
-            ) : (
-              <React.Fragment>
-                <Grid item>
-                  {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
-                  <div>{content}</div>
-                  {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
-                </Grid>
-                {isAlertsExists ? (
-                  <Grid item xs>
-                    <Grid container direction={'row'} spacing={1}>
-                      {alerts ? (
-                        <React.Fragment>
-                          {alertStats ? (
-                            <Grid item xs>
-                              <AlertStatBlock
-                                alertStats={alertStats}
-                                // classes={classes}
-                              />
-                            </Grid>
-                          ) : (
-                            <div />
-                          )}
-                          {alerts.map((alert) => (
-                            <Grid item xs>
-                              <AlertBlock data={alert} />
-                            </Grid>
-                          ))}
-                        </React.Fragment>
-                      ) : (
-                        <div />
-                      )}
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <div />
-                )}
-              </React.Fragment>
-            )}
-            {isInsightsExists ? (
-              insights!.map((insight) => (
-                <Grid item xs sm md>
-                  <InsightBlock data={insight} />
-                </Grid>
-              ))
-            ) : (
-              <div />
-            )}
-          </Grid>
-        </CardContent>
-      </Card>
+            ))
+          ) : (
+            <div />
+          )}
+        </Grid>
+      </CardContent>
+    </Card>
+  )
+
+  return (
+    <Grid item {...Sizes(size)}>
+      {ItemWrapper ? ItemWrapper({ id, children: Component }) : Component}
     </Grid>
   )
 }
