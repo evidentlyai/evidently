@@ -9,9 +9,8 @@ from fastapi import Depends
 from fastapi.security import APIKeyHeader
 
 from evidently.ui.base import AuthManager
-from evidently.ui.base import ProjectPermission
+from evidently.ui.base import Permission
 from evidently.ui.base import Team
-from evidently.ui.base import TeamPermission
 from evidently.ui.base import User
 from evidently.ui.config import SecurityConfig
 from evidently.ui.type_aliases import OrgID
@@ -43,10 +42,10 @@ class NoopAuthManager(AuthManager):
     def get_available_project_ids(self, user_id: UserID) -> Optional[Set[ProjectID]]:
         return None
 
-    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: TeamPermission) -> bool:
+    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: Permission) -> bool:
         return True
 
-    def check_project_permission(self, user_id: UserID, project_id: ProjectID, permission: ProjectPermission) -> bool:
+    def check_project_permission(self, user_id: UserID, project_id: ProjectID, permission: Permission) -> bool:
         return True
 
     def create_user(self, user_id: UserID, name: Optional[str]) -> User:
