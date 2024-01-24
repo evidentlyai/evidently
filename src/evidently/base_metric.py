@@ -1,9 +1,11 @@
 import abc
 import logging
+import warnings
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -183,13 +185,19 @@ class InputData:
 TResult = TypeVar("TResult", bound=MetricResult)
 
 
+class FieldsDescriptor:
+    def __get__(self, instance: Optional["Metric"], type: Type["Metric"]) -> FieldPath:
+        if instance is not None:
+            try:
+                return FieldPath([], instance.get_result())
+            except ValueError:
+                warnings.warn("Metric is not calculated yet, using generic fields list")
+        return FieldPath([], type.result_type())
+
+
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
     def result_type(cls) -> Type[MetricResult]:
         return cls.__orig_bases__[0].__args__[0]  # type: ignore[attr-defined]
-
-    @property
-    def fields(cls) -> FieldPath:
-        return FieldPath([], cls.result_type())
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
@@ -198,6 +206,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
     # TODO: if we want metric-specific options
     options: Options
 
+    fields: ClassVar = FieldsDescriptor()
     # resulting options will be determined via
     # options = global_option.override(display_options).override(metric_options)
 
