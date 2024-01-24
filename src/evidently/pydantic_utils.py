@@ -184,6 +184,8 @@ class ExcludeNoneMixin(BaseModel):
 class FieldPath:
     def __init__(self, path: List[str], cls_or_instance: Union[Type, Any], is_mapping: bool = False):
         self._path = path
+        self._cls: Type
+        self._instance: Any
         if isinstance(cls_or_instance, type):
             self._cls = cls_or_instance
             self._instance = None
@@ -197,9 +199,9 @@ class FieldPath:
         return self._instance is not None
 
     def list_fields(self) -> List[str]:
-        if self.has_instance and self._is_mapping:
+        if self.has_instance and self._is_mapping and isinstance(self._instance, dict):
             return list(self._instance.keys())
-        if issubclass(self._cls, BaseModel):
+        if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
             return list(self._cls.__fields__)
         return []
 
@@ -208,7 +210,7 @@ class FieldPath:
 
     def child(self, item: str) -> "FieldPath":
         if self._is_mapping:
-            if self.has_instance:
+            if self.has_instance and isinstance(self._instance, dict):
                 return FieldPath(self._path + [item], self._instance[item])
             return FieldPath(self._path + [item], self._cls)
         if not issubclass(self._cls, BaseModel):
