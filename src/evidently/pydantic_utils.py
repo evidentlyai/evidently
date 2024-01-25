@@ -237,7 +237,7 @@ class FieldPath:
                 field_value = getattr(self._instance, name)
                 if is_mapping and isinstance(field_value, dict):
                     for key, value in field_value.items():
-                        res.extend(FieldPath(self._path + [name, key], value).list_nested_fields())
+                        res.extend(FieldPath(self._path + [name, str(key)], value).list_nested_fields())
                     continue
             else:
                 if is_mapping:
