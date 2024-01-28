@@ -84,7 +84,7 @@ def _calculate_threshold(
     text_stattest_threshold: Optional[float] = None,
     per_column_stattest_threshold: Optional[Dict[str, float]] = None,
 ) -> Optional[float]:
-    if per_column_stattest_threshold is not None:
+    if per_column_stattest_threshold is not None and feature_name in per_column_stattest_threshold.keys():
         return per_column_stattest_threshold.get(feature_name)
 
     if cat_stattest_threshold is not None and feature_type == "cat":

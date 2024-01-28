@@ -58,6 +58,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
 
         super().__init__(
@@ -69,6 +70,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = ClassificationQualityMetric()
         self._dummy_metric = ClassificationDummyMetric()
@@ -113,7 +115,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+        k: Optional[int] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -122,6 +124,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
 
         if k is not None and probas_threshold is not None:
@@ -137,6 +140,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
         self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
@@ -248,6 +252,7 @@ class TestRocAuc(SimpleClassificationTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         self._roc_curve = ClassificationRocCurve()
         super().__init__(
@@ -259,6 +264,7 @@ class TestRocAuc(SimpleClassificationTest):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
 
     def get_value(self, result: DatasetClassificationQuality):
@@ -484,13 +490,13 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
     _conf_matrix: ClassificationConfusionMatrix
     label: Label
     probas_threshold: Optional[float] = None
-    k: Optional[Union[float, int]] = None
+    k: Optional[int] = None
 
     def __init__(
         self,
         label: Label,
         probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+        k: Optional[int] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -499,6 +505,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         if k is not None and probas_threshold is not None:
             raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
@@ -515,6 +522,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
 
         self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)

@@ -19,6 +19,9 @@ class Sentiment(GeneratedFeature):
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        import nltk
+
+        nltk.download("vader_lexicon", quiet=True)
         sid = SentimentIntensityAnalyzer()
 
         def sentiment_f(s, sid=sid):

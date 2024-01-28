@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import chi_stat_test
     >>> options = DataDriftOptions(all_features_stattest=chi_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="chisquare")
 """
 from typing import Tuple
@@ -30,10 +30,11 @@ from scipy.stats import chisquare
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
+from evidently.core import ColumnType
 
 
 def _chi_stat_test(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
@@ -46,7 +47,9 @@ def _chi_stat_test(
 
 
 chi_stat_test = StatTest(
-    name="chisquare", display_name="chi-square p_value", func=_chi_stat_test, allowed_feature_types=["cat"]
+    name="chisquare",
+    display_name="chi-square p_value",
+    allowed_feature_types=[ColumnType.Categorical],
 )
 
-register_stattest(chi_stat_test)
+register_stattest(chi_stat_test, default_impl=_chi_stat_test)

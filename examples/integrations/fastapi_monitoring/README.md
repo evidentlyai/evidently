@@ -9,7 +9,9 @@ This example shows steps to integrate Evidently into your production pipeline us
 - Save predictions to [PostgreSQL](https://www.postgresql.org/) database
 - View monitoring reports using API endpoints or [Streamlit](https://streamlit.io/) UI 
 
+**Note**: we tested this example on macOS/Linux.
 
+You can also read the blog [Tutorial](https://www.evidentlyai.com/blog/fastapi-tutorial).
 
 --------
 Project Organization

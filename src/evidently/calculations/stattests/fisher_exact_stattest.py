@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import fisher_exact_test
     >>> options = DataDriftOptions(all_features_stattest=fisher_exact_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="fisher_exact")
 """
 from typing import Tuple
@@ -31,11 +31,12 @@ from scipy.stats import fisher_exact
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
+from ...core import ColumnType
 from .utils import generate_fisher2x2_contingency_table
 
 
 def _fisher_exact_stattest(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Calculate the p-value of Fisher's exact test between two arrays
     Args:
@@ -72,9 +73,8 @@ def _fisher_exact_stattest(
 fisher_exact_test = StatTest(
     name="fisher_exact",
     display_name="Fisher's Exact test",
-    func=_fisher_exact_stattest,
-    allowed_feature_types=["cat"],
+    allowed_feature_types=[ColumnType.Categorical],
     default_threshold=0.1,
 )
 
-register_stattest(fisher_exact_test)
+register_stattest(fisher_exact_test, _fisher_exact_stattest)

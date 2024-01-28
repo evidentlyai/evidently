@@ -4,40 +4,41 @@ It helps evaluate, test, and monitor data and ML models from validation to produ
 
 # Quick Start
 
-Have only 1 minute? Check out this example:
-{% content-ref url="get-started/hello-world.md" %}
-["Hello world" example](get-started/hello-world.md). 
-{% endcontent-ref %}
+New to Evidently? Check out the ["Hello world"](get-started/hello-world.md) example (1 min) or go through the Tutorial (15 min):
 
-New to Evidently? This tutorial shows how to run ad hoc data and model checks. (15 min).
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Want a dashboard to track metrics over time? (2 min to launch a demo, 15 to complete).
+Want a dashboard to track metrics over time? You can self-host it: 
 {% content-ref url="get-started/tutorial-monitoring.md" %}
 [Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
 
-You can explore mode code [examples](examples/examples.md). 
+Or get started with [Evidently Cloud](https://www.evidentlyai.com/cloud-signup): 
+{% content-ref url="get-started/tutorial-cloud.md" %}
+[Get started tutorial](get-started/tutorial-cloud.md). 
+{% endcontent-ref %}
+
+You can explore more code [examples](examples/examples.md). 
 
 # How it works 
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and a **Monitoring Dashboard**. These interfaces cover alternative usage scenarios: from  ad hoc analysis to automated pipeline testing and continuous monitoring.
+Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and a **Monitoring Dashboard**. They cover different usage scenarios: from ad hoc analysis to automated pipeline testing and continuous monitoring.
 
 Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
 
 # 1. Tests suites: batch model checks 
 
-Tests perform structured data and ML model quality checks. You can set test parameters manually or let Evidently learn the expectations from the reference dataset. Tests verify a condition and return an explicit **pass** or **fail** result. 
+Tests perform structured data and ML model quality checks. You can set the conditions manually or let Evidently generate them based on the reference dataset. Tests will return an explicit **pass** or **fail** result. 
  
 You can create a **Test Suite** from 50+ tests or run one of the **Presets**. For example, to test Data Stability or Regression Performance.
 
 Tests are best for automated batch checks.
  
-![Example of an Evidently test](.gitbook/assets/main/evidently_tests_main-min.png)
+![](.gitbook/assets/main/evidently_tests_main-min.png)
 
 **Input**: one or two datasets as pandas.DataFrames or csv.
  
@@ -58,13 +59,13 @@ You can create a custom **Report** from individual metrics or run one of the **P
  
 Reports are best for exploratory analysis, debugging, and documentation.
 
-![Evidently reports](.gitbook/assets/main/evidently_reports_main-min.png)
+![](.gitbook/assets/main/evidently_reports_main-min.png)
 
 **Input**: one or two datasets as pandas.DataFrames or csv. 
  
 **How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML file, JSON, or Python dictionary.
  
-**Primary use case**: debugging and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
+**Primary use case**: analysis and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
  
 **Secondary use cases**:
 * **Reporting and documentation**. You can generate visual HTML reports and ML model cards.
@@ -83,7 +84,7 @@ You can self-host an ML monitoring dashboard to visualize metrics and test resul
 
 You can visualize any and track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embedding drift.
 
-![ML monitoring](.gitbook/assets/main/evidently_ml_monitoring_main-min.png)
+![](.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 **Input**: Evidently `snapshots`, logged to an object storage. 
 

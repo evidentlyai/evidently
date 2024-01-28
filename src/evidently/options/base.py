@@ -5,8 +5,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from pydantic import BaseModel
-
+from evidently._pydantic_compat import BaseModel
 from evidently.options import ColorOptions
 from evidently.options.agg_data import RenderOptions
 from evidently.options.option import Option
@@ -35,7 +34,7 @@ class Options(BaseModel):
         return option_type()
 
     @classmethod
-    def from_list(cls, values: List[Option]):
+    def from_list(cls, values: List[Option]) -> "Options":
         kwargs: Dict = {"custom": {}}
         for value in values:
             field = _option_cls_mapping.get(type(value), None)

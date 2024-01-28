@@ -9,6 +9,8 @@ from .classification_performance.class_separation_metric import ClassificationCl
 from .classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from .classification_performance.classification_quality_metric import ClassificationQualityMetric
 from .classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
+from .classification_performance.lift_curve_metric import ClassificationLiftCurve
+from .classification_performance.lift_table_metric import ClassificationLiftTable
 from .classification_performance.pr_curve_metric import ClassificationPRCurve
 from .classification_performance.pr_table_metric import ClassificationPRTable
 from .classification_performance.probability_distribution_metric import ClassificationProbDistribution
@@ -29,6 +31,7 @@ from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_integrity.column_summary_metric import ColumnSummaryMetric
 from .data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
 from .data_integrity.dataset_summary_metric import DatasetSummaryMetric
+from .data_quality.column_category_metric import ColumnCategoryMetric
 from .data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from .data_quality.column_distribution_metric import ColumnDistributionMetric
 from .data_quality.column_quantile_metric import ColumnQuantileMetric
@@ -40,6 +43,23 @@ from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality.stability_metric import DataQualityStabilityMetric
 from .data_quality.text_descriptors_correlation_metric import TextDescriptorsCorrelationMetric
 from .data_quality.text_descriptors_distribution import TextDescriptorsDistribution
+from .recsys.diversity import DiversityMetric
+from .recsys.f_beta_top_k import FBetaTopKMetric
+from .recsys.hit_rate_k import HitRateKMetric
+from .recsys.item_bias import ItemBiasMetric
+from .recsys.map_k import MAPKMetric
+from .recsys.mar_k import MARKMetric
+from .recsys.mrr import MRRKMetric
+from .recsys.ndcg_k import NDCGKMetric
+from .recsys.novelty import NoveltyMetric
+from .recsys.personalisation import PersonalizationMetric
+from .recsys.popularity_bias import PopularityBias
+from .recsys.precision_top_k import PrecisionTopKMetric
+from .recsys.rec_examples import RecCasesTable
+from .recsys.recall_top_k import RecallTopKMetric
+from .recsys.scores_distribution import ScoreDistribution
+from .recsys.serendipity import SerendipityMetric
+from .recsys.user_bias import UserBiasMetric
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
 from .regression_performance.error_bias_table import RegressionErrorBiasTable
 from .regression_performance.error_distribution import RegressionErrorDistribution
@@ -64,6 +84,8 @@ __all__ = [
     "ClassificationQualityByClass",
     "ClassificationQualityByFeatureTable",
     "ClassificationRocCurve",
+    "ClassificationLiftCurve",
+    "ClassificationLiftTable",
     "ColumnDriftMetric",
     "ColumnValuePlot",
     "DataDriftTable",
@@ -76,6 +98,7 @@ __all__ = [
     "ColumnSummaryMetric",
     "DatasetMissingValuesMetric",
     "DatasetSummaryMetric",
+    "ColumnCategoryMetric",
     "ColumnCorrelationsMetric",
     "ColumnDistributionMetric",
     "ColumnInteractionPlot",
@@ -100,4 +123,21 @@ __all__ = [
     "RegressionPerformanceMetrics",
     "RegressionQualityMetric",
     "RegressionTopErrorMetric",
+    "PrecisionTopKMetric",
+    "RecallTopKMetric",
+    "FBetaTopKMetric",
+    "MAPKMetric",
+    "MARKMetric",
+    "NDCGKMetric",
+    "DiversityMetric",
+    "PersonalizationMetric",
+    "NoveltyMetric",
+    "PopularityBias",
+    "UserBiasMetric",
+    "ItemBiasMetric",
+    "SerendipityMetric",
+    "HitRateKMetric",
+    "ScoreDistribution",
+    "MRRKMetric",
+    "RecCasesTable",
 ]

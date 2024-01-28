@@ -16,3 +16,8 @@ MANIFEST
 profile.json
 
 __pycache__
+
+# see .devcontainer/devcontainer.json
+test-workspace
+workspace
+workspace-for-visual-testing

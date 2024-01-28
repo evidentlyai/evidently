@@ -1,13 +1,12 @@
-from typing import Callable
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 
 import numpy as np
 
-from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metric_results import DatasetColumns
+from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pipeline.column_mapping import TaskType
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
@@ -20,6 +19,7 @@ from evidently.tests import TestNumColumnsOutOfRangeValues
 from evidently.tests import TestShareOfDriftedColumns
 from evidently.utils.data_drift_utils import add_emb_drift_to_reports
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class NoTargetPerformanceTestPreset(TestPreset):
@@ -43,7 +43,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
 
     columns: Optional[List[str]]
     embeddings: Optional[List[str]]
-    embeddings_drift_method: Optional[Dict[str, Callable]]
+    embeddings_drift_method: Optional[Dict[str, DriftMethod]]
     drift_share: Optional[float]
     stattest: Optional[PossibleStatTestType] = None
     cat_stattest: Optional[PossibleStatTestType] = None
@@ -60,7 +60,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self,
         columns: Optional[List[str]] = None,
         embeddings: Optional[List[str]] = None,
-        embeddings_drift_method: Optional[Dict[str, Callable]] = None,
+        embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None,
         drift_share: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
@@ -89,14 +89,15 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_feature_threshold = per_column_stattest_threshold
 
-    def generate_tests(self, data: InputData, columns: DatasetColumns):
-        embeddings_data = data.column_mapping.embeddings
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+        embeddings_data = data_definition.embeddings()
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))
             if self.columns is None:
                 self.columns = list(
                     np.setdiff1d(
-                        columns.num_feature_names + columns.cat_feature_names + columns.text_feature_names, embs
+                        [column.column_name for column in data_definition.get_columns(features_only=True)],
+                        embs,
                     )
                 )
             else:
@@ -104,10 +105,11 @@ class NoTargetPerformanceTestPreset(TestPreset):
 
         preset_tests: List = []
 
-        if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
+        prediction_columns = data_definition.get_prediction_columns()
+        if prediction_columns is not None and prediction_columns.predicted_values is not None:
             stattest, threshold = resolve_stattest_threshold(
-                columns.utility_columns.prediction,
-                "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",
+                prediction_columns.predicted_values.column_name,
+                "cat" if data_definition.task() == TaskType.CLASSIFICATION_TASK else "num",
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
@@ -121,7 +123,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
             )
             preset_tests.append(
                 TestColumnDrift(
-                    column_name=columns.utility_columns.prediction,
+                    column_name=prediction_columns.predicted_values.column_name,
                     stattest=stattest,
                     stattest_threshold=threshold,
                 )

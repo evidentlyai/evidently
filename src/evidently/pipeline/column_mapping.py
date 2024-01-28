@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -9,6 +10,12 @@ from typing import Union
 class TaskType:
     REGRESSION_TASK: str = "regression"
     CLASSIFICATION_TASK: str = "classification"
+    RECOMMENDER_SYSTEMS: str = "recsys"
+
+
+class RecomType(Enum):
+    SCORE = "score"
+    RANK = "rank"
 
 
 TargetNames = Union[List[Union[int, str]], Dict[Union[int, str], str]]
@@ -29,9 +36,18 @@ class ColumnMapping:
     pos_label: Optional[Union[str, int]] = 1
     text_features: Optional[List[str]] = None
     embeddings: Optional[Embeddings] = None
+    user_id: Optional[str] = "user_id"
+    item_id: Optional[str] = "item_id"
+    recommendations_type: Union[RecomType, str] = RecomType.SCORE
 
-    def is_classification_task(self):
+    @property
+    def recom_type(self) -> RecomType:
+        if isinstance(self.recommendations_type, str):
+            return RecomType(self.recommendations_type)
+        return self.recommendations_type
+
+    def is_classification_task(self) -> bool:
         return self.task == TaskType.CLASSIFICATION_TASK
 
-    def is_regression_task(self):
+    def is_regression_task(self) -> bool:
         return self.task == TaskType.REGRESSION_TASK

@@ -47,6 +47,10 @@ def test_get_columns():
         task="classification",
         classification_labels=["class_1", "class_2", "class_3"],
         embeddings=None,
+        reference_present=True,
+        user_id=None,
+        item_id=None,
+        recommendations_type=None,
     )
 
     all_columns = [
@@ -66,20 +70,26 @@ def test_get_columns():
     ]
     assert all_columns == [cd.column_name for cd in definition.get_columns()]
     cat_columns = ["id", "target", "predicted", "column_1"]
-    assert cat_columns == [cd.column_name for cd in definition.get_columns(filter_def="categorical_columns")]
+    assert cat_columns == [cd.column_name for cd in definition.get_columns(filter_def=ColumnType.Categorical)]
     num_columns = ["class_1", "class_2", "class_3", "column_2", "column_3"]
-    assert num_columns == [cd.column_name for cd in definition.get_columns(filter_def="numerical_columns")]
+    assert num_columns == [cd.column_name for cd in definition.get_columns(filter_def=ColumnType.Numerical)]
     dt_columns = ["datetime", "column_4", "column_5", "column_6"]
-    assert dt_columns == [cd.column_name for cd in definition.get_columns(filter_def="datetime_columns")]
+    assert dt_columns == [cd.column_name for cd in definition.get_columns(filter_def=ColumnType.Datetime)]
 
     features = ["column_1", "column_2", "column_3", "column_4", "column_5", "column_6"]
-    assert features == [cd.column_name for cd in definition.get_columns(filter_def="all_features")]
+    assert features == [cd.column_name for cd in definition.get_columns(features_only=True)]
     cat_features = ["column_1"]
-    assert cat_features == [cd.column_name for cd in definition.get_columns(filter_def="categorical_features")]
+    assert cat_features == [
+        cd.column_name for cd in definition.get_columns(filter_def=ColumnType.Categorical, features_only=True)
+    ]
     num_features = ["column_2", "column_3"]
-    assert num_features == [cd.column_name for cd in definition.get_columns(filter_def="numerical_features")]
+    assert num_features == [
+        cd.column_name for cd in definition.get_columns(filter_def=ColumnType.Numerical, features_only=True)
+    ]
     dt_features = ["column_4", "column_5", "column_6"]
-    assert dt_features == [cd.column_name for cd in definition.get_columns(filter_def="datetime_features")]
+    assert dt_features == [
+        cd.column_name for cd in definition.get_columns(filter_def=ColumnType.Datetime, features_only=True)
+    ]
 
 
 @pytest.mark.parametrize(

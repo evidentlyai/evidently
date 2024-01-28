@@ -13,6 +13,7 @@ import pandas as pd
 
 from evidently.core import ColumnType
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pipeline.column_mapping import RecomType
 from evidently.pipeline.column_mapping import TargetNames
 from evidently.pipeline.column_mapping import TaskType
 
@@ -41,28 +42,15 @@ class PredictionColumns:
         return [col for col in result if col is not None]
 
 
-def _check_filter(column: ColumnDefinition, utility_columns: List[str], filter_def: str) -> bool:
-    if filter_def == "all":
-        return True
-    if filter_def == "categorical_columns":
-        return column.column_type == ColumnType.Categorical
-    if filter_def == "numerical_columns":
-        return column.column_type == ColumnType.Numerical
-    if filter_def == "datetime_columns":
-        return column.column_type == ColumnType.Datetime
-    if filter_def == "text_columns":
-        return column.column_type == ColumnType.Text
-    if filter_def == "all_features":
-        return column.column_name not in utility_columns
-    if filter_def == "text_features":
-        return column.column_type == ColumnType.Text and column.column_name not in utility_columns
-    if filter_def == "categorical_features":
-        return column.column_type == ColumnType.Categorical and column.column_name not in utility_columns
-    if filter_def == "numerical_features":
-        return column.column_type == ColumnType.Numerical and column.column_name not in utility_columns
-    if filter_def == "datetime_features":
-        return column.column_type == ColumnType.Datetime and column.column_name not in utility_columns
-    raise ValueError(f"Unknown filter: {filter_def}")
+def _check_filter(
+    column: ColumnDefinition, utility_columns: List[str], filter_def: ColumnType = None, features_only: bool = False
+) -> bool:
+    if filter_def is None:
+        return column.column_name not in utility_columns if features_only else True
+    if not features_only:
+        return column.column_type == filter_def
+
+    return column.column_type == filter_def and column.column_name not in utility_columns
 
 
 @dataclasses.dataclass
@@ -73,9 +61,13 @@ class DataDefinition:
     _id_column: Optional[ColumnDefinition]
     _datetime_column: Optional[ColumnDefinition]
     _embeddings: Optional[Dict[str, List[str]]]
+    _user_id: Optional[ColumnDefinition]
+    _item_id: Optional[ColumnDefinition]
 
     _task: Optional[str]
     _classification_labels: Optional[TargetNames]
+    _reference_present: bool
+    _recommendations_type: Optional[RecomType]
 
     def __init__(
         self,
@@ -85,8 +77,12 @@ class DataDefinition:
         id_column: Optional[ColumnDefinition],
         datetime_column: Optional[ColumnDefinition],
         embeddings: Optional[Dict[str, List[str]]],
+        user_id: Optional[ColumnDefinition],
+        item_id: Optional[ColumnDefinition],
         task: Optional[str],
         classification_labels: Optional[TargetNames],
+        reference_present: bool,
+        recommendations_type: Union[RecomType, str, None],
     ):
         self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
@@ -94,13 +90,19 @@ class DataDefinition:
         self._task = task
         self._target = target
         self._prediction_columns = prediction_columns
+        self._item_id = item_id
+        self._user_id = user_id
         self._classification_labels = classification_labels
         self._embeddings = embeddings
+        self._reference_present = reference_present
+        self._recommendations_type = (
+            recommendations_type if not isinstance(recommendations_type, str) else RecomType(recommendations_type)
+        )
 
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self._columns[column_name]
 
-    def get_columns(self, filter_def: str = "all") -> List[ColumnDefinition]:
+    def get_columns(self, filter_def: ColumnType = None, features_only: bool = False) -> List[ColumnDefinition]:
         if self._prediction_columns is not None:
             prediction = self._prediction_columns.get_columns_list()
         else:
@@ -111,11 +113,17 @@ class DataDefinition:
                 self._id_column,
                 self._datetime_column,
                 self._target,
+                self._user_id,
+                self._item_id,
                 *prediction,
             ]
             if col is not None
         ]
-        return [column for column in self._columns.values() if _check_filter(column, utility_columns, filter_def)]
+        return [
+            column
+            for column in self._columns.values()
+            if _check_filter(column, utility_columns, filter_def, features_only)
+        ]
 
     def get_target_column(self) -> Optional[ColumnDefinition]:
         return self._target
@@ -125,6 +133,12 @@ class DataDefinition:
 
     def get_id_column(self) -> Optional[ColumnDefinition]:
         return self._id_column
+
+    def get_user_id_column(self) -> Optional[ColumnDefinition]:
+        return self._user_id
+
+    def get_item_id_column(self) -> Optional[ColumnDefinition]:
+        return self._item_id
 
     def get_datetime_column(self) -> Optional[ColumnDefinition]:
         return self._datetime_column
@@ -137,6 +151,12 @@ class DataDefinition:
 
     def embeddings(self) -> Optional[Dict]:
         return self._embeddings
+
+    def reference_present(self) -> bool:
+        return self._reference_present
+
+    def recommendations_type(self) -> Optional[RecomType]:
+        return self._recommendations_type
 
 
 def _process_column(
@@ -189,6 +209,14 @@ def _prediction_column(
                 raise ValueError("Prediction type is categorical but task is regression")
             if prediction_type == ColumnType.Numerical:
                 return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
+        if mapping is not None and mapping.recommendations_type == RecomType.RANK:
+            return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
+        if (
+            task == TaskType.RECOMMENDER_SYSTEMS
+            and mapping is not None
+            and mapping.recommendations_type == RecomType.SCORE
+        ):
+            return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
         if task is None:
             if prediction_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
                 # probably this is binary with single column of probabilities
@@ -257,6 +285,24 @@ def create_data_definition(
         ),
         data,
     )
+    user_id = _process_column(
+        _column_not_present_in_list(
+            mapping.user_id,
+            embedding_columns,
+            "warning",
+            "Column {column} is in embeddings list and as an user_id field. Ignoring user_id field.",
+        ),
+        data,
+    )
+    item_id = _process_column(
+        _column_not_present_in_list(
+            mapping.item_id,
+            embedding_columns,
+            "warning",
+            "Column {column} is in embeddings list and as an item_id field. Ignoring item_id field.",
+        ),
+        data,
+    )
     target_column = _process_column(
         _column_not_present_in_list(
             mapping.target,
@@ -289,6 +335,8 @@ def create_data_definition(
 
     all_columns = [
         id_column,
+        user_id,
+        item_id,
         datetime_column,
         target_column,
         *prediction_cols,
@@ -415,15 +463,26 @@ def create_data_definition(
         else:
             task = None
 
+    labels = None
+    if target_column is not None:
+        labels = list(data.current[target_column.column_name].unique())
+        if data.reference is not None:
+            labels = list(set(labels) | set(data.reference[target_column.column_name].unique()))
+    recommendations_type = mapping.recommendations_type or RecomType.SCORE
+
     return DataDefinition(
         columns=[col for col in all_columns if col is not None],
         id_column=id_column,
+        user_id=user_id,
+        item_id=item_id,
         datetime_column=datetime_column,
         target=target_column,
         prediction_columns=prediction_columns,
         task=task,
-        classification_labels=mapping.target_names,
+        classification_labels=mapping.target_names or labels,
         embeddings=embeddings,
+        reference_present=reference_data is not None,
+        recommendations_type=recommendations_type,
     )
 
 
@@ -483,9 +542,10 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
                 cur_type = ref_type
     nunique = ref_unique or cur_unique
     # special case: target
+    column_dtype = cur_type if cur_type is not None else ref_type
     if mapping is not None and (column_name == mapping.target or (mapping.target is None and column_name == "target")):
         reg_condition = mapping.task == "regression" or (
-            pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+            pd.api.types.is_numeric_dtype(column_dtype)
             and mapping.task != "classification"
             and (nunique is not None and nunique > NUMBER_UNIQUE_AS_CATEGORICAL)
         )
@@ -499,14 +559,20 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
         or (mapping.prediction is None and column_name == "prediction")
     ):
         if (
-            pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
+            pd.api.types.is_string_dtype(column_dtype)
             or (
-                pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
+                pd.api.types.is_integer_dtype(column_dtype)
                 and mapping.task != "regression"
                 and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL)
             )
             or (
-                pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
+                pd.api.types.is_numeric_dtype(column_dtype)
+                and mapping.task != "regression"
+                and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL)
+                and (data.current[column_name].max() > 1 or data.current[column_name].min() < 0)
+            )
+            or (
+                pd.api.types.is_numeric_dtype(column_dtype)
                 and mapping.task == "classification"
                 and (data.current[column_name].max() > 1 or data.current[column_name].min() < 0)
             )
@@ -516,13 +582,15 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
             return ColumnType.Numerical
 
     # all other features
-    if pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type):
+    if pd.api.types.is_integer_dtype(column_dtype):
         nunique = ref_unique or cur_unique
         if nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL:
             return ColumnType.Categorical
         return ColumnType.Numerical
-    if pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type):
+    if pd.api.types.is_numeric_dtype(column_dtype):
+        if column_dtype == bool:
+            return ColumnType.Categorical
         return ColumnType.Numerical
-    if pd.api.types.is_datetime64_dtype(cur_type if cur_type is not None else ref_type):
+    if pd.api.types.is_datetime64_dtype(column_dtype):
         return ColumnType.Datetime
     return ColumnType.Categorical

@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import t_test
     >>> options = DataDriftOptions(all_features_stattest=t_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="t_test")
 """
 from typing import Tuple
@@ -29,10 +29,11 @@ from scipy.stats import ttest_ind
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def _t_test2samp(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the two-sample t test between reference and current
     Args:
@@ -51,8 +52,7 @@ def _t_test2samp(
 t_test = StatTest(
     name="t_test",
     display_name="t_test",
-    func=_t_test2samp,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
 )
 
-register_stattest(t_test)
+register_stattest(t_test, _t_test2samp)

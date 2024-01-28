@@ -3,8 +3,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic import BaseModel
-
+from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
@@ -30,7 +29,7 @@ class ClassificationConfusionMatrixResult(MetricResult):
 
 class ClassificationConfusionMatrixParameters(BaseModel):
     probas_threshold: Optional[float]
-    k: Optional[Union[float, int]]
+    k: Optional[int]
 
     def confusion_matric_metric(self):
         return ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
@@ -42,7 +41,7 @@ class ClassificationConfusionMatrix(
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
-        k: Optional[Union[float, int]] = None,
+        k: Optional[int] = None,
         options: AnyOptions = None,
     ):
         super().__init__(probas_threshold=probas_threshold, k=k, options=options)

@@ -27,6 +27,7 @@ package_data_spec = {
         "ui/ui/*",
         "ui/ui/static/css/*",
         "ui/ui/static/js/*",
+        "ui/ui/static/img/*",
     ]
 }
 
@@ -45,29 +46,35 @@ cmdclass["jsdeps"] = combine_commands(
 setup_args = dict(
     cmdclass=cmdclass,
     author_email="emeli.dral@gmail.com",
+    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
         "plotly>=5.5.0",
         "statsmodels>=0.12.2",
         "scikit-learn>=0.24.0",
-        "pandas>=1.3.5",
+        "pandas[parquet]>=1.3.5",
         "numpy>=1.19.5",
         "nltk>=3.6.7",
-        "umap-learn>=0.5.3",
         "scipy>=1.5.4",
-        "requests>=2.19.0",
+        "requests>=2.21.0",
         "PyYAML>=5.1",
-        "pydantic>=1.10,<2",
-        "fastapi>=0.98.0",
+        "pydantic<2",
+        "fastapi>=0.100.0",
+        "fastapi-restful>=0.5.0",
+        "typing-inspect>=0.9.0",
         "uvicorn>=0.22.0",
-        "typer>=0.9",
+        "watchdog>=3",
+        "typer>=0.3",
         "rich>=13",
-        "iterative-telemetry==0.0.5"  # todo: until we support 3.7
+        "iterative-telemetry>=0.0.5",
+        "fsspec",
     ],
     extras_require={
         "dev": [
             "wheel==0.35.1",
-            "setuptools==50.3.2",
+            "setuptools==50.3.2; python_version < '3.12'",
+            "setuptools==68.2.2; python_version >= '3.12'",
             "flake8==4.0.1",
             "jupyter==1.0.0",
             "mypy==0.910",
@@ -79,6 +86,13 @@ setup_args = dict(
             "pillow==9.5.0",
             "black==22.8.0",
             "isort==5.10.1",
+            "httpx==0.24.1"
+        ],
+        "spark": [
+            "pyspark"
+        ],
+        "fsspec": [
+            "fsspec[full]"
         ]
     },
     entry_points={

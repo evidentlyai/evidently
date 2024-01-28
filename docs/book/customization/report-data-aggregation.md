@@ -61,6 +61,10 @@ All plots in the Report will be non-aggregated. Here is how the Scatter Plot in 
 **Consider the data size.** We recommend setting this option for smaller datasets or when you apply sampling. With non-aggregated plots, the HTML will contain all the data on individual data points. They may take significant time to load and be large in size. 
 {% endhint %}
 
+{% hint style="info" %}
+**Raw data is not available on Spark.** If you run the computations using Spark, the raw data option is not available.
+{% endhint %}
+
 # Non-aggregated plots for Metrics
 
 If you want to generate non-aggregated plots only for some visualizations, you can pass the option to the chosen Metrics:

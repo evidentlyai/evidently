@@ -16,6 +16,10 @@ The tutorial is split into two parts.
 
 **Note**: This guide assumes you run Evidently locally.
 
+{% hint style="info" %}
+**Don't want to self-host the ML monitoring dashboard?** Check out the [Evidently Cloud tutorial](tutorial-cloud.md).
+{% endhint %}
+
 # Part 1. Pre-built demo
 
 ## 1. Create virtual environment
@@ -45,17 +49,17 @@ conda install -c conda-forge evidently
 
 ## 3. Run demo project
 
-To launch the Evidently service with the demo project, run: 
+To launch the Evidently service with the demo projects, run: 
 
 ```
-evidently ui --demo-project
+evidently ui --demo-projects all
 ```
- 
+
 ## 4. View the project
 
 To view the Evidently interface, go to URL http://localhost:8000 in your web browser.
 
-![ML monitoring](../.gitbook/assets/main/evidently_ml_monitoring_main-min.png)
+![ML monitoring](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
 You will see a pre-built project that shows the toy model quality over 20 days. You can switch between tabs and view individual Reports and Test Suites. Each Report or Test Suite contains the information logged for a daily period. The monitoring dashboard parses the data from these Reports and shows how metrics change over time.
 
@@ -80,7 +84,7 @@ Open and explore the `get_started_monitoring.py`.
 This script does the following:
 * Imports the required components
 * Imports a toy dataset 
-* Defines the metrics to log using Evidenty Reports and Test Suites 
+* Defines the metrics to log using Evidently Reports and Test Suites 
 * Computes the metrics iterating over toy data 
 * Creates a new Evidently workspace and project
 * Creates several panels to visualize the metrics  
@@ -176,7 +180,7 @@ def create_report(i: int):
 * You can pass additional parameters to the individual Tests and Metrics.
 
 {% hint style="info" %}
-**Evaluating model quality.** For simplicity, the example works with a raw dataset. There is no model! You cannot compute model quality metrics for this dataset – you need to include prediction and target columns. You might also need to use [column Mapping](../input-data/column-mapping.md) to map your inputs.
+**Evaluating model quality.** For simplicity, the example works with a raw dataset. There is no model! You cannot compute model quality metrics on this data – you need to add prediction and target columns. You might also need to use [column mapping](../input-data/column-mapping.md) to map your inputs.
 {% endhint %}
 
 ### 1.4. Add panels to the project
@@ -196,20 +200,20 @@ Here is an example of adding a counter metric. The complete script includes seve
 ```python
     project.dashboard.add_panel(
         DashboardPanelCounter(
-            title="Model Calls",
+            title="Share of Drifted Features",
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             value=PanelValue(
-                metric_id="DatasetMissingValuesMetric",
-                field_path=DatasetMissingValuesMetric.fields.current.number_of_rows,
-                legend="count",
+                metric_id="DatasetDriftMetric",
+                field_path="share_of_drifted_columns",
+                legend="share",
             ),
-            text="count",
-            agg=CounterAgg.SUM,
+            text="share",
+            agg=CounterAgg.LAST,
             size=1,
         )
     )
 ```
-
+    
 As a `metric_id`, you pass the name of the Evidently Metric that was logged as part of the Report. As a `field_path`, you select the metric result computed as part of this Metric. Since Evidently Metrics contain multiple data points, you must specify which to show on a dashboard. You can display multiple metrics on a single panel. 
 
 **What you can change**:
@@ -218,18 +222,19 @@ As a `metric_id`, you pass the name of the Evidently Metric that was logged as p
 * You can define the aggregation function or select to show the last metric value.
 * You can add panels of different types following the examples in the script.
 
-### 1.5. Save snapshots
+### 1.5. Save panels
 
-To create logs parsable by the Evidently UI, you must save the Report or Test Suite output as a `snapshot`. This is a rich JSON object that contains summaries of the captured data and model metrics. You must store the snapshots in the object storage under the corresponding workspace name.
+To save changes made to a project, you must use the method save().
 
 ```python
 project.save()
-return project
 ```
 
 ### 1.6. Create the workspace and project
 
-Finally, create the project and workspace. When you execute the script, Evidently will log the snapshots with the selected metrics to the defined workspace folder, as if you captured data for 5 days. It will also create the dashboard panels.
+Finally, create the project, workspace, and generate the JSON `snapshots`. `Snapshot` is a JSON "version" of the `Report` or `Test Suite` that was defined earlier. It contains summaries of the captured data and model metrics. You must store the snapshots in a directory under the corresponding workspace name. This way, Evidently UI will be able to parse the metrics and visualize them on the monitoring panels.
+
+When you execute the script, Evidently will log the snapshots with the selected metrics to the defined workspace folder, as if you captured data for 5 days. It will also create the dashboard panels.
 
 ```python
 def create_demo_project(workspace: str):
@@ -249,7 +254,7 @@ if __name__ == "__main__":
 
 If you made any edits to this script, save them. 
 
-## 2. (Optional). Delete workspace
+## 2. (Optional) Delete workspace
 
 If this is not the first run of the script, and you reuse the same project – run the command to delete a previously generated workspace:
 
@@ -276,15 +281,15 @@ Finally, launch the user interface that will include the defined project.
 evidently ui 
 ```
 
-**4.2**. If you want to see both your new project and a standard demo project, run:
+**4.2**. If you want to see both your new project and a standard demo projects, run:
 
 ```
-evidently ui –-demo-project
+evidently ui --demo-projects all
 ```
 
 **Note**: If you already launched a demo project previously, it will remain in the workspace. There is no need to add it the second time.
 
-![ML monitoring workflwo](../.gitbook/assets/monitoring/view_projects-min.png)
+![](../.gitbook/assets/monitoring/view_projects-min.png)
 
 **4.3**. If you want to have your project in the specified workspace and have the UI service running at the specific port:
 
@@ -292,26 +297,46 @@ evidently ui –-demo-project
 evidently ui --workspace ./workspace --port 8080
 ```
 
-**4.4**. If you want to see both your project and demo project in the specified workspace and run the UI service at the specific port:
+**4.4**. If you want to see both your project and demo projects in the specified workspace and run the UI service at the specific port:
 
-``` 
-evidently ui --workspace ./workspace --port 8080 –-demo-project
+```
+evidently ui --workspace ./workspace --port 8080 --demo-projects all
 ```
 
-**Note**. Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md)). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.
+**All flags**
+
+To see all possible flags you can run evidently ui with the ```--help``` flag:
+```
+evidently ui --help
+```
+
+**Note**: Evidently collects anonymous telemetry about service usage. You can opt-out as described [here](../support/telemetry.md). We’d greatly appreciate it if you keep the telemetry on since it allows us to understand usage patterns and continue building useful free tools for the community.
 
 ## 5. View the new project 
 
 Access Evidently UI service in your browser to see the dashboards for the new project. Go to the `localhost:8000`, or a specified port if you set a different one. 
 
+![](../.gitbook/assets/monitoring/ml_monitoring_adult_example.png)
+
 # What’s next?
+
+* **Go through the steps in more detail**
+
+If you want to go through the steps in more details, refer to the complete [Monitoring User Guide](../monitoring/monitoring_overview.md) section in the docs. A good next step is to explore how to design [monitoring panels](../monitoring/design_dashboard.md).  
+
+* **Build the workflow**
+
 If you want to enable monitoring for an existing ML project, you must collect the data from your production pipelines or services, or run monitoring jobs over production logs stored in a data warehouse. The exact integration scenario depends on the model deployment type and infrastructure.  
 
-Here is one possible approach. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
+Here is a possible approach for batch monitoring. You can implement it using a workflow manager like Airflow to compute Evidently snapshots on a regular cadence.
 
-![ML monitoring workflwo](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
+![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
-You can browse sample [integrations](../integrations). We’ll add more example integrations in the future.  
+Alternatively, if you have a live ML service, you can run an [Evidently collector service](../monitoring/collector_service.md) and send the predictions for near real-time monitoring. 
+
+![](../.gitbook/assets/monitoring/monitoring_collector_min.png)
+
+You can browse sample [integrations](../integrations/evidently-integrations.md). We’ll add more example integrations in the future.  
 
 # Join our Community!
 
@@ -320,5 +345,3 @@ We run a [Discord community](https://discord.gg/xZjKRaNp8b) to connect with our 
 Evidently is in active development, so expect things to change and evolve. Subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) to stay updated about the latest functionality. 
 
 And if you want to support a project, give us a star on [GitHub](https://github.com/evidentlyai/evidently)!
-
-

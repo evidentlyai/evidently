@@ -1,0 +1,122 @@
+name: UI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  ui-build:
+    name: UI type-check and build with node v${{ matrix.node-version }}
+    runs-on: ubuntu-20.04
+    if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        node-version: [16, 18]
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+          cache-dependency-path: ui/pnpm-lock.yaml
+
+      - name: 📥 Install node dependencies
+        working-directory: ui
+        run: pnpm i --frozen-lockfile --ignore-scripts
+
+      - name: 🔬 Type check
+        working-directory: ui
+        run: pnpm type-check
+
+      - name: 🔧 Build
+        working-directory: ui
+        run: pnpm build
+
+      - name: 🔬 Analyze deps
+        working-directory: ui/service
+        run: npx vite-bundle-visualizer -o vite-bundle-report/index.html
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: vite-bundle-visualizer-${{ matrix.node-version }}
+          path: ui/service/vite-bundle-report
+          retention-days: 30
+
+  ui-test:
+    name: Playwright tests for Service
+    runs-on: ubuntu-20.04
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+          cache: "pip"
+
+      - name: Install Evidently
+        run: pip install -e .
+
+      - name: Install dvc
+        run: pip install dvc[gs]
+
+      - name: Pull data
+        run: dvc pull
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "pnpm"
+          cache-dependency-path: ui/pnpm-lock.yaml
+
+      - name: 📥 Install node dependencies
+        working-directory: ui
+        run: pnpm i --frozen-lockfile --ignore-scripts
+
+      - name: Install Playwright Browsers
+        working-directory: ui
+        run: pnpm dlx playwright@1.41.0 install --with-deps
+
+      - name: Run UI
+        run: evidently ui --port 8000 --workspace workspace-for-visual-testing &
+
+      - name: Wait UI to be ready to test
+        working-directory: ui/service
+        run: pnpm wait-on tcp:127.0.0.1:8000 -t 10000
+
+      - name: Run Service Playwright tests
+        working-directory: ui/service
+        run: pnpm test
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: ui/service/playwright-report/
+          retention-days: 30

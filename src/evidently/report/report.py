@@ -2,15 +2,19 @@ import dataclasses
 import datetime
 import uuid
 from collections import defaultdict
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 
 import pandas as pd
 
-from evidently.base_metric import InputData
+from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
+from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
@@ -19,13 +23,13 @@ from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import WidgetIdGenerator
+from evidently.renderers.base_renderer import replace_widgets_ids
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
 METRIC_GENERATORS = "metric_generators"
@@ -49,8 +53,9 @@ class Report(ReportBase):
         reference_id: str = None,
         batch_size: str = None,
         dataset_id: str = None,
+        name: str = None,
     ):
-        super().__init__(options, timestamp)
+        super().__init__(options, timestamp, name)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
@@ -70,9 +75,11 @@ class Report(ReportBase):
     def run(
         self,
         *,
-        reference_data: Optional[pd.DataFrame],
-        current_data: pd.DataFrame,
+        reference_data,
+        current_data,
         column_mapping: Optional[ColumnMapping] = None,
+        engine: Optional[Type[Engine]] = None,
+        additional_data: Dict[str, Any] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -80,19 +87,24 @@ class Report(ReportBase):
         if current_data is None:
             raise ValueError("Current dataset should be present")
 
-        self._columns_info = process_columns(current_data, column_mapping)
         self._inner_suite.reset()
-        self._inner_suite.verify()
+        self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
 
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
+        if self._inner_suite.context.engine is None:
+            raise ValueError("No Engine is set")
+        else:
+            data_definition = self._inner_suite.context.engine.get_data_definition(
+                current_data,
+                reference_data,
+                column_mapping,
+            )
 
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
         for item in self.metrics:
             # if the item is a metric generator, then we need to generate metrics and add them to the report
             if isinstance(item, BaseGenerator):
-                for metric in item.generate(columns_info=self._columns_info):
+                for metric in item.generate(data_definition):
                     if isinstance(metric, Metric):
                         self._first_level_metrics.append(metric)
                         self._inner_suite.add_metric(metric)
@@ -106,9 +118,9 @@ class Report(ReportBase):
             elif isinstance(item, MetricPreset):
                 metrics = []
 
-                for metric_item in item.generate_metrics(data=data, columns=self._columns_info):
+                for metric_item in item.generate_metrics(data_definition, additional_data=additional_data):
                     if isinstance(metric_item, BaseGenerator):
-                        metrics.extend(metric_item.generate(columns_info=self._columns_info))
+                        metrics.extend(metric_item.generate(data_definition))
 
                     else:
                         metrics.append(metric_item)
@@ -128,15 +140,8 @@ class Report(ReportBase):
             else:
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
 
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
-        data = InputData(
-            reference_data,
-            current_data,
-            ref_add,
-            curr_add,
-            column_mapping,
-            data_definition,
+        data = GenericInputData(
+            reference_data, current_data, column_mapping, data_definition, additional_data=additional_data or {}
         )
         self._inner_suite.run_calculate(data)
 
@@ -169,7 +174,7 @@ class Report(ReportBase):
             "metrics": metrics,
         }
 
-    def as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
+    def _as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
         metrics = defaultdict(list)
 
         for metric in self._first_level_metrics:
@@ -194,11 +199,14 @@ class Report(ReportBase):
 
         color_options = self.options.color_options
 
+        id_generator = WidgetIdGenerator("")
         for test in self._first_level_metrics:
+            id_generator.base_id = test.get_id()
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
             # set the color scheme from the report for each render
             renderer.color_options = color_options
             html_info = renderer.render_html(test)
+            replace_widgets_ids(html_info, id_generator)
 
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():
@@ -251,6 +259,7 @@ class Report(ReportBase):
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
+            name=snapshot.name,
         )
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx

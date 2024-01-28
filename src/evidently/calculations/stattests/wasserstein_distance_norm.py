@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import wasserstein_stat_test
     >>> options = DataDriftOptions(all_features_stattest=wasserstein_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="wasserstein")
 """
 from typing import Tuple
@@ -30,10 +30,11 @@ from scipy import stats
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def _wasserstein_distance_norm(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the first Wasserstein distance between two arrays normed by std of reference data
     Args:
@@ -53,9 +54,8 @@ def _wasserstein_distance_norm(
 wasserstein_stat_test = StatTest(
     name="wasserstein",
     display_name="Wasserstein distance (normed)",
-    func=_wasserstein_distance_norm,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(wasserstein_stat_test)
+register_stattest(wasserstein_stat_test, _wasserstein_distance_norm)

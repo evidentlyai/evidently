@@ -17,9 +17,8 @@ from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
-from evidently.tests.utils import plot_check
-from evidently.tests.utils import plot_metric_value
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
 REGRESSION_GROUP = GroupData("regression", "Regression", "")
 GroupingTypes.TestGroup.add_value(REGRESSION_GROUP)
@@ -40,6 +39,7 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        is_critical: bool = True,
     ):
         super().__init__(
             eq=eq,
@@ -50,6 +50,7 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
+            is_critical=is_critical,
         )
         self._metric = RegressionQualityMetric()
         self._dummy_metric = RegressionDummyMetric()
@@ -197,9 +198,21 @@ class TestValueMeanErrorRenderer(TestRenderer):
         hist_curr = me_hist_for_plot.current
         hist_ref = me_hist_for_plot.reference
 
-        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
-        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        fig = plot_metric_value(fig, metric_result.current.mean_error, "current mean error")
+        fig = plot_distr_with_cond_perc_button(
+            hist_curr=hist_curr,
+            hist_ref=hist_ref,
+            xaxis_name="",
+            yaxis_name="count",
+            yaxis_name_perc="percent",
+            color_options=self.color_options,
+            to_json=False,
+            condition=obj.get_condition(),
+            value=metric_result.current.mean_error,
+            value_name="current mean error",
+        )
+        # fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+        # fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
+        # fig = plot_metric_value(fig, metric_result.current.mean_error, "current mean error")
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 

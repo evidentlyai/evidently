@@ -98,7 +98,7 @@ drift_report.json()
 To export JSON as a separate file: 
 
 ```python
-drift_report.save_json(“file.json”)
+drift_report.save_json("file.json")
 ```
 
 **Python dictionary**. You can get the output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.
@@ -108,6 +108,16 @@ To get the dictionary:
 ```python
 drift_report.as_dict()
 ```
+
+**Evidently snapshot**. You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard.
+
+```python
+drift_report.save("snapshot.json")
+```
+
+{% hint style="info" %}
+**Building a live ML monitoring dashboard**. To better understand how the ML monitoring dashboard works, we recommend going through the [ML Monitoring Quickstart](../get-started/tutorial-monitoring.md) after completing this tutorial.
+{% endhint %}
 
 # Preset parameters 
 

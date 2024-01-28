@@ -20,15 +20,23 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
     if isinstance(outcome, Error):
-        with pytest.raises(outcome.exception_type):
+        with pytest.raises(outcome.exception_type, match=outcome.match):
             report.run(
-                reference_data=tdataset.reference, current_data=tdataset.current, column_mapping=tdataset.column_mapping
+                reference_data=tdataset.reference,
+                current_data=tdataset.current,
+                column_mapping=tdataset.column_mapping,
+                additional_data=tdataset.additional_data,
             )
             report._inner_suite.raise_for_error()
             assert not report.show()
         return
 
-    report.run(reference_data=tdataset.reference, current_data=tdataset.current, column_mapping=tdataset.column_mapping)
+    report.run(
+        reference_data=tdataset.reference,
+        current_data=tdataset.current,
+        column_mapping=tdataset.column_mapping,
+        additional_data=tdataset.additional_data,
+    )
     report._inner_suite.raise_for_error()
     assert report.show()
     assert report.json()
@@ -36,8 +44,8 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     outcome.check(report)
 
     path = str(tmp_path / "report.json")
-    report._save(path)
-    report2 = Report._load(path)
+    report.save(path)
+    report2 = Report.load(path)
 
     smart_assert_equal(report2.as_dict(), report.as_dict())  # has nans
     report2.show()

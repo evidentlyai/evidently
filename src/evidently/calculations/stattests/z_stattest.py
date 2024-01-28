@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import z_stat_test
     >>> options = DataDriftOptions(all_features_stattest=z_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="z")
 """
 from typing import Tuple
@@ -31,6 +31,7 @@ from scipy.stats import norm
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
+from evidently.core import ColumnType
 
 
 def proportions_diff_z_stat_ind(ref: pd.DataFrame, curr: pd.DataFrame):
@@ -59,7 +60,7 @@ def proportions_diff_z_test(z_stat, alternative="two-sided"):
 
 
 def _z_stat_test(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     """Compute the Z test between two arrays
     Args:
@@ -93,8 +94,7 @@ def _z_stat_test(
 z_stat_test = StatTest(
     name="z",
     display_name="Z-test p_value",
-    func=_z_stat_test,
-    allowed_feature_types=["cat"],
+    allowed_feature_types=[ColumnType.Categorical],
 )
 
-register_stattest(z_stat_test)
+register_stattest(z_stat_test, _z_stat_test)

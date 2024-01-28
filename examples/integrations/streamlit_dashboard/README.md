@@ -4,6 +4,10 @@ This example shows how to get a [Streamlit](https://github.com/streamlit/streaml
 
 ![Evidently dashboard with Streamlit](streamlit-app/static/preview.png "Dashboard preview")
 
+**Note**: we tested this example on macOS/Linux.
+
+You can also read the blog [Tutorial](https://www.evidentlyai.com/blog/ml-model-monitoring-dashboard-tutorial).
+
 ## :woman_technologist: Installation
 
 ### 1. Fork / Clone this repository

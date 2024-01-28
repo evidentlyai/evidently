@@ -54,6 +54,17 @@ class SimpleMetric(Metric[int]):
         return data.get_current_column(self.column_name).sum()
 
 
+class SimpleMetric2(Metric[int]):
+    column_name: ColumnName
+
+    def __init__(self, column_name: ColumnName):
+        self.column_name = column_name
+        super().__init__()
+
+    def calculate(self, data: InputData) -> int:
+        return data.get_current_column(self.column_name).sum() + 1
+
+
 class SimpleMetricWithFeatures(Metric[int]):
     column_name: str
     _feature: Optional[GeneratedFeature]
@@ -85,7 +96,7 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
     def required_features(self, data_definition: DataDefinition):
         self._features = {
             column.column_name: LengthFeature(column.column_name)
-            for column in data_definition.get_columns("text_features")
+            for column in data_definition.get_columns(ColumnType.Text, features_only=True)
         }
         return list(self._features.values())
 
@@ -93,15 +104,20 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
 class SimpleGeneratedFeature(GeneratedFeature):
     column_name: str
 
-    def __init__(self, column_name: str):
+    def __init__(self, column_name: str, display_name: str = ""):
         self.column_name = column_name
+        self.display_name = display_name
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name] * 2)]))
 
     def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name, f"SGF: {self.column_name}")
+        return additional_feature(
+            self,
+            self.column_name,
+            self.display_name if self.display_name else "SGF: {self.column_name}",
+        )
 
 
 class LengthFeature(GeneratedFeature):
@@ -152,3 +168,40 @@ def test_additional_features(metric, result):
     )
     report._inner_suite.raise_for_error()
     assert metric.get_result() == result
+
+
+@pytest.mark.parametrize(
+    "metrics,result",
+    [
+        (
+            [
+                SimpleMetric(SimpleGeneratedFeature("col1", "d1").feature_name()),
+                SimpleMetric2(SimpleGeneratedFeature("col1", "d2").feature_name()),
+            ],
+            (12, 13),
+        ),
+    ],
+)
+def test_additional_features_multi_metrics(metrics, result):
+    test_data = pd.DataFrame(
+        dict(
+            col1=[1.0, 2.0, 3.0],
+            col2=["11", "111", "1111"],
+            col3=["11", "111", "1111"],
+            col4=["111", "1111", "11111"],
+        )
+    )
+    report = Report(metrics=metrics)
+
+    report.run(
+        current_data=test_data,
+        reference_data=None,
+        column_mapping=ColumnMapping(
+            numerical_features=["col1"],
+            categorical_features=["col2"],
+            text_features=["col3", "col4"],
+        ),
+    )
+    report._inner_suite.raise_for_error()
+    assert metrics[0].get_result() == result[0]
+    assert metrics[1].get_result() == result[1]

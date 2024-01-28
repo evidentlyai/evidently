@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import mann_whitney_u_stat_test
     >>> options = DataDriftOptions(all_features_stattest=mann_whitney_u_stat_test)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="mannw")
 """
 from typing import Tuple
@@ -29,12 +29,13 @@ from scipy.stats import mannwhitneyu
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def _mannwhitneyu_rank(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
     """Perform the Mann-Whitney U-rank test between two arrays
@@ -54,9 +55,8 @@ def _mannwhitneyu_rank(
 mann_whitney_u_stat_test = StatTest(
     name="mannw",
     display_name="Mann-Whitney U-rank test",
-    func=_mannwhitneyu_rank,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.05,
 )
 
-register_stattest(mann_whitney_u_stat_test)
+register_stattest(mann_whitney_u_stat_test, _mannwhitneyu_rank)

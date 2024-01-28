@@ -8,6 +8,15 @@ from evidently.metrics import ColumnDriftMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
+test_stattest = StatTest(
+    name="test_stattest",
+    display_name="test stattest",
+    allowed_feature_types=[ColumnType.Numerical],
+    default_threshold=0.05,
+)
+
+add_stattest_impl(test_stattest, PythonEngine, _impls[psi_stat_test][PythonEngine])
+
 
 @pytest.mark.parametrize(
     "current_data, reference_data, data_mapping, metric, expected_error",

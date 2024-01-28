@@ -13,6 +13,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import ColumnType
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
@@ -54,15 +55,15 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         super().__init__(options=options)
 
     def required_features(self, data_definition: DataDefinition):
-        if len(data_definition.get_columns("text_features")) > 0:
-            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
-            text_features_gen = {}
+        if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:
+            text_cols = [col.column_name for col in data_definition.get_columns(ColumnType.Text, features_only=True)]
+            text_features_gen: Dict[str, Dict[str, GeneratedFeature]] = {}
             text_features_gen_result = []
             for col in text_cols:
                 if self.columns is not None and col not in self.columns:
                     continue
                 if self.descriptors is None or col not in self.descriptors:
-                    col_dict = {
+                    col_dict: Dict[str, GeneratedFeature] = {
                         f"{col}: Text Length": TextLength(col),
                         f"{col}: Non Letter Character %": NonLetterCharacterPercentage(col),
                         f"{col}: OOV %": OOVWordsPercentage(col),

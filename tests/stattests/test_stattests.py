@@ -17,17 +17,18 @@ from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_wh
 from evidently.calculations.stattests.mmd_stattest import emperical_mmd
 from evidently.calculations.stattests.t_test import t_test
 from evidently.calculations.stattests.tvd_stattest import tvd_test
+from evidently.core import ColumnType
 
 
 def test_freq_obs_eq_freq_exp() -> None:
     # observed and expected frequencies is the same
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
-    assert chi_stat_test.func(reference, current, "cat", 0.5) == (
+    assert chi_stat_test.func(reference, current, ColumnType.Categorical, 0.5) == (
         approx(0.67309, abs=1e-5),
         False,
     )
-    assert hellinger_stat_test.func(reference, current, "cat", 0.1) == (
+    assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
         approx(0.06812, abs=1e-5),
         False,
     )
@@ -37,11 +38,11 @@ def test_freq_obs_not_eq_freq_exp() -> None:
     # observed and expected frequencies is not the same
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([x * 2 for x in [16, 18, 16, 14, 12, 12]])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
-    assert chi_stat_test.func(reference, current, "cat", 0.5) == (
+    assert chi_stat_test.func(reference, current, ColumnType.Categorical, 0.5) == (
         approx(0.67309, abs=1e-5),
         False,
     )
-    assert hellinger_stat_test.func(reference, current, "cat", 0.1) == (
+    assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
         approx(0.06812, abs=1e-5),
         False,
     )
@@ -50,11 +51,11 @@ def test_freq_obs_not_eq_freq_exp() -> None:
 def test_cat_feature_with_nans() -> None:
     reference = pd.Series(["a", "b", np.nan]).repeat([10, 10, 10])
     current = pd.Series(["a", "b", np.nan]).repeat([10, 10, 10])
-    assert chi_stat_test.func(reference, current, "cat", 0.5) == (
+    assert chi_stat_test.func(reference, current, ColumnType.Categorical, 0.5) == (
         approx(1.0, abs=1e-5),
         False,
     )
-    assert hellinger_stat_test.func(reference, current, "cat", 0.1) == (
+    assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
         approx(0, abs=1e-5),
         False,
     )

@@ -1,0 +1,25 @@
+name: Publish on Docker Hub
+
+on:
+  workflow_dispatch:
+    inputs:
+      latest:
+        type: boolean
+        default: false
+        description: "Add latest tag"
+
+jobs:
+  build_and_pub_docker:
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - name: Login to docker.io
+        run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - uses: actions/checkout@master
+      - name: setup builder
+        run: docker buildx create --name mybuilder --bootstrap --use
+      - name: Build and release latest image
+        if: ${{ inputs.latest }}
+        run: cd docker && make release
+      - name: Build and push image
+        if: ${{ ! inputs.latest }}
+        run: cd docker && make buildx

@@ -71,15 +71,19 @@ def calculate_confusion_by_classes(
     return confusion_by_classes
 
 
-def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float]) -> float:
+def k_probability_threshold(
+    prediction_probas: pd.DataFrame, k: Optional[int] = None, prob_threshold: Optional[float] = None
+) -> float:
     probas = prediction_probas.iloc[:, 0].sort_values(ascending=False)
-    if isinstance(k, float):
-        if k < 0.0 or k > 1.0:
-            raise ValueError(f"K should be in range [0.0, 1.0] but was {k}")
-        return probas.iloc[max(int(np.ceil(k * prediction_probas.shape[0])) - 1, 0)]
-    if isinstance(k, int):
-        return probas.iloc[min(k, prediction_probas.shape[0] - 1)]
-    raise ValueError(f"K has unexpected type {type(k)}")
+    if prob_threshold is not None:
+        if prob_threshold < 0.0 or prob_threshold > 1.0:
+            raise ValueError(f"prob_threshold should be in range [0.0, 1.0] but was {k}")
+        return probas.iloc[max(int(np.ceil(prob_threshold * prediction_probas.shape[0])) - 1, 0)]
+    if k is None:
+        raise ValueError("Either k or prob_threshold should be not None")
+    if k <= 0:
+        raise ValueError("K should be > 0")
+    return probas.iloc[min(k, prediction_probas.shape[0] - 1)]
 
 
 def get_prediction_data(
@@ -95,6 +99,7 @@ def get_prediction_data(
     # for multiclass classification return just values and probas
     prediction = data_columns.utility_columns.prediction
     target = data_columns.utility_columns.target
+
     if isinstance(prediction, list) and len(prediction) > 2:
         # list of columns with prediction probas, should be same as target labels
         return PredictionData(
@@ -201,7 +206,7 @@ def get_prediction_data(
         isinstance(prediction, str)
         and target is not None
         and is_integer_dtype(data[target].dtype)
-        and data[prediction].dtype == dtype("float")
+        and is_float_dtype(data[prediction])
     ):
         predictions = (data[prediction] >= threshold).astype(dtype("int64"))
         prediction_probas = pd.DataFrame.from_dict(
@@ -260,6 +265,50 @@ def calculate_pr_table(binded):
         precision = round(100.0 * tp / count, 1)
         recall = round(100.0 * tp / target_class_size, 1)
         result.append([top, int(count), prob, int(tp), int(fp), precision, recall])
+    return result
+
+
+def calculate_lift_table(binded):
+    result = []
+    binded.sort(key=lambda item: item[1], reverse=True)
+    data_size = len(binded)
+    target_class_size = sum([x[0] for x in binded])
+    # we don't use declared STEP_SIZE due to specifics
+    # of lift metric calculation and visualization
+    offset = int(max(np.floor(data_size * 0.01), 1))
+
+    for step in np.arange(offset, data_size + 1, offset):
+        count = min(step, data_size)
+        prob = round(binded[min(step, data_size - 1)][1], 2)
+        top = round(100.0 * min(step, data_size) / data_size)
+        tp = sum([x[0] for x in binded[: min(step, data_size)]])
+        fp = count - tp
+        precision = round(100.0 * tp / count, 1)
+        recall = round(100.0 * tp / target_class_size, 1)
+        f1_score = round(2 / (1 / precision + 1 / recall), 1)
+        lift = round(recall / top, 2)
+        if count <= target_class_size:
+            max_lift = round(100.0 * count / target_class_size / top, 2)
+        else:
+            max_lift = round(100.0 / top, 2)
+        relative_lift = round(lift / max_lift, 2)
+        percent = round(100 * target_class_size / data_size, 2)
+        result.append(
+            [
+                top,
+                int(count),
+                prob,
+                int(tp),
+                int(fp),
+                precision,
+                recall,
+                f1_score,
+                lift,
+                max_lift,
+                relative_lift,
+                percent,
+            ]
+        )
     return result
 
 
@@ -335,26 +384,11 @@ def calculate_metrics(
         plot_data = collect_plot_data(prediction.prediction_probas)
     if len(prediction.labels) == 2 and prediction.prediction_probas is not None:
         fprs, tprs, thrs = metrics.roc_curve(target == pos_label, prediction.prediction_probas[pos_label])
-        df = pd.DataFrame(
-            {
-                "true": (target == pos_label).astype(int).values,
-                "preds": prediction.prediction_probas[pos_label].values,
-            }
+        tnrs = 1 - fprs
+        fnrs = 1 - tprs
+        rate_plots_data = RatesPlotData(
+            thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs.tolist(), tnr=tnrs.tolist()
         )
-        tnrs = []
-        fnrs = []
-        for tr in thrs:
-            if tr < 1:
-                tn = df[(df.true == 0) & (df.preds < tr)].shape[0]
-                fn = df[(df.true == 1) & (df.preds < tr)].shape[0]
-                tp = df[(df.true == 1) & (df.preds >= tr)].shape[0]
-                fp = df[(df.true == 0) & (df.preds >= tr)].shape[0]
-                tnrs.append(tn / (tn + fp))
-                fnrs.append(fn / (fn + tp))
-            else:
-                fnrs.append(1)
-                tnrs.append(1)
-        rate_plots_data = RatesPlotData(thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs, tnr=tnrs)
 
     return DatasetClassificationQuality(
         accuracy=metrics.accuracy_score(target, prediction.predictions),

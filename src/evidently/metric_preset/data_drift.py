@@ -1,16 +1,16 @@
-from typing import Callable
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metric_results import DatasetColumns
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
 from evidently.metrics import EmbeddingsDriftMetric
+from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.utils.data_drift_utils import add_emb_drift_to_reports
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataDriftPreset(MetricPreset):
@@ -24,7 +24,7 @@ class DataDriftPreset(MetricPreset):
 
     columns: Optional[List[str]]
     embeddings: Optional[List[str]]
-    embeddings_drift_method: Optional[Dict[str, Callable]]
+    embeddings_drift_method: Optional[Dict[str, DriftMethod]]
     drift_share: float
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
@@ -41,7 +41,7 @@ class DataDriftPreset(MetricPreset):
         self,
         columns: Optional[List[str]] = None,
         embeddings: Optional[List[str]] = None,
-        embeddings_drift_method: Optional[Dict[str, Callable]] = None,
+        embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None,
         drift_share: float = 0.5,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
@@ -70,7 +70,7 @@ class DataDriftPreset(MetricPreset):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate_metrics(self, data: InputData, columns: DatasetColumns):
+    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         result = [
             DatasetDriftMetric(
                 columns=self.columns,
@@ -100,7 +100,7 @@ class DataDriftPreset(MetricPreset):
                 per_column_stattest_threshold=self.per_column_stattest_threshold,
             ),
         ]
-        embeddings_data = data.column_mapping.embeddings
+        embeddings_data = data_definition.embeddings()
         if embeddings_data is None:
             return result
         result = add_emb_drift_to_reports(

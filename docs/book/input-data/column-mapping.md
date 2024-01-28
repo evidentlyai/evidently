@@ -37,6 +37,31 @@ Data structure requirements depend on the type of analysis. Here are example req
 **We recommend specifying column mapping manually**. Evidently applies different heuristics and rules to map the input data automatically. To avoid errors, it is always best to set column mapping manually. For example, numerical columns with only 3 different values in the reference data might be incorrectly parsed as categorical features.
 {% endhint %}
 
+# Code example
+
+Notebook example on specifying column mapping:
+
+{% embed url="https://github.com/elenasamuylova/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
+
+Once you create a column mapping object, you can pass it to the Report or Test Suite. For example:
+
+```python
+column_mapping = ColumnMapping()
+
+column_mapping.target = 'target'
+column_mapping.prediction = 'prediction'
+column_mapping.numerical_features = numerical_features
+column_mapping.categorical_features = categorical_features
+
+regression_performance_report = Report(metrics=[
+    RegressionPreset(),
+])
+
+regression_performance_report.run(reference_data=ref, current_data=cur,column_mapping=column_mapping)
+
+regression_performance_report
+```
+
 # Primary mapping options
 
 You can create a `ColumnMapping` object to map your column names and feature types. 
@@ -130,8 +155,11 @@ column_mapping = ColumnMapping()
 column_mapping.target = 'y'
 column_mapping.task = 'regression'
 ```
-It accepts two values: 'regression' and 'classification'. 
- 
+It accepts the following values: 
+* `regression`
+* `classification`
+* `recsys` (for ranking and recommender systems)
+
 **Default**: If you don't specify the task, Evidently will use a simple strategy: if the target has a numeric type and the number of unique values > 5: task == ‘regression.’ In all other cases, the task == ‘classification’.
 
 {% hint style="info" %} 
@@ -212,7 +240,7 @@ column_mapping.prediction = ['Setosa', 'Versicolour', 'Virginica']
 
 ```
 
-Naming the columns after the lables is a requirement. You cannot pass a custom list.
+Naming the columns after the labels is a requirement. You cannot pass a custom list.
 
 ### Binary classification, option 1
 
@@ -279,7 +307,7 @@ column_mapping = ColumnMapping()
 
 column_mapping.target = 'target'
 column_mapping.prediction = ['churn', 'not_churn']
-pos_label = 'churn'
+column_mapping.pos_label = 'churn'
 
 ```
 
@@ -299,7 +327,7 @@ column_mapping = ColumnMapping()
 
 column_mapping.target = 'target'
 column_mapping.prediction = 'not_churn'
-pos_label = 'churn'
+column_mapping.pos_label = 'churn'
 
 ```
 Both naming the column after one of the labels and passing the name of the positive class are requirements.
@@ -320,8 +348,39 @@ column_mapping = ColumnMapping()
 
 column_mapping.target = 'target'
 column_mapping.prediction = 'prediction'
-pos_label = 1
+column_mapping.pos_label = 1
 column_mapping.target_names = ['churn', 'not_churn']
 
 ```
 If you pass the target names, they will appear on the visualizations.
+
+# Recommender systems
+To evaluate the quality of a ranking or a recommendation system, you must pass:
+* The model score or rank as the prediction.
+* The information about user actions (e.g., click, assigned score) as the target. 
+
+Here are the examples of the expected data inputs.
+
+If the model prediction is a score (expected by default):
+
+| user_id | item_id | prediction (score) | target (interaction result) |
+|---|---|---|---|
+| user_1 | item_1 | 1.95 | 0 |
+| user_1 | item_2 | 0.8 | 1 |
+| user_1 | item_3 | 0.05 | 0 |
+
+If the model prediction is a rank:
+| user_id | item_id | prediction (rank) | target (interaction result) |
+|---|---|---|---|
+| user_1 | item_1 | 1 | 0 |
+| user_1 | item_2 | 2 | 1 |
+| user_1 | item_3 | 3 | 0 |
+
+The **target** column with the interaction result can contain either:
+* a binary label (where `1` is a positive outcome)
+* any true labels or scores (any positive values, where a higher value corresponds to a better recommendation match or a more valuable user action).
+
+You might need to add additional details about your dataset via column mapping:
+* `recommendations_type`: `score` (default) or `rank`. Helps specify whether the prediction column contains ranking or predicted score.
+* `user_id`: helps specify the column that contains user IDs.
+* `item_id`: helps specify the column that contains ranked items.

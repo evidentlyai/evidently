@@ -18,9 +18,10 @@ from evidently.descriptors import TextLength
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_results import DatasetColumns
+from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import DataDriftOptions
 from evidently.options.base import AnyOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -31,10 +32,10 @@ from evidently.renderers.html_widgets import RowDetails
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
@@ -116,7 +117,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         # text_dataset_columns = DatasetColumns(num_feature_names=curr_text_df.columns)
         text_dataset_columns = process_columns(ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns))
 
-        drift_by_columns = {}
+        drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
         for col in curr_text_df.columns:
             drift_by_columns[col] = get_one_column_drift(
                 current_data=curr_text_df,
@@ -172,16 +173,23 @@ class DataDriftTableRenderer(MetricRenderer):
                     std=(data.scatter.plot_shape["y0"] - data.scatter.plot_shape["y1"]) / 2,
                     xaxis_name=data.scatter.x_name,
                     xaxis_name_ref=None,
-                    yaxis_name=data.column_name,
+                    yaxis_name=f"{data.column_name} (mean +/- std)",
                     color_options=self.color_options,
                     return_json=False,
+                    line_name="reference (mean)",
                 )
             scatter = plotly_figure(title="", figure=scatter_fig)
             details.with_part("DATA DRIFT", info=scatter)
-            fig = get_distribution_plot_figure(
-                current_distribution=data.current.distribution,
-                reference_distribution=data.reference.distribution,
+            fig = plot_distr_with_perc_button(
+                hist_curr=HistogramData.from_distribution(data.current.distribution),
+                hist_ref=HistogramData.from_distribution(data.reference.distribution),
+                xaxis_name="",
+                yaxis_name="Count",
+                yaxis_name_perc="Percent",
+                same_color=False,
                 color_options=self.color_options,
+                subplots=False,
+                to_json=False,
             )
             distribution = plotly_figure(title="", figure=fig)
             details.with_part("DATA DISTRIBUTION", info=distribution)

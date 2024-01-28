@@ -6,6 +6,7 @@ import pandas as pd
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 def squared_paired_dist(x: np.ndarray, y: np.ndarray) -> np.ndarray:
@@ -122,7 +123,7 @@ def mmd_pval(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
 def _mmd_stattest(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
     """Run the  emperical maximum mean discrepancy test.
@@ -146,9 +147,8 @@ def _mmd_stattest(
 emperical_mmd = StatTest(
     name="emperical_mmd",
     display_name="emperical_mmd",
-    func=_mmd_stattest,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(emperical_mmd)
+register_stattest(emperical_mmd, _mmd_stattest)

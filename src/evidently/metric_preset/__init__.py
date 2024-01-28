@@ -1,6 +1,7 @@
 from .classification_performance import ClassificationPreset
 from .data_drift import DataDriftPreset
 from .data_quality import DataQualityPreset
+from .recsys import RecsysPreset
 from .regression_performance import RegressionPreset
 from .target_drift import TargetDriftPreset
 from .text_overview import TextOverviewPreset
@@ -12,4 +13,5 @@ __all__ = [
     RegressionPreset.__name__,
     TargetDriftPreset.__name__,
     TextOverviewPreset.__name__,
+    RecsysPreset.__name__,
 ]

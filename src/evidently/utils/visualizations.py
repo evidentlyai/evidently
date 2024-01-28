@@ -1,5 +1,7 @@
 import json
+from typing import TYPE_CHECKING
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -19,6 +21,10 @@ from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
 from evidently.metric_results import ScatterData
 from evidently.options.color_scheme import ColorOptions
+from evidently.utils.types import ApproxValue
+
+if TYPE_CHECKING:
+    from evidently.tests.base_test import TestValueCondition
 
 OPTIMAL_POINTS = 150
 
@@ -55,6 +61,221 @@ def plot_distr(
         cats = cats + ["other"]
         fig.update_xaxes(categoryorder="array", categoryarray=cats)
 
+    return fig
+
+
+def collect_updatemenus(name1: str, name2: str, y_name_1: str, y_name_2: str, visible: List[bool]):
+    button1 = dict(method="update", args=[{"visible": visible}, {"yaxis": {"title": y_name_1}}], label=name1)
+    button2 = dict(
+        method="update", args=[{"visible": [not x for x in visible]}, {"yaxis": {"title": y_name_2}}], label=name2
+    )
+    updatemenus = [dict(type="buttons", direction="right", buttons=[button1, button2], x=1.05, y=1.2, yanchor="top")]
+    return updatemenus
+
+
+def add_traces_with_perc(fig, hist_data, x, y, marker_color, name):
+    trace_1 = go.Bar(
+        x=hist_data.x,
+        y=hist_data.count,
+        visible=True,
+        marker_color=marker_color,
+        name=name,
+    )
+
+    trace_2 = go.Bar(
+        x=hist_data.x,
+        y=(hist_data.count / hist_data.count.sum()) * 100,
+        visible=False,
+        marker_color=marker_color,
+        name=name,
+    )
+
+    fig.add_trace(trace_1, x, y)
+    fig.add_trace(trace_2, x, y)
+    return fig
+
+
+def plot_distr_with_perc_button(
+    *,
+    hist_curr: HistogramData,
+    hist_ref: Optional[HistogramData] = None,
+    xaxis_name: str = "",
+    yaxis_name: str = "",
+    yaxis_name_perc: str = "",
+    same_color: bool = False,
+    color_options: ColorOptions,
+    subplots: bool = True,
+    to_json: bool = True,
+):
+    if not same_color:
+        curr_color = color_options.get_current_data_color()
+        ref_color = color_options.get_reference_data_color()
+
+    else:
+        curr_color = color_options.get_current_data_color()
+        ref_color = curr_color
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+    visible = [True, False]
+    is_subplots = hist_ref is not None and subplots
+
+    if is_subplots:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+
+    fig = add_traces_with_perc(fig, hist_curr, 1, 1, curr_color, "current")
+    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
+    if hist_ref is not None:
+        fig = add_traces_with_perc(fig, hist_ref, 1, int(is_subplots) + 1, ref_color, "reference")
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
+        visible += [True, False]
+
+    fig.update_layout(yaxis_title=yaxis_name)
+
+    updatemenus = collect_updatemenus("abs", "perc", yaxis_name, yaxis_name_perc, visible)
+    fig.update_layout(updatemenus=updatemenus)
+    if is_subplots:
+        fig.update_layout(showlegend=False)
+    if to_json:
+        fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_distr_with_cond_perc_button(
+    *,
+    hist_curr: HistogramData,
+    hist_ref: Optional[HistogramData] = None,
+    xaxis_name: str = "",
+    yaxis_name: str = "",
+    yaxis_name_perc: str = "",
+    color_options: ColorOptions,
+    to_json: bool = True,
+    condition: Optional["TestValueCondition"],
+    value: Optional[float] = None,
+    value_name: Optional[str] = None,
+    lt: Optional[float] = None,
+    gt: Optional[float] = None,
+    fill: Optional[bool] = True,
+    dict_rename: Dict[str, str] = {},
+    dict_style: Dict[str, str] = {},
+):
+    fig = make_subplots(rows=1, cols=1)
+    visible = [True, False]
+    fig = add_traces_with_perc(fig, hist_curr, 1, 1, color_options.get_current_data_color(), "current")
+    if hist_ref is not None:
+        fig = add_traces_with_perc(fig, hist_ref, 1, 1, color_options.get_reference_data_color(), "reference")
+        visible += [True, False]
+    lines = []
+    left_line: Optional[float] = None
+    right_line: Optional[float] = None
+    if condition is not None:
+        left_line = pd.Series([condition.gt, condition.gte]).max()
+        if not pd.isnull(left_line):
+            left_line_name = ["gt", "gte"][pd.Series([condition.gt, condition.gte]).argmax()]
+            lines.append((left_line, left_line_name))
+
+        right_line = pd.Series([condition.lt, condition.lte]).min()
+        if not pd.isnull(right_line):
+            right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
+            lines.append((right_line, right_line_name))
+        if condition.eq is not None and not isinstance(condition.eq, ApproxValue):
+            lines.append((condition.eq, "eq"))
+
+        if condition.eq is not None and isinstance(condition.eq, ApproxValue):
+            lines.append((condition.eq.value, "approx"))
+
+        if condition.not_eq is not None:
+            lines.append((condition.not_eq, "not_eq"))
+
+        if condition.eq is not None and isinstance(condition.eq, ApproxValue):
+            left_border = 0.0
+            right_border = 0.0
+
+            if condition.eq.relative > 1e-6:
+                left_border = condition.eq.value - condition.eq.value * condition.eq.relative
+                right_border = condition.eq.value + condition.eq.value * condition.eq.relative
+                fig.add_vrect(
+                    x0=left_border,
+                    x1=right_border,
+                    fillcolor="green",
+                    opacity=0.25,
+                    line_width=0,
+                )
+
+            elif condition.eq.absolute > 1e-12:
+                left_border = condition.eq.value - condition.eq.absolute
+                right_border = condition.eq.value + condition.eq.absolute
+                fig.add_vrect(
+                    x0=left_border,
+                    x1=right_border,
+                    fillcolor="green",
+                    opacity=0.25,
+                    line_width=0,
+                )
+
+            fig.add_vrect(
+                x0=left_border,
+                x1=right_border,
+                fillcolor="green",
+                opacity=0.25,
+                line_width=0,
+            )
+
+    if gt is not None:
+        left_line = gt
+        left_line_name = dict_rename.get("gt", "gt")
+        lines.append((left_line, left_line_name))
+    if lt is not None:
+        right_line = lt
+        right_line_name = dict_rename.get("lt", "lt")
+        lines.append((right_line, right_line_name))
+    if value is not None and value_name is not None:
+        lines.append((value, value_name))
+        dict_style[value_name] = "solid"
+
+    max_y = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[visible]])
+    not_visible = [not x for x in visible]
+    max_y_perc = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[not_visible]])
+
+    if len(lines) > 0:
+        for line, name in lines:
+            fig.add_trace(
+                go.Scatter(
+                    x=(line, line),
+                    y=(0, max_y),
+                    visible=True,
+                    mode="lines",
+                    line=dict(color="green", width=3, dash=dict_style.get(name, "dash")),
+                    name=name,
+                ),
+                1,
+                1,
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=(line, line),
+                    y=(0, max_y_perc),
+                    visible=False,
+                    mode="lines",
+                    line=dict(color="green", width=3, dash=dict_style.get(name, "dash")),
+                    name=name,
+                ),
+                1,
+                1,
+            )
+            visible += [True, False]
+
+    if fill and left_line and right_line:
+        fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
+
+    fig.update_xaxes(title_text=xaxis_name)
+    fig.update_layout(yaxis_title=yaxis_name)
+
+    updatemenus = collect_updatemenus("abs", "perc", yaxis_name, yaxis_name_perc, visible)
+    fig.update_layout(updatemenus=updatemenus)
+    if to_json:
+        fig = json.loads(fig.to_json())
     return fig
 
 
@@ -132,44 +353,6 @@ def plot_distr_with_log_button(
 
     fig = go.Figure(data=traces, layout=layout)
     fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
-    fig = json.loads(fig.to_json())
-    return fig
-
-
-def plot_distr_subplots(
-    *,
-    hist_curr: HistogramData,
-    hist_ref: Optional[HistogramData] = None,
-    xaxis_name: str = "",
-    yaxis_name: str = "",
-    same_color: bool = False,
-    color_options: ColorOptions,
-):
-    if same_color is None:
-        curr_color = color_options.get_current_data_color()
-        ref_color = color_options.get_reference_data_color()
-
-    else:
-        curr_color = color_options.get_current_data_color()
-        ref_color = curr_color
-
-    cols = 1
-    subplot_titles: Union[list, str] = ""
-
-    if hist_ref is not None:
-        cols = 2
-        subplot_titles = ["current", "reference"]
-
-    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    trace = go.Bar(x=hist_curr.x, y=hist_curr.count, marker_color=curr_color, showlegend=False)
-    fig.add_trace(trace, 1, 1)
-    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
-
-    if hist_ref is not None:
-        trace = go.Bar(x=hist_ref.x, y=hist_ref.count, marker_color=ref_color, showlegend=False)
-        fig.add_trace(trace, 1, 2)
-        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
-    fig.update_layout(yaxis_title=yaxis_name)
     fig = json.loads(fig.to_json())
     return fig
 
@@ -407,8 +590,7 @@ def plot_cat_cat_rel(
         cols = 2
         subplot_titles = ["current", "reference"]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    # logging.warning(type(curr))
-    # logging.warning(type(curr[target_name]))
+    visible = []
     for i, val in enumerate(curr[target_name].astype(str).unique()):
         trace = go.Bar(
             x=curr.loc[curr[target_name] == val, feature_name],
@@ -416,8 +598,21 @@ def plot_cat_cat_rel(
             marker_color=color_options.color_sequence[i],
             name=str(val),
             legendgroup=str(val),
+            visible=True,
         )
         fig.add_trace(trace, 1, 1)
+
+        trace = go.Bar(
+            x=curr.loc[curr[target_name] == val, feature_name],
+            y=curr.loc[curr[target_name] == val, "count_objects"] * 100 / curr["count_objects"].sum(),
+            marker_color=color_options.color_sequence[i],
+            name=str(val),
+            legendgroup=str(val),
+            visible=False,
+        )
+        fig.add_trace(trace, 1, 1)
+
+        visible += [True, False]
 
     if ref is not None:
         for i, val in enumerate(ref[target_name].astype(str).unique()):
@@ -430,7 +625,24 @@ def plot_cat_cat_rel(
                 legendgroup=str(val),
             )
             fig.add_trace(trace, 1, 2)
+
+            trace = go.Bar(
+                x=ref.loc[ref[target_name] == val, feature_name],
+                y=ref.loc[ref[target_name] == val, "count_objects"] * 100 / ref["count_objects"].sum(),
+                marker_color=color_options.color_sequence[i],
+                opacity=0.6,
+                name=str(val),
+                legendgroup=str(val),
+                visible=False,
+            )
+            fig.add_trace(trace, 1, 2)
+
+            visible += [True, False]
     fig.update_layout(yaxis_title="count")
+    updatemenus = collect_updatemenus("abs", "perc", "count", "percent", visible)
+    fig.update_layout(updatemenus=updatemenus)
+    # if is_subplots:
+    #     fig.update_layout(showlegend=False)
     fig = json.loads(fig.to_json())
     return fig
 
@@ -486,9 +698,13 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
 
 def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
     value_counts = column.value_counts(normalize=normalize, dropna=False)
+
+    # filter out na values if it amount == 0
+    new_values = [(k, v) for k, v in value_counts.items() if (not pd.isna(k) or v > 0)]
+
     return Distribution(
-        x=value_counts.index.values,
-        y=value_counts.values,
+        x=[x[0] for x in new_values],
+        y=[x[1] for x in new_values],
     )
 
 
@@ -718,6 +934,22 @@ def plot_scatter_for_data_drift(
     curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: ColorOptions
 ):
     fig = go.Figure()
+
+    x0 = np.max(curr_x)
+    x1 = np.min(curr_x)
+
+    fig.add_trace(
+        go.Scatter(
+            x=[x1, x0, x0, x1],
+            y=[y0, y0, y1, y1],
+            fill="toself",
+            fillcolor=color_options.fill_color,
+            opacity=0.5,
+            name="reference (+/- 1std)",
+            line=dict(color=color_options.fill_color, width=0, dash="solid"),
+            marker=dict(size=0),
+        )
+    )
     fig.add_trace(
         go.Scattergl(
             x=curr_x,
@@ -728,16 +960,13 @@ def plot_scatter_for_data_drift(
         )
     )
 
-    x0 = np.max(curr_x)
-
     fig.add_trace(
-        go.Scattergl(
-            x=[x0, x0],
-            y=[y0, y1],
-            mode="markers",
-            name="Current",
-            marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
-            showlegend=False,
+        go.Scatter(
+            x=curr_x,
+            y=[(y0 + y1) / 2] * len(curr_x),
+            mode="lines",
+            marker_color=color_options.zero_line_color,
+            name="reference (mean)",
         )
     )
 
@@ -746,34 +975,6 @@ def plot_scatter_for_data_drift(
         yaxis_title=y_name,
         showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        shapes=[
-            dict(
-                type="rect",
-                # x-reference is assigned to the x-values
-                xref="paper",
-                # y-reference is assigned to the plot paper [0,1]
-                yref="y",
-                x0=0,
-                y0=y0,
-                x1=1,
-                y1=y1,
-                fillcolor=color_options.fill_color,
-                opacity=0.5,
-                layer="below",
-                line_width=0,
-            ),
-            dict(
-                type="line",
-                name="Reference",
-                xref="paper",
-                yref="y",
-                x0=0,  # min(testset_agg_by_date.index),
-                y0=(y0 + y1) / 2,
-                x1=1,  # max(testset_agg_by_date.index),
-                y1=(y0 + y1) / 2,
-                line=dict(color=color_options.zero_line_color, width=3),
-            ),
-        ],
     )
     return fig
 
@@ -968,20 +1169,15 @@ def plot_top_error_contours(
 
 
 def choose_agg_period(current_date_column: pd.Series, reference_date_column: Optional[pd.Series]) -> Tuple[str, str]:
-    prefix_dict = {
-        "A": "year",
-        "Q": "quarter",
-        "M": "month",
-        "W": "week",
-        "D": "day",
-        "H": "hour",
-    }
+    prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour", "min": "minute"}
     datetime_feature = current_date_column
     if reference_date_column is not None:
         datetime_feature = pd.concat([datetime_feature, reference_date_column])
     days = (datetime_feature.max() - datetime_feature.min()).days
+    if days == 0:
+        days = (datetime_feature.max() - datetime_feature.min()).seconds / (3600 * 24)
     time_points = pd.Series(
-        index=["A", "Q", "M", "W", "D", "H"],
+        index=["A", "Q", "M", "W", "D", "H", "min"],
         data=[
             abs(OPTIMAL_POINTS - days / 365),
             abs(OPTIMAL_POINTS - days / 90),
@@ -989,6 +1185,7 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
             abs(OPTIMAL_POINTS - days / 7),
             abs(OPTIMAL_POINTS - days),
             abs(OPTIMAL_POINTS - days * 24),
+            abs(OPTIMAL_POINTS - days * 24 * 60),
         ],
     )
     period_prefix = prefix_dict[time_points.idxmin()]
@@ -1025,7 +1222,7 @@ def prepare_df_for_time_index_plot(
         plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
         plot_df["per"] = plot_df["per"].dt.to_timestamp()
         return plot_df, prefix
-    plot_df = df[column_name].reset_index().sort_values("index")
+    plot_df = df[column_name].reset_index().sort_values(index_name)
     plot_df["per"] = pd.cut(plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False)
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
@@ -1034,7 +1231,8 @@ def prepare_df_for_time_index_plot(
 def get_traces(df, color, error_band_opacity, name, showlegend):
     error_band_trace = go.Scatter(
         x=list(df["per"]) + list(df["per"][::-1]),  # x, then x reversed
-        y=list(df["mean"] + df["std"]) + list(df["mean"] - df["std"])[::-1],  # upper, then lower reversed
+        y=list(df["mean"] + df["std"].fillna(0))
+        + list(df["mean"] - df["std"].fillna(0))[::-1],  # upper, then lower reversed
         fill="toself",
         fillcolor=color,
         opacity=error_band_opacity,
@@ -1054,8 +1252,26 @@ def get_traces(df, color, error_band_opacity, name, showlegend):
     return error_band_trace, line_trace
 
 
+def rect_trace(line, std, min_value, max_value, color):
+    return go.Scatter(
+        x=[min_value, max_value, max_value, min_value],
+        y=[line + std, line + std, line - std, line - std],
+        fill="toself",
+        fillcolor=color,
+        opacity=0.5,
+        name="reference (+/- 1std)",
+        line=dict(color=color, width=0, dash="solid"),
+        marker=dict(size=0),
+    )
+
+
 def collect_traces(
-    data: Dict, line: Optional[float], std: Optional[float], color_options: ColorOptions, showlegend: bool
+    data: Dict,
+    line: Optional[float],
+    std: Optional[float],
+    color_options: ColorOptions,
+    showlegend: bool,
+    line_name: Optional[str] = None,
 ):
     name = list(data.keys())[0]
     traces = []
@@ -1065,15 +1281,20 @@ def collect_traces(
             y=[line] * len(data[name]["per"]),
             mode="lines",
             marker_color=color_options.zero_line_color,
-            showlegend=False,
+            name=line_name,
+            showlegend=True if line_name is not None else False,
         )
         traces.append(green_line_trace)
+    if std is not None and line is not None:
+        trace_rect = rect_trace(line, std, data[name]["per"].min(), data[name]["per"].max(), color_options.fill_color)
+        traces.append(trace_rect)
     if len(data.keys()) == 1:
         error_band_trace, line_trace = get_traces(
             data[name], color_options.get_current_data_color(), 0.2, name, showlegend
         )
         traces += [error_band_trace, line_trace]
         return traces
+
     if {"Predicted", "Actual"} == set(data.keys()):
         error_band_trace_pred, line_trace_pred = get_traces(
             data["Predicted"],
@@ -1107,6 +1328,7 @@ def collect_traces(
         showlegend,
     )
     traces += [error_band_trace_act, error_band_trace_pred, line_trace_act, line_trace_pred]
+
     return traces
 
 
@@ -1120,6 +1342,7 @@ def plot_agg_line_data(
     yaxis_name: str,
     color_options: ColorOptions,
     return_json: bool = True,
+    line_name: Optional[str] = None,
 ):
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -1129,7 +1352,7 @@ def plot_agg_line_data(
         subplot_titles = ["current", "reference"]
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    curr_traces = collect_traces(curr_data, line, std, color_options, True)
+    curr_traces = collect_traces(curr_data, line, std, color_options, True, line_name)
     for trace in curr_traces:
         fig.add_trace(trace, 1, 1)
     if ref_data is not None:
@@ -1139,16 +1362,146 @@ def plot_agg_line_data(
         fig.update_xaxes(title_text=xaxis_name_ref, row=1, col=2)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     fig.update_layout(yaxis_title=yaxis_name)
-    if std is not None and line is not None:
-        fig.add_hrect(
-            y0=line - std,
-            y1=line + std,
-            fillcolor=color_options.fill_color,
-            opacity=0.5,
-            layer="below",
-            line_width=0,
-        )
 
     if return_json:
         return json.loads(fig.to_json())
+    return fig
+
+
+def plot_metric_k(curr_data: pd.Series, ref_data: Optional[pd.Series], yaxis_name: str):
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if ref_data is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    fig.add_trace(go.Scatter(x=curr_data.index, y=curr_data, marker_color=color_options.get_current_data_color()), 1, 1)
+    if ref_data is not None:
+        fig.add_trace(
+            go.Scatter(x=ref_data.index, y=ref_data, marker_color=color_options.get_reference_data_color()), 1, 2
+        )
+    fig.update_xaxes(title_text="k", tickformat=",d")
+    fig.update_layout(yaxis_title=yaxis_name, showlegend=False)
+    return fig
+
+
+def plot_bias(
+    curr: Distribution,
+    curr_train: Distribution,
+    ref: Optional[Distribution],
+    ref_train: Optional[Distribution],
+    xaxis_name: str,
+):
+    color_options = ColorOptions()
+
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+    if ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Bar(
+        x=curr.x,
+        y=(curr.count / curr.count.sum()) * 100,
+        marker_color=color_options.get_current_data_color(),
+        name="recommendation",
+        legendgroup="recommendation",
+    )
+    fig.add_trace(trace, 1, 1)
+    trace = go.Bar(
+        x=curr_train.x,
+        y=(curr_train.count / curr_train.count.sum()) * 100,
+        marker_color=color_options.additional_data_color,
+        name="train",
+        legendgroup="train",
+    )
+    fig.add_trace(trace, 1, 1)
+    if ref is not None and ref_train is not None:
+        trace = go.Bar(
+            x=ref.x,
+            y=(ref.count / ref.count.sum()) * 100,
+            marker_color=color_options.get_current_data_color(),
+            name="recommendation",
+            legendgroup="recommendation",
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+        trace = go.Bar(
+            x=ref_train.x,
+            y=(ref_train.count / ref_train.count.sum()) * 100,
+            marker_color=color_options.additional_data_color,
+            name="train",
+            legendgroup="train",
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+    fig.update_layout(yaxis_title="percent")
+    fig.update_xaxes(title_text=xaxis_name)
+    return fig
+
+
+def plot_4_distr(
+    curr_1: Distribution,
+    curr_2: Optional[Distribution],
+    ref_1: Optional[Distribution],
+    ref_2: Optional[Distribution],
+    name_1: str,
+    name_2: str,
+    xaxis_name: str,
+    color_2: str = "additional",
+):
+    color_options = ColorOptions()
+    if color_2 == "additional":
+        color_2 = color_options.additional_data_color
+    else:
+        color_2 = color_options.secondary_color
+
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+    if ref_1 is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Bar(
+        x=curr_1.x,
+        y=(curr_1.count / curr_1.count.sum()) * 100,
+        marker_color=color_options.get_current_data_color(),
+        name=name_1,
+        legendgroup=name_1,
+    )
+    fig.add_trace(trace, 1, 1)
+    if curr_2 is not None:
+        trace = go.Bar(
+            x=curr_2.x,
+            y=(curr_2.count / curr_2.count.sum()) * 100,
+            marker_color=color_2,
+            name=name_2,
+            legendgroup=name_2,
+        )
+        fig.add_trace(trace, 1, 1)
+    if ref_1 is not None:
+        trace = go.Bar(
+            x=ref_1.x,
+            y=(ref_1.count / ref_1.count.sum()) * 100,
+            marker_color=color_options.get_current_data_color(),
+            name=name_1,
+            legendgroup=name_1,
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+    if ref_2 is not None:
+        trace = go.Bar(
+            x=ref_2.x,
+            y=(ref_2.count / ref_2.count.sum()) * 100,
+            marker_color=color_2,
+            name=name_2,
+            legendgroup=name_2,
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+    fig.update_layout(yaxis_title="percent")
+    fig.update_xaxes(title_text=xaxis_name)
     return fig

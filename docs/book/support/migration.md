@@ -51,7 +51,7 @@ data_drift_report.run(reference_data=ref, current_data=cur)
 data_drift_report
 ```
 
-If you want to keep non-aggregated visualization from the earlier Evidently version, set the [corresponding "raw_data" parmeter to False](../customization/report-data-aggregation.md).
+If you want to keep non-aggregated visualization from the earlier Evidently version, set the [corresponding "raw_data" parameter to True](../customization/report-data-aggregation.md). It is set to `False` by default.
 
 To get what was previously as JSON profile (and has now been improved and re-worked!), simply get the Report output as JSON:
 
@@ -67,7 +67,7 @@ You can also get the output as a Python dictionary.
 data_drift_report.as_dict()
 ```
 
-It works the same for all other pre-built Reports that are availble as presets. Browse the [sample notebooks](../examples/examples.md) to see the code.
+It works the same for all other pre-built Reports that are available as presets. Browse the [sample notebooks](../examples/examples.md) to see the code.
 
 ## Custom report example
 

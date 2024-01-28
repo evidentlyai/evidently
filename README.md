@@ -5,15 +5,20 @@
 <p align="center">
   <a href="https://docs.evidentlyai.com">Docs</a>
   |
-  <a href="https://discord.gg/xZjKRaNp8b">Discord Community</a>
+  <a href="https://discord.gg/xZjKRaNp8b">Discord</a>
   |
   <a href="https://www.evidentlyai.com/user-newsletter">User Newsletter</a>
   | 
   <a href="https://evidentlyai.com/blog">Blog</a>
   | 
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
+  | 
+  <a href="https://www.evidentlyai.com/product/cloud">Evidently Cloud</a>
 </p>
 
+# :new: New release
+
+**Evidently 0.4.0**. Self-host an ML Monitoring interface -> [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) 
 
 # :bar_chart: What is Evidently?
 
@@ -29,7 +34,7 @@ Tests perform structured data and ML model checks. They verify a condition and r
 
 You can create a custom Test Suite from 50+ tests or run a preset (for example, **Data Drift** or **Regression Performance**). You can get results as a **JSON**, Python dictionary, exportable HTML, **visual report** inside Jupyter notebook, or as Evidently JSON `snapshot`. 
 
-Tests are best for automated checks. You can integrate them as a pipeline step using tools like Airlfow. 
+Tests are best for automated checks. You can integrate them as a pipeline step using tools like Airflow. 
 
 ## 2. Reports: interactive visualizations
 
@@ -39,17 +44,17 @@ Tests are best for automated checks. You can integrate them as a pipeline step u
 
 Reports calculate various data and ML **metrics** and render rich **visualizations**. You can create a custom Report or run a preset to evaluate a specific aspect of the model or data performance. For example, a [**Data Quality**](https://docs.evidentlyai.com/presets/data-quality) or [**Classification Performance**](https://docs.evidentlyai.com/presets/class-performance) report.
 
-You can get an **HTML report** (best for exploratory analysis and debugging), **JSON** or Python dictionary output (best for logging, documention or to integrate with BI tools), or as Evidently JSON `snapshot`.
+You can get an **HTML report** (best for exploratory analysis and debugging), **JSON** or Python dictionary output (best for logging, documentation or to integrate with BI tools), or as Evidently JSON `snapshot`.
 
 ## 3. ML monitoring dashboard
 
 > This functionality is available from v0.4.0. 
 
-![Dashboard example](docs/images/evidently_ml_monitoring_main-min.png)
+<img width="1020" alt="image" src="https://github.com/evidentlyai/evidently/assets/32310771/5f5cb7b5-a58e-4431-bc22-2ad46fcb89d0">
 
 You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.  
 
-You can track 100+ metrics available in Evidently, from number nulls to text sentiment and embedding drift.
+You can track 100+ metrics available in Evidently, from the number of nulls to text sentiment and embedding drift.
 
 # :woman_technologist: Install Evidently
 
@@ -89,7 +94,7 @@ conda install -c conda-forge evidently
 # :arrow_forward: Getting started
 
 ### Option 1: Test Suites
-> This is a simple Hello World example. You can explore a complete tutorial to [Get Started with Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
+> This is a simple Hello World example. Head to docs for a complete [Quickstart for Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
 
 Prepare your data as two pandas `DataFrames`. The first is your reference data, and the second is current production data. The structure of both datasets should be identical. You need input features only to run some evaluations (e.g., Data Drift). In other cases (e.g., Target Drift, Classification Performance), you need Target and/or Prediction. 
 
@@ -164,7 +169,7 @@ To get the output as JSON:
 data_drift_report.json()
 ```
 ### Option 3: ML monitoring dashboard
-> This will launch a demo project with the Evidently UI service. You can find a complete tutorial to [Get Started with Monitoring](https://docs.evidentlyai.com/get-started/tutorial-monitoring) in the docs.
+> This will launch a demo project in the Evidently UI. Head to docs for a complete [ML Monitoring Quickstart](https://docs.evidentlyai.com/get-started/tutorial-monitoring).
 
 Recommended step: create a virtual environment and activate it.
 ```
@@ -173,9 +178,9 @@ virtualenv venv
 source venv/bin/activate
 ```
 
-After installing Evidently (`pip install evidently`), run the Evidently UI with the demo project:
+After installing Evidently (`pip install evidently`), run the Evidently UI with the demo projects:
 ```
-evidently ui --demo-project
+evidently ui --demo-projects all
 ```
  
 Access Evidently UI service in your browser. Go to the **localhost:8000**.
@@ -185,27 +190,29 @@ We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
 
 # :books: Documentation
 For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with the tutorials:
-* [Get Started with Reports and Test Suitesl](https://docs.evidentlyai.com/get-started/tutorial)
-* [Get Started with ML monitoringl](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
+* [Get Started with Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial)
+* [Get Started with ML monitoring](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
 
 # :card_index_dividers: Examples
-Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
-Report | Jupyter notebook | Colab notebook | Contents
+Simple examples on toy datasets to quickly explore what Evidently can do out of the box.
+
+Title | Code example | Tutorial | Contents
 --- | --- | --- | ---
-Getting Started Tutorial| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/getting_started_tutorial.ipynb)|[link](https://colab.research.google.com/drive/1j0Wh4LM0mgMuDY7LQciLaUV4G1khB-zb)|Data Stability and custom Test Suites, Data Drift and Target Drift Reports
-Evidently Metric Presets| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Data Drift, Target Drift, Data Quality, Regression, Classification Reports
-Evidently Metrics| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | All individual Metrics
-Evidently Test Presets| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | NoTargetPerformance, Data Stability, Data Quality, Data Drift Regression, Multi-class Classification, Binary Classification, Binary Classification top-K test suites
-Evidently Tests| [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl)| All individual Tests
+QuickStart Tutorial: ML Monitoring| [Example](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/get_started_monitoring.py)| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring) | Pre-built ML monitoring dashboard.
+QuickStart Tutorial: Tests and Reports| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/getting_started_tutorial.ipynb)<br>[Colab](https://colab.research.google.com/drive/1j0Wh4LM0mgMuDY7LQciLaUV4G1khB-zb)| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial) | Data Stability and custom Test Suites, Data Drift and Target Drift Reports
+Evidently Metric Presets| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metric_presets.ipynb) <br>[Colab](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | - | Data Drift, Target Drift, Data Quality, Regression, Classification Reports
+Evidently Metrics| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metrics.ipynb) <br>[Colab](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | - | All individual Metrics
+Evidently Test Presets| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_test_presets.ipynb) <br>[Colab](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | - |NoTargetPerformance, Data Stability, Data Quality, Data Drift Regression, Multi-class Classification, Binary Classification, Binary Classification top-K test suites
+Evidently Tests| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_tests.ipynb) <br>[Colab](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl)| - |All individual Tests
 
 There are more example in the [Community Examples](https://github.com/evidentlyai/community-examples) repository.
 
 ## Integrations
-Explore the [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) folder to see how to integrate Evidently in your prediction pipelines and use it with other tools. 
+Explore [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) to see how to integrate Evidently in the prediction pipelines and with other tools. 
 
-## How to
-Explore the [How To](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) folder to see how to use specific features in Evidently, such as run Reports for text data and NLP models.
+## How-to guides
+Explore the [How-to guides](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to understand specific features in Evidently, such as working with text data. 
 
 # :phone: User Newsletter 
 To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 

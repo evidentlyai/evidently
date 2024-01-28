@@ -13,13 +13,13 @@ Properties:
 Example:
     Using by object:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> from evidently.calculations.stattests import cramer_von_mises
     >>> options = DataDriftOptions(all_features_stattest=cramer_von_mises)
 
     Using by name:
 
-    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="cramer_von_mises")
 """
 
@@ -34,6 +34,7 @@ from scipy.stats import rankdata
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.core import ColumnType
 
 
 class CramerVonMisesResult:
@@ -194,7 +195,7 @@ def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonM
 def _cramer_von_mises(
     reference_data: pd.Series,
     current_data: pd.Series,
-    feature_type: str,
+    feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
     """Run the two-sample Cramer-Von-mises test of two samples.
@@ -214,9 +215,8 @@ def _cramer_von_mises(
 cramer_von_mises = StatTest(
     name="cramer_von_mises",
     display_name="Cramer-von Mises",
-    func=_cramer_von_mises,
-    allowed_feature_types=["num"],
+    allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(cramer_von_mises)
+register_stattest(cramer_von_mises, default_impl=_cramer_von_mises)

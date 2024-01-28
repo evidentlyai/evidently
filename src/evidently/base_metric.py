@@ -1,8 +1,12 @@
 import abc
 import logging
+import warnings
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import ClassVar
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -12,8 +16,8 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic.main import ModelMetaclass
 
+from evidently._pydantic_compat import ModelMetaclass
 from evidently.core import BaseResult
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
@@ -105,6 +109,15 @@ class ColumnNotFound(BaseException):
 
 
 @dataclass
+class GenericInputData:
+    reference_data: Optional[object]
+    current_data: object
+    column_mapping: ColumnMapping
+    data_definition: DataDefinition
+    additional_data: Dict[str, Any]
+
+
+@dataclass
 class InputData:
     reference_data: Optional[pd.DataFrame]
     current_data: pd.DataFrame
@@ -112,6 +125,7 @@ class InputData:
     current_additional_features: Optional[pd.DataFrame]
     column_mapping: ColumnMapping
     data_definition: DataDefinition
+    additional_data: Dict[str, Any]
 
     @staticmethod
     def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
@@ -171,13 +185,19 @@ class InputData:
 TResult = TypeVar("TResult", bound=MetricResult)
 
 
+class FieldsDescriptor:
+    def __get__(self, instance: Optional["Metric"], type: Type["Metric"]) -> FieldPath:
+        if instance is not None:
+            try:
+                return FieldPath([], instance.get_result())
+            except ValueError:
+                warnings.warn("Metric is not calculated yet, using generic fields list")
+        return FieldPath([], type.result_type())
+
+
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
     def result_type(cls) -> Type[MetricResult]:
         return cls.__orig_bases__[0].__args__[0]  # type: ignore[attr-defined]
-
-    @property
-    def fields(cls) -> FieldPath:
-        return FieldPath([], cls.result_type())
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
@@ -186,6 +206,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
     # TODO: if we want metric-specific options
     options: Options
 
+    fields: ClassVar = FieldsDescriptor()
     # resulting options will be determined via
     # options = global_option.override(display_options).override(metric_options)
 
@@ -258,7 +279,7 @@ class ColumnMetricResult(MetricResult):
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)
 
 
-class ColumnMetric(Metric, Generic[ColumnTResult], abc.ABC):
+class ColumnMetric(Metric[ColumnTResult], Generic[ColumnTResult], abc.ABC):
     column_name: ColumnName
 
     def __init__(self, column_name: Union[ColumnName, str], options: AnyOptions = None):

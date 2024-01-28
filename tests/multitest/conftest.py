@@ -30,8 +30,9 @@ class TestOutcome:
 
 
 class Error(TestOutcome):
-    def __init__(self, exception_type: Type[Exception]):
+    def __init__(self, exception_type: Type[Exception], match: str = None):
         self.exception_type = exception_type
+        self.match = match
 
     def check(self, report: Report):
         pass

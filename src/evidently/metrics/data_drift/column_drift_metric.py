@@ -19,10 +19,11 @@ from evidently.calculations.data_drift import get_distribution_for_column
 from evidently.calculations.data_drift import get_stattest
 from evidently.calculations.data_drift import get_text_data_for_plots
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_results import HistogramData
 from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import DataDriftOptions
 from evidently.options.base import AnyOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -31,8 +32,8 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.visualizations import plot_agg_line_data
+from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
@@ -102,8 +103,8 @@ def get_one_column_drift(
         if not pd.api.types.is_numeric_dtype(current_column):
             raise ValueError(f"Column '{column}' in current dataset should contain numerical values only.")
 
-    drift_test_function = get_stattest(reference_column, current_column, column_type.value, stattest)
-    drift_result = drift_test_function(reference_column, current_column, column_type.value, threshold)
+    drift_test_function = get_stattest(reference_column, current_column, column_type, stattest)
+    drift_result = drift_test_function(reference_column, current_column, column_type, threshold)
 
     scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:
@@ -148,7 +149,7 @@ def get_one_column_drift(
                 column.name,
                 datetime_name,
             )
-            current_scatter["current"] = df
+            current_scatter["current (mean)"] = df
             if prefix is None:
                 x_name = "Index binned"
             else:
@@ -171,9 +172,9 @@ def get_one_column_drift(
 
         for key in keys:
             if key not in reference_counts:
-                reference_counts.loc[key] = 0
+                reference_counts = pd.concat([reference_counts, pd.Series([0], [key])])
             if key not in current_counts:
-                current_counts.loc[key] = 0
+                current_counts = pd.concat([current_counts, pd.Series([0], [key])])
 
         reference_small_distribution = list(
             reversed(
@@ -196,29 +197,6 @@ def get_one_column_drift(
             )
         )
     if column_type != ColumnType.Text:
-        prediction = data_definition.get_prediction_columns()
-        labels = data_definition.classification_labels()
-        predicted_values = prediction.predicted_values if prediction else None
-        if (
-            column_type == ColumnType.Categorical
-            and labels is not None
-            and (
-                (target and column.name == target.column_name)
-                or (
-                    predicted_values
-                    and isinstance(predicted_values.column_name, str)
-                    and column.name == predicted_values.column_name
-                )
-            )
-        ):
-            column_values = np.union1d(current_column.unique(), reference_column.unique())
-            target_names = labels if isinstance(labels, list) else list(labels.values())
-            new_values = np.setdiff1d(list(target_names), column_values)
-            if len(new_values) > 0:
-                raise ValueError(f"Values {new_values} not presented in 'target_names'")
-            else:
-                current_column = current_column.map(target_names)
-                reference_column = reference_column.map(target_names)
         current_distribution, reference_distribution = get_distribution_for_column(
             column_type=column_type.value,
             current=current_column,
@@ -371,19 +349,25 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     std=(result.scatter.plot_shape["y0"] - result.scatter.plot_shape["y1"]) / 2,
                     xaxis_name=result.scatter.x_name,
                     xaxis_name_ref=None,
-                    yaxis_name=result.column_name,
+                    yaxis_name=f"{result.column_name} (mean +/- std)",
                     color_options=self.color_options,
                     return_json=False,
+                    line_name="reference (mean)",
                 )
             tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
         if result.current.distribution is not None and result.reference.distribution is not None:
-            distr_fig = get_distribution_plot_figure(
-                current_distribution=result.current.distribution,
-                reference_distribution=result.reference.distribution,
+            distr_fig = plot_distr_with_perc_button(
+                hist_curr=HistogramData.from_distribution(result.current.distribution),
+                hist_ref=HistogramData.from_distribution(result.reference.distribution),
+                xaxis_name="",
+                yaxis_name="Count",
+                yaxis_name_perc="Percent",
+                same_color=False,
                 color_options=self.color_options,
+                subplots=False,
+                to_json=False,
             )
-            # figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
             tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
 
         if (

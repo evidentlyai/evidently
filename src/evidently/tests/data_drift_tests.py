@@ -1,5 +1,4 @@
 from abc import ABC
-from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import List
@@ -12,11 +11,14 @@ import pandas as pd
 from evidently.base_metric import ColumnName
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metric_results import DatasetColumns
+from evidently.core import ColumnType
+from evidently.metric_results import HistogramData
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
 from evidently.metrics import EmbeddingsDriftMetric
+from evidently.metrics.data_drift.base import WithDriftOptionsFields
 from evidently.metrics.data_drift.data_drift_table import DataDriftTableResults
+from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -24,7 +26,6 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import ConditionTestParameters
 from evidently.tests.base_test import ExcludeNoneMixin
@@ -36,9 +37,11 @@ from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_contour_single
+from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
@@ -76,6 +79,7 @@ class ColumnsDriftParameters(ConditionTestParameters):
         )
 
     def to_dataframe(self) -> pd.DataFrame:
+
         return pd.DataFrame(
             [
                 {
@@ -90,9 +94,11 @@ class ColumnsDriftParameters(ConditionTestParameters):
         )
 
 
-class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
+class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
     group: ClassVar = DATA_DRIFT_GROUP.id
     _metric: DataDriftTable
+    columns: Optional[List[str]]
+    feature_importance: Optional[bool]
 
     def __init__(
         self,
@@ -115,6 +121,8 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         num_stattest_threshold: Optional[float] = None,
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        is_critical: bool = True,
+        feature_importance: Optional[bool] = False,
     ):
         super().__init__(
             eq=eq,
@@ -125,8 +133,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
-        )
-        self._metric = DataDriftTable(
+            is_critical=is_critical,
             columns=columns,
             stattest=stattest,
             cat_stattest=cat_stattest,
@@ -138,6 +145,21 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             num_stattest_threshold=num_stattest_threshold,
             text_stattest_threshold=text_stattest_threshold,
             per_column_stattest_threshold=per_column_stattest_threshold,
+            feature_importance=feature_importance,
+        )
+        self._metric = DataDriftTable(
+            columns=self.columns,
+            stattest=self.stattest,
+            cat_stattest=self.cat_stattest,
+            num_stattest=self.num_stattest,
+            text_stattest=self.text_stattest,
+            per_column_stattest=self.per_column_stattest,
+            stattest_threshold=self.stattest_threshold,
+            cat_stattest_threshold=self.cat_stattest_threshold,
+            num_stattest_threshold=self.num_stattest_threshold,
+            text_stattest_threshold=self.text_stattest_threshold,
+            per_column_stattest_threshold=self.per_column_stattest_threshold,
+            feature_importance=self.feature_importance,
         )
 
     @property
@@ -211,17 +233,18 @@ class TestColumnDrift(Test):
         column_name: Union[str, ColumnName],
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
+        is_critical: bool = True,
     ):
         self.column_name = ColumnName.from_any(column_name)
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
 
+        super().__init__(is_critical=is_critical)
         self._metric = ColumnDriftMetric(
-            column_name=column_name,
-            stattest=stattest,
-            stattest_threshold=stattest_threshold,
+            column_name=self.column_name,
+            stattest=self.stattest,
+            stattest_threshold=self.stattest_threshold,
         )
-        super().__init__()
 
     @property
     def metric(self):
@@ -250,11 +273,13 @@ class TestColumnDrift(Test):
             description=description,
             status=result_status,
             group=self.group,
-            groups={
-                GroupingTypes.ByFeature.id: self.column_name.display_name,
-            },
             parameters=ColumnDriftParameter.from_metric(drift_info, column_name=self.column_name.display_name),
         )
+
+    def groups(self) -> Dict[str, str]:
+        return {
+            GroupingTypes.ByFeature.id: self.column_name.display_name,
+        }
 
 
 class TestAllFeaturesValueDrift(BaseGenerator):
@@ -285,7 +310,9 @@ class TestAllFeaturesValueDrift(BaseGenerator):
         num_stattest_threshold: Optional[float] = None,
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        is_critical: bool = True,
     ):
+        self.is_critical = is_critical
         self.columns = columns
         self.stattest = stattest
         self.cat_stattest = cat_stattest
@@ -298,13 +325,13 @@ class TestAllFeaturesValueDrift(BaseGenerator):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
+    def generate(self, data_definition: DataDefinition) -> List[TestColumnDrift]:
         results = []
-        for name in columns_info.cat_feature_names:
-            if self.columns and name not in self.columns:
+        for column in data_definition.get_columns(ColumnType.Categorical, features_only=True):
+            if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
-                name,
+                column.column_name,
                 "cat",
                 self.stattest,
                 self.cat_stattest,
@@ -317,12 +344,19 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
-        for name in columns_info.num_feature_names:
-            if self.columns and name not in self.columns:
+            results.append(
+                TestColumnDrift(
+                    column_name=column.column_name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
+        for column in data_definition.get_columns(ColumnType.Numerical, features_only=True):
+            if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
-                name,
+                column.column_name,
                 "num",
                 self.stattest,
                 self.cat_stattest,
@@ -335,12 +369,19 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
-        for name in columns_info.text_feature_names:
-            if self.columns and name not in self.columns:
+            results.append(
+                TestColumnDrift(
+                    column_name=column.column_name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
+        for column in data_definition.get_columns(ColumnType.Text, features_only=True):
+            if self.columns and column.column_name not in self.columns:
                 continue
             stattest, threshold = resolve_stattest_threshold(
-                name,
+                column.column_name,
                 "text",
                 self.stattest,
                 self.cat_stattest,
@@ -353,7 +394,14 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
-            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+            results.append(
+                TestColumnDrift(
+                    column_name=column.column_name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                    is_critical=self.is_critical,
+                )
+            )
         return results
 
 
@@ -385,7 +433,9 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
         num_stattest_threshold: Optional[float] = None,
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        is_critical: bool = True,
     ):
+        self.is_critical = is_critical
         self.features = features
         self.stattest = stattest
         self.cat_stattest = cat_stattest
@@ -398,17 +448,18 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
         self.text_stattest_threshold = text_stattest_threshold
         self.per_feature_threshold = per_column_stattest_threshold
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
+    def generate(self, data_definition: DataDefinition) -> List[TestColumnDrift]:
         result = []
         for name in self.features:
+            column = data_definition.get_column(name)
             stattest, threshold = resolve_stattest_threshold(
                 name,
                 "cat"
-                if name in columns_info.cat_feature_names
+                if column.column_type == ColumnType.Categorical
                 else "num"
-                if columns_info.num_feature_names
+                if column.column_type == ColumnType.Numerical
                 else "text"
-                if columns_info.text_feature_names
+                if column.column_type == ColumnType.Text
                 else "datetime",
                 self.stattest,
                 self.cat_stattest,
@@ -426,6 +477,7 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
                     column_name=name,
                     stattest=stattest,
                     stattest_threshold=threshold,
+                    is_critical=self.is_critical,
                 )
             )
         return result
@@ -442,6 +494,17 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
         assert isinstance(parameters, ColumnsDriftParameters)
         df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
+        columns = ["Feature name"]
+        current_fi = obj.metric.get_result().current_fi
+        reference_fi = obj.metric.get_result().reference_fi
+        if current_fi is not None:
+            df["current_feature_importance"] = df["Feature name"].apply(lambda x: current_fi.get(x, ""))
+            columns.append("current_feature_importance")
+        if reference_fi is not None:
+            df["reference_feature_importance"] = df["Feature name"].apply(lambda x: reference_fi.get(x, ""))
+            columns.append("reference_feature_importance")
+        columns += ["Stattest", "Drift score", "Threshold", "Data Drift"]
+        df = df[columns]
         info.with_details(
             title="Drift Table",
             info=table_data(column_names=df.columns.to_list(), data=df.values),
@@ -457,9 +520,20 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
         if result.status == TestStatus.ERROR:
             return info
         parameters = result.parameters
+        current_fi = obj.metric.get_result().current_fi
+        reference_fi = obj.metric.get_result().reference_fi
         assert isinstance(parameters, ColumnsDriftParameters)
         df = parameters.to_dataframe()
         df = df.sort_values("Data Drift")
+        columns = ["Feature name"]
+        if current_fi is not None:
+            df["current_feature_importance"] = df["Feature name"].apply(lambda x: current_fi.get(x, ""))
+            columns.append("current_feature_importance")
+        if reference_fi is not None:
+            df["reference_feature_importance"] = df["Feature name"].apply(lambda x: reference_fi.get(x, ""))
+            columns.append("reference_feature_importance")
+        columns += ["Stattest", "Drift score", "Threshold", "Data Drift"]
+        df = df[columns]
         info.details = [
             DetailsInfo(
                 id="drift_table",
@@ -516,10 +590,15 @@ class TestColumnDriftRenderer(TestRenderer):
         else:
             if result.current.distribution is None:
                 raise ValueError("Expected data is missing")
-            fig = get_distribution_plot_figure(
-                current_distribution=result.current.distribution,
-                reference_distribution=result.reference.distribution,
+            fig = plot_distr_with_cond_perc_button(
+                hist_curr=HistogramData.from_distribution(result.current.distribution),
+                hist_ref=HistogramData.from_distribution(result.reference.distribution),
+                xaxis_name="",
+                yaxis_name="count",
+                yaxis_name_perc="percent",
                 color_options=self.color_options,
+                to_json=False,
+                condition=None,
             )
             info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -528,11 +607,15 @@ class TestColumnDriftRenderer(TestRenderer):
 class TestEmbeddingsDrift(Test):
     name: ClassVar = "Drift for embeddings"
     group: ClassVar = DATA_DRIFT_GROUP.id
+    embeddings_name: str
+    drift_method: Optional[DriftMethod]
     _metric: EmbeddingsDriftMetric
 
-    def __init__(self, embeddings_name: str, drift_method: Optional[Callable] = None):
-        super().__init__()
-        self._metric = EmbeddingsDriftMetric(embeddings_name=embeddings_name, drift_method=drift_method)
+    def __init__(self, embeddings_name: str, drift_method: Optional[DriftMethod] = None, is_critical: bool = True):
+        self.embeddings_name = embeddings_name
+        self.drift_method = drift_method
+        super().__init__(is_critical=is_critical)
+        self._metric = EmbeddingsDriftMetric(embeddings_name=self.embeddings_name, drift_method=self.drift_method)
 
     @property
     def metric(self):
@@ -563,6 +646,9 @@ class TestEmbeddingsDrift(Test):
             status=result_status,
             group=self.group,
         )
+
+    def groups(self) -> Dict[str, str]:
+        return {}
 
 
 @default_renderer(wrap_type=TestEmbeddingsDrift)

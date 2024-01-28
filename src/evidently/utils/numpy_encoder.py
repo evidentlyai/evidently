@@ -1,6 +1,10 @@
 import datetime
 import json
+import typing
 import uuid
+from typing import Callable
+from typing import Tuple
+from typing import Type
 
 import numpy as np
 import pandas as pd
@@ -26,7 +30,13 @@ _TYPES_MAPPING = (
     ((frozenset,), lambda obj: list(obj)),
     ((uuid.UUID,), lambda obj: str(obj)),
     ((ColumnType,), lambda obj: obj.value),
+    ((pd.Period,), lambda obj: str(obj)),
 )
+
+
+def add_type_mapping(types: Tuple[Type], encoder: Callable):
+    global _TYPES_MAPPING
+    _TYPES_MAPPING += ((types, encoder),)  # type: ignore[assignment]
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -38,8 +48,14 @@ class NumpyEncoder(json.JSONEncoder):
 
         If we cannot convert the object, leave the default `JSONEncoder` behaviour - raise a TypeError exception.
         """
+
+        # check mapping rules
         for types_list, python_type in _TYPES_MAPPING:
             if isinstance(o, types_list):
                 return python_type(o)
+
+        # explicit check pandas null
+        if not isinstance(o, typing.Sequence) and pd.isnull(o):
+            return None
 
         return json.JSONEncoder.default(self, o)

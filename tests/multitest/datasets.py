@@ -5,6 +5,7 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 from sklearn import datasets
 from sklearn import ensemble
 
@@ -19,6 +20,7 @@ class DatasetTags(Enum):
     BINARY_CLASSIFICATION = "binary_classification"
     MULTICLASS_CLASSIFICATION = "multiclass_classification"
     REGRESSION = "regression"
+    RECSYS = "recsys"
 
 
 @dataclasses.dataclass(eq=True)
@@ -26,6 +28,7 @@ class TestDataset:
     name: str = ""
     current: Any = None
     reference: Any = None
+    additional_data: Any = None
 
     tags: List[DatasetTags] = dataclasses.field(default_factory=list)
     column_mapping: Optional[ColumnMapping] = None
@@ -61,7 +64,7 @@ def bcancer():
         "bcancer",
         bcancer_cur,
         bcancer_ref,
-        [
+        tags=[
             DatasetTags.CLASSIFICATION,
             DatasetTags.PROB_PREDICTIONS,
             DatasetTags.HAS_TARGET,
@@ -91,7 +94,7 @@ def bcancer_label():
         "bcancer_label",
         bcancer_label_cur,
         bcancer_label_ref,
-        [
+        tags=[
             DatasetTags.CLASSIFICATION,
             DatasetTags.HAS_TARGET,
             DatasetTags.BINARY_CLASSIFICATION,
@@ -104,12 +107,13 @@ def bcancer_label():
 def adult():
     adult_data = datasets.fetch_openml(name="adult", version=2, as_frame=True)
     adult = adult_data.frame
+    adult.education = adult.education.astype(object)
 
     adult_ref = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
     adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
 
     adult_cur.iloc[:2000, 3:5] = np.nan
-    return TestDataset("adult", adult_cur, adult_ref, [])
+    return TestDataset("adult", adult_cur, adult_ref, tags=[])
 
 
 @dataset
@@ -126,7 +130,7 @@ def housing():
         "housing",
         housing_cur,
         housing_ref,
-        [DatasetTags.REGRESSION, DatasetTags.HAS_PREDICTION, DatasetTags.HAS_TARGET],
+        tags=[DatasetTags.REGRESSION, DatasetTags.HAS_PREDICTION, DatasetTags.HAS_TARGET],
     )
 
 
@@ -153,3 +157,30 @@ def reviews():
     )
 
     return TestDataset(name="reviews", current=reviews_cur, reference=reviews_ref, column_mapping=column_mapping)
+
+
+@dataset
+def recsys():
+    users = sum([[x] * 10 for x in range(10)], [])
+    np.random.seed(0)
+    items = np.random.randint(0, high=100, size=100)
+    rank = [x + 1 for x in range(10)] * 10
+    np.random.seed(0)
+    true = np.random.choice([1, 0], 100, p=[0.1, 0.9])
+    np.random.seed(1)
+    feature_1 = np.random.choice([1, 0], 100)
+    np.random.seed(2)
+    feature_2 = np.random.choice([1, 0], 100)
+
+    df = pd.DataFrame(
+        {
+            "user_id": users,
+            "item_id": items,
+            "prediction": rank,
+            "target": true,
+            "feature_1": feature_1,
+            "feature_2": feature_2,
+        }
+    )
+
+    return TestDataset("recsys", df, df, {"current_train_data": df}, tags=[DatasetTags.RECSYS])

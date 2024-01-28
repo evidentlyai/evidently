@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evidently UI standalone</title>
+  </head>
+  <body>
+    <script>
+      // hack for nivo and vite
+      // https://github.com/plouc/nivo/issues/1455#issuecomment-815904731
+      var global = globalThis
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

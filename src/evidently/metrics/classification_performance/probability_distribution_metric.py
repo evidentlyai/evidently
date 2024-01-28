@@ -55,27 +55,31 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
         if prediction is None:
             raise ValueError("Prediction column should be present")
 
-        prediction_data = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
-        if prediction_data.prediction_probas is None:
+        curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
+        if curr_predictions.prediction_probas is None:
             current_distribution = None
             reference_distribution = None
 
         else:
             current_data_copy = data.current_data.copy()
-            for col in prediction_data.prediction_probas.columns:
-                current_data_copy[col] = prediction_data.prediction_probas[col]
+            for col in curr_predictions.prediction_probas.columns:
+                current_data_copy[col] = curr_predictions.prediction_probas[col]
 
             current_distribution = self.get_distribution(
-                current_data_copy, target, prediction_data.prediction_probas.columns
+                current_data_copy, target, curr_predictions.prediction_probas.columns
             )
 
             if data.reference_data is not None:
-                reference_data_copy = data.reference_data.copy()
-                for col in prediction_data.prediction_probas.columns:
-                    reference_data_copy[col] = prediction_data.prediction_probas[col]
-                reference_distribution = self.get_distribution(
-                    reference_data_copy, target, prediction_data.prediction_probas.columns
-                )
+                ref_predictions = get_prediction_data(data.reference_data, columns, data.column_mapping.pos_label)
+                if ref_predictions.prediction_probas is None:
+                    reference_distribution = None
+                else:
+                    reference_data_copy = data.reference_data.copy()
+                    for col in ref_predictions.prediction_probas.columns:
+                        reference_data_copy[col] = ref_predictions.prediction_probas[col]
+                    reference_distribution = self.get_distribution(
+                        reference_data_copy, target, ref_predictions.prediction_probas.columns
+                    )
 
             else:
                 reference_distribution = None

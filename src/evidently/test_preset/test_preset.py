@@ -1,7 +1,9 @@
 import abc
+from typing import Any
+from typing import Dict
+from typing import Optional
 
-from evidently.base_metric import InputData
-from evidently.metric_results import DatasetColumns
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TestPreset:
@@ -9,5 +11,5 @@ class TestPreset:
         pass
 
     @abc.abstractmethod
-    def generate_tests(self, data: InputData, columns: DatasetColumns):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         raise NotImplementedError()

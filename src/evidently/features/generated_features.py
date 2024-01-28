@@ -41,6 +41,8 @@ class GeneratedFeature(EvidentlyBaseModel):
     def get_parameters(self) -> Optional[tuple]:
         attributes = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
+            if field == "display_name":
+                continue
             if isinstance(value, list):
                 attributes.append(tuple(value))
             elif isinstance(value, dict):

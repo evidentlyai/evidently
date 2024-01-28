@@ -10,16 +10,25 @@ from typing import overload
 
 import numpy as np
 import pandas as pd
-from pydantic import parse_obj_as
-from pydantic import validator
 from typing_extensions import Literal
 
+from evidently._pydantic_compat import parse_obj_as
+from evidently._pydantic_compat import validator
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.core import pydantic_type_validator
 from evidently.pipeline.column_mapping import TargetNames
 
 Label = Union[int, str]
+
+try:
+    List.__getitem__.__closure__[0].cell_contents.cache_clear()  # type: ignore[attr-defined]
+except AttributeError:  # since python 3.12
+    from typing import _caches  # type: ignore[attr-defined]
+
+    _caches[List.__getitem__.__wrapped__].cache_clear()  # type: ignore[attr-defined]
+
+LabelList = List[Label]
 
 
 class _LabelKeyType(int):
@@ -86,7 +95,7 @@ class PredictionData(MetricResult):
         dict_include = False
 
     predictions: pd.Series
-    labels: List[Label]
+    labels: LabelList
     prediction_probas: Optional[pd.DataFrame]
 
     @validator("prediction_probas")
@@ -315,6 +324,28 @@ class ROCCurveData(MetricResult):
 
 
 ROCCurve = Dict[Label, ROCCurveData]
+
+
+class LiftCurveData(MetricResult):
+    class Config:
+        dict_include = False
+        tags = {IncludeTags.Render}
+
+    lift: PlotData
+    top: PlotData
+    count: PlotData
+    prob: PlotData
+    tp: PlotData
+    fp: PlotData
+    precision: PlotData
+    recall: PlotData
+    f1_score: PlotData
+    max_lift: PlotData
+    relative_lift: PlotData
+    percent: PlotData
+
+
+LiftCurve = Dict[Label, LiftCurveData]
 
 
 class HistogramData(MetricResult):

@@ -15,6 +15,7 @@ from plotly.subplots import make_subplots
 
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
+from evidently.metric_results import LiftCurve
 from evidently.metric_results import PRCurve
 from evidently.metric_results import ROCCurve
 from evidently.model.widget import BaseWidgetInfo
@@ -22,10 +23,9 @@ from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
-from evidently.utils.types import Numeric
 
 
-class WidgetSize(Enum):
+class WidgetSize(int, Enum):
     HALF = 1
     FULL = 2
 
@@ -490,100 +490,6 @@ def get_histogram_figure(
     return figure
 
 
-def get_histogram_figure_with_range(
-    *,
-    primary_hist: HistogramData,
-    secondary_hist: Optional[HistogramData] = None,
-    left: Numeric,
-    right: Numeric,
-    orientation: str = "v",
-    color_options: ColorOptions,
-) -> go.Figure:
-    figure = get_histogram_figure(
-        primary_hist=primary_hist,
-        secondary_hist=secondary_hist,
-        color_options=color_options,
-        orientation=orientation,
-    )
-    max_y = np.max([np.max(x["y"]) for x in figure.data])
-    min_y = np.min([np.min(x["y"]) for x in figure.data])
-
-    figure.add_trace(
-        go.Scatter(
-            x=[left, left],
-            y=[min_y, max_y],
-            mode="lines",
-            line={"color": color_options.vertical_lines, "width": 2, "dash": "dash"},
-            name="range left value",
-        )
-    )
-    figure.add_trace(
-        go.Scatter(
-            x=[right, right],
-            y=[min_y, max_y],
-            mode="lines",
-            line={"color": color_options.vertical_lines, "width": 2, "dash": "solid"},
-            name="range right value",
-        )
-    )
-    figure.add_vrect(
-        x0=left,
-        x1=right,
-        fillcolor=color_options.fill_color,
-        opacity=0.25,
-        line_width=0,
-    )
-    return figure
-
-
-def get_histogram_figure_with_quantile(
-    *,
-    current: HistogramData,
-    reference: Optional[HistogramData] = None,
-    current_quantile: float,
-    reference_quantile: Optional[float] = None,
-    color_options: ColorOptions,
-    orientation: str = "v",
-) -> go.Figure:
-    figure = get_histogram_figure(
-        primary_hist=current,
-        secondary_hist=reference,
-        color_options=color_options,
-        orientation=orientation,
-    )
-    # add quantile lines. Use scatter, not `add_vline`
-    # because `add_vline` doesn't support legend, it is not interactive
-    max_y = np.max([np.max(x["y"]) for x in figure.data])
-    min_y = np.min([np.min(x["y"]) for x in figure.data])
-
-    figure.add_trace(
-        go.Scatter(
-            x=[current_quantile, current_quantile],
-            y=[min_y, max_y],
-            mode="lines",
-            line={"color": color_options.vertical_lines, "width": 2, "dash": "dash"},
-            name="reference quantile",
-        )
-    )
-
-    if reference_quantile is not None:
-        figure.add_trace(
-            go.Scatter(
-                x=[reference_quantile, reference_quantile],
-                y=[min_y, max_y],
-                mode="lines",
-                line={
-                    "color": color_options.vertical_lines,
-                    "width": 2,
-                    "dash": "solid",
-                },
-                name="current quantile",
-            )
-        )
-
-    return figure
-
-
 def histogram(
     *,
     title: str,
@@ -818,6 +724,81 @@ def get_pr_rec_plot_data(
             fig.add_trace(trace, 1, 2)
             fig.update_xaxes(title_text="Recall", row=1, col=2)
         fig.update_layout(yaxis_title="Precision", showlegend=True)
+
+        additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
+    return additional_plots
+
+
+def get_lift_plot_data(
+    current_lift_curve: LiftCurve,
+    reference_lift_curve: Optional[PRCurve],
+    color_options: ColorOptions,
+) -> List[Tuple[str, BaseWidgetInfo]]:
+    """
+    Forms plot data for lift metric visualization
+
+    Parameters
+    ----------
+    current_lift_curve: dict
+        Calculated lift table data for current sample
+    reference_lift_curve: Optional[dict]
+        Calculated lift table data for reference sample
+    color_options: ColorOptions
+        Standard Evidently class-collection of colors for data visualization
+
+    Return values
+    -------------
+    additional_plots: List[Tuple[str, BaseWidgetInfo]]
+        Plot objects within List
+    """
+    additional_plots = []
+    cols = 1
+    subplot_titles = [""]
+    if reference_lift_curve is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    for label in current_lift_curve.keys():
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        trace = go.Scatter(
+            x=current_lift_curve[label].top,
+            y=current_lift_curve[label].lift,
+            mode="lines+markers",
+            name="Lift",
+            hoverinfo="text",
+            text=[
+                f"top: {str(int(current_lift_curve[label].top[i]))}, " f"lift={str(current_lift_curve[label].lift[i])}"
+                for i in range(100)
+            ],
+            legendgroup="Lift",
+            marker=dict(
+                size=6,
+                color=color_options.get_current_data_color(),
+            ),
+        )
+        fig.add_trace(trace, 1, 1)
+        fig.update_xaxes(title_text="Top", row=1, col=1)
+        if reference_lift_curve is not None:
+            trace = go.Scatter(
+                x=reference_lift_curve[label].top,
+                y=reference_lift_curve[label].lift,
+                mode="lines+markers",
+                name="Lift",
+                hoverinfo="text",
+                text=[
+                    f"top: {str(int(reference_lift_curve[label].top[i]))}, "
+                    f"lift={str(reference_lift_curve[label].lift[i])}"
+                    for i in range(100)
+                ],
+                legendgroup="Lift",
+                showlegend=False,
+                marker=dict(
+                    size=6,
+                    color=color_options.get_current_data_color(),
+                ),
+            )
+            fig.add_trace(trace, 1, 2)
+            fig.update_xaxes(title_text="Top", row=1, col=2)
+        fig.update_layout(yaxis_title="Lift", showlegend=True)
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots

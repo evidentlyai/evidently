@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import Tuple
@@ -14,7 +15,7 @@ class QualityMetricsOptions:
     classification_threshold: float = DEFAULT_CLASSIFICATION_THRESHOLD
     cut_quantile: Union[None, Tuple[str, float], Dict[str, Tuple[str, float]]] = None
 
-    def as_dict(self):
+    def as_dict(self) -> Dict[str, Any]:
         return {
             "conf_interval_n_sigmas": self.conf_interval_n_sigmas,
             "classification_threshold": self.classification_threshold,

@@ -2,21 +2,26 @@ import dataclasses
 import uuid
 from collections import Counter
 from datetime import datetime
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 
 import pandas as pd
 
-from evidently.base_metric import InputData
+from evidently.base_metric import GenericInputData
+from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
-from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import WidgetIdGenerator
+from evidently.renderers.base_renderer import replace_test_widget_ids
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
@@ -26,8 +31,7 @@ from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 
 TEST_GENERATORS = "test_generators"
@@ -35,7 +39,7 @@ TEST_PRESETS = "test_presets"
 
 
 class TestSuite(ReportBase):
-    _columns_info: DatasetColumns
+    _data_definition: DataDefinition
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
     _tests: List[Test]
@@ -48,8 +52,9 @@ class TestSuite(ReportBase):
         id: Optional[uuid.UUID] = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
+        name: str = None,
     ):
-        super().__init__(options, timestamp)
+        super().__init__(options, timestamp, name)
         self._inner_suite = Suite(self.options)
         self.id = id or uuid.uuid4()
         self._test_presets = []
@@ -84,7 +89,7 @@ class TestSuite(ReportBase):
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
 
     def _add_tests_from_generator(self, test_generator: BaseGenerator):
-        for test_item in test_generator.generate(columns_info=self._columns_info):
+        for test_item in test_generator.generate(self._data_definition):
             self._add_test(test_item)
 
     def run(
@@ -93,17 +98,24 @@ class TestSuite(ReportBase):
         reference_data: Optional[pd.DataFrame],
         current_data: pd.DataFrame,
         column_mapping: Optional[ColumnMapping] = None,
+        engine: Optional[Type[Engine]] = None,
+        additional_data: Dict[str, Any] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
-        self._columns_info = process_columns(current_data, column_mapping)
         self._inner_suite.reset()
+        self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
         self._add_tests()
-        data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
+        if self._inner_suite.context.engine is None:
+            raise ValueError("Engine is not set")
+        self._data_definition = self._inner_suite.context.engine.get_data_definition(
+            current_data,
+            reference_data,
+            column_mapping,
+        )
         for preset in self._test_presets:
-            tests = preset.generate_tests(data, self._columns_info)
+            tests = preset.generate_tests(self._data_definition, additional_data=additional_data)
 
             for test in tests:
                 if isinstance(test, BaseGenerator):
@@ -114,8 +126,13 @@ class TestSuite(ReportBase):
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
         self._inner_suite.verify()
-        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
-        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
+        data = GenericInputData(
+            reference_data,
+            current_data,
+            column_mapping,
+            self._data_definition,
+            additional_data=additional_data or {},
+        )
 
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
@@ -186,11 +203,15 @@ class TestSuite(ReportBase):
         by_status = {}
         color_options = self.options.color_options
 
+        generator = WidgetIdGenerator("")
         for test, test_result in self._inner_suite.context.test_results.items():
+            generator.base_id = test.get_id()
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             renderer.color_options = color_options
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
-            test_results.append(renderer.render_html(test))
+            html = renderer.render_html(test)
+            replace_test_widget_ids(html, generator)
+            test_results.append(html)
 
         summary_widget = BaseWidgetInfo(
             title="",
@@ -246,6 +267,7 @@ class TestSuite(ReportBase):
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
+            name=snapshot.name,
         )
         suite._inner_suite.context = ctx
         return suite
