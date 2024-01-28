@@ -273,7 +273,9 @@ class ColumnMetricResult(MetricResult):
     column_type: str
 
     def get_pandas(self) -> pd.DataFrame:
-        return pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
+        df = pd.DataFrame.from_dict({self.column_name: self.collect_pandas_columns()}, orient="index")
+        df.index.name = "column_name"
+        return df
 
 
 ColumnTResult = TypeVar("ColumnTResult", bound=ColumnMetricResult)

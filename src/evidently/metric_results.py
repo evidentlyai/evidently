@@ -394,6 +394,14 @@ class ColumnCorrelations(MetricResult):
     kind: str
     values: DistributionIncluded
 
+    def get_pandas(self) -> pd.DataFrame:
+        return pd.DataFrame(
+            [
+                {"kind": self.kind, "column_name": key, "value": value}
+                for key, value in zip(self.values.x, self.values.y)
+            ]
+        )
+
 
 class DatasetClassificationQuality(MetricResult):
     accuracy: float

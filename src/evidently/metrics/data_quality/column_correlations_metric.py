@@ -29,6 +29,19 @@ class ColumnCorrelationsMetricResult(MetricResult):
     current: Dict[str, ColumnCorrelations]
     reference: Optional[Dict[str, ColumnCorrelations]] = None
 
+    def get_pandas(self) -> pd.DataFrame:
+        dfs = []
+        for field in ["current", "reference"]:
+            value = getattr(self, field)
+            if value is None:
+                continue
+            for corr in value.values():
+                df = corr.get_pandas()
+                df.columns = [f"{field}_{col}" for col in df.columns]
+                df["column_name"] = self.column_name
+                dfs.append(df)
+        return pd.concat(dfs)
+
 
 class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
     """Calculates correlations between the selected column and all the other columns.
