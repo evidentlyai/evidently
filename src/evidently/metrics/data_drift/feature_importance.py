@@ -24,6 +24,17 @@ class FeatureImportanceMetricResult(MetricResult):
     current: Optional[Dict[str, float]] = None
     reference: Optional[Dict[str, float]] = None
 
+    def get_pandas(self) -> pd.DataFrame:
+        dfs = []
+        for field in ["current", "reference"]:
+            value = getattr(self, field)
+            if value is None:
+                continue
+            df = pd.DataFrame([value])
+            df["dataset"] = field
+            dfs.append(df)
+        return pd.concat(dfs)
+
 
 class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
     def calculate(self, data: InputData) -> FeatureImportanceMetricResult:

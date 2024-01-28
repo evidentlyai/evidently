@@ -26,6 +26,9 @@ from evidently.renderers.html_widgets import widget_tabs
 class DataIntegrityValueByRegexpStat(MetricResult):
     """Statistics about matched by a regular expression values in a column for one dataset"""
 
+    class Config:
+        pd_exclude_fields = {"table_of_matched", "table_of_not_matched"}
+
     # count of matched values in the column, without NaNs
     number_of_matched: int
     # count of not matched values in the column, without NaNs

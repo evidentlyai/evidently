@@ -197,7 +197,7 @@ class BaseResult(BaseModel):
         field_tags = self.__config__.field_tags
         for name, field in self.__fields__.items():
             if field_tags.get(name) and any(
-                ft in {IncludeTags.TypeField, IncludeTags.Render} for ft in field_tags.get(name)
+                ft in {IncludeTags.TypeField, IncludeTags.Render} for ft in field_tags.get(name, set())
             ):
                 continue
             if name not in include or name in exclude:
@@ -214,7 +214,10 @@ class BaseResult(BaseModel):
                 continue
             if isinstance(field_value, dict):
                 # todo: deal with more complex stuff later
-                assert all(isinstance(v, BaseResult) for v in field_value.values())
+                try:
+                    assert all(isinstance(v, BaseResult) for v in field_value.values())
+                except AssertionError:
+                    raise
                 dict_value: BaseResult
                 for dict_key, dict_value in field_value.items():
                     for (

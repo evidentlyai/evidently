@@ -30,6 +30,9 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 
 
 class RegressionMetrics(MetricResult):
+    class Config:
+        pd_exclude_fields = {"underperformance"}
+
     r2_score: float
     rmse: float
     mean_error: float

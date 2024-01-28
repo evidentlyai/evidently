@@ -28,6 +28,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TextDescriptorsCorrelationMetricResult(MetricResult):
+    class Config:
+        pd_include = False
+
     column_name: str
     current: Dict[str, Dict[str, ColumnCorrelations]]
     reference: Optional[Dict[str, Dict[str, ColumnCorrelations]]] = None

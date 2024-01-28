@@ -260,6 +260,7 @@ class ColumnScatterResult(MetricResult):
     class Config:
         smart_union = True
         dict_include = False
+        pd_include = False
 
         tags = {IncludeTags.Render}
 
