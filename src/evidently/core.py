@@ -214,10 +214,10 @@ class BaseResult(BaseModel):
                 continue
             if isinstance(field_value, dict):
                 # todo: deal with more complex stuff later
-                try:
-                    assert all(isinstance(v, BaseResult) for v in field_value.values())
-                except AssertionError:
-                    raise
+                if all(isinstance(v, BaseResult) for v in field_value.values()):
+                    raise NotImplementedError(
+                        f"{self.__class__.__name__} does not support dataframe rendering. Please submit an issue to https://github.com/evidentlyai/evidently/issues"
+                    )
                 dict_value: BaseResult
                 for dict_key, dict_value in field_value.items():
                     for (
