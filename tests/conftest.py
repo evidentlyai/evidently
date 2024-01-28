@@ -2,20 +2,26 @@ import numpy as np
 import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
-from evidently.utils.types import ApproxValue
 from evidently.pydantic_utils import PolymorphicModel
+from evidently.utils.types import ApproxValue
 
 # for np.testing.assert_equal to work with ApproxValue
 np.core.numeric.ScalarType = np.core.numeric.ScalarType + (ApproxValue,)  # type: ignore[attr-defined]
 
 
-
 def smart_assert_equal(actual, expected, path=""):
-    if isinstance(actual, BaseModel) and isinstance(expected, BaseModel) and (actual.__class__ is expected.__class__ or (
+    if (
+        isinstance(actual, BaseModel)
+        and isinstance(expected, BaseModel)
+        and (
+            actual.__class__ is expected.__class__
+            or (
                 isinstance(actual, PolymorphicModel)
                 and isinstance(expected, PolymorphicModel)
                 and actual.type == expected.type
-            )) :
+            )
+        )
+    ):
         ignore_not_set = hasattr(expected, "__ignore_not_set__") and expected.__ignore_not_set__
         for field in actual.__fields__.values():
             if ignore_not_set and getattr(expected, field.name) is None:

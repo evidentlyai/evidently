@@ -4,6 +4,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from evidently.calculation_engine.python_engine import PythonEngine
+from evidently.calculations.stattests import StatTest
+from evidently.calculations.stattests import psi_stat_test
+from evidently.calculations.stattests.registry import _impls
+from evidently.calculations.stattests.registry import add_stattest_impl
+from evidently.core import ColumnType
 from evidently.metrics import ColumnDriftMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
