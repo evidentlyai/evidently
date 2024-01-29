@@ -1,4 +1,5 @@
 import pandas as pd
+from evidently.calculation_engine.python_engine import PythonEngine
 from pytest import approx
 from sklearn import datasets
 from sklearn.datasets import fetch_20newsgroups
@@ -7,6 +8,8 @@ from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import DriftStatsField
 from evidently.calculations.stattests import StatTest
 from evidently.calculations.stattests import psi_stat_test
+from evidently.calculations.stattests.registry import _impls, add_stattest_impl
+from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.metric_results import DistributionIncluded
 from evidently.metrics import ColumnInteractionPlot
@@ -85,13 +88,14 @@ def column_drift_metric():
 
 @metric
 def column_drift_metric_values():
+
     test_stattest = StatTest(
         name="test_stattest",
         display_name="test stattest",
-        func=psi_stat_test.func,
-        allowed_feature_types=["num"],
+        allowed_feature_types=[ColumnType.Numerical],
         default_threshold=0.05,
     )
+    add_stattest_impl(test_stattest, PythonEngine, _impls[psi_stat_test][PythonEngine])
 
     return [
         TestMetric(
