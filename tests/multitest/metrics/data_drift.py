@@ -1,14 +1,15 @@
 import pandas as pd
-from evidently.calculation_engine.python_engine import PythonEngine
 from pytest import approx
 from sklearn import datasets
 from sklearn.datasets import fetch_20newsgroups
 
+from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import DriftStatsField
 from evidently.calculations.stattests import StatTest
 from evidently.calculations.stattests import psi_stat_test
-from evidently.calculations.stattests.registry import _impls, add_stattest_impl
+from evidently.calculations.stattests.registry import _impls
+from evidently.calculations.stattests.registry import add_stattest_impl
 from evidently.core import ColumnType
 from evidently.metric_results import Distribution
 from evidently.metric_results import DistributionIncluded
