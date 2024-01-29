@@ -5,7 +5,7 @@
 * [Get Started](get-started/README.md)
   * [Hello World Example](get-started/hello-world.md)
   * [Quickstart for Reports and Tests](get-started/tutorial.md)
-  * [Quickstart for Evidently Cloud](get-started/tutorial-cloud.md)
+  * [Evidently Cloud Tutorial](get-started/tutorial-cloud.md)
   * [Self-host ML Monitoring](get-started/tutorial-monitoring.md)
 * [Presets](presets/README.md)
   * [All Presets](presets/all-presets.md)
