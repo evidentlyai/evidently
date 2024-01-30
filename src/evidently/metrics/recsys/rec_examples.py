@@ -25,6 +25,9 @@ from evidently.renderers.html_widgets import table_data
 
 
 class RecCasesTableResults(MetricResult):
+    class Config:
+        pd_include = False
+
     user_ids: List[str]
     current: Dict[str, pd.DataFrame]
     current_train: Dict[str, List[str]] = {}

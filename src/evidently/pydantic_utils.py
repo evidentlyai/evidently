@@ -1,4 +1,6 @@
+import hashlib
 import itertools
+import json
 import os
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -146,7 +148,8 @@ class PolymorphicModel(BaseModel):
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    pass
+    def get_object_hash(self):
+        return get_object_hash(self)
 
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
@@ -261,3 +264,11 @@ class FieldPath:
 @pydantic_type_validator(FieldPath)
 def series_validator(value):
     return value.get_path()
+
+
+def get_object_hash(obj: Union[BaseModel, dict]):
+    from evidently.utils import NumpyEncoder
+
+    if isinstance(obj, BaseModel):
+        obj = obj.dict()
+    return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8")).hexdigest()  # nosec: B324

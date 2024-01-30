@@ -2,6 +2,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import pandas as pd
+
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
@@ -140,6 +142,10 @@ class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
 
 @default_renderer(wrap_type=DataDriftTable)
 class DataDriftTableRenderer(MetricRenderer):
+    def render_pandas(self, obj: DataDriftTable) -> pd.DataFrame:
+        result: DataDriftTableResults = obj.get_result()
+        return pd.concat([v.get_pandas() for v in result.drift_by_columns.values()])
+
     def _generate_column_params(
         self,
         column_name: str,

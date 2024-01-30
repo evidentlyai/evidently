@@ -24,6 +24,9 @@ from evidently.renderers.html_widgets import widget_tabs
 
 
 class PersonalizationMetricResult(MetricResult):
+    class Config:
+        pd_include = False
+
     k: int
     current_value: float
     current_table: Dict[str, int]

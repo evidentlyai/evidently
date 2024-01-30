@@ -35,7 +35,14 @@ from evidently.utils.data_preprocessing import DataDefinition
 class RegressionErrorBiasTableResults(MetricResult):
     class Config:
         dict_exclude_fields = {"current_plot_data", "reference_plot_data"}
-        pd_exclude_fields = {"current_plot_data", "reference_plot_data"}
+        pd_exclude_fields = {
+            "current_plot_data",
+            "reference_plot_data",
+            "num_feature_names",
+            "cat_feature_names",
+            "error_bias",
+            "columns",
+        }
 
     top_error: float
     current_plot_data: pd.DataFrame

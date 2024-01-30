@@ -22,6 +22,9 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationRocCurveResults(MetricResult):
+    class Config:
+        pd_include = False
+
     current_roc_curve: Optional[ROCCurve] = None
     reference_roc_curve: Optional[ROCCurve] = None
 

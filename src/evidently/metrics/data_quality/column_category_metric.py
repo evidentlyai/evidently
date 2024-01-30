@@ -25,6 +25,9 @@ class CategoryStat(MetricResult):
 
 
 class ColumnCategoryMetricResult(MetricResult):
+    class Config:
+        pd_exclude_fields = {"counts_of_values"}
+
     column_name: str
     category: Union[int, float, str]
     current: CategoryStat

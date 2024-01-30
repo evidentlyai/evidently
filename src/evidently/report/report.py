@@ -174,15 +174,19 @@ class Report(ReportBase):
             "metrics": metrics,
         }
 
-    def _as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
+    def as_dataframe(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
         metrics = defaultdict(list)
 
         for metric in self._first_level_metrics:
             renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
             metric_id = metric.get_id()
+            metric_hash = metric.get_object_hash()
             if group is not None and metric_id != group:
                 continue
-            metrics[metric_id].append(renderer.render_pandas(metric))
+            df = renderer.render_pandas(metric)
+            df["metric_id"] = metric_id
+            df["metric_hash"] = metric_hash
+            metrics[metric_id].append(df)
 
         result = {cls: pd.concat(val) for cls, val in metrics.items()}
         if group is None and len(result) == 1:

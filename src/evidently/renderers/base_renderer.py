@@ -1,5 +1,6 @@
 import dataclasses
 import uuid
+import warnings
 from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
@@ -35,7 +36,13 @@ class BaseRenderer:
 
 class MetricRenderer(BaseRenderer):
     def render_pandas(self, obj: "Metric[TResult]") -> pd.DataFrame:
-        return obj.get_result().get_pandas()
+        result = obj.get_result()
+        if not result.__config__.pd_include:
+            warnings.warn(
+                f"{obj.get_id()} metric does not support as_dataframe yet. Please submit an issue to https://github.com/evidentlyai/evidently/issues"
+            )
+            return pd.DataFrame()
+        return result.get_pandas()
 
     def render_json(
         self,
