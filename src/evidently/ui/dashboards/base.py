@@ -49,7 +49,7 @@ class ReportFilter(BaseModel):
 class PanelValue(BaseModel):
     field_path: Union[str, FieldPath]
     metric_id: Optional[str] = None
-    metric_hash: Optional[int] = None
+    metric_hash: Optional[str] = None
     metric_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
     legend: Optional[str] = None
 
@@ -66,7 +66,7 @@ class PanelValue(BaseModel):
         return value
 
     def metric_matched(self, metric: Metric) -> bool:
-        if self.metric_hash is not None and hash(metric) == self.metric_hash:
+        if self.metric_hash is not None and metric.get_object_hash() == self.metric_hash:
             return True
         if self.metric_id is not None and self.metric_id != metric.get_id():
             return False
