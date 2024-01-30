@@ -51,7 +51,7 @@ jobs:
 
       - name: 🔬 Analyze deps
         working-directory: ui/service
-        run: npx vite-bundle-visualizer -o vite-bundle-report/index.html
+        run: npx vite-bundle-visualizer@1.0.0 -o vite-bundle-report/index.html
 
       - uses: actions/upload-artifact@v3
         if: always()
