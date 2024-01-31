@@ -223,8 +223,8 @@ type DashboardTab = { id: string; title: string }
 export interface DashboardInfo {
   name: string
   widgets: WidgetInfo[]
-  max_timestamp: string
-  min_timestamp: string
+  max_timestamp: string | null
+  min_timestamp: string | null
 }
 
 export interface SectionInfo {
