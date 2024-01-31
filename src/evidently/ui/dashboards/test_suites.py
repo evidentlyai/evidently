@@ -42,8 +42,8 @@ class TestFilter(BaseModel):
     test_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
 
     def test_matched(self, test: Test) -> bool:
-        if self.test_hash is not None and test.get_object_hash() == self.test_hash:
-            return True
+        if self.test_hash is not None:
+            return test.get_object_hash() == self.test_hash
         if self.test_id is not None and self.test_id != test.get_id():
             return False
         for field, value in self.test_args.items():
