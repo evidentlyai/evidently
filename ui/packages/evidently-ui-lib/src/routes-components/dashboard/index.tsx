@@ -19,8 +19,7 @@ export const DashboardComponentTemplate = ({ Dashboard }: Props) => {
   return (
     <>
       <DashboardDateFilter dataRanges={dataRanges} />
-
-      {isCorrectTimeInterval && <Dashboard data={data} />}
+      <Dashboard data={data} />
     </>
   )
 }
