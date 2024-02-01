@@ -77,7 +77,11 @@ metric_fixtures = []
 
 
 def metric(f):
-    metric_fixtures.append(f())
+    m = f()
+    if isinstance(m, list):
+        metric_fixtures.extend(m)
+    else:
+        metric_fixtures.append(m)
     return f
 
 

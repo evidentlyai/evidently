@@ -1,5 +1,6 @@
 import re
 
+import pandas as pd
 import pytest
 
 from evidently.base_metric import Metric
@@ -13,6 +14,11 @@ from tests.multitest.metrics.conftest import TestMetric
 from tests.multitest.metrics.conftest import generate_dataset_outcome
 from tests.multitest.metrics.conftest import load_test_metrics
 from tests.multitest.metrics.conftest import metric_fixtures
+
+
+def _check_dataframe(report: Report):
+    df = report.as_dataframe()
+    assert isinstance(df, pd.DataFrame)
 
 
 @pytest.mark.parametrize("raw_data", [True, False], ids=["raw_data", "agg_data"])
@@ -40,6 +46,7 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     report._inner_suite.raise_for_error()
     assert report.show()
     assert report.json()
+    _check_dataframe(report)
 
     outcome.check(report)
 

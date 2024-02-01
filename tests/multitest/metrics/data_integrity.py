@@ -61,8 +61,8 @@ def column_summary_metric_period():
                 ),
                 column_mapping=ColumnMapping(datetime="datetime"),
             ): AssertExpectedResult(
-                m,
-                ColumnSummaryResult(
+                metric=m,
+                result=ColumnSummaryResult(
                     column_name="feature1",
                     column_type="num",
                     current_characteristics=NumericCharacteristics(

@@ -25,6 +25,9 @@ from evidently.renderers.html_widgets import widget_tabs
 class ColumnMissingValues(MetricResult):
     """Statistics about missing values in a column"""
 
+    class Config:
+        pd_exclude_fields = {"different_missing_values"}
+
     # count of rows in the column
     number_of_rows: int
     # set of different missed values in the column

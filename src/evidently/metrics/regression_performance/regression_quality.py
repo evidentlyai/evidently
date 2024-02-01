@@ -39,7 +39,7 @@ class MoreRegressionMetrics(RegressionMetrics):
 class RegressionQualityMetricResults(MetricResult):
     class Config:
         dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
-        pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
+        pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_normality", "error_bias"}
 
     columns: DatasetColumns
     current: MoreRegressionMetrics

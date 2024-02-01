@@ -1,4 +1,6 @@
+import hashlib
 import itertools
+import json
 import os
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -146,7 +148,8 @@ class PolymorphicModel(BaseModel):
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    pass
+    def get_object_hash(self):
+        return get_object_hash(self)
 
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
@@ -182,34 +185,67 @@ class ExcludeNoneMixin(BaseModel):
 
 
 class FieldPath:
-    def __init__(self, path: List[str], cls: Type, is_mapping: bool = False):
+    def __init__(self, path: List[str], cls_or_instance: Union[Type, Any], is_mapping: bool = False):
         self._path = path
-        self._cls = cls
+        self._cls: Type
+        self._instance: Any
+        if isinstance(cls_or_instance, type):
+            self._cls = cls_or_instance
+            self._instance = None
+        else:
+            self._cls = type(cls_or_instance)
+            self._instance = cls_or_instance
         self._is_mapping = is_mapping
 
+    @property
+    def has_instance(self):
+        return self._instance is not None
+
     def list_fields(self) -> List[str]:
-        if issubclass(self._cls, BaseModel):
+        if self.has_instance and self._is_mapping and isinstance(self._instance, dict):
+            return list(self._instance.keys())
+        if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
             return list(self._cls.__fields__)
         return []
 
     def __getattr__(self, item) -> "FieldPath":
+        return self.child(item)
+
+    def child(self, item: str) -> "FieldPath":
         if self._is_mapping:
+            if self.has_instance and isinstance(self._instance, dict):
+                return FieldPath(self._path + [item], self._instance[item])
             return FieldPath(self._path + [item], self._cls)
         if not issubclass(self._cls, BaseModel):
             raise AttributeError(f"{self._cls} does not have fields")
         if item not in self._cls.__fields__:
             raise AttributeError(f"{self._cls} type does not have '{item}' field")
         field = self._cls.__fields__[item]
-        return FieldPath(self._path + [item], field.type_, is_mapping=field.shape == SHAPE_DICT)
+        field_value = field.type_
+        is_mapping = field.shape == SHAPE_DICT
+        if self.has_instance:
+            field_value = getattr(self._instance, item)
+            if is_mapping:
+                return FieldPath(self._path + [item], field_value, is_mapping=True)
+        return FieldPath(self._path + [item], field_value, is_mapping=is_mapping)
 
     def list_nested_fields(self) -> List[str]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
         for name, field in self._cls.__fields__.items():
-            if field.shape == SHAPE_DICT:
-                name = f"{name}.*"
-            res.extend(FieldPath(self._path + [name], field.type_).list_nested_fields())
+            field_value = field.type_
+            is_mapping = field.shape == SHAPE_DICT
+            if self.has_instance:
+                field_value = getattr(self._instance, name)
+                if is_mapping and isinstance(field_value, dict):
+                    for key, value in field_value.items():
+                        res.extend(FieldPath(self._path + [name, str(key)], value).list_nested_fields())
+                    continue
+            else:
+                if is_mapping:
+                    name = f"{name}.*"
+            res.extend(FieldPath(self._path + [name], field_value).list_nested_fields())
         return res
 
     def __repr__(self):
@@ -228,3 +264,11 @@ class FieldPath:
 @pydantic_type_validator(FieldPath)
 def series_validator(value):
     return value.get_path()
+
+
+def get_object_hash(obj: Union[BaseModel, dict]):
+    from evidently.utils import NumpyEncoder
+
+    if isinstance(obj, BaseModel):
+        obj = obj.dict()
+    return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8")).hexdigest()  # nosec: B324

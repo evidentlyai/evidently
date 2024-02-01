@@ -18,6 +18,9 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class PairwiseDistanceResult(MetricResult):
+    class Config:
+        pd_include = False
+
     dist_matrix: np.ndarray
     name_dict: Dict[Union[int, str], int]
 

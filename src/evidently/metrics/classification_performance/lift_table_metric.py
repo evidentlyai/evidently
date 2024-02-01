@@ -44,6 +44,9 @@ LiftTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 
 
 class ClassificationLiftTableResults(MetricResult):
+    class Config:
+        pd_include = False
+
     current_lift_table: Optional[LiftTable] = None
     reference_lift_table: Optional[LiftTable] = None
     top: Optional[int] = 10

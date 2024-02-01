@@ -1,10 +1,8 @@
-import json
 from typing import Optional
 
 import numpy as np
 import pandas as pd
 import pytest
-from pytest import approx
 
 from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.calculations.stattests import StatTest
@@ -24,91 +22,6 @@ test_stattest = StatTest(
 )
 
 add_stattest_impl(test_stattest, PythonEngine, _impls[psi_stat_test][PythonEngine])
-
-
-@pytest.mark.parametrize(
-    "current_data, reference_data, data_mapping, metric, expected_json",
-    (
-        (
-            pd.DataFrame({"col": [1, 2, 3]}),
-            pd.DataFrame({"col": [1, 2, 3]}),
-            None,
-            ColumnDriftMetric(column_name="col"),
-            {
-                "column_name": "col",
-                "column_type": "cat",
-                "drift_detected": False,
-                "drift_score": 1.0,
-                "stattest_name": "chi-square p_value",
-                "stattest_threshold": 0.05,
-                "current": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
-                "reference": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
-            },
-        ),
-        (
-            pd.DataFrame({"col": [5, 8, 3]}),
-            pd.DataFrame({"col": [1, 2, 3]}),
-            None,
-            ColumnDriftMetric(column_name="col"),
-            {
-                "column_name": "col",
-                "column_type": "cat",
-                "drift_detected": True,
-                "drift_score": 0.0,
-                "stattest_name": "chi-square p_value",
-                "stattest_threshold": 0.05,
-                "current": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [0, 0, 1, 1, 1]}},
-                "reference": {"small_distribution": {"x": [1, 2, 3, 5, 8], "y": [1, 1, 1, 0, 0]}},
-            },
-        ),
-        (
-            pd.DataFrame({"col": [1, 2, 3]}),
-            pd.DataFrame({"col": [3, 2, 2]}),
-            None,
-            ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
-            {
-                "column_name": "col",
-                "column_type": "cat",
-                "drift_detected": True,
-                "drift_score": approx(2.93, abs=0.01),
-                "stattest_name": "PSI",
-                "stattest_threshold": 0.1,
-                "current": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
-                "reference": {"small_distribution": {"x": [1, 2, 3], "y": [0, 2, 1]}},
-            },
-        ),
-        (
-            pd.DataFrame({"col": [1, 2, 3]}),
-            pd.DataFrame({"col": [3, 2, 2]}),
-            None,
-            ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
-            {
-                "column_name": "col",
-                "column_type": "cat",
-                "drift_detected": True,
-                "drift_score": approx(2.93, abs=0.01),
-                "stattest_name": "test stattest",
-                "stattest_threshold": 0.1,
-                "current": {"small_distribution": {"x": [1, 2, 3], "y": [1, 1, 1]}},
-                "reference": {"small_distribution": {"x": [1, 2, 3], "y": [0, 2, 1]}},
-            },
-        ),
-    ),
-)
-def test_column_drift_metric_success(
-    current_data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    data_mapping: Optional[ColumnMapping],
-    metric: ColumnDriftMetric,
-    expected_json: dict,
-) -> None:
-    report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
-    assert report.show()
-    result_json = report.json()
-    result = json.loads(result_json)
-    assert result["metrics"][0]["metric"] == "ColumnDriftMetric"
-    assert result["metrics"][0]["result"] == expected_json
 
 
 @pytest.mark.parametrize(

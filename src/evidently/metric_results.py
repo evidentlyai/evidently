@@ -138,6 +138,7 @@ class DatasetUtilityColumns(MetricResult):
 class DatasetColumns(MetricResult):
     class Config:
         dict_exclude_fields = {"task", "target_type"}
+        pd_include = False
 
     utility_columns: DatasetUtilityColumns
     target_type: Optional[str]
@@ -259,6 +260,7 @@ class ColumnScatterResult(MetricResult):
     class Config:
         smart_union = True
         dict_include = False
+        pd_include = False
 
         tags = {IncludeTags.Render}
 
@@ -393,6 +395,14 @@ class ColumnCorrelations(MetricResult):
     column_name: str
     kind: str
     values: DistributionIncluded
+
+    def get_pandas(self) -> pd.DataFrame:
+        return pd.DataFrame(
+            [
+                {"kind": self.kind, "column_name": key, "value": value}
+                for key, value in zip(self.values.x, self.values.y)
+            ]
+        )
 
 
 class DatasetClassificationQuality(MetricResult):

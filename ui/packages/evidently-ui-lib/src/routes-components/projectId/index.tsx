@@ -1,6 +1,6 @@
 import { Alert, Box, Collapse, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/material'
 
-import { Link as RouterLink, Outlet, useMatches, useLoaderData } from 'react-router-dom'
+import { Link as RouterLink, Outlet, useMatches, useLoaderData, useRouteError } from 'react-router-dom'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { crumbFunction } from '~/components/BreadCrumbs'
 import { loaderData } from './data'
@@ -10,10 +10,13 @@ export const handle: { crumb: crumbFunction<loaderData> } = {
 }
 
 export function ErrorBoundary() {
+  const error = useRouteError()
+
   return (
     <Collapse sx={{ my: 3 }} unmountOnExit in={true}>
       <Alert severity="error">
         <Typography variant="h6">Something went wrong...</Typography>
+        <Typography>{String(error)}</Typography>
       </Alert>
     </Collapse>
   )

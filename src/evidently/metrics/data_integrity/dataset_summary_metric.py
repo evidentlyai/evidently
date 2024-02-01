@@ -51,7 +51,7 @@ class DatasetSummary(MetricResult):
 
     class Config:
         dict_exclude_fields = {"columns_type_data"}
-        pd_exclude_fields = {"columns_type_data"}
+        pd_exclude_fields = {"columns_type_data", "nans_by_columns", "number_uniques_by_columns"}
 
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
