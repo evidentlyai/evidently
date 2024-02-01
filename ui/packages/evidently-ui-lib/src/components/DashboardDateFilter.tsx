@@ -45,7 +45,7 @@ export const useIsCorrectTimeInterval = ({ dataRanges }: DashboardDateFilterProp
   const date_to = dayjs(dateTo || dataRanges.maxDate)
 
   const isCorrectTimeInterval =
-    date_from.isValid() && date_to.isValid() && date_from.isBefore(date_to)
+    date_from.isValid() && date_to.isValid() && (date_from.isSame(date_to) || date_from.isBefore(date_to))
 
   return { isCorrectTimeInterval, date_from, date_to, setSearchParams }
 }
