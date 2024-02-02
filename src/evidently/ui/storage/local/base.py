@@ -269,8 +269,13 @@ class InMemoryDataStorage(DataStorage):
     ) -> DataPoints:
         points: DataPoints = [{} for _ in range(len(values))]
         for report in (s.as_report() for s in self.state.snapshot_data[project_id].values() if s.is_report):
-            if not filter.filter(report):
+            if not (
+                filter.filter(report)
+                and (timestamp_start is None or report.timestamp >= timestamp_start)
+                and (timestamp_end is None or report.timestamp < timestamp_end)
+            ):
                 continue
+
             for i, value in enumerate(values):
                 for metric, metric_field_value in value.get(report).items():
                     if metric not in points[i]:
