@@ -4,7 +4,7 @@ import { InJectAPI, expectJsonRequest } from '~/utils'
 
 export type loaderData = ProjectInfo[]
 
-export const actionSchema = z.object({
+export const createNewProjectSchema = z.object({
   action: z.literal('create-new-project')
 })
 
@@ -20,7 +20,7 @@ export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
 
     const json = await request.json()
 
-    const isCreateAction = actionSchema.safeParse(json)
+    const isCreateAction = createNewProjectSchema.safeParse(json)
     if (isCreateAction.success && isCreateAction.data.action === 'create-new-project') {
       return api.createProject(json)
     }
