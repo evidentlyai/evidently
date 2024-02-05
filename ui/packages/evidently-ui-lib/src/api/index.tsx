@@ -289,6 +289,10 @@ export interface Api {
 
   getProjectInfo(projectId: string): Promise<ProjectDetails>
 
+  createProject(project: Partial<ProjectDetails>): Promise<ProjectDetails>
+
+  deleteProject(projectId: string): Promise<Response>
+
   getVersion(): Promise<VersionInfo>
 
   editProjectInfo(project: ProjectDetails): Promise<Response>

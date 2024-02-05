@@ -45,19 +45,27 @@ class NotImplementedApi implements Api {
   }
 
   getTestSuites(): Promise<SnapshotInfo[]> {
-    return Promise.resolve([])
+    return Promise.reject('not implemented')
   }
 
   getVersion(): Promise<VersionInfo> {
-    return Promise.resolve({ version: '0.0.0' })
+    return Promise.reject('not implemented')
+  }
+
+  createProject(_project: Partial<ProjectDetails>): Promise<ProjectDetails> {
+    return Promise.reject('not implemented')
   }
 
   editProjectInfo(_project: ProjectDetails) {
-    return Promise.resolve(new Response('ok', { status: 200 }))
+    return Promise.reject('not implemented')
   }
 
   reloadProject(_projectId: string): Promise<Response> {
-    return Promise.resolve(new Response(null, { status: 200 }))
+    return Promise.reject('not implemented')
+  }
+
+  deleteProject(_projectId: string): Promise<Response> {
+    return Promise.reject('not implemented')
   }
 }
 
