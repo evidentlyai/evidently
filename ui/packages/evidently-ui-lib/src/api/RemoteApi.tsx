@@ -190,7 +190,7 @@ export class RemoteApi implements Api {
   async createProject(project: Partial<ProjectDetails>): Promise<ProjectDetails> {
     const params = new URLSearchParams()
     project.team_id && params.append('team_id', project.team_id)
-    
+
     const response = await fetch(`${this.endpoint}/projects?${params.toString()}`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
