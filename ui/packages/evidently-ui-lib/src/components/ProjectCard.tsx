@@ -203,7 +203,13 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
   )
 }
 
-export const AddNewProjectButton = ({ project }: { project?: Partial<ProjectInfo> }) => {
+export const AddNewProjectButton = ({
+  project,
+  children
+}: {
+  project?: Partial<ProjectInfo>
+  children?: React.ReactNode
+}) => {
   const [on, toggle] = useToggle(false)
   const navigation = useNavigation()
   const isDisabled = navigation.state !== 'idle'
@@ -226,7 +232,8 @@ export const AddNewProjectButton = ({ project }: { project?: Partial<ProjectInfo
       </Box>
 
       <Fade in={on} unmountOnExit>
-        <Box>
+        <Box py={1} display={'flex'} flexDirection={'column'} rowGap={1}>
+          {children}
           <EditProjectInfoForm
             project={project || { name: '', description: '' }}
             disabled={isDisabled}
