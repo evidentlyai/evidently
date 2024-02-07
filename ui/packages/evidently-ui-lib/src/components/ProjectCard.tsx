@@ -211,8 +211,22 @@ export const AddNewProjectButton = ({
   children?: React.ReactNode
 }) => {
   const [on, toggle] = useToggle(false)
+  const [wasSubmitting, toggleSubmitting] = useToggle(false)
   const navigation = useNavigation()
   const isDisabled = navigation.state !== 'idle'
+
+  useEffect(() => {
+    if (navigation.state === 'submitting') {
+      toggleSubmitting(true)
+    }
+  }, [navigation.state === 'submitting'])
+
+  useEffect(() => {
+    if (wasSubmitting && navigation.state === 'idle') {
+      toggle(false)
+      toggleSubmitting(false)
+    }
+  }, [wasSubmitting, navigation.state === 'idle'])
 
   return (
     <Box py={2}>
@@ -231,7 +245,7 @@ export const AddNewProjectButton = ({
         </Tooltip>
       </Box>
 
-      <Fade in={on} unmountOnExit>
+      {on && (
         <Box py={1} display={'flex'} flexDirection={'column'} rowGap={1}>
           {children}
           <EditProjectInfoForm
@@ -240,7 +254,7 @@ export const AddNewProjectButton = ({
             action="create-new-project"
           />
         </Box>
-      </Fade>
+      )}
     </Box>
   )
 }
