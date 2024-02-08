@@ -46,12 +46,14 @@ cmdclass["jsdeps"] = combine_commands(
 setup_args = dict(
     cmdclass=cmdclass,
     author_email="emeli.dral@gmail.com",
+    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
         "plotly>=5.5.0",
         "statsmodels>=0.12.2",
         "scikit-learn>=0.24.0",
-        "pandas>=1.3.5",
+        "pandas[parquet]>=1.3.5",
         "numpy>=1.19.5",
         "nltk>=3.6.7",
         "scipy>=1.5.4",
@@ -66,12 +68,13 @@ setup_args = dict(
         "typer>=0.3",
         "rich>=13",
         "iterative-telemetry>=0.0.5",
-        "pyarrow<11.0dev"
+        "fsspec",
     ],
     extras_require={
         "dev": [
             "wheel==0.35.1",
-            "setuptools==50.3.2",
+            "setuptools==50.3.2; python_version < '3.12'",
+            "setuptools==68.2.2; python_version >= '3.12'",
             "flake8==4.0.1",
             "jupyter==1.0.0",
             "mypy==0.910",

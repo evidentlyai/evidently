@@ -1,10 +1,10 @@
-import { RouteObject } from 'react-router-dom'
+import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { api } from 'api/RemoteApi'
 
 import TestSuiteRoute from './testSuiteId'
 
-const { loader } = injectTestSuitesAPI({ api })
+const { loader, action } = injectTestSuitesAPI({ api })
 
 export default {
   id: 'test_suites',
@@ -19,5 +19,6 @@ export default {
     return { ...rest, Component }
   },
   loader,
+  action,
   children: [TestSuiteRoute]
 } satisfies RouteObject

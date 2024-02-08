@@ -16,6 +16,10 @@ The tutorial is split into two parts.
 
 **Note**: This guide assumes you run Evidently locally.
 
+{% hint style="info" %}
+**Don't want to self-host the ML monitoring dashboard?** Check out the [Evidently Cloud tutorial](tutorial-cloud.md).
+{% endhint %}
+
 # Part 1. Pre-built demo
 
 ## 1. Create virtual environment

@@ -194,31 +194,39 @@ class BaseResult(BaseModel):
         exclude = exclude or self.__config__.pd_exclude_fields or set()
 
         data = {}
+        field_tags = self.__config__.field_tags
         for name, field in self.__fields__.items():
+            if field_tags.get(name) and any(
+                ft in {IncludeTags.TypeField, IncludeTags.Render} for ft in field_tags.get(name, set())
+            ):
+                continue
             if name not in include or name in exclude:
                 continue
-            if isinstance(field.type_, type) and issubclass(field.type_, BaseResult):
-                if field.type_.__config__.pd_include:
-                    field_value = getattr(self, name)
-                    field_prefix = f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
+            field_value = getattr(self, name)
+            field_prefix = f"{prefix}{self.__config__.pd_name_mapping.get(name, name)}_"
+            if isinstance(field_value, BaseResult):
+                field_type = type(field_value)
+                if field_type.__config__.pd_include:
                     if field_value is None:
                         continue
-                    elif isinstance(field_value, BaseResult):
+                    if isinstance(field_value, BaseResult):
                         data.update(field_value.collect_pandas_columns(field_prefix))
-                    elif isinstance(field_value, dict):  # Dict[str, MetricResultField]
-                        # todo: deal with more complex stuff later
-                        assert all(isinstance(v, BaseResult) for v in field_value.values())
-                        dict_value: BaseResult
-                        for dict_key, dict_value in field_value.items():
-                            for (
-                                key,
-                                value,
-                            ) in dict_value.collect_pandas_columns().items():
-                                data[f"{field_prefix}_{dict_key}_{key}"] = value
-                    elif isinstance(field_value, list):  # List[MetricResultField]
-                        raise NotImplementedError  # todo
                 continue
-            data[prefix + name] = getattr(self, name)
+            if isinstance(field_value, dict):
+                # todo: deal with more complex stuff later
+                if all(isinstance(v, BaseResult) for v in field_value.values()):
+                    raise NotImplementedError(
+                        f"{self.__class__.__name__} does not support dataframe rendering. Please submit an issue to https://github.com/evidentlyai/evidently/issues"
+                    )
+                dict_value: BaseResult
+                for dict_key, dict_value in field_value.items():
+                    for (
+                        key,
+                        value,
+                    ) in dict_value.collect_pandas_columns().items():
+                        data[f"{field_prefix}_{dict_key}_{key}"] = value
+                continue
+            data[prefix + name] = field_value
         return data
 
     def get_pandas(self) -> pd.DataFrame:

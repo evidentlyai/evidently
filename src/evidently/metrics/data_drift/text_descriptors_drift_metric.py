@@ -140,7 +140,11 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
 
 
 @default_renderer(wrap_type=TextDescriptorsDriftMetric)
-class DataDriftTableRenderer(MetricRenderer):
+class TextDescriptorsDriftRenderer(MetricRenderer):
+    def render_pandas(self, obj: TextDescriptorsDriftMetric) -> pd.DataFrame:
+        result: TextDescriptorsDriftMetricResults = obj.get_result()
+        return pd.concat([v.get_pandas() for v in result.drift_by_columns.values()])
+
     def _generate_column_params(
         self, column_name: str, data: ColumnDataDriftMetrics, agg_data: bool
     ) -> Optional[RichTableDataRow]:

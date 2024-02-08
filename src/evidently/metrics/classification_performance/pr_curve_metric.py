@@ -22,6 +22,9 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationPRCurveResults(MetricResult):
+    class Config:
+        pd_include = False
+
     current_pr_curve: Optional[PRCurve] = None
     reference_pr_curve: Optional[PRCurve] = None
 

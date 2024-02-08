@@ -384,26 +384,11 @@ def calculate_metrics(
         plot_data = collect_plot_data(prediction.prediction_probas)
     if len(prediction.labels) == 2 and prediction.prediction_probas is not None:
         fprs, tprs, thrs = metrics.roc_curve(target == pos_label, prediction.prediction_probas[pos_label])
-        df = pd.DataFrame(
-            {
-                "true": (target == pos_label).astype(int).values,
-                "preds": prediction.prediction_probas[pos_label].values,
-            }
+        tnrs = 1 - fprs
+        fnrs = 1 - tprs
+        rate_plots_data = RatesPlotData(
+            thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs.tolist(), tnr=tnrs.tolist()
         )
-        tnrs = []
-        fnrs = []
-        for tr in thrs:
-            if tr < 1:
-                tn = df[(df.true == 0) & (df.preds < tr)].shape[0]
-                fn = df[(df.true == 1) & (df.preds < tr)].shape[0]
-                tp = df[(df.true == 1) & (df.preds >= tr)].shape[0]
-                fp = df[(df.true == 0) & (df.preds >= tr)].shape[0]
-                tnrs.append(tn / (tn + fp))
-                fnrs.append(fn / (fn + tp))
-            else:
-                fnrs.append(1)
-                tnrs.append(1)
-        rate_plots_data = RatesPlotData(thrs=thrs.tolist(), tpr=tprs.tolist(), fpr=fprs.tolist(), fnr=fnrs, tnr=tnrs)
 
     return DatasetClassificationQuality(
         accuracy=metrics.accuracy_score(target, prediction.predictions),

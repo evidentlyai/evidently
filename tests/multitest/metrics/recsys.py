@@ -8,7 +8,7 @@ from evidently.metrics.recsys.mrr import MRRKMetric
 from evidently.metrics.recsys.ndcg_k import NDCGKMetric
 from evidently.metrics.recsys.novelty import NoveltyMetric
 from evidently.metrics.recsys.pairwise_distance import PairwiseDistance
-from evidently.metrics.recsys.personalisation import PersonalisationMetric
+from evidently.metrics.recsys.personalisation import PersonalizationMetric
 from evidently.metrics.recsys.popularity_bias import PopularityBias
 from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
 from evidently.metrics.recsys.precision_top_k import PrecisionTopKMetric
@@ -165,10 +165,10 @@ def serendipity():
 
 
 @metric
-def personalisation():
+def personalization():
     return TestMetric(
-        "personalisation",
-        PersonalisationMetric(k=3),
+        "personalization",
+        PersonalizationMetric(k=3),
         NoopOutcome(),
         [DatasetTags.RECSYS],
     )

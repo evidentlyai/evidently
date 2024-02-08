@@ -18,6 +18,9 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class PairwiseDistanceResult(MetricResult):
+    class Config:
+        pd_include = False
+
     dist_matrix: np.ndarray
     name_dict: Dict[Union[int, str], int]
 
@@ -35,7 +38,7 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
         curr = data.current_data
         ref = data.reference_data
         prediction_name = get_prediciton_name(data)
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         user_id = data.data_definition.get_user_id_column()
         item_id = data.data_definition.get_item_id_column()
         current_train_data = data.additional_data.get("current_train_data")
@@ -50,7 +53,7 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
             all_items[prediction_name] = all_items.groupby(user_id.column_name)[prediction_name].transform(
                 "rank", ascending=False
             )
-        all_items = all_items[all_items[prediction_name] <= self.k]
+        all_items = all_items[all_items[prediction_name] <= self.k + 1]
         all_items = all_items[[item_id.column_name] + self.item_features]
         if current_train_data is not None:
             if not np.in1d(self.item_features, current_train_data.columns).all():

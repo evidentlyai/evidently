@@ -23,6 +23,8 @@ from evidently.model.widget import AdditionalGraphInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import WidgetIdGenerator
+from evidently.renderers.base_renderer import replace_widgets_ids
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
@@ -172,15 +174,19 @@ class Report(ReportBase):
             "metrics": metrics,
         }
 
-    def _as_pandas(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
+    def as_dataframe(self, group: str = None) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
         metrics = defaultdict(list)
 
         for metric in self._first_level_metrics:
             renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
             metric_id = metric.get_id()
+            metric_hash = metric.get_object_hash()
             if group is not None and metric_id != group:
                 continue
-            metrics[metric_id].append(renderer.render_pandas(metric))
+            df = renderer.render_pandas(metric)
+            df["metric_id"] = metric_id
+            df["metric_hash"] = metric_hash
+            metrics[metric_id].append(df)
 
         result = {cls: pd.concat(val) for cls, val in metrics.items()}
         if group is None and len(result) == 1:
@@ -197,11 +203,14 @@ class Report(ReportBase):
 
         color_options = self.options.color_options
 
+        id_generator = WidgetIdGenerator("")
         for test in self._first_level_metrics:
+            id_generator.base_id = test.get_id()
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
             # set the color scheme from the report for each render
             renderer.color_options = color_options
             html_info = renderer.render_html(test)
+            replace_widgets_ids(html_info, id_generator)
 
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():

@@ -22,6 +22,9 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationLiftCurveResults(MetricResult):
+    class Config:
+        pd_include = False
+
     current_lift_curve: Optional[LiftCurve] = None
     reference_lift_curve: Optional[LiftCurve] = None
 

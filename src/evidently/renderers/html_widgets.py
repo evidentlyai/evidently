@@ -25,7 +25,7 @@ from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
 
 
-class WidgetSize(Enum):
+class WidgetSize(int, Enum):
     HALF = 1
     FULL = 2
 

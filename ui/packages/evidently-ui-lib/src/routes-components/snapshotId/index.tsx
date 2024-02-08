@@ -1,10 +1,11 @@
 import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { DashboardContent } from '~/components/DashboardContent'
+import { DashboardContentWidgets } from '~/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
 import { crumbFunction } from '~/components/BreadCrumbs'
 import { loaderData } from './data'
 import { Api } from '~/api'
+import { Grid } from '@mui/material'
 
 export const handle: { crumb: crumbFunction<loaderData>; hide: Record<string, Boolean> } = {
   crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
@@ -29,7 +30,9 @@ export const SnapshotTemplate = ({ api }: { api: Api }) => {
             api.getAdditionalWidgetData(projectId, snapshotId, widgetId)
         })}
       >
-        <DashboardContent widgets={data.widgets} />
+        <Grid container spacing={3} direction="row" alignItems="stretch">
+          <DashboardContentWidgets widgets={data.widgets} />
+        </Grid>
       </DashboardContext.Provider>
     </>
   )

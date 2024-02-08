@@ -43,6 +43,16 @@ MissingValue = Union[np.float_, NoneKey, Any]  # type: ignore[valid-type]
 class DatasetMissingValues(MetricResult):
     """Statistics about missed values in a dataset"""
 
+    class Config:
+        pd_exclude_fields = {
+            "different_missing_values_by_column",
+            "different_missing_values",
+            "number_of_different_missing_values_by_column",
+            "number_of_missing_values_by_column",
+            "share_of_missing_values_by_column",
+            "columns_with_missing_values",
+        }
+
     # set of different missing values in the dataset
     different_missing_values: Dict[MissingValue, int]
     # number of different missing values in the dataset

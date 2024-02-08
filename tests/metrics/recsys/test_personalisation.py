@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from evidently.metrics import PersonalisationMetric
+from evidently.metrics import PersonalizationMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.column_mapping import RecomType
 from evidently.report import Report
@@ -15,7 +15,7 @@ def test_curr_rank():
             "prediction": [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4],
         }
     )
-    metric = PersonalisationMetric(k=4)
+    metric = PersonalizationMetric(k=4)
     report = Report(metrics=[metric])
     column_mapping = ColumnMapping(recommendations_type=RecomType.RANK)
     report.run(reference_data=None, current_data=curr, column_mapping=column_mapping)
@@ -32,7 +32,7 @@ def test_curr_scores():
             "prediction": [10, 9, 8, 4, 10, 9, 8, 4, 10, 9, 8, 4],
         }
     )
-    metric = PersonalisationMetric(k=4)
+    metric = PersonalizationMetric(k=4)
     report = Report(metrics=[metric])
     column_mapping = ColumnMapping(recommendations_type=RecomType.SCORE)
     report.run(reference_data=None, current_data=curr, column_mapping=column_mapping)

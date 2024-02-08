@@ -39,6 +39,19 @@ class ClassificationQualityByClassResult(MetricResult):
     current: ClassificationQuality
     reference: Optional[ClassificationQuality]
 
+    def get_pandas(self) -> pd.DataFrame:
+        dfs = []
+        for field in ["current", "reference"]:
+            value: Optional[ClassificationQuality] = getattr(self, field)
+            if value is None:
+                continue
+            for class_value, class_metrics in value.metrics.items():
+                df = class_metrics.get_pandas()
+                df["class_value"] = class_value
+                df["dataset"] = field
+                dfs.append(df)
+        return pd.concat(dfs)
+
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
     def __init__(

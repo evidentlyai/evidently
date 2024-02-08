@@ -223,8 +223,8 @@ type DashboardTab = { id: string; title: string }
 export interface DashboardInfo {
   name: string
   widgets: WidgetInfo[]
-  max_timestamp: string
-  min_timestamp: string
+  max_timestamp: string | null
+  min_timestamp: string | null
 }
 
 export interface SectionInfo {
@@ -240,6 +240,7 @@ export interface ProjectInfo {
   description?: string
   date_from?: string
   date_to?: string
+  team_id?: string
 }
 
 export interface ProjectDetails extends ProjectInfo {
@@ -288,7 +289,13 @@ export interface Api {
 
   getProjectInfo(projectId: string): Promise<ProjectDetails>
 
+  createProject(project: Partial<ProjectDetails>): Promise<ProjectDetails>
+
+  deleteProject(projectId: string): Promise<Response>
+
   getVersion(): Promise<VersionInfo>
 
   editProjectInfo(project: ProjectDetails): Promise<Response>
+
+  reloadProject(projectId: string): Promise<Response>
 }

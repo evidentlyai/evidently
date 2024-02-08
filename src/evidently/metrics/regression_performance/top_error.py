@@ -41,6 +41,7 @@ class AggTopData(MetricResult):
 class RegressionTopErrorMetricResults(MetricResult):
     class Config:
         dict_include = False
+        pd_include = False
         tags = {IncludeTags.Render}
 
     current: Union[TopData, AggTopData]

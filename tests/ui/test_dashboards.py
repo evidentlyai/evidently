@@ -4,10 +4,13 @@ from typing import Dict
 import pytest
 
 from evidently._pydantic_compat import parse_obj_as
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import TResult
 from evidently.descriptors import OOV
 from evidently.ui.dashboards import PanelValue
-from evidently.ui.dashboards import getattr_nested
+from evidently.ui.dashboards.utils import getattr_nested
 
 
 class A(MetricResult):
@@ -34,3 +37,18 @@ def test_panel_value_metric_args_ser():
     pv2 = parse_obj_as(PanelValue, json.loads(pl))
 
     assert pv2 == pv
+
+
+def test_panel_value_methic_hash_filter():
+    class MyMetric(Metric[A]):
+        arg: str
+
+        def calculate(self, data: InputData) -> TResult:
+            return A(f=self.arg)
+
+    metric1 = MyMetric(arg="1")
+    metric2 = MyMetric(arg="2")
+    pv = PanelValue(field_path="value", metric_hash=metric1.get_object_hash())
+
+    assert pv.metric_matched(metric1)
+    assert not pv.metric_matched(metric2)

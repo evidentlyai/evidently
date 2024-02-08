@@ -16,6 +16,9 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class PrecisionRecallCalculationResult(MetricResult):
+    class Config:
+        pd_include = False
+
     current: Dict[str, list]
     reference: Optional[Dict[str, list]] = None
 

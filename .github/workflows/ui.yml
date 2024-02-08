@@ -6,6 +6,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -14,10 +19,48 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  changed_files:
+    runs-on: ubuntu-latest # windows-latest || macos-latest
+    name: 👀 List Changed UI Files
+    outputs:
+      ui_any_changed: ${{ steps.changed-files.outputs.ui_any_changed == 'true' }}
+      evidently_python_any_changed: ${{ steps.changed-files.outputs.evidently_python_any_changed == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get all UI files that have changed
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files_yaml: |
+            ui:
+              - ui/**
+            evidently_python:
+              - src/evidently/**
+              - requirements.dev.txt
+              - requirements.min.txt
+              - setup.py
+              - setup.cfg
+              - setupbase.py
+      - name: Run step if UI file(s) changed
+        if: steps.changed-files.outputs.ui_any_changed == 'true'
+        run: |
+          echo "One or more ui file(s) has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_all_changed_files }}"
+
+      - name: Run step if Playwright file(s) changed
+        if: steps.changed-files.outputs.evidently_python_any_changed == 'true'
+        run: |
+          echo "One or more evidently_python file(s) has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_files }}"
+
   ui-build:
     name: UI type-check and build with node v${{ matrix.node-version }}
     runs-on: ubuntu-20.04
-    if: github.event.pull_request.draft == false
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_changed == 'true' }}
     strategy:
       matrix:
         node-version: [16, 18]
@@ -39,7 +82,7 @@ jobs:
 
       - name: 📥 Install node dependencies
         working-directory: ui
-        run: pnpm i --frozen-lockfile
+        run: pnpm i --frozen-lockfile --ignore-scripts
 
       - name: 🔬 Type check
         working-directory: ui
@@ -51,7 +94,7 @@ jobs:
 
       - name: 🔬 Analyze deps
         working-directory: ui/service
-        run: npx vite-bundle-visualizer -o vite-bundle-report/index.html
+        run: npx vite-bundle-visualizer@1.0.0 -o vite-bundle-report/index.html
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -63,11 +106,27 @@ jobs:
   ui-test:
     name: Playwright tests for Service
     runs-on: ubuntu-20.04
-    if: github.event.pull_request.draft == false
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_changed == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+          cache: "pip"
+
+      - name: Install Evidently
+        run: pip install -e .
+
+      - name: Install dvc
+        run: pip install dvc[gs]
+
+      - name: Pull data
+        run: dvc pull
 
       - uses: pnpm/action-setup@v2
         with:
@@ -82,26 +141,18 @@ jobs:
 
       - name: 📥 Install node dependencies
         working-directory: ui
-        run: pnpm i --frozen-lockfile
+        run: pnpm i --frozen-lockfile --ignore-scripts
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-          architecture: "x64"
-          cache: "pip"
-
-      - name: Install python dependencies
-        run: pip install -e .
+        working-directory: ui
+        run: pnpm dlx playwright@1.41.0 install --with-deps
 
       - name: Run UI
-        run: evidently ui --port 8000 --demo-projects all --workspace test-workspace &
+        run: evidently ui --port 8000 --workspace workspace-for-visual-testing &
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
-        run: pnpm wait-on tcp:127.0.0.1:8000 -t 300000
+        run: pnpm wait-on tcp:127.0.0.1:8000 -t 10000
 
       - name: Run Service Playwright tests
         working-directory: ui/service

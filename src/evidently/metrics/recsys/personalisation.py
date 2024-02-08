@@ -23,7 +23,10 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 
 
-class PersonalisationMetricResult(MetricResult):
+class PersonalizationMetricResult(MetricResult):
+    class Config:
+        pd_include = False
+
     k: int
     current_value: float
     current_table: Dict[str, int]
@@ -31,7 +34,7 @@ class PersonalisationMetricResult(MetricResult):
     reference_table: Optional[Dict[str, int]] = None
 
 
-class PersonalisationMetric(Metric[PersonalisationMetricResult]):
+class PersonalizationMetric(Metric[PersonalizationMetricResult]):
     """Mean Inter List"""
 
     k: int
@@ -50,6 +53,7 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
         recommendations_type: RecomType,
     ):
         df = df.copy()
+        table = dict(df[item_id].value_counts()[:10])
         if recommendations_type == RecomType.SCORE:
             df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
         df = df[df[prediction_name] <= k]
@@ -61,15 +65,13 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
 
         diversity = diversity_cumulative / all_user_couples_count
         recommended_counter.index = recommended_counter.index.astype(str)
-        table = dict(recommended_counter[:10])
-
         return diversity, table
 
-    def calculate(self, data: InputData) -> PersonalisationMetricResult:
+    def calculate(self, data: InputData) -> PersonalizationMetricResult:
         prediction_name = get_prediciton_name(data)
         user_id = data.data_definition.get_user_id_column()
         item_id = data.data_definition.get_item_id_column()
-        recommendations_type = data.column_mapping.recommendations_type
+        recommendations_type = data.column_mapping.recom_type
         if user_id is None or item_id is None or recommendations_type is None:
             raise ValueError("user_id and item_id and recommendations_type should be specified")
         curr_value, curr_table = self.get_diversity(
@@ -92,7 +94,7 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
                 k=self.k,
                 recommendations_type=recommendations_type,
             )
-        return PersonalisationMetricResult(
+        return PersonalizationMetricResult(
             k=self.k,
             current_value=curr_value,
             current_table=curr_table,
@@ -101,8 +103,8 @@ class PersonalisationMetric(Metric[PersonalisationMetricResult]):
         )
 
 
-@default_renderer(wrap_type=PersonalisationMetric)
-class PersonalisationMetricRenderer(MetricRenderer):
+@default_renderer(wrap_type=PersonalizationMetric)
+class PersonalizationMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_table_stat(dataset_name: str, curr_table: dict, ref_table: Optional[dict]) -> BaseWidgetInfo:
         matched_stat_headers = ["Value", "Count"]
@@ -129,7 +131,7 @@ class PersonalisationMetricRenderer(MetricRenderer):
             )
         return widget_tabs(title="", tabs=tabs)
 
-    def render_html(self, obj: PersonalisationMetric) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: PersonalizationMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
 
         counters = [CounterData.float(label="current", value=metric_result.current_value, precision=4)]
@@ -139,7 +141,7 @@ class PersonalisationMetricRenderer(MetricRenderer):
         result = [
             header_text(label=f"Personalization (top-{metric_result.k})"),
             counter(counters=counters),
-            self._get_table_stat("current", metric_result.current_table, metric_result.reference_table),
+            self._get_table_stat("", metric_result.current_table, metric_result.reference_table),
         ]
 
         return result

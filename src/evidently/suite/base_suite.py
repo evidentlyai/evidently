@@ -32,7 +32,6 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.notebook_utils import determine_template
-from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
@@ -355,12 +354,6 @@ class Suite:
                     parameters=TestParameters(),
                     exception=ex,
                 )
-            test_results[test].groups.update(
-                {
-                    GroupingTypes.TestGroup.id: test.group,
-                    GroupingTypes.TestType.id: test.name,
-                }
-            )
 
         self.context.test_results = test_results
         self.context.state = States.Tested
@@ -487,4 +480,8 @@ class ReportBase(Display):
         return cls._parse_snapshot(Snapshot.load(filename))
 
     def to_snapshot(self):
+        try:
+            self._inner_suite.raise_for_error()
+        except Exception as e:
+            raise ValueError("Cannot create snapshot because of calculation error") from e
         return self._get_snapshot()

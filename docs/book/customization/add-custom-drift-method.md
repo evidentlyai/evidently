@@ -7,6 +7,13 @@ description: How to implement a new drift detection method.
 
 If you do not find a suitable drift detection method, you can implement a custom function.
 
+
+# Code example
+
+Notebook example with custom data drift function example:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_specify_stattest_for_a_testsuite.ipynb" %}
+
 # Custom StatTest function requirements:
 
 The StatTest function should match `(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]` signature:

@@ -77,7 +77,11 @@ metric_fixtures = []
 
 
 def metric(f):
-    metric_fixtures.append(f())
+    m = f()
+    if isinstance(m, list):
+        metric_fixtures.extend(m)
+    else:
+        metric_fixtures.append(m)
     return f
 
 
@@ -102,7 +106,7 @@ def generate_dataset_outcome(m: TestMetric):
 
 
 def load_test_metrics():
-    for module in ["classification", "data_integrity", "data_drift", "data_quality", "recsys", "regression"]:
+    for module in ["classification", "data_integrity", "data_drift", "data_quality", "recsys", "regression", "custom"]:
         import_module(f"tests.multitest.metrics.{module}")
 
 

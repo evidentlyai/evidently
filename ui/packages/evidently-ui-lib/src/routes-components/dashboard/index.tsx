@@ -1,6 +1,6 @@
 import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { DashboardDateFilter, useIsCorrectTimeInterval } from '~/components/DashboardDateFilter'
+import { DashboardDateFilter } from '~/components/DashboardDateFilter'
 import { loaderData } from './data'
 import dayjs from 'dayjs'
 
@@ -13,14 +13,14 @@ export const DashboardComponentTemplate = ({ Dashboard }: Props) => {
   invariant(projectId, 'missing projectId')
 
   const data = useLoaderData() as loaderData
+
+  const isShowDateFilter = data.min_timestamp !== null && data.max_timestamp !== null
   const dataRanges = { minDate: dayjs(data.min_timestamp), maxDate: dayjs(data.max_timestamp) }
-  const { isCorrectTimeInterval } = useIsCorrectTimeInterval({ dataRanges })
 
   return (
     <>
-      <DashboardDateFilter dataRanges={dataRanges} />
-
-      {isCorrectTimeInterval && <Dashboard data={data} />}
+      {isShowDateFilter && <DashboardDateFilter dataRanges={dataRanges} />}
+      <Dashboard data={data} />
     </>
   )
 }

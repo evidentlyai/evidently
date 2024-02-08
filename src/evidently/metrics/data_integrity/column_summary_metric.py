@@ -131,6 +131,7 @@ class DataByTarget(MetricResult):
 class DataQualityPlot(MetricResult):
     class Config:
         dict_include = False
+        pd_include = False
         tags = {IncludeTags.Render}
 
     bins_for_hist: Optional[Histogram]
@@ -304,8 +305,8 @@ def _split_periods(curr_data: pd.DataFrame, ref_data: pd.DataFrame, feature_name
 class ColumnSummaryResult(ColumnMetricResult):
     class Config:
         pd_name_mapping = {
-            "reference_characteristics": "ref",
-            "current_characteristics": "cur",
+            "reference_characteristics": "reference",
+            "current_characteristics": "current",
         }
 
     reference_characteristics: Optional[ColumnCharacteristics]

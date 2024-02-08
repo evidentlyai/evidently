@@ -23,7 +23,9 @@ import {
   useParams,
   Outlet,
   useMatches,
-  useSearchParams
+  useSearchParams,
+  useSubmit,
+  useNavigation
 } from 'react-router-dom'
 
 import type { MetadataValueType } from '~/api'
@@ -71,6 +73,9 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
   const { projectId } = useParams()
   const snapshots = useLoaderData() as loaderData
   const matches = useMatches()
+  const submit = useSubmit()
+  const navigation = useNavigation()
+  const isNavigation = navigation.state !== 'idle'
 
   const [searchParams] = useSearchParams()
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
@@ -128,19 +133,25 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
   )
 
   if (hideSnapshotsList) {
-    return (
-      <Grid container>
-        <Grid item xs={12}>
-          <Outlet />
-        </Grid>
-      </Grid>
-    )
+    return <Outlet />
   }
 
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Grid container gap={6} alignItems={'flex-end'}>
+        <Grid container gap={2} alignItems={'flex-end'}>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                onClick={() => submit(null, { method: 'post' })}
+                color="primary"
+                disabled={isNavigation}
+              >
+                Refresh {`${type.toLocaleUpperCase()}S`}
+              </Button>
+            </Box>
+          </Grid>
           <Grid item xs={12} md={4}>
             <Autocomplete
               multiple

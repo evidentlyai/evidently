@@ -95,4 +95,20 @@ export default class LocalApi implements Api {
   editProjectInfo(_project: ProjectDetails) {
     return Promise.resolve(new Response('ok', { status: 200 }))
   }
+
+  reloadProject(_projectId: string): Promise<Response> {
+    return Promise.resolve(new Response(null, { status: 200 }))
+  }
+
+  createProject(_project: Partial<ProjectDetails>): Promise<ProjectDetails> {
+    return Promise.resolve({
+      id: 'new-project-id',
+      name: 'name',
+      dashboard: { tab_id_to_panel_ids: {}, tabs: [] }
+    })
+  }
+
+  deleteProject(_projectId: string): Promise<Response> {
+    return Promise.resolve(new Response('ok', { status: 200 }))
+  }
 }

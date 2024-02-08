@@ -3,7 +3,7 @@ import React from 'react'
 import { Box, Button, Grid, Select } from '@mui/material'
 
 import { DashboardInfo } from '~/api'
-import { DashboardContent } from './DashboardContent'
+import { DashboardContentWidgets } from './DashboardContent'
 
 interface SummaryViewProps {
   dashboardInfo: DashboardInfo
@@ -38,7 +38,7 @@ const SummaryView: React.FunctionComponent<SummaryViewProps> = (props) => {
             </Button>
           </Box>
         </Grid>
-        <DashboardContent widgets={props.dashboardInfo.widgets} />
+        <DashboardContentWidgets widgets={props.dashboardInfo.widgets} />
       </Grid>
     </Box>
   )

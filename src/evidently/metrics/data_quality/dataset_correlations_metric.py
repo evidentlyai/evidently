@@ -42,6 +42,7 @@ class CorrelationStats(MetricResult):
 class DatasetCorrelation(MetricResult):
     class Config:
         dict_exclude_fields = {"correlation", "correlations_calculate"}
+        pd_include = False
         pd_exclude_fields = {"correlation", "correlations_calculate"}
 
     correlation: Dict[str, pd.DataFrame]
