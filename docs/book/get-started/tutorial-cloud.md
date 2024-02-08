@@ -163,6 +163,7 @@ Use the `create_project` command to create a new Project. Add a name and descrip
 ```python
 project = ws.create_project("My project name")
 project.description = "My project description"
+project.save()
 ```
 
 {% hint style="info" %}
@@ -331,7 +332,7 @@ You can also add or delete tabs and individual panels from the UI. To make chang
 
 To add a new panel from the UI, choose the "add panel" button as shown below. Note that you can only add values from the metrics captured inside the snapshots - in our example, those related to data drift and data quality. (For example, you cannot yet add values related to model quality).
 
-![](../.gitbook/assets/cloud/add_new_panel.gif)
+![](../.gitbook/assets/cloud/add_new_panel_2.gif)
 
 {% hint style="info" %}
 **Coming soon**: We are working on adding templates and further simplifying adding new panels from the UI.
