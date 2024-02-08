@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react'
-
 import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
+import {
+  Box,
+  Button,
+  Fade,
+  IconButton,
+  Link,
+  Paper,
+  TextField,
+  ToggleButton,
+  Tooltip,
+  Typography
+} from '@mui/material'
 
-import { Box, Button, Fade, IconButton, Link, Paper, TextField, Typography } from '@mui/material'
+import { Add as AddIcon } from '@mui/icons-material'
 
 import EditIcon from '@mui/icons-material/Edit'
-
-import { useHover } from '@uidotdev/usehooks'
-
+import DeleteIcon from '@mui/icons-material/Delete'
+import { useHover, useToggle } from '@uidotdev/usehooks'
 import { ProjectInfo } from '~/api'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -15,16 +25,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 // validation here
 const editProjectInfoSchema = z.object({
-  id: z.string(),
   name: z.string().min(3),
   description: z.string()
 })
 
-const EditProjectInfoForm = ({
+export const EditProjectInfoForm = ({
   project,
-  disabled
+  disabled,
+  action
 }: {
-  project: ProjectInfo
+  action?: string
+  project: Partial<ProjectInfo>
   disabled: boolean
 }) => {
   const {
@@ -35,9 +46,8 @@ const EditProjectInfoForm = ({
   } = useForm<z.infer<typeof editProjectInfoSchema>>({
     resolver: zodResolver(editProjectInfoSchema),
     defaultValues: {
-      name: project.name,
-      description: project.description,
-      id: project.id
+      name: project.name || '',
+      description: project.description || ''
     }
   })
 
@@ -53,24 +63,28 @@ const EditProjectInfoForm = ({
         onSubmit={handleSubmit(({ name, description }) =>
           // here we inject the new `name` and `description`
           // to project object, then it goes to the action
+
           submit(
-            {
-              ...project,
-              name,
-              description
-            },
+            Object.assign(
+              {
+                ...project,
+                name,
+                description
+              },
+              // we use `action` string to identify action type (like `create new` or edit existing)
+              (action && { action }) || null
+            ),
             { method: 'put', replace: true, encType: 'application/json' }
           )
         )}
         style={{ opacity: disabled ? 0.5 : 1 }}
       >
-        {/* hidden input here for project id */}
-        <input {...register('id')} hidden />
         {/* name */}
         <TextField
           {...register('name')}
           error={Boolean(errors.name)}
           helperText={errors.name?.message}
+          placeholder="Name"
           InputProps={{
             style: { color: 'red', fontSize: '20px', fontWeight: '500' }
           }}
@@ -82,6 +96,7 @@ const EditProjectInfoForm = ({
           {...register('description')}
           error={Boolean(errors.description)}
           helperText={errors.description?.message}
+          placeholder="Description"
           disabled={disabled}
           fullWidth
           // this `multiline` below causes Material-UI: Too many re-renders
@@ -134,21 +149,48 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
 
   const navigation = useNavigation()
   const isDisabled = navigation.state !== 'idle'
+  const submit = useSubmit()
 
   // project has changed -> set edit mode to false
   useEffect(() => setEditMode(false), [project])
 
   return (
     <Paper ref={ref} elevation={3} sx={{ m: 1, p: 2, position: 'relative' }}>
-      <Fade in={hovering}>
-        <IconButton
-          disabled={isDisabled}
-          style={{ position: 'absolute', top: '3px', right: '3px' }}
-          onClick={() => setEditMode((mode) => !mode)}
-        >
-          <EditIcon />
-        </IconButton>
-      </Fade>
+      <Box style={{ position: 'absolute', top: '5px', right: '5px' }}>
+        <Box display={'flex'} columnGap={1}>
+          <Fade in={hovering}>
+            <IconButton
+              disabled={isDisabled || isEditMode}
+              onClick={() => {
+                if (confirm('Are you sure you want to delete this project?') === true) {
+                  submit(
+                    {
+                      projectId: project.id,
+                      action: 'delete-project'
+                    },
+                    { method: 'post', replace: true, encType: 'application/json' }
+                  )
+                }
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Fade>
+          <Fade in={hovering}>
+            <ToggleButton
+              color="primary"
+              value={'edit-mode'}
+              selected={isEditMode}
+              size="small"
+              disabled={isDisabled}
+              sx={{ border: 'none', borderRadius: '50%' }}
+              onChange={() => setEditMode((mode) => !mode)}
+            >
+              <EditIcon />
+            </ToggleButton>
+          </Fade>
+        </Box>
+      </Box>
 
       {children}
 
@@ -158,5 +200,61 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
         <ProjectInfoCard project={project} />
       )}
     </Paper>
+  )
+}
+
+export const AddNewProjectButton = ({
+  project,
+  children
+}: {
+  project?: Partial<ProjectInfo>
+  children?: React.ReactNode
+}) => {
+  const [on, toggle] = useToggle(false)
+  const [wasSubmitting, toggleSubmitting] = useToggle(false)
+  const navigation = useNavigation()
+  const isDisabled = navigation.state !== 'idle'
+
+  useEffect(() => {
+    if (navigation.state === 'submitting') {
+      toggleSubmitting(true)
+    }
+  }, [navigation.state === 'submitting'])
+
+  useEffect(() => {
+    if (wasSubmitting && navigation.state === 'idle') {
+      toggle(false)
+      toggleSubmitting(false)
+    }
+  }, [wasSubmitting, navigation.state === 'idle'])
+
+  return (
+    <Box py={2}>
+      <Box display={'flex'} justifyContent={'center'}>
+        <Tooltip title="Create new project">
+          <ToggleButton
+            color="primary"
+            value={'check'}
+            selected={on}
+            size="small"
+            sx={{ border: 'none', borderRadius: '50%' }}
+            onChange={() => toggle()}
+          >
+            <AddIcon />
+          </ToggleButton>
+        </Tooltip>
+      </Box>
+
+      {on && (
+        <Box py={1} display={'flex'} flexDirection={'column'} rowGap={1}>
+          {children}
+          <EditProjectInfoForm
+            project={project || { name: '', description: '' }}
+            disabled={isDisabled}
+            action="create-new-project"
+          />
+        </Box>
+      )}
+    </Box>
   )
 }

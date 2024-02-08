@@ -1,4 +1,7 @@
-import { RouteObject, createBrowserRouter } from 'react-router-dom'
+import {
+  RouteObject,
+  createBrowserRouter
+} from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
 import HomeRoute from './home'
 import ProjectsRoute from './projects/projectId'

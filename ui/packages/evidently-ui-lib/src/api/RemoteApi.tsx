@@ -186,4 +186,35 @@ export class RemoteApi implements Api {
 
     return response
   }
+
+  async createProject(project: Partial<ProjectDetails>): Promise<ProjectDetails> {
+    const params = new URLSearchParams()
+    project.team_id && params.append('team_id', project.team_id)
+
+    const response = await fetch(`${this.endpoint}/projects?${params.toString()}`, {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(project)
+    })
+
+    throwIfStatus401(response)
+
+    if (!response.ok) {
+      throw Error(`${response.status}, ${response.statusText}`)
+    }
+
+    return response.json()
+  }
+
+  async deleteProject(projectId: string): Promise<Response> {
+    const response = await fetch(`${this.endpoint}/projects/${projectId}`, {
+      method: 'delete'
+    })
+
+    if (response.ok) {
+      return response
+    }
+
+    throw Error(`${response.status}, ${response.statusText}, ${await response.text()}`)
+  }
 }

@@ -40,6 +40,8 @@ class ColumnCorrelationsMetricResult(MetricResult):
                 df.columns = [f"{field}_{col}" for col in df.columns]
                 df["column_name"] = self.column_name
                 dfs.append(df)
+        if len(dfs) == 0:
+            return pd.DataFrame()
         return pd.concat(dfs)
 
 

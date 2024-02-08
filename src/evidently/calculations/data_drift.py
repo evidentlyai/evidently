@@ -55,6 +55,7 @@ class ColumnDataDriftMetrics(ColumnMetricResult):
     class Config:
         # todo: change to field_tags: render
         dict_exclude_fields = {"scatter"}
+        pd_exclude_fields = {"scatter"}
 
     stattest_name: str
     stattest_threshold: Optional[float]
