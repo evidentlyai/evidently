@@ -37,15 +37,13 @@ After you log in, you will see an empty dashboard. Click on "Generate Demo Proje
 
 ![](../.gitbook/assets/cloud/generate_demo_project.png)
 
-It will take a few moments to populate the project. You can then see a sample dashboard wih different tabs that show data quality, data drift and model quality for a regression model that forecasts bike demand.
-
-You can customize your choice of panels - this is just an example.
+It will take a few moments to populate the project. You can then see a sample dashboard wih different tabs that show data quality, data drift and model quality for a regression model that forecasts bike demand. 
 
 ![](../.gitbook/assets/cloud/demo_dashboard.gif)
 
 You can also open the "Reports" and "Test Suites" tabs to see the individual `snapshots` that serve as a data source for the monitoring panels and help explore the results of the individual daily checks.
 
-Now, let's see how you can create something similar for your project!
+Now, let's see how you can create something similar for your project! 
 
 # Part 2. Add a new project
 
