@@ -138,7 +138,7 @@ The rest of the workdpace functionality and methods are the same.
 
 ## Remote snapshot storage
 
-You can also save `snapshots` in a remote data store and access it from the UI service. To connect to data stores, Evidently uses `fsspec` that allows accessing different file systems via a standard interface. You can verify supported data stores in the [Fsspec documentation](https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations
+You can also save `snapshots` in a remote data store and access it from the UI service. To connect to data stores, Evidently uses `fsspec` that allows accessing data on remote file systems via a standard Python interface. You can verify supported data stores in the [Fsspec documentation](https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations
 ).
 
 For example, to read snapshots from an S3 bucket, you must specify environment variables:
