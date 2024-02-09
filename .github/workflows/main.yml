@@ -28,15 +28,13 @@ jobs:
     runs-on: ubuntu-latest # windows-latest || macos-latest
     name: 👀 List Changed Evidently Files
     outputs:
-      evidently_any_modified: ${{ steps.changed-files.outputs.evidently_tests_any_modified == 'true' || steps.changed-files.outputs.evidently_python_any_modified == 'true' }}
+      evidently_any_modified: ${{ steps.changed-files.outputs.evidently_python_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
       - name: Get all python files that have changed
         id: changed-files
-        uses: tj-actions/changed-files@v40
+        uses: tj-actions/changed-files@v42
         with:
           files_yaml: |
             evidently_python:
@@ -51,18 +49,12 @@ jobs:
               - setup.cfg
               - setupbase.py
               - pylintrc
-            evidently_tests:
               - tests/**
 
       - name: Run step if evidently_python file(s) change
         run: |
           echo "One or more evidently_python file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
-
-      - name: Run step if evidently_tests file(s) change
-        run: |
-          echo "One or more evidently_tests file(s) has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_tests_all_changed_and_modified_files }}"
 
   linter:
     # The type of runner that the job will run on
