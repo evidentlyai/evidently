@@ -55,13 +55,11 @@ jobs:
               - tests/**
 
       - name: Run step if evidently_python file(s) change
-        if: steps.changed-files.outputs.evidently_python_any_modified == 'true'
         run: |
           echo "One or more evidently_python file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
       - name: Run step if evidently_tests file(s) change
-        if: steps.changed-files.outputs.evidently_tests_any_modified == 'true'
         run: |
           echo "One or more evidently_tests file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_tests_all_changed_and_modified_files }}"
