@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest # windows-latest || macos-latest
     name: 👀 List Changed Evidently Files
     outputs:
-      evidently_any_changed: ${{ steps.changed-files.outputs.evidently_tests_all_changed_and_modified_files == 'true' || steps.changed-files.outputs.evidently_python_all_changed_and_modified_files == 'true' }}
+      evidently_any_modified: ${{ steps.changed-files.outputs.evidently_tests_any_modified == 'true' || steps.changed-files.outputs.evidently_python_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,13 +55,13 @@ jobs:
               - tests/**
 
       - name: Run step if evidently_python file(s) change
-        if: steps.changed-files.outputs.evidently_python_all_changed_and_modified_files == 'true'
+        if: steps.changed-files.outputs.evidently_python_any_modified == 'true'
         run: |
           echo "One or more evidently_python file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
       - name: Run step if evidently_tests file(s) change
-        if: steps.changed-files.outputs.evidently_tests_all_changed_and_modified_files == 'true'
+        if: steps.changed-files.outputs.evidently_tests_any_modified == 'true'
         run: |
           echo "One or more evidently_tests file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_tests_all_changed_and_modified_files }}"
@@ -70,7 +70,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_changed == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -107,7 +107,7 @@ jobs:
     name: Test on minimal requirements
     runs-on: ubuntu-latest
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_changed == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -187,7 +187,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_changed == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
