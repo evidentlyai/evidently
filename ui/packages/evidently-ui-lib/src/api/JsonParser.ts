@@ -2,8 +2,6 @@
 // This version adds support for NaN, -Infinity and Infinity.
 
 
-// trigger ci test
-
 export class JsonParser {
   at = 0
   ch = ''
