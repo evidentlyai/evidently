@@ -1,7 +1,6 @@
 // Adapted from Crockford's JSON.parse (see https://github.com/douglascrockford/JSON-js)
 // This version adds support for NaN, -Infinity and Infinity.
 
-
 export class JsonParser {
   at = 0
   ch = ''
