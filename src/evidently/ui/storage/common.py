@@ -1,4 +1,5 @@
 import os
+import uuid
 from typing import Callable
 from typing import ClassVar
 from typing import List
@@ -9,6 +10,7 @@ from fastapi import Depends
 from fastapi.security import APIKeyHeader
 
 from evidently.ui.base import AuthManager
+from evidently.ui.base import EntityType
 from evidently.ui.base import Permission
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -42,10 +44,9 @@ class NoopAuthManager(AuthManager):
     def get_available_project_ids(self, user_id: UserID) -> Optional[Set[ProjectID]]:
         return None
 
-    def check_team_permission(self, user_id: UserID, team_id: TeamID, permission: Permission) -> bool:
-        return True
-
-    def check_project_permission(self, user_id: UserID, project_id: ProjectID, permission: Permission) -> bool:
+    def check_entity_permission(
+        self, user_id: UserID, entity_id: uuid.UUID, entity_type: EntityType, permission: Permission
+    ) -> bool:
         return True
 
     def create_user(self, user_id: UserID, name: Optional[str]) -> User:
