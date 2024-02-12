@@ -37,15 +37,13 @@ After you log in, you will see an empty dashboard. Click on "Generate Demo Proje
 
 ![](../.gitbook/assets/cloud/generate_demo_project.png)
 
-It will take a few moments to populate the project. You can then see a sample dashboard wih different tabs that show data quality, data drift and model quality for a regression model that forecasts bike demand.
-
-You can customize your choice of panels - this is just an example.
+It will take a few moments to populate the project. You can then see a sample dashboard wih different tabs that show data quality, data drift and model quality for a regression model that forecasts bike demand. 
 
 ![](../.gitbook/assets/cloud/demo_dashboard.gif)
 
 You can also open the "Reports" and "Test Suites" tabs to see the individual `snapshots` that serve as a data source for the monitoring panels and help explore the results of the individual daily checks.
 
-Now, let's see how you can create something similar for your project!
+Now, let's see how you can create something similar for your project! 
 
 # Part 2. Add a new project
 
@@ -163,6 +161,7 @@ Use the `create_project` command to create a new Project. Add a name and descrip
 ```python
 project = ws.create_project("My project name")
 project.description = "My project description"
+project.save()
 ```
 
 {% hint style="info" %}
@@ -331,7 +330,7 @@ You can also add or delete tabs and individual panels from the UI. To make chang
 
 To add a new panel from the UI, choose the "add panel" button as shown below. Note that you can only add values from the metrics captured inside the snapshots - in our example, those related to data drift and data quality. (For example, you cannot yet add values related to model quality).
 
-![](../.gitbook/assets/cloud/add_new_panel.gif)
+![](../.gitbook/assets/cloud/add_new_panel_2.gif)
 
 {% hint style="info" %}
 **Coming soon**: We are working on adding templates and further simplifying adding new panels from the UI.

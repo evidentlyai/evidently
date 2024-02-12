@@ -134,7 +134,20 @@ You can pass the following parameters:
 | `self.base_url = base_url` | URL for the remote UI service. |
 | `self.secret = secret` | String with secret, None by default. Use it if access to the URL is protected by a password. |
 
-The rest of the functionality and methods are the same.
+The rest of the workdpace functionality and methods are the same.
+
+## Remote snapshot storage
+
+You can also save `snapshots` in a remote data store and access it from the UI service. To connect to data stores, Evidently uses `fsspec` that allows accessing data on remote file systems via a standard Python interface. You can verify supported data stores in the [Fsspec documentation](https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations
+).
+
+For example, to read snapshots from an S3 bucket, you must specify environment variables:
+
+```
+FSSPEC_S3_ENDPOINT_URL=http://localhost:9000/
+FSSPEC_S3_KEY=my_key FSSPEC_S3_SECRET=my_secret
+evidently ui --workspace s3://my_bucket/workspace
+```
 
 ## Code example
 

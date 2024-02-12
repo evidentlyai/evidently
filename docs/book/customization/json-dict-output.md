@@ -11,6 +11,8 @@ Notebook example on JSON / Python dictionary customization:
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_customize_json_output.ipynb" %}
 
+**Note**: to export the Evidently Metric output in the tabular format, you can use the `as_dataframe()` option instead of JSON or Python dictionary export. 
+
 # Default
 
 Default JSON and Python dictionary output includes the values of Metrics and Test results but does not include visualizations. 
