@@ -34,6 +34,7 @@ from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
+from evidently.ui.type_aliases import RoleID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import TestResultPoints
@@ -93,6 +94,11 @@ class SnapshotMetadata(BaseModel):
         if self._additional_graphs is None:
             _, self._dashboard_info, self._additional_graphs = self.as_report_base()._build_dashboard_info()
         return self._additional_graphs
+
+
+class Org(BaseModel):
+    id: OrgID = Field(default_factory=uuid.uuid4)
+    name: str
 
 
 class Team(BaseModel):
@@ -194,7 +200,7 @@ class Project(BaseModel):
 
 class MetadataStorage(EvidentlyBaseModel, ABC):
     @abstractmethod
-    def add_project(self, project: Project, user: User, team: Team) -> Project:
+    def add_project(self, project: Project, user: User, team: Team, org: Org) -> Project:
         raise NotImplementedError
 
     @abstractmethod
@@ -288,6 +294,11 @@ class DataStorage(EvidentlyBaseModel, ABC):
 
 
 class Permission(Enum):
+    GRANT_ROLE = "all_grant_role"
+    REVOKE_ROLE = "all_revoke_role"
+
+    ORG_USER_REMOVE_SELF = "org_user_remove_self"
+
     TEAM_READ = "team_read"
     TEAM_WRITE = "team_write"
     TEAM_DELETE = "team_delete"
@@ -306,6 +317,29 @@ class EntityType(Enum):
     Project = "project"
     Team = "team"
     Org = "org"
+
+
+class Role(BaseModel):
+    id: RoleID
+    name: str
+
+
+class DefaultRole(Enum):
+    OWNER = "owner"
+    EDITOR = "editor"
+    VIEWER = "viewer"
+
+
+DEFAULT_ROLE_PERMISSIONS: Dict[DefaultRole, Set[Permission]] = {
+    DefaultRole.OWNER: set(Permission),
+    DefaultRole.EDITOR: {
+        Permission.TEAM_READ,
+        Permission.TEAM_WRITE,
+        Permission.PROJECT_READ,
+        Permission.PROJECT_WRITE,
+    },
+    DefaultRole.VIEWER: {Permission.TEAM_READ, Permission.PROJECT_READ},
+}
 
 
 class AuthManager(EvidentlyBaseModel):
@@ -348,7 +382,7 @@ class AuthManager(EvidentlyBaseModel):
         return user
 
     @abstractmethod
-    def create_team(self, author: UserID, team: Team, org_id: Optional[OrgID]) -> Team:
+    def create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
         raise NotImplementedError
 
     @abstractmethod
@@ -357,6 +391,14 @@ class AuthManager(EvidentlyBaseModel):
 
     @abstractmethod
     def get_default_team(self, user_id: UserID) -> Team:
+        raise NotImplementedError
+
+    @abstractmethod
+    def create_org(self, owner: UserID, org: Org):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_org(self, org_id: OrgID) -> Optional[Org]:
         raise NotImplementedError
 
     def get_or_create_team(self, team_id: TeamID, author: UserID, name: str, org_id: Optional[OrgID]):
@@ -426,6 +468,30 @@ class AuthManager(EvidentlyBaseModel):
         if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
             raise TeamNotFound()
         return self._list_team_users(team_id)
+
+    @abstractmethod
+    def get_default_role(self, default_role: DefaultRole) -> Role:
+        raise NotImplementedError
+
+    def grant_entity_role(self, manager: UserID, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
+        if not self.check_entity_permission(manager, entity_id, entity_type, Permission.GRANT_ROLE):
+            raise NotEnoughPermissions()
+        self._grant_entity_role(entity_id, entity_type, user_id, role)
+
+    @abstractmethod
+    def _grant_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
+        raise NotImplementedError
+
+    def revoke_entity_role(self, manager: UserID, entity_id: UUID, entity_type: EntityType, user_id: UserID):
+        if not self.check_entity_permission(manager, entity_id, entity_type, Permission.REVOKE_ROLE):
+            raise NotEnoughPermissions()
+        if manager == user_id:
+            raise NotEnoughPermissions()
+        self._revoke_entity_role(entity_id, entity_type, user_id)
+
+    @abstractmethod
+    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID):
+        raise NotImplementedError
 
 
 class ProjectManager(EvidentlyBaseModel):

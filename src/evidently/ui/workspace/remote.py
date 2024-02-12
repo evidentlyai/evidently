@@ -19,6 +19,7 @@ from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
+from evidently.ui.base import Org
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
@@ -71,7 +72,7 @@ class RemoteMetadataStorage(MetadataStorage):
             return parse_obj_as(response_model, response.json())
         return response
 
-    def add_project(self, project: Project, user: User, team: Team) -> Project:
+    def add_project(self, project: Project, user: User, team: Team, org: Org) -> Project:
         params = {}
         if team is not None and team.id is not None:
             params["team_id"] = str(team.id)
