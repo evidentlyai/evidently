@@ -41,7 +41,7 @@ class NoopAuthManager(AuthManager):
     user: ClassVar[User] = NO_USER
     team: ClassVar[Team] = NO_TEAM
 
-    def get_available_project_ids(self, user_id: UserID) -> Optional[Set[ProjectID]]:
+    def get_available_project_ids(self, user_id: UserID, org_id: OrgID) -> Optional[Set[ProjectID]]:
         return None
 
     def check_entity_permission(

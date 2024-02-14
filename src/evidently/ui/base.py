@@ -297,14 +297,14 @@ class Permission(Enum):
     GRANT_ROLE = "all_grant_role"
     REVOKE_ROLE = "all_revoke_role"
 
-    ORG_USER_REMOVE_SELF = "org_user_remove_self"
+    # ORG_USER_REMOVE_SELF = "org_user_remove_self"
 
     TEAM_READ = "team_read"
     TEAM_WRITE = "team_write"
     TEAM_DELETE = "team_delete"
-    TEAM_USER_ADD = "team_user_add"
-    TEAM_USER_REMOVE = "team_user_remove"
-    TEAM_USER_REMOVE_SELF = "team_user_remove_self"
+    # TEAM_USER_ADD = "team_user_add"
+    # TEAM_USER_REMOVE = "team_user_remove"
+    # TEAM_USER_REMOVE_SELF = "team_user_remove_self"
 
     PROJECT_READ = "project_read"
     PROJECT_WRITE = "project_write"
@@ -337,6 +337,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[DefaultRole, Set[Permission]] = {
         Permission.TEAM_WRITE,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
+        Permission.PROJECT_SNAPSHOT_ADD,
     },
     DefaultRole.VIEWER: {Permission.TEAM_READ, Permission.PROJECT_READ},
 }
@@ -346,7 +347,7 @@ class AuthManager(EvidentlyBaseModel):
     allow_default_user: bool = True
 
     @abstractmethod
-    def get_available_project_ids(self, user_id: UserID) -> Optional[Set[ProjectID]]:
+    def get_available_project_ids(self, user_id: UserID, org_id: OrgID) -> Optional[Set[ProjectID]]:
         raise NotImplementedError
 
     # @abstractmethod
@@ -389,9 +390,9 @@ class AuthManager(EvidentlyBaseModel):
     def get_team(self, team_id: TeamID) -> Optional[Team]:
         raise NotImplementedError
 
-    @abstractmethod
-    def get_default_team(self, user_id: UserID) -> Team:
-        raise NotImplementedError
+    # @abstractmethod
+    # def get_default_team(self, user_id: UserID) -> Team:
+    #     raise NotImplementedError
 
     @abstractmethod
     def create_org(self, owner: UserID, org: Org):
@@ -410,46 +411,23 @@ class AuthManager(EvidentlyBaseModel):
     def get_or_default_user(self, user_id: Optional[UserID]) -> User:
         return self.get_or_create_user(user_id) if user_id is not None else self.get_default_user()
 
-    def get_or_default_team(self, team_id: Optional[TeamID], user_id: UserID) -> Team:
-        if team_id is None:
-            return self.get_default_team(user_id)
-        team = self.get_team(team_id)
-        if team is None:
-            raise TeamNotFound()
+    # def get_or_default_team(self, team_id: Optional[TeamID], user_id: UserID) -> Team:
+    #     if team_id is None:
+    #         return self.get_default_team(user_id)
+    #     team = self.get_team(team_id)
+    #     if team is None:
+    #         raise TeamNotFound()
+    #
+    #     return team
 
-        return team
-
-    @abstractmethod
-    def _add_user_to_team(self, team_id: TeamID, user_id: UserID):
-        raise NotImplementedError
-
-    def add_user_to_team(self, manager: UserID, team_id: TeamID, user_id: UserID):
-        if not self.check_entity_permission(manager, team_id, EntityType.Team, Permission.TEAM_USER_ADD):
-            raise NotEnoughPermissions()
-        self._add_user_to_team(team_id, user_id)
-
-    @abstractmethod
-    def _remove_user_from_team(self, team_id: TeamID, user_id: UserID):
-        raise NotImplementedError
-
-    def remove_user_from_team(self, manager: UserID, team_id: TeamID, user_id: UserID):
-        if not self.check_entity_permission(
-            manager,
-            team_id,
-            EntityType.Team,
-            Permission.TEAM_USER_REMOVE if manager != user_id else Permission.TEAM_USER_REMOVE_SELF,
-        ):
-            raise NotEnoughPermissions()
-        self._remove_user_from_team(team_id, user_id)
-
-    @abstractmethod
-    def _list_user_teams(self, user_id: UserID, include_virtual: bool) -> List[Team]:
-        raise NotImplementedError
-
-    def list_user_teams(self, user_id: Optional[UserID], include_virtual: bool) -> List[Team]:
-        if user_id is None:
-            user_id = self.get_default_user().id
-        return self._list_user_teams(user_id, include_virtual)
+    # @abstractmethod
+    # def _list_user_teams(self, user_id: UserID, include_virtual: bool) -> List[Team]:
+    #     raise NotImplementedError
+    #
+    # def list_user_teams(self, user_id: Optional[UserID], include_virtual: bool) -> List[Team]:
+    #     if user_id is None:
+    #         user_id = self.get_default_user().id
+    #     return self._list_user_teams(user_id, include_virtual)
 
     @abstractmethod
     def _delete_team(self, team_id: TeamID):
