@@ -93,9 +93,10 @@ async def search_projects(
     project_manager: ProjectManager = Depends(get_project_manager),
     log_event: Callable = Depends(event_logger),
     user_id: UserID = Depends(get_user_id),
+    org_id: OrgID = Depends(get_org_id),
 ) -> List[Project]:
     log_event("search_projects")
-    return project_manager.search_project(user_id, project_name=project_name)
+    return project_manager.search_project(user_id, org_id, project_name=project_name)
 
 
 @project_write_router.post("/{project_id}/info")

@@ -28,6 +28,7 @@ from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.errors import NotEnoughPermissions
+from evidently.ui.errors import OrgNotFound
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
 from evidently.ui.type_aliases import ZERO_UUID
@@ -348,7 +349,7 @@ class AuthManager(EvidentlyBaseModel):
     allow_default_user: bool = True
 
     @abstractmethod
-    def get_available_project_ids(self, user_id: UserID, org_id: Optional[OrgID]) -> Optional[Set[ProjectID]]:
+    def get_available_project_ids(self, user_id: UserID, org_id: OrgID) -> Optional[Set[ProjectID]]:
         raise NotImplementedError
 
     @abstractmethod
@@ -380,34 +381,31 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     @abstractmethod
-    def get_team(self, team_id: Optional[TeamID]) -> Optional[Team]:
+    def get_team(self, team_id: TeamID) -> Optional[Team]:
         raise NotImplementedError
+
+    def get_team_or_error(self, team_id: TeamID) -> Team:
+        team = self.get_team(team_id)
+        if team is None:
+            raise TeamNotFound()
+        return team
 
     @abstractmethod
     def create_org(self, owner: UserID, org: Org):
         raise NotImplementedError
 
     @abstractmethod
-    def get_org(self, org_id: Optional[OrgID]) -> Optional[Org]:
+    def get_org(self, org_id: OrgID) -> Optional[Org]:
         raise NotImplementedError
 
-    def get_or_create_team(self, team_id: TeamID, author: UserID, name: str, org_id: Optional[OrgID]):
-        team = self.get_team(team_id)
-        if team is None:
-            team = self.create_team(author, Team(name=name), org_id)
-        return team
+    def get_org_or_error(self, org_id: OrgID) -> Org:
+        org = self.get_org(org_id)
+        if org is None:
+            raise OrgNotFound()
+        return org
 
-    def get_or_default_user(self, user_id: Optional[UserID]) -> User:
+    def get_or_default_user(self, user_id: UserID) -> User:
         return self.get_or_create_user(user_id) if user_id is not None else self.get_default_user()
-
-    # @abstractmethod
-    # def _list_user_teams(self, user_id: UserID, include_virtual: bool) -> List[Team]:
-    #     raise NotImplementedError
-    #
-    # def list_user_teams(self, user_id: Optional[UserID], include_virtual: bool) -> List[Team]:
-    #     if user_id is None:
-    #         user_id = self.get_default_user().id
-    #     return self._list_user_teams(user_id, include_virtual)
 
     @abstractmethod
     def _delete_team(self, team_id: TeamID):
@@ -482,8 +480,8 @@ class ProjectManager(EvidentlyBaseModel):
         self, project: Project, user_id: Optional[UserID], team_id: Optional[TeamID], org_id: Optional[OrgID]
     ) -> Project:
         user = self.auth.get_or_default_user(user_id)
-        team = self.auth.get_team(team_id)
-        org = self.auth.get_org(org_id)
+        team = self.auth.get_team_or_error(team_id)
+        org = self.auth.get_org_or_error(org_id)
         project.team_id = team_id if team_id != ZERO_UUID else None
         return self.metadata.add_project(project, user, team, org).bind(self, user.id)
 

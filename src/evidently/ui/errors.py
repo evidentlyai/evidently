@@ -21,6 +21,10 @@ class ProjectNotFound(EntityNotFound):
     entity_name = "Project"
 
 
+class OrgNotFound(EntityNotFound):
+    entity_name = "Org"
+
+
 class TeamNotFound(EntityNotFound):
     entity_name = "Team"
 
