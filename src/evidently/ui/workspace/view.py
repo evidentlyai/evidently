@@ -6,6 +6,7 @@ from evidently.suite.base_suite import Snapshot
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.type_aliases import STR_UUID
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
@@ -15,15 +16,15 @@ from evidently.ui.workspace.base import WorkspaceBase
 class WorkspaceView(WorkspaceBase):
     def __init__(self, user_id: Optional[UserID], project_manager: ProjectManager, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None):
         self.project_manager = project_manager
-        self.user_id = user_id
-        self.team_id = team_id
-        self.org_id = org_id
+        self.user_id = user_id or ZERO_UUID
+        self.team_id = team_id or ZERO_UUID
+        self.org_id = org_id or ZERO_UUID
 
     def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
-        return self.project_manager.create_project(name, description, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id)
+        return self.project_manager.create_project(name, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id, description=description)
 
     def add_project(self, project: Project, team_id: TeamID = None) -> Project:
-        project = self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or self.team_id, org_id=None)
+        project = self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id)
         return project
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:

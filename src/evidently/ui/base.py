@@ -459,10 +459,10 @@ class ProjectManager(EvidentlyBaseModel):
     def create_project(
         self,
         name: str,
+        user_id: UserID,
+        team_id: TeamID,
+        org_id: OrgID,
         description: Optional[str] = None,
-        user_id: UserID = None,
-        team_id: TeamID = None,
-        org_id: OrgID = None,
     ) -> Project:
         from evidently.ui.dashboards import DashboardConfig
 
@@ -476,22 +476,20 @@ class ProjectManager(EvidentlyBaseModel):
         )
         return project
 
-    def add_project(
-        self, project: Project, user_id: Optional[UserID], team_id: Optional[TeamID], org_id: Optional[OrgID]
-    ) -> Project:
+    def add_project(self, project: Project, user_id: UserID, team_id: TeamID, org_id: OrgID) -> Project:
         user = self.auth.get_or_default_user(user_id)
         team = self.auth.get_team_or_error(team_id)
         org = self.auth.get_org_or_error(org_id)
         project.team_id = team_id if team_id != ZERO_UUID else None
         return self.metadata.add_project(project, user, team, org).bind(self, user.id)
 
-    def update_project(self, user_id: Optional[UserID], project: Project):
+    def update_project(self, user_id: UserID, project: Project):
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(user.id, project.id, EntityType.Project, Permission.PROJECT_WRITE):
             raise ProjectNotFound()
         return self.metadata.update_project(project)
 
-    def get_project(self, user_id: Optional[UserID], project_id: ProjectID) -> Optional[Project]:
+    def get_project(self, user_id: UserID, project_id: ProjectID) -> Optional[Project]:
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(user.id, project_id, EntityType.Project, Permission.PROJECT_READ):
             raise ProjectNotFound()
@@ -500,18 +498,18 @@ class ProjectManager(EvidentlyBaseModel):
             return None
         return project.bind(self, user.id)
 
-    def delete_project(self, user_id: Optional[UserID], project_id: UUID):
+    def delete_project(self, user_id: UserID, project_id: ProjectID):
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(user.id, project_id, EntityType.Project, Permission.PROJECT_DELETE):
             raise ProjectNotFound()
         return self.metadata.delete_project(project_id)
 
-    def list_projects(self, user_id: Optional[UserID], org_id: Optional[OrgID]) -> List[Project]:
+    def list_projects(self, user_id: UserID, org_id: OrgID) -> List[Project]:
         user = self.auth.get_or_default_user(user_id)
         project_ids = self.auth.get_available_project_ids(user.id, org_id)
         return [p.bind(self, user.id) for p in self.metadata.list_projects(project_ids)]
 
-    def add_snapshot(self, user_id: Optional[UserID], project_id: UUID, snapshot: Snapshot):
+    def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot):
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(
             user.id, project_id, EntityType.Project, Permission.PROJECT_SNAPSHOT_ADD
@@ -521,7 +519,7 @@ class ProjectManager(EvidentlyBaseModel):
         self.metadata.add_snapshot(project_id, snapshot, blob_id)
         self.data.extract_points(project_id, snapshot)
 
-    def delete_snapshot(self, user_id: Optional[UserID], project_id: UUID, snapshot_id: UUID):
+    def delete_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID):
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(
             user.id, project_id, EntityType.Project, Permission.PROJECT_SNAPSHOT_DELETE
@@ -532,7 +530,7 @@ class ProjectManager(EvidentlyBaseModel):
         # self.blob.delete_snapshot(project_id, snapshot_id)
         self.metadata.delete_snapshot(project_id, snapshot_id)
 
-    def search_project(self, user_id: Optional[UserID], org_id: Optional[OrgID], project_name: str) -> List[Project]:
+    def search_project(self, user_id: UserID, org_id: OrgID, project_name: str) -> List[Project]:
         user = self.auth.get_or_default_user(user_id)
         project_ids = self.auth.get_available_project_ids(user.id, org_id)
         return [p.bind(self, user.id) for p in self.metadata.search_project(project_name, project_ids)]
@@ -547,7 +545,9 @@ class ProjectManager(EvidentlyBaseModel):
             s.project.bind(self, user_id)
         return snapshots
 
-    def load_snapshot(self, user_id: UserID, project_id: UUID, snapshot: Union[UUID, SnapshotMetadata]) -> Snapshot:
+    def load_snapshot(
+        self, user_id: UserID, project_id: ProjectID, snapshot: Union[SnapshotID, SnapshotMetadata]
+    ) -> Snapshot:
         if isinstance(snapshot, SnapshotID):
             snapshot = self.get_snapshot_metadata(user_id, project_id, snapshot)
         with self.blob.open_blob(snapshot.blob_id) as f:
@@ -562,7 +562,7 @@ class ProjectManager(EvidentlyBaseModel):
         meta.project.bind(self, user_id)
         return meta
 
-    def reload_snapshots(self, user_id: UserID, project_id: UUID):
+    def reload_snapshots(self, user_id: UserID, project_id: ProjectID):
         if not self.auth.check_entity_permission(user_id, project_id, EntityType.Project, Permission.PROJECT_READ):
             raise NotEnoughPermissions()
         self.metadata.reload_snapshots(project_id)

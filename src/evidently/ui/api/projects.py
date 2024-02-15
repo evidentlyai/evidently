@@ -29,6 +29,7 @@ from evidently.ui.api.utils import get_project_manager
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards.base import DashboardPanel
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
@@ -266,7 +267,7 @@ async def add_project(
     project_manager: ProjectManager = Depends(get_project_manager),
     log_event: Callable = Depends(event_logger),
     user_id: UserID = Depends(get_user_id),
-    team_id: Annotated[TeamID, "Id of team"] = None,
+    team_id: Annotated[TeamID, "Id of team"] = ZERO_UUID,
     org_id: OrgID = Depends(get_org_id),
 ) -> Project:
     p = project_manager.add_project(project, user_id, team_id, org_id)
