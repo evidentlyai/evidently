@@ -15,6 +15,7 @@ def add_static(app: Litestar, ui_path: str):
         [
             "/",
             "/projects",
+            "/signup"
             "/auth",
             "/teams",
             "/token",
