@@ -33,6 +33,7 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.dashboards.test_suites import to_period
 from evidently.ui.errors import ProjectNotFound
+from evidently.ui.storage.common import NO_ORG
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
@@ -193,7 +194,7 @@ class JsonFileMetadataStorage(MetadataStorage):
         return project
 
     def update_project(self, project: Project) -> Project:
-        return self.add_project(project, NO_USER, NO_TEAM)
+        return self.add_project(project, NO_USER, NO_TEAM, NO_ORG)
 
     def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
         return self.state.projects.get(project_id)
