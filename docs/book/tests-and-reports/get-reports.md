@@ -67,15 +67,25 @@ Refer to the [Presets overview](../presets/all-presets.md) to understand when to
 
 # Output formats 
 
-You can get the Report results in different formats. 
-
-**HTML**. You can get an interactive visual report. It is best for exploration and debugging. You can also document the results and share them with the team. 
-
-To see in Jupyter notebook or Colab, call the object: 
+To see in Jupyter notebook or Colab, call the resulting object: 
 
 ```python
 drift_report
 ```
+
+You can also export the Report results in different formats in addition to rendering them in the notebook.
+
+**Evidently snapshot**. You can save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard. This also allows you to load the JSON back to the Python environment after saving to be able to view the Report or export it in another format.
+
+```python
+drift_report.save("snapshot.json")
+```
+
+{% hint style="info" %}
+**Building a live ML monitoring dashboard**. To better understand how the ML monitoring dashboard works, we recommend going through the [ML Monitoring Quickstart](../get-started/tutorial-monitoring.md).
+{% endhint %}
+
+**HTML**. You can save the interactive visual report as an HTML, to be able to open it in the browser or share with the team. 
 
 To export HTML as a separate file: 
 
@@ -87,7 +97,7 @@ drift_report.save_html(“file.html”)
 Reports contain interactive visualizations inside the HTML, so large reports might take time to load. In this case, downsample your data. 
 {% endhint %}
 
-**JSON**. You can get the results of the calculation as a JSON. It is best for automation and integration in your prediction pipelines. 
+**JSON**. You can get the results of the calculation as a JSON with metrics. It is best for automation and integration in your prediction pipelines. 
 
 To get the JSON:
 
@@ -109,15 +119,19 @@ To get the dictionary:
 drift_report.as_dict()
 ```
 
-**Evidently snapshot**. You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard.
+**Pandas dataframe**. You can get the output in tabular format as a dataframe.
+
+You can also export the results for a specific Metric only. 
 
 ```python
-drift_report.save("snapshot.json")
+drift_report.as_dataframe("DataDriftTable")
 ```
 
-{% hint style="info" %}
-**Building a live ML monitoring dashboard**. To better understand how the ML monitoring dashboard works, we recommend going through the [ML Monitoring Quickstart](../get-started/tutorial-monitoring.md) after completing this tutorial.
-{% endhint %}
+You can also export results for the complete Report. In this case, you get a dictionary of dataframes.
+
+```python
+drift_report.as_dataframe()
+```
 
 # Preset parameters 
 
