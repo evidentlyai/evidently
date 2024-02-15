@@ -20,6 +20,8 @@ pyspark
 # service dependencies
 fastapi<=0.102.0  # todo: update crashing mypy and remove restriction
 fastapi-utils
+litestar
+dynaconf
 uvicorn
 pyarrow
 httpx
