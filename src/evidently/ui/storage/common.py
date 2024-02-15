@@ -91,13 +91,7 @@ class NoopAuthManager(AuthManager):
     def get_team(self, team_id: TeamID) -> Optional[Team]:
         return self.team
 
-    def _add_user_to_team(self, team_id: TeamID, user_id: UserID):
-        pass
-
-    def _remove_user_from_team(self, team_id: TeamID, user_id: UserID):
-        pass
-
-    def _list_user_teams(self, user_id: UserID, include_virtual: bool) -> List[Team]:
+    def list_user_teams(self, user_id: UserID, org_id: OrgID) -> List[Team]:
         return []
 
     def _delete_team(self, team_id: TeamID):

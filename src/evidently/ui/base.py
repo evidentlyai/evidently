@@ -449,6 +449,10 @@ class AuthManager(EvidentlyBaseModel):
     def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID):
         raise NotImplementedError
 
+    @abstractmethod
+    def list_user_teams(self, user_id: UserID, org_id: OrgID) -> List[Team]:
+        raise NotImplementedError
+
 
 class ProjectManager(EvidentlyBaseModel):
     metadata: MetadataStorage
