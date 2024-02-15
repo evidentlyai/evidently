@@ -18,6 +18,7 @@ def add_static(app: FastAPI, ui_path: str):
 
     @app.get("/", include_in_schema=False)
     @app.get("/auth", include_in_schema=False)
+    @app.get("/singup", include_in_schema=False)
     @app.get("/projects", include_in_schema=False)
     @app.get("/projects/{path:path}", include_in_schema=False)
     @app.get("/teams", include_in_schema=False)
