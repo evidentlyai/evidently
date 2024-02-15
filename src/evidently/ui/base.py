@@ -299,14 +299,13 @@ class Permission(Enum):
     GRANT_ROLE = "all_grant_role"
     REVOKE_ROLE = "all_revoke_role"
 
-    # ORG_USER_REMOVE_SELF = "org_user_remove_self"
+    ORG_READ = "org_read"
+    ORG_WRITE = "org_write"
+    ORG_DELETE = "org_delete"
 
     TEAM_READ = "team_read"
     TEAM_WRITE = "team_write"
     TEAM_DELETE = "team_delete"
-    # TEAM_USER_ADD = "team_user_add"
-    # TEAM_USER_REMOVE = "team_user_remove"
-    # TEAM_USER_REMOVE_SELF = "team_user_remove_self"
 
     PROJECT_READ = "project_read"
     PROJECT_WRITE = "project_write"
@@ -398,6 +397,15 @@ class AuthManager(EvidentlyBaseModel):
     def get_org(self, org_id: OrgID) -> Optional[Org]:
         raise NotImplementedError
 
+    def delete_org(self, user_id: UserID, org_id: OrgID):
+        if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_DELETE):
+            raise NotEnoughPermissions()
+        self._delete_org(org_id)
+
+    @abstractmethod
+    def _delete_org(self, org_id: OrgID):
+        raise NotImplementedError
+
     def get_org_or_error(self, org_id: OrgID) -> Org:
         org = self.get_org(org_id)
         if org is None:
@@ -415,15 +423,6 @@ class AuthManager(EvidentlyBaseModel):
         if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_DELETE):
             raise NotEnoughPermissions()
         self._delete_team(team_id)
-
-    @abstractmethod
-    def _list_team_users(self, team_id: TeamID) -> List[User]:
-        raise NotImplementedError
-
-    def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[User]:
-        if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
-            raise TeamNotFound()
-        return self._list_team_users(team_id)
 
     @abstractmethod
     def get_default_role(self, default_role: DefaultRole) -> Role:
@@ -450,8 +449,30 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     @abstractmethod
+    def _list_team_users(self, team_id: TeamID) -> List[User]:
+        raise NotImplementedError
+
+    def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[User]:
+        if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
+            raise TeamNotFound()
+        return self._list_team_users(team_id)
+
+    @abstractmethod
     def list_user_teams(self, user_id: UserID, org_id: OrgID) -> List[Team]:
         raise NotImplementedError
+
+    @abstractmethod
+    def list_user_orgs(self, user_id: UserID) -> List[Org]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def _list_org_users(self, org_id: OrgID) -> List[User]:
+        raise NotImplementedError
+
+    def list_org_users(self, user_id: UserID, org_id: OrgID) -> List[User]:
+        if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_READ):
+            raise OrgNotFound()
+        return self._list_org_users(org_id)
 
 
 class ProjectManager(EvidentlyBaseModel):

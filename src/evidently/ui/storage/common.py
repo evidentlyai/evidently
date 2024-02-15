@@ -100,6 +100,15 @@ class NoopAuthManager(AuthManager):
     def _list_team_users(self, team_id: TeamID) -> List[User]:
         return []
 
+    def _delete_org(self, org_id: OrgID):
+        pass
+
+    def list_user_orgs(self, user_id: UserID):
+        return []
+
+    def _list_org_users(self, org_id: OrgID):
+        return []
+
 
 SECRET_HEADER_NAME = "evidently-secret"
 
