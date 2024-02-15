@@ -30,6 +30,7 @@ from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import OrgID
@@ -347,16 +348,8 @@ class AuthManager(EvidentlyBaseModel):
     allow_default_user: bool = True
 
     @abstractmethod
-    def get_available_project_ids(self, user_id: UserID, org_id: OrgID) -> Optional[Set[ProjectID]]:
+    def get_available_project_ids(self, user_id: UserID, org_id: Optional[OrgID]) -> Optional[Set[ProjectID]]:
         raise NotImplementedError
-
-    # @abstractmethod
-    # def check_team1_permission(self, user_id: UserID, team_id: TeamID, permission: Permission) -> bool:
-    #     raise NotImplementedError
-    #
-    # @abstractmethod
-    # def check_projec1t_permission(self, user_id: UserID, project_id: ProjectID, permission: Permission) -> bool:
-    #     raise NotImplementedError
 
     @abstractmethod
     def check_entity_permission(
@@ -387,19 +380,15 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     @abstractmethod
-    def get_team(self, team_id: TeamID) -> Optional[Team]:
+    def get_team(self, team_id: Optional[TeamID]) -> Optional[Team]:
         raise NotImplementedError
-
-    # @abstractmethod
-    # def get_default_team(self, user_id: UserID) -> Team:
-    #     raise NotImplementedError
 
     @abstractmethod
     def create_org(self, owner: UserID, org: Org):
         raise NotImplementedError
 
     @abstractmethod
-    def get_org(self, org_id: OrgID) -> Optional[Org]:
+    def get_org(self, org_id: Optional[OrgID]) -> Optional[Org]:
         raise NotImplementedError
 
     def get_or_create_team(self, team_id: TeamID, author: UserID, name: str, org_id: Optional[OrgID]):
@@ -410,15 +399,6 @@ class AuthManager(EvidentlyBaseModel):
 
     def get_or_default_user(self, user_id: Optional[UserID]) -> User:
         return self.get_or_create_user(user_id) if user_id is not None else self.get_default_user()
-
-    # def get_or_default_team(self, team_id: Optional[TeamID], user_id: UserID) -> Team:
-    #     if team_id is None:
-    #         return self.get_default_team(user_id)
-    #     team = self.get_team(team_id)
-    #     if team is None:
-    #         raise TeamNotFound()
-    #
-    #     return team
 
     # @abstractmethod
     # def _list_user_teams(self, user_id: UserID, include_virtual: bool) -> List[Team]:
@@ -502,9 +482,10 @@ class ProjectManager(EvidentlyBaseModel):
         self, project: Project, user_id: Optional[UserID], team_id: Optional[TeamID], org_id: Optional[OrgID]
     ) -> Project:
         user = self.auth.get_or_default_user(user_id)
-        team = self.auth.get_or_default_team(team_id, user.id)
-        project.team_id = team_id
-        return self.metadata.add_project(project, user, team).bind(self, user.id)
+        team = self.auth.get_team(team_id)
+        org = self.auth.get_org(org_id)
+        project.team_id = team_id if team_id != ZERO_UUID else None
+        return self.metadata.add_project(project, user, team, org).bind(self, user.id)
 
     def update_project(self, user_id: Optional[UserID], project: Project):
         user = self.auth.get_or_default_user(user_id)
@@ -527,9 +508,9 @@ class ProjectManager(EvidentlyBaseModel):
             raise ProjectNotFound()
         return self.metadata.delete_project(project_id)
 
-    def list_projects(self, user_id: Optional[UserID]) -> List[Project]:
+    def list_projects(self, user_id: Optional[UserID], org_id: Optional[OrgID]) -> List[Project]:
         user = self.auth.get_or_default_user(user_id)
-        project_ids = self.auth.get_available_project_ids(user.id)
+        project_ids = self.auth.get_available_project_ids(user.id, org_id)
         return [p.bind(self, user.id) for p in self.metadata.list_projects(project_ids)]
 
     def add_snapshot(self, user_id: Optional[UserID], project_id: UUID, snapshot: Snapshot):
@@ -553,9 +534,9 @@ class ProjectManager(EvidentlyBaseModel):
         # self.blob.delete_snapshot(project_id, snapshot_id)
         self.metadata.delete_snapshot(project_id, snapshot_id)
 
-    def search_project(self, user_id: Optional[UserID], project_name: str) -> List[Project]:
+    def search_project(self, user_id: Optional[UserID], org_id: Optional[OrgID], project_name: str) -> List[Project]:
         user = self.auth.get_or_default_user(user_id)
-        project_ids = self.auth.get_available_project_ids(user.id)
+        project_ids = self.auth.get_available_project_ids(user.id, org_id)
         return [p.bind(self, user.id) for p in self.metadata.search_project(project_name, project_ids)]
 
     def list_snapshots(

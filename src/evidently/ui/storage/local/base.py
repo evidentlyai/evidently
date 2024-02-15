@@ -22,6 +22,7 @@ from evidently.tests.base_test import TestStatus
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
+from evidently.ui.base import Org
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
@@ -182,7 +183,7 @@ class JsonFileMetadataStorage(MetadataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    def add_project(self, project: Project, user: User, team: Team) -> Project:
+    def add_project(self, project: Project, user: User, team: Team, org: Org) -> Project:
         project_id = str(project.id)
         self.state.location.makedirs(posixpath.join(project_id, SNAPSHOTS))
         with self.state.location.open(posixpath.join(project_id, METADATA_PATH), "w") as f:

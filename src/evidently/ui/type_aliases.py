@@ -18,6 +18,7 @@ RoleID = int
 ProjectID = uuid.UUID
 SnapshotID = uuid.UUID
 STR_UUID = Union[str, uuid.UUID]
+ZERO_UUID = uuid.UUID(int=0)
 
 DataPoints = List[Dict[Metric, List[Tuple[datetime.datetime, Any]]]]
 TestResultPoints = Dict[datetime.datetime, Dict[Test, TestStatus]]

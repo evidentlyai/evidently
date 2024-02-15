@@ -51,8 +51,9 @@ async def list_projects(
     project_manager: ProjectManager = Depends(get_project_manager),
     log_event: Callable = Depends(event_logger),
     user_id: UserID = Depends(get_user_id),
+    org_id: OrgID = Depends(get_org_id),
 ) -> Sequence[Project]:
-    projects = project_manager.list_projects(user_id)
+    projects = project_manager.list_projects(user_id, org_id)
     log_event("list_projects", project_count=len(projects))
     return projects
 

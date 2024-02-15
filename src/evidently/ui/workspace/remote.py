@@ -28,6 +28,7 @@ from evidently.ui.base import User
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
+from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
@@ -67,6 +68,12 @@ class RemoteMetadataStorage(MetadataStorage):
         response = requests.request(
             method, urllib.parse.urljoin(self.base_url, path), params=query_params, data=data, headers=headers, cookies=cookies
         )
+        if response.status_code >= 400:
+            try:
+                details = response.json()["detail"]
+                raise EvidentlyServiceError(details)
+            except ValueError:
+                pass
         response.raise_for_status()
         if response_model is not None:
             return parse_obj_as(response_model, response.json())
@@ -76,7 +83,7 @@ class RemoteMetadataStorage(MetadataStorage):
         params = {}
         if team is not None and team.id is not None:
             params["team_id"] = str(team.id)
-        return self._request("/api/projects/", "POST", query_params=params, body=project.dict(), response_model=Project)
+        return self._request("/api/projects", "POST", query_params=params, body=project.dict(), response_model=Project)
 
     def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
         try:

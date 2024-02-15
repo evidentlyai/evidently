@@ -5,16 +5,21 @@ from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Set
+from uuid import UUID
 
 from fastapi import Depends
 from fastapi.security import APIKeyHeader
 
 from evidently.ui.base import AuthManager
+from evidently.ui.base import DefaultRole
 from evidently.ui.base import EntityType
+from evidently.ui.base import Org
 from evidently.ui.base import Permission
+from evidently.ui.base import Role
 from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.config import SecurityConfig
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TeamID
@@ -24,24 +29,46 @@ EVIDENTLY_SECRET_ENV = "EVIDENTLY_SECRET"
 
 
 class NoUser(User):
-    id: Optional[UserID] = None  # type: ignore[assignment]
+    id: UserID = ZERO_UUID
     name: str = ""
 
 
 class NoTeam(Team):
-    id: Optional[UserID] = None  # type: ignore[assignment]
+    id: TeamID = ZERO_UUID
+    name = ""
+
+
+class NoOrg(Org):
+    id: OrgID = ZERO_UUID
     name = ""
 
 
 NO_USER = NoUser()
 NO_TEAM = NoTeam()
+NO_ORG = NoOrg()
 
 
 class NoopAuthManager(AuthManager):
     user: ClassVar[User] = NO_USER
     team: ClassVar[Team] = NO_TEAM
+    org: ClassVar[Org] = NO_ORG
 
-    def get_available_project_ids(self, user_id: UserID, org_id: OrgID) -> Optional[Set[ProjectID]]:
+    def create_org(self, owner: UserID, org: Org):
+        return self.org
+
+    def get_org(self, org_id: OrgID) -> Optional[Org]:
+        return self.org
+
+    def get_default_role(self, default_role: DefaultRole) -> Role:
+        return Role(id=0, name=default_role.value)
+
+    def _grant_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
+        pass
+
+    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID):
+        pass
+
+    def get_available_project_ids(self, user_id: UserID, org_id: Optional[OrgID]) -> Optional[Set[ProjectID]]:
         return None
 
     def check_entity_permission(
@@ -62,9 +89,6 @@ class NoopAuthManager(AuthManager):
         return self.team
 
     def get_team(self, team_id: TeamID) -> Optional[Team]:
-        return Team(id=team_id, name="")
-
-    def get_default_team(self, user_id: UserID) -> Team:
         return self.team
 
     def _add_user_to_team(self, team_id: TeamID, user_id: UserID):
