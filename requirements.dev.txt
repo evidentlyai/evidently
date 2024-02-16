@@ -23,4 +23,5 @@ fastapi-utils
 uvicorn
 pyarrow
 httpx
+gcsfs
 
