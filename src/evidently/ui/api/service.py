@@ -20,7 +20,7 @@ async def version() -> Dict[str, str]:
         "version": evidently.__version__,
     }
     if DEV:
-        result["commit"] = get_git_revision_short_hash(os.path.dirname(evidently.__file__))
+        result["commit"] = get_git_revision_short_hash(os.path.dirname(evidently.__file__)) or "-"
     return result
 
 

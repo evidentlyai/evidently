@@ -31,6 +31,7 @@ from evidently.telemetry import event_logger
 from evidently.ui.config import NoSecurityConfig
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.security.no_security import NoSecurityService
+from evidently.ui.security.service import SecurityService
 from evidently.ui.security.token import TokenSecurity
 from evidently.ui.security.token import TokenSecurityConfig
 
@@ -161,7 +162,8 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
                 service.storage,
             )
         )()
-        )
+    )
+    security: SecurityService
     if secret is None:
         security = NoSecurityService(NoSecurityConfig())
     else:
@@ -169,7 +171,7 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
 
     def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
-            request = Request(scope)
+            request: Request = Request(scope)
             auth = security.authenticate(request)
             if auth is None:
                 scope["auth"] = {
@@ -203,7 +205,7 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
             "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=True),
         },
         middleware=[auth_middleware_factory],
-        guards=[is_authenticated]
+        guards=[is_authenticated],
     )
 
     uvicorn.run(app, host=host, port=port)

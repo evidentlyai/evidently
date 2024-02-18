@@ -1,5 +1,6 @@
 import uuid
 from typing import Literal
+from typing import Optional
 
 from litestar import Request
 from pydantic import SecretStr
@@ -27,6 +28,7 @@ class TokenSecurity(SecurityService):
     def __init__(self, config: TokenSecurityConfig):
         self.config = config
 
-    def authenticate(self, request: Request) -> User:
+    def authenticate(self, request: Request) -> Optional[User]:
         if request.headers.get(SECRET_HEADER_NAME) == self.config.token:
             return default_user
+        return None

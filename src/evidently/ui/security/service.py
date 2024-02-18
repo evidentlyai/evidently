@@ -15,5 +15,5 @@ class User(BaseModel):
 
 class SecurityService:
     @abc.abstractmethod
-    def authenticate(self, request: Request) -> User:
+    def authenticate(self, request: Request) -> Optional[User]:
         raise NotImplementedError()

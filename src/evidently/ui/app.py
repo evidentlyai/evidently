@@ -35,6 +35,7 @@ from evidently.ui.config import settings
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.security.config import NoSecurityConfig
 from evidently.ui.security.no_security import NoSecurityService
+from evidently.ui.security.service import SecurityService
 from evidently.ui.security.token import TokenSecurity
 from evidently.ui.security.token import TokenSecurityConfig
 from evidently.ui.storage.common import NoopAuthManager
@@ -83,14 +84,16 @@ async def create_project_manager(
 
 
 def create_app(config: Config):
-    if isinstance(config.security, NoSecurityConfig):
-        security = NoSecurityService(config.security)
-    elif isinstance(config.security, TokenSecurityConfig):
-        security = TokenSecurity(config.security)
+    config_security = config.security
+    security: SecurityService
+    if isinstance(config_security, NoSecurityConfig):
+        security = NoSecurityService(config_security)
+    elif isinstance(config_security, TokenSecurityConfig):
+        security = TokenSecurity(config_security)
 
     def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
-            request = Request(scope)
+            request: Request = Request(scope)
             auth = security.authenticate(request)
             if auth is None:
                 scope["auth"] = {
