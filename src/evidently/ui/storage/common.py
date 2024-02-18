@@ -75,3 +75,5 @@ class NoopAuthManager(AuthManager):
 
     def _list_team_users(self, team_id: TeamID) -> List[User]:
         return []
+
+SECRET_HEADER_NAME = "evidently-secret"

@@ -14,4 +14,4 @@ class NoSecurityService(SecurityService):
         self.security_config = security_config
 
     def authenticate(self, request: Request) -> User:
-        return User(id=_test_uuid_, org_id=None)
+        return User(id=self.security_config.dummy_user_id, org_id=self.security_config.dummy_org_id)

@@ -9,7 +9,14 @@ from litestar import Litestar
 from litestar import Request
 from litestar import Response
 from litestar import Router
+from litestar.connection import ASGIConnection
 from litestar.di import Provide
+from litestar.exceptions import NotAuthorizedException
+from litestar.handlers import BaseRouteHandler
+from litestar.types import ASGIApp
+from litestar.types import Receive
+from litestar.types import Scope
+from litestar.types import Send
 
 import evidently
 from evidently.ui.api.projects import project_api
@@ -26,6 +33,10 @@ from evidently.ui.config import Config
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
 from evidently.ui.errors import EvidentlyServiceError
+from evidently.ui.security.config import NoSecurityConfig
+from evidently.ui.security.no_security import NoSecurityService
+from evidently.ui.security.token import TokenSecurity
+from evidently.ui.security.token import TokenSecurityConfig
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.storage.local import InMemoryDataStorage
@@ -71,7 +82,34 @@ async def create_project_manager(
     )
 
 
-def run(config: Config):
+def create_app(config: Config):
+    if isinstance(config.security, NoSecurityConfig):
+        security = NoSecurityService(config.security)
+    elif isinstance(config.security, TokenSecurityConfig):
+        security = TokenSecurity(config.security)
+
+    def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
+        async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
+            request = Request(scope)
+            auth = security.authenticate(request)
+            if auth is None:
+                scope["auth"] = {
+                    "authenticated": False,
+                }
+            else:
+                scope["auth"] = {
+                    "user_id": auth.id,
+                    "org_id": auth.org_id,
+                    "authenticated": True,
+                }
+            await app(scope, receive, send)
+
+        return middleware
+
+    def is_authenticated(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+        if not connection.scope["auth"]["authenticated"]:
+            raise NotAuthorizedException()
+
     ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
     app = Litestar(
         route_handlers=[
@@ -103,9 +141,15 @@ def run(config: Config):
             "org_id": Provide(get_org_id),
             "log_event": Provide(get_event_logger),
         },
+        middleware=[auth_middleware_factory],
         debug=True,
     )
     add_static(app, ui_path)
+    return app
+
+
+def run(config: Config):
+    app = create_app(config)
     uvicorn.run(app, host=config.service.host, port=config.service.port)
 
 
