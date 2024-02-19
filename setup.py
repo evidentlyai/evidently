@@ -69,6 +69,7 @@ setup_args = dict(
         "rich>=13",
         "iterative-telemetry>=0.0.5",
         "fsspec",
+        "gcsfs",
     ],
     extras_require={
         "dev": [
