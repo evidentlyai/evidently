@@ -6,6 +6,7 @@ from iterative_telemetry import IterativeTelemetryLogger
 from starlette.requests import Request
 
 import evidently
+from evidently.telemetry import DO_NOT_TRACK
 from evidently.ui.api.security import is_authorized
 from evidently.ui.config import Configuration
 from evidently.ui.errors import NotEnoughPermissions
@@ -31,7 +32,7 @@ def event_logger(
             evidently.__version__,
             url=config.telemetry.url,
             token=config.telemetry.token,
-            enabled=config.telemetry.enabled,
+            enabled=config.telemetry.enabled and DO_NOT_TRACK is None,
         )
     yield partial(_event_logger.send_event, config.telemetry.service_name)
 
