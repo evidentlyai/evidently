@@ -1,10 +1,8 @@
 import json
 import urllib.parse
-from typing import Any
 from typing import Optional
 
 import requests
-from starlette.responses import JSONResponse
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
@@ -40,13 +38,6 @@ class RemoteClientBase:
         if response_model is not None:
             return parse_obj_as(response_model, response.json())
         return response
-
-
-class NumpyJsonResponse(JSONResponse):
-    def render(self, content: Any) -> bytes:
-        return json.dumps(
-            content, ensure_ascii=False, allow_nan=True, indent=None, separators=(",", ":"), cls=NumpyEncoder
-        ).encode("utf-8")
 
 
 _skip_jsonable_encoder_cache = {}

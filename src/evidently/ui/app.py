@@ -50,13 +50,7 @@ def api_router():
 
 
 def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
-    resp = exc.to_response()
-    return Response(
-        status_code=resp.status_code,
-        content=resp.body,
-        headers=resp.headers,
-        media_type=resp.media_type,
-    )
+    return exc.to_response()
 
 
 async def get_event_logger(telemetry_config: Any):
