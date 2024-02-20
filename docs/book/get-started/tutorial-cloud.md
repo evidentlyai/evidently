@@ -9,7 +9,7 @@ It will take 1 minute to launch a demo dashboard and 10 minutes to complete the 
 Evidently Cloud is currently in beta. 
 
 {% hint style="success" %}
-**Can I try Evidently Cloud?** To start your free trial, [create an account](http://app.evidently.cloud/signup).
+**Can I try Evidently Cloud?** To start your free trial, [create an account](https://app.evidently.cloud/signup).
 {% endhint %}
 
 <details>
