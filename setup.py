@@ -77,7 +77,7 @@ setup_args = dict(
             "setuptools==68.2.2; python_version >= '3.12'",
             "flake8==4.0.1",
             "jupyter==1.0.0",
-            "mypy==0.910",
+            "mypy==0.981",
             "pytest==6.2.5",
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",

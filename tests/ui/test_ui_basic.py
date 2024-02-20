@@ -1,5 +1,5 @@
 import pytest
-from fastapi.testclient import TestClient
+from litestar.testing import TestClient
 
 from evidently.ui.app import create_app
 from evidently.ui.config import Config
