@@ -19,6 +19,7 @@ from litestar.types import Scope
 from litestar.types import Send
 
 import evidently
+from evidently.telemetry import DO_NOT_TRACK
 from evidently.ui.api.projects import project_api
 from evidently.ui.api.security import get_org_id
 from evidently.ui.api.security import get_user_id
@@ -64,7 +65,7 @@ async def get_event_logger(telemetry_config: Any):
         evidently.__version__,
         url=telemetry_config.url,
         token=telemetry_config.token,
-        enabled=telemetry_config.enabled,
+        enabled=telemetry_config.enabled and DO_NOT_TRACK is None,
     )
     yield partial(_event_logger.send_event, telemetry_config.service_name)
 
