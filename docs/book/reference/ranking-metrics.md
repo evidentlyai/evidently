@@ -13,7 +13,10 @@ Recall at K reflects the ability of the recommender or ranking system to retriev
 **Implemented method:**
 * **Compute recall at K by user**. Compute the recall at K for each individual user, by measuring the share of all relevant items in the dataset (e.g. that a given user liked or interacted with) that appear in the top K results.
 
-$$\text{Recall at } K = \frac{\text{Number of relevant items in } K}{\text{Total number of relevant items}}$$
+$$
+\text{Recall at } K = \frac{\text{Number of relevant items in } K}{\text{Total number of relevant items}}
+$$
+
 * **Compute overall recall**. Average the results across all users in the dataset. 
 
 **Range**: 0 to 1.
@@ -33,7 +36,10 @@ Precision at K reflects the ability of the system to suggest items that are trul
 **Implemented method:**
 * **Compute precision at K by user**. Compute the precision at K for each user by measuring the share of the relevant results within the top K (e.g. that the user liked or interacted with). 
 
-$$\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{Total number of items in }K}$$
+$$
+\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{Total number of items in }K}
+$$
+
 * **Compute overall precision**. Average the results across all users in the dataset. 
 
 **Range**: 0 to 1.
@@ -48,7 +54,9 @@ $$\text{Precision at } K = \frac{\text{Number of relevant items in } K}{\text{To
 
 The F Beta score at K combines precision and recall into a single value, providing a balanced measure of a recommendation system's performance. 
 
-$$F_{\beta} = \frac{(1 + \beta^2) \times \text{Precision at K} \times \text{Recall at K}}{(\beta^2 \times \text{Precision at K}) + \text{Recall at K}} \$$
+$$
+F_{\beta} = \frac{(1 + \beta^2) \times \text{Precision at K} \times \text{Recall at K}}{(\beta^2 \times \text{Precision at K}) + \text{Recall at K}} \
+$$
 
 `Beta` is a parameter that determines the weight assigned to recall relative to precision. `Beta` > 1 gives more weight to recall, while `beta` < 1 favors precision.
 
@@ -71,16 +79,23 @@ Compared to precision at K, MAP at K is rank-aware. It penalizes the system for 
 **Implemented method:**
 * **Compute Average Precision (AP) at K by user**. The Average Precision at K is computed for each user as an average of precision values at each relevant item position within the top K. To do that, we sum up precision at all values of K when the item is relevant (e.g., Precision @1, Precision@2..), and divide it by the total number of relevant items in K.
 
-$$\text{AP@K} = \frac{1}{N} \sum_{k=1}^{K} Precision(k) \times rel(k)$$
+$$
+\text{AP@K} = \frac{1}{N} \sum_{k=1}^{K} Precision(k) \times rel(k)
+$$
 
 Where *N* is the total number of relevant items at K, and *rel(k)* is equal to 1 if the item is relevant, and is 0 otherwise.
 
 Example: if K = 10, and items in positions 1, 2, and 10 are relevant, the formula will look as:
 
-$$AP@10 = \frac{Precision@1+Precision@2+Precision@10}{3}$$
+$$
+AP@10 = \frac{Precision@1+Precision@2+Precision@10}{3}
+$$
+
 * **Compute Mean Average Precision (MAP) at K**. Average the results across all users in the dataset.
 
-$$\text{MAP@K} = \frac{1}{U} \sum_{u=1}^{U} \text{AP@K}_u$$
+$$
+\text{MAP@K} = \frac{1}{U} \sum_{u=1}^{U} \text{AP@K}_u
+$$
 
 Where *U* is the total number of users or queries in the dataset, and *AP* is the average precision for a given list.
 
@@ -97,14 +112,21 @@ MAR (Mean Average Recall) at K assesses the ability of a recommendation system t
 **Implemented method:**
 * **Compute the average recall at K by user**. Compute and average the recall at each relevant position within the top K for every user. To do that, we sum up the recall at all values of K when the item is relevant (e.g. Recall @1, Recall@2..), and divide it by the total number of relevant recommendations in K.
 
-$$\text{AR@K} = \frac{1}{N} \sum_{k=1}^{K} Recall(k) \times rel(k)$$
+$$
+\text{AR@K} = \frac{1}{N} \sum_{k=1}^{K} Recall(k) \times rel(k)
+$$
 
 Example: if K = 10, and items in positions 1, 2, and 10 are relevant, the formula will look as:
 
-$$\text{AR@10} = \frac{Recall@1+Recall@2+Recall@10}{3}$$
+$$
+\text{AR@10} = \frac{Recall@1+Recall@2+Recall@10}{3}
+$$
+
 * **Compute mean average recall at K**. Average the results across all users.
 
-$$\text{MAR@K} = \frac{1}{U} \sum_{u=1}^{U} \text{AR@K}_u$$
+$$
+\text{MAR@K} = \frac{1}{U} \sum_{u=1}^{U} \text{AR@K}_u
+$$
 
 Where *U* is the total number of users or queries in the dataset, and *AR* is the average recall for a given list.
 
@@ -124,12 +146,16 @@ NDCG (Normalized Discounted Cumulative Gain) at K reflects the ranking quality, 
 * **Provide the item relevance score**. You can assign a relevance score for each item in each user’s top-K list. Depending on the model type, it can be a binary outcome (1 is relevant, 0 is not) or a score.  
 * **Compute the discounted cumulative gain (DCG)** at K by the user. DCG at K measures the quality of the ranking (= total relevance) for a list of top-K items. We add a logarithmic discount to account for diminishing returns from each following item being lower on the list. To get the resulting DCG, you can compute a weighted sum of the relevance scores for all items from the top of the list to K with an applied discount.
 
-$$\text{DCG@K} = \sum_{k=1}^{K} \frac{rel_i}{\log_2(i + 1)}$$
+$$
+\text{DCG@K} = \sum_{k=1}^{K} \frac{rel_i}{\log_2(i + 1)}
+$$
 
 Where *Rel(i)* is the relevance score of the item at rank *i*. 
 * **Compute the normalized DCG (NDCG)**. To normalize the metric, we divide the resulting DCG by the ideal DCG (IDCG) at K. Ideal DCG at K represents the maximum achievable DCG for a user when the items are perfectly ranked in descending order of relevance. 
 
-$$\text{NDCG@K} = \frac{DCG@K}{IDCG@K}$$
+$$
+\text{NDCG@K} = \frac{DCG@K}{IDCG@K}
+$$
 
 This way, it is possible to compare NDCG values across different use cases. The resulting NDCG values for all users are averaged to measure the overall performance of a model. 
 
@@ -169,7 +195,9 @@ Mean Reciprocal Rank (MRR) measures the ranking quality considering the position
 Example: if the first relevant item is at the top of the list - the reciprocal rank is 1, if it is on the 2nd position - the reciprocal rank ½, if on the 3rd - ⅓, etc.
 * Calculate the **mean reciprocal rank** (MRR). Compute the average reciprocal rank across all users.
 
-$$\text{MRR} = \frac{1}{U} \sum_{u=1}^{U}\frac{1}{rank_i}$$
+$$
+\text{MRR} = \frac{1}{U} \sum_{u=1}^{U}\frac{1}{rank_i}
+$$
 
 Where *U* is the total number of users, and *rank(i)* is the rank of the first relevant item for user *u* in the top-K results.
 
@@ -190,7 +218,9 @@ Where *U* is the total number of users, and *rank(i)* is the rank of the first r
 **Implemented method**:
 * **Measure the difference between recommended items**. Calculate the Cosine distance for each pair of recommendations inside the top-K in each user's list. The cosine distance serves as a measure of diversity between vectors representing recommended items, and is computed as:
 
-$$\text{Cosine distance} = 1 - \text{Cosine Similarity}$$
+$$
+\text{Cosine distance} = 1 - \text{Cosine Similarity}
+$$
 
 Link: [Cosine Similarity on Wikipedia](https://en.wikipedia.org/wiki/Cosine_similarity). 
 
@@ -220,11 +250,14 @@ Link: [Cosine Similarity on Wikipedia](https://en.wikipedia.org/wiki/Cosine_simi
 **Implemented method**:
 * Measure **novelty of recommended items**. The novelty of an item can be defined based on its popularity in the training set.
 
-$$\text{novelty}_i = -\log_2(p_i)$$
-
+$$
+\text{novelty}_i = -\log_2(p_i)
+$$
 where *p* represents the probability that item *i* is observed. It is calculated as the share of users that interacted with an item in the training set.
 
-$$\text{novelty}_i = -\log_2\left(\frac{\text{users who interacted with } i}{\text{number of users}}\right)$$
+$$
+\text{novelty}_i = -\log_2\left(\frac{\text{users who interacted with } i}{\text{number of users}}\right)
+$$
 
 High novelty corresponds to long-tail items that few users interacted with, and low novelty values correspond to popular items. If all users had interacted with an item, novelty is 0.
 * Measure **novelty by user**. For each user, compute the average item novelty at K, by summing up the novelty of all items and dividing by K.
@@ -253,13 +286,17 @@ Serendipity combines unexpectedness and relevance. It reflects the ability of a 
 **Implemented method**. 
 * Measure the **unexpectedness** of relevant recommendations. The “unexpectedness” is measured using Cosine distance. For every relevant recommendation in top-K, we compute the distance between this item and the previous user interactions in the training set. Higher cosine distance indicates higher unexpectedness.
 
-$$\text{serendipity}_i = \text{unexpectedness}_i\times\text{relevance}_i$$
+$$
+\text{serendipity}_i = \text{unexpectedness}_i\times\text{relevance}_i
+$$
 
 Where *relevance(i)* is equal to 1 if the item is relevant, and is 0 otherwise.
 * **Serendipity by user**. Calculate the average of the resulting distances for all relevant recommendations in the user list.  
 * **Overall serendipity**. Calculate the overall recommendation serendipity by averaging the results across all users.
 
-$$\text{Serendipity} = 1 - \sum_{u \in S} \frac{1}{|S| |H_u|} \sum_{h \in H_u} \sum_{i \in R_{u,k}} \frac{\text{CosSim}(i, h)}{k}$$
+$$
+\text{Serendipity} = 1 - \sum_{u \in S} \frac{1}{|S| |H_u|} \sum_{h \in H_u} \sum_{i \in R_{u,k}} \frac{\text{CosSim}(i, h)}{k}
+$$
 
 Where
 * *S* is the set of all users.
@@ -293,8 +330,10 @@ Personalization of recommendations: this metric measures the average uniqueness 
 * Calculate the **average overlap** across all pairs of users.
 * Calculate personalization as: 
 
-$$\text{Personalization} = 1 - \text{average overlap}$$
- 
+$$
+\text{Personalization} = 1 - \text{average overlap}
+$$
+
 The resulting metric reflects the average share of unique recommendations in each user’s list.
 
 **Range**: 0 to 1.
@@ -320,7 +359,9 @@ ARP reflects the average popularity of the items recommended to the users.
 * Compute the average popularity for each user’s list as a sum of all items’ popularity divided by the number of recommended items.
 * Compute the average popularity for all users by averaging the results across all users.
 
-$$ARP = \frac{1}{|U|} \sum_{u \in U} \frac{1}{|L_u|} \sum_{i \in L_u} \phi(i) \$$
+$$
+ARP = \frac{1}{|U|} \sum_{u \in U} \frac{1}{|L_u|} \sum_{i \in L_u} \phi(i) \
+$$
 
 Where:
 * *U* is the total number of users.
@@ -341,7 +382,9 @@ Coverage reflects the item coverage as a proportion of items that has been recom
 
 **Implementation**: compute the share of items recommended to the users out of the total number of potential items (as seen in the training dataset).
 
-$$\text{Coverage} = \frac{\text{Number of unique items recommended} K}{\text{Total number of unique items}}$$
+$$
+\text{Coverage} = \frac{\text{Number of unique items recommended} K}{\text{Total number of unique items}}
+$$
 
 **Range**: 0 to 1, where 1 means that 100% of items have been recommended to users. 
 
@@ -353,7 +396,9 @@ Gini index: reflects the inequality in the distribution of recommended items sho
 
 **Implementation**:  
 
-$$ Gini(L) = 1 - \frac{1}{|I| - 1} \sum_{k=1}^{|I|} (2k - |I| - 1) p(i_k | L) \$$
+$$ 
+Gini(L) = 1 - \frac{1}{|I| - 1} \sum_{k=1}^{|I|} (2k - |I| - 1) p(i_k | L) \
+$$
 
 Where 
 * *L* is the combined list of all recommendation lists given to different users (note that an item may appear multiple times in L, if recommended for more than one user).
