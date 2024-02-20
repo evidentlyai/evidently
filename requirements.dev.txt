@@ -18,8 +18,7 @@ isort==5.10.1
 pyspark
 
 # service dependencies
-fastapi<=0.102.0  # todo: update crashing mypy and remove restriction
-fastapi-utils
+fastapi-restful==0.5.0
 litestar
 dynaconf
 uvicorn
