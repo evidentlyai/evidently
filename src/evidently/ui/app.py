@@ -2,6 +2,7 @@ import os
 import pathlib
 from functools import partial
 from typing import Any
+from typing import Optional
 
 import uvicorn
 from iterative_telemetry import IterativeTelemetryLogger
@@ -21,8 +22,6 @@ from litestar.types import Send
 import evidently
 from evidently.telemetry import DO_NOT_TRACK
 from evidently.ui.api.projects import project_api
-from evidently.ui.api.security import get_org_id
-from evidently.ui.api.security import get_user_id
 from evidently.ui.api.service import service_api
 from evidently.ui.api.static import add_static
 from evidently.ui.base import AuthManager
@@ -43,6 +42,8 @@ from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.storage.local import InMemoryDataStorage
 from evidently.ui.storage.local import JsonFileMetadataStorage
+from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import UserID
 
 
 def api_router():
@@ -51,6 +52,14 @@ def api_router():
 
 def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
     return exc.to_response()
+
+
+async def get_user_id() -> UserID:
+    return UserID("00000000-0000-0000-0000-000000000001")
+
+
+async def get_org_id() -> Optional[OrgID]:
+    return None
 
 
 async def get_event_logger(telemetry_config: Any):
