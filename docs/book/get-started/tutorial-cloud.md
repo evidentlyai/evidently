@@ -6,10 +6,10 @@ It will take 1 minute to launch a demo dashboard and 10 minutes to complete the 
 
 ## 1. Create an account
 
-Evidently Cloud is in private beta. Once you get the registration link from us, create your account and confirm the email.
+Evidently Cloud is currently in beta. 
 
 {% hint style="success" %}
-**Can I try Evidently Cloud?** To request a free trial, fill out [this form](https://www.evidentlyai.com/cloud-signup).
+**Can I try Evidently Cloud?** To start your free trial, [create an account](http://app.evidently.cloud/signup).
 {% endhint %}
 
 <details>
