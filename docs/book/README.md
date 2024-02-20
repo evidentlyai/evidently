@@ -10,14 +10,16 @@ New to Evidently? Check out the ["Hello world"](get-started/hello-world.md) exam
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Want a dashboard to track metrics over time? You can self-host it: 
-{% content-ref url="get-started/tutorial-monitoring.md" %}
-[Get started tutorial](get-started/tutorial-monitoring.md). 
-{% endcontent-ref %}
+Want a dashboard to track metrics over time? 
 
-Or get started with [Evidently Cloud](https://www.evidentlyai.com/cloud-signup): 
+Get started with [Evidently Cloud](https://www.evidentlyai.com/cloud-signup): 
 {% content-ref url="get-started/tutorial-cloud.md" %}
 [Get started tutorial](get-started/tutorial-cloud.md). 
+{% endcontent-ref %}
+
+Or self-host an open-source dashboard: 
+{% content-ref url="get-started/tutorial-monitoring.md" %}
+[Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
 
 You can explore more code [examples](examples/examples.md). 
