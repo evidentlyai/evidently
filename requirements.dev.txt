@@ -4,7 +4,7 @@ setuptools==50.3.2; python_version < '3.12'
 setuptools==68.2.2; python_version >= '3.12'
 flake8==4.0.1
 jupyter==1.0.0
-mypy==0.920
+mypy==0.981
 pytest==6.2.5
 types-PyYAML==6.0.1
 types-requests==2.26.0
@@ -18,8 +18,8 @@ isort==5.10.1
 pyspark
 
 # service dependencies
-fastapi<=0.102.0  # todo: update crashing mypy and remove restriction
-fastapi-utils
+litestar
+dynaconf
 uvicorn
 pyarrow
 httpx
