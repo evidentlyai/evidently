@@ -327,7 +327,6 @@ def project_api(guard: Callable) -> Router:
                 route_handlers=[
                     update_project_info,
                     reload_project_snapshots,
-
                     add_project,
                     delete_project,
                     add_snapshot,
