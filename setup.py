@@ -59,7 +59,7 @@ setup_args = dict(
         "scipy>=1.5.4",
         "requests>=2.21.0",
         "PyYAML>=5.1",
-        "pydantic<2",
+        "pydantic>=1.10.14",
         "litestar>=2.5.1",
         "typing-inspect>=0.9.0",
         "uvicorn>=0.22.0",
