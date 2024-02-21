@@ -303,25 +303,37 @@ async def delete_snapshot(
     log_event("delete_snapshot")
 
 
-def project_api() -> Router:
+def project_api(guard: Callable) -> Router:
     return Router(
         "/projects",
         route_handlers=[
-            list_projects,
-            list_reports,
-            get_project_info,
-            search_projects,
-            update_project_info,
-            reload_project_snapshots,
-            list_test_suites,
-            get_snapshot_graph_data,
-            get_snapshot_data,
-            get_snapshot_download,
-            list_project_dashboard_panels,
-            project_dashboard,
-            add_project,
-            delete_project,
-            add_snapshot,
-            delete_snapshot,
+            Router(
+                "",
+                route_handlers=[
+                    list_projects,
+                    list_reports,
+                    get_project_info,
+                    search_projects,
+                    list_test_suites,
+                    get_snapshot_graph_data,
+                    get_snapshot_data,
+                    get_snapshot_download,
+                    list_project_dashboard_panels,
+                    project_dashboard,
+                ],
+            ),
+            Router(
+                "",
+                route_handlers=[
+                    update_project_info,
+                    reload_project_snapshots,
+
+                    add_project,
+                    delete_project,
+                    add_snapshot,
+                    delete_snapshot,
+                ],
+                guards=[guard],
+            ),
         ],
     )

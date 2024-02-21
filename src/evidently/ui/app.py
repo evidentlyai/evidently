@@ -2,6 +2,7 @@ import os
 import pathlib
 from functools import partial
 from typing import Any
+from typing import Callable
 from typing import Optional
 
 import uvicorn
@@ -12,7 +13,6 @@ from litestar import Response
 from litestar import Router
 from litestar.connection import ASGIConnection
 from litestar.di import Provide
-from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import BaseRouteHandler
 from litestar.types import ASGIApp
 from litestar.types import Receive
@@ -33,11 +33,13 @@ from evidently.ui.config import Config
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
 from evidently.ui.errors import EvidentlyServiceError
+from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.security.config import NoSecurityConfig
 from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.token import TokenSecurity
 from evidently.ui.security.token import TokenSecurityConfig
+from evidently.ui.storage.common import EVIDENTLY_SECRET_ENV
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.storage.local import InMemoryDataStorage
@@ -46,8 +48,8 @@ from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
 
-def api_router():
-    return Router(path="/api", route_handlers=[project_api(), service_api()])
+def api_router(guard: Callable):
+    return Router(path="/api", route_handlers=[project_api(guard), service_api()])
 
 
 def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
@@ -115,12 +117,12 @@ def create_app(config: Config):
 
     def is_authenticated(connection: ASGIConnection, _: BaseRouteHandler) -> None:
         if not connection.scope["auth"]["authenticated"]:
-            raise NotAuthorizedException()
+            raise NotEnoughPermissions()
 
     ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
     app = Litestar(
         route_handlers=[
-            api_router(),
+            api_router(is_authenticated),
         ],
         exception_handlers={
             EvidentlyServiceError: unicorn_exception_handler,
@@ -174,7 +176,8 @@ def run_local(
     config.storage.metadata.path = workspace
     config.storage.data.path = workspace
     config.storage.blob.path = workspace
-    # secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)
+    if secret or os.environ.get(EVIDENTLY_SECRET_ENV):
+        config.security = TokenSecurityConfig(token=secret or os.environ.get(EVIDENTLY_SECRET_ENV))
     run(config)
 
 
