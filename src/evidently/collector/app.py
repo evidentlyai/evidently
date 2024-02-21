@@ -161,9 +161,7 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
         print("Anonimous usage reporting is disabled")
     event_logger.send_event(COLLECTOR_INTERFACE, "startup")
 
-    ensure_future(
-        loop(seconds=service.check_interval, func=check_snapshots_factory(service, service.storage))
-    )
+    ensure_future(loop(seconds=service.check_interval, func=check_snapshots_factory(service, service.storage)))
     security: SecurityService
     if secret is None:
         security = NoSecurityService(NoSecurityConfig())
