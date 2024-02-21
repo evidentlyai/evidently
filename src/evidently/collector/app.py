@@ -1,9 +1,9 @@
+import asyncio
 from asyncio import ensure_future
 from typing import List
 
 import pandas as pd
 import uvicorn
-from fastapi_restful.tasks import repeat_every
 from litestar import Litestar
 from litestar import Request
 from litestar import get
@@ -145,6 +145,12 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
         storage.log(collector.id, LogEvent(ok=True))
 
 
+async def loop(seconds: int, func):
+    while True:
+        await func()
+        await asyncio.sleep(seconds)
+
+
 def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: str = None):
     service = CollectorServiceConfig.load_or_default(config_path)
     service.storage.init_all(service)
@@ -156,12 +162,7 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
     event_logger.send_event(COLLECTOR_INTERFACE, "startup")
 
     ensure_future(
-        repeat_every(seconds=service.check_interval, raise_exceptions=True)(
-            check_snapshots_factory(
-                service,
-                service.storage,
-            )
-        )()
+        loop(seconds=service.check_interval, func=check_snapshots_factory(service, service.storage))
     )
     security: SecurityService
     if secret is None:

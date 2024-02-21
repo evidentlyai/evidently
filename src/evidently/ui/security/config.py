@@ -1,10 +1,10 @@
 import uuid
 from typing import Literal
 
-import pydantic
+from evidently._pydantic_compat import BaseModel
 
 
-class SecurityConfig(pydantic.BaseModel):
+class SecurityConfig(BaseModel):
     type: str
 
 

@@ -18,7 +18,6 @@ isort==5.10.1
 pyspark
 
 # service dependencies
-fastapi-restful==0.5.0
 litestar
 dynaconf
 uvicorn
