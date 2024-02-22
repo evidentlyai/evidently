@@ -5,6 +5,7 @@ from pydantic import parse_obj_as
 
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.pydantic_utils import PolymorphicModel
 
 
@@ -130,3 +131,32 @@ def test_type_alias():
 
     obj = parse_obj_as(SomeModel, {"type": "othersubclass"})
     assert obj.__class__ == SomeOtherSubclass
+
+
+def test_include_exclude():
+    class SomeModel(MetricResult):
+        class Config:
+            field_tags = {"f1": {IncludeTags.Render}}
+
+        f1: str
+        f2: str
+
+    assert SomeModel.fields.list_nested_fields(exclude={IncludeTags.Render, IncludeTags.TypeField}) == ["f2"]
+    # assert SomeModel.fields.list_nested_fields(include={IncludeTags.Render}) == ["f1"]
+
+    class SomeNestedModel(MetricResult):
+        class Config:
+            tags = {IncludeTags.Render}
+
+        f1: str
+
+    class SomeOtherModel(MetricResult):
+        f1: str
+        f2: SomeNestedModel
+        f3: SomeModel
+
+    assert SomeOtherModel.fields.list_nested_fields(exclude={IncludeTags.Render, IncludeTags.TypeField}) == [
+        "f1",
+        "f3.f2",
+    ]
+    # assert SomeOtherModel.fields.list_nested_fields(include={IncludeTags.Render}) == ["f2.f1", "f3.f1"]

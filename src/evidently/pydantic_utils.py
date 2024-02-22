@@ -24,6 +24,7 @@ from evidently._pydantic_compat import import_string
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
     from evidently._pydantic_compat import Model
+    from evidently.core import IncludeTags
 T = TypeVar("T")
 
 
@@ -229,23 +230,50 @@ class FieldPath:
                 return FieldPath(self._path + [item], field_value, is_mapping=True)
         return FieldPath(self._path + [item], field_value, is_mapping=is_mapping)
 
-    def list_nested_fields(self) -> List[str]:
+    @staticmethod
+    def _get_field_tags_rec(mro, name):
+        from evidently.base_metric import BaseResult
+
+        cls = mro[0]
+        if not issubclass(cls, BaseResult):
+            return None
+        if name in cls.__config__.field_tags:
+            return cls.__config__.field_tags[name]
+        return FieldPath._get_field_tags_rec(mro[1:], name)
+
+    @staticmethod
+    def _get_field_tags(cls, name, type_) -> Optional[Set["IncludeTags"]]:
+        from evidently.base_metric import BaseResult
+
+        if not issubclass(cls, BaseResult):
+            return None
+        field_tags = FieldPath._get_field_tags_rec(cls.__mro__, name)
+        if field_tags is not None:
+            return field_tags
+        if isinstance(type_, type) and issubclass(type_, BaseResult):
+            return type_.__config__.tags
+        return set()
+
+    def list_nested_fields(self, exclude: Set["IncludeTags"] = None) -> List[str]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
+            field_tags = self._get_field_tags(self._cls, name, field_value)
+            if field_tags is not None and (exclude is not None and any(t in exclude for t in field_tags)):
+                continue
             is_mapping = field.shape == SHAPE_DICT
             if self.has_instance:
                 field_value = getattr(self._instance, name)
                 if is_mapping and isinstance(field_value, dict):
                     for key, value in field_value.items():
-                        res.extend(FieldPath(self._path + [name, str(key)], value).list_nested_fields())
+                        res.extend(FieldPath(self._path + [name, str(key)], value).list_nested_fields(exclude=exclude))
                     continue
             else:
                 if is_mapping:
                     name = f"{name}.*"
-            res.extend(FieldPath(self._path + [name], field_value).list_nested_fields())
+            res.extend(FieldPath(self._path + [name], field_value).list_nested_fields(exclude=exclude))
         return res
 
     def __repr__(self):
