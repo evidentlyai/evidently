@@ -3,8 +3,8 @@ from typing import Literal
 from typing import Optional
 
 from litestar import Request
-from pydantic import SecretStr
 
+from evidently._pydantic_compat import SecretStr
 from evidently.ui.security.config import SecurityConfig
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.service import User
