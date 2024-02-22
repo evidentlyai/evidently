@@ -160,3 +160,35 @@ def test_include_exclude():
         "f3.f2",
     ]
     # assert SomeOtherModel.fields.list_nested_fields(include={IncludeTags.Render}) == ["f2.f1", "f3.f1"]
+
+
+def test_get_field_tags():
+    class SomeModel(MetricResult):
+        class Config:
+            field_tags = {"f1": {IncludeTags.Render}}
+
+        f1: str
+        f2: str
+
+    assert SomeModel.fields.get_field_tags(["type"]) == {IncludeTags.TypeField}
+    assert SomeModel.fields.get_field_tags(["f1"]) == {IncludeTags.Render}
+    assert SomeModel.fields.get_field_tags(["f2"]) == set()
+
+    class SomeNestedModel(MetricResult):
+        class Config:
+            tags = {IncludeTags.Render}
+
+        f1: str
+
+    class SomeOtherModel(MetricResult):
+        f1: str
+        f2: SomeNestedModel
+        f3: SomeModel
+
+    assert SomeOtherModel.fields.get_field_tags(["type"]) == {IncludeTags.TypeField}
+    assert SomeOtherModel.fields.get_field_tags(["f1"]) == set()
+    assert SomeOtherModel.fields.get_field_tags(["f2"]) == {IncludeTags.Render}
+    assert SomeOtherModel.fields.get_field_tags(["f2", "f1"]) == {IncludeTags.Render}
+    assert SomeOtherModel.fields.get_field_tags(["f3"]) == set()
+    assert SomeOtherModel.fields.get_field_tags(["f3", "f1"]) == {IncludeTags.Render}
+    assert SomeOtherModel.fields.get_field_tags(["f3", "f2"]) == set()

@@ -288,6 +288,19 @@ class FieldPath:
         res.extend(self.list_fields())
         return res
 
+    def get_field_tags(self, path: List[str]) -> Optional[Set["IncludeTags"]]:
+        from evidently.base_metric import BaseResult
+
+        if not isinstance(self._cls, type) or not issubclass(self._cls, BaseResult):
+            return None
+        self_tags = self._cls.__config__.tags
+        if len(path) == 0:
+            return self_tags
+        field_name, *path = path
+
+        field_tags = self._get_field_tags(self._cls, field_name, self._cls.__fields__[field_name].type_) or set()
+        return self_tags.union(field_tags).union(self.child(field_name).get_field_tags(path) or tuple())
+
 
 @pydantic_type_validator(FieldPath)
 def series_validator(value):
