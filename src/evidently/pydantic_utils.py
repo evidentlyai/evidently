@@ -11,6 +11,7 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
@@ -275,6 +276,34 @@ class FieldPath:
                     name = f"{name}.*"
             res.extend(FieldPath(self._path + [name], field_value).list_nested_fields(exclude=exclude))
         return res
+
+    def _list_with_tags(self, current_tags: Set["IncludeTags"]) -> List[Tuple[str, Set["IncludeTags"]]]:
+        if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
+            return [(repr(self), current_tags)]
+        res = []
+        for name, field in self._cls.__fields__.items():
+            field_value = field.type_
+            field_tags = self._get_field_tags(self._cls, name, field_value) or set()
+
+            is_mapping = field.shape == SHAPE_DICT
+            if self.has_instance:
+                field_value = getattr(self._instance, name)
+                if is_mapping and isinstance(field_value, dict):
+                    for key, value in field_value.items():
+                        res.extend(
+                            FieldPath(self._path + [name, str(key)], value)._list_with_tags(
+                                current_tags.union(field_tags)
+                            )
+                        )
+                    continue
+            else:
+                if is_mapping:
+                    name = f"{name}.*"
+            res.extend(FieldPath(self._path + [name], field_value)._list_with_tags(current_tags.union(field_tags)))
+        return res
+
+    def list_nested_fields_with_tags(self) -> List[Tuple[str, Set["IncludeTags"]]]:
+        return self._list_with_tags(set())
 
     def __repr__(self):
         return self.get_path()
