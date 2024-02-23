@@ -49,7 +49,7 @@ class NDCGKMetric(Metric[TopKMetricResult]):
         for i in range(1, max_k + 1):
             discount = 1 / np.log2(np.arange(i) + 2)
             dcg = df[df.preds <= i].groupby("users").dcg.sum()
-            idcg = df.groupby("users").target.apply(lambda x: x[:i].dot(discount[:len(x)]).rename("idcg")
+            idcg = df.groupby("users").target.apply(lambda x: x[:i].dot(discount[:len(x)])).rename("idcg")
             user_df = pd.concat([dcg, idcg], axis=1).fillna(0)
             ndcg_k.append((user_df["dcg"] / user_df["idcg"]).replace([np.inf, -np.inf], np.nan).fillna(0).mean())
 
