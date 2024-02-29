@@ -89,7 +89,7 @@ setup_args = dict(
             "httpx==0.24.1"
         ],
         "spark": [
-            "pyspark"
+            "pyspark>=3.2.2"
         ],
         "fsspec": [
             "fsspec[full]"
