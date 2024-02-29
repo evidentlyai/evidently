@@ -1,5 +1,9 @@
 import asyncio
-from asyncio import ensure_future
+from asyncio import Task
+from typing import Any
+from typing import Awaitable
+from typing import Callable
+from typing import Dict
 from typing import List
 
 import pandas as pd
@@ -29,7 +33,6 @@ from evidently.collector.storage import LogEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
 from evidently.ui.config import NoSecurityConfig
-from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.token import TokenSecurity
@@ -38,13 +41,9 @@ from evidently.ui.security.token import TokenSecurityConfig
 COLLECTOR_INTERFACE = "collector"
 
 
-async def entity_not_found_exception_handler(request: Request, exc: EvidentlyServiceError):
-    return exc.to_response()
-
-
 @post("/{id:str}")
 async def create_collector(
-    id: Annotated[str, Parameter(query="id", description="Collector ID")],
+    id: Annotated[str, Parameter(description="Collector ID")],
     data: CollectorConfig,
     service: CollectorServiceConfig,
     storage: CollectorStorage,
@@ -58,7 +57,7 @@ async def create_collector(
 
 @get("/{id:str}")
 async def get_collector(
-    id: Annotated[str, Parameter(query="id", description="Collector ID")],
+    id: Annotated[str, Parameter(description="Collector ID")],
     service: CollectorServiceConfig,
 ) -> CollectorConfig:
     if id not in service.collectors:
@@ -68,10 +67,10 @@ async def get_collector(
 
 @post("/{id:str}/reference")
 async def reference(
-    id: Annotated[str, Parameter(query="id", description="Collector ID")],
+    id: Annotated[str, Parameter(description="Collector ID")],
     request: Request,
     service: CollectorServiceConfig,
-):
+) -> Dict[str, str]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     collector = service.collectors[id]
@@ -85,11 +84,11 @@ async def reference(
 
 @post("/{id:str}/data")
 async def data(
-    id: Annotated[str, Parameter(query="id", description="Collector ID")],
+    id: Annotated[str, Parameter(description="Collector ID")],
     request: Request,
     service: CollectorServiceConfig,
     storage: CollectorStorage,
-):
+) -> Dict[str, str]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     async with storage.lock(id):
@@ -99,7 +98,7 @@ async def data(
 
 @get("/{id:str}/logs")
 async def get_logs(
-    id: Annotated[str, Parameter(query="id", description="Collector ID")],
+    id: Annotated[str, Parameter(description="Collector ID")],
     service: CollectorServiceConfig,
     storage: CollectorStorage,
 ) -> List[LogEvent]:
@@ -108,8 +107,10 @@ async def get_logs(
     return storage.get_logs(id)
 
 
-def check_snapshots_factory(service: CollectorServiceConfig, storage: CollectorStorage):
-    async def check_snapshots():
+def check_snapshots_factory(
+    service: CollectorServiceConfig, storage: CollectorStorage
+) -> Callable[[], Awaitable[None]]:
+    async def check_snapshots() -> None:
         for _, collector in service.collectors.items():
             if not collector.trigger.is_ready(collector, storage):
                 continue
@@ -119,7 +120,7 @@ def check_snapshots_factory(service: CollectorServiceConfig, storage: CollectorS
     return check_snapshots
 
 
-async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage):
+async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
     async with storage.lock(collector.id):
         current = storage.get_and_flush(collector.id)
         if current is None:
@@ -145,10 +146,13 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
         storage.log(collector.id, LogEvent(ok=True))
 
 
-async def loop(seconds: int, func):
-    while True:
-        await func()
-        await asyncio.sleep(seconds)
+async def loop(seconds: int, func: Callable[[], Awaitable[Any]]) -> Task:
+    async def _loop():
+        while True:
+            await func()
+            await asyncio.sleep(seconds)
+
+    return asyncio.create_task(_loop())
 
 
 def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: str = None):
@@ -161,7 +165,6 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
         print("Anonimous usage reporting is disabled")
     event_logger.send_event(COLLECTOR_INTERFACE, "startup")
 
-    ensure_future(loop(seconds=service.check_interval, func=check_snapshots_factory(service, service.storage)))
     security: SecurityService
     if secret is None:
         security = NoSecurityService(NoSecurityConfig())
@@ -190,6 +193,10 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
         if not connection.scope["auth"]["authenticated"]:
             raise NotAuthorizedException()
 
+    async def on_startup(app: Litestar) -> None:
+        # TODO: check task health
+        await loop(seconds=service.check_interval, func=check_snapshots_factory(service, service.storage))
+
     app = Litestar(
         route_handlers=[
             create_collector,
@@ -205,8 +212,8 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
         },
         middleware=[auth_middleware_factory],
         guards=[is_authenticated],
+        on_startup=[on_startup],
     )
-
     uvicorn.run(app, host=host, port=port)
 
 
