@@ -23,4 +23,5 @@ dynaconf
 uvicorn
 pyarrow
 httpx
+gcsfs
 
