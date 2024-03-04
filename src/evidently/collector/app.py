@@ -1,8 +1,7 @@
 import asyncio
-from asyncio import Task
-from typing import Any
-from typing import Awaitable
-from typing import Callable
+import contextlib
+import logging
+from typing import AsyncGenerator
 from typing import Dict
 from typing import List
 
@@ -39,6 +38,8 @@ from evidently.ui.security.token import TokenSecurity
 from evidently.ui.security.token import TokenSecurityConfig
 
 COLLECTOR_INTERFACE = "collector"
+
+logger = logging.getLogger(__name__)
 
 
 @post("/{id:str}")
@@ -107,17 +108,11 @@ async def get_logs(
     return storage.get_logs(id)
 
 
-def check_snapshots_factory(
-    service: CollectorServiceConfig, storage: CollectorStorage
-) -> Callable[[], Awaitable[None]]:
-    async def check_snapshots() -> None:
-        for _, collector in service.collectors.items():
-            if not collector.trigger.is_ready(collector, storage):
-                continue
-            # todo: call async
-            await create_snapshot(collector, storage)
-
-    return check_snapshots
+async def check_snapshots_factory(service: CollectorServiceConfig, storage: CollectorStorage) -> None:
+    for _, collector in service.collectors.items():
+        if not collector.trigger.is_ready(collector, storage):
+            continue
+        await create_snapshot(collector, storage)
 
 
 async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
@@ -144,15 +139,6 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
             )
             return
         storage.log(collector.id, LogEvent(ok=True))
-
-
-async def loop(seconds: int, func: Callable[[], Awaitable[Any]]) -> Task:
-    async def _loop():
-        while True:
-            await func()
-            await asyncio.sleep(seconds)
-
-    return asyncio.create_task(_loop())
 
 
 def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: str = None):
@@ -193,9 +179,24 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
         if not connection.scope["auth"]["authenticated"]:
             raise NotAuthorizedException()
 
-    async def on_startup(app: Litestar) -> None:
-        # TODO: check task health
-        await loop(seconds=service.check_interval, func=check_snapshots_factory(service, service.storage))
+    @contextlib.asynccontextmanager
+    async def check_snapshots_factory_lifespan(app: Litestar) -> AsyncGenerator[None, None]:
+        stop_event = asyncio.Event()
+
+        async def check_service_snapshots_periodically():
+            while not stop_event.is_set():
+                try:
+                    await check_snapshots_factory(service, service.storage)
+                except Exception as e:
+                    logger.exception(f"Check snapshots factory error: {e}")
+                await asyncio.sleep(service.check_interval)
+
+        task = asyncio.create_task(check_service_snapshots_periodically())
+        try:
+            yield
+        finally:
+            stop_event.set()
+            await task
 
     app = Litestar(
         route_handlers=[
@@ -212,7 +213,7 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
         },
         middleware=[auth_middleware_factory],
         guards=[is_authenticated],
-        on_startup=[on_startup],
+        lifespan=[check_snapshots_factory_lifespan],
     )
     uvicorn.run(app, host=host, port=port)
 
