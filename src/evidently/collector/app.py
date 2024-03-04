@@ -127,6 +127,7 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
             report.run(reference_data=collector.reference, current_data=current, column_mapping=ColumnMapping())
             report._inner_suite.raise_for_error()
         except Exception as e:
+            logger.exception(f"Error running report: {e}")
             storage.log(
                 collector.id, LogEvent(ok=False, error=f"Error running report: {e.__class__.__name__}: {e.args}")
             )
@@ -134,6 +135,7 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
         try:
             collector.workspace.add_snapshot(collector.project_id, report.to_snapshot())
         except Exception as e:
+            logger.exception(f"Error saving snapshot: {e}")
             storage.log(
                 collector.id, LogEvent(ok=False, error=f"Error saving snapshot: {e.__class__.__name__}: {e.args}")
             )
