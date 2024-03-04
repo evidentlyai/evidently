@@ -11,6 +11,7 @@ from litestar import Litestar
 from litestar import Request
 from litestar import get
 from litestar import post
+from litestar.concurrency import sync_to_thread
 from litestar.connection import ASGIConnection
 from litestar.di import Provide
 from litestar.exceptions import HTTPException
@@ -117,14 +118,16 @@ async def check_snapshots_factory(service: CollectorServiceConfig, storage: Coll
 
 async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
     async with storage.lock(collector.id):
-        current = storage.get_and_flush(collector.id)
+        current = await sync_to_thread(storage.get_and_flush, collector.id)  # FIXME: sync function
         if current is None:
             return
         current.index = current.index.astype(int)
         report_conf = collector.report_config
         report = report_conf.to_report_base()
         try:
-            report.run(reference_data=collector.reference, current_data=current, column_mapping=ColumnMapping())
+            await sync_to_thread(
+                report.run, reference_data=collector.reference, current_data=current, column_mapping=ColumnMapping()
+            )  # FIXME: sync function
             report._inner_suite.raise_for_error()
         except Exception as e:
             logger.exception(f"Error running report: {e}")
@@ -133,7 +136,9 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
             )
             return
         try:
-            collector.workspace.add_snapshot(collector.project_id, report.to_snapshot())
+            await sync_to_thread(
+                collector.workspace.add_snapshot, collector.project_id, report.to_snapshot()
+            )  # FIXME: sync function
         except Exception as e:
             logger.exception(f"Error saving snapshot: {e}")
             storage.log(
