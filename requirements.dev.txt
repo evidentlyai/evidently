@@ -18,7 +18,7 @@ isort==5.10.1
 pyspark
 
 # service dependencies
-litestar
+litestar>=2.6.3
 dynaconf
 uvicorn
 pyarrow
