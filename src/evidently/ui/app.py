@@ -3,7 +3,6 @@ import pathlib
 from functools import partial
 from typing import Any
 from typing import Callable
-from typing import Optional
 
 import uvicorn
 from iterative_telemetry import IterativeTelemetryLogger
@@ -44,6 +43,7 @@ from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.storage.local import InMemoryDataStorage
 from evidently.ui.storage.local import JsonFileMetadataStorage
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
@@ -57,11 +57,11 @@ def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Respons
 
 
 async def get_user_id() -> UserID:
-    return UserID("00000000-0000-0000-0000-000000000001")
+    return ZERO_UUID
 
 
-async def get_org_id() -> Optional[OrgID]:
-    return None
+async def get_org_id() -> OrgID:
+    return ZERO_UUID
 
 
 async def get_event_logger(telemetry_config: Any):
@@ -108,7 +108,6 @@ def create_app(config: Config):
             else:
                 scope["auth"] = {
                     "user_id": auth.id,
-                    "org_id": auth.org_id,
                     "authenticated": True,
                 }
             await app(scope, receive, send)
