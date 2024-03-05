@@ -1,14 +1,13 @@
 import os
-import uuid
 from typing import Callable
 from typing import ClassVar
+import os
+import uuid
+from typing import Callable
 from typing import List
 from typing import Optional
 from typing import Set
 from uuid import UUID
-
-from fastapi import Depends
-from fastapi.security import APIKeyHeader
 
 from evidently.ui.base import AuthManager
 from evidently.ui.base import DefaultRole
@@ -111,26 +110,3 @@ class NoopAuthManager(AuthManager):
 
 
 SECRET_HEADER_NAME = "evidently-secret"
-
-
-class SecretHeaderSecurity(SecurityConfig):
-    secret: Optional[str] = None
-    secret_env: str = EVIDENTLY_SECRET_ENV
-
-    def get_secret_value(self) -> Optional[str]:
-        if self.secret is not None:
-            return self.secret
-        return os.environ.get(self.secret_env)
-
-    def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
-        return lambda: None
-
-    def get_is_authorized_dependency(self) -> Callable[..., bool]:
-        header = APIKeyHeader(name=SECRET_HEADER_NAME, auto_error=False)
-
-        value = self.get_secret_value()
-
-        def is_authorized(secret: str = Depends(header)):
-            return value is not None and secret == value
-
-        return is_authorized

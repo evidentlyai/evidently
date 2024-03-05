@@ -77,7 +77,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.7"
+          python-version: "3.9"
           architecture: "x64"
           cache: "pip"
       # Runs a single command using the runners shell
@@ -87,9 +87,9 @@ jobs:
       # temporary specify line length and python version explicitly for black
       # it cannot find the settings in setup.cfg
       - name: Run Black
-        run: black --check --diff -l 120 -t py37 src
+        run: black --check --diff -l 120 -t py38 src
       - name: Run Black for Tests
-        run: black --check --diff -l 120 -t py37 tests
+        run: black --check --diff -l 120 -t py38 tests
       # run isort separately for source and tests folders (prevent generated examples folder checking)
       - name: Run iSort
         run: isort --check src
@@ -112,7 +112,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.7"
+          python-version: "3.8"
           architecture: "x64"
           cache: "pip"
       - name: Install package
@@ -130,10 +130,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         exclude:
-          - os: macos-latest
-            python: "3.7"
           - os: windows-latest
             python: "3.12"
       fail-fast: false
@@ -157,7 +155,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python: ["3.7"]
+        python: ["3.8"]
         minimal: [false]
       fail-fast: false
     steps:
@@ -192,7 +190,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.7"
+          python-version: "3.8"
           architecture: "x64"
           cache: "pip"
       - name: Install dependencies

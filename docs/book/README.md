@@ -10,14 +10,18 @@ New to Evidently? Check out the ["Hello world"](get-started/hello-world.md) exam
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Want a dashboard to track metrics over time? You can self-host it: 
-{% content-ref url="get-started/tutorial-monitoring.md" %}
-[Get started tutorial](get-started/tutorial-monitoring.md). 
-{% endcontent-ref %}
+Want a dashboard to track metrics over time? 
 
-Or get started with [Evidently Cloud](https://www.evidentlyai.com/cloud-signup): 
+Get started with [Evidently Cloud](https://www.evidentlyai.com/cloud-signup): 
+
 {% content-ref url="get-started/tutorial-cloud.md" %}
 [Get started tutorial](get-started/tutorial-cloud.md). 
+{% endcontent-ref %}
+
+Or self-host an open-source dashboard: 
+
+{% content-ref url="get-started/tutorial-monitoring.md" %}
+[Get started tutorial](get-started/tutorial-monitoring.md). 
 {% endcontent-ref %}
 
 You can explore more code [examples](examples/examples.md). 
@@ -88,12 +92,13 @@ You can visualize any and track 100+ metrics available in Evidently, from number
 
 **Input**: Evidently `snapshots`, logged to an object storage. 
 
-**Output**: a self-hostable dashboard available as a web app.
+**Output**: a monitoring dashboard available as a web app.
   
 **Primary use case: continuous monitoring**. When you need a live dashboard to see all your models and metrics over time. 
  
 **Read more**:
-* [Get Started](get-started/tutorial-monitoring.md)
+* [Get Started - Evidently Cloud](get-started/tutorial-cloud.md)
+* [Get Started - Self-hosting](get-started/tutorial-monitoring.md)
 
 # Community and support 
 
