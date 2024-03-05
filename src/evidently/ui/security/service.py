@@ -2,15 +2,8 @@ import abc
 from typing import Optional
 
 from litestar import Request
-from pydantic import BaseModel
 
-from evidently.ui.type_aliases import OrgID
-from evidently.ui.type_aliases import UserID
-
-
-class User(BaseModel):
-    id: UserID
-    org_id: Optional[OrgID]
+from evidently.ui.base import User
 
 
 class SecurityService:

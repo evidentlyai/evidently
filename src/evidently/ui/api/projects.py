@@ -41,7 +41,7 @@ async def list_reports(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency()],
     log_event: Annotated[Callable, Dependency()],
-    user_id: Annotated[UserID, Dependency()],
+    user_id: UserID = Annotated[UserID, Dependency()],
 ) -> List[ReportModel]:
     project = project_manager.get_project(user_id, project_id)
     if project is None:
@@ -56,7 +56,7 @@ async def list_projects(
     project_manager: Annotated[ProjectManager, Dependency()],
     log_event: Annotated[Callable, Dependency()],
     user_id: Annotated[UserID, Dependency()],
-    org_id: Annotated[OrgID, Dependency()]
+    org_id: Annotated[OrgID, Dependency()],
 ) -> Sequence[Project]:
     projects = project_manager.list_projects(user_id, org_id)
     log_event("list_projects", project_count=len(projects))
@@ -83,10 +83,10 @@ async def search_projects(
     project_manager: Annotated[ProjectManager, Dependency()],
     log_event: Annotated[Callable, Dependency()],
     user_id: Annotated[UserID, Dependency()],
-    org_id: Annotated[OrgID, Dependency()]
+    org_id: Annotated[OrgID, Dependency()],
 ) -> List[Project]:
     log_event("search_projects")
-    return project_manager.search_project(user_id, org_id, project_name=project_name)
+    return project_manager.search_project(user_id, org_id=org_id, project_name=project_name)
 
 
 @post("/{project_id:uuid}/info")
@@ -259,7 +259,7 @@ async def add_project(
     project_manager: Annotated[ProjectManager, Dependency()],
     log_event: Annotated[Callable, Dependency()],
     user_id: Annotated[UserID, Dependency()],
-    team_id: Annotated[Optional[TeamID], Parameter(query="team_id", default=ZERO_UUID)],
+    team_id: Annotated[TeamID, Parameter(query="team_id", default=ZERO_UUID)],
     org_id: Annotated[OrgID, Dependency()],
 ) -> Project:
     p = project_manager.add_project(data, user_id, team_id, org_id)

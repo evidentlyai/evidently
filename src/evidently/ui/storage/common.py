@@ -1,9 +1,5 @@
-import os
-from typing import Callable
-from typing import ClassVar
-import os
 import uuid
-from typing import Callable
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Set
@@ -17,7 +13,6 @@ from evidently.ui.base import Permission
 from evidently.ui.base import Role
 from evidently.ui.base import Team
 from evidently.ui.base import User
-from evidently.ui.config import SecurityConfig
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
