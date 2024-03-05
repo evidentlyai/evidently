@@ -1,4 +1,3 @@
-import uuid
 from typing import Literal
 from typing import Optional
 
@@ -8,6 +7,7 @@ from evidently._pydantic_compat import SecretStr
 from evidently.ui.security.config import SecurityConfig
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.service import User
+from evidently.ui.type_aliases import ZERO_UUID
 
 
 class TokenSecurityConfig(SecurityConfig):
@@ -18,10 +18,7 @@ class TokenSecurityConfig(SecurityConfig):
 SECRET_HEADER_NAME = "evidently-secret"
 
 
-default_user = User(
-    id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
-    org_id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
-)
+default_user = User(id=ZERO_UUID, name="")
 
 
 class TokenSecurity(SecurityService):
