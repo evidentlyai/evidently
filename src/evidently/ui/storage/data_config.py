@@ -1,13 +1,13 @@
-import pydantic
+from evidently._pydantic_compat import BaseModel
 
 
-class MetadataStorageConfig(pydantic.BaseModel):
+class MetadataStorageConfig(BaseModel):
     type: str
 
 
-class DataStorageConfig(pydantic.BaseModel):
+class DataStorageConfig(BaseModel):
     type: str
 
 
-class FSSpecBlobStorageConfig(pydantic.BaseModel):
+class FSSpecBlobStorageConfig(BaseModel):
     path: str = "workspace"

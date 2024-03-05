@@ -7,8 +7,8 @@ import dynaconf
 import pydantic
 from dynaconf import LazySettings
 from dynaconf.utils.boxing import DynaBox
-from pydantic import BaseModel
 
+from evidently._pydantic_compat import BaseModel
 from evidently.ui.security.config import NoSecurityConfig
 from evidently.ui.security.token import TokenSecurityConfig
 from evidently.ui.storage.data_config import FSSpecBlobStorageConfig
