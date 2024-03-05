@@ -4,6 +4,7 @@ import logging
 from typing import AsyncGenerator
 from typing import Dict
 from typing import List
+from typing import Optional
 
 import pandas as pd
 import uvicorn
@@ -148,7 +149,7 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
         storage.log(collector.id, LogEvent(ok=True))
 
 
-def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: str = None):
+def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> Litestar:
     service = CollectorServiceConfig.load_or_default(config_path)
     service.storage.init_all(service)
 
@@ -205,7 +206,7 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
             stop_event.set()
             await task
 
-    app = Litestar(
+    return Litestar(
         route_handlers=[
             create_collector,
             get_collector,
@@ -222,12 +223,12 @@ def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH,
         guards=[is_authenticated],
         lifespan=[check_snapshots_factory_lifespan],
     )
+
+
+def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: Optional[str] = None):
+    app = create_app(config_path, secret)
     uvicorn.run(app, host=host, port=port)
 
 
-def main():
-    run()
-
-
 if __name__ == "__main__":
-    main()
+    run()
