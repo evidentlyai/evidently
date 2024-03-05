@@ -41,7 +41,7 @@ async def list_reports(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency()],
     log_event: Annotated[Callable, Dependency()],
-    user_id: UserID = Annotated[UserID, Dependency()],
+    user_id: Annotated[UserID, Dependency()],
 ) -> List[ReportModel]:
     project = project_manager.get_project(user_id, project_id)
     if project is None:
