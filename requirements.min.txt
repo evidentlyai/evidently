@@ -14,3 +14,4 @@ iterative-telemetry==0.0.5
 watchdog==3.0.0
 pyarrow<11.0dev
 pyspark==3.0.0
+certifi==2023.07.22

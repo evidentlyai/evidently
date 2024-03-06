@@ -68,6 +68,7 @@ setup_args = dict(
         "rich>=13",
         "iterative-telemetry>=0.0.5",
         "dynaconf>=3.2.4",
+        "certifi>=2023.07.22",
         "fsspec",
     ],
     extras_require={
