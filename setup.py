@@ -50,14 +50,14 @@ setup_args = dict(
     long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
-        "plotly>=5.5.0",
+        "plotly>=5.10.0",
         "statsmodels>=0.12.2",
-        "scikit-learn>=0.24.0",
+        "scikit-learn>=1.0.1",
         "pandas[parquet]>=1.3.5",
-        "numpy>=1.19.5",
+        "numpy>=1.22.0",
         "nltk>=3.6.7",
-        "scipy>=1.5.4",
-        "requests>=2.21.0",
+        "scipy>=1.10.0",
+        "requests>=2.31.0",
         "PyYAML>=5.1",
         "pydantic>=1.10.14",
         "litestar>=2.5.1",
@@ -69,8 +69,8 @@ setup_args = dict(
         "iterative-telemetry>=0.0.5",
         "dynaconf>=3.2.4",
         "certifi>=2023.07.22",
-        "urllib3==1.26.18",
-        "fsspec",
+        "urllib3>=1.26.18",
+        "fsspec>=2024.2.0",
     ],
     extras_require={
         "dev": [
@@ -92,10 +92,10 @@ setup_args = dict(
             "httpx==0.24.1"
         ],
         "spark": [
-            "pyspark>=3.2.2"
+            "pyspark>=3.4.0"
         ],
         "fsspec": [
-            "fsspec[full]"
+            "fsspec[full]>=2024.2.0"
         ]
     },
     entry_points={

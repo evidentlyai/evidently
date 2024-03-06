@@ -122,7 +122,6 @@ jobs:
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
       - name: Run pip-audit
-        continue-on-error: true
         run: pip-audit
       - name: Run Tests
         run: python -m pytest --durations=50
