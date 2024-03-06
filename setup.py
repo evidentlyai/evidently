@@ -68,10 +68,12 @@ setup_args = dict(
         "rich>=13",
         "iterative-telemetry>=0.0.5",
         "dynaconf>=3.2.4",
+        "certifi>=2023.07.22",
         "fsspec",
     ],
     extras_require={
         "dev": [
+            "pip-audit>=2.7.2",
             "wheel==0.35.1",
             "setuptools==50.3.2; python_version < '3.12'",
             "setuptools==68.2.2; python_version >= '3.12'",
