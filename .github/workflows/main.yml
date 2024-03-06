@@ -115,6 +115,8 @@ jobs:
           python-version: "3.8"
           architecture: "x64"
           cache: "pip"
+      - name: Update pip
+        run: python -m pip install --upgrade pip
       - name: Install package
         run: pip install -e .[dev,spark,fsspec]
       - name: Install minimal dependencies
