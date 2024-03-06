@@ -19,6 +19,6 @@ iterative-telemetry==0.0.5
 dynaconf==3.2.4
 pyarrow==14.0.1
 pyspark==3.4.0
-fsspec[full]==
+fsspec[full]==2024.2.0
 certifi==2023.07.22
 urllib3==1.26.18
