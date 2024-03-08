@@ -1,8 +1,6 @@
 ---
-description: Get to know Evidently in a couple of minutes.
+description: ML Monitoring “Hello world.” From data to dashboard in a couple of minutes. 
 ---
-
-ML Monitoring “Hello world.” From data to dashboard in a couple of minutes. 
 
 # 1. Create an account  
 
