@@ -74,7 +74,7 @@ Visit Evidently Cloud, open your Project, and navigate to the "Report" tab to se
 
 Go to the "Dashboard" tab and enter the "Edit" mode. Add a new tab, and select the "Data quality" template.
 
-![](../.gitbook/assets/cloud/qs_add_data_quality_tab.gif)
+![](../.gitbook/assets/cloud/qs_add_data_quality_tab_2.gif)
 
 You'll see a set of panels with a single data point. As you send more snapshots, you can track trends and set up alerts. You can choose from 100+ metrics and tests and add yours.
 
