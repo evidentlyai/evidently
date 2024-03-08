@@ -83,5 +83,5 @@ You'll see a set of panels with a single data point. As you send more snapshots,
 Check out a more in-depth tutorial to learn the key workflows and architecture: 
 
 {% content-ref url="tutorial-cloud.md" %}
-[Evidently Cloud Tutoriall](tutorial-cloud.md). 
+[Evidently Cloud Tutorial](tutorial-cloud.md). 
 {% endcontent-ref %}
