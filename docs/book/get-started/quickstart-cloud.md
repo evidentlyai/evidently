@@ -12,10 +12,10 @@ Click your username, select "personal token," generate and save the token.
 
 # 3. Install the Python library
 
-Install the Evidently Python library.
+Install the Evidently Python library. You can this example in Colab or other Python environment.
 
 ```
-$ pip install evidently
+!pip install evidently
 ```
 
 Import the components to work with the dataset and send the metrics. 
