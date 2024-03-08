@@ -1,8 +1,8 @@
-In this tutorial, you will monitor a toy ML model using Evidently Cloud. 
+In this tutorial, you will monitor a toy ML model using Evidently Cloud and learn the core workflows. 
 
-It will take 1 minute to launch a demo dashboard and 10 minutes to complete the tutorial for a new dataset to learn the core workflows. You must have basic knowledge of Python to work with Evidently Cloud using the API. 
+It will take you 15 minutes to launch a demo dashboard and complete the tutorial for a new dataset. You must have basic knowledge of Python to work with Evidently Cloud using the API. 
 
-Want a simpler example on how to send the data? Check this [Evidently Cloud "Hello World"](quickstart-cloud.md).
+Have only a couple of minutes? Check this [Evidently Cloud "Hello World"](quickstart-cloud.md) instead.
 
 # Part 1. Demo dashboard
 
