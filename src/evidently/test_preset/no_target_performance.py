@@ -90,7 +90,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self.per_feature_threshold = per_column_stattest_threshold
 
     def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
-        embeddings_data = data_definition.embeddings()
+        embeddings_data = data_definition.embeddings
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))
             if self.columns is None:
@@ -109,7 +109,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         if prediction_columns is not None and prediction_columns.predicted_values is not None:
             stattest, threshold = resolve_stattest_threshold(
                 prediction_columns.predicted_values.column_name,
-                "cat" if data_definition.task() == TaskType.CLASSIFICATION_TASK else "num",
+                "cat" if data_definition.task == TaskType.CLASSIFICATION_TASK else "num",
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,

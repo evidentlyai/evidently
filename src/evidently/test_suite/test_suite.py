@@ -109,7 +109,7 @@ class TestSuite(ReportBase):
         self._add_tests()
         if self._inner_suite.context.engine is None:
             raise ValueError("Engine is not set")
-        self._data_definition = self._inner_suite.context.engine.get_data_definition(
+        self._data_definition = self._inner_suite.context.get_data_definition(
             current_data,
             reference_data,
             column_mapping,

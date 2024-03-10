@@ -39,7 +39,7 @@ class TextOverviewPreset(MetricPreset):
             TextDescriptorsDistribution(column_name=self.column_name, descriptors=self.descriptors),
             TextDescriptorsCorrelationMetric(column_name=self.column_name, descriptors=self.descriptors),
         ]
-        if data_definition.reference_present() is not None:
+        if data_definition.reference_present is not None:
             result.extend(
                 [
                     ColumnDriftMetric(column_name=self.column_name),

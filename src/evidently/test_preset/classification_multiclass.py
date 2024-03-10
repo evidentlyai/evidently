@@ -53,7 +53,7 @@ class MulticlassClassificationTestPreset(TestPreset):
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")
 
-        classification_labels = data_definition.classification_labels()
+        classification_labels = data_definition.classification_labels
         if classification_labels is None:
             labels = set()
         else:

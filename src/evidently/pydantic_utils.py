@@ -169,8 +169,9 @@ class WithTestAndMetricDependencies(EvidentlyBaseModel):
 class EnumValueMixin(BaseModel):
     def _to_enum_value(self, key, value):
         field = self.__fields__[key]
-        if not issubclass(field.type_, Enum):
+        if isinstance(field.type_, type) and not issubclass(field.type_, Enum):
             return value
+
         if isinstance(value, list):
             return [v.value if isinstance(v, Enum) else v for v in value]
         return value.value if isinstance(value, Enum) else value

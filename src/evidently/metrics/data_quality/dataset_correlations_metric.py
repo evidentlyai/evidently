@@ -225,11 +225,11 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             if ref_df is not None:
                 prediction_ref = get_prediction_data(ref_df, columns, data.column_mapping.pos_label)
                 ref_df[prediction_labels_name] = prediction_ref.predictions
-            data_definition._prediction_columns = PredictionColumns(
+            data_definition.prediction_columns = PredictionColumns(
                 prediction_probas=prediction_data.prediction_probas,
                 predicted_values=ColumnDefinition(prediction_labels_name, target_type),
             )
-            data_definition._columns[prediction_labels_name] = ColumnDefinition(prediction_labels_name, target_type)
+            data_definition.columns[prediction_labels_name] = ColumnDefinition(prediction_labels_name, target_type)
 
         # process text columns
         text_columns = []
