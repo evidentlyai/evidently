@@ -43,8 +43,6 @@ from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
-
-# if TYPE_CHECKING:
 from evidently.utils.data_preprocessing import DataDefinition
 
 
