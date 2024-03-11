@@ -82,7 +82,13 @@ const Widget2 = (props: WidgetProps) => {
             {alertsPosition === 'row' ? (
               <Grid container spacing={1} item>
                 <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
-                  {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
+                  {title ? (
+                    <Typography fontWeight={500} variant={'h5'}>
+                      {title}
+                    </Typography>
+                  ) : (
+                    <div />
+                  )}
                   <div>{content}</div>
                   {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
                 </Grid>
