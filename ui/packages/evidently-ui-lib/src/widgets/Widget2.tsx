@@ -70,13 +70,14 @@ const Widget2 = (props: WidgetProps) => {
       // className={classes.widget}
     >
       <Card
-        // className={classes.widgetInner}
-        square
-        elevation={2}
+        sx={{
+          border: '1px solid',
+          borderColor: '#d7cccc',
+          borderRadius: '4px'
+        }}
+        elevation={0}
       >
-        <CardContent
-        // className={classes.cardContentOverride}
-        >
+        <CardContent>
           <Grid container spacing={1} direction={'column'}>
             {alertsPosition === 'row' ? (
               <Grid container spacing={1} item>
