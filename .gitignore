@@ -21,4 +21,3 @@ __pycache__
 test-workspace
 workspace
 workspace-for-visual-testing
-ui/service/tests/visual.spec.ts-snapshots
