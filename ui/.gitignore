@@ -4,3 +4,4 @@ playwright-report
 test-results
 vite-bundle-report
 tests/visual.spec.ts-snapshots
+ 
