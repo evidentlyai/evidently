@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Grid, Paper, Typography } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import { CounterInfo } from '~/api'
 
 interface CounterWidgetProps {
@@ -21,9 +21,9 @@ const CounterWidgetContent: React.FunctionComponent<CounterWidgetProps> = (props
       <Grid container spacing={1} direction="row" alignItems="center">
         {props.counters.map((counter, idx) => (
           <Grid item xs key={idx} component={Box} height={'100%'}>
-            <Paper>
+            <Box>
               <CounterItem {...counter} />
-            </Paper>
+            </Box>
           </Grid>
         ))}
       </Grid>
