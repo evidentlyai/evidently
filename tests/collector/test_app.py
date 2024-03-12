@@ -66,14 +66,13 @@ def wait_server_start(host: str = HOST, port: int = PORT, timeout: float = 10.0,
 
 @pytest.fixture
 def server() -> None:
-    proc = Process(target=run, args=(HOST, PORT), daemon=True)
+    proc = Process(target=run, args=(HOST, PORT))
     proc.start()
     wait_server_start()
     try:
         yield
-    except Exception as e:
+    finally:
         proc.kill()
-        raise e
 
 
 def test_create_collector_handler_work_with_collector_client(server: None):
