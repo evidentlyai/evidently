@@ -3,5 +3,5 @@ node_modules
 playwright-report
 test-results
 vite-bundle-report
-tests/visual.spec.ts-snapshots
+visual.spec.ts-snapshots/
  
