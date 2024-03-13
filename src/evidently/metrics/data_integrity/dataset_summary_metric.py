@@ -41,10 +41,10 @@ class NumpyDtype(ExcludeNoneMixin):
         return np.dtype(self.dtype)
 
     @classmethod
-    def from_dtype(cls, dtype: np.dtype):
+    def from_dtype(cls, dtype: Union[np.dtype, ExtensionDtype]):
         if isinstance(dtype, pd.CategoricalDtype):
             return cls(dtype=dtype.name, categories=list(dtype.categories))
-        if isinstance(dtype, type) and issubclass(dtype, ExtensionDtype) and issubclass(dtype.type, np.generic):
+        if isinstance(dtype, ExtensionDtype) and issubclass(dtype.type, np.generic):
             return cls(dtype=np.dtype(dtype.type).name)
         return cls(dtype=dtype.name)
 

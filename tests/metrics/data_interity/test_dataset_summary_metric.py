@@ -261,9 +261,9 @@ def test_dataset_summary_metric_with_report(
 @pytest.mark.parametrize(
     "pd_type,np_type",
     [
-        (pd.Int64Dtype, np.int64),
+        (pd.Int64Dtype(), np.int64),
         (pd.CategoricalDtype(categories=["1"]), pd.CategoricalDtype(categories=["1"])),
-        (pd.Float64Dtype, np.float64),
+        (pd.Float64Dtype(), np.float64),
     ],
 )
 def test_numpy_dtype_from_pandas(pd_type, np_type):
