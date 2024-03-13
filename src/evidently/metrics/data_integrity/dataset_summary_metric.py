@@ -6,6 +6,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pandas.core.dtypes.base import ExtensionDtype
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -43,6 +44,8 @@ class NumpyDtype(ExcludeNoneMixin):
     def from_dtype(cls, dtype: np.dtype):
         if isinstance(dtype, pd.CategoricalDtype):
             return cls(dtype=dtype.name, categories=list(dtype.categories))
+        if isinstance(dtype, type) and issubclass(dtype, ExtensionDtype) and issubclass(dtype.type, np.generic):
+            return cls(dtype=np.dtype(dtype.type).name)
         return cls(dtype=dtype.name)
 
 
