@@ -49,5 +49,5 @@ spark_report_table = Report(metrics=[
 ])
 spark_report_table.run(reference_data=reference, current_data=current, engine=SparkEngine)
 
-spark_report_table.show()  # OR spark_report_table.show(mode='inline')
+spark_report_table.show()  # OR spark_report_table.show()
 ```
