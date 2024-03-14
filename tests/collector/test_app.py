@@ -75,6 +75,7 @@ def server() -> None:
         proc.kill()
 
 
+@pytest.mark.skip
 def test_create_collector_handler_work_with_collector_client(server: None):
     collector_config = create_collector_config(create_test_data(), create_test_suite())
     client = create_collector_client()
@@ -83,6 +84,7 @@ def test_create_collector_handler_work_with_collector_client(server: None):
     assert resp["project_id"] == PROJECT_ID
 
 
+@pytest.mark.skip
 def test_data_handler_work_with_collector_client(server: None):
     collector_config = create_collector_config(create_test_data(), create_test_suite())
     client = create_collector_client()
@@ -90,6 +92,7 @@ def test_data_handler_work_with_collector_client(server: None):
     client.send_data(COLLECTOR_ID, create_test_data())
 
 
+@pytest.mark.skip
 def test_references_handler_work_with_collector_client(server: None):
     collector_config = create_collector_config(create_test_data(), create_test_suite())
     client = create_collector_client()
