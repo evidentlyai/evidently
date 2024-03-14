@@ -16,6 +16,7 @@ from typing import TypeVar
 from typing import Union
 
 import evidently
+from evidently import ColumnMapping
 from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
@@ -42,6 +43,7 @@ from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -96,6 +98,14 @@ class Context:
     state: State
     renderers: RenderersDefinitions
     options: Options = Options()
+    data_definition: Optional["DataDefinition"] = None
+
+    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+        if self.data_definition is None:
+            if self.engine is None:
+                raise ValueError("Cannot create data definition when engine is not set")
+            self.data_definition = self.engine.get_data_definition(current_data, reference_data, column_mapping)
+        return self.data_definition
 
 
 class ContextPayload(BaseModel):
@@ -104,6 +114,7 @@ class ContextPayload(BaseModel):
     tests: List[Test]
     test_results: List[TestResult]
     options: Options = Options()
+    data_definition: Optional[DataDefinition]
 
     @classmethod
     def from_context(cls, context: Context):
@@ -113,6 +124,7 @@ class ContextPayload(BaseModel):
             tests=list(context.test_results.keys()),
             test_results=list(context.test_results.values()),
             options=context.options,
+            data_definition=context.data_definition,
         )
 
     def to_context(self) -> Context:
@@ -125,6 +137,7 @@ class ContextPayload(BaseModel):
             state=States.Calculated,
             renderers=DEFAULT_RENDERERS,
             options=self.options,
+            data_definition=self.data_definition,
         )
         for m in ctx.metrics:
             m.set_context(ctx)
