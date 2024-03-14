@@ -38,9 +38,9 @@ Here is the general workflow:
 git clone https://github.com/evidentlyai/evidently.git
 ```
 
-## 2. (Optional, but recommended!) Create virtual environment with python 3.7
+## 2. (Optional, but recommended!) Create virtual environment with python 3.8
 
-Note: Since evidently v0.2.2 python 3.7 is the earliest version we support.
+Note: Since evidently v0.4.16 python 3.8 is the earliest version we support.
 Although you probably use one of the most recent python version, it is important to make sure that your changes do not cause any issues in older python versions. This is why we suggest you to test them under the oldest supported python version.
 
 #### MacOS / Linux
@@ -89,8 +89,8 @@ pip install -e .[dev]
 We use black for code auto formatting.
 
 ```sh
-black -l 120 -t py37 src
-black -l 120 -t py37 tests
+black src
+black tests
 ```
 
 ### Running isort
