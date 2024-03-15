@@ -67,17 +67,6 @@ Evidently is also available on Anaconda distribution platform. To install Eviden
 ```sh
 conda install -c conda-forge evidently
 ```
-If you want visualize the Reports or Test Suites inside Jupyter notebook, you need `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory. This is not required if you want to use Evidently Monitoring UI.
-
-To install `jupyter nbextension`, run:
-```sh
-jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
-```
-To enable it, run:
-```sh
-jupyter nbextension enable evidently --py --sys-prefix
-```
-That's it! A single run after the installation is enough. 
 
 ### Windows
 Evidently is available as a PyPI package. To install it using pip package manager, run:
@@ -88,8 +77,6 @@ To install Evidently using conda installer, run:
 ```sh
 conda install -c conda-forge evidently
 ```
-
-**Note**: If you run Jupyter notebook on Windows, you will use a different method to display Reports and Test Suites. You must add the argument ```inline``` when calling the Report: ```report.show(mode='inline')```.  Read more about different environments in the [docs](https://docs.evidentlyai.com/integrations/notebook-environments).
 
 # :arrow_forward: Getting started
 

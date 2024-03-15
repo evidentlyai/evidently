@@ -43,7 +43,7 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; save_json(filename)
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; show(mode='auto')
+##### &nbsp;&nbsp;&nbsp;&nbsp; show()
 
 ### exception ExecutionError()
 Bases: `Exception`

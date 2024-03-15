@@ -169,6 +169,13 @@ class Display:
         return self._render(determine_template("auto"), template_params)
 
     def show(self, mode="auto"):
+        """
+        Keyword arguments:
+        `mode` - Deprecated.
+
+        Now you should call
+        this function without any args, like: `.show()`
+        """
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
             dashboard_id=dashboard_id,
