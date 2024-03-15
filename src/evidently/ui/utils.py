@@ -46,30 +46,5 @@ class RemoteClientBase:
         return response
 
 
-_skip_jsonable_encoder_cache = {}
-
-
-def skip_jsonable_encoder(f):
-    """Decorator to change route's return model so that it does not call `jsonable_encoder` on response content
-    It is needed for routes that can return invalid json produced with NumpyEncoder
-    Should be used with response_class=NumpyJsonResponse"""
-    return_model = f.__annotations__["return"]
-    if not isinstance(return_model, type) or not issubclass(return_model, BaseModel):
-        raise ValueError("Can skip jsonable encoder only for BaseModel return model")
-    # we generete new type derived from original type with `json_encoders` field in Config class
-    # this encoder is called on 2nd iteration of jsonable_encoder called from fastapi.routing.serialize_response
-    # 1st one creates dict from BaseModel with `.dict` and passes model's `json_encoders` to subsequent `jsonable_encoder` calls
-    # On 2nd call it gets a dict from model and short-circuites with our custom encoder for dict and returns immediately
-    if return_model not in _skip_jsonable_encoder_cache:
-        new_return_model = type(
-            return_model.__name__,
-            (return_model,),
-            {"Config": type("Config", tuple(), {"json_encoders": {dict: lambda x: x}})},
-        )
-        _skip_jsonable_encoder_cache[return_model] = new_return_model
-    f.__annotations__["return"] = _skip_jsonable_encoder_cache[return_model]
-    return f
-
-
 async def parse_json(body: bytes) -> Any:
     return json.loads(body)
