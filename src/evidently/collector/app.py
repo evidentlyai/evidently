@@ -219,9 +219,9 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
             get_logs,
         ],
         dependencies={
-            "security": Provide(lambda: security, use_cache=True, sync_to_thread=True),
-            "service": Provide(lambda: service, use_cache=True, sync_to_thread=True),
-            "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=True),
+            "security": Provide(lambda: security, use_cache=True, sync_to_thread=False),
+            "service": Provide(lambda: service, use_cache=True, sync_to_thread=False),
+            "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=False),
             "parsed_json": Provide(parse_json),
         },
         middleware=[auth_middleware_factory],
