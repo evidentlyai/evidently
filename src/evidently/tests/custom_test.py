@@ -4,6 +4,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.base_metric import InputData
 from evidently.metrics.custom_metric import CustomValueMetric
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
@@ -23,7 +24,7 @@ class CustomValueTest(BaseCheckValueTest):
 
     def __init__(
         self,
-        func: Callable[[], Numeric],
+        func: Callable[[InputData], float],
         title: str = None,
         eq: Optional[NumericApprox] = None,
         gt: Optional[NumericApprox] = None,
