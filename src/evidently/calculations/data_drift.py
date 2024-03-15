@@ -1,5 +1,4 @@
 """Methods and types for data drift calculations."""
-
 from dataclasses import dataclass
 from typing import Dict
 from typing import List
@@ -97,6 +96,7 @@ def get_one_column_drift(
     dataset_columns: DatasetColumns,
     column_type: Union[str, ColumnType] = None,
     agg_data: bool,
+    num_correlations: Optional[tuple],
 ) -> ColumnDataDriftMetrics:
     if column_name not in current_data:
         raise ValueError(f"Cannot find column '{column_name}' in current dataset")
@@ -173,8 +173,11 @@ def get_one_column_drift(
             # for target and prediction cases add the column_name in the numeric columns list
             numeric_columns = numeric_columns + [column_name]
 
-        current_correlations = current_data[numeric_columns].corr()[column_name].to_dict()
-        reference_correlations = reference_data[numeric_columns].corr()[column_name].to_dict()
+        if num_correlations is None:
+            num_correlations = (current_data[numeric_columns].corr(), reference_data[numeric_columns].corr())
+
+        current_correlations = num_correlations[0][column_name].to_dict()
+        reference_correlations = num_correlations[1][column_name].to_dict()
         current_nbinsx = options.get_nbinsx(column_name)
         current_small_distribution = [
             t.tolist()
@@ -439,6 +442,11 @@ def get_drift_for_columns(
     # calculate result
     drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
 
+    num_correlations = (
+        current_data[dataset_columns.num_feature_names].corr(),
+        reference_data[dataset_columns.num_feature_names].corr(),
+    )
+
     for column_name in columns:
         drift_by_columns[column_name] = get_one_column_drift(
             current_data=current_data,
@@ -447,6 +455,7 @@ def get_drift_for_columns(
             options=data_drift_options,
             dataset_columns=dataset_columns,
             agg_data=agg_data,
+            num_correlations=num_correlations,
         )
 
     dataset_drift = get_dataset_drift(drift_by_columns, drift_share_threshold)
