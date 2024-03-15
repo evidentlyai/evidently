@@ -89,8 +89,8 @@ pip install -e .[dev]
 We use black for code auto formatting.
 
 ```sh
-black src
-black tests
+black -l 120 -t py38 src
+black -l 120 -t py38 tests
 ```
 
 ### Running isort
