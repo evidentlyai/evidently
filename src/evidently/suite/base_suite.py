@@ -159,7 +159,7 @@ class Display:
         """
         Keyword arguments:
         `mode` - Deprecated.
-        
+
         Now you should call
         this function without any args, like: `.show()`
         """
