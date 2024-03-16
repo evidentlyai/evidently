@@ -96,7 +96,7 @@ def get_one_column_drift(
     dataset_columns: DatasetColumns,
     column_type: Union[str, ColumnType] = None,
     agg_data: bool,
-    num_correlations: Optional[tuple],
+    num_correlations: Optional[tuple] = None,
 ) -> ColumnDataDriftMetrics:
     if column_name not in current_data:
         raise ValueError(f"Cannot find column '{column_name}' in current dataset")
