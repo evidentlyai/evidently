@@ -94,7 +94,7 @@ def get_one_column_drift(
     column_name: str,
     options: DataDriftOptions,
     dataset_columns: DatasetColumns,
-    column_type: Union[str, ColumnType] = None,
+    column_type: ColumnType,
     agg_data: bool,
     num_correlations: Optional[tuple] = None,
 ) -> ColumnDataDriftMetrics:
@@ -103,13 +103,6 @@ def get_one_column_drift(
 
     if column_name not in reference_data:
         raise ValueError(f"Cannot find column '{column_name}' in reference dataset")
-
-    if isinstance(column_type, str):
-        column_type = ColumnType(column_type)
-    if column_type is None:
-        column_type = recognize_column_type_(
-            dataset=pd.concat([reference_data, current_data]), column_name=column_name, columns=dataset_columns
-        )
 
     if column_type not in (ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
@@ -442,16 +435,26 @@ def get_drift_for_columns(
     # calculate result
     drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
 
+    columns_types = {column_name: recognize_column_type_(
+        dataset=pd.concat([reference_data, current_data]),
+        column_name=column_name,
+        columns=dataset_columns,
+    ) for column_name in columns}
+
+    num_columns = [k for k, v in columns_types.items() if v == ColumnType.Numerical]
+
     num_correlations = (
-        current_data[dataset_columns.num_feature_names].corr(),
-        reference_data[dataset_columns.num_feature_names].corr(),
+        current_data[num_columns].corr(),
+        reference_data[num_columns].corr(),
     )
 
     for column_name in columns:
+
         drift_by_columns[column_name] = get_one_column_drift(
             current_data=current_data,
             reference_data=reference_data,
             column_name=column_name,
+            column_type=columns_types[column_name],
             options=data_drift_options,
             dataset_columns=dataset_columns,
             agg_data=agg_data,
