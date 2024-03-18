@@ -435,9 +435,10 @@ def get_drift_for_columns(
     # calculate result
     drift_by_columns: Dict[str, ColumnDataDriftMetrics] = {}
 
+    dataset = pd.concat([reference_data, current_data])
     columns_types = {
         column_name: recognize_column_type_(
-            dataset=pd.concat([reference_data, current_data]),
+            dataset=dataset,
             column_name=column_name,
             columns=dataset_columns,
         )
