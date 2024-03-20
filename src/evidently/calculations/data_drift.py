@@ -4,6 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -97,6 +98,7 @@ def get_one_column_drift(
     column_type: ColumnType,
     agg_data: bool,
     num_correlations: Optional[tuple] = None,
+    is_contains_nans: Optional[Tuple[pd.Series, pd.Series]] = None,
 ) -> ColumnDataDriftMetrics:
     if column_name not in current_data:
         raise ValueError(f"Cannot find column '{column_name}' in current dataset")
@@ -123,7 +125,8 @@ def get_one_column_drift(
     reference_column = reference_data[column_name]
 
     # clean and check the column in reference dataset
-    reference_column = reference_column.replace([-np.inf, np.inf], np.nan).dropna()
+    if is_contains_nans is None or is_contains_nans[1][column_name]:
+        reference_column = reference_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if reference_column.empty:
         raise ValueError(
@@ -131,7 +134,8 @@ def get_one_column_drift(
         )
 
     # clean and check the column in current dataset
-    current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
+    if is_contains_nans is None or is_contains_nans[0][column_name]:
+        current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if current_column.empty:
         raise ValueError(f"An empty column '{column_name}' was provided for drift calculation in the current dataset.")
@@ -199,8 +203,11 @@ def get_one_column_drift(
                 x_name = "Index"
         else:
             current_scatter = {}
-            curr_data = current_data.copy()
-            curr_data.dropna(axis=0, how="any", inplace=True, subset=[column_name])
+            if is_contains_nans is None or is_contains_nans[0].any():
+                curr_data = current_data.copy()
+                curr_data.dropna(axis=0, how="any", inplace=True, subset=[column_name])
+            else:
+                curr_data = current_data
 
             df, prefix = prepare_df_for_time_index_plot(
                 curr_data,
@@ -447,9 +454,28 @@ def get_drift_for_columns(
 
     num_columns = [k for k, v in columns_types.items() if v == ColumnType.Numerical]
 
+    is_current_contains_nans = current_data.isna().any()
+    if is_current_contains_nans[num_columns].any():
+        current_correlations = current_data[num_columns].corr()
+    else:
+        current_correlations = pd.DataFrame(
+            data=np.corrcoef(current_data[num_columns].values, rowvar=False),
+            columns=num_columns,
+            index=num_columns,
+        )
+
+    is_reference_contains_nans = reference_data.isna().any()
+    if is_reference_contains_nans[num_columns].any():
+        reference_correlations = reference_data[num_columns].corr()
+    else:
+        reference_correlations = pd.DataFrame(
+            data=np.corrcoef(reference_data[num_columns].values, rowvar=False),
+            columns=num_columns,
+            index=num_columns,
+        )
     num_correlations = (
-        current_data[num_columns].corr(),
-        reference_data[num_columns].corr(),
+        current_correlations,
+        reference_correlations,
     )
 
     for column_name in columns:
@@ -462,6 +488,7 @@ def get_drift_for_columns(
             dataset_columns=dataset_columns,
             agg_data=agg_data,
             num_correlations=num_correlations,
+            is_contains_nans=(is_current_contains_nans, is_reference_contains_nans),
         )
 
     dataset_drift = get_dataset_drift(drift_by_columns, drift_share_threshold)

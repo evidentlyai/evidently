@@ -15,6 +15,8 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+import ujson
+
 import evidently
 from evidently import ColumnMapping
 from evidently._pydantic_compat import UUID4
@@ -413,9 +415,12 @@ class Snapshot(BaseModel):
     test_ids: List[int] = []
     options: Options
 
-    def save(self, filename):
+    def save(self, filename, use_ujson=False):
         with open(filename, "w") as f:
-            json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
+            if use_ujson:
+                ujson.dump(self.dict(), f, indent=2, default=NumpyEncoder().default)
+            else:
+                json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
     @classmethod
     def load(cls, filename):
@@ -490,9 +495,9 @@ class ReportBase(Display):
     def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
         raise NotImplementedError
 
-    def save(self, filename):
+    def save(self, filename, use_ujson: bool = False) -> None:
         """Save state to file (experimental)"""
-        self._get_snapshot().save(filename)
+        self._get_snapshot().save(filename, use_ujson)
 
     @classmethod
     def load(cls: Type[T], filename) -> T:
