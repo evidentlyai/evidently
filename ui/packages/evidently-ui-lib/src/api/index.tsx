@@ -251,7 +251,7 @@ type PanelTestFilter =
     }
 
 type PanelValueBase = { field_path: string; legend: string }
-type PanelValue = PanelValueBase &
+export type PanelValue = PanelValueBase &
   (
     | { metric_hash: string }
     | {
