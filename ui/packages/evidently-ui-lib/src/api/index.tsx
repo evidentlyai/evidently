@@ -260,6 +260,11 @@ export type PanelValue = PanelValueBase &
       }
   )
 
+export type MetricAlert = {
+  path: PanelValue
+  condition: { type: 'eq' | 'gt'; value: number }
+}
+
 type DashboardPanelBase = {
   id: string
   title: string
