@@ -25,10 +25,6 @@ from evidently.ui.api.projects import project_api
 from evidently.ui.api.service import service_api
 from evidently.ui.api.static import add_static
 from evidently.ui.base import AuthManager
-from evidently.ui.base import BlobStorage
-from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
-from evidently.ui.base import ProjectManager
 from evidently.ui.config import Config
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
@@ -41,9 +37,7 @@ from evidently.ui.security.token import TokenSecurity
 from evidently.ui.security.token import TokenSecurityConfig
 from evidently.ui.storage.common import EVIDENTLY_SECRET_ENV
 from evidently.ui.storage.common import NoopAuthManager
-from evidently.ui.storage.local import FSSpecBlobStorage
-from evidently.ui.storage.local import InMemoryDataStorage
-from evidently.ui.storage.local import JsonFileMetadataStorage
+from evidently.ui.storage.local import create_local_project_manager
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
@@ -76,17 +70,11 @@ async def get_event_logger(telemetry_config: Any):
 
 
 async def create_project_manager(
-    metadata_storage: MetadataStorage,
-    data_storage: DataStorage,
-    blob_storage: BlobStorage,
+    path: str,
     auth_manager: AuthManager,
+    autorefresh: bool,
 ):
-    return ProjectManager(
-        metadata=metadata_storage,
-        data=data_storage,
-        blob=blob_storage,
-        auth=auth_manager,
-    )
+    return create_local_project_manager(path, autorefresh, auth_manager)
 
 
 def create_app(config: Config):
@@ -129,23 +117,12 @@ def create_app(config: Config):
         },
         dependencies={
             "telemetry_config": Provide(lambda: config.telemetry, sync_to_thread=True),
-            "metadata_storage": Provide(
-                lambda: JsonFileMetadataStorage(path=config.storage.metadata.path),
-                sync_to_thread=True,
-                use_cache=True,
-            ),
-            "data_storage": Provide(
-                lambda: InMemoryDataStorage(path=config.storage.data.path),
-                sync_to_thread=True,
-                use_cache=True,
-            ),
-            "blob_storage": Provide(
-                lambda: FSSpecBlobStorage(base_path=config.storage.blob.path),
-                sync_to_thread=True,
-                use_cache=True,
-            ),
             "auth_manager": Provide(lambda: NoopAuthManager(), sync_to_thread=True, use_cache=True),
-            "project_manager": Provide(create_project_manager, sync_to_thread=True, use_cache=True),
+            "project_manager": Provide(
+                partial(create_project_manager, path=config.storage.path, autorefresh=config.storage.autorefresh),
+                sync_to_thread=True,
+                use_cache=True,
+            ),
             "user_id": Provide(get_user_id),
             "org_id": Provide(get_org_id),
             "log_event": Provide(get_event_logger),
