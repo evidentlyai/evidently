@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import json
 import logging
 from typing import AsyncGenerator
 from typing import Dict
@@ -23,6 +24,7 @@ from litestar.types import ASGIApp
 from litestar.types import Receive
 from litestar.types import Scope
 from litestar.types import Send
+from pydantic import parse_obj_as
 from typing_extensions import Annotated
 
 from evidently import ColumnMapping
@@ -44,13 +46,17 @@ COLLECTOR_INTERFACE = "collector"
 logger = logging.getLogger(__name__)
 
 
-@post("/{id:str}")
+@post(
+    "/{id:str}",
+)
 async def create_collector(
     id: Annotated[str, Parameter(description="Collector ID")],
-    data: CollectorConfig,
+    # data: CollectorConfig,
+    request: Request,
     service: CollectorServiceConfig,
     storage: CollectorStorage,
 ) -> CollectorConfig:
+    data = parse_obj_as(CollectorConfig, json.loads(await request.body()))
     data.id = id
     service.collectors[id] = data
     storage.init(id)
