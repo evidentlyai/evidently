@@ -262,7 +262,13 @@ export type PanelValue = PanelValueBase &
 
 export type MetricAlert = {
   path: PanelValue
-  condition: { type: 'eq' | 'gt'; value: number }
+  condition: Partial<{
+    eq?: number | null
+    gt?: number | null
+    gte?: number | null
+    lt?: number | null
+    lte?: number | null
+  }>
 }
 
 type DashboardPanelBase = {
