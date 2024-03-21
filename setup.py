@@ -71,7 +71,7 @@ setup_args = dict(
         "certifi>=2023.07.22",
         "urllib3>=1.26.18",
         "fsspec>=2024.2.0",
-        "ujson>=5.1.0",
+        "ujson>=5.4.0",
     ],
     extras_require={
         "dev": [
@@ -87,7 +87,7 @@ setup_args = dict(
             "types-requests==2.26.0",
             "types-dataclasses==0.6",
             "types-python-dateutil==2.8.19",
-            "types-ujson>=5.1.0",
+            "types-ujson>=5.4.0",
             "pillow==10.2.0",
             "black==22.8.0",
             "isort==5.10.1",
