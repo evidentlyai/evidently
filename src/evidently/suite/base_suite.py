@@ -48,6 +48,9 @@ from evidently.utils.dashboard import save_lib_files
 from evidently.utils.data_preprocessing import DataDefinition
 
 
+USE_UJSON = False
+
+
 @dataclasses.dataclass
 class State:
     name: str
@@ -415,9 +418,9 @@ class Snapshot(BaseModel):
     test_ids: List[int] = []
     options: Options
 
-    def save(self, filename, use_ujson=False):
+    def save(self, filename):
         with open(filename, "w") as f:
-            if use_ujson:
+            if USE_UJSON:
                 ujson.dump(self.dict(), f, indent=2, default=NumpyEncoder().default)
             else:
                 json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
@@ -495,9 +498,9 @@ class ReportBase(Display):
     def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
         raise NotImplementedError
 
-    def save(self, filename, use_ujson: bool = False) -> None:
+    def save(self, filename) -> None:
         """Save state to file (experimental)"""
-        self._get_snapshot().save(filename, use_ujson)
+        self._get_snapshot().save(filename)
 
     @classmethod
     def load(cls: Type[T], filename) -> T:
