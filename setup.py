@@ -89,7 +89,7 @@ setup_args = dict(
             "types-python-dateutil==2.8.19",
             "types-ujson>=5.4.0",
             "pillow==10.2.0",
-            "black==22.8.0",
+            "black==24.3.0",
             "isort==5.10.1",
             "httpx==0.24.1"
         ],
