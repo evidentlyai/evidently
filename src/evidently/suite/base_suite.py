@@ -47,7 +47,6 @@ from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
 from evidently.utils.data_preprocessing import DataDefinition
 
-
 USE_UJSON = False
 
 
