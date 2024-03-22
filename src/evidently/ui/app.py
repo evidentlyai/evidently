@@ -150,9 +150,8 @@ def run_local(
     config = load_config(Config)(settings)
     config.service.host = host
     config.service.port = port
-    config.storage.metadata.path = workspace
-    config.storage.data.path = workspace
-    config.storage.blob.path = workspace
+    config.storage.path = workspace
+
     if secret or os.environ.get(EVIDENTLY_SECRET_ENV):
         config.security = TokenSecurityConfig(token=secret or os.environ.get(EVIDENTLY_SECRET_ENV))
     run(config)
