@@ -15,6 +15,8 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+import ujson
+
 import evidently
 from evidently import ColumnMapping
 from evidently._pydantic_compat import UUID4
@@ -44,6 +46,8 @@ from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
 from evidently.utils.data_preprocessing import DataDefinition
+
+USE_UJSON = False
 
 
 @dataclasses.dataclass
@@ -415,7 +419,10 @@ class Snapshot(BaseModel):
 
     def save(self, filename):
         with open(filename, "w") as f:
-            json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
+            if USE_UJSON:
+                ujson.dump(self.dict(), f, indent=2, default=NumpyEncoder().default)
+            else:
+                json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
     @classmethod
     def load(cls, filename):
@@ -490,7 +497,7 @@ class ReportBase(Display):
     def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
         raise NotImplementedError
 
-    def save(self, filename):
+    def save(self, filename) -> None:
         """Save state to file (experimental)"""
         self._get_snapshot().save(filename)
 
