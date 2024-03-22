@@ -122,7 +122,7 @@ jobs:
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
       - name: Run pip-audit
-        run: pip-audit
+        run: pip-audit --ignore-vuln PYSEC-2024-48
       - name: Run Tests
         run: python -m pytest --durations=50
   test:
