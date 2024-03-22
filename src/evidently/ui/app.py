@@ -69,7 +69,7 @@ async def get_event_logger(telemetry_config: Any):
     yield partial(_event_logger.send_event, telemetry_config.service_name)
 
 
-async def create_project_manager(
+def create_project_manager(
     path: str,
     auth_manager: AuthManager,
     autorefresh: bool,
@@ -117,9 +117,10 @@ def create_app(config: Config):
         },
         dependencies={
             "telemetry_config": Provide(lambda: config.telemetry, sync_to_thread=True),
-            "auth_manager": Provide(lambda: NoopAuthManager(), sync_to_thread=True, use_cache=True),
             "project_manager": Provide(
-                partial(create_project_manager, path=config.storage.path, autorefresh=config.storage.autorefresh),
+                lambda: create_project_manager(
+                    config.storage.path, NoopAuthManager(), autorefresh=config.storage.autorefresh
+                ),
                 sync_to_thread=True,
                 use_cache=True,
             ),
