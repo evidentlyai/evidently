@@ -1,5 +1,6 @@
 import json
 import urllib.parse
+from typing import Any
 from typing import Optional
 from typing import Type
 from typing import TypeVar
@@ -68,3 +69,7 @@ def skip_jsonable_encoder(f):
         _skip_jsonable_encoder_cache[return_model] = new_return_model
     f.__annotations__["return"] = _skip_jsonable_encoder_cache[return_model]
     return f
+
+
+async def parse_json(body: bytes) -> Any:
+    return json.loads(body)

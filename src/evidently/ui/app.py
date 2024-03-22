@@ -46,6 +46,7 @@ from evidently.ui.storage.local import InMemoryDataStorage
 from evidently.ui.storage.local import JsonFileMetadataStorage
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
+from evidently.ui.utils import parse_json
 
 
 def api_router(guard: Callable):
@@ -149,6 +150,7 @@ def create_app(config: Config):
             "user_id": Provide(get_user_id),
             "org_id": Provide(get_org_id),
             "log_event": Provide(get_event_logger),
+            "parsed_json": Provide(parse_json),
         },
         middleware=[auth_middleware_factory],
         debug=True,

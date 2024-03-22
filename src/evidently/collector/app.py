@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import logging
+from typing import Any
 from typing import AsyncGenerator
 from typing import Dict
 from typing import List
@@ -38,24 +39,27 @@ from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.token import TokenSecurity
 from evidently.ui.security.token import TokenSecurityConfig
+from evidently.ui.utils import parse_json
 
 COLLECTOR_INTERFACE = "collector"
 
 logger = logging.getLogger(__name__)
 
 
-@post("/{id:str}")
+@post(
+    "/{id:str}",
+)
 async def create_collector(
     id: Annotated[str, Parameter(description="Collector ID")],
-    data: CollectorConfig,
+    parsed_json: CollectorConfig,
     service: CollectorServiceConfig,
     storage: CollectorStorage,
 ) -> CollectorConfig:
-    data.id = id
-    service.collectors[id] = data
+    parsed_json.id = id
+    service.collectors[id] = parsed_json
     storage.init(id)
     service.save(CONFIG_PATH)
-    return data
+    return parsed_json
 
 
 @get("/{id:str}")
@@ -71,13 +75,13 @@ async def get_collector(
 @post("/{id:str}/reference")
 async def reference(
     id: Annotated[str, Parameter(description="Collector ID")],
-    request: Request,
+    parsed_json: Any,
     service: CollectorServiceConfig,
 ) -> Dict[str, str]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     collector = service.collectors[id]
-    data = pd.DataFrame.from_dict(await request.json())
+    data = pd.DataFrame.from_dict(parsed_json)
     path = collector.reference_path or f"{id}_reference.parquet"
     data.to_parquet(path)
     collector.reference_path = path
@@ -218,6 +222,7 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
             "security": Provide(lambda: security, use_cache=True, sync_to_thread=True),
             "service": Provide(lambda: service, use_cache=True, sync_to_thread=True),
             "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=True),
+            "parsed_json": Provide(parse_json),
         },
         middleware=[auth_middleware_factory],
         guards=[is_authenticated],
