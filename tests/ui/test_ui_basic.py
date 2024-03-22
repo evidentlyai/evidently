@@ -16,9 +16,7 @@ def test_client_with_demo(tmp_path):
     dp = DEMO_PROJECTS["bikes"]
     dp.create(str(tmp_path))
     config = Config()
-    config.storage.metadata.path = str(tmp_path)
-    config.storage.data.path = str(tmp_path)
-    config.storage.blob.path = str(tmp_path)
+    config.storage.path = str(tmp_path)
 
     return TestClient(create_app(config=config))
 

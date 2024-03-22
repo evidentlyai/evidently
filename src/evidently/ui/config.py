@@ -11,9 +11,6 @@ from pydantic import BaseModel
 
 from evidently.ui.security.config import NoSecurityConfig
 from evidently.ui.security.token import TokenSecurityConfig
-from evidently.ui.storage.data_config import FSSpecBlobStorageConfig
-from evidently.ui.storage.local_data_config import InmemoryDataStorageConfig
-from evidently.ui.storage.local_data_config import JsonFileMetadataStorageConfig
 
 TConfig = TypeVar("TConfig")
 
@@ -57,9 +54,8 @@ class ServiceConfig(BaseModel):
 
 
 class StorageConfig(BaseModel):
-    metadata: JsonFileMetadataStorageConfig = JsonFileMetadataStorageConfig()
-    data: InmemoryDataStorageConfig = InmemoryDataStorageConfig()
-    blob: FSSpecBlobStorageConfig = FSSpecBlobStorageConfig(base_path="workspace")
+    path: str = "workspace"
+    autorefresh: bool = True
 
 
 class Config(BaseModel):
