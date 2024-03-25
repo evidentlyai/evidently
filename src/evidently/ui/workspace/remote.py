@@ -11,7 +11,8 @@ from typing import Optional
 from typing import Set
 from urllib.error import HTTPError
 
-import requests
+from requests import Request
+from requests import Session
 
 from evidently._pydantic_compat import parse_obj_as
 from evidently.suite.base_suite import Snapshot
@@ -32,6 +33,7 @@ from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import ProjectID
@@ -41,9 +43,25 @@ from evidently.ui.workspace.view import WorkspaceView
 from evidently.utils import NumpyEncoder
 
 
-class RemoteMetadataStorage(MetadataStorage):
-    base_url: str
-    secret: Optional[str] = None
+class RemoteBase:
+    def get_url(self):
+        raise NotImplementedError
+
+    def _prepare_request(self, path: str,
+                         method: str,
+                         query_params: Optional[dict] = None,
+                         body: Optional[dict] = None,
+                         cookies=None,
+                         headers: Dict[str, str] = None):
+        # todo: better encoding
+        cookies = cookies or {}
+        headers = headers or {}
+        data = None
+        if body is not None:
+            headers["Content-Type"] = "application/json"
+
+            data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
+        return Request(method, urllib.parse.urljoin(self.get_url(), path), params=query_params, data=data, headers=headers, cookies=cookies)
 
     def _request(
             self,
@@ -55,19 +73,13 @@ class RemoteMetadataStorage(MetadataStorage):
             cookies=None,
             headers: Dict[str, str] = None
     ):
-        # todo: better encoding
-        headers = headers or {}
-        if self.secret is not None:
-            headers[SECRET_HEADER_NAME] = self.secret
-        data = None
-        if body is not None:
-            headers["Content-Type"] = "application/json"
 
-            data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
-
-        response = requests.request(
-            method, urllib.parse.urljoin(self.base_url, path), params=query_params, data=data, headers=headers, cookies=cookies
+        request = self._prepare_request(
+            path, method, query_params, body, cookies, headers
         )
+        s = Session()
+        response = s.send(request.prepare())
+
         if response.status_code >= 400:
             try:
                 details = response.json()["detail"]
@@ -79,9 +91,28 @@ class RemoteMetadataStorage(MetadataStorage):
             return parse_obj_as(response_model, response.json())
         return response
 
+
+class RemoteMetadataStorage(MetadataStorage, RemoteBase):
+    base_url: str
+    secret: Optional[str] = None
+
+    def get_url(self):
+        return self.base_url
+
+    def _prepare_request(self, path: str,
+                         method: str,
+                         query_params: Optional[dict] = None,
+                         body: Optional[dict] = None,
+                         cookies=None,
+                         headers: Dict[str, str] = None):
+        r = super()._prepare_request(path, method, query_params, body, cookies, headers)
+        if self.secret is not None:
+            r.headers[SECRET_HEADER_NAME] = self.secret
+        return r
+
     def add_project(self, project: Project, user: User, team: Team, org: Org) -> Project:
         params = {}
-        if team is not None and team.id is not None:
+        if team is not None and team.id is not None and team.id != ZERO_UUID:
             params["team_id"] = str(team.id)
         return self._request("/api/projects", "POST", query_params=params, body=project.dict(), response_model=Project)
 
