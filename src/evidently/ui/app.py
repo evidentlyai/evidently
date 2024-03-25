@@ -36,8 +36,8 @@ from evidently.ui.security.token import TokenSecurity
 from evidently.ui.security.token import TokenSecurityConfig
 from evidently.ui.storage.common import EVIDENTLY_SECRET_ENV
 from evidently.ui.storage.common import NoopAuthManager
-from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.storage.local import create_local_project_manager
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 from evidently.ui.utils import parse_json
