@@ -33,6 +33,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
 from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import recognize_column_type_
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_distr_with_perc_button
@@ -123,6 +124,11 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
                 current_data=curr_text_df,
                 reference_data=ref_text_df,
                 column_name=col,
+                column_type=recognize_column_type_(
+                    dataset=pd.concat([ref_text_df, curr_text_df]),
+                    column_name=col,
+                    columns=text_dataset_columns,
+                ),
                 options=self._drift_options,
                 dataset_columns=text_dataset_columns,
                 agg_data=agg_data,

@@ -28,15 +28,13 @@ jobs:
     runs-on: ubuntu-latest # windows-latest || macos-latest
     name: 👀 List Changed Evidently Files
     outputs:
-      evidently_any_changed: ${{ steps.changed-files.outputs.evidently_tests_any_changed == 'true' || steps.changed-files.outputs.evidently_python_any_changed == 'true' }}
+      evidently_any_modified: ${{ steps.changed-files.outputs.evidently_python_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
       - name: Get all python files that have changed
         id: changed-files
-        uses: tj-actions/changed-files@v40
+        uses: tj-actions/changed-files@v42
         with:
           files_yaml: |
             evidently_python:
@@ -51,26 +49,19 @@ jobs:
               - setup.cfg
               - setupbase.py
               - pylintrc
-            evidently_tests:
               - tests/**
 
       - name: Run step if evidently_python file(s) change
-        if: steps.changed-files.outputs.evidently_python_any_changed == 'true'
+        if: steps.changed-files.outputs.evidently_python_any_modified == 'true'
         run: |
           echo "One or more evidently_python file(s) has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_files }}"
-
-      - name: Run step if evidently_tests file(s) change
-        if: steps.changed-files.outputs.evidently_tests_any_changed == 'true'
-        run: |
-          echo "One or more evidently_tests file(s) has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_tests_all_changed_files }}"
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
   linter:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_changed == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -107,7 +98,7 @@ jobs:
     name: Test on minimal requirements
     runs-on: ubuntu-latest
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_changed == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -115,10 +106,14 @@ jobs:
           python-version: "3.8"
           architecture: "x64"
           cache: "pip"
+      - name: Update pip
+        run: python -m pip install --upgrade pip
       - name: Install package
         run: pip install -e .[dev,spark,fsspec]
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
+      - name: Run pip-audit
+        run: pip-audit --ignore-vuln PYSEC-2024-48
       - name: Run Tests
         run: python -m pytest --durations=50
   test:
@@ -185,7 +180,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_changed == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4

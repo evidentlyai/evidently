@@ -256,3 +256,16 @@ def test_dataset_summary_metric_with_report(
     result = json.loads(json_result)
     assert result["metrics"][0]["metric"] == "DatasetSummaryMetric"
     assert result["metrics"][0]["result"] == expected_json
+
+
+@pytest.mark.parametrize(
+    "pd_type,np_type",
+    [
+        (pd.Int64Dtype(), np.int64),
+        (pd.CategoricalDtype(categories=["1"]), pd.CategoricalDtype(categories=["1"])),
+        (pd.Float64Dtype(), np.float64),
+    ],
+)
+def test_numpy_dtype_from_pandas(pd_type, np_type):
+    t = NumpyDtype.from_dtype(pd_type)
+    assert t.type == np_type

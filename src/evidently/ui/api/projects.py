@@ -6,7 +6,6 @@ from typing import List
 from typing import Optional
 from typing import Sequence
 
-from litestar import Request
 from litestar import Response
 from litestar import Router
 from litestar import delete
@@ -281,16 +280,15 @@ async def delete_project(
 @post("/{project_id:uuid}/snapshots")
 async def add_snapshot(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
-    request: Request,
+    parsed_json: Snapshot,
     project_manager: Annotated[ProjectManager, Dependency()],
     log_event: Annotated[Callable, Dependency()],
     user_id: Annotated[UserID, Dependency()],
 ) -> None:
-    snapshot = Snapshot.parse_raw(await request.body())
     if project_manager.get_project(user_id, project_id) is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    project_manager.add_snapshot(user_id, project_id, snapshot)
+    project_manager.add_snapshot(user_id, project_id, parsed_json)
     log_event("add_snapshot")
 
 

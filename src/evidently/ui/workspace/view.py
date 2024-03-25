@@ -58,17 +58,17 @@ class WorkspaceView(WorkspaceBase):
 
 class LocalWorkspaceView(WorkspaceView):
     def __init__(self, path: str):
-        from evidently.ui.storage.local import LocalStorageConfig
+        from evidently.ui.storage.local import create_local_project_manager
         self.path = path
-        super().__init__(None, LocalStorageConfig(path=path, autorefresh=False).create_project_manager())
+        super().__init__(None, create_local_project_manager(path=path, autorefresh=False))
 
     @classmethod
     def create(cls, path: str):
         return LocalWorkspaceView(path)
 
     def refresh(self):
-        from evidently.ui.storage.local import LocalStorageConfig
-        self.project_manager = LocalStorageConfig(path=self.path, autorefresh=False).create_project_manager()
+        from evidently.ui.storage.local import create_local_project_manager
+        self.project_manager = create_local_project_manager(path=self.path, autorefresh=False)
 
 
 Workspace = LocalWorkspaceView

@@ -50,17 +50,17 @@ setup_args = dict(
     long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
-        "plotly>=5.5.0",
+        "plotly>=5.10.0",
         "statsmodels>=0.12.2",
-        "scikit-learn>=0.24.0",
+        "scikit-learn>=1.0.1",
         "pandas[parquet]>=1.3.5",
-        "numpy>=1.19.5",
+        "numpy>=1.22.0",
         "nltk>=3.6.7",
-        "scipy>=1.5.4",
-        "requests>=2.21.0",
-        "PyYAML>=5.1",
+        "scipy>=1.10.0",
+        "requests>=2.31.0",
+        "PyYAML>=5.4",
         "pydantic>=1.10.14",
-        "litestar>=2.5.1",
+        "litestar>=2.6.3",
         "typing-inspect>=0.9.0",
         "uvicorn>=0.22.0",
         "watchdog>=3",
@@ -68,31 +68,36 @@ setup_args = dict(
         "rich>=13",
         "iterative-telemetry>=0.0.5",
         "dynaconf>=3.2.4",
-        "fsspec",
+        "certifi>=2023.07.22",
+        "urllib3>=1.26.18",
+        "fsspec>=2024.2.0",
+        "ujson>=5.4.0",
     ],
     extras_require={
         "dev": [
-            "wheel==0.35.1",
-            "setuptools==50.3.2; python_version < '3.12'",
+            "pip-audit>=2.7.2",
+            "wheel==0.38.1",
+            "setuptools==65.5.1; python_version < '3.12'",
             "setuptools==68.2.2; python_version >= '3.12'",
             "flake8==4.0.1",
             "jupyter==1.0.0",
             "mypy==0.981",
-            "pytest==6.2.5",
+            "pytest==7.4.4",
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
             "types-dataclasses==0.6",
             "types-python-dateutil==2.8.19",
-            "pillow==9.5.0",
+            "types-ujson>=5.4.0",
+            "pillow==10.2.0",
             "black==22.8.0",
             "isort==5.10.1",
             "httpx==0.24.1"
         ],
         "spark": [
-            "pyspark"
+            "pyspark>=3.4.0"
         ],
         "fsspec": [
-            "fsspec[full]"
+            "fsspec[full]>=2024.2.0"
         ]
     },
     entry_points={

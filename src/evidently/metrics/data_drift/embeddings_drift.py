@@ -54,7 +54,7 @@ class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
         drift_method = self.drift_method or model(bootstrap=data.reference_data.shape[0] < 1000)
-        emb_dict = data.data_definition.embeddings()
+        emb_dict = data.data_definition.embeddings
         if emb_dict is None:
             raise ValueError("Embeddings should be defined in column mapping")
         if self.embeddings_name not in emb_dict.keys():
