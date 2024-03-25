@@ -21,7 +21,7 @@ export default defineConfig({
             // don't hash images
             return `static/img/[name][extname]`
           }
-          // hash everything else
+          // hash everything else (like css)
           return `static/${extType}/[name]-[hash][extname]`
         },
         chunkFileNames: 'static/js/[name]-[hash].js',
