@@ -50,7 +50,7 @@ You can get an **HTML report** (best for exploratory analysis and debugging), **
 
 > This functionality is available from v0.4.0. 
 
-<img width="1020" alt="image" src="https://github.com/evidentlyai/evidently/assets/32310771/5f5cb7b5-a58e-4431-bc22-2ad46fcb89d0">
+<img width="872" alt="image" src="https://github.com/evidentlyai/evidently/assets/32310771/642816f7-bfc6-4af9-bfe3-d14b4fdda2b7">
 
 You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.  
 
