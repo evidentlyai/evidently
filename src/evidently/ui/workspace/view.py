@@ -14,17 +14,27 @@ from evidently.ui.workspace.base import WorkspaceBase
 
 
 class WorkspaceView(WorkspaceBase):
-    def __init__(self, user_id: Optional[UserID], project_manager: ProjectManager, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None):
+    def __init__(
+        self,
+        user_id: Optional[UserID],
+        project_manager: ProjectManager,
+        team_id: Optional[TeamID] = None,
+        org_id: Optional[OrgID] = None,
+    ):
         self.project_manager = project_manager
         self.user_id = user_id or ZERO_UUID
         self.team_id = team_id or ZERO_UUID
         self.org_id = org_id or ZERO_UUID
 
     def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
-        return self.project_manager.create_project(name, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id, description=description)
+        return self.project_manager.create_project(
+            name, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id, description=description
+        )
 
     def add_project(self, project: Project, team_id: TeamID = None) -> Project:
-        project = self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id)
+        project = self.project_manager.add_project(
+            project, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id
+        )
         return project
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
@@ -59,6 +69,7 @@ class WorkspaceView(WorkspaceBase):
 class LocalWorkspaceView(WorkspaceView):
     def __init__(self, path: str):
         from evidently.ui.storage.local import create_local_project_manager
+
         self.path = path
         super().__init__(None, create_local_project_manager(path=path, autorefresh=False))
 
@@ -68,6 +79,7 @@ class LocalWorkspaceView(WorkspaceView):
 
     def refresh(self):
         from evidently.ui.storage.local import create_local_project_manager
+
         self.project_manager = create_local_project_manager(path=self.path, autorefresh=False)
 
 

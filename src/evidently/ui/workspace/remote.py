@@ -47,12 +47,15 @@ class RemoteBase:
     def get_url(self):
         raise NotImplementedError
 
-    def _prepare_request(self, path: str,
-                         method: str,
-                         query_params: Optional[dict] = None,
-                         body: Optional[dict] = None,
-                         cookies=None,
-                         headers: Dict[str, str] = None):
+    def _prepare_request(
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        cookies=None,
+        headers: Dict[str, str] = None,
+    ):
         # todo: better encoding
         cookies = cookies or {}
         headers = headers or {}
@@ -61,22 +64,27 @@ class RemoteBase:
             headers["Content-Type"] = "application/json"
 
             data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
-        return Request(method, urllib.parse.urljoin(self.get_url(), path), params=query_params, data=data, headers=headers, cookies=cookies)
+        return Request(
+            method,
+            urllib.parse.urljoin(self.get_url(), path),
+            params=query_params,
+            data=data,
+            headers=headers,
+            cookies=cookies,
+        )
 
     def _request(
-            self,
-            path: str,
-            method: str,
-            query_params: Optional[dict] = None,
-            body: Optional[dict] = None,
-            response_model=None,
-            cookies=None,
-            headers: Dict[str, str] = None
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        response_model=None,
+        cookies=None,
+        headers: Dict[str, str] = None,
     ):
 
-        request = self._prepare_request(
-            path, method, query_params, body, cookies, headers
-        )
+        request = self._prepare_request(path, method, query_params, body, cookies, headers)
         s = Session()
         response = s.send(request.prepare())
 
@@ -99,12 +107,15 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
     def get_url(self):
         return self.base_url
 
-    def _prepare_request(self, path: str,
-                         method: str,
-                         query_params: Optional[dict] = None,
-                         body: Optional[dict] = None,
-                         cookies=None,
-                         headers: Dict[str, str] = None):
+    def _prepare_request(
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        cookies=None,
+        headers: Dict[str, str] = None,
+    ):
         r = super()._prepare_request(path, method, query_params, body, cookies, headers)
         if self.secret is not None:
             r.headers[SECRET_HEADER_NAME] = self.secret
@@ -146,7 +157,9 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
             for p in self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[Project])
         ]
 
-    def list_snapshots(self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True) -> List[SnapshotMetadata]:
+    def list_snapshots(
+        self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
+    ) -> List[SnapshotMetadata]:
         raise NotImplementedError
 
     def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
@@ -175,13 +188,25 @@ class NoopDataStorage(DataStorage):
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
 
-    def load_points(self, project_id: ProjectID, filter: ReportFilter, values: List["PanelValue"],
-                    timestamp_start: Optional[datetime.datetime],
-                    timestamp_end: Optional[datetime.datetime]) -> DataPoints:
+    def load_points(
+        self,
+        project_id: ProjectID,
+        filter: ReportFilter,
+        values: List["PanelValue"],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPoints:
         return []
 
-    def load_test_results(self, project_id: ProjectID, filter: ReportFilter, test_filters: List[TestFilter], time_agg: Optional[str],
-                          timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]) -> TestResultPoints:
+    def load_test_results(
+        self,
+        project_id: ProjectID,
+        filter: ReportFilter,
+        test_filters: List[TestFilter],
+        time_agg: Optional[str],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> TestResultPoints:
         return {}
 
 
@@ -200,7 +225,7 @@ class RemoteWorkspaceView(WorkspaceView):
             metadata=(RemoteMetadataStorage(base_url=self.base_url, secret=self.secret)),
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
-            auth=(NoopAuthManager())
+            auth=(NoopAuthManager()),
         )
         super().__init__(None, pm)
         self.verify()
