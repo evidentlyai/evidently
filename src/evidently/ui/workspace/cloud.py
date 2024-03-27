@@ -1,9 +1,12 @@
-import dataclasses
 from typing import Dict
+from typing import List
+from typing import NamedTuple
 from typing import Optional
 from uuid import UUID
 
 from evidently._pydantic_compat import PrivateAttr
+from evidently.ui.api.models import OrgModel
+from evidently.ui.base import Org
 from evidently.ui.base import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
@@ -17,25 +20,24 @@ from evidently.ui.workspace.view import WorkspaceView
 TOKEN_HEADER_NAME = "X-Evidently-Token"
 
 
-class COOKIES:
-    @dataclasses.dataclass
-    class Cookie:
-        key: str
-        description: str
-        httponly: bool
+class Cookie(NamedTuple):
+    key: str
+    description: str
+    httponly: bool
 
-    ORG_ID = Cookie(
-        key="org-id",
-        description="We use this cookie to identify the organization",
-        # we set `httponly=False` to be able to read it in the UI
-        httponly=False,
-    )
 
-    ACCESS_TOKEN = Cookie(
-        key="app.at",
-        description="",
-        httponly=True,
-    )
+ORG_ID_COOKIE = Cookie(
+    key="org-id",
+    description="We use this cookie to identify the organization",
+    # we set `httponly=False` to be able to read it in the UI
+    httponly=False,
+)
+
+ACCESS_TOKEN_COOKIE = Cookie(
+    key="app.at",
+    description="",
+    httponly=True,
+)
 
 
 class CloudMetadataStorage(RemoteMetadataStorage):
@@ -69,7 +71,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         if path == "/api/users/login":
             return r
         r.cookies[self.token_cookie_name] = self.jwt_token
-        r.cookies[self.org_id_cookie_name] = self.org_id
+        r.cookies[self.org_id_cookie_name] = str(self.org_id)
         return r
 
     def _request(
@@ -95,6 +97,12 @@ class CloudMetadataStorage(RemoteMetadataStorage):
     def switch_org(self, org_id: OrgID):
         self.org_id = org_id
 
+    def create_org(self, org: Org) -> OrgModel:
+        return self._request("/api/orgs", "POST", body=org.dict(), response_model=OrgModel)
+
+    def list_orgs(self) -> List[OrgModel]:
+        return self._request("/api/orgs", "GET", response_model=List[OrgModel])
+
 
 class CloudWorkspace(WorkspaceView):
     token: str
@@ -116,9 +124,9 @@ class CloudWorkspace(WorkspaceView):
         meta = CloudMetadataStorage(
             base_url=self.url,
             token=self.token,
-            token_cookie_name=COOKIES.ACCESS_TOKEN.key,
+            token_cookie_name=ACCESS_TOKEN_COOKIE.key,
             org_id=org_id or ZERO_UUID,
-            org_id_cookie_name=COOKIES.ORG_ID.key,
+            org_id_cookie_name=ORG_ID_COOKIE.key,
         )
 
         pm = ProjectManager(
@@ -136,4 +144,13 @@ class CloudWorkspace(WorkspaceView):
 
     def switch_org(self, org_id: STR_UUID):
         org_id_uuid = UUID(org_id) if isinstance(org_id, str) else org_id
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         self.project_manager.metadata.switch_org(org_id_uuid)
+
+    def create_org(self, org: Org) -> OrgModel:
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        return self.project_manager.metadata.create_org(org)
+
+    def list_orgs(self) -> List[OrgModel]:
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        return self.project_manager.metadata.list_orgs()
