@@ -19,6 +19,7 @@ from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import BaseRouteHandler
+from litestar.params import Dependency
 from litestar.params import Parameter
 from litestar.types import ASGIApp
 from litestar.types import Receive
@@ -46,14 +47,12 @@ COLLECTOR_INTERFACE = "collector"
 logger = logging.getLogger(__name__)
 
 
-@post(
-    "/{id:str}",
-)
-async def create_collector(
+@post("/{id:str}", sync_to_thread=True)
+def create_collector(
     id: Annotated[str, Parameter(description="Collector ID")],
     parsed_json: CollectorConfig,
-    service: CollectorServiceConfig,
-    storage: CollectorStorage,
+    service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
+    storage: Annotated[CollectorStorage, Dependency(skip_validation=True)],
 ) -> CollectorConfig:
     parsed_json.id = id
     service.collectors[id] = parsed_json
@@ -65,18 +64,18 @@ async def create_collector(
 @get("/{id:str}")
 async def get_collector(
     id: Annotated[str, Parameter(description="Collector ID")],
-    service: CollectorServiceConfig,
+    service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
 ) -> CollectorConfig:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     return service.collectors[id]
 
 
-@post("/{id:str}/reference")
-async def reference(
+@post("/{id:str}/reference", sync_to_thread=True)
+def reference(
     id: Annotated[str, Parameter(description="Collector ID")],
     parsed_json: Any,
-    service: CollectorServiceConfig,
+    service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
 ) -> Dict[str, str]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
@@ -92,22 +91,22 @@ async def reference(
 @post("/{id:str}/data")
 async def data(
     id: Annotated[str, Parameter(description="Collector ID")],
-    request: Request,
-    service: CollectorServiceConfig,
-    storage: CollectorStorage,
+    data: Any,
+    service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
+    storage: Annotated[CollectorStorage, Dependency(skip_validation=True)],
 ) -> Dict[str, str]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     async with storage.lock(id):
-        storage.append(id, await request.json())
+        storage.append(id, data)
     return {}
 
 
 @get("/{id:str}/logs")
 async def get_logs(
     id: Annotated[str, Parameter(description="Collector ID")],
-    service: CollectorServiceConfig,
-    storage: CollectorStorage,
+    service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
+    storage: Annotated[CollectorStorage, Dependency(skip_validation=True)],
 ) -> List[LogEvent]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
@@ -219,10 +218,10 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
             get_logs,
         ],
         dependencies={
-            "security": Provide(lambda: security, use_cache=True, sync_to_thread=True),
-            "service": Provide(lambda: service, use_cache=True, sync_to_thread=True),
-            "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=True),
-            "parsed_json": Provide(parse_json),
+            "security": Provide(lambda: security, use_cache=True, sync_to_thread=False),
+            "service": Provide(lambda: service, use_cache=True, sync_to_thread=False),
+            "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=False),
+            "parsed_json": Provide(parse_json, sync_to_thread=False),
         },
         middleware=[auth_middleware_factory],
         guards=[is_authenticated],

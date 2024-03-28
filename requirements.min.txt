@@ -9,7 +9,7 @@ scipy==1.10.0
 requests==2.31.0
 PyYAML==5.4
 pydantic==1.10.14
-litestar==2.5.1
+litestar==2.7.1
 typing-inspect==0.9.0
 uvicorn==0.22.0
 watchdog==3.0.0

@@ -20,7 +20,7 @@ pip-audit
 pyspark
 
 # service dependencies
-litestar>=2.6.3
+litestar>=2.7.1
 dynaconf
 uvicorn
 pyarrow
