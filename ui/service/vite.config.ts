@@ -18,9 +18,11 @@ export default defineConfig({
         assetFileNames: (assetInfo) => {
           let [extType] = assetInfo.name.split('.').reverse()
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-            extType = 'img'
+            // don't hash images
+            return `static/img/[name][extname]`
           }
-          return `static/${extType}/[name][extname]`
+          // hash everything else (like css)
+          return `static/${extType}/[name]-[hash][extname]`
         },
         chunkFileNames: 'static/js/[name]-[hash].js',
         entryFileNames: 'static/js/[name]-[hash].js'
