@@ -3,14 +3,15 @@ import pathlib
 from typing import Optional
 
 import litestar
-from litestar import Litestar
 from litestar import MediaType
 from litestar import Request
 from litestar import Response
-from litestar.static_files import StaticFilesConfig
+from litestar.response import File
+from litestar.router import Router
+from litestar.static_files import create_static_files_router
 
 
-def add_static(app: Litestar, ui_path: str):
+def create_static_routes(ui_path: str) -> Router:
     @litestar.get(
         [
             "/",
@@ -25,8 +26,7 @@ def add_static(app: Litestar, ui_path: str):
         include_in_schema=False,
     )
     async def index(path: Optional[str]) -> Response:
-        data = open(pathlib.Path(ui_path) / "index.html").read()
-        return Response(content=data, media_type=MediaType.HTML)
+        return File(path=pathlib.Path(ui_path).joinpath("index.html"), media_type=MediaType.HTML)
 
     @litestar.get(
         [
@@ -39,12 +39,13 @@ def add_static(app: Litestar, ui_path: str):
     )
     async def manifest(request: Request) -> Response:
         path = request.url.path[1:]
-        if path in ("manifest.json", "favicon.ico", "favicon-16x16.png", "favicon-32x32.png"):
-            data = os.path.join(ui_path, path)
-            with open(data, "rb") as f:
-                return Response(content=f.read())
-        return Response(content="not found", status_code=404)
+        return File(path=os.path.join(ui_path, path), content_disposition_type="inline")
 
-    app.register(index)
-    app.register(manifest)
-    app.register(StaticFilesConfig("/static", directories=[pathlib.Path(ui_path) / "static"]).to_static_files_app())
+    return Router(
+        path="",
+        route_handlers=[
+            index,
+            manifest,
+            create_static_files_router("/static", directories=[pathlib.Path(ui_path) / "static"]),
+        ],
+    )

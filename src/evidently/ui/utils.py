@@ -46,5 +46,5 @@ class RemoteClientBase:
         return response
 
 
-async def parse_json(body: bytes) -> Any:
+def parse_json(body: bytes) -> Any:
     return json.loads(body)

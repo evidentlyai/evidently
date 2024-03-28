@@ -23,7 +23,7 @@ import evidently
 from evidently.telemetry import DO_NOT_TRACK
 from evidently.ui.api.projects import project_api
 from evidently.ui.api.service import service_api
-from evidently.ui.api.static import add_static
+from evidently.ui.api.static import create_static_routes
 from evidently.ui.base import AuthManager
 from evidently.ui.config import Config
 from evidently.ui.config import load_config
@@ -41,10 +41,6 @@ from evidently.ui.storage.local import create_local_project_manager
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 from evidently.ui.utils import parse_json
-
-
-def api_router(guard: Callable):
-    return Router(path="/api", route_handlers=[project_api(guard), service_api()])
 
 
 def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
@@ -78,7 +74,7 @@ def create_project_manager(
     return create_local_project_manager(path, autorefresh, auth_manager)
 
 
-def create_app(config: Config):
+def create_app(config: Config, debug: bool = False):
     config_security = config.security
     security: SecurityService
     if isinstance(config_security, NoSecurityConfig):
@@ -104,36 +100,32 @@ def create_app(config: Config):
 
         return middleware
 
-    def is_authenticated(connection: ASGIConnection, _: BaseRouteHandler) -> None:
-        if not connection.scope["auth"]["authenticated"]:
-            raise NotEnoughPermissions()
-
     ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
     app = Litestar(
         route_handlers=[
-            api_router(is_authenticated),
+            Router(path="/api", route_handlers=[project_api, service_api]),
+            create_static_routes(ui_path),
         ],
         exception_handlers={
             EvidentlyServiceError: unicorn_exception_handler,
         },
         dependencies={
-            "telemetry_config": Provide(lambda: config.telemetry, sync_to_thread=True),
+            "telemetry_config": Provide(lambda: config.telemetry, sync_to_thread=False),
             "project_manager": Provide(
                 lambda: create_project_manager(
                     config.storage.path, NoopAuthManager(), autorefresh=config.storage.autorefresh
                 ),
-                sync_to_thread=True,
+                sync_to_thread=False,
                 use_cache=True,
             ),
-            "user_id": Provide(get_user_id),
-            "org_id": Provide(get_org_id),
-            "log_event": Provide(get_event_logger),
-            "parsed_json": Provide(parse_json),
+            "user_id": get_user_id,
+            "org_id": get_org_id,
+            "log_event": get_event_logger,
+            "parsed_json": Provide(parse_json, sync_to_thread=False),
         },
         middleware=[auth_middleware_factory],
-        debug=True,
+        debug=debug,
     )
-    add_static(app, ui_path)
     return app
 
 
