@@ -46,9 +46,7 @@ COLLECTOR_INTERFACE = "collector"
 logger = logging.getLogger(__name__)
 
 
-@post(
-    "/{id:str}", sync_to_thread=True
-)
+@post("/{id:str}", sync_to_thread=True)
 def create_collector(
     id: Annotated[str, Parameter(description="Collector ID")],
     parsed_json: CollectorConfig,
