@@ -1,7 +1,7 @@
 import asyncio
 import contextlib
 import logging
-from typing import Any, Union
+from typing import Any
 from typing import AsyncGenerator
 from typing import Dict
 from typing import List
@@ -90,7 +90,7 @@ def reference(
 @post("/{id:str}/data", sync_to_thread=True)
 async def data(
     id: Annotated[str, Parameter(description="Collector ID")],
-    data: Union[Dict[Any, Any], List[Any]],
+    data: Any,
     service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
     storage: Annotated[CollectorStorage, Dependency(skip_validation=True)],
 ) -> Dict[str, str]:
