@@ -14,7 +14,6 @@ from litestar import post
 from litestar.connection import ASGIConnection
 from litestar.exceptions import HTTPException
 from litestar.handlers import BaseRouteHandler
-from litestar.params import Body
 from litestar.params import Dependency
 from litestar.params import Parameter
 from typing_extensions import Annotated
@@ -93,7 +92,7 @@ def search_projects(
     return project_manager.search_project(user_id, project_name=project_name)
 
 
-@post("/{project_id:uuid}/info", sync_to_thread=True)
+@post("/{project_id:uuid}/info", sync_to_thread=True, guards=[is_authenticated])
 def update_project_info(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
     data: Project,
@@ -114,7 +113,7 @@ def update_project_info(
     return project
 
 
-@get("/{project_id:uuid}/reload", sync_to_thread=True)
+@get("/{project_id:uuid}/reload", sync_to_thread=True, guards=[is_authenticated])
 def reload_project_snapshots(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
@@ -257,7 +256,7 @@ def project_dashboard(
     return Response(content=json.dumps(info.dict(), cls=NumpyEncoder), media_type="application/json")
 
 
-@post(sync_to_thread=True)
+@post("/", sync_to_thread=True, guards=[is_authenticated])
 def add_project(
     data: Project,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
@@ -271,7 +270,7 @@ def add_project(
     return p
 
 
-@delete("/{project_id:uuid}", sync_to_thread=True)
+@delete("/{project_id:uuid}", sync_to_thread=True, guards=[is_authenticated])
 def delete_project(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
@@ -282,7 +281,7 @@ def delete_project(
     log_event("delete_project")
 
 
-@post("/{project_id:uuid}/snapshots", sync_to_thread=True)
+@post("/{project_id:uuid}/snapshots", sync_to_thread=True, guards=[is_authenticated])
 def add_snapshot(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
     parsed_json: Snapshot,
@@ -297,7 +296,7 @@ def add_snapshot(
     log_event("add_snapshot")
 
 
-@delete("/{project_id:uuid}/{snapshot_id:uuid}", sync_to_thread=True)
+@delete("/{project_id:uuid}/{snapshot_id:uuid}", sync_to_thread=True, guards=[is_authenticated])
 def delete_snapshot(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
     snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
@@ -312,32 +311,21 @@ def delete_snapshot(
 project_api = Router(
     "/projects",
     route_handlers=[
-        Router(
-            "",
-            route_handlers=[
-                list_projects,
-                list_reports,
-                get_project_info,
-                search_projects,
-                list_test_suites,
-                get_snapshot_graph_data,
-                get_snapshot_data,
-                get_snapshot_download,
-                list_project_dashboard_panels,
-                project_dashboard,
-            ],
-        ),
-        Router(
-            "",
-            route_handlers=[
-                update_project_info,
-                reload_project_snapshots,
-                add_project,
-                delete_project,
-                add_snapshot,
-                delete_snapshot,
-            ],
-            guards=[is_authenticated],
-        ),
+        list_projects,
+        list_reports,
+        get_project_info,
+        search_projects,
+        list_test_suites,
+        get_snapshot_graph_data,
+        get_snapshot_data,
+        get_snapshot_download,
+        list_project_dashboard_panels,
+        project_dashboard,
+        update_project_info,
+        reload_project_snapshots,
+        add_project,
+        delete_project,
+        add_snapshot,
+        delete_snapshot,
     ],
 )

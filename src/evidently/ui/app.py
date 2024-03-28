@@ -1,8 +1,6 @@
 import os
-import pathlib
 from functools import partial
 from typing import Any
-from typing import Callable
 from typing import Optional
 
 import uvicorn
@@ -11,9 +9,7 @@ from litestar import Litestar
 from litestar import Request
 from litestar import Response
 from litestar import Router
-from litestar.connection import ASGIConnection
 from litestar.di import Provide
-from litestar.handlers import BaseRouteHandler
 from litestar.types import ASGIApp
 from litestar.types import Receive
 from litestar.types import Scope
@@ -23,13 +19,12 @@ import evidently
 from evidently.telemetry import DO_NOT_TRACK
 from evidently.ui.api.projects import project_api
 from evidently.ui.api.service import service_api
-from evidently.ui.api.static import create_static_routes
+from evidently.ui.api.static import assets_router
 from evidently.ui.base import AuthManager
 from evidently.ui.config import Config
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
 from evidently.ui.errors import EvidentlyServiceError
-from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.security.config import NoSecurityConfig
 from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
@@ -100,11 +95,10 @@ def create_app(config: Config, debug: bool = False):
 
         return middleware
 
-    ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
     app = Litestar(
         route_handlers=[
             Router(path="/api", route_handlers=[project_api, service_api]),
-            create_static_routes(ui_path),
+            assets_router,
         ],
         exception_handlers={
             EvidentlyServiceError: unicorn_exception_handler,
