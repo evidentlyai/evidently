@@ -19,7 +19,8 @@ from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import BaseRouteHandler
-from litestar.params import Parameter, Dependency
+from litestar.params import Dependency
+from litestar.params import Parameter
 from litestar.types import ASGIApp
 from litestar.types import Receive
 from litestar.types import Scope
