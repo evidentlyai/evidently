@@ -19,5 +19,4 @@ __pycache__
 
 # see .devcontainer/devcontainer.json
 test-workspace
-workspace
 workspace-for-visual-testing

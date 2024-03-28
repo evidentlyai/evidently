@@ -12,10 +12,12 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
+from evidently.ui.base import Org
 from evidently.ui.base import Project
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 
@@ -108,6 +110,15 @@ class DashboardInfoModel(BaseModel):
         return cls(**dataclasses.asdict(info), **time_range)
 
 
+class OrgModel(BaseModel):
+    id: OrgID
+    name: str
+
+    @classmethod
+    def from_org(cls, org: Org):
+        return OrgModel(id=org.id, name=org.name)
+
+
 class TeamModel(BaseModel):
     id: TeamID
     name: str
@@ -123,4 +134,4 @@ class UserModel(BaseModel):
 
     @classmethod
     def from_user(cls, user: User):
-        return TeamModel(id=user.id, name=user.name)
+        return UserModel(id=user.id, name=user.name)
