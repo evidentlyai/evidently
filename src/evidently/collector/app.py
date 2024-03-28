@@ -87,7 +87,7 @@ def reference(
     return {}
 
 
-@post("/{id:str}/data", sync_to_thread=True)
+@post("/{id:str}/data")
 async def data(
     id: Annotated[str, Parameter(description="Collector ID")],
     data: Any,
