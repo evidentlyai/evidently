@@ -2,6 +2,8 @@ from typing import Dict
 from typing import Optional
 from uuid import UUID
 
+from requests import HTTPError
+
 from evidently._pydantic_compat import PrivateAttr
 from evidently.ui.base import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
@@ -18,6 +20,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
     token: str
     cookie_name: str
     _jwt_token: str = PrivateAttr(None)
+    _logged_in: bool = PrivateAttr(False)
 
     def _get_jwt_token(self):
         return super()._request("/api/users/login", "GET", headers={TOKEN_HEADER_NAME: self.token}).text
@@ -34,7 +37,17 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         cookies = cookies or {}
         cookies = cookies.copy()
         cookies[self.cookie_name] = self.jwt_token
-        return super()._request(path, method, query_params, body, response_model, cookies=cookies, headers=headers)
+        try:
+            res = super()._request(path, method, query_params, body, response_model, cookies=cookies, headers=headers)
+            self._logged_in = True
+            return res
+        except HTTPError as e:
+            if self._logged_in and e.response.status_code == 401:
+                # renew token and retry
+                self._jwt_token = self._get_jwt_token()
+                cookies[self.cookie_name] = self.jwt_token
+                return super()._request(path, method, query_params, body, response_model, cookies=cookies, headers=headers)
+            raise
 
 
 class CloudWorkspace(WorkspaceView):
