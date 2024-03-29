@@ -8,8 +8,12 @@ interface CounterWidgetProps {
 
 const CounterItem: React.FunctionComponent<CounterInfo> = (props) => (
   <div>
-    <Typography sx={{ fontSize: 36, textAlign: 'center' }}>{props.value}</Typography>
-    <Typography sx={{ fontSize: 24, textAlign: 'center' }}>{props.label}</Typography>
+    <Typography align="center" fontWeight={500} sx={{ fontSize: 36 }}>
+      {props.value}
+    </Typography>
+    <Typography align="center" variant="h5" fontWeight={500}>
+      {props.label}
+    </Typography>
   </div>
 )
 
