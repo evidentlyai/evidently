@@ -12,6 +12,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Histogram
 from evidently.metrics.regression_performance.objects import RegressionMetricScatter
@@ -46,6 +47,7 @@ class RegressionPerformanceMetricsResults(MetricResult):
     class Config:
         dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
         pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_bias", "error_normality"}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     columns: DatasetColumns
 

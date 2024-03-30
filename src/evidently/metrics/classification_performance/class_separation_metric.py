@@ -8,6 +8,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import IncludeTags
 from evidently.metric_results import ColumnAggScatter
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterOrAgg
@@ -30,6 +31,7 @@ class ClassificationClassSeparationPlotResults(MetricResult):
     class Config:
         dict_exclude_fields = {"current", "reference"}
         pd_exclude_fields = {"current", "reference"}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     target_name: str
 

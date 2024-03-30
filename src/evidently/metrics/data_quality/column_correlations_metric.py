@@ -12,6 +12,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import calculate_category_correlation
 from evidently.calculations.data_quality import calculate_numerical_correlation
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.metric_results import ColumnCorrelations
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -25,6 +26,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ColumnCorrelationsMetricResult(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     column_name: str
     current: Dict[str, ColumnCorrelations]
     reference: Optional[Dict[str, ColumnCorrelations]] = None

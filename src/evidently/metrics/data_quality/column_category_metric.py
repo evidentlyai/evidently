@@ -9,6 +9,7 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -27,6 +28,7 @@ class CategoryStat(MetricResult):
 class ColumnCategoryMetricResult(MetricResult):
     class Config:
         pd_exclude_fields = {"counts_of_values"}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     column_name: str
     category: Union[int, float, str]

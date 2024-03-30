@@ -7,6 +7,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.metrics.recsys.precision_recall_k import PrecisionRecallCalculation
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -20,6 +21,9 @@ from evidently.utils.visualizations import plot_metric_k
 
 
 class TopKMetricResult(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     k: int
     current: pd.Series
     reference: Optional[pd.Series] = None

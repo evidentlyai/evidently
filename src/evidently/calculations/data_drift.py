@@ -58,6 +58,8 @@ class ColumnDataDriftMetrics(ColumnMetricResult):
         pd_exclude_fields = {"scatter"}
         field_tags = {
             "stattest_name": {IncludeTags.Parameter},
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
         }
 
     stattest_name: str

@@ -11,6 +11,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -33,6 +34,9 @@ class QuantileStats(MetricResult):
 
 
 class ColumnQuantileMetricResult(ColumnMetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     # range of the quantile (from 0 to 1)
     quantile: float
     current: QuantileStats

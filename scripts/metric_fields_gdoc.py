@@ -63,26 +63,29 @@ class MetricField(NamedTuple):
         ws.append_row(values)
 
     def check_and_update(self, ws: Worksheet, header: List[str], existing: "MetricField", row: int):
+        changed = False
         for f in UPDATE_FIELDS:
             value = getattr(self, f)
             if value != getattr(existing, f):
                 print(f"updating {f} with new value {value}")
+                changed = True
                 ws.update_cell(row + 1, header.index(f) + 1, value)
                 time.sleep(1)
+        return changed
 
     @property
     def keep(self) -> Optional[bool]:
-        if self.additional_data.get("keep") is not None:
+        if self.additional_data.get("keep"):
             return self.additional_data["keep"] == "1"
-        if self.additional_data.get("drop") is not None:
+        if self.additional_data.get("drop"):
             return self.additional_data["drop"] == "0"
         return None
 
     @property
     def drop(self) -> Optional[bool]:
-        if self.additional_data.get("drop") is not None:
+        if self.additional_data.get("drop"):
             return self.additional_data["drop"] == "1"
-        if self.additional_data.get("keep") is not None:
+        if self.additional_data.get("keep"):
             return self.additional_data["keep"] == "0"
         return None
 
@@ -110,12 +113,14 @@ def all_metrics() -> Set[Type[Metric]]:
 
 
 def collect_metric_fields() -> List[MetricField]:
+    print("loading code metrics")
     metric_fields = []
     for metric_type in all_metrics():
         if isabstract(metric_type):
             continue
         metric_field = MetricField.from_metric(metric_type)
         metric_fields.extend(metric_field)
+    print("loading code metrics: done")
     return metric_fields
 
 
@@ -132,6 +137,7 @@ def parse_row(header: List[str], row: List[str]) -> MetricField:
 
 
 def parse_worksheet(worksheet: Worksheet) -> Tuple[List[str], List[MetricField]]:
+    print("parsing worksheet")
     result = []
     header = None
     for row in worksheet.get_all_values():
@@ -140,6 +146,7 @@ def parse_worksheet(worksheet: Worksheet) -> Tuple[List[str], List[MetricField]]
             continue
         result.append(parse_row(header, row))
 
+    print("parsing worksheet: done")
     return header, result
 
 
@@ -150,11 +157,38 @@ def check_additional(mf: MetricField):
         # print(mf)
         if any(t in EXCLUDE_TAGS for t in tags):
             print(mf, "should be kept but is dropped")
+            return False
 
     if mf.drop:
         # print(mf)
         if all(t not in EXCLUDE_TAGS for t in tags):
             print(mf, "should be dropped but is kept")
+            return False
+
+    if mf.keep is None:
+        return None
+    return True
+
+
+COLORING = True
+
+
+def recolor_row(check_result: Optional[bool], ws: Worksheet, row_num: int):
+    if not COLORING:
+        return
+    if check_result is None:
+        return
+    color_map = {False: {
+        "red": 0.9,
+        "green": 0.7,
+        "blue": 0.7
+    }, True: {
+        "red": 0.7,
+        "green": 0.9,
+        "blue": 0.7
+    }}
+    ws.format(f"{row_num + 1}", {"backgroundColor": color_map[check_result]})
+    time.sleep(1)
 
 
 def open_spreadsheet(name="Metric Fields v1"):
@@ -171,12 +205,14 @@ def open_spreadsheet(name="Metric Fields v1"):
     # wtf am i doin
     doc_mf_dict = {mf: (mf, i + 1) for i, mf in enumerate(doc_mf)}
 
+    changed = set()
+
     to_upload = []
     for mf in code_mf:
         if mf in doc_mf_dict:
             # print(f"existing {doc_mf_dict[mf]}")
-            mf.check_and_update(ws, header, *doc_mf_dict[mf])
-            doc_mf_dict[mf] = mf
+            if mf.check_and_update(ws, header, *doc_mf_dict[mf]):
+                changed.add(mf)
             continue
         to_upload.append(mf)
 
@@ -184,8 +220,10 @@ def open_spreadsheet(name="Metric Fields v1"):
         mf.upload(ws, header)
         time.sleep(1)
 
-    for mf in doc_mf_dict:
-        check_additional(mf)
+    for mf, row_num in doc_mf_dict.values():
+        check_result = check_additional(mf)
+        if mf in changed:
+            recolor_row(check_result, ws, row_num)
 
 
 def main():

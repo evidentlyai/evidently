@@ -31,7 +31,11 @@ class EmbeddingsDriftMetricResults(MetricResult):
             "reference",
             "current",
         }
-        field_tags = {k: {IncludeTags.Render} for k in dict_exclude_fields}
+
+        field_tags = {
+            "current": {IncludeTags.Current, IncludeTags.Render},
+            "reference": {IncludeTags.Reference, IncludeTags.Render},
+        }
 
     embeddings_name: str
     drift_score: float

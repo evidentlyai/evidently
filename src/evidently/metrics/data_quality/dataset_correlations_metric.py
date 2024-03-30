@@ -13,6 +13,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.data_quality import calculate_correlations
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -54,6 +55,7 @@ class DatasetCorrelationsMetricResult(MetricResult):
     class Config:
         dict_exclude_fields = {"target_correlation"}
         pd_exclude_fields = {"target_correlation"}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]

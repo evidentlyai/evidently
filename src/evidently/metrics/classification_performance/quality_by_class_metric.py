@@ -11,6 +11,7 @@ from plotly.subplots import make_subplots
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.core import AllDict
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.objects import ClassesMetrics
@@ -35,6 +36,9 @@ class ClassificationQuality(MetricResult):
 
 
 class ClassificationQualityByClassResult(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     columns: DatasetColumns
     current: ClassificationQuality
     reference: Optional[ClassificationQuality]

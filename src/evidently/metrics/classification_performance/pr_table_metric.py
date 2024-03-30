@@ -14,6 +14,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_pr_table
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import IncludeTags
 from evidently.metric_results import Label
 from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
@@ -45,6 +46,7 @@ PRTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 class ClassificationPRTableResults(MetricResult):
     class Config:
         pd_include = False
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Optional[PRTable] = None
     reference: Optional[PRTable] = None

@@ -9,6 +9,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.metrics.data_integrity.dataset_missing_values_metric import MissingValue
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -41,6 +42,9 @@ class ColumnMissingValues(MetricResult):
 
 
 class ColumnMissingValuesMetricResult(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     column_name: str
     current: ColumnMissingValues
     reference: Optional[ColumnMissingValues] = None

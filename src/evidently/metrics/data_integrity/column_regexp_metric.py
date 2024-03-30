@@ -11,6 +11,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -42,6 +43,9 @@ class DataIntegrityValueByRegexpStat(MetricResult):
 
 
 class DataIntegrityValueByRegexpMetricResult(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     # name of the column that we check by the regular expression
     column_name: str
     # the regular expression as a string

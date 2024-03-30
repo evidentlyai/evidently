@@ -263,6 +263,7 @@ class ColumnScatterResult(MetricResult):
         pd_include = False
 
         tags = {IncludeTags.Render}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: ColumnScatter
     reference: Optional[ColumnScatter]
@@ -271,6 +272,9 @@ class ColumnScatterResult(MetricResult):
 
 
 class ColumnAggScatterResult(ColumnScatterResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     current: ColumnAggScatter
     reference: Optional[ColumnAggScatter]
 
@@ -377,6 +381,7 @@ class Histogram(MetricResult):
     class Config:
         dict_include = False
         tags = {IncludeTags.Render}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: HistogramData
     reference: Optional[HistogramData]

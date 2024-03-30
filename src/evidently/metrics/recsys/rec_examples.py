@@ -11,6 +11,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import RecomType
@@ -27,6 +28,7 @@ from evidently.renderers.html_widgets import table_data
 class RecCasesTableResults(MetricResult):
     class Config:
         pd_include = False
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     user_ids: List[str]
     current: Dict[str, pd.DataFrame]
