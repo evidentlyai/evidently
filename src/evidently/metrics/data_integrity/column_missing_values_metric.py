@@ -28,6 +28,7 @@ class ColumnMissingValues(MetricResult):
 
     class Config:
         pd_exclude_fields = {"different_missing_values"}
+        field_tags = {"number_of_rows": {IncludeTags.Extra}, "different_missing_values": {IncludeTags.Extra}}
 
     # count of rows in the column
     number_of_rows: int
@@ -43,7 +44,11 @@ class ColumnMissingValues(MetricResult):
 
 class ColumnMissingValuesMetricResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+        }
 
     column_name: str
     current: ColumnMissingValues

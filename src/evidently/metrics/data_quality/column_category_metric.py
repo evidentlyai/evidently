@@ -20,6 +20,9 @@ from evidently.renderers.html_widgets import header_text
 
 
 class CategoryStat(MetricResult):
+    class Config:
+        field_tags = {"all_num": {IncludeTags.Extra}}
+
     all_num: int
     category_num: int
     category_ratio: float
@@ -28,7 +31,12 @@ class CategoryStat(MetricResult):
 class ColumnCategoryMetricResult(MetricResult):
     class Config:
         pd_exclude_fields = {"counts_of_values"}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+            "counts_of_values": {IncludeTags.Extra},
+        }
 
     column_name: str
     category: Union[int, float, str]

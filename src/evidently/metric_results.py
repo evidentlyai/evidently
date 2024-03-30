@@ -381,7 +381,12 @@ class Histogram(MetricResult):
     class Config:
         dict_include = False
         tags = {IncludeTags.Render}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "current_log": {IncludeTags.Current},
+            "reference_log": {IncludeTags.Reference},
+        }
 
     current: HistogramData
     reference: Optional[HistogramData]
@@ -397,6 +402,9 @@ class DistributionIncluded(Distribution):
 
 
 class ColumnCorrelations(MetricResult):
+    class Config:
+        field_tags = {"column_name": {IncludeTags.Parameter}, "kind": {IncludeTags.Parameter}}
+
     column_name: str
     kind: str
     values: DistributionIncluded

@@ -35,7 +35,11 @@ class QuantileStats(MetricResult):
 
 class ColumnQuantileMetricResult(ColumnMetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "quantile": {IncludeTags.Parameter},
+        }
 
     # range of the quantile (from 0 to 1)
     quantile: float

@@ -30,6 +30,12 @@ class DataIntegrityValueByRegexpStat(MetricResult):
     class Config:
         pd_exclude_fields = {"table_of_matched", "table_of_not_matched"}
 
+        field_tags = {
+            "number_of_rows": {IncludeTags.Extra},
+            "table_of_matched": {IncludeTags.Extra},
+            "table_of_not_matched": {IncludeTags.Extra},
+        }
+
     # count of matched values in the column, without NaNs
     number_of_matched: int
     # count of not matched values in the column, without NaNs
@@ -44,7 +50,13 @@ class DataIntegrityValueByRegexpStat(MetricResult):
 
 class DataIntegrityValueByRegexpMetricResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+            "reg_exp": {IncludeTags.Parameter},
+            "top": {IncludeTags.Parameter},
+        }
 
     # name of the column that we check by the regular expression
     column_name: str

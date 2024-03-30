@@ -31,7 +31,11 @@ from evidently.utils.data_preprocessing import DataDefinition
 class TextDescriptorsCorrelationMetricResult(MetricResult):
     class Config:
         pd_include = False
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+        }
 
     column_name: str
     current: Dict[str, Dict[str, ColumnCorrelations]]

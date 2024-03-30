@@ -54,6 +54,17 @@ class DatasetMissingValues(MetricResult):
             "columns_with_missing_values",
         }
 
+        field_tags = {
+            "different_missing_values": {IncludeTags.Extra},
+            "different_missing_values_by_column": {IncludeTags.Extra},
+            "number_of_different_missing_values_by_column": {IncludeTags.Extra},
+            "number_of_missing_values_by_column": {IncludeTags.Extra},
+            "share_of_missing_values_by_column": {IncludeTags.Extra},
+            "number_of_rows": {IncludeTags.Extra},
+            "number_of_columns": {IncludeTags.Extra},
+            "columns_with_missing_values": {IncludeTags.Extra},
+        }
+
     # set of different missing values in the dataset
     different_missing_values: Dict[MissingValue, int]
     # number of different missing values in the dataset
