@@ -18,6 +18,7 @@ from evidently.calculations.data_integration import get_number_of_constant_colum
 from evidently.calculations.data_integration import get_number_of_duplicated_columns
 from evidently.calculations.data_integration import get_number_of_empty_columns
 from evidently.calculations.data_quality import get_rows_count
+from evidently.core import IncludeTags
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -56,6 +57,16 @@ class DatasetSummary(MetricResult):
         dict_exclude_fields = {"columns_type_data"}
         pd_exclude_fields = {"columns_type_data", "nans_by_columns", "number_uniques_by_columns"}
 
+        field_tags = {
+            "target": {IncludeTags.Parameter},
+            "prediction": {IncludeTags.Parameter},
+            "date_column": {IncludeTags.Parameter},
+            "id_column": {IncludeTags.Parameter},
+            "columns_type_data": {IncludeTags.Extra},
+            "nans_by_columns": {IncludeTags.Extra},
+            "number_uniques_by_columns": {IncludeTags.Extra},
+        }
+
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
     date_column: Optional[str]
@@ -84,6 +95,13 @@ class DatasetSummary(MetricResult):
 
 
 class DatasetSummaryMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "almost_duplicated_threshold": {IncludeTags.Parameter},
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+        }
+
     almost_duplicated_threshold: float
     current: DatasetSummary
     reference: Optional[DatasetSummary] = None

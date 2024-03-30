@@ -66,8 +66,12 @@ class AllDict(dict):
 
 
 class IncludeTags(Enum):
+    Parameter = "parameter"
+    Current = "current"
+    Reference = "reference"
     Render = "render"
     TypeField = "type_field"
+    Extra = "extra"
 
 
 @pydantic_type_validator(pd.Series)

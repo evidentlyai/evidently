@@ -9,6 +9,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
 from evidently.metrics.data_drift.base import WithDriftOptions
@@ -35,6 +36,11 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 class DataDriftTableResults(MetricResult):
     class Config:
         dict_exclude_fields = {"dataset_columns"}
+        field_tags = {
+            "dataset_columns": {IncludeTags.Extra},
+            "current_fi": {IncludeTags.Extra, IncludeTags.Current},
+            "reference_fi": {IncludeTags.Extra, IncludeTags.Reference},
+        }
 
     number_of_columns: int
     number_of_drifted_columns: int

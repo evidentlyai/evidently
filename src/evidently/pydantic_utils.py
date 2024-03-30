@@ -15,6 +15,9 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
+from typing import get_args
+
+from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
 from evidently._pydantic_compat import BaseModel
@@ -192,6 +195,8 @@ class FieldPath:
         self._path = path
         self._cls: Type
         self._instance: Any
+        if is_union_type(cls_or_instance):
+            cls_or_instance = get_args(cls_or_instance)[0]
         if isinstance(cls_or_instance, type):
             self._cls = cls_or_instance
             self._instance = None
@@ -249,12 +254,13 @@ class FieldPath:
 
         if not issubclass(cls, BaseResult):
             return None
+        self_tags = cls.__config__.tags
         field_tags = FieldPath._get_field_tags_rec(cls.__mro__, name)
         if field_tags is not None:
-            return field_tags
+            return field_tags.union(self_tags)
         if isinstance(type_, type) and issubclass(type_, BaseResult):
-            return type_.__config__.tags
-        return set()
+            return type_.__config__.tags.union(self_tags)
+        return self_tags
 
     def list_nested_fields(self, exclude: Set["IncludeTags"] = None) -> List[str]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):

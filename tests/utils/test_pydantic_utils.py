@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import Union
 
 import pytest
 
@@ -6,6 +7,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 
 
@@ -228,4 +230,33 @@ def test_list_with_tags():
         ("f3.type", {IncludeTags.TypeField}),
         ("f3.f1", {IncludeTags.Render}),
         ("f3.f2", set()),
+    ]
+
+
+def test_list_with_tags_with_union():
+    class A(MetricResult):
+        class Config:
+            tags = {IncludeTags.Render}
+
+        f1: str
+
+    class B(MetricResult):
+        class Config:
+            tags = {IncludeTags.Render}
+
+        f1: str
+
+    fp = FieldPath([], Union[A, B])
+    assert not fp.has_instance
+    assert fp._cls == A
+
+    class SomeModel(MetricResult):
+        f2: Union[A, B]
+        f1: str
+
+    assert SomeModel.fields.list_nested_fields_with_tags() == [
+        ("type", {IncludeTags.TypeField}),
+        ("f2.type", {IncludeTags.Render, IncludeTags.TypeField}),
+        ("f2.f1", {IncludeTags.Render}),
+        ("f1", set()),
     ]
