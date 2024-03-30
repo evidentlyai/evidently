@@ -40,7 +40,7 @@ class DriftStatsField(MetricResult):
             "characteristic_examples": {IncludeTags.Render},
             "characteristic_words": {IncludeTags.Render},
             "correlations": {IncludeTags.Render},
-            "type": {IncludeTags.TypeField},
+            "small_distribution": {IncludeTags.Extra},
         }
         pd_include = False
 

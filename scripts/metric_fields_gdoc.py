@@ -1,4 +1,5 @@
 import glob
+import hashlib
 import os
 import time
 from importlib import import_module
@@ -194,9 +195,21 @@ def check_additional(mf: MetricField) -> float:
 
 
 COLORING = True
+SHADES = 256
+MIN_BASE = 0.5
+COL_AMPL = 0.2
 
+def metric_color(mf: MetricField):
+    h = int(hashlib.md5(mf.metric_id.encode("utf8")).hexdigest(), 16)
+    base = (h % SHADES) / SHADES * (1 - MIN_BASE - COL_AMPL)
+    col_ampls = h % 1000
+    return {
+            "red": MIN_BASE + base + (col_ampls // 100) / 10 * COL_AMPL,
+            "green": MIN_BASE + base + ((col_ampls % 100) // 10) / 10 * COL_AMPL,
+            "blue": MIN_BASE + base + (col_ampls % 10) / 10 * COL_AMPL
+        }
 
-def recolor_row(check_result: float, row_num: int):
+def recolor_row(mf: MetricField, check_result: float, row_num: int):
     if not COLORING:
         return
     color_map = {
@@ -221,7 +234,8 @@ def recolor_row(check_result: float, row_num: int):
             "blue": 1
         },
     }
-    return {"range": str(row_num + 1), "format": {"backgroundColor": color_map[check_result]}}
+    return [{"range": str(row_num + 1), "format": {"backgroundColor": color_map[check_result]}},
+            {"range": f"B{row_num + 1}", "format": {"backgroundColor": metric_color(mf)}}]
 
 
 def open_spreadsheet(name="Metric Fields v1"):
@@ -257,9 +271,9 @@ def open_spreadsheet(name="Metric Fields v1"):
     for mf, row_num in doc_mf_dict.values():
         check_result = check_additional(mf)
 
-        recolor = recolor_row(check_result, row_num)
+        recolor = recolor_row(mf, check_result, row_num)
         if recolor is not None:
-            format_batch.append(recolor)
+            format_batch.extend(recolor)
     ws.batch_format(format_batch)
 
 

@@ -254,9 +254,9 @@ def test_list_with_tags_with_union():
         f2: Union[A, B]
         f1: str
 
-    assert SomeModel.fields.list_nested_fields_with_tags() == [
-        ("type", {IncludeTags.TypeField}),
-        ("f2.type", {IncludeTags.Render, IncludeTags.TypeField}),
-        ("f2.f1", {IncludeTags.Render}),
+    assert list(sorted(SomeModel.fields.list_nested_fields_with_tags())) == [
         ("f1", set()),
+        ("f2.f1", {IncludeTags.Render}),
+        ("f2.type", {IncludeTags.Render, IncludeTags.TypeField}),
+        ("type", {IncludeTags.TypeField}),
     ]
