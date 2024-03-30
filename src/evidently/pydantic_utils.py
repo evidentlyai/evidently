@@ -237,38 +237,13 @@ class FieldPath:
                 return FieldPath(self._path + [item], field_value, is_mapping=True)
         return FieldPath(self._path + [item], field_value, is_mapping=is_mapping)
 
-    @staticmethod
-    def _get_field_tags_rec(mro, name):
-        from evidently.base_metric import BaseResult
-
-        cls = mro[0]
-        if not issubclass(cls, BaseResult):
-            return None
-        if name in cls.__config__.field_tags:
-            return cls.__config__.field_tags[name]
-        return FieldPath._get_field_tags_rec(mro[1:], name)
-
-    @staticmethod
-    def _get_field_tags(cls, name, type_) -> Optional[Set["IncludeTags"]]:
-        from evidently.base_metric import BaseResult
-
-        if not issubclass(cls, BaseResult):
-            return None
-        self_tags = cls.__config__.tags
-        field_tags = FieldPath._get_field_tags_rec(cls.__mro__, name)
-        if field_tags is not None:
-            return field_tags.union(self_tags)
-        if isinstance(type_, type) and issubclass(type_, BaseResult):
-            return type_.__config__.tags.union(self_tags)
-        return self_tags
-
     def list_nested_fields(self, exclude: Set["IncludeTags"] = None) -> List[str]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
-            field_tags = self._get_field_tags(self._cls, name, field_value)
+            field_tags = get_field_tags(self._cls, name, field_value)
             if field_tags is not None and (exclude is not None and any(t in exclude for t in field_tags)):
                 continue
             is_mapping = field.shape == SHAPE_DICT
@@ -290,7 +265,7 @@ class FieldPath:
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
-            field_tags = self._get_field_tags(self._cls, name, field_value) or set()
+            field_tags = get_field_tags(self._cls, name, field_value) or set()
 
             is_mapping = field.shape == SHAPE_DICT
             if self.has_instance:
@@ -334,8 +309,33 @@ class FieldPath:
             return self_tags
         field_name, *path = path
 
-        field_tags = self._get_field_tags(self._cls, field_name, self._cls.__fields__[field_name].type_) or set()
+        field_tags = get_field_tags(self._cls, field_name, self._cls.__fields__[field_name].type_) or set()
         return self_tags.union(field_tags).union(self.child(field_name).get_field_tags(path) or tuple())
+
+
+def _get_field_tags_rec(mro, name):
+    from evidently.base_metric import BaseResult
+
+    cls = mro[0]
+    if not issubclass(cls, BaseResult):
+        return None
+    if name in cls.__config__.field_tags:
+        return cls.__config__.field_tags[name]
+    return _get_field_tags_rec(mro[1:], name)
+
+
+def get_field_tags(cls, field_name, field_type) -> Optional[Set["IncludeTags"]]:
+    from evidently.base_metric import BaseResult
+
+    if not issubclass(cls, BaseResult):
+        return None
+    self_tags = cls.__config__.tags
+    field_tags = _get_field_tags_rec(cls.__mro__, field_name)
+    if field_tags is not None:
+        return field_tags.union(self_tags)
+    if isinstance(field_type, type) and issubclass(field_type, BaseResult):
+        return field_type.__config__.tags.union(self_tags)
+    return self_tags
 
 
 @pydantic_type_validator(FieldPath)

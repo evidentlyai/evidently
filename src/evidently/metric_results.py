@@ -2,6 +2,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Set
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
@@ -398,6 +399,7 @@ class Histogram(MetricResult):
 # todo need better config overriding logic in metricresult
 class DistributionIncluded(Distribution):
     class Config:
+        tags: Set[IncludeTags] = set()
         dict_include = True
 
 

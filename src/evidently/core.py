@@ -123,9 +123,12 @@ class BaseResult(BaseModel):
         include: Optional[IncludeOptions] = None,
         exclude: Optional[IncludeOptions] = None,
     ):
-        include_tags = set()
-        if include_render:
-            include_tags.add(IncludeTags.Render)
+        include_tags = set(IncludeTags)
+        include_tags.remove(IncludeTags.TypeField)
+        if not include_render:
+            # include_tags.add(IncludeTags.Render)
+            include_tags.remove(IncludeTags.Render)
+        # include_tags = set()
         return self.dict(include=include or self._build_include(include_tags=include_tags), exclude=exclude)
 
     def _build_include(
@@ -146,7 +149,7 @@ class BaseResult(BaseModel):
             or set(self.__fields__.keys())
         )
         dict_exclude_fields = self.__config__.dict_exclude_fields or set()
-        field_tags = self.__config__.field_tags or {}
+        field_tags = get_fields_tags(self.__class__)
         result: Dict[str, Any] = {}
         for name, field in self.__fields__.items():
             if field_tags.get(name) and all(tag not in include_tags for tag in field_tags.get(name, set())):
@@ -235,3 +238,25 @@ class BaseResult(BaseModel):
 
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame([self.collect_pandas_columns()])
+
+
+def _get_field_tags_rec(mro) -> Dict[str, Set[IncludeTags]]:
+    if len(mro) == 0:
+        return {}
+    cls, *mro = mro
+    if not issubclass(cls, BaseResult):
+        return {}
+
+    result = _get_field_tags_rec(mro)
+    result.update(cls.__config__.field_tags)
+    return result
+
+
+def get_fields_tags(cls: Type[BaseResult]) -> Dict[str, Set[IncludeTags]]:
+    result: Dict[str, Set[IncludeTags]] = {f: set() for f in cls.__fields__}
+
+    self_tags = cls.__config__.tags
+    result.update(_get_field_tags_rec(cls.__mro__))
+    for _, tags in result.items():
+        tags.update(self_tags)
+    return result
