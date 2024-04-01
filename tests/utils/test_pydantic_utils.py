@@ -7,6 +7,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.core import get_fields_tags
 from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 
@@ -260,3 +261,30 @@ def test_list_with_tags_with_union():
         ("f2.type", {IncludeTags.Render, IncludeTags.TypeField}),
         ("type", {IncludeTags.TypeField}),
     ]
+
+
+def test_get_field_tags_no_overwrite():
+    class A(MetricResult):
+        class Config:
+            field_tags = {"f": {IncludeTags.Current}}
+
+        f: str
+
+    class B(A):
+        class Config:
+            tags = {IncludeTags.Reference}
+
+    class C(MetricResult):
+        class Config:
+            field_tags = {"f": {IncludeTags.Reference}}
+
+        f: A
+
+    assert A.fields.get_field_tags("f") == {IncludeTags.Current}
+    assert B.fields.get_field_tags("f") == {IncludeTags.Current, IncludeTags.Reference}
+    assert C.fields.get_field_tags(["f", "f"]) == {IncludeTags.Current, IncludeTags.Reference}
+    B.fields.list_nested_fields_with_tags()
+    C.fields.list_nested_fields_with_tags()
+    get_fields_tags(B)
+    get_fields_tags(C)
+    assert A.fields.get_field_tags("f") == {IncludeTags.Current}

@@ -126,9 +126,7 @@ class BaseResult(BaseModel):
         include_tags = set(IncludeTags)
         include_tags.remove(IncludeTags.TypeField)
         if not include_render:
-            # include_tags.add(IncludeTags.Render)
             include_tags.remove(IncludeTags.Render)
-        # include_tags = set()
         return self.dict(include=include or self._build_include(include_tags=include_tags), exclude=exclude)
 
     def _build_include(
@@ -257,6 +255,6 @@ def get_fields_tags(cls: Type[BaseResult]) -> Dict[str, Set[IncludeTags]]:
 
     self_tags = cls.__config__.tags
     result.update(_get_field_tags_rec(cls.__mro__))
-    for _, tags in result.items():
-        tags.update(self_tags)
+    for field_name in list(result):
+        result[field_name] = result[field_name].union(self_tags)
     return result
