@@ -42,7 +42,7 @@ jobs:
               - '!src/evidently/ui/ui/**'
               - '!src/evidently/nbextension/**'
               - example_test.py
-              - examples/**.ipynb
+              - examples/**
               - requirements.dev.txt
               - requirements.min.txt
               - setup.py
