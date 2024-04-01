@@ -124,7 +124,7 @@ jobs:
       - name: Install dvc
         run: pip install dvc[gs]
 
-      - name: Pull data
+      - name: Pull test data
         run: dvc pull
 
       - uses: pnpm/action-setup@v2
