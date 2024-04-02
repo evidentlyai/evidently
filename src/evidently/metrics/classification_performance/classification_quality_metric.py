@@ -20,7 +20,11 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationQualityMetricResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "target_name": {IncludeTags.Parameter},
+        }
 
     current: DatasetClassificationQuality
     reference: Optional[DatasetClassificationQuality]

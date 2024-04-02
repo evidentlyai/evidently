@@ -28,7 +28,13 @@ from evidently.renderers.html_widgets import table_data
 class RecCasesTableResults(MetricResult):
     class Config:
         pd_include = False
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "user_ids": {IncludeTags.Extra},
+            "current": {IncludeTags.Current, IncludeTags.Extra},
+            "reference": {IncludeTags.Reference},
+            "current_train": {IncludeTags.Current, IncludeTags.Extra},
+            "reference_train": {IncludeTags.Reference},
+        }
 
     user_ids: List[str]
     current: Dict[str, pd.DataFrame]

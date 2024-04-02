@@ -35,6 +35,8 @@ class EmbeddingsDriftMetricResults(MetricResult):
         field_tags = {
             "current": {IncludeTags.Current, IncludeTags.Render},
             "reference": {IncludeTags.Reference, IncludeTags.Render},
+            "embeddings_name": {IncludeTags.Parameter},
+            "method_name": {IncludeTags.Parameter},
         }
 
     embeddings_name: str

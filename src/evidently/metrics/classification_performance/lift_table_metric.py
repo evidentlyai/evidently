@@ -14,6 +14,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_lift_table
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import IncludeTags
 from evidently.metric_results import Label
 from evidently.metric_results import PredictionData
 from evidently.model.widget import BaseWidgetInfo
@@ -46,6 +47,11 @@ LiftTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 class ClassificationLiftTableResults(MetricResult):
     class Config:
         pd_include = False
+        field_tags = {
+            "current_lift_table": {IncludeTags.Current},
+            "reference_lift_table": {IncludeTags.Reference},
+            "top": {IncludeTags.Parameter},
+        }
 
     current_lift_table: Optional[LiftTable] = None
     reference_lift_table: Optional[LiftTable] = None

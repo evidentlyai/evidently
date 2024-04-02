@@ -32,7 +32,11 @@ class TextDomainField(MetricResult):
 
 class TextDomainClassifierDriftResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current, IncludeTags.Extra},
+            "reference": {IncludeTags.Reference, IncludeTags.Extra},
+            "text_column_name": {IncludeTags.Parameter},
+        }
 
     text_column_name: str
     domain_classifier_roc_auc: float

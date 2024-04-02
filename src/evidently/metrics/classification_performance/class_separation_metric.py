@@ -31,7 +31,11 @@ class ClassificationClassSeparationPlotResults(MetricResult):
     class Config:
         dict_exclude_fields = {"current", "reference"}
         pd_exclude_fields = {"current", "reference"}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current, IncludeTags.Extra},
+            "reference": {IncludeTags.Reference, IncludeTags.Extra},
+            "target_name": {IncludeTags.Parameter},
+        }
 
     target_name: str
 

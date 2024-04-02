@@ -12,6 +12,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.calculations.classification_performance import k_probability_threshold
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetClassificationQuality
 from evidently.metric_results import PredictionData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
@@ -32,6 +33,8 @@ class ClassificationDummyMetricResults(MetricResult):
     class Config:
         dict_exclude_fields = {"metrics_matrix"}
         pd_exclude_fields = {"metrics_matrix"}
+
+        field_tags = {"by_reference_dummy": {IncludeTags.Reference}, "metrics_matrix": {IncludeTags.Extra}}
 
     dummy: DatasetClassificationQuality
     by_reference_dummy: Optional[DatasetClassificationQuality]

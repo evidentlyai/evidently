@@ -22,7 +22,11 @@ from evidently.utils.visualizations import plot_metric_k
 
 class TopKMetricResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "k": {IncludeTags.Parameter},
+        }
 
     k: int
     current: pd.Series

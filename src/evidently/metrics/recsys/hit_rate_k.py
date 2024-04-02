@@ -14,7 +14,11 @@ from evidently.renderers.base_renderer import default_renderer
 
 class HitRateKMetricResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "k": {IncludeTags.Parameter},
+        }
 
     k: int
     current: pd.Series

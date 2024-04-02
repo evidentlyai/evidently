@@ -14,7 +14,11 @@ from evidently.renderers.base_renderer import default_renderer
 
 class MRRKMetricResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "k": {IncludeTags.Parameter},
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+        }
 
     k: int
     current: pd.Series

@@ -33,7 +33,12 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "target_name": {IncludeTags.Parameter},
+            "columns": {IncludeTags.Parameter},
+        }
 
     current: StatsByFeature
     reference: Optional[StatsByFeature]

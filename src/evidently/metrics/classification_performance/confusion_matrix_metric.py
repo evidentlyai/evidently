@@ -24,7 +24,11 @@ DEFAULT_THRESHOLD = 0.5
 
 class ClassificationConfusionMatrixResult(MetricResult):
     class Config:
-        field_tags = {"current_matrix": {IncludeTags.Current}, "reference_matrix": {IncludeTags.Reference}}
+        field_tags = {
+            "current_matrix": {IncludeTags.Current},
+            "reference_matrix": {IncludeTags.Reference},
+            "target_names": {IncludeTags.Parameter},
+        }
 
     current_matrix: ConfusionMatrix
     reference_matrix: Optional[ConfusionMatrix]

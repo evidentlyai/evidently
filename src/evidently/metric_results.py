@@ -87,6 +87,8 @@ class ConfusionMatrix(MetricResult):
     class Config:
         smart_union = True
 
+        field_tags = {"labels": {IncludeTags.Parameter}}
+
     labels: Sequence[Label]
     values: list  # todo better typing
 
@@ -401,6 +403,7 @@ class DistributionIncluded(Distribution):
     class Config:
         tags: Set[IncludeTags] = set()
         dict_include = True
+        field_tags = {"x": {IncludeTags.Extra}}
 
 
 class ColumnCorrelations(MetricResult):

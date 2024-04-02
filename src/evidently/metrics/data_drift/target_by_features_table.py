@@ -34,7 +34,13 @@ from evidently.utils.data_preprocessing import DataDefinition
 class TargetByFeaturesTableResults(MetricResult):
     class Config:
         dict_include = False
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "target_name": {IncludeTags.Parameter},
+            "columns": {IncludeTags.Parameter},
+            "task": {IncludeTags.Parameter},
+        }
 
     current: StatsByFeature
     reference: Optional[StatsByFeature]

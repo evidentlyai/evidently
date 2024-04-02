@@ -15,7 +15,12 @@ from evidently.renderers.base_renderer import default_renderer
 
 class TrainStatsResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "current_n_users": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "reference_n_users": {IncludeTags.Reference},
+        }
 
     current: pd.Series
     current_n_users: int

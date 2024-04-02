@@ -37,7 +37,11 @@ class ClassificationQuality(MetricResult):
 
 class ClassificationQualityByClassResult(MetricResult):
     class Config:
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "columns": {IncludeTags.Parameter},
+        }
 
     columns: DatasetColumns
     current: ClassificationQuality
