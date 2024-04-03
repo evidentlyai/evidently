@@ -14,7 +14,16 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
         data={props.data}
         layout={{
           ...props.layout,
-          title: undefined
+          title: undefined,
+          font: { size: 20 },
+          legend: {
+            xanchor: 'right',
+            x: 1,
+            y: 1,
+            bgcolor: '#ebebeb'
+          },
+          paper_bgcolor: 'white',
+          plot_bgcolor: 'white'
           // width: (props.size.width ? props.size.width - 20 : undefined)
         }}
         config={{ responsive: true }}
