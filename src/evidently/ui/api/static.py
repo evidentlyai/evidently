@@ -7,7 +7,7 @@ from litestar.response import File
 from litestar.router import Router
 from litestar.static_files import create_static_files_router
 
-base_path = pathlib.Path(__file__).parent.parent.resolve() / "ui"
+base_path = pathlib.Path(__file__).parent.parent.resolve() / "assets"
 
 
 @litestar.get(
@@ -36,7 +36,6 @@ assets_router = Router(
     path="",
     route_handlers=[
         index,
-        create_static_files_router("/static", directories=[pathlib.Path(base_path) / "static"]),
-        create_static_files_router("/", directories=[pathlib.Path(base_path) / "assets"]),
+        create_static_files_router("/", directories=[base_path]),
     ],
 )

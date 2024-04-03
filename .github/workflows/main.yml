@@ -39,7 +39,7 @@ jobs:
           files_yaml: |
             evidently_python:
               - src/evidently/**
-              - '!src/evidently/ui/ui/**'
+              - '!src/evidently/ui/assets/**'
               - '!src/evidently/nbextension/**'
               - example_test.py
               - examples/**/*.ipynb
