@@ -67,10 +67,16 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
                   xanchor: 'right',
                   x: 1,
                   y: 1,
-                  bgcolor: '#ebebeb'
+                  bgcolor: '#ebebebbb'
                 },
                 paper_bgcolor: 'white',
-                plot_bgcolor: 'white'
+                plot_bgcolor: 'white',
+                yaxis: {
+                  gridcolor: '#d6d6d6'
+                },
+                xaxis: {
+                  gridcolor: '#d6d6d6'
+                }
               }}
               config={{ responsive: true }}
               style={{

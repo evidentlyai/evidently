@@ -20,10 +20,16 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
             xanchor: 'right',
             x: 1,
             y: 1,
-            bgcolor: '#ebebeb'
+            bgcolor: '#ebebebbb'
           },
           paper_bgcolor: 'white',
-          plot_bgcolor: 'white'
+          plot_bgcolor: 'white',
+          yaxis: {
+            gridcolor: '#d6d6d6'
+          },
+          xaxis: {
+            gridcolor: '#d6d6d6'
+          }
           // width: (props.size.width ? props.size.width - 20 : undefined)
         }}
         config={{ responsive: true }}
