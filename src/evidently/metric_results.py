@@ -142,6 +142,7 @@ class DatasetColumns(MetricResult):
     class Config:
         dict_exclude_fields = {"task", "target_type"}
         pd_include = False
+        tags = {IncludeTags.Parameter}
 
     utility_columns: DatasetUtilityColumns
     target_type: Optional[str]

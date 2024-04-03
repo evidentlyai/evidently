@@ -12,7 +12,6 @@ from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.core import ColumnType as ColumnType_data
-from evidently.core import IncludeTags
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import TextLength
@@ -42,9 +41,6 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 class TextDescriptorsDriftMetricResults(MetricResult):
-    class Config:
-        field_tags = {"dataset_columns": {IncludeTags.Extra}}
-
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float

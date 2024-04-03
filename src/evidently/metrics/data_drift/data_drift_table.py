@@ -37,7 +37,6 @@ class DataDriftTableResults(MetricResult):
     class Config:
         dict_exclude_fields = {"dataset_columns"}
         field_tags = {
-            "dataset_columns": {IncludeTags.Extra},
             "current_fi": {IncludeTags.Extra, IncludeTags.Current},
             "reference_fi": {IncludeTags.Extra, IncludeTags.Reference},
         }

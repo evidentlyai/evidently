@@ -2,8 +2,10 @@ import glob
 import hashlib
 import os
 import time
+from enum import Enum
 from importlib import import_module
 from inspect import isabstract
+from pprint import pprint
 from typing import Dict, Union
 from typing import List
 from typing import NamedTuple
@@ -15,6 +17,7 @@ from typing import Type
 import dataclasses
 import gspread
 from gspread import Worksheet
+from gspread.utils import rowcol_to_a1
 
 import evidently
 from evidently.base_metric import Metric
@@ -66,21 +69,21 @@ class MetricField:
         values = [self.get(c) for c in header]
         ws.append_row(values)
 
-    def check_and_update(self, ws: Worksheet, header: List[str], existing: "MetricField", row: int):
-        changed = False
+    def check_and_update(self, ws: Worksheet, header: List[str], existing: "MetricField", row: int) -> List[dict]:
+        updates = []
         for f in UPDATE_FIELDS:
             value = getattr(self, f)
             if value != getattr(existing, f):
                 print(f"updating {f} with new value {value}")
-                changed = True
-                ws.update_cell(row + 1, header.index(f) + 1, value)
+                updates.append({"range": rowcol_to_a1(row + 1, header.index(f) + 1), "values": [[value]]})
+                # ws.update_cell(row + 1, header.index(f) + 1, value)
                 try:
                     setattr(existing, f, value)
                 except AttributeError:
                     print(existing, f, value, self)
                     raise
-                time.sleep(1)
-        return changed
+                # time.sleep(1)
+        return updates
 
     @property
     def keep(self) -> Optional[bool]:
@@ -169,29 +172,36 @@ def parse_worksheet(worksheet: Worksheet) -> Tuple[List[str], List[MetricField]]
     return header, result
 
 
-def check_additional(mf: MetricField) -> float:
+class Status(Enum):
+    Valid = "valid"
+    Invalid = "invalid"
+    WrongTags = "wrong tags"
+    NotFilled = "not filled"
+
+
+def check_additional(mf: MetricField) -> Status:
     tags = mf.tags_parsed
     # print(mf.keep, mf.drop, tags,)
     if mf.keep:
         # print(mf)
         if any(t in EXCLUDE_TAGS for t in tags):
             print(mf.repr(), "should be kept but is dropped")
-            return 0
+            return Status.Invalid
 
     if mf.drop:
         # print(mf)
         if all(t not in EXCLUDE_TAGS for t in tags):
             print(mf.repr(), "should be dropped but is kept")
-            return 0
+            return Status.Invalid
 
     for tag in TAG_COLUMNS:
         if mf.tag_column_set(tag) and not mf.has_tag(tag) or mf.has_tag(tag) and not mf.tag_column_set(tag):
             print(mf.repr(), f"has incosistent tags: {mf.tags} vs {mf.additional_data}")
-            return 0.5
+            return Status.WrongTags
 
     if mf.keep is None:
-        return -1
-    return 1
+        return Status.NotFilled
+    return Status.Valid
 
 
 COLORING = True
@@ -199,36 +209,38 @@ SHADES = 256
 MIN_BASE = 0.5
 COL_AMPL = 0.2
 
+
 def metric_color(mf: MetricField):
     h = int(hashlib.md5(mf.metric_id.encode("utf8")).hexdigest(), 16)
     base = (h % SHADES) / SHADES * (1 - MIN_BASE - COL_AMPL)
     col_ampls = h % 1000
     return {
-            "red": MIN_BASE + base + (col_ampls // 100) / 10 * COL_AMPL,
-            "green": MIN_BASE + base + ((col_ampls % 100) // 10) / 10 * COL_AMPL,
-            "blue": MIN_BASE + base + (col_ampls % 10) / 10 * COL_AMPL
-        }
+        "red": MIN_BASE + base + (col_ampls // 100) / 10 * COL_AMPL,
+        "green": MIN_BASE + base + ((col_ampls % 100) // 10) / 10 * COL_AMPL,
+        "blue": MIN_BASE + base + (col_ampls % 10) / 10 * COL_AMPL
+    }
 
-def recolor_row(mf: MetricField, check_result: float, row_num: int):
+
+def recolor_row(mf: MetricField, check_result: Status, row_num: int):
     if not COLORING:
         return
     color_map = {
-        0: {
+        Status.Invalid: {
             "red": 0.9,
             "green": 0.7,
             "blue": 0.7
         },
-        1: {
+        Status.Valid: {
             "red": 0.7,
             "green": 0.9,
             "blue": 0.7
         },
-        0.5: {
+        Status.WrongTags: {
             "red": 0.6,
             "green": 0.9,
             "blue": 0.8
         },
-        -1: {
+        Status.NotFilled: {
             "red": 1,
             "green": 1,
             "blue": 1
@@ -252,29 +264,31 @@ def open_spreadsheet(name="Metric Fields v1"):
     # wtf am i doin
     doc_mf_dict = {mf: (mf, i + 1) for i, mf in enumerate(doc_mf)}
 
-    changed = set()
-
+    updates = []
     to_upload = []
     for mf in code_mf:
         if mf in doc_mf_dict:
             # print(f"existing {doc_mf_dict[mf]}")
-            if mf.check_and_update(ws, header, *doc_mf_dict[mf]):
-                changed.add(mf)
+            updates.extend(mf.check_and_update(ws, header, *doc_mf_dict[mf]))
             continue
         to_upload.append(mf)
-
+    # updates = updates[:1]
+    # pprint(updates)
+    ws.batch_update(updates)
     for i, mf in enumerate(to_upload):
         mf.upload(ws, header)
         time.sleep(1)
 
     format_batch = []
+    valid_batch = []
     for mf, row_num in doc_mf_dict.values():
         check_result = check_additional(mf)
-
+        valid_batch.append({"range": rowcol_to_a1(row_num + 1, header.index("valid") + 1), "values": [[check_result.value]]})
         recolor = recolor_row(mf, check_result, row_num)
         if recolor is not None:
             format_batch.extend(recolor)
     ws.batch_format(format_batch)
+    ws.batch_update(valid_batch)
 
 
 def main():

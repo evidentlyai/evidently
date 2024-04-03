@@ -33,6 +33,7 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 class RegressionMetrics(MetricResult):
     class Config:
         pd_exclude_fields = {"underperformance"}
+        field_tags = {"underperformance": {IncludeTags.Extra}}
 
     r2_score: float
     rmse: float
@@ -47,7 +48,21 @@ class RegressionPerformanceMetricsResults(MetricResult):
     class Config:
         dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
         pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_bias", "error_normality"}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "rmse_default": {IncludeTags.Extra},
+            "me_default_sigma": {IncludeTags.Extra},
+            "mean_abs_error_default": {IncludeTags.Extra},
+            "mean_abs_perc_error_default": {IncludeTags.Extra},
+            "abs_error_max_default": {IncludeTags.Extra},
+            "error_std": {IncludeTags.Extra},
+            "abs_error_std": {IncludeTags.Extra},
+            "abs_perc_error_std": {IncludeTags.Extra},
+            "error_normality": {IncludeTags.Extra},
+            "vals_for_plots": {IncludeTags.Render},
+            "error_bias": {IncludeTags.Extra},
+        }
 
     columns: DatasetColumns
 
