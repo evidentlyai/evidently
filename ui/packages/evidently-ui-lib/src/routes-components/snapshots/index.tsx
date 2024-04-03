@@ -151,7 +151,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                 color="primary"
                 disabled={isNavigation}
               >
-                Refresh {`${type.toLocaleUpperCase()}S`}
+                Refresh {`${type}s`}
               </Button>
             </Box>
           </Grid>
