@@ -87,7 +87,7 @@ export const DashboardDateFilter = ({ dataRanges }: DashboardDateFilterProps) =>
         <FormControl fullWidth>
           <InputLabel>Period</InputLabel>
           <Select
-            variant="standard"
+            variant="outlined"
             defaultValue={''}
             onChange={(event) => {
               const [valueStr, durationStr] = (event.target.value as string).split(',')
