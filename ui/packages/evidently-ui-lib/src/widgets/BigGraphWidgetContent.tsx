@@ -16,12 +16,6 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
           ...props.layout,
           title: undefined,
           font: { size: 20 },
-          legend: {
-            xanchor: 'right',
-            x: 1,
-            y: 1,
-            bgcolor: '#ebebebbb'
-          },
           paper_bgcolor: 'white',
           plot_bgcolor: 'white',
           yaxis: {
