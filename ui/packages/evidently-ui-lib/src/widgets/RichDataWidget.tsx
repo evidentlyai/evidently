@@ -63,12 +63,6 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
                 ...props.graph.layout,
                 title: undefined,
                 font: { size: 20 },
-                legend: {
-                  xanchor: 'right',
-                  x: 1,
-                  y: 1,
-                  bgcolor: '#ebebebbb'
-                },
                 paper_bgcolor: 'white',
                 plot_bgcolor: 'white',
                 yaxis: {
