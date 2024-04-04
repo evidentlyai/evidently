@@ -2,20 +2,20 @@ import pytest
 from litestar.testing import TestClient
 
 from evidently.ui.app import create_app
-from evidently.ui.config import Config
+from evidently.ui.config import LocalConfig
 from evidently.ui.demo_projects import DEMO_PROJECTS
 
 
 @pytest.fixture
 def test_client():
-    return TestClient(create_app(config=Config()))
+    return TestClient(create_app(config=LocalConfig()))
 
 
 @pytest.fixture
 def test_client_with_demo(tmp_path):
     dp = DEMO_PROJECTS["bikes"]
     dp.create(str(tmp_path))
-    config = Config()
+    config = LocalConfig()
     config.storage.path = str(tmp_path)
 
     return TestClient(create_app(config=config))

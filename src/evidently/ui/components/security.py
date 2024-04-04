@@ -1,0 +1,96 @@
+import uuid
+from abc import ABC
+from typing import Dict
+from typing import Optional
+
+from litestar import Request
+from litestar.connection import ASGIConnection
+from litestar.di import Provide
+from litestar.handlers import BaseRouteHandler
+from litestar.types import ASGIApp
+from litestar.types import Receive
+from litestar.types import Scope
+from litestar.types import Send
+
+from evidently._pydantic_compat import SecretStr
+from evidently.ui.components.base import Component
+from evidently.ui.errors import NotEnoughPermissions
+from evidently.ui.security.service import SecurityService
+from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import UserID
+
+
+class SecurityComponent(Component, ABC):
+    def get_security(self) -> SecurityService:
+        raise NotImplementedError
+
+    def get_middlewares(self):
+        security = self.get_security()
+
+        def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
+            async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
+                request: Request = Request(scope)
+                auth = security.authenticate(request)
+                if auth is None:
+                    scope["auth"] = {
+                        "authenticated": False,
+                    }
+                else:
+                    scope["auth"] = {
+                        "user_id": auth.id,
+                        "org_id": auth.org_id,
+                        "authenticated": True,
+                    }
+                await app(scope, receive, send)
+
+            return middleware
+
+        return [auth_middleware_factory]
+
+    def get_auth_guard(self):
+        def is_authenticated(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+            if not connection.scope["auth"]["authenticated"]:
+                raise NotEnoughPermissions()
+
+        return is_authenticated
+
+
+async def get_user_id() -> UserID:
+    return UserID("00000000-0000-0000-0000-000000000001")
+
+
+async def get_org_id() -> Optional[OrgID]:
+    return None
+
+
+class SimpleSecurity(SecurityComponent):
+    def get_dependencies(self) -> Dict[str, Provide]:
+        return {
+            "user_id": Provide(get_user_id),
+            "org_id": Provide(get_org_id),
+        }
+
+
+class NoSecurityConfig(SimpleSecurity):
+    class Config:
+        type_alias = "none"
+
+    dummy_user_id: uuid.UUID = uuid.UUID("00000000-0000-0000-0000-000000000001")
+    dummy_org_id: uuid.UUID = uuid.UUID("00000000-0000-0000-0000-000000000002")
+
+    def get_security(self) -> SecurityService:
+        from evidently.ui.security.no_security import NoSecurityService
+
+        return NoSecurityService(self)
+
+
+class TokenSecurityConfig(SimpleSecurity):
+    class Config:
+        type_alias = "token"
+
+    token: SecretStr
+
+    def get_security(self) -> SecurityService:
+        from evidently.ui.security.token import TokenSecurity
+
+        return TokenSecurity(self)

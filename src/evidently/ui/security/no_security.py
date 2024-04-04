@@ -1,12 +1,8 @@
-import uuid
-
 from litestar import Request
 
-from .config import NoSecurityConfig
+from ..components.security import NoSecurityConfig
 from .service import SecurityService
 from .service import User
-
-_test_uuid_ = uuid.uuid4()
 
 
 class NoSecurityService(SecurityService):
