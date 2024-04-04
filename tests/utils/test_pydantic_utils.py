@@ -7,7 +7,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
-from evidently.core import get_fields_tags
+from evidently.core import get_all_fields_tags
 from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 
@@ -285,6 +285,6 @@ def test_get_field_tags_no_overwrite():
     assert C.fields.get_field_tags(["f", "f"]) == {IncludeTags.Current, IncludeTags.Reference}
     B.fields.list_nested_fields_with_tags()
     C.fields.list_nested_fields_with_tags()
-    get_fields_tags(B)
-    get_fields_tags(C)
+    get_all_fields_tags(B)
+    get_all_fields_tags(C)
     assert A.fields.get_field_tags("f") == {IncludeTags.Current}

@@ -13,6 +13,7 @@ from evidently.test_preset import MulticlassClassificationTestPreset
 from evidently.test_preset import NoTargetPerformanceTestPreset
 from evidently.test_preset import RegressionTestPreset
 from evidently.test_suite import TestSuite
+from tests.conftest import slow
 
 
 @pytest.fixture
@@ -93,6 +94,7 @@ def bcancer():
     return bcancer_cur, bcancer_ref
 
 
+@slow
 @pytest.mark.parametrize(
     "preset,data",
     [

@@ -5,6 +5,7 @@ import pytest
 
 from evidently.base_metric import Metric
 from evidently.report import Report
+from tests.conftest import slow
 from tests.conftest import smart_assert_equal
 from tests.multitest.conftest import Error
 from tests.multitest.conftest import TestOutcome
@@ -21,7 +22,9 @@ def _check_dataframe(report: Report):
     assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.parametrize("raw_data", [True, False], ids=["raw_data", "agg_data"])
+@pytest.mark.parametrize(
+    "raw_data", [pytest.param(True, marks=[slow], id="raw_data"), pytest.param(False, id="agg_data")]
+)
 def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome, raw_data, tmp_path):
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 

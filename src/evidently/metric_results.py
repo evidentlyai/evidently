@@ -74,7 +74,6 @@ def column_scatter_valudator(value):
 
 class Distribution(MetricResult):
     class Config:
-        dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
         smart_union = True
