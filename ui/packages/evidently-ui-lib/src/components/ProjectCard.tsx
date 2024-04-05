@@ -22,6 +22,7 @@ import { ProjectInfo } from '~/api'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTheme } from '@mui/material/styles'
 
 // validation here
 const editProjectInfoSchema = z.object({
@@ -50,6 +51,8 @@ export const EditProjectInfoForm = ({
       description: project.description || ''
     }
   })
+
+  const { palette } = useTheme()
 
   // for form submitting
   const submit = useSubmit()
@@ -86,7 +89,7 @@ export const EditProjectInfoForm = ({
           helperText={errors.name?.message}
           placeholder="Name"
           InputProps={{
-            style: { color: 'red', fontSize: '20px', fontWeight: '500' }
+            style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
           }}
           disabled={disabled}
           variant="standard"

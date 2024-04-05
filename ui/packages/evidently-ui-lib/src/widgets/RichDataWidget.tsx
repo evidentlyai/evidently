@@ -61,7 +61,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
               data={props.graph.data}
               layout={{
                 ...props.graph.layout,
-                title: undefined
+                title: undefined,
               }}
               config={{ responsive: true }}
               style={{
