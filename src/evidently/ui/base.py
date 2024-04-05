@@ -103,6 +103,7 @@ class Team(BaseModel):
 class User(BaseModel):
     id: UserID = Field(default_factory=uuid.uuid4)
     name: str
+    email: str = ""
 
 
 def _default_dashboard():
@@ -406,10 +407,10 @@ class AuthManager(EvidentlyBaseModel):
         self._delete_team(team_id)
 
     @abstractmethod
-    def _list_team_users(self, team_id: TeamID) -> List[User]:
+    def _list_team_users(self, team_id: TeamID) -> List[UserID]:
         raise NotImplementedError
 
-    def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[User]:
+    def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[UserID]:
         if not self.check_team_permission(user_id, team_id, TeamPermission.READ):
             raise TeamNotFound()
         return self._list_team_users(team_id)

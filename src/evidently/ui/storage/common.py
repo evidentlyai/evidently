@@ -73,7 +73,7 @@ class NoopAuthManager(AuthManager):
     def _delete_team(self, team_id: TeamID):
         pass
 
-    def _list_team_users(self, team_id: TeamID) -> List[User]:
+    def _list_team_users(self, team_id: TeamID) -> List[UserID]:
         return []
 
 
