@@ -13,7 +13,7 @@ from evidently.ui.api.service import service_api
 from evidently.ui.api.static import add_static
 from evidently.ui.config import Config
 from evidently.ui.config import LocalConfig
-from evidently.ui.config import load_config2
+from evidently.ui.config import load_config
 from evidently.ui.config import settings
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.security.token import TokenSecurityConfig
@@ -29,20 +29,21 @@ def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Respons
 
 
 def create_app(config: Config):
-    ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
-    app = Litestar(
-        route_handlers=[
-            api_router(config.security.get_auth_guard()),
-        ],
-        exception_handlers={
-            EvidentlyServiceError: unicorn_exception_handler,
-        },
-        dependencies=config.get_dependencies(),
-        middleware=config.get_middlewares(),
-        debug=True,
-    )
-    add_static(app, ui_path)
-    return app
+    with config.context():
+        ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
+        app = Litestar(
+            route_handlers=[
+                api_router(config.security.get_auth_guard()),
+            ],
+            exception_handlers={
+                EvidentlyServiceError: unicorn_exception_handler,
+            },
+            dependencies=config.get_dependencies(),
+            middleware=config.get_middlewares(),
+            debug=True,
+        )
+        add_static(app, ui_path)
+        return app
 
 
 def run(config: Config):
@@ -58,7 +59,7 @@ def run_local(
     conf_path: str = None,
 ):
     settings.configure(settings_module=conf_path)
-    config = load_config2(LocalConfig, settings)
+    config = load_config(LocalConfig, settings)
     config.service.host = host
     config.service.port = port
     config.storage.path = workspace

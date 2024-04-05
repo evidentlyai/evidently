@@ -14,8 +14,10 @@ from litestar.types import Send
 
 from evidently._pydantic_compat import SecretStr
 from evidently.ui.components.base import Component
+from evidently.ui.components.base import ComponentContext
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.security.service import SecurityService
+from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
@@ -24,7 +26,7 @@ class SecurityComponent(Component, ABC):
     def get_security(self) -> SecurityService:
         raise NotImplementedError
 
-    def get_middlewares(self):
+    def get_middlewares(self, ctx: ComponentContext):
         security = self.get_security()
 
         def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
@@ -64,10 +66,13 @@ async def get_org_id() -> Optional[OrgID]:
 
 
 class SimpleSecurity(SecurityComponent):
-    def get_dependencies(self) -> Dict[str, Provide]:
+    def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         return {
             "user_id": Provide(get_user_id),
             "org_id": Provide(get_org_id),
+            "security": Provide(self.get_security),
+            "security_config": Provide(lambda: self),
+            "auth_manager": Provide(lambda: NoopAuthManager()),
         }
 
 

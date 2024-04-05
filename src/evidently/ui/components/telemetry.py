@@ -1,5 +1,4 @@
 from functools import partial
-from typing import Any
 from typing import ClassVar
 from typing import Dict
 
@@ -9,17 +8,7 @@ from litestar.di import Provide
 import evidently
 from evidently.telemetry import DO_NOT_TRACK
 from evidently.ui.components.base import Component
-
-
-async def get_event_logger(telemetry_config: Any):
-    _event_logger = IterativeTelemetryLogger(
-        telemetry_config.tool_name,
-        evidently.__version__,
-        url=telemetry_config.url,
-        token=telemetry_config.token,
-        enabled=telemetry_config.enabled and DO_NOT_TRACK is None,
-    )
-    yield partial(_event_logger.send_event, telemetry_config.service_name)
+from evidently.ui.components.base import ComponentContext
 
 
 class TelemetryComponent(Component):
@@ -31,8 +20,17 @@ class TelemetryComponent(Component):
     token: str = "s2s.5xmxpip2ax4ut5rrihfjhb.uqcoh71nviknmzp77ev6rd"
     enabled: bool = True
 
-    def get_dependencies(self) -> Dict[str, Provide]:
+    def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         return {
-            "telemetry_config": Provide(lambda: self, sync_to_thread=True),
-            "log_event": Provide(get_event_logger),
+            "log_event": Provide(self.get_event_logger),
         }
+
+    async def get_event_logger(self):
+        _event_logger = IterativeTelemetryLogger(
+            self.tool_name,
+            evidently.__version__,
+            url=self.url,
+            token=self.token,
+            enabled=self.enabled and DO_NOT_TRACK is None,
+        )
+        yield partial(_event_logger.send_event, self.service_name)
