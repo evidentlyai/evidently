@@ -1,11 +1,8 @@
 from typing import TYPE_CHECKING
 
-try:
-    from pydantic import v1  # noqa
+import pydantic
 
-    v = 2
-except ImportError:
-    v = 1
+v = 1 if pydantic.__version__.startswith("1") else 2
 
 if v == 2:
     from pydantic.v1 import UUID4
