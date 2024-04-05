@@ -52,11 +52,7 @@ export const EditProjectInfoForm = ({
     }
   })
 
-  const {
-    palette: {
-      primary: { main: mainColor }
-    }
-  } = useTheme()
+  const { palette } = useTheme()
 
   // for form submitting
   const submit = useSubmit()
@@ -93,7 +89,7 @@ export const EditProjectInfoForm = ({
           helperText={errors.name?.message}
           placeholder="Name"
           InputProps={{
-            style: { color: mainColor, fontSize: '20px', fontWeight: '500' }
+            style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
           }}
           disabled={disabled}
           variant="standard"
