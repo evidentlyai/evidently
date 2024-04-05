@@ -54,7 +54,7 @@ class FactoryComponent(Component, Generic[DT], ABC):
     use_cache: ClassVar[bool] = True
     sync_to_thread: ClassVar[bool] = False
 
-    def dependency_factory(self) -> Callable[[...], DT]:
+    def dependency_factory(self) -> Callable[..., DT]:
         raise NotImplementedError(self.__class__)
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
