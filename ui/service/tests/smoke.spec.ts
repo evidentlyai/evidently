@@ -162,10 +162,10 @@ test.skip('Check header of ColumnSummaryMetric', async ({ page }) => {
   const expectedHeaderCells = ['', 'current', 'reference']
 
   await page.goto('/')
-  await page.getByRole('link', { name: 'Home' }).click()
-  await page.getByRole('link', { name: 'Demo project - Reviews' }).click()
-  await page.getByRole('tab', { name: 'reports' }).click()
-  await page.getByRole('link', { name: 'View' }).first().click()
+  await page.getByRole('link', { name: 'Home', exact: true }).click()
+  await page.getByRole('link', { name: 'Demo project - Reviews', exact: true }).click()
+  await page.getByRole('tab', { name: 'Reports', exact: true }).click()
+  await page.getByRole('link', { name: 'View', exact: true }).first().click()
   const graph = await page.getByText('OOVnumcurrentreference')
   await expect(graph).toBeVisible()
 
