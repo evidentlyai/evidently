@@ -14,7 +14,7 @@ export default {
       'evidently-ui-lib/routes-components/snapshots'
     )
 
-    const Component = () => <SnapshotTemplate type="test-suite" />
+    const Component = () => <SnapshotTemplate type="test suite" />
 
     return { ...rest, Component }
   },

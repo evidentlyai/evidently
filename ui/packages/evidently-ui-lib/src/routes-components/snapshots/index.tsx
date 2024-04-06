@@ -5,7 +5,6 @@ import {
   Button,
   FormControlLabel,
   Grid,
-  Link,
   Switch,
   Table,
   TableBody,
@@ -72,7 +71,7 @@ const metadataToOneString: (metadata: MetadataValueType) => string = (
     })
     .join(' ')
 
-export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) => {
+export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) => {
   const { projectId } = useParams()
   const snapshots = useLoaderData() as loaderData
   const matches = useMatches()
@@ -199,7 +198,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
             <TableCell>
               {type === 'report'
                 ? 'Report ID'
-                : type === 'test-suite'
+                : type === 'test suite'
                 ? 'Test Suite ID'
                 : 'indefined'}
             </TableCell>
@@ -266,9 +265,9 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test-suite' }) =>
                 </Typography>
               </TableCell>
               <TableCell>
-                <Link component={RouterLink} to={`${snapshot.id}`}>
-                  <Button>View</Button>
-                </Link>
+                <Button component={RouterLink} to={`${snapshot.id}`}>
+                  View
+                </Button>
                 <DownloadButton
                   downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
                 />
