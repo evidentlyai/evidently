@@ -11,13 +11,12 @@ const { loader } = injectAPI({ api })
 import DashboardRoute from './dashboard'
 import ReportsRoute from './reports'
 import TestSuitesRoute from './test-suites'
-import TestSuitesOldRoute from './test_suites'
 
 const PROJECT_TABS = [
   { id: 'dashboard', link: '.', label: 'Dashboard' },
   { id: 'reports', link: 'reports', label: 'Reports' },
   { id: 'test_suites', link: 'test-suites', label: 'Test suites' },
-  { id: 'comparisons', link: 'comparisons', disabled: true }
+  { id: 'comparisons', link: 'comparisons', disabled: true, label: 'Comparisons' }
 ]
 
 export default {
@@ -32,5 +31,5 @@ export default {
     return { Component, ...rest }
   },
   loader,
-  children: [DashboardRoute, ReportsRoute, TestSuitesRoute, TestSuitesOldRoute]
+  children: [DashboardRoute, ReportsRoute, TestSuitesRoute]
 } satisfies RouteObject
