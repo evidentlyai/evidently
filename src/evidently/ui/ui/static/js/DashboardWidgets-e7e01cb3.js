@@ -1,0 +1,1 @@
+import{j as r,G as i}from"./vendor-d5d40d46.js";import{D as o}from"./DashboardContent-ffa58c4b.js";import"./createSvgIcon-82cd5c29.js";import"./Edit-40047b20.js";const d=({widgets:t,ItemWrapper:s})=>r.jsx(r.Fragment,{children:r.jsx(i,{container:!0,spacing:3,direction:"row",alignItems:"stretch",children:r.jsx(o,{widgets:t,ItemWrapper:s})})});export{d as DashboardWidgets};
