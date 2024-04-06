@@ -14,9 +14,9 @@ import TestSuitesRoute from './test-suites'
 import TestSuitesOldRoute from './test_suites'
 
 const PROJECT_TABS = [
-  { id: 'dashboard', link: '.' },
-  { id: 'reports', link: 'reports' },
-  { id: 'test_suites', link: 'test-suites', label: 'test suites' },
+  { id: 'dashboard', link: '.', label: 'Dashboard' },
+  { id: 'reports', link: 'reports', label: 'Reports' },
+  { id: 'test_suites', link: 'test-suites', label: 'Test suites' },
   { id: 'comparisons', link: 'comparisons', disabled: true }
 ]
 
