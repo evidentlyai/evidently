@@ -10,9 +10,11 @@ const goToFirstSnapshotAndExpanSomeWidgets = async ({
   projectName: string
 }) => {
   await page.goto('/')
-  await page.getByRole('link', { name: projectName }).click()
-  await page.getByRole('tab', { name: isTestSuite ? 'Test Suites' : 'Reports' }).click()
-  await page.getByRole('link', { name: 'View' }).first().click()
+  await page.getByRole('link', { name: projectName, exact: true }).click()
+  await page
+    .getByRole('tab', { name: isTestSuite ? 'test suites' : 'reports', exact: true })
+    .click()
+  await page.getByRole('link', { name: 'View', exact: true }).first().click()
   await page.waitForLoadState('networkidle')
 
   const Details = page.getByRole('button', { name: 'Details' })
