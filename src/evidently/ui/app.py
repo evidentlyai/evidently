@@ -9,7 +9,9 @@ from litestar import Litestar
 from litestar import Request
 from litestar import Response
 from litestar import Router
+from litestar.connection import ASGIConnection
 from litestar.di import Provide
+from litestar.handlers import BaseRouteHandler
 from litestar.types import ASGIApp
 from litestar.types import Receive
 from litestar.types import Scope
@@ -17,14 +19,13 @@ from litestar.types import Send
 
 import evidently
 from evidently.telemetry import DO_NOT_TRACK
-from evidently.ui.api.projects import project_api
 from evidently.ui.api.service import service_api
 from evidently.ui.api.static import assets_router
 from evidently.ui.base import AuthManager
 from evidently.ui.config import Config
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
-from evidently.ui.errors import EvidentlyServiceError
+from evidently.ui.errors import EvidentlyServiceError, NotEnoughPermissions
 from evidently.ui.security.config import NoSecurityConfig
 from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
@@ -36,6 +37,7 @@ from evidently.ui.storage.local import create_local_project_manager
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 from evidently.ui.utils import parse_json
+from evidently.ui.api.projects import create_projects_api
 
 
 def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
@@ -69,6 +71,11 @@ def create_project_manager(
     return create_local_project_manager(path, autorefresh, auth_manager)
 
 
+def is_authenticated(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+    if not connection.scope["auth"]["authenticated"]:
+        raise NotEnoughPermissions()
+
+
 def create_app(config: Config, debug: bool = False):
     config_security = config.security
     security: SecurityService
@@ -97,7 +104,13 @@ def create_app(config: Config, debug: bool = False):
 
     app = Litestar(
         route_handlers=[
-            Router(path="/api", route_handlers=[project_api, service_api]),
+            Router(
+                path="/api",
+                route_handlers=[
+                    create_projects_api(guard=is_authenticated),
+                    service_api,
+                ],
+            ),
             assets_router,
         ],
         exception_handlers={
@@ -107,7 +120,9 @@ def create_app(config: Config, debug: bool = False):
             "telemetry_config": Provide(lambda: config.telemetry, sync_to_thread=False),
             "project_manager": Provide(
                 lambda: create_project_manager(
-                    config.storage.path, NoopAuthManager(), autorefresh=config.storage.autorefresh
+                    config.storage.path,
+                    NoopAuthManager(),
+                    autorefresh=config.storage.autorefresh,
                 ),
                 sync_to_thread=False,
                 use_cache=True,
