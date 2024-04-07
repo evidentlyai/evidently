@@ -45,8 +45,7 @@ export const theme = createTheme({
         text: {
           '&:hover': {
             color: mainRed,
-            borderColor: mainRed,
-            background: 'white'
+            borderColor: mainRed
           }
         }
       }
