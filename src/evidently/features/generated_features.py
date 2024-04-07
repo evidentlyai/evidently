@@ -46,7 +46,7 @@ class GeneratedFeature(EvidentlyBaseModel):
             if isinstance(value, list):
                 attributes.append(tuple(value))
             elif isinstance(value, dict):
-                attributes.append(tuple([(k, value[k]) for k in sorted(value.items())]))
+                attributes.append(tuple([(k, value[k]) for k in sorted(value.keys())]))
             else:
                 attributes.append(value)
         params = tuple(attributes)
