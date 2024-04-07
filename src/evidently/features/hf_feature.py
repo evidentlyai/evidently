@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional
 
 import evaluate
@@ -10,6 +11,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class HFFeature(GeneratedFeature):
+    feature_id: str
     column_name: str
     path: str
     config_name: str
@@ -27,6 +29,7 @@ class HFFeature(GeneratedFeature):
         result_scores_field: str,
         display_name: Optional[str] = None,
     ):
+        self.feature_id = str(uuid.uuid4())
         self.result_scores_field = result_scores_field
         self.path = path
         self.config_name = config_name
@@ -44,12 +47,14 @@ class HFFeature(GeneratedFeature):
             **self.model_params,
         )
         scores = model.compute(predictions=column_data, **self.compute_params)
-        return pd.DataFrame(dict([(self.column_name, scores[self.result_scores_field])]))
+        return pd.DataFrame(dict([(self._feature_column_name(), scores[self.result_scores_field])]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
             self,
-            self.column_name,
+            self._feature_column_name(),
             self.display_name or f"Hugging Face % for {self.column_name}",
         )
 
+    def _feature_column_name(self) -> str:
+        return self.column_name + "_" + self.feature_id

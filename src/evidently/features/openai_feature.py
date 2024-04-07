@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional
 
 import pandas as pd
@@ -13,6 +14,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class OpenAIFeature(GeneratedFeature):
     column_name: str
+    feature_id: str
     prompt: str
     prompt_replace_string: str
     model: str
@@ -26,6 +28,7 @@ class OpenAIFeature(GeneratedFeature):
         feature_type: str,
         display_name: Optional[str] = None,
     ):
+        self.feature_id = str(uuid.uuid4())
         self.prompt = prompt
         self.prompt_replace_string = prompt_replace_string
         self.model = model
@@ -49,11 +52,14 @@ class OpenAIFeature(GeneratedFeature):
                 except ValueError:
                     result.append(None)
 
-        return pd.DataFrame(dict([(self.column_name, result)]))
+        return pd.DataFrame(dict([(self._feature_column_name(), result)]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
             self,
-            self.column_name,
+            self._feature_column_name(),
             self.display_name or f"OpenAI for {self.column_name}",
         )
+
+    def _feature_column_name(self) -> str:
+        return self.column_name + "_" + self.feature_id
