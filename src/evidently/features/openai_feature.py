@@ -1,4 +1,5 @@
 import uuid
+from typing import List
 from typing import Optional
 
 import pandas as pd
@@ -18,6 +19,7 @@ class OpenAIFeature(GeneratedFeature):
     prompt: str
     prompt_replace_string: str
     model: str
+    possible_values: Optional[List[str]]
 
     def __init__(
         self,
@@ -26,6 +28,7 @@ class OpenAIFeature(GeneratedFeature):
         prompt: str,
         prompt_replace_string: str,
         feature_type: str,
+        possible_values: Optional[List[str]] = None,
         display_name: Optional[str] = None,
     ):
         self.feature_id = str(uuid.uuid4())
@@ -35,6 +38,7 @@ class OpenAIFeature(GeneratedFeature):
         self.feature_type = ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical
         self.column_name = column_name
         self.display_name = display_name
+        self.possible_values = [v.upper for v in possible_values] if possible_values else None
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
@@ -44,11 +48,12 @@ class OpenAIFeature(GeneratedFeature):
         for value in column_data:
             prompt = self.prompt.replace(self.prompt_replace_string, value)
             prompt_answer = client.completions.create(model=self.model, prompt=prompt)
+            processed_response = _postprocess_response(prompt_answer.choices[0].text, self.possible_values)
             if self.feature_type == "cat":
-                result.append(prompt_answer.choices[0].text)
+                result.append(processed_response)
             else:
                 try:
-                    result.append(float(prompt_answer.choices[0].text))
+                    result.append(float(processed_response))
                 except ValueError:
                     result.append(None)
 
@@ -63,3 +68,16 @@ class OpenAIFeature(GeneratedFeature):
 
     def _feature_column_name(self) -> str:
         return self.column_name + "_" + self.feature_id
+
+
+def _postprocess_response(response: str, possible_values: List[str]) -> Optional[str]:
+    for line in response.split("\n"):
+        line = line.strip().upper()
+        if line:
+            if possible_values:
+                if line in possible_values:
+                    return line
+                else:
+                    return None
+            return line
+    return None
