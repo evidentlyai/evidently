@@ -265,12 +265,14 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
                 </Typography>
               </TableCell>
               <TableCell>
-                <Button component={RouterLink} to={`${snapshot.id}`}>
-                  View
-                </Button>
-                <DownloadButton
-                  downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
-                />
+                <Box display={'flex'} gap={1}>
+                  <Button component={RouterLink} to={`${snapshot.id}`}>
+                    View
+                  </Button>
+                  <DownloadButton
+                    downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
+                  />
+                </Box>
               </TableCell>
             </TableRow>
           ))}
