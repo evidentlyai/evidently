@@ -6,6 +6,7 @@ from openai import OpenAI
 
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -15,7 +16,6 @@ class OpenAIFeature(GeneratedFeature):
     prompt: str
     prompt_replace_string: str
     model: str
-    feature_type: str
 
     def __init__(
         self,
@@ -29,7 +29,7 @@ class OpenAIFeature(GeneratedFeature):
         self.prompt = prompt
         self.prompt_replace_string = prompt_replace_string
         self.model = model
-        self.feature_type = feature_type
+        self.feature_type = ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical
         self.column_name = column_name
         self.display_name = display_name
         super().__init__()

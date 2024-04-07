@@ -5,6 +5,7 @@ from typing import Optional
 
 import pandas as pd
 
+from evidently.core import ColumnType
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -14,6 +15,7 @@ if typing.TYPE_CHECKING:
 
 class GeneratedFeature(EvidentlyBaseModel):
     display_name: Optional[str] = None
+    feature_type: ColumnType = ColumnType.Numerical
     """
     Class for computation of additional features.
     """

@@ -157,7 +157,7 @@ class InputData:
 
     def _determine_type(self, column: Union[str, ColumnName]) -> ColumnType:
         if isinstance(column, ColumnName) and column.feature_class is not None:
-            column_type = ColumnType.Numerical
+            column_type = column.feature_class.feature_type
         else:
             if isinstance(column, ColumnName):
                 column_name = column.name
