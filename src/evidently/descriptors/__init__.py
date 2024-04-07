@@ -6,8 +6,12 @@ from .sentiment_descriptor import Sentiment
 from .text_length_descriptor import TextLength
 from .trigger_words_presence_descriptor import TriggerWordsPresence
 from .word_count_descriptor import WordCount
+from .hf_descriptor import HuggingFaceModel
+from .openai_descriptor import OpenAIPrompting
 
 __all__ = [
+    "HuggingFaceModel",
+    "OpenAIPrompting",
     "NonLetterCharacterPercentage",
     "OOV",
     "TextLength",
