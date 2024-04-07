@@ -1,3 +1,4 @@
+from typing import List
 from typing import Optional
 
 from evidently.features.generated_features import FeatureDescriptor
@@ -10,6 +11,7 @@ class OpenAIPrompting(FeatureDescriptor):
     prompt_replace_string: str
     model: str
     feature_type: str
+    possible_values: Optional[List[str]]
 
     def __init__(
         self,
@@ -18,12 +20,14 @@ class OpenAIPrompting(FeatureDescriptor):
         model: str,
         feature_type: str,
         display_name: Optional[str] = None,
+        possible_values: Optional[List[str]] = None,
     ):
         self.model = model
         self.feature_type = feature_type
         self.prompt_replace_string = prompt_replace_string
         self.prompt = prompt
         self.display_name = display_name
+        self.possible_values = possible_values
         super().__init__()
 
     def for_column(self, column_name: str):
@@ -34,6 +38,7 @@ class OpenAIPrompting(FeatureDescriptor):
             prompt_replace_string=self.prompt_replace_string,
             feature_type=self.feature_type,
             display_name=self.display_name,
+            possible_values=self.possible_values,
         ).feature_name()
 
     def feature(self, column_name: str) -> GeneratedFeature:
@@ -44,4 +49,5 @@ class OpenAIPrompting(FeatureDescriptor):
             prompt_replace_string=self.prompt_replace_string,
             feature_type=self.feature_type,
             display_name=self.display_name,
+            possible_values=self.possible_values,
         )
