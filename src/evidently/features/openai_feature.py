@@ -20,7 +20,7 @@ class OpenAIFeature(GeneratedFeature):
     prompt_replace_string: str
     context: str
     context_replace_string: str
-    openai_params: Optional[dict]
+    openai_params: dict
     model: str
     possible_values: Optional[List[str]]
 
@@ -42,7 +42,7 @@ class OpenAIFeature(GeneratedFeature):
         self.prompt_replace_string = prompt_replace_string
         self.context = context
         self.context_replace_string = context_replace_string
-        self.openai_params = openai_params
+        self.openai_params = openai_params or {}
         self.model = model
         self.feature_type = ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical
         self.column_name = column_name
