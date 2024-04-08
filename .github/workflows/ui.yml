@@ -144,7 +144,7 @@ jobs:
 
       - name: Install Playwright Browsers
         working-directory: ui
-        run: pnpm dlx playwright@1.41.0 install --with-deps
+        run: pnpm dlx playwright@1.43.0 install --with-deps
 
       - name: Run UI
         run: evidently ui --port 8000 --workspace workspace-for-visual-testing &

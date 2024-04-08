@@ -5,7 +5,7 @@ import { AdditionalGraphInfo, DashboardInfo } from 'evidently-ui-lib/api'
 import ApiContext from 'evidently-ui-lib/contexts/ApiContext'
 import LocalApi from 'evidently-ui-lib/api/LocalApi'
 import { ThemeProvider } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { theme } from 'evidently-ui-lib/theme/v1'
+import { theme } from 'evidently-ui-lib/theme/v2'
 
 import { ProjectReport } from 'evidently-ui-lib/standalone/app'
 
