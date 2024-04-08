@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 
 import { RouterProvider } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { ThemeProvider } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { theme } from 'evidently-ui-lib/theme/v1'
+import { theme } from 'evidently-ui-lib/theme/v2'
 import { router } from 'Routes'
 import './index.css'
 

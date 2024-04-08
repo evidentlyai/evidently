@@ -1,3 +1,4 @@
+import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectAPI } from 'evidently-ui-lib/routes-components/projectId/data'
 import { api } from 'api/RemoteApi'
@@ -11,13 +12,11 @@ const { loader } = injectAPI({ api })
 import DashboardRoute from './dashboard'
 import ReportsRoute from './reports'
 import TestSuitesRoute from './test-suites'
-import TestSuitesOldRoute from './test_suites'
 
 const PROJECT_TABS = [
-  { id: 'dashboard', link: '.' },
-  { id: 'reports', link: 'reports' },
-  { id: 'test_suites', link: 'test-suites', label: 'test suites' },
-  { id: 'comparisons', link: 'comparisons', disabled: true }
+  { id: 'dashboard', link: '.', label: 'Dashboard' },
+  { id: 'reports', link: 'reports', label: 'Reports' },
+  { id: 'test_suites', link: 'test-suites', label: 'Test suites' }
 ]
 
 export default {
@@ -32,5 +31,6 @@ export default {
     return { Component, ...rest }
   },
   loader,
-  children: [DashboardRoute, ReportsRoute, TestSuitesRoute, TestSuitesOldRoute]
+  ErrorBoundary: GenericErrorBoundary,
+  children: [DashboardRoute, ReportsRoute, TestSuitesRoute]
 } satisfies RouteObject

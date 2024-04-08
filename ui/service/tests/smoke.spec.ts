@@ -18,7 +18,7 @@ test.skip('Can view Snapshot', async ({ page }) => {
   await expect(page.getByRole('columnheader', { name: 'Timestamp' })).toBeVisible()
   await expect(page.getByRole('columnheader', { name: 'Actions' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'View' }).first().click()
+  await page.getByRole('link', { name: 'View' }).first().click()
   await expect(page.getByText('Dataset Drift', { exact: true })).toBeVisible()
 
   await page.getByRole('tab', { name: 'Test suites' }).click()
@@ -28,7 +28,7 @@ test.skip('Can view Snapshot', async ({ page }) => {
   await expect(page.getByRole('columnheader', { name: 'Timestamp' })).toBeVisible()
   await expect(page.getByRole('columnheader', { name: 'Actions' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'View' }).first().click()
+  await page.getByRole('link', { name: 'View' }).first().click()
   await expect(page.getByText('Drift per Column', { exact: true }).first()).toBeVisible()
 })
 
@@ -162,10 +162,10 @@ test.skip('Check header of ColumnSummaryMetric', async ({ page }) => {
   const expectedHeaderCells = ['', 'current', 'reference']
 
   await page.goto('/')
-  await page.getByRole('link', { name: 'Home' }).click()
-  await page.getByRole('link', { name: 'Demo project - Reviews' }).click()
-  await page.getByRole('tab', { name: 'reports' }).click()
-  await page.getByRole('button', { name: 'View' }).first().click()
+  await page.getByRole('link', { name: 'Home', exact: true }).click()
+  await page.getByRole('link', { name: 'Demo project - Reviews', exact: true }).click()
+  await page.getByRole('tab', { name: 'Reports', exact: true }).click()
+  await page.getByRole('link', { name: 'View', exact: true }).first().click()
   const graph = await page.getByText('OOVnumcurrentreference')
   await expect(graph).toBeVisible()
 

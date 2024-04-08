@@ -1,6 +1,6 @@
 import {
-  AdditionalGraphInfo,
   Api,
+  AdditionalGraphInfo,
   DashboardInfo,
   ProjectDetails,
   ProjectInfo,
@@ -11,13 +11,16 @@ import {
 
 import { JsonParser } from './JsonParser'
 
-const throwIfStatus = (status: number) => (response: Response) => {
-  if (!response.ok && response.status === status) {
+export async function fetchThrow(...args: Parameters<typeof fetch>) {
+  const response = await fetch(...args)
+
+  if (!response.ok && response.status >= 400) {
+    // smth went wrong
     throw response
   }
-}
 
-const throwIfStatus401 = throwIfStatus(401)
+  return response
+}
 
 export class RemoteApi implements Api {
   private readonly endpoint: string
@@ -26,18 +29,16 @@ export class RemoteApi implements Api {
     this.endpoint = endpoint
   }
 
-  async getAdditionalGraphData(projectId: string, dashboardId: string, graphId: string) {
-    const response = await fetch(
+  async getAdditionalGraphData(
+    projectId: string,
+    dashboardId: string,
+    graphId: string
+  ): Promise<AdditionalGraphInfo> {
+    const response = await fetchThrow(
       `${this.endpoint}/projects/${projectId}/${dashboardId}/graphs_data/${graphId}`
     )
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return new JsonParser().parse(await response.text()) as AdditionalGraphInfo
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
   async getAdditionalWidgetData(
@@ -45,176 +46,96 @@ export class RemoteApi implements Api {
     dashboardId: string,
     widgetId: string
   ): Promise<WidgetInfo> {
-    const response = await fetch(
+    const response = await fetchThrow(
       `${this.endpoint}/projects/${projectId}/${dashboardId}/graphs_data/${widgetId}`
     )
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return new JsonParser().parse(await response.text()) as WidgetInfo
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
-  async getDashboard(projectId: string, dashboardId: string) {
-    const response = await fetch(`${this.endpoint}/projects/${projectId}/${dashboardId}/data`)
+  async getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfo> {
+    const response = await fetchThrow(`${this.endpoint}/projects/${projectId}/${dashboardId}/data`)
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return new JsonParser().parse(await response.text()) as DashboardInfo
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
-  async getProjects() {
-    const response = await fetch(`${this.endpoint}/projects`)
+  async getProjects(): Promise<ProjectInfo[]> {
+    const response = await fetchThrow(`${this.endpoint}/projects`)
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      let projects = new JsonParser().parse(await response.text()) as ProjectInfo[]
-      console.log(projects)
-      return projects
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
   async getProjectDashboard(
     projectId: string,
     from?: string | null,
-    to?: string | null,
-    signal?: AbortSignal
-  ) {
+    to?: string | null
+  ): Promise<DashboardInfo> {
     const params = new URLSearchParams()
 
     from && params.append('timestamp_start', from)
     to && params.append('timestamp_end', to)
 
-    const response = await fetch(
-      `${this.endpoint}/projects/${projectId}/dashboard?${params.toString()}`,
-      { signal }
+    const response = await fetchThrow(
+      `${this.endpoint}/projects/${projectId}/dashboard?${params.toString()}`
     )
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return new JsonParser().parse(await response.text()) as DashboardInfo
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
-  async getReports(projectId: string) {
-    const response = await fetch(`${this.endpoint}/projects/${projectId}/reports`)
+  async getReports(projectId: string): Promise<SnapshotInfo[]> {
+    const response = await fetchThrow(`${this.endpoint}/projects/${projectId}/reports`)
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return new JsonParser().parse(await response.text()) as SnapshotInfo[]
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
-  async getTestSuites(projectId: string) {
-    const response = await fetch(`${this.endpoint}/projects/${projectId}/test_suites`)
+  async getTestSuites(projectId: string): Promise<SnapshotInfo[]> {
+    const response = await fetchThrow(`${this.endpoint}/projects/${projectId}/test_suites`)
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return new JsonParser().parse(await response.text()) as SnapshotInfo[]
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
-  async getProjectInfo(projectId: string) {
-    const response = await fetch(`${this.endpoint}/projects/${projectId}/info`)
+  async getProjectInfo(projectId: string): Promise<ProjectDetails> {
+    const response = await fetchThrow(`${this.endpoint}/projects/${projectId}/info`)
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return new JsonParser().parse(await response.text()) as ProjectDetails
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return new JsonParser().parse(await response.text())
   }
 
-  async getVersion() {
-    const response = await fetch(`${this.endpoint}/version`)
+  async getVersion(): Promise<VersionInfo> {
+    const response = await fetchThrow(`${this.endpoint}/version`)
 
-    throwIfStatus401(response)
-
-    if (response.ok) {
-      return (await response.json()) as VersionInfo
-    }
-
-    throw Error(`${response.status}, ${response.statusText}`)
+    return response.json()
   }
 
   async editProjectInfo(project: ProjectDetails) {
-    const response = await fetch(`${this.endpoint}/projects/${project.id}/info`, {
+    return fetchThrow(`${this.endpoint}/projects/${project.id}/info`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(project)
     })
-
-    throwIfStatus401(response)
-
-    if (!response.ok) {
-      throw Error(`${response.status}, ${response.statusText}`)
-    }
-
-    return response
   }
 
   async reloadProject(projectId: string) {
-    const response = await fetch(`${this.endpoint}/projects/${projectId}/reload`)
-
-    throwIfStatus401(response)
-
-    if (!response.ok) {
-      throw response
-    }
-
-    return response
+    return fetchThrow(`${this.endpoint}/projects/${projectId}/reload`)
   }
 
   async createProject(project: Partial<ProjectDetails>): Promise<ProjectDetails> {
     const params = new URLSearchParams()
     project.team_id && params.append('team_id', project.team_id)
 
-    const response = await fetch(`${this.endpoint}/projects?${params.toString()}`, {
+    const response = await fetchThrow(`${this.endpoint}/projects?${params.toString()}`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(project)
     })
 
-    throwIfStatus401(response)
-
-    if (!response.ok) {
-      throw Error(`${response.status}, ${response.statusText}`)
-    }
-
     return response.json()
   }
 
   async deleteProject(projectId: string): Promise<Response> {
-    const response = await fetch(`${this.endpoint}/projects/${projectId}`, {
+    return fetchThrow(`${this.endpoint}/projects/${projectId}`, {
       method: 'delete'
     })
-
-    if (response.ok) {
-      return response
-    }
-
-    throw Error(`${response.status}, ${response.statusText}, ${await response.text()}`)
   }
 }

@@ -34,7 +34,7 @@ const BaseTabs: React.FunctionComponent<BaseTabsProps> = (props) => {
             key={idx}
             label={
               <Box className={props.tabStyle}>
-                <Box display={'flex'}>
+                <Box display={'flex'} sx={{ fontSize: '0.875rem' }}>
                   <span>{ti.icon}</span>
                   {ti.title}
                 </Box>

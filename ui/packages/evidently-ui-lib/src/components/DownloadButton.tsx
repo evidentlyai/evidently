@@ -37,9 +37,9 @@ export function DownloadButton(props: { downloadLink: string }) {
   return (
     <>
       <Button
+        variant="outlined"
         ref={anchorRef}
         color="primary"
-        size="small"
         aria-controls={open ? 'split-button-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
         aria-label="select merge strategy"
