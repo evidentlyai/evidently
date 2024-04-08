@@ -14,6 +14,7 @@ class OpenAIPrompting(FeatureDescriptor):
     openai_params: Optional[dict]
     model: str
     feature_type: str
+    check_mode: str
     possible_values: Optional[List[str]]
 
     def __init__(
@@ -27,6 +28,7 @@ class OpenAIPrompting(FeatureDescriptor):
         display_name: Optional[str] = None,
         possible_values: Optional[List[str]] = None,
         openai_params: Optional[dict] = None,
+        check_mode: str = "any_line",
     ):
         self.model = model
         self.feature_type = feature_type
@@ -37,6 +39,7 @@ class OpenAIPrompting(FeatureDescriptor):
         self.context = context
         self.context_replace_string = context_replace_string
         self.openai_params = openai_params
+        self.check_mode = check_mode
         super().__init__()
 
     def for_column(self, column_name: str):
@@ -51,6 +54,7 @@ class OpenAIPrompting(FeatureDescriptor):
             context=self.context,
             context_replace_string=self.context_replace_string,
             openai_params=self.openai_params,
+            check_mode=self.check_mode,
         ).feature_name()
 
     def feature(self, column_name: str) -> GeneratedFeature:
@@ -65,4 +69,5 @@ class OpenAIPrompting(FeatureDescriptor):
             context=self.context,
             context_replace_string=self.context_replace_string,
             openai_params=self.openai_params,
+            check_mode=self.check_mode,
         )

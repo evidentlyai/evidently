@@ -22,6 +22,7 @@ class OpenAIFeature(GeneratedFeature):
     context_replace_string: str
     openai_params: dict
     model: str
+    check_mode: str
     possible_values: Optional[List[str]]
 
     def __init__(
@@ -33,6 +34,7 @@ class OpenAIFeature(GeneratedFeature):
         context: str = "",
         prompt_replace_string: str = "REPLACE",
         context_replace_string: str = "CONTEXT",
+        check_mode: str = "any_line",
         possible_values: Optional[List[str]] = None,
         openai_params: Optional[dict] = None,
         display_name: Optional[str] = None,
@@ -47,7 +49,8 @@ class OpenAIFeature(GeneratedFeature):
         self.feature_type = ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical
         self.column_name = column_name
         self.display_name = display_name
-        self.possible_values = [v.upper for v in possible_values] if possible_values else None
+        self.check_mode = check_mode
+        self.possible_values = [v.lower() for v in possible_values] if possible_values else None
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
@@ -58,8 +61,14 @@ class OpenAIFeature(GeneratedFeature):
         for value in column_data:
             prompt = prompt.replace(self.prompt_replace_string, value)
             prompt_answer = client.completions.create(model=self.model, prompt=prompt, **self.openai_params)
-            processed_response = _postprocess_response(prompt_answer.choices[0].text, self.possible_values)
-            if self.feature_type == "cat":
+            processed_response = _postprocess_response(
+                prompt_answer.choices[0].text,
+                self.check_mode,
+                self.possible_values,
+            )
+            print(f"'{prompt_answer}'")
+            print(f"'{processed_response}'")
+            if self.feature_type == ColumnType.Categorical:
                 result.append(processed_response)
             else:
                 try:
@@ -80,13 +89,20 @@ class OpenAIFeature(GeneratedFeature):
         return self.column_name + "_" + self.feature_id
 
 
-def _postprocess_response(response: str, possible_values: List[str]) -> Optional[str]:
+def _postprocess_response(response: str, check_mode: str, possible_values: List[str]) -> Optional[str]:
     for line in response.split("\n"):
-        line = line.strip().upper()
+        line = line.strip().lower()
         if line:
             if possible_values:
-                if line in possible_values:
-                    return line
+                if check_mode.endswith("contains"):
+                    for v in possible_values:
+                        if v in line:
+                            return v
+                else:
+                    if line in possible_values:
+                        return line
+                if check_mode.startswith("any_line"):
+                    continue
                 else:
                     return None
             return line
