@@ -265,7 +265,7 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
                 </Typography>
               </TableCell>
               <TableCell>
-                <Box display={'flex'} gap={1}>
+                <Box display={'flex'} justifyContent={'center'} flexWrap={'wrap'} gap={1}>
                   <Button component={RouterLink} to={`${snapshot.id}`}>
                     View
                   </Button>
