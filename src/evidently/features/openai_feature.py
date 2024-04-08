@@ -66,8 +66,6 @@ class OpenAIFeature(GeneratedFeature):
                 self.check_mode,
                 self.possible_values,
             )
-            print(f"'{prompt_answer}'")
-            print(f"'{processed_response}'")
             if self.feature_type == ColumnType.Categorical:
                 result.append(processed_response)
             else:

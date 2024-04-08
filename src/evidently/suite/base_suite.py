@@ -28,6 +28,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.engine import Engine
 from evidently.core import IncludeOptions
+from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
@@ -102,6 +103,7 @@ class Context:
     state: State
     renderers: RenderersDefinitions
     data: Optional[GenericInputData] = None
+    features: Optional[Dict[tuple, GeneratedFeature]] = None
     options: Options = Options()
     data_definition: Optional["DataDefinition"] = None
 

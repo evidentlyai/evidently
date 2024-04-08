@@ -35,6 +35,7 @@ class Engine(Generic[TMetricImplementation, TInputData]):
         calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
         converted_data = self.convert_input_data(data)
         self.generate_additional_features(converted_data)
+        context.features = self.generate_additional_features(converted_data)
         context.data = converted_data
         for metric, calculation in self.get_metric_execution_iterator():
             if calculation not in calculations:

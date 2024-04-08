@@ -78,6 +78,7 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
                     ref_additional_data = ref_additional_data.join(ref_feature_data)
         data.current_additional_features = curr_additional_data
         data.reference_additional_features = ref_additional_data
+        return features
 
     def get_metric_implementation(self, metric):
         impl = super().get_metric_implementation(metric)
