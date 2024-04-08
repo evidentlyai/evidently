@@ -57,4 +57,6 @@ class HFFeature(GeneratedFeature):
         )
 
     def _feature_column_name(self) -> str:
+        if self.display_name:
+            return self.display_name.replace(" ", "_").lower()
         return self.column_name + "_" + self.feature_id
