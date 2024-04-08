@@ -12,7 +12,7 @@ export const handle: { crumb: crumbFunction<loaderData> } = {
 export const ProjectTemplate = ({
   tabsConfig
 }: {
-  tabsConfig: { id: string; link: string; label?: string; disabled?: boolean }[]
+  tabsConfig: { id: string; link: string; label?: string }[]
 }) => {
   const matches = useMatches()
   const project = useLoaderData() as loaderData
@@ -36,20 +36,11 @@ export const ProjectTemplate = ({
       </Grid>
 
       <Tabs value={tabIndex} aria-label="simple tabs example" indicatorColor={'primary'}>
-        {tabsConfig.map((tab) => {
-          const TabComponent = (
-            <Tab label={tab.label || tab.id} value={tab.id} disabled={tab.disabled} />
-          )
-          if (tab.disabled) {
-            return TabComponent
-          }
-
-          return (
-            <Link component={RouterLink} to={tab.link}>
-              {TabComponent}
-            </Link>
-          )
-        })}
+        {tabsConfig.map((tab) => (
+          <Link component={RouterLink} to={tab.link}>
+            <Tab label={tab.label || tab.id} value={tab.id} />
+          </Link>
+        ))}
       </Tabs>
       <Outlet />
     </Box>

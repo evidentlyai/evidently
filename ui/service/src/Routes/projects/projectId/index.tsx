@@ -16,8 +16,7 @@ import TestSuitesRoute from './test-suites'
 const PROJECT_TABS = [
   { id: 'dashboard', link: '.', label: 'Dashboard' },
   { id: 'reports', link: 'reports', label: 'Reports' },
-  { id: 'test_suites', link: 'test-suites', label: 'Test suites' },
-  { id: 'comparisons', link: 'comparisons', disabled: true, label: 'Comparisons' }
+  { id: 'test_suites', link: 'test-suites', label: 'Test suites' }
 ]
 
 export default {
