@@ -9,6 +9,9 @@ from evidently.features.openai_feature import OpenAIFeature
 class OpenAIPrompting(FeatureDescriptor):
     prompt: str
     prompt_replace_string: str
+    context: str
+    context_replace_string: str
+    openai_params: Optional[dict]
     model: str
     feature_type: str
     possible_values: Optional[List[str]]
@@ -16,11 +19,14 @@ class OpenAIPrompting(FeatureDescriptor):
     def __init__(
         self,
         prompt: str,
-        prompt_replace_string: str,
         model: str,
         feature_type: str,
+        context: str = "",
+        prompt_replace_string: str = "REPLACE",
+        context_replace_string: str = "CONTEXT",
         display_name: Optional[str] = None,
         possible_values: Optional[List[str]] = None,
+        openai_params: Optional[dict] = None,
     ):
         self.model = model
         self.feature_type = feature_type
@@ -28,6 +34,9 @@ class OpenAIPrompting(FeatureDescriptor):
         self.prompt = prompt
         self.display_name = display_name
         self.possible_values = possible_values
+        self.context = context
+        self.context_replace_string = context_replace_string
+        self.openai_params = openai_params
         super().__init__()
 
     def for_column(self, column_name: str):
@@ -39,6 +48,9 @@ class OpenAIPrompting(FeatureDescriptor):
             feature_type=self.feature_type,
             display_name=self.display_name,
             possible_values=self.possible_values,
+            context=self.context,
+            context_replace_string=self.context_replace_string,
+            openai_params=self.openai_params,
         ).feature_name()
 
     def feature(self, column_name: str) -> GeneratedFeature:
@@ -50,4 +62,7 @@ class OpenAIPrompting(FeatureDescriptor):
             feature_type=self.feature_type,
             display_name=self.display_name,
             possible_values=self.possible_values,
+            context=self.context,
+            context_replace_string=self.context_replace_string,
+            openai_params=self.openai_params,
         )

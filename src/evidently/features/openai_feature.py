@@ -18,6 +18,9 @@ class OpenAIFeature(GeneratedFeature):
     feature_id: str
     prompt: str
     prompt_replace_string: str
+    context: str
+    context_replace_string: str
+    openai_params: Optional[dict]
     model: str
     possible_values: Optional[List[str]]
 
@@ -26,14 +29,20 @@ class OpenAIFeature(GeneratedFeature):
         column_name: str,
         model: str,
         prompt: str,
-        prompt_replace_string: str,
         feature_type: str,
+        context: str = "",
+        prompt_replace_string: str = "REPLACE",
+        context_replace_string: str = "CONTEXT",
         possible_values: Optional[List[str]] = None,
+        openai_params: Optional[dict] = None,
         display_name: Optional[str] = None,
     ):
         self.feature_id = str(uuid.uuid4())
         self.prompt = prompt
         self.prompt_replace_string = prompt_replace_string
+        self.context = context
+        self.context_replace_string = context_replace_string
+        self.openai_params = openai_params
         self.model = model
         self.feature_type = ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical
         self.column_name = column_name
@@ -45,9 +54,10 @@ class OpenAIFeature(GeneratedFeature):
         column_data = data[self.column_name]
         client = OpenAI()
         result = []
+        prompt = self.prompt.replace(self.context_replace_string, self.context)
         for value in column_data:
-            prompt = self.prompt.replace(self.prompt_replace_string, value)
-            prompt_answer = client.completions.create(model=self.model, prompt=prompt)
+            prompt = prompt.replace(self.prompt_replace_string, value)
+            prompt_answer = client.completions.create(model=self.model, prompt=prompt, **self.openai_params)
             processed_response = _postprocess_response(prompt_answer.choices[0].text, self.possible_values)
             if self.feature_type == "cat":
                 result.append(processed_response)
