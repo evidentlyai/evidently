@@ -124,7 +124,7 @@ jobs:
       - name: Install dvc
         run: pip install dvc[gs]
 
-      - name: Pull data
+      - name: Pull test data
         run: dvc pull
 
       - uses: pnpm/action-setup@v2
@@ -144,7 +144,7 @@ jobs:
 
       - name: Install Playwright Browsers
         working-directory: ui
-        run: pnpm dlx playwright@1.41.0 install --with-deps
+        run: pnpm dlx playwright@1.43.0 install --with-deps
 
       - name: Run UI
         run: evidently ui --port 8000 --workspace workspace-for-visual-testing &

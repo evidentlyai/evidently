@@ -251,7 +251,7 @@ type PanelTestFilter =
     }
 
 type PanelValueBase = { field_path: string; legend: string }
-type PanelValue = PanelValueBase &
+export type PanelValue = PanelValueBase &
   (
     | { metric_hash: string }
     | {
@@ -259,6 +259,17 @@ type PanelValue = PanelValueBase &
         metric_args: Record<string, string>
       }
   )
+
+export type MetricAlert = {
+  path: PanelValue
+  condition: Partial<{
+    eq?: number | null
+    gt?: number | null
+    gte?: number | null
+    lt?: number | null
+    lte?: number | null
+  }>
+}
 
 type DashboardPanelBase = {
   id: string

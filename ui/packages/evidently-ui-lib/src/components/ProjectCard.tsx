@@ -3,7 +3,6 @@ import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router
 import {
   Box,
   Button,
-  Fade,
   IconButton,
   Link,
   Paper,
@@ -17,11 +16,12 @@ import { Add as AddIcon } from '@mui/icons-material'
 
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { useHover, useToggle } from '@uidotdev/usehooks'
+import { useToggle } from '@uidotdev/usehooks'
 import { ProjectInfo } from '~/api'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTheme } from '@mui/material/styles'
 
 // validation here
 const editProjectInfoSchema = z.object({
@@ -50,6 +50,8 @@ export const EditProjectInfoForm = ({
       description: project.description || ''
     }
   })
+
+  const { palette } = useTheme()
 
   // for form submitting
   const submit = useSubmit()
@@ -86,7 +88,7 @@ export const EditProjectInfoForm = ({
           helperText={errors.name?.message}
           placeholder="Name"
           InputProps={{
-            style: { color: 'red', fontSize: '20px', fontWeight: '500' }
+            style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
           }}
           disabled={disabled}
           variant="standard"
@@ -106,6 +108,7 @@ export const EditProjectInfoForm = ({
         {/* Submit button */}
         <Box sx={{ display: 'flex', justifyContent: 'right' }}>
           <Button
+            variant="outlined"
             disabled={
               disabled ||
               // we didn't touch any fields
@@ -144,7 +147,6 @@ interface projectProps {
 }
 
 export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
-  const [ref, hovering] = useHover()
   const [isEditMode, setEditMode] = useState(false)
 
   const navigation = useNavigation()
@@ -155,40 +157,57 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
   useEffect(() => setEditMode(false), [project])
 
   return (
-    <Paper ref={ref} elevation={3} sx={{ m: 1, p: 2, position: 'relative' }}>
+    <Paper
+      sx={{
+        m: 1,
+        p: 2,
+        position: 'relative',
+        '&:hover .action-buttons': {
+          opacity: 1
+        }
+      }}
+    >
       <Box style={{ position: 'absolute', top: '5px', right: '5px' }}>
-        <Box display={'flex'} columnGap={1}>
-          <Fade in={hovering}>
-            <IconButton
-              disabled={isDisabled || isEditMode}
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this project?') === true) {
-                  submit(
-                    {
-                      projectId: project.id,
-                      action: 'delete-project'
-                    },
-                    { method: 'post', replace: true, encType: 'application/json' }
-                  )
-                }
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Fade>
-          <Fade in={hovering}>
-            <ToggleButton
-              color="primary"
-              value={'edit-mode'}
-              selected={isEditMode}
-              size="small"
-              disabled={isDisabled}
-              sx={{ border: 'none', borderRadius: '50%' }}
-              onChange={() => setEditMode((mode) => !mode)}
-            >
-              <EditIcon />
-            </ToggleButton>
-          </Fade>
+        <Box
+          sx={{
+            opacity: 0,
+            transition: (theme) =>
+              theme.transitions.create('opacity', {
+                duration: theme.transitions.duration.enteringScreen
+              })
+          }}
+          className={'action-buttons'}
+          display={'flex'}
+          columnGap={1}
+        >
+          <IconButton
+            disabled={isDisabled || isEditMode}
+            onClick={() => {
+              if (confirm('Are you sure you want to delete this project?') === true) {
+                submit(
+                  {
+                    projectId: project.id,
+                    action: 'delete-project'
+                  },
+                  { method: 'post', replace: true, encType: 'application/json' }
+                )
+              }
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+
+          <ToggleButton
+            color="primary"
+            value={'edit-mode'}
+            selected={isEditMode}
+            size="small"
+            disabled={isDisabled}
+            sx={{ border: 'none', borderRadius: '50%' }}
+            onChange={() => setEditMode((mode) => !mode)}
+          >
+            <EditIcon />
+          </ToggleButton>
         </Box>
       </Box>
 
@@ -233,6 +252,7 @@ export const AddNewProjectButton = ({
       <Box display={'flex'} justifyContent={'center'}>
         <Tooltip title="Create new project">
           <ToggleButton
+            disabled={isDisabled}
             color="primary"
             value={'check'}
             selected={on}
@@ -246,7 +266,7 @@ export const AddNewProjectButton = ({
       </Box>
 
       {on && (
-        <Box py={1} display={'flex'} flexDirection={'column'} rowGap={1}>
+        <Box p={3} display={'flex'} flexDirection={'column'} rowGap={1}>
           {children}
           <EditProjectInfoForm
             project={project || { name: '', description: '' }}

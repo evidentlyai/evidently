@@ -1,3 +1,5 @@
+import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+
 import {
   RouteObject,
   createBrowserRouter
@@ -15,7 +17,8 @@ const homeRoute = {
   // children routes
   ////////////////////
 
-  children: [ProjectsListRoute, ProjectsRoute, NotFound]
+  children: [ProjectsListRoute, ProjectsRoute, NotFound],
+  ErrorBoundary: GenericErrorBoundary
 } satisfies RouteObject
 
 export const router = createBrowserRouter([homeRoute])
