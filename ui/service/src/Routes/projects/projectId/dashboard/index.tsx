@@ -1,3 +1,4 @@
+import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectAPI } from 'evidently-ui-lib/routes-components/dashboard/data'
 import { api } from 'api/RemoteApi'
@@ -21,5 +22,6 @@ export default {
       )
     }
   },
-  loader
+  loader,
+  ErrorBoundary: GenericErrorBoundary
 } satisfies RouteObject
