@@ -118,6 +118,9 @@ class OrgModel(BaseModel):
     def from_org(cls, org: Org):
         return OrgModel(id=org.id, name=org.name)
 
+    def to_org(self) -> Org:
+        return Org(id=self.id, name=self.name)
+
 
 class TeamModel(BaseModel):
     id: TeamID
@@ -126,6 +129,9 @@ class TeamModel(BaseModel):
     @classmethod
     def from_team(cls, team: Team):
         return TeamModel(id=team.id, name=team.name)
+
+    def to_team(self) -> Team:
+        return Team(id=self.id, name=self.name)
 
 
 class UserModel(BaseModel):

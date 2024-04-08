@@ -8,12 +8,15 @@ from requests import HTTPError
 
 from evidently._pydantic_compat import PrivateAttr
 from evidently.ui.api.models import OrgModel
+from evidently.ui.api.models import TeamModel
 from evidently.ui.base import Org
 from evidently.ui.base import ProjectManager
+from evidently.ui.base import Team
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import TeamID
 from evidently.ui.workspace.remote import NoopBlobStorage
 from evidently.ui.workspace.remote import NoopDataStorage
 from evidently.ui.workspace.remote import RemoteMetadataStorage
@@ -116,13 +119,21 @@ class CloudMetadataStorage(RemoteMetadataStorage):
             raise
 
     def switch_org(self, org_id: OrgID):
-        self.org_id = org_id
+        # todo: make not pydantic
+        object.__setattr__(self, "org_id", org_id)
 
     def create_org(self, org: Org) -> OrgModel:
         return self._request("/api/orgs", "POST", body=org.dict(), response_model=OrgModel)
 
     def list_orgs(self) -> List[OrgModel]:
         return self._request("/api/orgs", "GET", response_model=List[OrgModel])
+
+    def create_team(self, team: Team) -> TeamModel:
+        return self._request("/api/teams", "POST", query_params={"name": team.name}, response_model=TeamModel)
+
+    def switch_team(self, team_id: TeamID):
+        # self.team_id = team_id
+        pass
 
 
 class CloudWorkspace(WorkspaceView):
@@ -154,7 +165,7 @@ class CloudWorkspace(WorkspaceView):
             metadata=meta,
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
-            auth=(NoopAuthManager()),
+            auth=(CloudAuthManager()),
         )
         super().__init__(
             user_id,
@@ -168,10 +179,24 @@ class CloudWorkspace(WorkspaceView):
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         self.project_manager.metadata.switch_org(org_id_uuid)
 
-    def create_org(self, org: Org) -> OrgModel:
+    def create_org(self, org: Org) -> Org:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_org(org)
+        return self.project_manager.metadata.create_org(org).to_org()
 
-    def list_orgs(self) -> List[OrgModel]:
+    def list_orgs(self) -> List[Org]:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.list_orgs()
+        return [o.to_org() for o in self.project_manager.metadata.list_orgs()]
+
+    def create_team(self, team: Team) -> Team:
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        return self.project_manager.metadata.create_team(team).to_team()
+
+    def switch_team(self, team_id: STR_UUID):
+        team_id_uuid = UUID(team_id) if isinstance(team_id, str) else team_id
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        self.project_manager.metadata.switch_team(team_id_uuid)
+
+
+class CloudAuthManager(NoopAuthManager):
+    def get_team(self, team_id: TeamID) -> Optional[Team]:
+        return Team(id=team_id, name="")
