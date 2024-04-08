@@ -101,6 +101,7 @@ class Context:
     test_results: Dict[Test, TestResult]
     state: State
     renderers: RenderersDefinitions
+    data: Optional[GenericInputData] = None
     options: Options = Options()
     data_definition: Optional["DataDefinition"] = None
 
