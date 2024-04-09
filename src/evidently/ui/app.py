@@ -3,7 +3,6 @@ import pathlib
 from typing import Callable
 
 import uvicorn
-from litestar import Litestar
 from litestar import Request
 from litestar import Response
 from litestar import Router
@@ -11,6 +10,7 @@ from litestar import Router
 from evidently.ui.api.projects import project_api
 from evidently.ui.api.service import service_api
 from evidently.ui.api.static import add_static
+from evidently.ui.components.base import AppBuilder
 from evidently.ui.config import Config
 from evidently.ui.config import LocalConfig
 from evidently.ui.config import load_config
@@ -29,19 +29,16 @@ def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Respons
 
 
 def create_app(config: Config):
-    with config.context():
+    with config.context() as ctx:
         ui_path = os.path.join(pathlib.Path(__file__).parent.resolve(), "ui")
-        app = Litestar(
-            route_handlers=[
-                api_router(config.security.get_auth_guard()),
-            ],
-            exception_handlers={
-                EvidentlyServiceError: unicorn_exception_handler,
-            },
-            dependencies=config.get_dependencies(),
-            middleware=config.get_middlewares(),
-            debug=True,
-        )
+
+        builder = AppBuilder()
+        builder.route_handlers.append(api_router(config.security.get_auth_guard()))
+        builder.exception_handlers[EvidentlyServiceError] = unicorn_exception_handler
+        builder.kwargs["debug"] = True
+        ctx.apply(builder)
+        app = builder.build()
+        ctx.finalize(app)
         add_static(app, ui_path)
         return app
 

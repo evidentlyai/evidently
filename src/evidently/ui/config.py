@@ -1,5 +1,6 @@
 import contextlib
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import Type
 from typing import TypeVar
@@ -14,6 +15,7 @@ from pydantic import PrivateAttr
 
 from evidently._pydantic_compat import parse_obj_as
 from evidently.ui.components.base import SECTION_COMPONENT_TYPE_MAPPING
+from evidently.ui.components.base import AppBuilder
 from evidently.ui.components.base import Component
 from evidently.ui.components.base import ComponentContext
 from evidently.ui.components.base import ServiceComponent
@@ -32,7 +34,8 @@ def _convert_keys(box):
 
 
 class ConfigContext(ComponentContext):
-    def __init__(self, components_mapping: Dict[Type[Component], Component]):
+    def __init__(self, config: "Config", components_mapping: Dict[Type[Component], Component]):
+        self.config = config
         self.components_mapping = components_mapping
 
     def get_component(self, type_: Type[T]) -> T:
@@ -40,6 +43,32 @@ class ConfigContext(ComponentContext):
             if issubclass(cls, type_):
                 return self.components_mapping[cls]
         raise ValueError(f"Component of type {type_.__name__} not found")
+
+    @property
+    def components(self) -> List[Component]:
+        return list(self.components_mapping.values())
+
+    def get_dependencies(self) -> Dict[str, Provide]:
+        res = {}
+        for c in self.components:
+            dependencies = c.get_dependencies(self)
+            print(f"{c.__class__.__name__} deps: " + ", ".join(dependencies))
+            res.update(dependencies)
+        return res
+
+    def get_middlewares(self):
+        res = []
+        for c in self.components:
+            res.extend(c.get_middlewares(self))
+        return res
+
+    def apply(self, builder: AppBuilder):
+        for c in self.components:
+            c.apply(self, builder)
+
+    def finalize(self, app: Litestar):
+        for c in self.components:
+            c.finalize(self, app)
 
     # def validate(self):
     #     for c in self.components_mapping.values():
@@ -65,30 +94,12 @@ class Config(BaseModel):
             self.additional_components.values()
         )
 
-    def get_dependencies(self) -> Dict[str, Provide]:
-        res = {}
-        for c in self.components:
-            dependencies = c.get_dependencies(self._ctx)
-            print(f"{c.__class__.__name__} deps: " + ", ".join(dependencies))
-            res.update(dependencies)
-        return res
-
-    def get_middlewares(self):
-        res = []
-        for c in self.components:
-            res.extend(c.get_middlewares(self._ctx))
-        return res
-
-    def finalize(self, app: Litestar):
-        for c in self.components:
-            c.finalize(self._ctx, app)
-
     @contextlib.contextmanager
-    def context(self):
-        ctx = ConfigContext({type(c): c for c in self.components})
+    def context(self) -> Iterator[ConfigContext]:
+        ctx = ConfigContext(self, {type(c): c for c in self.components})
         # ctx.validate()
         self._ctx = ctx
-        yield self
+        yield ctx
         del self._ctx
 
 

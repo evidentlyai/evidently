@@ -19,6 +19,24 @@ SECTION_COMPONENT_TYPE_MAPPING: Dict[str, Type["Component"]] = {}
 T = TypeVar("T", bound="Component")
 
 
+class AppBuilder:
+    def __init__(self):
+        self.dependencies: Dict[str, Provide] = {}
+        self.route_handlers = []
+        self.exception_handlers = {}
+        self.middlewares = []
+        self.kwargs = {}
+
+    def build(self) -> Litestar:
+        return Litestar(
+            route_handlers=self.route_handlers,
+            exception_handlers=self.exception_handlers,
+            dependencies=self.dependencies,
+            middleware=self.middlewares,
+            **self.kwargs,
+        )
+
+
 class ComponentContext:
     def get_component(self, type_: Type[T]) -> T:
         raise NotImplementedError
@@ -40,10 +58,14 @@ class Component(PolymorphicModel, ABC):
             SECTION_COMPONENT_TYPE_MAPPING[cls.__section__] = cls
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
-        raise NotImplementedError(self.__class__)
+        return {}
 
     def get_middlewares(self, ctx: ComponentContext):
         return []
+
+    def apply(self, ctx: ComponentContext, builder: AppBuilder):
+        builder.dependencies.update(self.get_dependencies(ctx))
+        builder.middlewares.extend(self.get_middlewares(ctx))
 
     def finalize(self, ctx: ComponentContext, app: Litestar):
         pass
