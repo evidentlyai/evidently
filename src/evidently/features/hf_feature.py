@@ -40,7 +40,7 @@ class HFFeature(GeneratedFeature):
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        column_data = data[self.column_name]
+        column_data = data[self.column_name].values.tolist()
         model = evaluate.load(
             self.path,
             self.config_name,
