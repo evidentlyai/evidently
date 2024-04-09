@@ -54,7 +54,7 @@ class OpenAIFeature(GeneratedFeature):
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        column_data = data[self.column_name]
+        column_data = data[self.column_name].values.tolist()
         client = OpenAI()
         result = []
         prompt = self.prompt.replace(self.context_replace_string, self.context)
@@ -74,7 +74,7 @@ class OpenAIFeature(GeneratedFeature):
                 except ValueError:
                     result.append(None)
 
-        return pd.DataFrame(dict([(self._feature_column_name(), result)]))
+        return pd.DataFrame(dict([(self._feature_column_name(), result)]), index=data.index)
 
     def feature_name(self) -> ColumnName:
         return additional_feature(

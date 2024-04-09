@@ -47,7 +47,7 @@ class HFFeature(GeneratedFeature):
             **self.model_params,
         )
         scores = model.compute(predictions=column_data, **self.compute_params)
-        return pd.DataFrame(dict([(self._feature_column_name(), scores[self.result_scores_field])]))
+        return pd.DataFrame(dict([(self._feature_column_name(), scores[self.result_scores_field])]), index=data.index)
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
