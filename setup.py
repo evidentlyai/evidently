@@ -59,7 +59,7 @@ setup_args = dict(
         "scipy>=1.10.0",
         "requests>=2.31.0",
         "PyYAML>=5.4",
-        "pydantic>=1.10.14",
+        "pydantic>=1.10.12",
         "litestar>=2.6.3",
         "typing-inspect>=0.9.0",
         "uvicorn>=0.22.0",
@@ -88,7 +88,7 @@ setup_args = dict(
             "types-dataclasses==0.6",
             "types-python-dateutil==2.8.19",
             "types-ujson>=5.4.0",
-            "pillow==10.2.0",
+            "pillow==10.3.0",
             "black==22.8.0",
             "isort==5.10.1",
             "httpx==0.24.1"

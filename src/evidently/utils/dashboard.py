@@ -228,8 +228,10 @@ def inline_iframe_html_template(params: TemplateParams):
 
 
 def __load_js():
-    return open(os.path.join(STATIC_PATH, "index.js"), encoding="utf-8").read()
+    with open(os.path.join(STATIC_PATH, "index.js"), encoding="utf-8") as f:
+        return f.read()
 
 
 def __load_font():
-    return base64.b64encode(open(os.path.join(STATIC_PATH, "material-ui-icons.woff2"), "rb").read()).decode()
+    with open(os.path.join(STATIC_PATH, "material-ui-icons.woff2"), "rb") as f:
+        return base64.b64encode(f.read()).decode()
