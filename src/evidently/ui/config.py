@@ -41,14 +41,14 @@ class ConfigContext(ComponentContext):
                 return self.components_mapping[cls]
         raise ValueError(f"Component of type {type_.__name__} not found")
 
-    def validate(self):
-        for c in self.components_mapping.values():
-            reqs = c.get_requirements()
-            for r in reqs:
-                try:
-                    self.get_component(r)
-                except ValueError as e:
-                    raise ValueError(f"Component {c.__class__.__name__} missing {r.__name__} requirement") from e
+    # def validate(self):
+    #     for c in self.components_mapping.values():
+    #         reqs = c.get_requirements()
+    #         for r in reqs:
+    #             try:
+    #                 self.get_component(r)
+    #             except ValueError as e:
+    #                 raise ValueError(f"Component {c.__class__.__name__} missing {r.__name__} requirement") from e
 
 
 class Config(BaseModel):
@@ -86,7 +86,7 @@ class Config(BaseModel):
     @contextlib.contextmanager
     def context(self):
         ctx = ConfigContext({type(c): c for c in self.components})
-        ctx.validate()
+        # ctx.validate()
         self._ctx = ctx
         yield self
         del self._ctx
