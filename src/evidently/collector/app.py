@@ -34,7 +34,7 @@ from evidently.collector.storage import CollectorStorage
 from evidently.collector.storage import LogEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
-from evidently.ui.config import NoSecurityConfig
+from evidently.ui.components.security import NoSecurityConfig
 from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.token import TokenSecurity

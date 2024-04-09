@@ -10,9 +10,9 @@ from dynaconf import LazySettings
 from dynaconf.utils.boxing import DynaBox
 from litestar import Litestar
 from litestar.di import Provide
+
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import PrivateAttr
-
 from evidently._pydantic_compat import parse_obj_as
 from evidently.ui.components.base import SECTION_COMPONENT_TYPE_MAPPING
 from evidently.ui.components.base import AppBuilder
@@ -20,11 +20,7 @@ from evidently.ui.components.base import Component
 from evidently.ui.components.base import ComponentContext
 from evidently.ui.components.base import ServiceComponent
 from evidently.ui.components.base import T
-from evidently.ui.components.security import NoSecurityConfig
 from evidently.ui.components.security import SecurityComponent
-from evidently.ui.components.storage import LocalStorageComponent
-from evidently.ui.components.storage import StorageComponent
-from evidently.ui.components.telemetry import TelemetryComponent
 
 
 def _convert_keys(box):
@@ -129,13 +125,6 @@ def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
 
     # todo: we will get validation error if not all components configured, but we can wrap it more nicely
     return config_type(additional_components=components, **named_components)
-
-
-class LocalConfig(Config):
-    security: SecurityComponent = NoSecurityConfig()
-    service: ServiceComponent = ServiceComponent()
-    storage: StorageComponent = LocalStorageComponent()
-    telemetry: TelemetryComponent = TelemetryComponent()
 
 
 settings = dynaconf.Dynaconf(
