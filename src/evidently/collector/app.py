@@ -34,11 +34,11 @@ from evidently.collector.storage import CollectorStorage
 from evidently.collector.storage import LogEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
-from evidently.ui.components.security import NoSecurityConfig
+from evidently.ui.components.security import NoSecurityComponent
 from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.token import TokenSecurity
-from evidently.ui.security.token import TokenSecurityConfig
+from evidently.ui.security.token import TokenSecurityComponent
 from evidently.ui.utils import parse_json
 
 COLLECTOR_INTERFACE = "collector"
@@ -165,9 +165,9 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
 
     security: SecurityService
     if secret is None:
-        security = NoSecurityService(NoSecurityConfig())
+        security = NoSecurityService(NoSecurityComponent())
     else:
-        security = TokenSecurity(TokenSecurityConfig(token=secret))
+        security = TokenSecurity(TokenSecurityComponent(token=secret))
 
     def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:

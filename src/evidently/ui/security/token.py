@@ -3,7 +3,7 @@ from typing import Optional
 
 from litestar import Request
 
-from evidently.ui.components.security import TokenSecurityConfig
+from evidently.ui.components.security import TokenSecurityComponent
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.service import User
 
@@ -17,7 +17,7 @@ default_user = User(
 
 
 class TokenSecurity(SecurityService):
-    def __init__(self, config: TokenSecurityConfig):
+    def __init__(self, config: TokenSecurityComponent):
         self.config = config
 
     def authenticate(self, request: Request) -> Optional[User]:

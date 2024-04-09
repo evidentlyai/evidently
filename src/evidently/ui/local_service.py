@@ -12,7 +12,7 @@ from evidently.ui.api.service import service_api
 from evidently.ui.components.base import AppBuilder
 from evidently.ui.components.base import ComponentContext
 from evidently.ui.components.base import ServiceComponent
-from evidently.ui.components.security import NoSecurityConfig
+from evidently.ui.components.security import NoSecurityComponent
 from evidently.ui.components.security import SecurityComponent
 from evidently.ui.components.storage import LocalStorageComponent
 from evidently.ui.components.storage import StorageComponent
@@ -44,7 +44,7 @@ class LocalServiceComponent(ServiceComponent):
 
 
 class LocalConfig(Config):
-    security: SecurityComponent = NoSecurityConfig()
+    security: SecurityComponent = NoSecurityComponent()
     service: ServiceComponent = LocalServiceComponent()
     storage: StorageComponent = LocalStorageComponent()
     telemetry: TelemetryComponent = TelemetryComponent()

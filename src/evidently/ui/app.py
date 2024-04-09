@@ -7,7 +7,7 @@ from evidently.ui.config import Config
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
 from evidently.ui.local_service import LocalConfig
-from evidently.ui.security.token import TokenSecurityConfig
+from evidently.ui.security.token import TokenSecurityComponent
 from evidently.ui.storage.common import EVIDENTLY_SECRET_ENV
 
 
@@ -40,7 +40,7 @@ def run_local(
 
     secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)
     if secret is not None:
-        config.security = TokenSecurityConfig(token=secret)
+        config.security = TokenSecurityComponent(token=secret)
     run(config)
 
 

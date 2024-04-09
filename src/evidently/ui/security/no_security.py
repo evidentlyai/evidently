@@ -1,12 +1,12 @@
 from litestar import Request
 
-from ..components.security import NoSecurityConfig
+from ..components.security import NoSecurityComponent
 from .service import SecurityService
 from .service import User
 
 
 class NoSecurityService(SecurityService):
-    def __init__(self, security_config: NoSecurityConfig):
+    def __init__(self, security_config: NoSecurityComponent):
         self.security_config = security_config
 
     def authenticate(self, request: Request) -> User:

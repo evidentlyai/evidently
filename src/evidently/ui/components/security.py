@@ -88,7 +88,7 @@ class SimpleSecurity(SecurityComponent):
         }
 
 
-class NoSecurityConfig(SimpleSecurity):
+class NoSecurityComponent(SimpleSecurity):
     class Config:
         type_alias = "none"
 
@@ -101,7 +101,7 @@ class NoSecurityConfig(SimpleSecurity):
         return NoSecurityService(self)
 
 
-class TokenSecurityConfig(SimpleSecurity):
+class TokenSecurityComponent(SimpleSecurity):
     class Config:
         type_alias = "token"
 
@@ -111,6 +111,3 @@ class TokenSecurityConfig(SimpleSecurity):
         from evidently.ui.security.token import TokenSecurity
 
         return TokenSecurity(self)
-
-
-# register_type_alias()
