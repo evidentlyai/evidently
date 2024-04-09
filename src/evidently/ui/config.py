@@ -10,8 +10,8 @@ from dynaconf import LazySettings
 from dynaconf.utils.boxing import DynaBox
 from litestar import Litestar
 from litestar.di import Provide
-from pydantic import BaseModel
-from pydantic import PrivateAttr
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import PrivateAttr
 
 from evidently._pydantic_compat import parse_obj_as
 from evidently.ui.components.base import SECTION_COMPONENT_TYPE_MAPPING
