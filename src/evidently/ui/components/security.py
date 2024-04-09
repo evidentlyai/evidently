@@ -13,6 +13,7 @@ from litestar.types import Scope
 from litestar.types import Send
 
 from evidently._pydantic_compat import SecretStr
+from evidently.pydantic_utils import register_type_alias
 from evidently.ui.components.base import Component
 from evidently.ui.components.base import ComponentContext
 from evidently.ui.errors import NotEnoughPermissions
@@ -23,6 +24,9 @@ from evidently.ui.type_aliases import UserID
 
 
 class SecurityComponent(Component, ABC):
+    class Config:
+        is_base_type = True
+
     def get_security(self) -> SecurityService:
         raise NotImplementedError
 
@@ -55,6 +59,14 @@ class SecurityComponent(Component, ABC):
                 raise NotEnoughPermissions()
 
         return is_authenticated
+
+
+register_type_alias(
+    SecurityComponent,
+    "evidently.ui.components.security.TokenSecurityConfig",
+    "token",
+)
+register_type_alias(SecurityComponent, "evidently.ui.components.security.NoSecurityConfig", "none")
 
 
 async def get_user_id() -> UserID:
@@ -99,3 +111,6 @@ class TokenSecurityConfig(SimpleSecurity):
         from evidently.ui.security.token import TokenSecurity
 
         return TokenSecurity(self)
+
+
+# register_type_alias()
