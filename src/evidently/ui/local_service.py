@@ -1,11 +1,9 @@
 import os
 import pathlib
-from typing import Callable
 
 from litestar import Litestar
 from litestar import Request
 from litestar import Response
-from litestar import Router
 
 from evidently.ui.api.projects import project_api
 from evidently.ui.api.service import service_api
@@ -21,19 +19,18 @@ from evidently.ui.config import Config
 from evidently.ui.errors import EvidentlyServiceError
 
 
-def api_router(guard: Callable):
-    return Router(path="/api", route_handlers=[project_api(guard), service_api()])
-
-
-def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
+def evidently_service_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
     return exc.to_response()
 
 
 class LocalServiceComponent(ServiceComponent):
+    def get_api_route_handelers(self, ctx: ComponentContext):
+        guard = ctx.get_component(SecurityComponent).get_auth_guard()
+        return [project_api(guard), service_api()]
+
     def apply(self, ctx: ComponentContext, builder: AppBuilder):
         super().apply(ctx, builder)
-        builder.route_handlers.append(api_router(ctx.get_component(SecurityComponent).get_auth_guard()))
-        builder.exception_handlers[EvidentlyServiceError] = unicorn_exception_handler
+        builder.exception_handlers[EvidentlyServiceError] = evidently_service_exception_handler
         builder.kwargs["debug"] = True
 
     def finalize(self, ctx: ComponentContext, app: Litestar):

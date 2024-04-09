@@ -1,13 +1,19 @@
 from abc import ABC
+from typing import Any
 from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import Generic
+from typing import List
 from typing import Type
 from typing import TypeVar
 
 from litestar import Litestar
+from litestar import Router
 from litestar.di import Provide
+from litestar.types import ControllerRouterHandler
+from litestar.types import ExceptionHandlersMap
+from litestar.types import Middleware
 
 from evidently._pydantic_compat import Extra
 from evidently.pydantic_utils import PolymorphicModel
@@ -20,16 +26,22 @@ T = TypeVar("T", bound="Component")
 
 
 class AppBuilder:
-    def __init__(self):
+    def __init__(self, context: "ComponentContext"):
+        self.context = context
         self.dependencies: Dict[str, Provide] = {}
-        self.route_handlers = []
-        self.exception_handlers = {}
-        self.middlewares = []
-        self.kwargs = {}
+        self.route_handlers: List[ControllerRouterHandler] = []
+        self.api_route_handlers: List[ControllerRouterHandler] = []
+        self.exception_handlers: ExceptionHandlersMap = {}
+        self.middlewares: List[Middleware] = []
+        self.kwargs: Dict[str, Any] = {}
+
+    def build_api_router(self):
+        return Router(path="/api", route_handlers=self.api_route_handlers)
 
     def build(self) -> Litestar:
+        api_router = self.build_api_router()
         return Litestar(
-            route_handlers=self.route_handlers,
+            route_handlers=[api_router] + self.route_handlers,
             exception_handlers=self.exception_handlers,
             dependencies=self.dependencies,
             middleware=self.middlewares,
@@ -63,9 +75,17 @@ class Component(PolymorphicModel, ABC):
     def get_middlewares(self, ctx: ComponentContext):
         return []
 
+    def get_route_handlers(self, ctx: ComponentContext):
+        return []
+
+    def get_api_route_handelers(self, ctx: ComponentContext):
+        return []
+
     def apply(self, ctx: ComponentContext, builder: AppBuilder):
         builder.dependencies.update(self.get_dependencies(ctx))
         builder.middlewares.extend(self.get_middlewares(ctx))
+        builder.route_handlers.extend(self.get_route_handlers(ctx))
+        builder.api_route_handlers.extend(self.get_api_route_handelers(ctx))
 
     def finalize(self, ctx: ComponentContext, app: Litestar):
         pass

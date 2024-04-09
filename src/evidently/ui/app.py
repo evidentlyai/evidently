@@ -13,7 +13,7 @@ from evidently.ui.storage.common import EVIDENTLY_SECRET_ENV
 
 def create_app(config: Config):
     with config.context() as ctx:
-        builder = AppBuilder()
+        builder = AppBuilder(ctx)
         ctx.apply(builder)
         app = builder.build()
         ctx.finalize(app)
