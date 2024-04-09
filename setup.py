@@ -93,6 +93,11 @@ setup_args = dict(
             "isort==5.10.1",
             "httpx==0.24.1"
         ],
+        "llm": [
+            "openai>=1.16.2",
+            "evaluate>=0.4.1",
+            "transformers[torch]>=4.39.3"
+        ],
         "spark": [
             "pyspark>=3.4.0"
         ],
