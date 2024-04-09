@@ -407,10 +407,10 @@ class AuthManager(EvidentlyBaseModel):
         self._delete_team(team_id)
 
     @abstractmethod
-    def _list_team_users(self, team_id: TeamID) -> List[UserID]:
+    def _list_team_users(self, team_id: TeamID) -> Dict[UserID, bool]:
         raise NotImplementedError
 
-    def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[UserID]:
+    def list_team_users(self, user_id: UserID, team_id: TeamID) -> Dict[UserID, bool]:
         if not self.check_team_permission(user_id, team_id, TeamPermission.READ):
             raise TeamNotFound()
         return self._list_team_users(team_id)
