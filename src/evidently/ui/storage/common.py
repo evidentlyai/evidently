@@ -1,4 +1,5 @@
 from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
@@ -73,8 +74,8 @@ class NoopAuthManager(AuthManager):
     def _delete_team(self, team_id: TeamID):
         pass
 
-    def _list_team_users(self, team_id: TeamID) -> List[UserID]:
-        return []
+    def _list_team_users(self, team_id: TeamID) -> Dict[UserID, bool]:
+        return {}
 
 
 SECRET_HEADER_NAME = "evidently-secret"
