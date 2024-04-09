@@ -248,7 +248,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         else:
             curr_contour = result.current_agg.contour
             ref_contour = result.reference_agg.contour if result.reference_agg is not None else None
-            fig = plot_top_error_contours(curr_contour, ref_contour, "Acual value", "Predicted value")
+            fig = plot_top_error_contours(curr_contour, ref_contour, "Actual value", "Predicted value")
             fig = json.loads(fig.to_json())
         res = [
             header_text(label="Error Bias Table"),
