@@ -6,7 +6,6 @@ from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
 from evidently.ui.base import ProjectManager
-from evidently.ui.components.base import DT
 from evidently.ui.components.base import FactoryComponent
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.storage.local import create_local_project_manager
@@ -22,7 +21,7 @@ class LocalStorageComponent(StorageComponent):
     path: str = "workspace"
     autorefresh: bool = True
 
-    def dependency_factory(self) -> Callable[..., DT]:
+    def dependency_factory(self) -> Callable[..., ProjectManager]:
         return lambda: create_local_project_manager(self.path, autorefresh=self.autorefresh, auth=NoopAuthManager())
 
 

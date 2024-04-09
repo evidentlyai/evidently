@@ -3,13 +3,13 @@ from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import Generic
-from typing import List
 from typing import Type
 from typing import TypeVar
 
 from litestar import Litestar
 from litestar.di import Provide
 
+from evidently._pydantic_compat import Extra
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.ui.utils import parse_json
 
@@ -31,13 +31,16 @@ class Component(PolymorphicModel, ABC):
     # def get_requirements(self) -> List[Type["Component"]]:
     #     return self.__require__
 
+    class Config:
+        extra = Extra.forbid
+
     def __init_subclass__(cls):
         super().__init_subclass__()
         if cls.__section__:
             SECTION_COMPONENT_TYPE_MAPPING[cls.__section__] = cls
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
-        raise NotImplementedError
+        raise NotImplementedError(self.__class__)
 
     def get_middlewares(self, ctx: ComponentContext):
         return []

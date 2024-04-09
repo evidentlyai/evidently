@@ -22,13 +22,14 @@ def start_workspace_watchdog(path: str, state: LocalState):
 
 
 def create_local_project_manager(path: str, autorefresh: bool, auth: AuthManager = None) -> ProjectManager:
-    metadata = JsonFileMetadataStorage(path=path)
-    data = InMemoryDataStorage(path=path)
+    state = LocalState.load(path, None)
+
+    metadata = JsonFileMetadataStorage(path=path, state=state)
+    data = InMemoryDataStorage(path=path, state=state)
     project_manager = ProjectManager(
         metadata=metadata, blob=FSSpecBlobStorage(base_path=path), data=data, auth=auth or NoopAuthManager()
     )
-    state = LocalState.load(path, project_manager)
-    project_manager.data._state = project_manager.metadata._state = state
+    state.project_manager = project_manager
 
     fs = state.location.fs
     if autorefresh and isinstance(fs, LocalFileSystem):
