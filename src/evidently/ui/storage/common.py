@@ -54,8 +54,8 @@ class NoopAuthManager(AuthManager):
     def get_org(self, org_id: OrgID) -> Optional[Org]:
         return self.org
 
-    def get_default_role(self, default_role: DefaultRole) -> Role:
-        return Role(id=0, name=default_role.value)
+    def get_default_role(self, default_role: DefaultRole, entity_type: Optional[EntityType]) -> Role:
+        return Role(id=0, name=default_role.value, entity_type=entity_type)
 
     def _grant_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
         pass
@@ -112,7 +112,10 @@ class NoopAuthManager(AuthManager):
     def list_user_entity_roles(
         self, user_id: UserID, entity_id: UUID, entity_type: EntityType
     ) -> List[Tuple[EntityType, UUID, Role]]:
-        return [(entity_type, entity_id, self.get_default_role(DefaultRole.OWNER))]
+        return [(entity_type, entity_id, self.get_default_role(DefaultRole.OWNER, None))]
+
+    def list_roles(self, entity_type: Optional[EntityType]) -> List[Role]:
+        return [self.get_default_role(DefaultRole.OWNER, None)]
 
 
 SECRET_HEADER_NAME = "evidently-secret"

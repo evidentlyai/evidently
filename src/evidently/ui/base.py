@@ -324,6 +324,7 @@ class EntityType(Enum):
 class Role(BaseModel):
     id: RoleID
     name: str
+    entity_type: Optional[EntityType]
 
 
 class DefaultRole(Enum):
@@ -332,19 +333,40 @@ class DefaultRole(Enum):
     VIEWER = "viewer"
 
 
-DEFAULT_ROLE_PERMISSIONS: Dict[DefaultRole, Set[Permission]] = {
-    DefaultRole.OWNER: set(Permission),
-    DefaultRole.EDITOR: {
+DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
+    (DefaultRole.OWNER, None): set(Permission),
+    (DefaultRole.EDITOR, EntityType.Org): {
         Permission.ORG_READ,
         Permission.ORG_WRITE,
+    },
+    (DefaultRole.EDITOR, EntityType.Team): {
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
     },
-    DefaultRole.VIEWER: {Permission.ORG_READ, Permission.TEAM_READ, Permission.PROJECT_READ},
+    (DefaultRole.EDITOR, EntityType.Project): {
+        Permission.PROJECT_READ,
+        Permission.PROJECT_WRITE,
+        Permission.PROJECT_SNAPSHOT_ADD,
+    },
+    (DefaultRole.VIEWER, EntityType.Org): {Permission.ORG_READ},
+    (DefaultRole.VIEWER, EntityType.Team): {Permission.TEAM_READ},
+    (DefaultRole.VIEWER, EntityType.Project): {Permission.PROJECT_READ},
 }
+
+
+def get_default_role_permissions(
+    default_role: DefaultRole, entity_type: Optional[EntityType]
+) -> Tuple[Optional[EntityType], Set[Permission]]:
+    res = DEFAULT_ROLE_PERMISSIONS.get((default_role, entity_type))
+    if res is None:
+        entity_type = None
+        res = DEFAULT_ROLE_PERMISSIONS.get((default_role, None))
+    if res is None:
+        raise ValueError(f"No default role for ({default_role}, {entity_type}) pair")
+    return entity_type, res
 
 
 class AuthManager(EvidentlyBaseModel):
@@ -428,7 +450,7 @@ class AuthManager(EvidentlyBaseModel):
         self._delete_team(team_id)
 
     @abstractmethod
-    def get_default_role(self, default_role: DefaultRole) -> Role:
+    def get_default_role(self, default_role: DefaultRole, entity_type: Optional[EntityType]) -> Role:
         raise NotImplementedError
 
     def grant_entity_role(self, manager: UserID, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
@@ -487,6 +509,10 @@ class AuthManager(EvidentlyBaseModel):
     def list_user_entity_roles(
         self, user_id: UserID, entity_id: UUID, entity_type: EntityType
     ) -> List[Tuple[EntityType, UUID, Role]]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_roles(self, entity_type: Optional[EntityType]) -> List[Role]:
         raise NotImplementedError
 
 

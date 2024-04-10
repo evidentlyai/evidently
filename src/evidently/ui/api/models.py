@@ -12,12 +12,15 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
+from evidently.ui.base import EntityType
 from evidently.ui.base import Org
 from evidently.ui.base import Project
+from evidently.ui.base import Role
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import RoleID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 
@@ -141,3 +144,13 @@ class UserModel(BaseModel):
     @classmethod
     def from_user(cls, user: User):
         return UserModel(id=user.id, name=user.name)
+
+
+class RoleModel(BaseModel):
+    id: RoleID
+    name: str
+    entity_type: Optional[EntityType]
+
+    @classmethod
+    def from_role(cls, role: Role):
+        return RoleModel(id=role.id, name=role.name, entity_type=role.entity_type)
