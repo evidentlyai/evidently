@@ -1,20 +1,40 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box } from '@mui/material'
-import { BreadCrumbs } from './BreadCrumbs'
+import { useParams } from 'react-router-dom'
+import { ProjectSideBar } from './Sidebar'
 
 export interface ServiceMainPageProps {
   children: React.ReactNode
+  additionalProjectSideBarLinks?: { label: string; icon: React.ReactNode; path: string }[]
 }
 
-export function ServiceMainPage(props: ServiceMainPageProps) {
+export function ServiceMainPage({
+  children,
+  additionalProjectSideBarLinks = []
+}: ServiceMainPageProps) {
+  const { projectId } = useParams()
+  const [sideBarSize, setSideBarSize] = useState(projectId ? 65 : 0)
+
+  useEffect(() => {
+    if (projectId) {
+      setSideBarSize(65)
+    } else {
+      setSideBarSize(0)
+    }
+  }, [projectId])
+
   return (
-    <>
-      <Box py={3}>
-        <Box px={3}>
-          <BreadCrumbs />
-        </Box>
-        {props.children}
+    <Box
+      display={'grid'}
+      gridTemplateColumns={`${sideBarSize}px 1px calc(100% - ${sideBarSize}px - 1px)`}
+      alignItems={'start'}
+      sx={{ transition: '225ms ease-in-out' }}
+    >
+      <Box sx={{ position: 'sticky', top: 0, left: 0, overflow: 'hidden' }}>
+        <ProjectSideBar projectId={projectId} additionalLinks={additionalProjectSideBarLinks} />
       </Box>
-    </>
+      <Box sx={{ height: 1, backgroundColor: '#ded5d5' }}></Box>
+      <Box>{children}</Box>
+    </Box>
   )
 }

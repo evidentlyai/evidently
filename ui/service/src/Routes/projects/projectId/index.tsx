@@ -16,11 +16,11 @@ import TestSuitesRoute from './test-suites'
 export default {
   path: 'projects/:projectId',
   lazy: async () => {
-    const { ProjectTemplate, DEFAULT_PROJECT_TABS, ...rest } = await import(
+    const { ProjectTemplate, ...rest } = await import(
       'evidently-ui-lib/routes-components/projectId'
     )
 
-    const Component = () => <ProjectTemplate tabsConfig={DEFAULT_PROJECT_TABS} />
+    const Component = () => <ProjectTemplate />
 
     return { Component, ...rest }
   },
