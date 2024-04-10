@@ -7,6 +7,7 @@ import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
 from evidently.base_metric import additional_feature
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -18,7 +19,7 @@ class TriggerWordsPresent(GeneratedFeature):
     _lem: WordNetLemmatizer
 
     def __init__(self, column_name: str, words_list=(), lemmatize=True, display_name: Optional[str] = None):
-
+        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize

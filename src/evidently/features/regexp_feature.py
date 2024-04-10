@@ -3,6 +3,7 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import additional_feature
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -12,6 +13,7 @@ class RegExp(GeneratedFeature):
     reg_exp: str
 
     def __init__(self, column_name: str, reg_exp: str, display_name: Optional[str] = None):
+        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.reg_exp = reg_exp
         self.display_name = display_name
