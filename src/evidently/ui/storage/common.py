@@ -3,6 +3,7 @@ from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Tuple
 from uuid import UUID
 
 from evidently.ui.base import AuthManager
@@ -102,6 +103,16 @@ class NoopAuthManager(AuthManager):
 
     def _list_org_users(self, org_id: OrgID):
         return []
+
+    def list_user_entity_permissions(
+        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
+    ) -> Set[Permission]:
+        return set(Permission)
+
+    def list_user_entity_roles(
+        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
+    ) -> List[Tuple[EntityType, UUID, Role]]:
+        return [(entity_type, entity_id, self.get_default_role(DefaultRole.OWNER))]
 
 
 SECRET_HEADER_NAME = "evidently-secret"

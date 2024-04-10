@@ -9,6 +9,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Tuple
 from typing import Union
 from uuid import UUID
 
@@ -334,13 +335,15 @@ class DefaultRole(Enum):
 DEFAULT_ROLE_PERMISSIONS: Dict[DefaultRole, Set[Permission]] = {
     DefaultRole.OWNER: set(Permission),
     DefaultRole.EDITOR: {
+        Permission.ORG_READ,
+        Permission.ORG_WRITE,
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
     },
-    DefaultRole.VIEWER: {Permission.TEAM_READ, Permission.PROJECT_READ},
+    DefaultRole.VIEWER: {Permission.ORG_READ, Permission.TEAM_READ, Permission.PROJECT_READ},
 }
 
 
@@ -473,6 +476,18 @@ class AuthManager(EvidentlyBaseModel):
         if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_READ):
             raise OrgNotFound()
         return self._list_org_users(org_id)
+
+    @abstractmethod
+    def list_user_entity_permissions(
+        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
+    ) -> Set[Permission]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_user_entity_roles(
+        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
+    ) -> List[Tuple[EntityType, UUID, Role]]:
+        raise NotImplementedError
 
 
 class ProjectManager(EvidentlyBaseModel):
