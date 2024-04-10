@@ -71,7 +71,7 @@ const metadataToOneString: (metadata: MetadataValueType) => string = (
     })
     .join(' ')
 
-export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) => {
+export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites' }) => {
   const { projectId } = useParams()
   const snapshots = useLoaderData() as loaderData
   const matches = useMatches()
@@ -138,6 +138,14 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
     return <Outlet />
   }
 
+  if (resultSnapshots.length === 0) {
+    return (
+      <Typography my={3} variant="h4" align="center">
+        You don't have any {type} yet
+      </Typography>
+    )
+  }
+
   return (
     <>
       <Box sx={{ padding: 2 }}>
@@ -196,9 +204,9 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
         <TableHead>
           <TableRow>
             <TableCell>
-              {type === 'report'
+              {type === 'reports'
                 ? 'Report ID'
-                : type === 'test suite'
+                : type === 'test suites'
                 ? 'Test Suite ID'
                 : 'indefined'}
             </TableCell>

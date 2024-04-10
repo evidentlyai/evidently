@@ -9,8 +9,10 @@ export interface ServiceMainPageProps {
 export function ServiceMainPage(props: ServiceMainPageProps) {
   return (
     <>
-      <Box p={3}>
-        <BreadCrumbs />
+      <Box py={3}>
+        <Box px={3}>
+          <BreadCrumbs />
+        </Box>
         {props.children}
       </Box>
     </>
