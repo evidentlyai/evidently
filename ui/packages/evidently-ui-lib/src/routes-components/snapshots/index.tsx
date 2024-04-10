@@ -141,7 +141,7 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
   if (resultSnapshots.length === 0) {
     return (
       <Typography my={3} variant="h4" align="center">
-        You don't have any {type} yet
+        You don't have any {type} yet.
       </Typography>
     )
   }
