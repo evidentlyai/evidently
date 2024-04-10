@@ -158,7 +158,7 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
                 color="primary"
                 disabled={isNavigation}
               >
-                refresh {`${type}s`}
+                refresh {type}
               </Button>
             </Box>
           </Grid>
