@@ -17,11 +17,14 @@ import { SideBarLink } from '~/components/Sidebar'
 export const HomeComponentTemplate = ({
   logoSrc,
   authComponent,
-  additionalProjectSideBarLinks = []
+  sideBarSettings = {}
 }: {
   logoSrc: string
   authComponent?: React.ReactNode
-  additionalProjectSideBarLinks?: SideBarLink[]
+  sideBarSettings?: {
+    additionalProjectLinks?: SideBarLink[]
+    globalLinks?: SideBarLink[]
+  }
 }) => {
   const { version } = useLoaderData() as loaderData
 
@@ -30,7 +33,7 @@ export const HomeComponentTemplate = ({
       <ServiceHeader authComponent={authComponent} version={version} logoSrc={logoSrc} />
       <NavigationProgress />
       <ScrollRestoration />
-      <ServiceMainPage sideBarSettings={{ additionalProjectLinks: additionalProjectSideBarLinks }}>
+      <ServiceMainPage sideBarSettings={sideBarSettings}>
         <Box p={3}>
           <BreadCrumbs />
           <Outlet />

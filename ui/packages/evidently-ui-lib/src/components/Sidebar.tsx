@@ -1,5 +1,5 @@
 import { Link as RouterLink, useMatches } from 'react-router-dom'
-import { Divider, IconButton, Link, Stack, Tooltip } from '@mui/material'
+import { Divider, Fade, IconButton, Link, Stack, Tooltip } from '@mui/material'
 
 import DashboardOutlinedIcon from '@mui/icons-material/Dashboard'
 import ChecklistOutlinedIcon from '@mui/icons-material/Checklist'
@@ -37,22 +37,23 @@ const BaseProjectLinks = [
 
 export const SideBar = ({
   projectId,
-  globalLinks: globalLevelLinks = [],
-  additionalProjectLinks = []
+  globalLinks,
+  additionalProjectLinks
 }: {
   projectId?: string
-  globalLinks?: SideBarLink[]
-  additionalProjectLinks?: SideBarLink[]
+  globalLinks: SideBarLink[]
+  additionalProjectLinks: SideBarLink[]
 }) => {
   const matches = useMatches()
   const projectLinks = [...BaseProjectLinks, ...additionalProjectLinks]
   const activeIndex = projectLinks.findIndex(({ id }) => matches.map(({ id }) => id).includes(id))
+
   return (
     <nav aria-label="project navigation">
       <Stack direction={'column'} alignItems={'center'} useFlexGap gap={1}>
-        {globalLevelLinks.length > 0 && (
+        {globalLinks.length > 0 && (
           <>
-            {globalLevelLinks.map((link, index) => (
+            {globalLinks.map((link, index) => (
               <Tooltip key={link.path} placement="right" title={link.label}>
                 <Link component={RouterLink} to={'/' + link.path}>
                   <IconButton
@@ -73,27 +74,28 @@ export const SideBar = ({
             <Divider flexItem orientation="horizontal" />
           </>
         )}
-        {projectLinks.map((link, index) => (
-          <Tooltip key={link.path} placement="right" title={link.label}>
-            <Link
-              component={RouterLink}
-              to={['projects', projectId, link.path].filter(Boolean).join('/')}
-            >
-              <IconButton
-                sx={[
-                  { borderRadius: 3 },
-                  activeIndex === index && {
-                    color: (theme) => theme.palette.secondary.main,
-                    backgroundColor: (theme) => theme.palette.primary.light
-                  }
-                ]}
-                size="large"
-              >
-                {link.icon}
-              </IconButton>
-            </Link>
-          </Tooltip>
-        ))}
+        <Fade in={Boolean(projectId)}>
+          <span>
+            {projectLinks.map((link, index) => (
+              <Tooltip key={link.path} placement="right" title={link.label}>
+                <Link component={RouterLink} to={['projects', projectId, link.path].join('/')}>
+                  <IconButton
+                    sx={[
+                      { borderRadius: 3 },
+                      activeIndex === index && {
+                        color: (theme) => theme.palette.secondary.main,
+                        backgroundColor: (theme) => theme.palette.primary.light
+                      }
+                    ]}
+                    size="large"
+                  >
+                    {link.icon}
+                  </IconButton>
+                </Link>
+              </Tooltip>
+            ))}
+          </span>
+        </Fade>
       </Stack>
     </nav>
   )
