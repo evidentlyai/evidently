@@ -16,6 +16,7 @@ export const DashboardWidgets = ({
       </Typography>
     )
   }
+
   return (
     <>
       <Grid container spacing={3} direction="row" alignItems="stretch">

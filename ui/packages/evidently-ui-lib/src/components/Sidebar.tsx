@@ -1,5 +1,5 @@
 import { Link as RouterLink, useMatches } from 'react-router-dom'
-import { Divider, Fade, IconButton, Link, Stack, Tooltip } from '@mui/material'
+import { Box, Divider, Fade, IconButton, Link, Stack, Tooltip } from '@mui/material'
 
 import DashboardOutlinedIcon from '@mui/icons-material/Dashboard'
 import ChecklistOutlinedIcon from '@mui/icons-material/Checklist'
@@ -50,7 +50,13 @@ export const SideBar = ({
 
   return (
     <nav aria-label="project navigation">
-      <Stack direction={'column'} alignItems={'center'} useFlexGap gap={1}>
+      <Stack
+        direction={'column'}
+        alignItems={'center'}
+        justifyContent={'center'}
+        useFlexGap
+        gap={1}
+      >
         {globalLinks.length > 0 && (
           <>
             {globalLinks.map((link, index) => (
@@ -74,28 +80,29 @@ export const SideBar = ({
             <Divider flexItem orientation="horizontal" />
           </>
         )}
-        <Fade in={Boolean(projectId)}>
-          <span>
-            {projectLinks.map((link, index) => (
-              <Tooltip key={link.path} placement="right" title={link.label}>
-                <Link component={RouterLink} to={['projects', projectId, link.path].join('/')}>
-                  <IconButton
-                    sx={[
-                      { borderRadius: 3 },
-                      activeIndex === index && {
-                        color: (theme) => theme.palette.secondary.main,
-                        backgroundColor: (theme) => theme.palette.primary.light
-                      }
-                    ]}
-                    size="large"
-                  >
-                    {link.icon}
-                  </IconButton>
-                </Link>
-              </Tooltip>
-            ))}
-          </span>
-        </Fade>
+
+        {projectLinks.map((link, index) => (
+          <Tooltip key={link.path} placement="right" title={link.label}>
+            <Fade in={Boolean(projectId)}>
+              <Link component={RouterLink} to={['projects', projectId, link.path].join('/')}>
+                <IconButton
+                  sx={[
+                    { borderRadius: 3 },
+                    activeIndex === index && {
+                      color: (theme) => theme.palette.secondary.main,
+                      backgroundColor: (theme) => theme.palette.primary.light
+                    }
+                  ]}
+                  size="large"
+                >
+                  {link.icon}
+                </IconButton>
+              </Link>
+            </Fade>
+          </Tooltip>
+        ))}
+
+        {/* </Fade> */}
       </Stack>
     </nav>
   )
