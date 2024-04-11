@@ -30,7 +30,7 @@ export const HomeComponentTemplate = ({
       <ServiceHeader authComponent={authComponent} version={version} logoSrc={logoSrc} />
       <NavigationProgress />
       <ScrollRestoration />
-      <ServiceMainPage additionalProjectSideBarLinks={additionalProjectSideBarLinks}>
+      <ServiceMainPage sideBarSettings={{ additionalProjectLinks: additionalProjectSideBarLinks }}>
         <Box p={3}>
           <BreadCrumbs />
           <Outlet />

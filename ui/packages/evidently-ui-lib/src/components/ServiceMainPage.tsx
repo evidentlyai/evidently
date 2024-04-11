@@ -5,23 +5,24 @@ import { SideBar, SideBarLink } from '~/components/Sidebar'
 
 export interface ServiceMainPageProps {
   children: React.ReactNode
-  additionalProjectSideBarLinks?: SideBarLink[]
+  sideBarSettings: {
+    additionalProjectLinks?: SideBarLink[]
+    globalLinks?: SideBarLink[]
+  }
 }
 
 export function ServiceMainPage({
   children,
-  additionalProjectSideBarLinks = []
+  sideBarSettings: { additionalProjectLinks = [], globalLinks = [] }
 }: ServiceMainPageProps) {
   const { projectId } = useParams()
-  const [sideBarSize, setSideBarSize] = useState(projectId ? 65 : 0)
+  const getSideBarSize = () => (projectId || globalLinks.length > 0 ? 65 : 0)
+
+  const [sideBarSize, setSideBarSize] = useState(() => getSideBarSize())
 
   useEffect(() => {
-    if (projectId) {
-      setSideBarSize(65)
-    } else {
-      setSideBarSize(0)
-    }
-  }, [projectId])
+    setSideBarSize(getSideBarSize())
+  }, [projectId, globalLinks.length > 0])
 
   return (
     <Box
@@ -31,7 +32,11 @@ export function ServiceMainPage({
       sx={{ transition: '225ms ease-in-out' }}
     >
       <Box sx={{ position: 'sticky', top: 0, left: 0, overflow: 'hidden' }}>
-        <SideBar projectId={projectId} additionalLinks={additionalProjectSideBarLinks} />
+        <SideBar
+          projectId={projectId}
+          additionalProjectLinks={additionalProjectLinks}
+          globalLinks={globalLinks}
+        />
       </Box>
       <Divider orientation="vertical" />
       <Box>{children}</Box>
