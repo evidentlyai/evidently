@@ -149,19 +149,7 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Grid container gap={2} alignItems={'flex-end'}>
-          <Grid item xs={12}>
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                variant="outlined"
-                onClick={() => submit(null, { method: 'post' })}
-                color="primary"
-                disabled={isNavigation}
-              >
-                refresh {type}
-              </Button>
-            </Box>
-          </Grid>
+        <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
           <Grid item xs={12} md={4}>
             <Autocomplete
               multiple
@@ -174,7 +162,6 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
               )}
             />
           </Grid>
-
           <Grid item xs={12} md={7}>
             <Box display={'flex'} alignItems={'flex-end'} gap={2}>
               <TextField
@@ -184,7 +171,6 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
                 variant="standard"
                 label="Search in Metadata"
               />
-
               <Box minWidth={220} display={'flex'} justifyContent={'center'}>
                 <FormControlLabel
                   control={
@@ -195,6 +181,17 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
                   }
                   label="Hide Metadata"
                 />
+              </Box>
+              <Box display="flex" justifyContent="flex-end">
+                <Button
+                  sx={{ minWidth: 160 }}
+                  variant="outlined"
+                  onClick={() => submit(null, { method: 'post' })}
+                  color="primary"
+                  disabled={isNavigation}
+                >
+                  refresh {type}
+                </Button>
               </Box>
             </Box>
           </Grid>
