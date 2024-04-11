@@ -101,8 +101,6 @@ export const SideBar = ({
             </Fade>
           </Tooltip>
         ))}
-
-        {/* </Fade> */}
       </Stack>
     </nav>
   )
