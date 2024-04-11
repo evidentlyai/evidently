@@ -9,7 +9,7 @@ const borderColorGrey = '#ded5d5'
 export const theme = createTheme({
   shape: { borderRadius: 5 },
   palette: {
-    primary: { main: colors.grey[900] },
+    primary: { main: colors.grey[900], light: '#e6e6e6' },
     // we use `secondary` color for interactive elements
     secondary: { main: mainRed, dark: '#c10400' },
     background: { default: 'white', paper: 'white' }

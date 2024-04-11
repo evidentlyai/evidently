@@ -73,7 +73,7 @@ const Widget = (
     <Card
       sx={{
         border: '1px solid',
-        borderColor: '#d6d6d6',
+        borderColor: 'primary.light',
         borderRadius: '4px'
       }}
       elevation={0}

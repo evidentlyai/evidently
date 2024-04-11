@@ -12,6 +12,7 @@ import 'dayjs/locale/en-gb'
 
 import type { loaderData } from './data'
 import { Box } from '@mui/material'
+import { SideBarLink } from '~/components/Sidebar'
 
 export const HomeComponentTemplate = ({
   logoSrc,
@@ -20,7 +21,7 @@ export const HomeComponentTemplate = ({
 }: {
   logoSrc: string
   authComponent?: React.ReactNode
-  additionalProjectSideBarLinks?: { label: string; icon: React.ReactNode; path: string }[]
+  additionalProjectSideBarLinks?: SideBarLink[]
 }) => {
   const { version } = useLoaderData() as loaderData
 

@@ -62,17 +62,12 @@ const Widget2 = (props: WidgetProps) => {
   const { title, details, content, alerts, insights } = props.children
   const isAlertsExists = alerts === undefined ? false : alerts.length > 0
   const isInsightsExists = insights === undefined ? false : insights.length > 0
-  // const classes = useStyles();
   return (
-    <Grid
-      item
-      {...Sizes(size)}
-      // className={classes.widget}
-    >
+    <Grid item {...Sizes(size)}>
       <Card
         sx={{
           border: '1px solid',
-          borderColor: '#d6d6d6',
+          borderColor: 'primary.light',
           borderRadius: '4px'
         }}
         elevation={0}

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Box } from '@mui/material'
 import { useParams } from 'react-router-dom'
-import { ProjectSideBar } from './Sidebar'
+import { SideBar, SideBarLink } from '~/components/Sidebar'
 
 export interface ServiceMainPageProps {
   children: React.ReactNode
-  additionalProjectSideBarLinks?: { label: string; icon: React.ReactNode; path: string }[]
+  additionalProjectSideBarLinks?: SideBarLink[]
 }
 
 export function ServiceMainPage({
@@ -31,9 +31,9 @@ export function ServiceMainPage({
       sx={{ transition: '225ms ease-in-out' }}
     >
       <Box sx={{ position: 'sticky', top: 0, left: 0, overflow: 'hidden' }}>
-        <ProjectSideBar projectId={projectId} additionalLinks={additionalProjectSideBarLinks} />
+        <SideBar projectId={projectId} additionalLinks={additionalProjectSideBarLinks} />
       </Box>
-      <Box sx={{ height: 1, backgroundColor: '#ded5d5' }}></Box>
+      <Box sx={{ height: 1, backgroundColor: 'primary.light' }}></Box>
       <Box>{children}</Box>
     </Box>
   )
