@@ -15,15 +15,7 @@ import TestSuitesRoute from './test-suites'
 
 export default {
   path: 'projects/:projectId',
-  lazy: async () => {
-    const { ProjectTemplate, ...rest } = await import(
-      'evidently-ui-lib/routes-components/projectId'
-    )
-
-    const Component = () => <ProjectTemplate />
-
-    return { Component, ...rest }
-  },
+  lazy: () => import('evidently-ui-lib/routes-components/projectId'),
   loader,
   ErrorBoundary: GenericErrorBoundary,
   children: [DashboardRoute, ReportsRoute, TestSuitesRoute]

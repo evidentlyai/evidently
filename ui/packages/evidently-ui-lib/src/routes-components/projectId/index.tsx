@@ -33,3 +33,5 @@ export const ProjectTemplate = () => {
     </Box>
   )
 }
+
+export const Component = ProjectTemplate
