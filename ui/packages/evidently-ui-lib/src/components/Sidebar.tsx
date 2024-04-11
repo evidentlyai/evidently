@@ -1,5 +1,5 @@
 import { Link as RouterLink, useMatches } from 'react-router-dom'
-import { Box, Divider, Fade, IconButton, Link, Stack, Tooltip } from '@mui/material'
+import { Divider, Fade, IconButton, Link, Stack, Tooltip } from '@mui/material'
 
 import DashboardOutlinedIcon from '@mui/icons-material/Dashboard'
 import ChecklistOutlinedIcon from '@mui/icons-material/Checklist'
