@@ -72,6 +72,7 @@ export const SideBar = ({
         useFlexGap
         gap={1}
       >
+        <Divider sx={{ border: 'transparent' }} flexItem orientation="horizontal" />
         <Tooltip key={HomeLink.path} placement="right" title={HomeLink.label}>
           <Link component={RouterLink} to={HomeLink.path}>
             <IconButton sx={{ borderRadius: 3 }} size="large">
