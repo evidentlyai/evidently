@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box } from '@mui/material'
+import { Box, Divider } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import { SideBar, SideBarLink } from '~/components/Sidebar'
 
@@ -33,7 +33,7 @@ export function ServiceMainPage({
       <Box sx={{ position: 'sticky', top: 0, left: 0, overflow: 'hidden' }}>
         <SideBar projectId={projectId} additionalLinks={additionalProjectSideBarLinks} />
       </Box>
-      <Box sx={{ height: 1, backgroundColor: 'primary.light' }}></Box>
+      <Divider orientation="vertical" />
       <Box>{children}</Box>
     </Box>
   )
