@@ -4,6 +4,7 @@ import { Divider, Fade, IconButton, Link, Stack, Tooltip } from '@mui/material'
 import DashboardOutlinedIcon from '@mui/icons-material/Dashboard'
 import ChecklistOutlinedIcon from '@mui/icons-material/Checklist'
 import SummarizeOutlinedIcon from '@mui/icons-material/Summarize'
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 
 export const ICONS_FONS_SIZE = 25
 
@@ -13,6 +14,13 @@ export type SideBarLink = {
   icon: React.ReactNode
   path: string
 }
+
+const HomeLink = {
+  id: 'home',
+  label: 'Home',
+  icon: <HomeOutlinedIcon sx={{ fontSize: ICONS_FONS_SIZE }} />,
+  path: '/'
+} satisfies SideBarLink
 
 const BaseProjectLinks = [
   {
@@ -46,7 +54,14 @@ export const SideBar = ({
 }) => {
   const matches = useMatches()
   const projectLinks = [...BaseProjectLinks, ...additionalProjectLinks]
-  const activeIndex = projectLinks.findIndex(({ id }) => matches.map(({ id }) => id).includes(id))
+
+  const activeProjectLinkIndex = projectLinks.findIndex(({ id }) =>
+    matches.map(({ id }) => id).includes(id)
+  )
+
+  const activeGlobalLinkIndex = globalLinks.findIndex(({ id }) =>
+    matches.map(({ id }) => id).includes(id)
+  )
 
   return (
     <nav aria-label="project navigation">
@@ -57,15 +72,24 @@ export const SideBar = ({
         useFlexGap
         gap={1}
       >
+        <Tooltip key={HomeLink.path} placement="right" title={HomeLink.label}>
+          <Link component={RouterLink} to={HomeLink.path}>
+            <IconButton sx={{ borderRadius: 3 }} size="large">
+              {HomeLink.icon}
+            </IconButton>
+          </Link>
+        </Tooltip>
+        <Divider flexItem orientation="horizontal" />
+
         {globalLinks.length > 0 && (
           <>
             {globalLinks.map((link, index) => (
               <Tooltip key={link.path} placement="right" title={link.label}>
-                <Link component={RouterLink} to={'/' + link.path}>
+                <Link component={RouterLink} to={`/${link.path}`}>
                   <IconButton
                     sx={[
                       { borderRadius: 3 },
-                      activeIndex === index && {
+                      activeGlobalLinkIndex === index && {
                         color: (theme) => theme.palette.secondary.main,
                         backgroundColor: (theme) => theme.palette.primary.light
                       }
@@ -88,7 +112,7 @@ export const SideBar = ({
                 <IconButton
                   sx={[
                     { borderRadius: 3 },
-                    activeIndex === index && {
+                    activeProjectLinkIndex === index && {
                       color: (theme) => theme.palette.secondary.main,
                       backgroundColor: (theme) => theme.palette.primary.light
                     }
