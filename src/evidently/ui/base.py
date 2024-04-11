@@ -112,6 +112,7 @@ class Team(BaseModel):
 class User(BaseModel):
     id: UserID = Field(default_factory=uuid.uuid4)
     name: str
+    email: str = ""
 
 
 def _default_dashboard():
