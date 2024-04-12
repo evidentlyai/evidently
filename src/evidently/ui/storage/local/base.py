@@ -210,7 +210,8 @@ class JsonFileMetadataStorage(MetadataStorage):
             self.state.location.rmtree(path)
 
     def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
-        return [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
+        projects = [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
+        return sorted(projects, key=lambda x: x.created_at, reverse=True)
 
     def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
         project = self.get_project(project_id)
