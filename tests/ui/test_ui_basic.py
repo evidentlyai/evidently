@@ -2,8 +2,8 @@ import pytest
 from litestar.testing import TestClient
 
 from evidently.ui.app import create_app
-from evidently.ui.config import LocalConfig
 from evidently.ui.demo_projects import DEMO_PROJECTS
+from evidently.ui.local_service import LocalConfig
 
 
 @pytest.fixture
