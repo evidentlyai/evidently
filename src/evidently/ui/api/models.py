@@ -5,6 +5,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import TypeVar
 
 from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import Metric
@@ -137,6 +138,9 @@ class TeamModel(BaseModel):
         return Team(id=self.id, name=self.name)
 
 
+UT = TypeVar("UT", bound="UserModel")
+
+
 class UserModel(BaseModel):
     id: UserID
     name: str
@@ -145,6 +149,10 @@ class UserModel(BaseModel):
     @classmethod
     def from_user(cls, user: User):
         return UserModel(id=user.id, name=user.name, email=user.email)
+
+    def merge(self: UT, other: "UserModel") -> UT:
+        kwargs = {f: getattr(other, f, None) or getattr(self, f) for f in self.__fields__}
+        return self.__class__(**kwargs)
 
 
 class RoleModel(BaseModel):
