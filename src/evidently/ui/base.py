@@ -7,6 +7,7 @@ from abc import abstractmethod
 from enum import Enum
 from typing import Dict
 from typing import List
+from typing import NamedTuple
 from typing import Optional
 from typing import Set
 from typing import Tuple
@@ -370,6 +371,11 @@ def get_default_role_permissions(
     return entity_type, res
 
 
+class UserWithRoles(NamedTuple):
+    user: User
+    roles: List[Role]
+
+
 class AuthManager(EvidentlyBaseModel):
     allow_default_user: bool = True
 
@@ -484,10 +490,10 @@ class AuthManager(EvidentlyBaseModel):
         return self._list_team_users(team_id)
 
     @abstractmethod
-    def _list_team_users_with_roles(self, team_id: TeamID) -> List[Tuple[User, List[Role]]]:
+    def _list_team_users_with_roles(self, team_id: TeamID) -> List[UserWithRoles]:
         raise NotImplementedError
 
-    def list_team_users_with_roles(self, user_id: UserID, team_id: TeamID) -> List[Tuple[User, List[Role]]]:
+    def list_team_users_with_roles(self, user_id: UserID, team_id: TeamID) -> List[UserWithRoles]:
         if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
             raise TeamNotFound()
         return self._list_team_users_with_roles(team_id)

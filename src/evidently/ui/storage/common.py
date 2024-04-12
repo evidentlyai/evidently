@@ -14,6 +14,7 @@ from evidently.ui.base import Permission
 from evidently.ui.base import Role
 from evidently.ui.base import Team
 from evidently.ui.base import User
+from evidently.ui.base import UserWithRoles
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
@@ -95,7 +96,7 @@ class NoopAuthManager(AuthManager):
     def _list_team_users(self, team_id: TeamID) -> List[User]:
         return []
 
-    def _list_team_users_with_roles(self, team_id: TeamID) -> List[Tuple[User, List[Role]]]:
+    def _list_team_users_with_roles(self, team_id: TeamID) -> List[UserWithRoles]:
         return []
 
     def _delete_org(self, org_id: OrgID):
