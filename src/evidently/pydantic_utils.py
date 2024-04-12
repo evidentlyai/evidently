@@ -29,7 +29,6 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
-    from evidently._pydantic_compat import Model
     from evidently.core import IncludeTags
 T = TypeVar("T")
 
@@ -134,7 +133,7 @@ def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["Polym
     LOADED_TYPE_ALIASES[key] = cls
 
 
-@lru_cache
+@lru_cache()
 def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
     for cls_ in cls.mro():
         if not issubclass(cls_, PolymorphicModel):
@@ -143,6 +142,9 @@ def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
         if config is not None and config.__dict__.get("is_base_type", False):
             return cls_
     return PolymorphicModel
+
+
+TPM = TypeVar("TPM", bound="PolymorphicModel")
 
 
 class PolymorphicModel(BaseModel):
@@ -176,10 +178,10 @@ class PolymorphicModel(BaseModel):
         return Union[tuple(all_subclasses(cls))]
 
     @classmethod
-    def validate(cls: Type["Model"], value: Any) -> "Model":
+    def validate(cls: Type[TPM], value: Any) -> TPM:
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
-            key = (get_base_class(cls), typename)
+            key = (get_base_class(cls), typename)  # type: ignore[arg-type]
             if key in LOADED_TYPE_ALIASES:
                 subcls = LOADED_TYPE_ALIASES[key]
             else:
