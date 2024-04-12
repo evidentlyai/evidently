@@ -17,6 +17,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import error_bias_table
 from evidently.calculations.regression_performance import error_with_quantiles
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
@@ -42,6 +43,17 @@ class RegressionErrorBiasTableResults(MetricResult):
             "cat_feature_names",
             "error_bias",
             "columns",
+        }
+
+        field_tags = {
+            "current_plot_data": {IncludeTags.Current, IncludeTags.Render},
+            "reference_plot_data": {IncludeTags.Reference, IncludeTags.Render},
+            "target_name": {IncludeTags.Parameter},
+            "prediction_name": {IncludeTags.Parameter},
+            "num_feature_names": {IncludeTags.Parameter},
+            "cat_feature_names": {IncludeTags.Parameter},
+            "columns": {IncludeTags.Parameter},
+            "error_bias": {IncludeTags.Extra},
         }
 
     top_error: float

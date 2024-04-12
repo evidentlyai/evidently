@@ -6,6 +6,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
@@ -20,6 +21,16 @@ from evidently.utils.visualizations import plot_bias
 
 
 class ItemBiasMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "k": {IncludeTags.Parameter},
+            "column_name": {IncludeTags.Parameter},
+            "current_train_distr": {IncludeTags.Current},
+            "current_distr": {IncludeTags.Current},
+            "reference_train_distr": {IncludeTags.Reference},
+            "reference_distr": {IncludeTags.Reference},
+        }
+
     k: int
     column_name: str
     current_train_distr: Distribution

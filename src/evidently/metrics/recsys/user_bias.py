@@ -5,6 +5,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
@@ -18,6 +19,15 @@ from evidently.utils.visualizations import plot_bias
 
 
 class UserBiasMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "column_name": {IncludeTags.Parameter},
+            "current_train_distr": {IncludeTags.Current},
+            "current_distr": {IncludeTags.Current},
+            "reference_train_distr": {IncludeTags.Reference},
+            "reference_distr": {IncludeTags.Reference},
+        }
+
     column_name: str
     current_train_distr: Distribution
     current_distr: Distribution

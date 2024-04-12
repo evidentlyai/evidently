@@ -43,6 +43,7 @@ class RegressionTopErrorMetricResults(MetricResult):
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Union[TopData, AggTopData]
     reference: Optional[Union[TopData, AggTopData]]

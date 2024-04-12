@@ -13,6 +13,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
+from evidently.core import IncludeTags
 from evidently.core import pydantic_type_validator
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -53,6 +54,17 @@ class DatasetMissingValues(MetricResult):
             "columns_with_missing_values",
         }
 
+        field_tags = {
+            "different_missing_values": {IncludeTags.Extra},
+            "different_missing_values_by_column": {IncludeTags.Extra},
+            "number_of_different_missing_values_by_column": {IncludeTags.Extra},
+            "number_of_missing_values_by_column": {IncludeTags.Extra},
+            "share_of_missing_values_by_column": {IncludeTags.Extra},
+            "number_of_rows": {IncludeTags.Extra},
+            "number_of_columns": {IncludeTags.Extra},
+            "columns_with_missing_values": {IncludeTags.Extra},
+        }
+
     # set of different missing values in the dataset
     different_missing_values: Dict[MissingValue, int]
     # number of different missing values in the dataset
@@ -86,6 +98,9 @@ class DatasetMissingValues(MetricResult):
 
 
 class DatasetMissingValuesMetricResult(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     current: DatasetMissingValues
     reference: Optional[DatasetMissingValues] = None
 

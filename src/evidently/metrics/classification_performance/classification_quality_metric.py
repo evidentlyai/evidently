@@ -4,6 +4,7 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_metrics
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetClassificationQuality
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
@@ -18,6 +19,13 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationQualityMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "target_name": {IncludeTags.Parameter},
+        }
+
     current: DatasetClassificationQuality
     reference: Optional[DatasetClassificationQuality]
     target_name: str
