@@ -61,7 +61,7 @@ class NoopAuthManager(AuthManager):
     def _grant_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
         pass
 
-    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID):
+    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
         pass
 
     def get_available_project_ids(self, user_id: UserID, org_id: Optional[OrgID]) -> Optional[Set[ProjectID]]:

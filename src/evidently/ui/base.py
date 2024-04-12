@@ -477,15 +477,17 @@ class AuthManager(EvidentlyBaseModel):
     def _grant_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
         raise NotImplementedError
 
-    def revoke_entity_role(self, manager: UserID, entity_id: UUID, entity_type: EntityType, user_id: UserID):
+    def revoke_entity_role(
+        self, manager: UserID, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role
+    ):
         if not self.check_entity_permission(manager, entity_id, entity_type, Permission.REVOKE_ROLE):
             raise NotEnoughPermissions()
         if manager == user_id:
             raise NotEnoughPermissions()
-        self._revoke_entity_role(entity_id, entity_type, user_id)
+        self._revoke_entity_role(entity_id, entity_type, user_id, role)
 
     @abstractmethod
-    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID):
+    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
         raise NotImplementedError
 
     @abstractmethod
