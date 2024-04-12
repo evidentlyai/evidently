@@ -93,19 +93,18 @@ class NoopAuthManager(AuthManager):
     def _delete_team(self, team_id: TeamID):
         pass
 
-    def _list_team_users(self, team_id: TeamID) -> List[User]:
+    def _list_entity_users(self, entity_id: UUID, entity_type: EntityType, read_permission: Permission) -> List[User]:
         return []
 
-    def _list_team_users_with_roles(self, team_id: TeamID) -> List[UserWithRoles]:
+    def _list_entity_users_with_roles(
+        self, entity_id: UUID, entity_type: EntityType, read_permission: Permission
+    ) -> List[UserWithRoles]:
         return []
 
     def _delete_org(self, org_id: OrgID):
         pass
 
     def list_user_orgs(self, user_id: UserID):
-        return []
-
-    def _list_org_users(self, org_id: OrgID):
         return []
 
     def list_user_entity_permissions(

@@ -11,6 +11,7 @@ from typing import NamedTuple
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import TypeVar
 from typing import Union
 from uuid import UUID
 
@@ -110,10 +111,17 @@ class Team(BaseModel):
     name: str
 
 
+UT = TypeVar("UT", bound="User")
+
+
 class User(BaseModel):
     id: UserID = Field(default_factory=uuid.uuid4)
     name: str
     email: str = ""
+
+    def merge(self: UT, other: "User") -> UT:
+        kwargs = {f: getattr(other, f, None) or getattr(self, f) for f in self.__fields__}
+        return self.__class__(**kwargs)
 
 
 def _default_dashboard():
@@ -481,22 +489,18 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     @abstractmethod
-    def _list_team_users(self, team_id: TeamID) -> List[User]:
+    def _list_entity_users(self, entity_id: UUID, entity_type: EntityType, read_permission: Permission) -> List[User]:
         raise NotImplementedError
 
     def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[User]:
         if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
             raise TeamNotFound()
-        return self._list_team_users(team_id)
-
-    @abstractmethod
-    def _list_team_users_with_roles(self, team_id: TeamID) -> List[UserWithRoles]:
-        raise NotImplementedError
+        return self._list_entity_users(team_id, EntityType.Team, Permission.TEAM_READ)
 
     def list_team_users_with_roles(self, user_id: UserID, team_id: TeamID) -> List[UserWithRoles]:
         if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
             raise TeamNotFound()
-        return self._list_team_users_with_roles(team_id)
+        return self._list_entity_users_with_roles(team_id, EntityType.Team, Permission.TEAM_READ)
 
     @abstractmethod
     def list_user_teams(self, user_id: UserID, org_id: OrgID) -> List[Team]:
@@ -506,14 +510,21 @@ class AuthManager(EvidentlyBaseModel):
     def list_user_orgs(self, user_id: UserID) -> List[Org]:
         raise NotImplementedError
 
-    @abstractmethod
-    def _list_org_users(self, org_id: OrgID) -> List[User]:
-        raise NotImplementedError
-
     def list_org_users(self, user_id: UserID, org_id: OrgID) -> List[User]:
         if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_READ):
             raise OrgNotFound()
-        return self._list_org_users(org_id)
+        return self._list_entity_users(org_id, EntityType.Org, Permission.ORG_READ)
+
+    @abstractmethod
+    def _list_entity_users_with_roles(
+        self, entity_id: UUID, entity_type: EntityType, read_permission: Permission
+    ) -> List[UserWithRoles]:
+        raise NotImplementedError
+
+    def list_org_users_with_roles(self, user_id: UserID, org_id: OrgID) -> List[UserWithRoles]:
+        if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_READ):
+            raise OrgNotFound()
+        return self._list_entity_users_with_roles(org_id, EntityType.Org, Permission.ORG_READ)
 
     @abstractmethod
     def list_user_entity_permissions(
