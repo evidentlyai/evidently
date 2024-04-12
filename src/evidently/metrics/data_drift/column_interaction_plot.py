@@ -39,6 +39,16 @@ class ColumnInteractionPlotResults(MetricResult):
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "current_scatter": {IncludeTags.Current},
+            "current_contour": {IncludeTags.Current},
+            "current_boxes": {IncludeTags.Current},
+            "reference_scatter": {IncludeTags.Reference},
+            "reference_contour": {IncludeTags.Reference},
+            "reference_boxes": {IncludeTags.Reference},
+        }
 
     y_type: ColumnType
     x_type: ColumnType

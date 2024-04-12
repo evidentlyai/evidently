@@ -7,6 +7,8 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
+from _pytest.mark import Mark
+from _pytest.mark import ParameterSet
 from _pytest.python import Metafunc
 
 from evidently.base_metric import Metric
@@ -35,6 +37,7 @@ class TestMetric:
     datasets: Optional[List[TestDataset]] = None
     """Only run on those datasets"""
 
+    marks: List[Mark] = dataclasses.field(default_factory=list)
     # additional_check: Optional[Callable[[Report], None]] = None
     # """Additional callable to call on report"""
 
@@ -102,7 +105,7 @@ def generate_dataset_outcome(m: TestMetric):
         is_included = m.include_tags == [] or all(t in d.tags for t in m.include_tags)
         is_excluded = any(t in m.exclude_tags for t in d.tags)
         if is_included and not is_excluded:
-            yield m, i, d, m.get_outcome(d)
+            yield m, i, d, m.get_outcome(d),
 
 
 def load_test_metrics():
@@ -132,4 +135,6 @@ def pytest_generate_tests(metafunc: Metafunc):
         ([m, d, o], f"{m.name}-{d.name or i}-{o.__class__.__name__}")
         for m, i, d, o in generate_metric_dataset_outcome()
     ]
-    metafunc.parametrize("tmetric,tdataset,outcome", [p[0] for p in parameters], ids=[p[1] for p in parameters])
+    metafunc.parametrize(
+        "tmetric,tdataset,outcome", [ParameterSet(values, values[0].marks, id_) for values, id_ in parameters]
+    )

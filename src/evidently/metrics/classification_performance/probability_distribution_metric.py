@@ -27,6 +27,8 @@ class ClassificationProbDistributionResults(MetricResult):
         pd_include = False
         tags = {IncludeTags.Render}
 
+        field_tags = {"current_distribution": {IncludeTags.Current}, "reference_distribution": {IncludeTags.Reference}}
+
     current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
     reference_distribution: Optional[Dict[str, list]]
 

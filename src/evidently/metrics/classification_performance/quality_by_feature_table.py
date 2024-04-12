@@ -14,6 +14,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
@@ -31,6 +32,14 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
+    class Config:
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "target_name": {IncludeTags.Parameter},
+            "columns": {IncludeTags.Parameter},
+        }
+
     current: StatsByFeature
     reference: Optional[StatsByFeature]
 
