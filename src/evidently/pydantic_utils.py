@@ -4,6 +4,7 @@ import json
 import os
 import warnings
 from enum import Enum
+from functools import lru_cache
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -133,6 +134,7 @@ def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["Polym
     LOADED_TYPE_ALIASES[key] = cls
 
 
+@lru_cache
 def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
     for cls_ in cls.mro():
         if not issubclass(cls_, PolymorphicModel):
@@ -177,7 +179,7 @@ class PolymorphicModel(BaseModel):
     def validate(cls: Type["Model"], value: Any) -> "Model":
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
-            key = (cls, typename)
+            key = (get_base_class(cls), typename)
             if key in LOADED_TYPE_ALIASES:
                 subcls = LOADED_TYPE_ALIASES[key]
             else:

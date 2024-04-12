@@ -61,12 +61,8 @@ class SecurityComponent(Component, ABC):
         return is_authenticated
 
 
-register_type_alias(
-    SecurityComponent,
-    "evidently.ui.components.security.TokenSecurityConfig",
-    "token",
-)
-register_type_alias(SecurityComponent, "evidently.ui.components.security.NoSecurityConfig", "none")
+register_type_alias(SecurityComponent, "evidently.ui.components.security.NoSecurityComponent", "none")
+register_type_alias(SecurityComponent, "evidently.ui.components.security.TokenSecurityComponent", "token")
 
 
 async def get_user_id() -> UserID:
