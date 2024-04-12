@@ -19,13 +19,15 @@ from litestar.types import Send
 
 import evidently
 from evidently.telemetry import DO_NOT_TRACK
+from evidently.ui.api.projects import create_projects_api
 from evidently.ui.api.service import service_api
 from evidently.ui.api.static import assets_router
 from evidently.ui.base import AuthManager
 from evidently.ui.config import Config
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
-from evidently.ui.errors import EvidentlyServiceError, NotEnoughPermissions
+from evidently.ui.errors import EvidentlyServiceError
+from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.security.config import NoSecurityConfig
 from evidently.ui.security.no_security import NoSecurityService
 from evidently.ui.security.service import SecurityService
@@ -37,7 +39,6 @@ from evidently.ui.storage.local import create_local_project_manager
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 from evidently.ui.utils import parse_json
-from evidently.ui.api.projects import create_projects_api
 
 
 def unicorn_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
