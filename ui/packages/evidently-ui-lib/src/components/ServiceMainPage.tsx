@@ -29,7 +29,7 @@ export function ServiceMainPage({
       display={'grid'}
       gridTemplateColumns={`${sideBarSize}px 1px calc(100% - ${sideBarSize}px - 1px)`}
       alignItems={'start'}
-      sx={{ transition: '225ms ease-in-out' }}
+      sx={{ transition: '225ms ease-in-out', minHeight: 'calc(100vh - 70px)' }}
     >
       <Box sx={{ position: 'sticky', top: 0, left: 0, overflow: 'hidden' }}>
         <SideBar

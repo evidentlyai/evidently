@@ -1,8 +1,15 @@
-html, body {
+html,
+body {
   overflow-x: clip;
 }
 
-body {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
   margin: 0;
   padding: 0;
 }
