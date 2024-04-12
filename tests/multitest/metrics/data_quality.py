@@ -10,6 +10,7 @@ from evidently.metrics.data_quality.dataset_correlations_metric import DatasetCo
 from evidently.metrics.data_quality.stability_metric import DataQualityStabilityMetric
 from evidently.metrics.data_quality.text_descriptors_correlation_metric import TextDescriptorsCorrelationMetric
 from evidently.metrics.data_quality.text_descriptors_distribution import TextDescriptorsDistribution
+from tests.conftest import slow
 from tests.multitest.conftest import NoopOutcome
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.metrics.conftest import TestMetric
@@ -33,6 +34,7 @@ def dataset_correlations_metric():
         DatasetCorrelationsMetric(),
         NoopOutcome(),
         exclude_tags=[DatasetTags.RECSYS],
+        marks=[slow],
     )
 
 
@@ -50,6 +52,7 @@ def text_descriptors_correlation_metric():
         TextDescriptorsCorrelationMetric(column_name="Review_Text"),
         NoopOutcome(),
         dataset_names=["reviews"],
+        marks=[slow],
     )
 
 
@@ -60,6 +63,7 @@ def text_descriptors_distribution():
         TextDescriptorsDistribution(column_name="Review_Text"),
         NoopOutcome(),
         dataset_names=["reviews"],
+        marks=[slow],
     )
 
 

@@ -13,6 +13,7 @@ from sklearn.pipeline import Pipeline
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -30,6 +31,13 @@ class TextDomainField(MetricResult):
 
 
 class TextDomainClassifierDriftResult(MetricResult):
+    class Config:
+        field_tags = {
+            "current": {IncludeTags.Current, IncludeTags.Extra},
+            "reference": {IncludeTags.Reference, IncludeTags.Extra},
+            "text_column_name": {IncludeTags.Parameter},
+        }
+
     text_column_name: str
     domain_classifier_roc_auc: float
     random_classifier_95_percentile: float

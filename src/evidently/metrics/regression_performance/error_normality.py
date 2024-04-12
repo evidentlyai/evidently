@@ -13,6 +13,7 @@ from scipy.stats import probplot
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -25,6 +26,13 @@ class RegressionErrorNormalityResults(MetricResult):
     class Config:
         dict_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
         pd_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
+
+        field_tags = {
+            "current_plot": {IncludeTags.Render, IncludeTags.Current},
+            "current_theoretical": {IncludeTags.Extra, IncludeTags.Current},
+            "reference_plot": {IncludeTags.Render, IncludeTags.Reference},
+            "reference_theoretical": {IncludeTags.Extra, IncludeTags.Reference},
+        }
 
     current_plot: pd.DataFrame
     current_theoretical: pd.DataFrame
