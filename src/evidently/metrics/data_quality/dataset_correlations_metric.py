@@ -13,6 +13,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.data_quality import calculate_correlations
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
@@ -32,6 +33,14 @@ from evidently.utils.data_preprocessing import PredictionColumns
 
 
 class CorrelationStats(MetricResult):
+    class Config:
+        field_tags = {
+            "abs_max_target_features_correlation": {IncludeTags.Extra},
+            "abs_max_prediction_features_correlation": {IncludeTags.Extra},
+            "abs_max_correlation": {IncludeTags.Extra},
+            "abs_max_features_correlation": {IncludeTags.Extra},
+        }
+
     target_prediction_correlation: Optional[float] = None
     abs_max_target_features_correlation: Optional[float] = None
     abs_max_prediction_features_correlation: Optional[float] = None
@@ -45,6 +54,8 @@ class DatasetCorrelation(MetricResult):
         pd_include = False
         pd_exclude_fields = {"correlation", "correlations_calculate"}
 
+        field_tags = {"correlations_calculate": {IncludeTags.Extra}}
+
     correlation: Dict[str, pd.DataFrame]
     stats: Dict[str, CorrelationStats]
     correlations_calculate: Optional[Dict[str, pd.DataFrame]]
@@ -54,6 +65,11 @@ class DatasetCorrelationsMetricResult(MetricResult):
     class Config:
         dict_exclude_fields = {"target_correlation"}
         pd_exclude_fields = {"target_correlation"}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "target_correlation": {IncludeTags.Parameter},
+        }
 
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]

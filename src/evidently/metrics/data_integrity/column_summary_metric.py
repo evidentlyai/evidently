@@ -106,6 +106,9 @@ class TextCharacteristics(ColumnCharacteristics):
 
 
 class DataInTimePlots(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     current: pd.DataFrame
     reference: Optional[pd.DataFrame]
 
@@ -307,6 +310,11 @@ class ColumnSummaryResult(ColumnMetricResult):
         pd_name_mapping = {
             "reference_characteristics": "reference",
             "current_characteristics": "current",
+        }
+
+        field_tags = {
+            "current_characteristics": {IncludeTags.Current},
+            "reference_characteristics": {IncludeTags.Reference},
         }
 
     reference_characteristics: Optional[ColumnCharacteristics]

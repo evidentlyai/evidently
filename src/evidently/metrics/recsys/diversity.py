@@ -10,6 +10,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.metrics.recsys.pairwise_distance import PairwiseDistance
@@ -27,6 +28,15 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class DiversityMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "k": {IncludeTags.Parameter},
+            "current_value": {IncludeTags.Current},
+            "current_distr": {IncludeTags.Current},
+            "reference_value": {IncludeTags.Reference},
+            "reference_distr": {IncludeTags.Reference},
+        }
+
     k: int
     current_value: float
     current_distr: Distribution

@@ -1,6 +1,7 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Set
 
 import numpy as np
 from sklearn.metrics import mean_absolute_error
@@ -12,6 +13,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import Histogram
 from evidently.metrics.regression_performance.objects import RegressionMetricScatter
@@ -31,6 +33,9 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 
 
 class MoreRegressionMetrics(RegressionMetrics):
+    class Config:
+        field_tags: Dict[str, Set[IncludeTags]] = {"underperformance": set()}
+
     error_std: float
     abs_error_std: float
     abs_perc_error_std: float
@@ -40,6 +45,18 @@ class RegressionQualityMetricResults(MetricResult):
     class Config:
         dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
         pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_normality", "error_bias"}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "rmse_default": {IncludeTags.Extra},
+            "me_default_sigma": {IncludeTags.Extra},
+            "mean_abs_error_default": {IncludeTags.Extra},
+            "mean_abs_perc_error_default": {IncludeTags.Extra},
+            "abs_error_max_default": {IncludeTags.Extra},
+            "error_normality": {IncludeTags.Extra},
+            "vals_for_plots": {IncludeTags.Render},
+            "error_bias": {IncludeTags.Extra},
+        }
 
     columns: DatasetColumns
     current: MoreRegressionMetrics
