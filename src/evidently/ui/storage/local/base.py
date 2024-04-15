@@ -211,7 +211,8 @@ class JsonFileMetadataStorage(MetadataStorage):
 
     def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         projects = [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
-        return sorted(projects, key=lambda x: x.created_at, reverse=True)
+        projects.sort(key=lambda x: x.created_at, reverse=True)
+        return projects
 
     def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
         project = self.get_project(project_id)
