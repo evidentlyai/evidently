@@ -266,7 +266,7 @@ def add_project(
     org_id: Optional[OrgID],
     team_id: Optional[TeamID] = None,
 ) -> Project:
-    p = project_manager.add_project(data, user_id, team_id, org_id)
+    p = project_manager.add_przoject(data, user_id, team_id, org_id)
     log_event("add_project")
     return p
 
