@@ -125,7 +125,7 @@ class Project(BaseModel):
 
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
-    created_at: Optional[datetime.datetime]
+    created_at: Optional[datetime.datetime] = None
 
     _project_manager: "ProjectManager" = PrivateAttr(None)
     _user_id: UserID = PrivateAttr(None)
