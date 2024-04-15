@@ -24,10 +24,10 @@ package_data_spec = {
     "evidently": [
         "nbextension/static/*.*js*",
         "nbextension/static/*.*woff2*",
-        "ui/ui/*",
-        "ui/ui/static/css/*",
-        "ui/ui/static/js/*",
-        "ui/ui/static/img/*",
+        "ui/assets/*",
+        "ui/assets/static/css/*",
+        "ui/assets/static/js/*",
+        "ui/assets/static/img/*",
     ]
 }
 
@@ -60,9 +60,9 @@ setup_args = dict(
         "requests>=2.31.0",
         "PyYAML>=5.4",
         "pydantic>=1.10.12",
-        "litestar>=2.6.3",
+        "litestar>=2.7.1",
         "typing-inspect>=0.9.0",
-        "uvicorn>=0.22.0",
+        "uvicorn[standard]>=0.22.0",
         "watchdog>=3",
         "typer>=0.3",
         "rich>=13",
