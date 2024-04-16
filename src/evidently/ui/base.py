@@ -446,10 +446,10 @@ class ProjectManager(EvidentlyBaseModel):
     def add_project(
         self, project: Project, user_id: Optional[UserID], team_id: Optional[TeamID], org_id: Optional[OrgID]
     ) -> Project:
-        project.created_at = project.created_at or datetime.datetime.now()
         user = self.auth.get_or_default_user(user_id)
         team = self.auth.get_or_default_team(team_id, user.id)
         project.team_id = team_id
+        project.created_at = datetime.datetime.now()
         return self.metadata.add_project(project, user, team).bind(self, user.id)
 
     def update_project(self, user_id: Optional[UserID], project: Project):
