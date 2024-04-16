@@ -54,7 +54,7 @@ def list_projects(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-    org_id: OrgID
+    org_id: OrgID,
 ) -> Sequence[Project]:
     projects = project_manager.list_projects(user_id, org_id)
     log_event("list_projects", project_count=len(projects))
