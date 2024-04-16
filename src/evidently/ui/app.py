@@ -109,10 +109,10 @@ def create_app(config: Config, debug: bool = False):
                 path="/api",
                 route_handlers=[
                     create_projects_api(guard=is_authenticated),
-                    service_api,
+                    service_api(),
                 ],
             ),
-            assets_router,
+            assets_router(),
         ],
         exception_handlers={
             EvidentlyServiceError: unicorn_exception_handler,
