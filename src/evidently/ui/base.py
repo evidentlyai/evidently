@@ -125,7 +125,8 @@ class Project(BaseModel):
 
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
-    created_at: Optional[datetime.datetime] = Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
+    created_at: Optional[datetime.datetime] = Field(default=None)
+    # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
     _project_manager: "ProjectManager" = PrivateAttr(None)
     _user_id: UserID = PrivateAttr(None)
