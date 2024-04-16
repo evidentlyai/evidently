@@ -4,7 +4,6 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
-from uuid import UUID
 
 from evidently.ui.base import AuthManager
 from evidently.ui.base import DefaultRole
@@ -16,6 +15,7 @@ from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.base import UserWithRoles
 from evidently.ui.type_aliases import ZERO_UUID
+from evidently.ui.type_aliases import EntityID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TeamID
@@ -58,17 +58,17 @@ class NoopAuthManager(AuthManager):
     def get_default_role(self, default_role: DefaultRole, entity_type: Optional[EntityType]) -> Role:
         return Role(id=0, name=default_role.value, entity_type=entity_type)
 
-    def _grant_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
+    def _grant_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
         pass
 
-    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
+    def _revoke_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
         pass
 
     def get_available_project_ids(self, user_id: UserID, org_id: Optional[OrgID]) -> Optional[Set[ProjectID]]:
         return None
 
     def check_entity_permission(
-        self, user_id: UserID, entity_id: uuid.UUID, entity_type: EntityType, permission: Permission
+        self, user_id: UserID, entity_type: EntityType, entity_id: uuid.UUID, permission: Permission
     ) -> bool:
         return True
 
@@ -93,11 +93,13 @@ class NoopAuthManager(AuthManager):
     def _delete_team(self, team_id: TeamID):
         pass
 
-    def _list_entity_users(self, entity_id: UUID, entity_type: EntityType, read_permission: Permission) -> List[User]:
+    def _list_entity_users(
+        self, entity_type: EntityType, entity_id: EntityID, read_permission: Permission
+    ) -> List[User]:
         return []
 
     def _list_entity_users_with_roles(
-        self, entity_id: UUID, entity_type: EntityType, read_permission: Permission
+        self, entity_type: EntityType, entity_id: EntityID, read_permission: Permission
     ) -> List[UserWithRoles]:
         return []
 
@@ -108,13 +110,13 @@ class NoopAuthManager(AuthManager):
         return []
 
     def list_user_entity_permissions(
-        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
+        self, user_id: UserID, entity_type: EntityType, entity_id: EntityID
     ) -> Set[Permission]:
         return set(Permission)
 
     def list_user_entity_roles(
-        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
-    ) -> List[Tuple[EntityType, UUID, Role]]:
+        self, user_id: UserID, entity_type: EntityType, entity_id: EntityID
+    ) -> List[Tuple[EntityType, EntityID, Role]]:
         return [(entity_type, entity_id, self.get_default_role(DefaultRole.OWNER, None))]
 
     def list_roles(self, entity_type: Optional[EntityType]) -> List[Role]:

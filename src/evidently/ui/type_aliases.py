@@ -16,6 +16,7 @@ TeamID = uuid.UUID
 OrgID = uuid.UUID
 RoleID = int
 ProjectID = uuid.UUID
+EntityID = uuid.UUID
 SnapshotID = uuid.UUID
 STR_UUID = Union[str, uuid.UUID]
 ZERO_UUID = uuid.UUID(int=0)

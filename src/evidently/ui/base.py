@@ -13,7 +13,6 @@ from typing import Set
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
-from uuid import UUID
 
 from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
@@ -37,6 +36,7 @@ from evidently.ui.errors import TeamNotFound
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import EntityID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import RoleID
@@ -163,13 +163,13 @@ class Project(BaseModel):
         self.project_manager.update_project(self._user_id, self)
         return self
 
-    def load_snapshot(self, snapshot_id: uuid.UUID) -> Snapshot:
+    def load_snapshot(self, snapshot_id: SnapshotID) -> Snapshot:
         return self.project_manager.load_snapshot(self._user_id, self.id, snapshot_id)
 
     def add_snapshot(self, snapshot: Snapshot):
         self.project_manager.add_snapshot(self._user_id, self.id, snapshot)
 
-    def delete_snapshot(self, snapshot_id: Union[str, uuid.UUID]):
+    def delete_snapshot(self, snapshot_id: Union[str, SnapshotID]):
         if isinstance(snapshot_id, str):
             snapshot_id = uuid.UUID(snapshot_id)
         self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)
@@ -177,7 +177,7 @@ class Project(BaseModel):
     def list_snapshots(self, include_reports: bool = True, include_test_suites: bool = True) -> List[SnapshotMetadata]:
         return self.project_manager.list_snapshots(self._user_id, self.id, include_reports, include_test_suites)
 
-    def get_snapshot_metadata(self, id: uuid.UUID) -> SnapshotMetadata:
+    def get_snapshot_metadata(self, id: SnapshotID) -> SnapshotMetadata:
         return self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)
 
     def build_dashboard_info(
@@ -268,10 +268,10 @@ class BlobStorage(EvidentlyBaseModel, ABC):
     def put_blob(self, path: str, obj):
         raise NotImplementedError
 
-    def get_snapshot_blob_id(self, project_id: UUID, snapshot: Snapshot) -> BlobID:
+    def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         raise NotImplementedError
 
-    def put_snapshot(self, project_id: UUID, snapshot: Snapshot) -> BlobID:
+    def put_snapshot(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         id = self.get_snapshot_blob_id(project_id, snapshot)
         self.put_blob(id, json.dumps(snapshot.dict(), cls=NumpyEncoder))
         return id
@@ -366,6 +366,18 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
     (DefaultRole.VIEWER, EntityType.Project): {Permission.PROJECT_READ},
 }
 
+ENTITY_READ_PERMISSION = {
+    EntityType.Org: Permission.ORG_READ,
+    EntityType.Team: Permission.TEAM_READ,
+    EntityType.Project: Permission.PROJECT_READ,
+}
+
+ENTITY_NOT_FOUND_ERROR = {
+    EntityType.Org: OrgNotFound,
+    EntityType.Team: TeamNotFound,
+    EntityType.Project: ProjectNotFound,
+}
+
 
 def get_default_role_permissions(
     default_role: DefaultRole, entity_type: Optional[EntityType]
@@ -393,7 +405,7 @@ class AuthManager(EvidentlyBaseModel):
 
     @abstractmethod
     def check_entity_permission(
-        self, user_id: UserID, entity_id: uuid.UUID, entity_type: EntityType, permission: Permission
+        self, user_id: UserID, entity_type: EntityType, entity_id: EntityID, permission: Permission
     ) -> bool:
         raise NotImplementedError
 
@@ -438,7 +450,7 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     def delete_org(self, user_id: UserID, org_id: OrgID):
-        if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_DELETE):
+        if not self.check_entity_permission(user_id, EntityType.Org, org_id, Permission.ORG_DELETE):
             raise NotEnoughPermissions()
         self._delete_org(org_id)
 
@@ -460,7 +472,7 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     def delete_team(self, user_id: UserID, team_id: TeamID):
-        if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_DELETE):
+        if not self.check_entity_permission(user_id, EntityType.Team, team_id, Permission.TEAM_DELETE):
             raise NotEnoughPermissions()
         self._delete_team(team_id)
 
@@ -468,41 +480,51 @@ class AuthManager(EvidentlyBaseModel):
     def get_default_role(self, default_role: DefaultRole, entity_type: Optional[EntityType]) -> Role:
         raise NotImplementedError
 
-    def grant_entity_role(self, manager: UserID, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
-        if not self.check_entity_permission(manager, entity_id, entity_type, Permission.GRANT_ROLE):
+    @abstractmethod
+    def _grant_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
+        raise NotImplementedError
+
+    def grant_entity_role(
+        self, manager: UserID, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role
+    ):
+        if not self.check_entity_permission(manager, entity_type, entity_id, Permission.GRANT_ROLE):
             raise NotEnoughPermissions()
-        self._grant_entity_role(entity_id, entity_type, user_id, role)
+        self._grant_entity_role(entity_type, entity_id, user_id, role)
 
     @abstractmethod
-    def _grant_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
+    def _revoke_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
         raise NotImplementedError
 
     def revoke_entity_role(
-        self, manager: UserID, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role
+        self, manager: UserID, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role
     ):
-        if not self.check_entity_permission(manager, entity_id, entity_type, Permission.REVOKE_ROLE):
+        if not self.check_entity_permission(manager, entity_type, entity_id, Permission.REVOKE_ROLE):
             raise NotEnoughPermissions()
         if manager == user_id:
             raise NotEnoughPermissions()
-        self._revoke_entity_role(entity_id, entity_type, user_id, role)
+        self._revoke_entity_role(entity_type, entity_id, user_id, role)
 
     @abstractmethod
-    def _revoke_entity_role(self, entity_id: UUID, entity_type: EntityType, user_id: UserID, role: Role):
+    def _list_entity_users(
+        self, entity_type: EntityType, entity_id: EntityID, read_permission: Permission
+    ) -> List[User]:
         raise NotImplementedError
+
+    def list_entity_users(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
+        if not self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+            raise ENTITY_NOT_FOUND_ERROR[entity_type]()
+        return self._list_entity_users(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
 
     @abstractmethod
-    def _list_entity_users(self, entity_id: UUID, entity_type: EntityType, read_permission: Permission) -> List[User]:
+    def _list_entity_users_with_roles(
+        self, entity_type: EntityType, entity_id: EntityID, read_permission: Permission
+    ) -> List[UserWithRoles]:
         raise NotImplementedError
 
-    def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[User]:
-        if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
-            raise TeamNotFound()
-        return self._list_entity_users(team_id, EntityType.Team, Permission.TEAM_READ)
-
-    def list_team_users_with_roles(self, user_id: UserID, team_id: TeamID) -> List[UserWithRoles]:
-        if not self.check_entity_permission(user_id, team_id, EntityType.Team, Permission.TEAM_READ):
-            raise TeamNotFound()
-        return self._list_entity_users_with_roles(team_id, EntityType.Team, Permission.TEAM_READ)
+    def list_entity_users_with_roles(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
+        if not self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+            raise ENTITY_NOT_FOUND_ERROR[entity_type]()
+        return self._list_entity_users_with_roles(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
 
     @abstractmethod
     def list_user_teams(self, user_id: UserID, org_id: OrgID) -> List[Team]:
@@ -512,32 +534,16 @@ class AuthManager(EvidentlyBaseModel):
     def list_user_orgs(self, user_id: UserID) -> List[Org]:
         raise NotImplementedError
 
-    def list_org_users(self, user_id: UserID, org_id: OrgID) -> List[User]:
-        if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_READ):
-            raise OrgNotFound()
-        return self._list_entity_users(org_id, EntityType.Org, Permission.ORG_READ)
-
-    @abstractmethod
-    def _list_entity_users_with_roles(
-        self, entity_id: UUID, entity_type: EntityType, read_permission: Permission
-    ) -> List[UserWithRoles]:
-        raise NotImplementedError
-
-    def list_org_users_with_roles(self, user_id: UserID, org_id: OrgID) -> List[UserWithRoles]:
-        if not self.check_entity_permission(user_id, org_id, EntityType.Org, Permission.ORG_READ):
-            raise OrgNotFound()
-        return self._list_entity_users_with_roles(org_id, EntityType.Org, Permission.ORG_READ)
-
     @abstractmethod
     def list_user_entity_permissions(
-        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
+        self, user_id: UserID, entity_type: EntityType, entity_id: EntityID
     ) -> Set[Permission]:
         raise NotImplementedError
 
     @abstractmethod
     def list_user_entity_roles(
-        self, user_id: UserID, entity_id: UUID, entity_type: EntityType
-    ) -> List[Tuple[EntityType, UUID, Role]]:
+        self, user_id: UserID, entity_type: EntityType, entity_id: EntityID
+    ) -> List[Tuple[EntityType, EntityID, Role]]:
         raise NotImplementedError
 
     @abstractmethod
@@ -580,13 +586,13 @@ class ProjectManager(EvidentlyBaseModel):
 
     def update_project(self, user_id: UserID, project: Project):
         user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(user.id, project.id, EntityType.Project, Permission.PROJECT_WRITE):
+        if not self.auth.check_entity_permission(user.id, EntityType.Project, project.id, Permission.PROJECT_WRITE):
             raise ProjectNotFound()
         return self.metadata.update_project(project)
 
     def get_project(self, user_id: UserID, project_id: ProjectID) -> Optional[Project]:
         user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(user.id, project_id, EntityType.Project, Permission.PROJECT_READ):
+        if not self.auth.check_entity_permission(user.id, EntityType.Project, project_id, Permission.PROJECT_READ):
             raise ProjectNotFound()
         project = self.metadata.get_project(project_id)
         if project is None:
@@ -595,7 +601,7 @@ class ProjectManager(EvidentlyBaseModel):
 
     def delete_project(self, user_id: UserID, project_id: ProjectID):
         user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(user.id, project_id, EntityType.Project, Permission.PROJECT_DELETE):
+        if not self.auth.check_entity_permission(user.id, EntityType.Project, project_id, Permission.PROJECT_DELETE):
             raise ProjectNotFound()
         return self.metadata.delete_project(project_id)
 
@@ -607,7 +613,7 @@ class ProjectManager(EvidentlyBaseModel):
     def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot):
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(
-            user.id, project_id, EntityType.Project, Permission.PROJECT_SNAPSHOT_ADD
+            user.id, EntityType.Project, project_id, Permission.PROJECT_SNAPSHOT_ADD
         ):
             raise ProjectNotFound()  # todo: better exception
         blob_id = self.blob.put_snapshot(project_id, snapshot)
@@ -617,7 +623,7 @@ class ProjectManager(EvidentlyBaseModel):
     def delete_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID):
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(
-            user.id, project_id, EntityType.Project, Permission.PROJECT_SNAPSHOT_DELETE
+            user.id, EntityType.Project, project_id, Permission.PROJECT_SNAPSHOT_DELETE
         ):
             raise ProjectNotFound()  # todo: better exception
         # todo
@@ -633,7 +639,7 @@ class ProjectManager(EvidentlyBaseModel):
     def list_snapshots(
         self, user_id: UserID, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
     ) -> List[SnapshotMetadata]:
-        if not self.auth.check_entity_permission(user_id, project_id, EntityType.Project, Permission.PROJECT_READ):
+        if not self.auth.check_entity_permission(user_id, EntityType.Project, project_id, Permission.PROJECT_READ):
             raise NotEnoughPermissions()
         snapshots = self.metadata.list_snapshots(project_id, include_reports, include_test_suites)
         for s in snapshots:
@@ -651,13 +657,13 @@ class ProjectManager(EvidentlyBaseModel):
     def get_snapshot_metadata(
         self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID
     ) -> SnapshotMetadata:
-        if not self.auth.check_entity_permission(user_id, project_id, EntityType.Project, Permission.PROJECT_READ):
+        if not self.auth.check_entity_permission(user_id, EntityType.Project, project_id, Permission.PROJECT_READ):
             raise NotEnoughPermissions()
         meta = self.metadata.get_snapshot_metadata(project_id, snapshot_id)
         meta.project.bind(self, user_id)
         return meta
 
     def reload_snapshots(self, user_id: UserID, project_id: ProjectID):
-        if not self.auth.check_entity_permission(user_id, project_id, EntityType.Project, Permission.PROJECT_READ):
+        if not self.auth.check_entity_permission(user_id, EntityType.Project, project_id, Permission.PROJECT_READ):
             raise NotEnoughPermissions()
         self.metadata.reload_snapshots(project_id)
