@@ -36,4 +36,5 @@ def get_git_revision_short_hash(path: str) -> Optional[str]:
         return None
 
 
-service_api = Router("", route_handlers=[version])
+def service_api():
+    return Router("", route_handlers=[version])
