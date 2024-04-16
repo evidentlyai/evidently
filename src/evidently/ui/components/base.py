@@ -117,5 +117,5 @@ class ServiceComponent(Component):
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         # todo: maybe not put utils here
         return {
-            "parsed_json": Provide(parse_json),
+            "parsed_json": Provide(parse_json, sync_to_thread=False),
         }

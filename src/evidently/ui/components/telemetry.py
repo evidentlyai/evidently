@@ -22,7 +22,7 @@ class TelemetryComponent(Component):
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         return {
-            "log_event": Provide(self.get_event_logger),
+            "log_event": Provide(self.get_event_logger, use_cache=True, sync_to_thread=False),
         }
 
     async def get_event_logger(self):

@@ -15,6 +15,7 @@ from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 
 EVIDENTLY_SECRET_ENV = "EVIDENTLY_SECRET"
+SECRET_HEADER_NAME = "evidently-secret"
 
 
 class NoUser(User):
@@ -76,6 +77,3 @@ class NoopAuthManager(AuthManager):
 
     def _list_team_users(self, team_id: TeamID) -> Dict[UserID, bool]:
         return {}
-
-
-SECRET_HEADER_NAME = "evidently-secret"

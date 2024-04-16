@@ -2,6 +2,7 @@ import os
 
 import uvicorn
 
+from evidently._pydantic_compat import SecretStr
 from evidently.ui.components.base import AppBuilder
 from evidently.ui.config import Config
 from evidently.ui.config import load_config
@@ -40,7 +41,7 @@ def run_local(
 
     secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)
     if secret is not None:
-        config.security = TokenSecurityComponent(token=secret)
+        config.security = TokenSecurityComponent(token=SecretStr(secret))
     run(config)
 
 

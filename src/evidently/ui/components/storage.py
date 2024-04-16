@@ -18,7 +18,7 @@ class StorageComponent(FactoryComponent[ProjectManager], ABC):
 
     dependency_name: ClassVar = "project_manager"
     use_cache: ClassVar[bool] = True
-    sync_to_thread: ClassVar[bool] = True
+    sync_to_thread: ClassVar[bool] = False
 
 
 class LocalStorageComponent(StorageComponent):
