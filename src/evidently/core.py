@@ -21,7 +21,8 @@ from evidently._pydantic_compat import ModelField
 from evidently.pydantic_utils import pydantic_type_validator
 
 if TYPE_CHECKING:
-    from evidently._pydantic_compat import MappingIntStrAny, AbstractSetIntStr
+    from evidently._pydantic_compat import AbstractSetIntStr
+    from evidently._pydantic_compat import MappingIntStrAny
 
 from enum import Enum
 

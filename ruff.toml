@@ -1,0 +1,40 @@
+include = ["src/**/*.py", "tests/**/*.py"]
+
+line-length = 120
+[lint.pycodestyle]
+max-line-length = 140  # allow unforamttable lines up to 140 chars
+
+[lint]
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = [
+    "E", # flake8
+    "F", # Pyflakes
+    "I", # isort
+    "PL" # pylint
+]
+extend-ignore = [
+    "PLR5501", # collapsible-else-if
+    "PLR0913", # Too many arguments in function definition
+    "PLR0915", # Too many statements
+    "PLR0912", # Too many branches
+    "PLR2004", # Magic value used in comparison
+    "PLR0911", # Too many return statements
+
+    # temporary
+    "PLW3301", # Nested `max` calls can be flattened
+    "PLW2901", # `for` loop variable `item` overwritten by assignment target
+]
+
+[lint.isort]
+force-single-line = true
+
+known-first-party = ["evidently"]
+
+[lint.per-file-ignores]
+"tests/*" = [
+    "PLR2004", # Magic value used in comparison
+ #   "E501",
+    "PLR0913", # Too many arguments in function definition
+]

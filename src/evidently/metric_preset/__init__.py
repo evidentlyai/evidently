@@ -7,11 +7,11 @@ from .target_drift import TargetDriftPreset
 from .text_overview import TextOverviewPreset
 
 __all__ = [
-    ClassificationPreset.__name__,
-    DataDriftPreset.__name__,
-    DataQualityPreset.__name__,
-    RegressionPreset.__name__,
-    TargetDriftPreset.__name__,
-    TextOverviewPreset.__name__,
-    RecsysPreset.__name__,
+    "ClassificationPreset",
+    "DataDriftPreset",
+    "DataQualityPreset",
+    "RegressionPreset",
+    "TargetDriftPreset",
+    "TextOverviewPreset",
+    "RecsysPreset",
 ]
