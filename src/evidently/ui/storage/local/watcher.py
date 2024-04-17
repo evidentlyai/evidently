@@ -71,9 +71,7 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         project = self.state.projects.get(pid)
         if project is None:
             return
-        if (event.event_type in (EVENT_TYPE_MODIFIED, EVENT_TYPE_MOVED)) and os.path.exists(
-            event.src_path
-        ):
+        if (event.event_type in (EVENT_TYPE_MODIFIED, EVENT_TYPE_MOVED)) and os.path.exists(event.src_path):
             self.state.reload_snapshot(project, sid)
         if (
             event.event_type == EVENT_TYPE_DELETED

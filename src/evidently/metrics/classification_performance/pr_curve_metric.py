@@ -69,7 +69,6 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
             for label in labels:
-
                 pr, rcl, thrs = metrics.precision_recall_curve(
                     binaraized_target[label],
                     prediction.prediction_probas[label],

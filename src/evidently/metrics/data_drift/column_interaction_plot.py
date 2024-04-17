@@ -73,7 +73,6 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
         super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnInteractionPlotResults:
-
         for col in [self.x_column, self.y_column]:
             if not data.has_column(col):
                 raise ValueError(f"Column '{col}' not found in dataset.")

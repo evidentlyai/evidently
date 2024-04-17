@@ -443,15 +443,15 @@ TA = TypeVar("TA")
 
 
 @overload
-def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]) -> Tuple[TR, TA]:
-    ...
+def raw_agg_properties(
+    field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]
+) -> Tuple[TR, TA]: ...
 
 
 @overload
 def raw_agg_properties(
     field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[True]
-) -> Tuple[Optional[TR], Optional[TA]]:
-    ...
+) -> Tuple[Optional[TR], Optional[TA]]: ...
 
 
 def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: bool) -> Tuple[TR, TA]:
