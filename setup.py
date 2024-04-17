@@ -91,6 +91,7 @@ setup_args = dict(
             "pillow==10.3.0",
             "httpx==0.24.1",
             "ruff==0.3.4",
+            "pre-commit==3.7.0",
         ],
         "spark": ["pyspark>=3.4.0"],
         "fsspec": ["fsspec[full]>=2024.2.0"],

@@ -14,6 +14,7 @@ pillow==10.3.0
 pip-audit
 pyspark
 ruff==0.3.4
+pre-commit==3.7.0
 
 # service dependencies
 litestar>=2.7.1
