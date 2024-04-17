@@ -2,7 +2,6 @@
 wheel==0.38.1
 setuptools==65.5.1; python_version < '3.12'
 setuptools==68.2.2; python_version >= '3.12'
-flake8==4.0.1
 jupyter==1.0.0
 mypy==0.981
 pytest==7.4.4
@@ -12,12 +11,9 @@ types-dataclasses==0.6
 types-python-dateutil==2.8.19
 types-ujson==5.4.0
 pillow==10.3.0
-# Be careful on Black version update: this is the last release that supports running Black on Python 3.6
-black==22.8.0
-isort==5.10.1
 pip-audit
-
 pyspark
+ruff==0.3.4
 
 # service dependencies
 litestar>=2.7.1

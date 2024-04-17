@@ -79,7 +79,6 @@ setup_args = dict(
             "wheel==0.38.1",
             "setuptools==65.5.1; python_version < '3.12'",
             "setuptools==68.2.2; python_version >= '3.12'",
-            "flake8==4.0.1",
             "jupyter==1.0.0",
             "mypy==0.981",
             "pytest==7.4.4",
@@ -89,9 +88,8 @@ setup_args = dict(
             "types-python-dateutil==2.8.19",
             "types-ujson>=5.4.0",
             "pillow==10.3.0",
-            "black==22.8.0",
-            "isort==5.10.1",
-            "httpx==0.24.1"
+            "httpx==0.24.1",
+            "ruff==0.3.4"
         ],
         "spark": [
             "pyspark>=3.4.0"
