@@ -25,7 +25,7 @@ class TelemetryComponent(Component):
             "log_event": Provide(self.get_event_logger, use_cache=True, sync_to_thread=False),
         }
 
-    async def get_event_logger(self):
+    def get_event_logger(self):
         _event_logger = IterativeTelemetryLogger(
             self.tool_name,
             evidently.__version__,
@@ -33,4 +33,4 @@ class TelemetryComponent(Component):
             token=self.token,
             enabled=self.enabled and DO_NOT_TRACK is None,
         )
-        yield partial(_event_logger.send_event, self.service_name)
+        return partial(_event_logger.send_event, self.service_name)
