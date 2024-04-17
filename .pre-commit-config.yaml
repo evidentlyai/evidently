@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v4.4.0"
+    rev: "v4.6.0"
     hooks:
       - id: check-case-conflict
       - id: check-merge-conflict
@@ -10,7 +10,7 @@ repos:
       # - id: trailing-whitespace
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.1.6"
+    rev: "v0.3.7"
     hooks:
       - id: ruff
         args: [--exit-non-zero-on-fix, --fix]

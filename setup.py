@@ -90,7 +90,7 @@ setup_args = dict(
             "types-ujson>=5.4.0",
             "pillow==10.3.0",
             "httpx==0.24.1",
-            "ruff==0.3.4",
+            "ruff==0.3.7",
             "pre-commit==3.7.0",
         ],
         "spark": ["pyspark>=3.4.0"],

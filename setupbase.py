@@ -9,6 +9,7 @@ This file originates from the 'jupyter-packaging' package, and
 contains a set of useful utilities for including npm packages
 within a Python package.
 """
+
 import functools
 import io
 import os
