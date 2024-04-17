@@ -69,11 +69,13 @@ def is_numeric_column_dtype(df: DataFrame, column: ColumnName):
 
 
 @overload
-def calculate_stats(df: DataFrame, column_name: str, funcs: Callable[[str], Column]) -> Any: ...
+def calculate_stats(df: DataFrame, column_name: str, funcs: Callable[[str], Column]) -> Any:
+    ...
 
 
 @overload
-def calculate_stats(df: DataFrame, column_name: str, *funcs: Callable[[str], Column]) -> Tuple: ...
+def calculate_stats(df: DataFrame, column_name: str, *funcs: Callable[[str], Column]) -> Tuple:
+    ...
 
 
 def calculate_stats(df: DataFrame, column_name: str, *funcs: Callable[[str], Column]) -> Union[Tuple, Any]:

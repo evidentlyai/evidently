@@ -6,12 +6,13 @@
 import os
 from os.path import join as pjoin
 
+from setuptools import setup
+
 from setupbase import HERE
 from setupbase import combine_commands
 from setupbase import create_cmdclass
 from setupbase import ensure_targets
 from setupbase import install_npm
-from setuptools import setup
 
 nb_path = pjoin(HERE, "src", "evidently", "nbextension", "static")
 
@@ -46,7 +47,7 @@ cmdclass["jsdeps"] = combine_commands(
 setup_args = dict(
     cmdclass=cmdclass,
     author_email="emeli.dral@gmail.com",
-    long_description=open('README.md').read(),
+    long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
@@ -89,18 +90,12 @@ setup_args = dict(
             "types-ujson>=5.4.0",
             "pillow==10.3.0",
             "httpx==0.24.1",
-            "ruff==0.3.4"
+            "ruff==0.3.4",
         ],
-        "spark": [
-            "pyspark>=3.4.0"
-        ],
-        "fsspec": [
-            "fsspec[full]>=2024.2.0"
-        ]
+        "spark": ["pyspark>=3.4.0"],
+        "fsspec": ["fsspec[full]>=2024.2.0"],
     },
-    entry_points={
-        "console_scripts": ["evidently=evidently.cli:app"]
-    },
+    entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )
 
 if __name__ == "__main__":

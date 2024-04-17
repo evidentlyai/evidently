@@ -1,4 +1,4 @@
-include = ["src/**/*.py", "tests/**/*.py"]
+exclude = ["examples/**/*.py"]
 
 target-version = "py38"
 

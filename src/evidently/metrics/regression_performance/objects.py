@@ -17,11 +17,13 @@ class PredActualScatter(MetricResult):
 
 
 @overload
-def scatter_as_dict(scatter: PredActualScatter) -> Dict[str, ScatterData]: ...
+def scatter_as_dict(scatter: PredActualScatter) -> Dict[str, ScatterData]:
+    ...
 
 
 @overload
-def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]: ...
+def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]:
+    ...
 
 
 def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]:

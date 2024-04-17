@@ -9,7 +9,7 @@ excludes = [
     "bicycle_demand_monitoring_setup.py",
     "how_to_run_drift_report_for_text_encoders.py",
     "comparing_custom_statest_with_classic_distributions.py",
-    "how_to_run_drift_report_for_text_data.py"  # too slow & torch version conflict?
+    "how_to_run_drift_report_for_text_data.py",  # too slow & torch version conflict?
 ]
 
 
