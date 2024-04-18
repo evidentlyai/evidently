@@ -36,6 +36,7 @@ jobs:
             ui:
               - ui/**
             evidently_python:
+              - *.dvc
               - src/evidently/**
               - requirements.dev.txt
               - requirements.min.txt
