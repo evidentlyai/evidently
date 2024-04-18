@@ -22,4 +22,3 @@ dynaconf
 uvicorn
 pyarrow
 httpx
-

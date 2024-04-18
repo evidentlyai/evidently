@@ -51,7 +51,7 @@ jobs:
       with:
         name: python-package-distributions
         path: dist/
- 
+
   publish_to_pypi:
     name: Publish Python distributions to PyPI and TestPyPI
     runs-on: [ ubuntu-latest ]
@@ -59,7 +59,7 @@ jobs:
       - build
 
     permissions:
-      id-token: write  
+      id-token: write
 
     environment:
       name: Release
@@ -134,4 +134,3 @@ jobs:
         with:
           artifacts: "dist/*"
           generateReleaseNotes: true
-        

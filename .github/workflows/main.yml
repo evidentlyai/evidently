@@ -74,10 +74,8 @@ jobs:
       # Runs a single command using the runners shell
       - name: Install dependencies
         run: pip install -r requirements.min.txt && pip install -r requirements.dev.txt
-      - name: Run ruff linter
-        run: ruff check
-      - name: Run ruff format
-        run: ruff format --check
+      - name: Run pre-commit
+        run: pre-commit run --all
       - name: Run Mypy
         run: mypy
 
