@@ -15,11 +15,11 @@ export default {
   id: 'reports',
   path: 'reports',
   lazy: async () => {
-    const { SnapshotTemplate, ...rest } = await import(
+    const { SnapshotsListTemplate, ...rest } = await import(
       'evidently-ui-lib/routes-components/snapshots'
     )
 
-    const Component = () => <SnapshotTemplate type="report" />
+    const Component = () => <SnapshotsListTemplate type="reports" />
 
     return { ...rest, Component }
   },

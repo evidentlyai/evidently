@@ -84,8 +84,10 @@ export const theme = createTheme({
             duration: transitions.duration.enteringScreen
           }),
           color: colors.grey[900],
-          '&:hover': {
-            color: mainRed
+          '&:hover': { color: mainRed },
+          '&.Mui-disabled': {
+            border: 'unset',
+            background: colors.grey[100]
           }
         }
       }
