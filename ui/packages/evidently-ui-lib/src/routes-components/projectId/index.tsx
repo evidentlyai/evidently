@@ -56,3 +56,4 @@ const PROJECT_TABS = [
 ]
 
 export const Component = () => <ProjectTemplate tabsConfig={PROJECT_TABS} />
+export const ProjectWithoutTabs = () => <ProjectTemplate />
