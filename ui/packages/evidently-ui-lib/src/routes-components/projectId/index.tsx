@@ -35,14 +35,24 @@ export const ProjectTemplate = ({
         </Grid>
       </Grid>
 
-      <Tabs value={tabIndex} aria-label="simple tabs example" indicatorColor={'primary'}>
-        {tabsConfig.map((tab) => (
-          <Link component={RouterLink} to={tab.link}>
-            <Tab label={tab.label || tab.id} value={tab.id} />
-          </Link>
-        ))}
-      </Tabs>
+      {tabsConfig.length > 0 && (
+        <Tabs value={tabIndex} aria-label="simple tabs example" indicatorColor={'primary'}>
+          {tabsConfig.map((tab) => (
+            <Link key={tab.id} component={RouterLink} to={tab.link}>
+              <Tab label={tab.label || tab.id} value={tab.id} />
+            </Link>
+          ))}
+        </Tabs>
+      )}
       <Outlet />
     </Box>
   )
 }
+
+const PROJECT_TABS = [
+  { id: 'dashboard', link: '.', label: 'Dashboard' },
+  { id: 'reports', link: 'reports', label: 'Reports' },
+  { id: 'test_suites', link: 'test-suites', label: 'Test suites' }
+]
+
+export const Component = () => <ProjectTemplate tabsConfig={PROJECT_TABS} />
