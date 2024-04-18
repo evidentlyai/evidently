@@ -62,7 +62,7 @@ jobs:
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
     strategy:
       matrix:
-        node-version: [16, 18]
+        node-version: [20]
 
     steps:
       - name: ⬇️ Checkout repo
