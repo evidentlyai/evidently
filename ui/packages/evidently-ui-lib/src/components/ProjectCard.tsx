@@ -131,7 +131,7 @@ export const EditProjectInfoForm = ({
 const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
   return (
     <>
-      <Link component={RouterLink} to={`/projects/${project.id}`}>
+      <Link component={RouterLink} to={`projects/${project.id}`}>
         <Typography variant={'h6'}>{project.name}</Typography>
       </Link>
       <Typography style={{ whiteSpace: 'pre-line' }} variant="body1">

@@ -103,8 +103,7 @@ const ReviewsDemoProjectName = 'Demo project - Reviews'
 ///   Home
 /////////////////////
 
-// skip due to reordering projects on home page
-test.skip(`Home`, async ({ page }) => {
+test(`Home`, async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
   await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })

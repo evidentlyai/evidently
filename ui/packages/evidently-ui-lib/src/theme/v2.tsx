@@ -9,9 +9,9 @@ const borderColorGrey = '#ded5d5'
 export const theme = createTheme({
   shape: { borderRadius: 5 },
   palette: {
-    primary: { main: colors.grey[900] },
+    primary: { main: colors.grey[900], light: colors.grey[200] },
     // we use `secondary` color for interactive elements
-    secondary: { main: mainRed, dark: '#c10400' },
+    secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] },
     background: { default: 'white', paper: 'white' }
   },
   components: {
@@ -84,8 +84,10 @@ export const theme = createTheme({
             duration: transitions.duration.enteringScreen
           }),
           color: colors.grey[900],
-          '&:hover': {
-            color: mainRed
+          '&:hover': { color: mainRed },
+          '&.Mui-disabled': {
+            border: 'unset',
+            background: colors.grey[100]
           }
         }
       }
