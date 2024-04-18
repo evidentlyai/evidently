@@ -12,7 +12,7 @@ export const NavigationProgress = () => {
   }
 
   return (
-    <Box width={1} sx={{ position: 'fixed', top: 0, left: 0, zIndex: 99922343 }}>
+    <Box width={1} sx={{ position: 'fixed', top: 0, left: 0, zIndex: 99999 }}>
       <LinearProgress sx={{ height: '3px' }} />
     </Box>
   )
