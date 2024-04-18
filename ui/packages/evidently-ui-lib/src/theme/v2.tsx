@@ -11,7 +11,7 @@ export const theme = createTheme({
   palette: {
     primary: { main: colors.grey[900] },
     // we use `secondary` color for interactive elements
-    secondary: { main: mainRed, dark: '#c10400' },
+    secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] },
     background: { default: 'white', paper: 'white' }
   },
   components: {
