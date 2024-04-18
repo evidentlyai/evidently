@@ -211,7 +211,8 @@ class JsonFileMetadataStorage(MetadataStorage):
 
     def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         projects = [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
-        projects.sort(key=lambda x: x.created_at, reverse=True)
+        default_date = datetime.datetime.fromisoformat("1900-01-01T00:00:00")
+        projects.sort(key=lambda x: x.created_at or default_date, reverse=True)
         return projects
 
     def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
