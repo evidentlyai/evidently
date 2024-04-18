@@ -10,9 +10,9 @@ export const handle: { crumb: crumbFunction<loaderData> } = {
 }
 
 export const ProjectTemplate = ({
-  tabsConfig
+  tabsConfig = []
 }: {
-  tabsConfig: { id: string; link: string; label?: string }[]
+  tabsConfig?: { id: string; link: string; label?: string }[]
 }) => {
   const matches = useMatches()
   const project = useLoaderData() as loaderData
