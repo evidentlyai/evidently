@@ -195,7 +195,7 @@ jobs:
       - name: Build package
         run: python setup.py sdist bdist_wheel
       - name: Archive built package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: dist/

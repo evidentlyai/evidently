@@ -95,7 +95,7 @@ jobs:
         working-directory: ui/service
         run: npx vite-bundle-visualizer@1.0.0 -o vite-bundle-report/index.html
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: vite-bundle-visualizer-${{ matrix.node-version }}
@@ -157,7 +157,7 @@ jobs:
         working-directory: ui/service
         run: pnpm test
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
