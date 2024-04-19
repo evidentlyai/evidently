@@ -23,6 +23,7 @@ Example:
     >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="es")
 """
+
 from typing import Tuple
 
 import numpy as np
@@ -54,7 +55,9 @@ def _epps_singleton(
     iqr_value = iqr(np.hstack((reference_data, current_data)))
     if iqr_value == 0:
         raise ValueError(
-            f'{"Epps-Singleton testsinterquartile range (IQR) is zero. IQR of 0 means there is no variability in the middle 50% of your data, but the center of the distribution can be anywhere. Expected: your data sould have higher variability/variance."}'
+            "Epps-Singleton testsinterquartile range (IQR) is zero. "
+            "IQR of 0 means there is no variability in the middle 50% of your data, but the center of the distribution can be anywhere. "
+            "Expected: your data sould have higher variability/variance."
         )
     p_value = epps_singleton_2samp(reference_data, current_data)[1]
     return p_value, p_value < threshold

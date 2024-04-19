@@ -105,7 +105,12 @@ def generate_dataset_outcome(m: TestMetric):
         is_included = m.include_tags == [] or all(t in d.tags for t in m.include_tags)
         is_excluded = any(t in m.exclude_tags for t in d.tags)
         if is_included and not is_excluded:
-            yield m, i, d, m.get_outcome(d),
+            yield (
+                m,
+                i,
+                d,
+                m.get_outcome(d),
+            )
 
 
 def load_test_metrics():

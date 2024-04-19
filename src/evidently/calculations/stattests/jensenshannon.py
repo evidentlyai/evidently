@@ -22,6 +22,7 @@ Example:
     >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="jensenshannon")
 """
+
 from typing import Optional
 from typing import Tuple
 

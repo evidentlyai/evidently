@@ -38,13 +38,13 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]
     errors = []
     for cls in all_metric_results:
         field_names = set(cls.__fields__)
-        for config_field in {
+        for config_field in (
             "pd_name_mapping",
             "dict_include_fields",
             "dict_exclude_fields",
             "pd_include_fields",
             "pd_exclude_fields",
-        }:
+        ):
             field_value = getattr(cls.__config__, config_field)
             if field_value is None:
                 continue

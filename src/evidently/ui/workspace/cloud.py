@@ -37,8 +37,16 @@ class CloudMetadataStorage(RemoteMetadataStorage):
 
         return self._jwt_token
 
-    def _request(self, path: str, method: str, query_params: Optional[dict] = None, body: Optional[dict] = None, response_model=None,
-                 cookies=None, headers: Dict[str, str] = None):
+    def _request(
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        response_model=None,
+        cookies=None,
+        headers: Dict[str, str] = None,
+    ):
         cookies = cookies or {}
         cookies = cookies.copy()
         cookies[self.cookie_name] = self.jwt_token
@@ -51,7 +59,9 @@ class CloudMetadataStorage(RemoteMetadataStorage):
                 # renew token and retry
                 self._jwt_token = self._get_jwt_token()
                 cookies[self.cookie_name] = self.jwt_token
-                return super()._request(path, method, query_params, body, response_model, cookies=cookies, headers=headers)
+                return super()._request(
+                    path, method, query_params, body, response_model, cookies=cookies, headers=headers
+                )
             raise
 
 
@@ -60,18 +70,15 @@ class CloudWorkspace(WorkspaceView):
 
     URL: str = "https://cloud.evidentlyai.com"
 
-    def __init__(self, token: str,
-                 team_id: Optional[STR_UUID] = None, url: str = None):
+    def __init__(self, token: str, team_id: Optional[STR_UUID] = None, url: str = None):
         self.token = token
         self.url = url or self.URL
 
-        meta = CloudMetadataStorage(base_url=self.url, token=self.token,
-                                    cookie_name="app.at", )
-
-        pm = ProjectManager(
-            metadata=meta,
-            blob=(NoopBlobStorage()),
-            data=(NoopDataStorage()),
-            auth=(NoopAuthManager())
+        meta = CloudMetadataStorage(
+            base_url=self.url,
+            token=self.token,
+            cookie_name="app.at",
         )
+
+        pm = ProjectManager(metadata=meta, blob=(NoopBlobStorage()), data=(NoopDataStorage()), auth=(NoopAuthManager()))
         super().__init__(None, pm, UUID(team_id) if isinstance(team_id, str) else team_id)

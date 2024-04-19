@@ -91,7 +91,6 @@ def column_drift_metric():
 
 @metric
 def column_drift_metric_values():
-
     test_stattest = StatTest(
         name="test_stattest",
         display_name="test stattest",

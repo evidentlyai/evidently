@@ -1,4 +1,5 @@
 """Additional types, classes, dataclasses, etc."""
+
 from typing import Any
 from typing import ClassVar
 from typing import Dict

@@ -37,7 +37,7 @@ def plot_error_bias_colored_scatter(
             mode="markers",
             name=name,
             legendgroup=name,
-            marker_color=color
+            marker_color=color,
             # marker=dict(color=color_options.underestimation_color, showscale=False),
         )
         fig.add_trace(trace, 1, 1)
@@ -56,7 +56,7 @@ def plot_error_bias_colored_scatter(
                 name=name,
                 legendgroup=name,
                 showlegend=False,
-                marker_color=color
+                marker_color=color,
                 # marker=dict(color=color_options.underestimation_color, showscale=False),
             )
             fig.add_trace(trace, 1, 2)

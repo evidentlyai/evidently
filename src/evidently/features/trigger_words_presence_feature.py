@@ -18,7 +18,6 @@ class TriggerWordsPresent(GeneratedFeature):
     _lem: WordNetLemmatizer
 
     def __init__(self, column_name: str, words_list=(), lemmatize=True, display_name: Optional[str] = None):
-
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize

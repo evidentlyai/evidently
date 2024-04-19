@@ -850,7 +850,6 @@ class MeanInNSigmasParameter(TestParameters):
 
 
 class TestMeanInNSigmas(Test):
-
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Mean Value Stability"
     _metric: ColumnSummaryMetric
@@ -1638,7 +1637,6 @@ class TestCategoryRenderer(TestRenderer):
         n_ref: Optional[int],
         name: str,
     ) -> TestHtmlInfo:
-
         curr_df = curr_df.copy()
         replace = [("current value counts", n_curr)]
         if ref_df is not None and n_ref is not None:
