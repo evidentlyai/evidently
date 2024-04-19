@@ -1,4 +1,5 @@
 """Methods and types for data drift calculations."""
+
 from dataclasses import dataclass
 from typing import Dict
 from typing import List

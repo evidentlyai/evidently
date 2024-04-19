@@ -1,5 +1,5 @@
 <h1 align="center">Evidently</h1>
- 
+
 <p align="center"><b>An open-source framework to evaluate, test and monitor ML models in production.</b></p>
 
 <p align="center">
@@ -8,33 +8,33 @@
   <a href="https://discord.gg/xZjKRaNp8b">Discord</a>
   |
   <a href="https://www.evidentlyai.com/user-newsletter">User Newsletter</a>
-  | 
+  |
   <a href="https://evidentlyai.com/blog">Blog</a>
-  | 
+  |
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
-  | 
+  |
   <a href="https://www.evidentlyai.com/product/cloud">Evidently Cloud</a>
 </p>
 
 # :new: New release
 
-**Evidently 0.4.0**. Self-host an ML Monitoring interface -> [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring) 
+**Evidently 0.4.0**. Self-host an ML Monitoring interface -> [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
 
 # :bar_chart: What is Evidently?
 
-Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test, and monitor ML models from validation to production. It works with tabular, text data and embeddings. 
+Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test, and monitor ML models from validation to production. It works with tabular, text data and embeddings.
 
-Evidently has a modular approach with 3 components on top of the shared `metrics` functionality. 
+Evidently has a modular approach with 3 components on top of the shared `metrics` functionality.
 
 ## 1. Tests: batch model checks
 
 ![Tests example](docs/images/evidently_tests_main-min.png)
 
-Tests perform structured data and ML model checks. They verify a condition and return an explicit **pass** or **fail**. 
+Tests perform structured data and ML model checks. They verify a condition and return an explicit **pass** or **fail**.
 
-You can create a custom Test Suite from 50+ tests or run a preset (for example, **Data Drift** or **Regression Performance**). You can get results as a **JSON**, Python dictionary, exportable HTML, **visual report** inside Jupyter notebook, or as Evidently JSON `snapshot`. 
+You can create a custom Test Suite from 50+ tests or run a preset (for example, **Data Drift** or **Regression Performance**). You can get results as a **JSON**, Python dictionary, exportable HTML, **visual report** inside Jupyter notebook, or as Evidently JSON `snapshot`.
 
-Tests are best for automated checks. You can integrate them as a pipeline step using tools like Airflow. 
+Tests are best for automated checks. You can integrate them as a pipeline step using tools like Airflow.
 
 ## 2. Reports: interactive visualizations
 
@@ -48,11 +48,11 @@ You can get an **HTML report** (best for exploratory analysis and debugging), **
 
 ## 3. ML monitoring dashboard
 
-> This functionality is available from v0.4.0. 
+> This functionality is available from v0.4.0.
 
 <img width="872" alt="image" src="https://github.com/evidentlyai/evidently/assets/32310771/642816f7-bfc6-4af9-bfe3-d14b4fdda2b7">
 
-You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.  
+You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.
 
 You can track 100+ metrics available in Evidently, from the number of nulls to text sentiment and embedding drift.
 
@@ -83,7 +83,7 @@ conda install -c conda-forge evidently
 ### Option 1: Test Suites
 > This is a simple Hello World example. Head to docs for a complete [Quickstart for Reports and Test Suites](https://docs.evidentlyai.com/get-started/tutorial).
 
-Prepare your data as two pandas `DataFrames`. The first is your reference data, and the second is current production data. The structure of both datasets should be identical. You need input features only to run some evaluations (e.g., Data Drift). In other cases (e.g., Target Drift, Classification Performance), you need Target and/or Prediction. 
+Prepare your data as two pandas `DataFrames`. The first is your reference data, and the second is current production data. The structure of both datasets should be identical. You need input features only to run some evaluations (e.g., Data Drift). In other cases (e.g., Target Drift, Classification Performance), you need Target and/or Prediction.
 
 After installing the tool, import the Evidently **Test Suite** and required presets. We'll use a simple toy dataset:
 
@@ -106,7 +106,7 @@ data_stability= TestSuite(tests=[
     DataStabilityTestPreset(),
 ])
 data_stability.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
-data_stability 
+data_stability
 ```
 
 You can also save an HTML file. You'll need to open it from the destination folder.
@@ -169,11 +169,11 @@ After installing Evidently (`pip install evidently`), run the Evidently UI with 
 ```
 evidently ui --demo-projects all
 ```
- 
+
 Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
 # :computer: Contributions
-We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more. 
+We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
 
 # :books: Documentation
 For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with the tutorials:
@@ -196,13 +196,13 @@ Evidently Tests| [Jupyter notebook](https://github.com/evidentlyai/evidently/blo
 There are more example in the [Community Examples](https://github.com/evidentlyai/community-examples) repository.
 
 ## Integrations
-Explore [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) to see how to integrate Evidently in the prediction pipelines and with other tools. 
+Explore [Integrations](https://github.com/evidentlyai/evidently/tree/main/examples/integrations) to see how to integrate Evidently in the prediction pipelines and with other tools.
 
 ## How-to guides
-Explore the [How-to guides](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to understand specific features in Evidently, such as working with text data. 
+Explore the [How-to guides](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to understand specific features in Evidently, such as working with text data.
 
-# :phone: User Newsletter 
-To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 
+# :phone: User Newsletter
+To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter).
 
 # :white_check_mark: Discord Community
 If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!

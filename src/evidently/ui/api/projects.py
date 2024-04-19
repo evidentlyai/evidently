@@ -120,7 +120,6 @@ def reload_project_snapshots(
         raise HTTPException(status_code=404, detail="project not found")
     project.reload(reload_snapshots=True)
     log_event("reload_project_snapshots")
-    return
 
 
 @get("/{project_id:uuid}/test_suites", sync_to_thread=True)

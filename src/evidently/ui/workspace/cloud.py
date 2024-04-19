@@ -106,7 +106,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
             if self._logged_in and e.response.status_code == 401:
                 # renew token and retry
                 self._jwt_token = self._get_jwt_token()
-                cookies[self.cookie_name] = self.jwt_token
+                cookies[self.token_cookie_name] = self.jwt_token
                 return super()._request(
                     path,
                     method,

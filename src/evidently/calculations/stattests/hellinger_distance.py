@@ -22,6 +22,7 @@ Example:
     >>> from evidently.options.data_drift import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="hellinger")
 """
+
 from collections import defaultdict
 from math import sqrt
 from typing import DefaultDict

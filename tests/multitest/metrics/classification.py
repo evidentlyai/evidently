@@ -371,7 +371,6 @@ def classification_prob_distribution():
 
 @metric
 def classification_prob_distribution_values():
-
     return TestMetric(
         "classification_prob_distribution_values",
         ClassificationProbDistribution(),
