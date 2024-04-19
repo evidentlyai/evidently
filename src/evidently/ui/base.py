@@ -143,7 +143,8 @@ class Project(BaseModel):
 
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
-    created_at: Optional[datetime.datetime] = Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
+    created_at: Optional[datetime.datetime] = Field(default=None)
+    # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
     _project_manager: "ProjectManager" = PrivateAttr(None)
     _user_id: UserID = PrivateAttr(None)
@@ -584,6 +585,7 @@ class ProjectManager(EvidentlyBaseModel):
         team = self.auth.get_team_or_error(team_id)
         org = self.auth.get_org_or_error(org_id)
         project.team_id = team_id if team_id != ZERO_UUID else None
+        project.created_at = datetime.datetime.now()
         return self.metadata.add_project(project, user, team, org).bind(self, user.id)
 
     def update_project(self, user_id: UserID, project: Project):

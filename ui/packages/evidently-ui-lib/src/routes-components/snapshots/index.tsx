@@ -71,7 +71,7 @@ const metadataToOneString: (metadata: MetadataValueType) => string = (
     })
     .join(' ')
 
-export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) => {
+export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites' }) => {
   const { projectId } = useParams()
   const snapshots = useLoaderData() as loaderData
   const matches = useMatches()
@@ -138,22 +138,18 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
     return <Outlet />
   }
 
+  if (snapshots.length === 0) {
+    return (
+      <Typography my={3} variant="h4" align="center">
+        You don't have any {type} yet.
+      </Typography>
+    )
+  }
+
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Grid container gap={2} alignItems={'flex-end'}>
-          <Grid item xs={12}>
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                variant="outlined"
-                onClick={() => submit(null, { method: 'post' })}
-                color="primary"
-                disabled={isNavigation}
-              >
-                refresh {`${type}s`}
-              </Button>
-            </Box>
-          </Grid>
+        <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
           <Grid item xs={12} md={4}>
             <Autocomplete
               multiple
@@ -166,7 +162,6 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
               )}
             />
           </Grid>
-
           <Grid item xs={12} md={7}>
             <Box display={'flex'} alignItems={'flex-end'} gap={2}>
               <TextField
@@ -176,7 +171,6 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
                 variant="standard"
                 label="Search in Metadata"
               />
-
               <Box minWidth={220} display={'flex'} justifyContent={'center'}>
                 <FormControlLabel
                   control={
@@ -188,6 +182,17 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
                   label="Hide Metadata"
                 />
               </Box>
+              <Box display="flex" justifyContent="flex-end">
+                <Button
+                  sx={{ minWidth: 160 }}
+                  variant="outlined"
+                  onClick={() => submit(null, { method: 'post' })}
+                  color="primary"
+                  disabled={isNavigation}
+                >
+                  refresh {type}
+                </Button>
+              </Box>
             </Box>
           </Grid>
         </Grid>
@@ -196,9 +201,9 @@ export const SnapshotTemplate = ({ type }: { type: 'report' | 'test suite' }) =>
         <TableHead>
           <TableRow>
             <TableCell>
-              {type === 'report'
+              {type === 'reports'
                 ? 'Report ID'
-                : type === 'test suite'
+                : type === 'test suites'
                 ? 'Test Suite ID'
                 : 'indefined'}
             </TableCell>
