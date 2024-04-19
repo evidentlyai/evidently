@@ -314,10 +314,12 @@ class Permission(Enum):
 
     ORG_READ = "org_read"
     ORG_WRITE = "org_write"
+    ORG_CREATE_TEAM = "org_create_team"
     ORG_DELETE = "org_delete"
 
     TEAM_READ = "team_read"
     TEAM_WRITE = "team_write"
+    TEAM_CREATE_PROJECT = "team_create_project"
     TEAM_DELETE = "team_delete"
 
     PROJECT_READ = "project_read"
@@ -430,8 +432,14 @@ class AuthManager(EvidentlyBaseModel):
         return user
 
     @abstractmethod
-    def create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
+    def _create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
         raise NotImplementedError
+
+    @abstractmethod
+    def create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
+        if not self.check_entity_permission(author, EntityType.Org, org_id, Permission.ORG_CREATE_TEAM):
+            raise NotEnoughPermissions()
+        return self._create_team(author, team, org_id)
 
     @abstractmethod
     def get_team(self, team_id: TeamID) -> Optional[Team]:
@@ -487,9 +495,17 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
     def grant_entity_role(
-        self, manager: UserID, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role
+        self,
+        manager: UserID,
+        entity_type: EntityType,
+        entity_id: EntityID,
+        user_id: UserID,
+        role: Role,
+        skip_permission_check: bool = False,
     ):
-        if not self.check_entity_permission(manager, entity_type, entity_id, Permission.GRANT_ROLE):
+        if not skip_permission_check and not self.check_entity_permission(
+            manager, entity_type, entity_id, Permission.GRANT_ROLE
+        ):
             raise NotEnoughPermissions()
         self._grant_entity_role(entity_type, entity_id, user_id, role)
 
@@ -584,9 +600,20 @@ class ProjectManager(EvidentlyBaseModel):
         user = self.auth.get_or_default_user(user_id)
         team = self.auth.get_team_or_error(team_id)
         org = self.auth.get_org_or_error(org_id)
+        if not self.auth.check_entity_permission(user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT):
+            raise NotEnoughPermissions()
         project.team_id = team_id if team_id != ZERO_UUID else None
         project.created_at = datetime.datetime.now()
-        return self.metadata.add_project(project, user, team, org).bind(self, user.id)
+        project = self.metadata.add_project(project, user, team, org).bind(self, user.id)
+        self.auth.grant_entity_role(
+            user.id,
+            EntityType.Project,
+            project.id,
+            user.id,
+            self.auth.get_default_role(DefaultRole.OWNER, EntityType.Project),
+            skip_permission_check=True,
+        )
+        return project
 
     def update_project(self, user_id: UserID, project: Project):
         user = self.auth.get_or_default_user(user_id)
