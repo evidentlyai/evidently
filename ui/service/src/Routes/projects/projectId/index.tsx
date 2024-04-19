@@ -13,23 +13,9 @@ import DashboardRoute from './dashboard'
 import ReportsRoute from './reports'
 import TestSuitesRoute from './test-suites'
 
-const PROJECT_TABS = [
-  { id: 'dashboard', link: '.', label: 'Dashboard' },
-  { id: 'reports', link: 'reports', label: 'Reports' },
-  { id: 'test_suites', link: 'test-suites', label: 'Test suites' }
-]
-
 export default {
   path: 'projects/:projectId',
-  lazy: async () => {
-    const { ProjectTemplate, ...rest } = await import(
-      'evidently-ui-lib/routes-components/projectId'
-    )
-
-    const Component = () => <ProjectTemplate tabsConfig={PROJECT_TABS} />
-
-    return { Component, ...rest }
-  },
+  lazy: () => import('evidently-ui-lib/routes-components/projectId'),
   loader,
   ErrorBoundary: GenericErrorBoundary,
   children: [DashboardRoute, ReportsRoute, TestSuitesRoute]

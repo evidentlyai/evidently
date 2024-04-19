@@ -1,10 +1,7 @@
 import { Outlet, ScrollRestoration, useLoaderData } from 'react-router-dom'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { NavigationProgress, ServiceMainPage, ServiceHeader, crumbFunction } from '~/components'
-import 'dayjs/locale/en-gb'
-
+import { NavigationProgress, BreadCrumbs, ServiceHeader, crumbFunction } from '~/components'
 import type { loaderData } from './data'
+import { Box } from '@mui/material'
 
 export const HomeComponentTemplate = ({
   logoSrc,
@@ -16,14 +13,15 @@ export const HomeComponentTemplate = ({
   const { version } = useLoaderData() as loaderData
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
+    <>
       <ServiceHeader authComponent={authComponent} version={version} logoSrc={logoSrc} />
       <NavigationProgress />
       <ScrollRestoration />
-      <ServiceMainPage>
+      <Box p={3}>
+        <BreadCrumbs />
         <Outlet />
-      </ServiceMainPage>
-    </LocalizationProvider>
+      </Box>
+    </>
   )
 }
 
