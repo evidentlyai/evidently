@@ -83,7 +83,6 @@ class RemoteBase:
         cookies=None,
         headers: Dict[str, str] = None,
     ):
-
         request = self._prepare_request(path, method, query_params, body, cookies, headers)
         s = Session()
         response = s.send(request.prepare())
