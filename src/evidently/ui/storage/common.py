@@ -14,6 +14,7 @@ from evidently.ui.base import Role
 from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.base import UserWithRoles
+from evidently.ui.base import get_default_role_permissions
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import EntityID
 from evidently.ui.type_aliases import OrgID
@@ -56,7 +57,15 @@ class NoopAuthManager(AuthManager):
         return self.org
 
     def get_default_role(self, default_role: DefaultRole, entity_type: Optional[EntityType]) -> Role:
-        return Role(id=0, name=default_role.value, entity_type=entity_type)
+        return Role(
+            id=0,
+            name=default_role.value,
+            entity_type=entity_type,
+            permissions=get_default_role_permissions(default_role, entity_type)[1],
+        )
+
+    def update_role(self, role: Role):
+        return role
 
     def _grant_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
         pass

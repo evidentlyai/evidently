@@ -339,6 +339,7 @@ class Role(BaseModel):
     id: RoleID
     name: str
     entity_type: Optional[EntityType]
+    permissions: Set[Permission]
 
 
 class DefaultRole(Enum):
@@ -349,13 +350,11 @@ class DefaultRole(Enum):
 
 DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
     (DefaultRole.OWNER, None): set(Permission),
-    (DefaultRole.EDITOR, EntityType.Org): {
-        Permission.ORG_READ,
-        Permission.ORG_WRITE,
-    },
+    (DefaultRole.EDITOR, EntityType.Org): {Permission.ORG_READ, Permission.ORG_WRITE, Permission.ORG_CREATE_TEAM},
     (DefaultRole.EDITOR, EntityType.Team): {
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
+        Permission.TEAM_CREATE_PROJECT,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
@@ -403,6 +402,17 @@ class UserWithRoles(NamedTuple):
 class AuthManager(EvidentlyBaseModel):
     allow_default_user: bool = True
 
+    def refresh_default_roles(self):
+        for (default_role, entity_type), permissions in DEFAULT_ROLE_PERMISSIONS.items():
+            role = self.get_default_role(default_role, entity_type)
+            if role.permissions != permissions:
+                role.permissions = permissions
+                self.update_role(role)
+
+    @abstractmethod
+    def update_role(self, role: Role):
+        raise NotImplementedError
+
     @abstractmethod
     def get_available_project_ids(self, user_id: UserID, org_id: OrgID) -> Optional[Set[ProjectID]]:
         raise NotImplementedError
@@ -435,7 +445,6 @@ class AuthManager(EvidentlyBaseModel):
     def _create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
         raise NotImplementedError
 
-    @abstractmethod
     def create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
         if not self.check_entity_permission(author, EntityType.Org, org_id, Permission.ORG_CREATE_TEAM):
             raise NotEnoughPermissions()
