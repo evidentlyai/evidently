@@ -1,11 +1,15 @@
-import { useFetchers, useNavigation } from 'react-router-dom'
+import { useFetchers, useNavigation, useRevalidator } from 'react-router-dom'
 import { Box, LinearProgress } from '@mui/material'
 
 export const NavigationProgress = () => {
   const navigation = useNavigation()
   const fetchers = useFetchers()
+  const { state } = useRevalidator()
 
-  const isNavigation = navigation.state !== 'idle' || fetchers.some(({ state }) => state !== 'idle')
+  const isNavigation =
+    navigation.state !== 'idle' ||
+    fetchers.some(({ state }) => state !== 'idle') ||
+    state !== 'idle'
 
   if (!isNavigation) {
     return null
