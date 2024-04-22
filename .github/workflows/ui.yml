@@ -123,7 +123,7 @@ jobs:
         run: pip install -e .
 
       - name: Install dvc
-        run: pip install dvc[gs]
+        run: pip install 'dvc[gs]==3.50.0'
 
       - name: Pull test data
         run: dvc pull
