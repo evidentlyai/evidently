@@ -32,6 +32,7 @@ from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import DataPointsAsDict
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
@@ -162,6 +163,16 @@ class NoopDataStorage(DataStorage):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
+        return {}
+
+    def load_points_as_dict(
+        self,
+        project_id: ProjectID,
+        filter: "ReportFilter",
+        value: "PanelValue",
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPointsAsDict:
         return {}
 
 

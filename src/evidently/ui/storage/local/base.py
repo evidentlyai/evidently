@@ -4,6 +4,7 @@ import json
 import posixpath
 import uuid
 from collections import defaultdict
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -36,6 +37,7 @@ from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import DataPointsAsDict
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
@@ -318,4 +320,28 @@ class InMemoryDataStorage(DataStorage):
             else:
                 points[ts].update(TestFilter().get(report))
 
+        return points
+
+    def load_points_as_dict(
+        self,
+        project_id: ProjectID,
+        filter: "ReportFilter",
+        value: "PanelValue",
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPointsAsDict:
+        points: Dict[datetime.datetime, Dict[str, Any]] = {}
+
+        for report in (s.as_report() for s in self.state.snapshot_data[project_id].values() if s.is_report):
+            if not (
+                filter.filter(report)
+                and (timestamp_start is None or report.timestamp >= timestamp_start)
+                and (timestamp_end is None or report.timestamp < timestamp_end)
+            ):
+                continue
+
+            for metric, metric_field_value in value.get(report).items():
+                # if not isinstance(metric_field_value, dict):
+                #     continue
+                points[report.timestamp] = metric_field_value
         return points

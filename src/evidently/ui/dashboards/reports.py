@@ -4,6 +4,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 
 from plotly import graph_objs as go
@@ -14,6 +15,8 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.ui.type_aliases import ProjectID
 
+from ...metric_results import HistogramData
+from ...model.widget import BaseWidgetInfo
 from .base import DashboardPanel
 from .base import PanelValue
 from .base import assign_panel_id
@@ -117,3 +120,41 @@ class DashboardPanelCounter(DashboardPanel):
         if self.agg == CounterAgg.SUM:
             return sum(v or 0 for vs in points.values() for ts, v in vs)
         raise ValueError(f"Unknown agg type {self.agg}")
+
+
+class DashboardPanelHist(DashboardPanel):
+    value: PanelValue
+
+    @assign_panel_id
+    def build(
+        self,
+        data_storage: "DataStorage",
+        project_id: ProjectID,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> BaseWidgetInfo:
+        bins_for_hist: Dict[datetime.datetime, HistogramData] = data_storage.load_points_as_dict(
+            project_id, self.filter, self.value, timestamp_start, timestamp_end
+        )
+
+        timestamps: List[datetime.datetime] = []
+        names: Set[str] = set()
+        values: List[Dict[str, Any]] = []
+
+        for timestamp, hist in bins_for_hist.items():
+            timestamps.append(timestamp)
+            data = dict(zip(hist.x, hist.count))
+            names.update(data.keys())
+            values.append(data)
+
+        name_to_date_value: Dict[str, List[Any]] = {name: [] for name in names}
+        for timestamp, data in zip(timestamps, values):
+            for name in names:
+                name_to_date_value[name].append(data.get(name))
+
+        fig = go.Figure(data=[go.Bar(name=name, x=timestamps, y=name_to_date_value.get(name)) for name in names])
+        # Change the bar mode
+        fig.update_layout(barmode="stack")
+        fig.show()
+
+        return plotly_figure(title=self.title, figure=fig, size=self.size)

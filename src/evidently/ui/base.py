@@ -32,6 +32,7 @@ from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import DataPointsAsDict
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -287,6 +288,17 @@ class DataStorage(EvidentlyBaseModel, ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_points_as_dict(
+        self,
+        project_id: ProjectID,
+        filter: "ReportFilter",
+        value: "PanelValue",
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPointsAsDict:
         raise NotImplementedError
 
 

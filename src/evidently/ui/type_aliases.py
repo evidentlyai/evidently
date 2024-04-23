@@ -17,6 +17,9 @@ OrgID = uuid.UUID
 ProjectID = uuid.UUID
 SnapshotID = uuid.UUID
 STR_UUID = Union[str, uuid.UUID]
+PanelID = uuid.UUID
+TabID = uuid.UUID
 
 DataPoints = List[Dict[Metric, List[Tuple[datetime.datetime, Any]]]]
 TestResultPoints = Dict[datetime.datetime, Dict[Test, TestStatus]]
+DataPointsAsDict = Dict[datetime.date, Dict[str, Any]]
