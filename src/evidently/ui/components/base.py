@@ -56,10 +56,10 @@ class ComponentContext:
 
 class Component(PolymorphicModel, ABC):
     __section__: ClassVar[str] = ""
-    # __require__: ClassVar[List[Type["Component"]]] = []
+    __require__: ClassVar[List[Type["Component"]]] = []
 
-    # def get_requirements(self) -> List[Type["Component"]]:
-    #     return self.__require__
+    def get_requirements(self) -> List[Type["Component"]]:
+        return self.__require__
 
     class Config:
         extra = Extra.forbid

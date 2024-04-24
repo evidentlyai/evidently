@@ -65,4 +65,4 @@ register_type_alias(BlobStorageComponent, "evidently.ui.components.local_storage
 register_type_alias(
     MetadataStorageComponent, "evidently.ui.components.local_storage.JsonMetadataComponent", "json_file"
 )
-register_type_alias(DataStorageComponent, "evidently.ui.components.local_storage.InmemoryDataComponent", "d_inmemory")
+register_type_alias(DataStorageComponent, "evidently.ui.components.local_storage.InmemoryDataComponent", "inmemory")
