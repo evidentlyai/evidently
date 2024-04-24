@@ -33,7 +33,7 @@ class JsonMetadataComponent(MetadataStorageComponent):
 
 class InmemoryDataComponent(DataStorageComponent):
     class Config:
-        type_alias = "d_inmemory"
+        type_alias = "inmemory"
 
     path: str
 

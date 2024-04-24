@@ -191,7 +191,7 @@ class PolymorphicModel(BaseModel):
                     classpath = typename
                 if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
                     raise ValueError(f"{classpath} does not match any allowed prefixes")
-                subcls = import_string(typename)
+                subcls = import_string(classpath)
             return subcls.validate(value)
         return super().validate(value)  # type: ignore[misc]
 
