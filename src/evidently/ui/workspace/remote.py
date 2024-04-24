@@ -40,8 +40,9 @@ from evidently.utils import NumpyEncoder
 
 
 class RemoteMetadataStorage(MetadataStorage):
-    base_url: str
-    secret: Optional[str] = None
+    def __init__(self, base_url: str, secret: Optional[str] = None):
+        self.base_url = base_url
+        self.secret = secret
 
     def _request(
         self,

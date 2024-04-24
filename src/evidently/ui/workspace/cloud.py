@@ -22,6 +22,11 @@ class CloudMetadataStorage(RemoteMetadataStorage):
     _jwt_token: str = PrivateAttr(None)
     _logged_in: bool = PrivateAttr(False)
 
+    def __init__(self, base_url: str, token: str, cookie_name: str):
+        self.token = token
+        self.cookie_name = cookie_name
+        super().__init__(base_url=base_url)
+
     def _get_jwt_token(self):
         return super()._request("/api/users/login", "GET", headers={TOKEN_HEADER_NAME: self.token}).text
 

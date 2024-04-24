@@ -88,6 +88,10 @@ class FSSpecBlobStorage(BlobStorage):
 
     _location: FSLocation = PrivateAttr(None)
 
+    def __init__(self, base_path: str):
+        self.base_path = base_path
+        self._location = FSLocation(self.base_path)
+
     @property
     def location(self) -> FSLocation:
         if self._location is None:
@@ -177,9 +181,8 @@ class JsonFileMetadataStorage(MetadataStorage):
     _state: LocalState = PrivateAttr(None)
 
     def __init__(self, path: str, state: Optional[LocalState] = None):
-        super().__init__(path=path)
-        if state is not None:
-            self._state = state
+        self.path = path
+        self._state = state or LocalState.load(self.path, None)
 
     @property
     def state(self):
@@ -259,9 +262,8 @@ class InMemoryDataStorage(DataStorage):
     _state: LocalState = PrivateAttr(None)
 
     def __init__(self, path: str, state: Optional[LocalState] = None):
-        super().__init__(path=path)
-        if state is not None:
-            self._state = state
+        self.path = path
+        self._state = state or LocalState.load(self.path, None)
 
     @property
     def state(self):
