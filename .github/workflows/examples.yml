@@ -1,10 +1,6 @@
-# This is a basic workflow to help you get started with Actions
+name: Example Tests
 
-name: CI
-
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   schedule:
     - cron: '0 0 * * *'
 
@@ -15,7 +11,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test-examples:
     name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}, min ${{ matrix.minimal }}
