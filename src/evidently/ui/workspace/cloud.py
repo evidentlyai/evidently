@@ -4,7 +4,6 @@ from uuid import UUID
 
 from requests import HTTPError
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.ui.base import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
@@ -17,14 +16,11 @@ TOKEN_HEADER_NAME = "X-Evidently-Token"
 
 
 class CloudMetadataStorage(RemoteMetadataStorage):
-    token: str
-    cookie_name: str
-    _jwt_token: str = PrivateAttr(None)
-    _logged_in: bool = PrivateAttr(False)
-
     def __init__(self, base_url: str, token: str, cookie_name: str):
         self.token = token
         self.cookie_name = cookie_name
+        self._jwt_token = None
+        self._logged_in: bool = False
         super().__init__(base_url=base_url)
 
     def _get_jwt_token(self):
