@@ -32,7 +32,6 @@ from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import BlobID
-from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
@@ -43,8 +42,9 @@ from evidently.utils import NumpyEncoder
 
 
 class RemoteMetadataStorage(MetadataStorage):
-    base_url: str
-    secret: Optional[str] = None
+    def __init__(self, base_url: str, secret: Optional[str] = None):
+        self.base_url = base_url
+        self.secret = secret
 
     def _request(
         self,
@@ -145,16 +145,6 @@ class NoopBlobStorage(BlobStorage):
 class NoopDataStorage(DataStorage):
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
-
-    def load_points(
-        self,
-        project_id: ProjectID,
-        filter: ReportFilter,
-        values: List["PanelValue"],
-        timestamp_start: Optional[datetime.datetime],
-        timestamp_end: Optional[datetime.datetime],
-    ) -> DataPoints:
-        return []
 
     def load_test_results(
         self,

@@ -2,8 +2,8 @@ import abc
 from typing import Optional
 
 from litestar import Request
-from pydantic import BaseModel
 
+from evidently._pydantic_compat import BaseModel
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
