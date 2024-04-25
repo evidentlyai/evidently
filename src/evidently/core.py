@@ -117,6 +117,7 @@ class BaseResult(BaseModel):
 
         tags: Set[IncludeTags] = set()
         field_tags: Dict[str, set] = {}
+        extract_as_obj: bool = False
 
     if TYPE_CHECKING:
         __config__: ClassVar[Type[Config]] = Config

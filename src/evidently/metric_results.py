@@ -361,6 +361,7 @@ class HistogramData(MetricResult):
     class Config:
         dict_include = False
         tags = {IncludeTags.Render}
+        extract_as_obj = True
 
     x: pd.Series
     count: pd.Series
