@@ -23,6 +23,7 @@ from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 
 EVIDENTLY_SECRET_ENV = "EVIDENTLY_SECRET"
+SECRET_HEADER_NAME = "evidently-secret"
 
 
 class NoUser(User):
@@ -130,6 +131,3 @@ class NoopAuthManager(AuthManager):
 
     def list_roles(self, entity_type: Optional[EntityType]) -> List[Role]:
         return [self.get_default_role(DefaultRole.OWNER, None)]
-
-
-SECRET_HEADER_NAME = "evidently-secret"

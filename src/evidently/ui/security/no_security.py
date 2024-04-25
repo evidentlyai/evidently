@@ -1,16 +1,12 @@
-import uuid
-
 from litestar import Request
 
 from ..base import User
-from .config import NoSecurityConfig
+from ..components.security import NoSecurityComponent
 from .service import SecurityService
-
-_test_uuid_ = uuid.uuid4()
 
 
 class NoSecurityService(SecurityService):
-    def __init__(self, security_config: NoSecurityConfig):
+    def __init__(self, security_config: NoSecurityComponent):
         self.security_config = security_config
 
     def authenticate(self, request: Request) -> User:

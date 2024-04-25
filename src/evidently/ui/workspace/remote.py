@@ -100,8 +100,9 @@ class RemoteBase:
 
 
 class RemoteMetadataStorage(MetadataStorage, RemoteBase):
-    base_url: str
-    secret: Optional[str] = None
+    def __init__(self, base_url: str, secret: Optional[str] = None):
+        self.base_url = base_url
+        self.secret = secret
 
     def get_url(self):
         return self.base_url

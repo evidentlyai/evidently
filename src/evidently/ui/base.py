@@ -20,7 +20,6 @@ from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
 from evidently.model.dashboard import DashboardInfo
-from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.renderers.notebook_utils import determine_template
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
@@ -213,7 +212,7 @@ class Project(BaseModel):
             self.project_manager.reload_snapshots(self._user_id, self.id)
 
 
-class MetadataStorage(EvidentlyBaseModel, ABC):
+class MetadataStorage(ABC):
     @abstractmethod
     def add_project(self, project: Project, user: User, team: Team, org: Org) -> Project:
         raise NotImplementedError
@@ -261,7 +260,7 @@ class MetadataStorage(EvidentlyBaseModel, ABC):
         raise NotImplementedError
 
 
-class BlobStorage(EvidentlyBaseModel, ABC):
+class BlobStorage(ABC):
     @abstractmethod
     @contextlib.contextmanager
     def open_blob(self, id: BlobID):
@@ -279,7 +278,7 @@ class BlobStorage(EvidentlyBaseModel, ABC):
         return id
 
 
-class DataStorage(EvidentlyBaseModel, ABC):
+class DataStorage(ABC):
     @abstractmethod
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         raise NotImplementedError
@@ -399,7 +398,7 @@ class UserWithRoles(NamedTuple):
     roles: List[Role]
 
 
-class AuthManager(EvidentlyBaseModel):
+class AuthManager(ABC):
     allow_default_user: bool = True
 
     def refresh_default_roles(self):
@@ -578,11 +577,12 @@ class AuthManager(EvidentlyBaseModel):
         raise NotImplementedError
 
 
-class ProjectManager(EvidentlyBaseModel):
-    metadata: MetadataStorage
-    blob: BlobStorage
-    data: DataStorage
-    auth: AuthManager
+class ProjectManager:
+    def __init__(self, metadata: MetadataStorage, blob: BlobStorage, data: DataStorage, auth: AuthManager):
+        self.metadata: MetadataStorage = metadata
+        self.blob: BlobStorage = blob
+        self.data: DataStorage = data
+        self.auth: AuthManager = auth
 
     def create_project(
         self,

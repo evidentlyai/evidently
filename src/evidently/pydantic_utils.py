@@ -2,7 +2,9 @@ import hashlib
 import itertools
 import json
 import os
+import warnings
 from enum import Enum
+from functools import lru_cache
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -27,7 +29,6 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
-    from evidently._pydantic_compat import Model
     from evidently.core import IncludeTags
 T = TypeVar("T")
 
@@ -110,18 +111,56 @@ ALLOWED_TYPE_PREFIXES = ["evidently."]
 EVIDENTLY_TYPE_PREFIXES_ENV = "EVIDENTLY_TYPE_PREFIXES"
 ALLOWED_TYPE_PREFIXES.extend([p for p in os.environ.get(EVIDENTLY_TYPE_PREFIXES_ENV, "").split(",") if p])
 
-TYPE_ALIASES: Dict[str, Type["PolymorphicModel"]] = {}
+TYPE_ALIASES: Dict[Tuple[Type["PolymorphicModel"], str], str] = {}
+LOADED_TYPE_ALIASES: Dict[Tuple[Type["PolymorphicModel"], str], Type["PolymorphicModel"]] = {}
+
+
+def register_type_alias(base_class: Type["PolymorphicModel"], classpath: str, alias: str):
+    key = (base_class, alias)
+
+    if key in TYPE_ALIASES and TYPE_ALIASES[key] != classpath:
+        warnings.warn(f"Duplicate key {key} in alias map")
+    TYPE_ALIASES[key] = classpath
+
+
+def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["PolymorphicModel"], alias: str):
+    if not issubclass(cls, base_class):
+        raise ValueError(f"Cannot register alias: {cls.__name__} is not subclass of {base_class.__name__}")
+
+    key = (base_class, alias)
+    if key in TYPE_ALIASES and TYPE_ALIASES[key] != cls:
+        warnings.warn(f"Duplicate key {key} in alias map")
+    LOADED_TYPE_ALIASES[key] = cls
+
+
+@lru_cache()
+def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
+    for cls_ in cls.mro():
+        if not issubclass(cls_, PolymorphicModel):
+            continue
+        config = cls_.__dict__.get("Config")
+        if config is not None and config.__dict__.get("is_base_type", False):
+            return cls_
+    return PolymorphicModel
+
+
+TPM = TypeVar("TPM", bound="PolymorphicModel")
 
 
 class PolymorphicModel(BaseModel):
     class Config:
         type_alias: ClassVar[Optional[str]] = None
+        is_base_type: ClassVar[bool] = False
 
     @classmethod
     def __get_type__(cls):
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
+        return cls.__get_classpath__()
+
+    @classmethod
+    def __get_classpath__(cls):
         return f"{cls.__module__}.{cls.__name__}"
 
     type: str = Field("")
@@ -132,22 +171,27 @@ class PolymorphicModel(BaseModel):
             return
         typename = cls.__get_type__()
         cls.__fields__["type"].default = typename
-        TYPE_ALIASES[typename] = cls
+        register_loaded_alias(get_base_class(cls), cls, typename)
 
     @classmethod
     def __subtypes__(cls):
         return Union[tuple(all_subclasses(cls))]
 
     @classmethod
-    def validate(cls: Type["Model"], value: Any) -> "Model":
+    def validate(cls: Type[TPM], value: Any) -> TPM:
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
-            if typename in TYPE_ALIASES:
-                subcls = TYPE_ALIASES[typename]
+            key = (get_base_class(cls), typename)  # type: ignore[arg-type]
+            if key in LOADED_TYPE_ALIASES:
+                subcls = LOADED_TYPE_ALIASES[key]
             else:
-                if not any(typename.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
-                    raise ValueError(f"{typename} does not match any allowed prefixes")
-                subcls = import_string(typename)
+                if key in TYPE_ALIASES:
+                    classpath = TYPE_ALIASES[key]
+                else:
+                    classpath = typename
+                if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
+                    raise ValueError(f"{classpath} does not match any allowed prefixes")
+                subcls = import_string(classpath)
             return subcls.validate(value)
         return super().validate(value)  # type: ignore[misc]
 
