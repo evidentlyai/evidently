@@ -133,15 +133,20 @@ class DashboardPanelHist(DashboardPanel):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
-        bins_for_hist: Dict[datetime.datetime, HistogramData] = data_storage.load_points_as_dict(
-            project_id, self.filter, self.value, timestamp_start, timestamp_end
-        )
+        bins_for_hists: Dict[Metric, List[Tuple[datetime.datetime, HistogramData]]] = data_storage.load_points_as_type(
+            HistogramData, project_id, self.filter, [self.value], timestamp_start, timestamp_end
+        )[0]
+        if len(bins_for_hists) == 0:
+            raise ValueError(f"Cannot build hist from {self.value}")
+        if len(bins_for_hists) > 1:
+            raise ValueError(f"Ambiguious metrics for {self.value}")
+        bins_for_hist: List[Tuple[datetime.datetime, HistogramData]] = next(iter(bins_for_hists.values()))
 
         timestamps: List[datetime.datetime] = []
         names: Set[str] = set()
         values: List[Dict[str, Any]] = []
 
-        for timestamp, hist in bins_for_hist.items():
+        for timestamp, hist in bins_for_hist:
             timestamps.append(timestamp)
             data = dict(zip(hist.x, hist.count))
             names.update(data.keys())
@@ -155,6 +160,5 @@ class DashboardPanelHist(DashboardPanel):
         fig = go.Figure(data=[go.Bar(name=name, x=timestamps, y=name_to_date_value.get(name)) for name in names])
         # Change the bar mode
         fig.update_layout(barmode="stack")
-        fig.show()
 
         return plotly_figure(title=self.title, figure=fig, size=self.size)

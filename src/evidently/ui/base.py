@@ -9,6 +9,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Type
+from typing import TypeVar
 from typing import Union
 from uuid import UUID
 
@@ -32,8 +34,9 @@ from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
-from evidently.ui.type_aliases import DataPointsAsDict
+from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
@@ -262,12 +265,14 @@ class BlobStorage(EvidentlyBaseModel, ABC):
         return id
 
 
+PT = TypeVar("PT")
+
+
 class DataStorage(EvidentlyBaseModel, ABC):
     @abstractmethod
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         raise NotImplementedError
 
-    @abstractmethod
     def load_points(
         self,
         project_id: ProjectID,
@@ -276,7 +281,7 @@ class DataStorage(EvidentlyBaseModel, ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPoints:
-        raise NotImplementedError
+        return self.load_points_as_type(float, project_id, filter, values, timestamp_start, timestamp_end)
 
     @abstractmethod
     def load_test_results(
@@ -291,14 +296,15 @@ class DataStorage(EvidentlyBaseModel, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def load_points_as_dict(
+    def load_points_as_type(
         self,
+        cls: Type[PointType],
         project_id: ProjectID,
         filter: "ReportFilter",
-        value: "PanelValue",
+        values: List["PanelValue"],
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
-    ) -> DataPointsAsDict:
+    ) -> DataPointsAsType[PointType]:
         raise NotImplementedError
 
 

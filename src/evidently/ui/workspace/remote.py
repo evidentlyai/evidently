@@ -9,6 +9,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Type
 from urllib.error import HTTPError
 
 import requests
@@ -32,7 +33,8 @@ from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
-from evidently.ui.type_aliases import DataPointsAsDict
+from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
@@ -165,15 +167,16 @@ class NoopDataStorage(DataStorage):
     ) -> TestResultPoints:
         return {}
 
-    def load_points_as_dict(
+    def load_points_as_type(
         self,
+        cls: Type[PointType],
         project_id: ProjectID,
         filter: "ReportFilter",
-        value: "PanelValue",
+        values: List["PanelValue"],
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
-    ) -> DataPointsAsDict:
-        return {}
+    ) -> DataPointsAsType[PointType]:
+        return []
 
 
 class RemoteWorkspaceView(WorkspaceView):

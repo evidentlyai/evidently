@@ -1,9 +1,9 @@
 import datetime
 import uuid
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import TypeVar
 from typing import Union
 
 from evidently.base_metric import Metric
@@ -20,6 +20,7 @@ STR_UUID = Union[str, uuid.UUID]
 PanelID = uuid.UUID
 TabID = uuid.UUID
 
-DataPoints = List[Dict[Metric, List[Tuple[datetime.datetime, Any]]]]
 TestResultPoints = Dict[datetime.datetime, Dict[Test, TestStatus]]
-DataPointsAsDict = Dict[datetime.date, Dict[str, Any]]
+PointType = TypeVar("PointType")
+DataPointsAsType = List[Dict[Metric, List[Tuple[datetime.datetime, PointType]]]]
+DataPoints = DataPointsAsType[float]
