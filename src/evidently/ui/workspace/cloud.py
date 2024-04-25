@@ -46,17 +46,14 @@ ACCESS_TOKEN_COOKIE = Cookie(
 
 
 class CloudMetadataStorage(RemoteMetadataStorage):
-    token: str
-    token_cookie_name: str
-    org_id: OrgID
-    org_id_cookie_name: str
-
     _jwt_token: str = PrivateAttr(None)
     _logged_in: bool = PrivateAttr(False)
 
-    def __init__(self, base_url: str, token: str, cookie_name: str):
+    def __init__(self, base_url: str, token: str, token_cookie_name: str, org_id: OrgID, org_id_cookie_name: str):
+        self.org_id_cookie_name = org_id_cookie_name
+        self.org_id = org_id
         self.token = token
-        self.cookie_name = cookie_name
+        self.token_cookie_name = token_cookie_name
         super().__init__(base_url=base_url)
 
     def _get_jwt_token(self):
@@ -162,7 +159,7 @@ class CloudWorkspace(WorkspaceView):
             base_url=self.url,
             token=self.token,
             token_cookie_name=ACCESS_TOKEN_COOKIE.key,
-            org_id=org_id or ZERO_UUID,
+            org_id=org_id_uuid or ZERO_UUID,
             org_id_cookie_name=ORG_ID_COOKIE.key,
         )
 
