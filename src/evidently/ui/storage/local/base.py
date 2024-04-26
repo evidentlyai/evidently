@@ -44,6 +44,7 @@ from evidently.ui.type_aliases import TestResultPoints
 from evidently.utils import NumpyEncoder
 
 SNAPSHOTS = "snapshots"
+TMP_DATASETS = "loading_datasets"
 METADATA_PATH = "metadata.json"
 
 
@@ -113,6 +114,16 @@ class FSSpecBlobStorage(BlobStorage):
         with self.location.open(path, "w") as f:
             f.write(obj)
         return path
+
+    def put_bytes(self, path: str, obj: bytes) -> str:
+        self.location.makedirs(posixpath.dirname(path))
+        with self.location.open(path, "wb") as f:
+            f.write(obj)
+        return path
+
+    @staticmethod
+    def get_dataset_blob_id(project_id: ProjectID, ds_id: str) -> BlobID:
+        return posixpath.join(TMP_DATASETS, str(project_id), ds_id)
 
 
 def load_project(location: FSLocation, path: str) -> Optional[Project]:

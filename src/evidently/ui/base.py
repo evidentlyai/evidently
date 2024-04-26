@@ -1,6 +1,7 @@
 import contextlib
 import datetime
 import json
+import time
 import uuid
 from abc import ABC
 from abc import abstractmethod
@@ -262,6 +263,24 @@ class BlobStorage(ABC):
         id = self.get_snapshot_blob_id(project_id, snapshot)
         self.put_blob(id, json.dumps(snapshot.dict(), cls=NumpyEncoder))
         return id
+
+    @staticmethod
+    def get_dataset_blob_id(project_id: ProjectID, ds_id: str) -> BlobID:
+        return ds_id
+
+    def put_bytes(self, path: str, obj: bytes) -> str:
+        pass
+
+    @staticmethod
+    def get_tmp_file_name(user_id: UserID, filename: str):
+        timestamp = int(time.time())
+        return f"{user_id}-{filename}-{timestamp}"
+
+    def put_dataset(self, user_id: UserID, project_id: ProjectID, filename: str, data: bytes) -> BlobID:
+        ds_id = self.get_tmp_file_name(user_id, filename)
+        path = self.get_dataset_blob_id(project_id, ds_id)
+        self.put_bytes(path, data)
+        return ds_id
 
 
 class DataStorage(ABC):
