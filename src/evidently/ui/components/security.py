@@ -1,6 +1,5 @@
 import uuid
 from abc import ABC
-from typing import ClassVar
 from typing import Dict
 from typing import Optional
 
@@ -25,8 +24,6 @@ from evidently.ui.type_aliases import UserID
 
 
 class SecurityComponent(Component, ABC):
-    add_security_middleware: ClassVar[bool] = True
-
     class Config:
         is_base_type = True
 
@@ -42,6 +39,8 @@ class SecurityComponent(Component, ABC):
                 auth = security.authenticate(request)
                 if auth is None:
                     scope["auth"] = {
+                        "user_id": None,
+                        "org_id": None,
                         "authenticated": False,
                     }
                 else:
@@ -55,11 +54,6 @@ class SecurityComponent(Component, ABC):
             return middleware
 
         return auth_middleware_factory
-
-    def get_middlewares(self, ctx: ComponentContext):
-        if self.add_security_middleware:
-            return [self.get_security_middleware(ctx)]
-        return []
 
     def get_auth_guard(self):
         def is_authenticated(connection: ASGIConnection, _: BaseRouteHandler) -> None:

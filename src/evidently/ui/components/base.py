@@ -36,7 +36,14 @@ class AppBuilder:
         self.kwargs: Dict[str, Any] = {}
 
     def build_api_router(self):
-        return Router(path="/api", route_handlers=self.api_route_handlers)
+        from evidently.ui.config import ConfigContext
+
+        assert isinstance(self.context, ConfigContext)
+        return Router(
+            path="/api",
+            route_handlers=self.api_route_handlers,
+            middleware=[self.context.config.security.get_security_middleware(self.context)],
+        )
 
     def build(self) -> Litestar:
         api_router = self.build_api_router()
