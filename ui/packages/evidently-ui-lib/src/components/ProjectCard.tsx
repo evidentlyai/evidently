@@ -29,15 +29,16 @@ const editProjectInfoSchema = z.object({
   description: z.string()
 })
 
-export const EditProjectInfoForm = ({
+const EditProjectInfoForm = ({
   project,
-  disabled,
   action
 }: {
-  action?: string
+  action: string
   project: Partial<ProjectInfo>
-  disabled: boolean
 }) => {
+  const navigation = useNavigation()
+  const isDisabled = navigation.state !== 'idle'
+
   const {
     setFocus,
     register,
@@ -79,7 +80,7 @@ export const EditProjectInfoForm = ({
             { method: 'put', replace: true, encType: 'application/json' }
           )
         )}
-        style={{ opacity: disabled ? 0.5 : 1 }}
+        style={{ opacity: isDisabled ? 0.5 : 1 }}
       >
         {/* name */}
         <TextField
@@ -90,7 +91,7 @@ export const EditProjectInfoForm = ({
           InputProps={{
             style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
           }}
-          disabled={disabled}
+          disabled={isDisabled}
           variant="standard"
         ></TextField>
         {/* description */}
@@ -99,7 +100,7 @@ export const EditProjectInfoForm = ({
           error={Boolean(errors.description)}
           helperText={errors.description?.message}
           placeholder="Description"
-          disabled={disabled}
+          disabled={isDisabled}
           fullWidth
           // this `multiline` below causes Material-UI: Too many re-renders
           // multiline
@@ -110,7 +111,7 @@ export const EditProjectInfoForm = ({
           <Button
             variant="outlined"
             disabled={
-              disabled ||
+              isDisabled ||
               // we didn't touch any fields
               Object.keys(dirtyFields).length === 0 ||
               // error here
@@ -141,12 +142,17 @@ const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
   )
 }
 
-interface projectProps {
+interface ProjectProps {
   project: ProjectInfo
-  children?: React.ReactNode
+  EditComponent?: React.FC<{ project: Partial<ProjectInfo>; action: string }>
+  InfoComponent?: React.FC<{ project: Partial<ProjectInfo> }>
 }
 
-export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
+export const ProjectCard: React.FC<ProjectProps> = ({
+  project,
+  EditComponent = EditProjectInfoForm,
+  InfoComponent = ProjectInfoCard
+}) => {
   const [isEditMode, setEditMode] = useState(false)
 
   const navigation = useNavigation()
@@ -198,11 +204,11 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
           </IconButton>
 
           <ToggleButton
+            disabled={isDisabled}
             color="primary"
             value={'edit-mode'}
             selected={isEditMode}
             size="small"
-            disabled={isDisabled}
             sx={{ border: 'none', borderRadius: '50%' }}
             onChange={() => setEditMode((mode) => !mode)}
           >
@@ -211,24 +217,16 @@ export const ProjectCard: React.FC<projectProps> = ({ project, children }) => {
         </Box>
       </Box>
 
-      {children}
-
       {isEditMode ? (
-        <EditProjectInfoForm project={project} disabled={isDisabled} />
+        <EditComponent project={project} action={'edit-project'} />
       ) : (
-        <ProjectInfoCard project={project} />
+        <InfoComponent project={project} />
       )}
     </Paper>
   )
 }
 
-export const AddNewProjectButton = ({
-  project,
-  children
-}: {
-  project?: Partial<ProjectInfo>
-  children?: React.ReactNode
-}) => {
+export const AddNewProjectButton = () => {
   const [on, toggle] = useToggle(false)
   const [wasSubmitting, toggleSubmitting] = useToggle(false)
   const navigation = useNavigation()
@@ -252,11 +250,11 @@ export const AddNewProjectButton = ({
       <Box display={'flex'} justifyContent={'center'}>
         <Tooltip title="Create new project">
           <ToggleButton
+            size="small"
+            selected={on}
             disabled={isDisabled}
             color="primary"
             value={'check'}
-            selected={on}
-            size="small"
             sx={{ border: 'none', borderRadius: '50%' }}
             onChange={() => toggle()}
           >
@@ -267,10 +265,8 @@ export const AddNewProjectButton = ({
 
       {on && (
         <Box p={3} display={'flex'} flexDirection={'column'} rowGap={1}>
-          {children}
           <EditProjectInfoForm
-            project={project || { name: '', description: '' }}
-            disabled={isDisabled}
+            project={{ name: '', description: '' }}
             action="create-new-project"
           />
         </Box>
