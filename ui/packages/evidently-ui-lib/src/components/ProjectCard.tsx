@@ -29,7 +29,7 @@ const editProjectInfoSchema = z.object({
   description: z.string()
 })
 
-const EditProjectInfoForm = ({
+export const EditProjectInfoForm = ({
   project,
   action
 }: {
@@ -129,7 +129,7 @@ const EditProjectInfoForm = ({
   )
 }
 
-const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
+export const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
   return (
     <>
       <Link component={RouterLink} to={`projects/${project.id}`}>
