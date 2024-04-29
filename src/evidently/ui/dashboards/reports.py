@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -122,8 +123,16 @@ class DashboardPanelCounter(DashboardPanel):
         raise ValueError(f"Unknown agg type {self.agg}")
 
 
+class HistBarMode(Enum):
+    STACK = "stack"
+    GROUP = "group"
+    OVERLAY = "overlay"
+    RELATIVE = "relative"
+
+
 class DashboardPanelHist(DashboardPanel):
     value: PanelValue
+    barmode: HistBarMode = HistBarMode.STACK
 
     @assign_panel_id
     def build(
@@ -156,9 +165,19 @@ class DashboardPanelHist(DashboardPanel):
         for timestamp, data in zip(timestamps, values):
             for name in names:
                 name_to_date_value[name].append(data.get(name))
-
-        fig = go.Figure(data=[go.Bar(name=name, x=timestamps, y=name_to_date_value.get(name)) for name in names])
+        hovertemplate = "<b>{name}: %{{y}}</b><br><b>Timestamp: %{{x}}</b>"
+        fig = go.Figure(
+            data=[
+                go.Bar(
+                    name=name,
+                    x=timestamps,
+                    y=name_to_date_value.get(name),
+                    hovertemplate=hovertemplate.format(name=name),
+                )
+                for name in names
+            ]
+        )
         # Change the bar mode
-        fig.update_layout(barmode="stack")
+        fig.update_layout(barmode=self.barmode.value)
 
         return plotly_figure(title=self.title, figure=fig, size=self.size)
