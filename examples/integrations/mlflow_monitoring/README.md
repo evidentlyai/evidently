@@ -58,21 +58,7 @@ pip install -r requirements.txt
 ```
 
 
-### 3. Setup Jupyter Notebooks (optional)
-
-In case you are also interested in Evidently Dashboard visualization in Jupyter install jupyter nbextention:
-```bash 
-jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
-```
-
-And activate it:
-```bash 
-jupyter nbextension enable evidently --py --sys-prefix
-```
-More details: https://docs.evidentlyai.com/install-evidently 
-
-
-### 4 - Download data
+### 3 - Download data
 
 This is a preparation step. Load data from [https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) to the `data/` directory
 

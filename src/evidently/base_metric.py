@@ -214,8 +214,15 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
         self.options = Options.from_any_options(options)
         super().__init__(**data)
 
-    def get_id(self) -> str:
-        return self.__class__.__name__
+    @classmethod
+    def get_id(cls) -> str:
+        return cls.__name__
+
+    @classmethod
+    def get_group(cls) -> str:
+        if cls.__module__.startswith("evidently.metrics."):
+            return cls.__module__.split(".")[2]
+        return ""
 
     @abc.abstractmethod
     def calculate(self, data: InputData) -> TResult:
@@ -268,6 +275,12 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
 
 
 class ColumnMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "column_name": {IncludeTags.Parameter},
+            "column_type": {IncludeTags.Parameter},
+        }
+
     column_name: str
     # todo: use enum
     column_type: str

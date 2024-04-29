@@ -38,9 +38,9 @@ Here is the general workflow:
 git clone https://github.com/evidentlyai/evidently.git
 ```
 
-## 2. (Optional, but recommended!) Create virtual environment with python 3.7
+## 2. (Optional, but recommended!) Create virtual environment with python 3.8
 
-Note: Since evidently v0.2.2 python 3.7 is the earliest version we support.
+Note: Since evidently v0.4.16 python 3.8 is the earliest version we support.
 Although you probably use one of the most recent python version, it is important to make sure that your changes do not cause any issues in older python versions. This is why we suggest you to test them under the oldest supported python version.
 
 #### MacOS / Linux
@@ -84,30 +84,23 @@ pip install -e .[dev]
 
 ## 5. Run formatters, linters, unit tests
 
-### Running black
+### Installing pre-commit hook
 
-We use black for code auto formatting.
+We use pre-commit hook that runs all the needed checks. To install it, run
 
 ```sh
-black -l 120 -t py37 src
-black -l 120 -t py37 tests
+pre-commit install
 ```
 
-### Running isort
+But you can run all the checks manually.
 
-We use black for imports auto formatting.
+### Running ruff
 
-```sh
-isort .
-```
-
-### Running flake8
-
-We use flake8 for code style checks.
+We use ruff for code linting and formatting.
 
 ```sh
-flake8 src
-flake8 tests
+ruff check
+ruff format
 ```
 
 ### Running mypy

@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+import warnings
 from enum import Enum
 from typing import Collection
 from typing import Dict
@@ -11,11 +12,13 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently._pydantic_compat import BaseModel
 from evidently.core import ColumnType
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.column_mapping import RecomType
 from evidently.pipeline.column_mapping import TargetNames
 from evidently.pipeline.column_mapping import TaskType
+from evidently.pydantic_utils import EnumValueMixin
 
 
 @dataclasses.dataclass
@@ -24,16 +27,24 @@ class _InputData:
     current: pd.DataFrame
 
 
-@dataclasses.dataclass
-class ColumnDefinition:
+class ColumnDefinition(BaseModel):
     column_name: str
     column_type: ColumnType
 
+    def __init__(self, column_name: str, column_type: ColumnType):
+        super().__init__(column_name=column_name, column_type=column_type)
 
-@dataclasses.dataclass
-class PredictionColumns:
+
+class PredictionColumns(BaseModel):
     predicted_values: Optional[ColumnDefinition] = None
     prediction_probas: Optional[List[ColumnDefinition]] = None
+
+    def __init__(
+        self,
+        predicted_values: Optional[ColumnDefinition] = None,
+        prediction_probas: Optional[List[ColumnDefinition]] = None,
+    ):
+        super().__init__(predicted_values=predicted_values, prediction_probas=prediction_probas)
 
     def get_columns_list(self) -> List[ColumnDefinition]:
         result = [self.predicted_values]
@@ -53,110 +64,64 @@ def _check_filter(
     return column.column_type == filter_def and column.column_name not in utility_columns
 
 
-@dataclasses.dataclass
-class DataDefinition:
-    _columns: Dict[str, ColumnDefinition]
-    _target: Optional[ColumnDefinition]
-    _prediction_columns: Optional[PredictionColumns]
-    _id_column: Optional[ColumnDefinition]
-    _datetime_column: Optional[ColumnDefinition]
-    _embeddings: Optional[Dict[str, List[str]]]
-    _user_id: Optional[ColumnDefinition]
-    _item_id: Optional[ColumnDefinition]
+class DataDefinition(EnumValueMixin):
+    columns: Dict[str, ColumnDefinition]
+    target: Optional[ColumnDefinition]
+    prediction_columns: Optional[PredictionColumns]
+    id_column: Optional[ColumnDefinition]
+    datetime_column: Optional[ColumnDefinition]
+    embeddings: Optional[Dict[str, List[str]]]
+    user_id: Optional[ColumnDefinition]
+    item_id: Optional[ColumnDefinition]
 
-    _task: Optional[str]
-    _classification_labels: Optional[TargetNames]
-    _reference_present: bool
-    _recommendations_type: Optional[RecomType]
-
-    def __init__(
-        self,
-        columns: List[ColumnDefinition],
-        target: Optional[ColumnDefinition],
-        prediction_columns: Optional[PredictionColumns],
-        id_column: Optional[ColumnDefinition],
-        datetime_column: Optional[ColumnDefinition],
-        embeddings: Optional[Dict[str, List[str]]],
-        user_id: Optional[ColumnDefinition],
-        item_id: Optional[ColumnDefinition],
-        task: Optional[str],
-        classification_labels: Optional[TargetNames],
-        reference_present: bool,
-        recommendations_type: Union[RecomType, str, None],
-    ):
-        self._columns = {column.column_name: column for column in columns}
-        self._id_column = id_column
-        self._datetime_column = datetime_column
-        self._task = task
-        self._target = target
-        self._prediction_columns = prediction_columns
-        self._item_id = item_id
-        self._user_id = user_id
-        self._classification_labels = classification_labels
-        self._embeddings = embeddings
-        self._reference_present = reference_present
-        self._recommendations_type = (
-            recommendations_type if not isinstance(recommendations_type, str) else RecomType(recommendations_type)
-        )
+    task: Optional[str]
+    classification_labels: Optional[TargetNames]
+    reference_present: bool
+    recommendations_type: Optional[RecomType]
 
     def get_column(self, column_name: str) -> ColumnDefinition:
-        return self._columns[column_name]
+        return self.columns[column_name]
 
     def get_columns(self, filter_def: ColumnType = None, features_only: bool = False) -> List[ColumnDefinition]:
-        if self._prediction_columns is not None:
-            prediction = self._prediction_columns.get_columns_list()
+        if self.prediction_columns is not None:
+            prediction = self.prediction_columns.get_columns_list()
         else:
             prediction = []
         utility_columns = [
             col.column_name
             for col in [
-                self._id_column,
-                self._datetime_column,
-                self._target,
-                self._user_id,
-                self._item_id,
+                self.id_column,
+                self.datetime_column,
+                self.target,
+                self.user_id,
+                self.item_id,
                 *prediction,
             ]
             if col is not None
         ]
         return [
             column
-            for column in self._columns.values()
+            for column in self.columns.values()
             if _check_filter(column, utility_columns, filter_def, features_only)
         ]
 
     def get_target_column(self) -> Optional[ColumnDefinition]:
-        return self._target
+        return self.target
 
     def get_prediction_columns(self) -> Optional[PredictionColumns]:
-        return self._prediction_columns
+        return self.prediction_columns
 
     def get_id_column(self) -> Optional[ColumnDefinition]:
-        return self._id_column
+        return self.id_column
 
     def get_user_id_column(self) -> Optional[ColumnDefinition]:
-        return self._user_id
+        return self.user_id
 
     def get_item_id_column(self) -> Optional[ColumnDefinition]:
-        return self._item_id
+        return self.item_id
 
     def get_datetime_column(self) -> Optional[ColumnDefinition]:
-        return self._datetime_column
-
-    def task(self) -> Optional[str]:
-        return self._task
-
-    def classification_labels(self) -> Optional[TargetNames]:
-        return self._classification_labels
-
-    def embeddings(self) -> Optional[Dict]:
-        return self._embeddings
-
-    def reference_present(self) -> bool:
-        return self._reference_present
-
-    def recommendations_type(self) -> Optional[RecomType]:
-        return self._recommendations_type
+        return self.datetime_column
 
 
 def _process_column(
@@ -266,7 +231,7 @@ def create_data_definition(
     embeddings: Optional[Dict[str, List[str]]] = None
     if mapping.embeddings is not None:
         embeddings = dict()
-        for (embedding_name, columns) in mapping.embeddings.items():
+        for embedding_name, columns in mapping.embeddings.items():
             embeddings[embedding_name] = []
             for column in columns:
                 presence = _get_column_presence(column, data)
@@ -468,10 +433,16 @@ def create_data_definition(
         labels = list(data.current[target_column.column_name].unique())
         if data.reference is not None:
             labels = list(set(labels) | set(data.reference[target_column.column_name].unique()))
+        if None in labels:
+            warnings.warn(
+                f"Target column '{target_column.column_name}' contains 'None' values, which is not supported as label value"
+            )
+            labels = [v for v in labels if v is not None]
     recommendations_type = mapping.recommendations_type or RecomType.SCORE
 
+    classification_labels = mapping.target_names or labels
     return DataDefinition(
-        columns=[col for col in all_columns if col is not None],
+        columns={col.column_name: col for col in all_columns if col is not None},
         id_column=id_column,
         user_id=user_id,
         item_id=item_id,
@@ -479,7 +450,7 @@ def create_data_definition(
         target=target_column,
         prediction_columns=prediction_columns,
         task=task,
-        classification_labels=mapping.target_names or labels,
+        classification_labels=classification_labels,
         embeddings=embeddings,
         reference_present=reference_data is not None,
         recommendations_type=recommendations_type,

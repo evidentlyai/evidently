@@ -1,15 +1,17 @@
-In this tutorial, you will monitor a toy ML model using Evidently Cloud. 
+In this tutorial, you will monitor a toy ML model using Evidently Cloud and learn the core workflows. 
 
-It will take 1 minute to launch a demo dashboard and 10 minutes to complete the tutorial for a new dataset. You must have basic knowledge of Python to work with Evidently Cloud using the API. 
+It will take you 15 minutes to launch a demo dashboard and complete the tutorial for a new dataset. You must have basic knowledge of Python to work with Evidently Cloud using the API. 
+
+Have only a couple of minutes? Check this [Evidently Cloud "Hello World"](quickstart-cloud.md) instead.
 
 # Part 1. Demo dashboard
 
 ## 1. Create an account
 
-Evidently Cloud is in private beta. Once you get the registration link from us, create your account and confirm the email.
+Evidently Cloud is currently in beta. 
 
 {% hint style="success" %}
-**Can I try Evidently Cloud?** To request a free trial, fill out [this form](https://www.evidentlyai.com/cloud-signup).
+**Can I try Evidently Cloud?** To start your free trial, [create an account](https://app.evidently.cloud/signup).
 {% endhint %}
 
 <details>
@@ -252,9 +254,9 @@ Let's add the monitoring panels. You can:
 * Choose between panel types, including Line Plot, Bar Plot, Histogram, etc.
 * Create multiple panels and organize them using tabs.
 
-You can create the tabs and panels from the user interface or do it programmatically. 
+You can create the tabs and panels from the user interface or do it programmatically. You can choose between pre-built tabs or design your own combination of panels.
 
-Let's first explore the API route. We will keep it simple and add three panels to a single "Summary" tab. Say, you want track:
+Let's first explore the API route for custom panel combination. We will keep it simple and add three panels to a single "Summary" tab. Say, you want track:
 * the number of rows (inferences)
 * the share of drifting features, and
 * the mean value of a specific column (e.g. named "capital-gain" ).
@@ -331,10 +333,6 @@ You can also add or delete tabs and individual panels from the UI. To make chang
 To add a new panel from the UI, choose the "add panel" button as shown below. Note that you can only add values from the metrics captured inside the snapshots - in our example, those related to data drift and data quality. (For example, you cannot yet add values related to model quality).
 
 ![](../.gitbook/assets/cloud/add_new_panel_2.gif)
-
-{% hint style="info" %}
-**Coming soon**: We are working on adding templates and further simplifying adding new panels from the UI.
-{% endhint %}
 
 ## 8. (Optional) Monitor Test results
 

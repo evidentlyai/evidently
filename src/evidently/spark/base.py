@@ -79,7 +79,7 @@ def create_data_definition_spark(
     embeddings: Optional[Dict[str, List[str]]] = None
     if mapping.embeddings is not None:
         embeddings = dict()
-        for (embedding_name, columns) in mapping.embeddings.items():
+        for embedding_name, columns in mapping.embeddings.items():
             embeddings[embedding_name] = []
             for column in columns:
                 presence = _get_column_presence_spark(column, data)
@@ -274,7 +274,7 @@ def create_data_definition_spark(
     return DataDefinition(
         user_id=ColumnDefinition(mapping.user_id, ColumnType.Id) if mapping.user_id is not None else None,
         item_id=ColumnDefinition(mapping.item_id, ColumnType.Id) if mapping.item_id is not None else None,
-        columns=[col for col in all_columns if col is not None],
+        columns={col.column_name: col for col in all_columns if col is not None},
         id_column=id_column,
         datetime_column=datetime_column,
         target=target_column,

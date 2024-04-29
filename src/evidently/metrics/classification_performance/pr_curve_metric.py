@@ -8,6 +8,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import IncludeTags
 from evidently.metric_results import PRCurve
 from evidently.metric_results import PRCurveData
 from evidently.metric_results import PredictionData
@@ -24,6 +25,8 @@ from evidently.utils.data_operations import process_columns
 class ClassificationPRCurveResults(MetricResult):
     class Config:
         pd_include = False
+
+        field_tags = {"current_pr_curve": {IncludeTags.Current}, "reference_pr_curve": {IncludeTags.Reference}}
 
     current_pr_curve: Optional[PRCurve] = None
     reference_pr_curve: Optional[PRCurve] = None
@@ -66,7 +69,6 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
             for label in labels:
-
                 pr, rcl, thrs = metrics.precision_recall_curve(
                     binaraized_target[label],
                     prediction.prediction_probas[label],

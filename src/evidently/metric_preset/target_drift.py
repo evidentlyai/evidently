@@ -78,7 +78,7 @@ class TargetDriftPreset(MetricPreset):
 
             stattest, threshold = resolve_stattest_threshold(
                 target.column_name,
-                "cat" if data_definition.task() == TaskType.CLASSIFICATION_TASK else "num",
+                "cat" if data_definition.task == TaskType.CLASSIFICATION_TASK else "num",
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
@@ -98,7 +98,7 @@ class TargetDriftPreset(MetricPreset):
                 )
             )
 
-            if data_definition.task() == TaskType.REGRESSION_TASK:
+            if data_definition.task == TaskType.REGRESSION_TASK:
                 result.append(ColumnValuePlot(column_name=target.column_name))
 
             result.append(ColumnCorrelationsMetric(column_name=target.column_name))
@@ -107,7 +107,7 @@ class TargetDriftPreset(MetricPreset):
             columns_by_target.append(prediction.predicted_values.column_name)
             stattest, threshold = resolve_stattest_threshold(
                 prediction.predicted_values.column_name,
-                "cat" if data_definition.task() == TaskType.CLASSIFICATION_TASK else "num",
+                "cat" if data_definition.task == TaskType.CLASSIFICATION_TASK else "num",
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,

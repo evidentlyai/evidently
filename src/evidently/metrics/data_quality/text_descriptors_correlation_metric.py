@@ -10,6 +10,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import calculate_numerical_correlation
 from evidently.core import ColumnType
 from evidently.core import ColumnType as ColumnType_data
+from evidently.core import IncludeTags
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import TextLength
@@ -30,6 +31,11 @@ from evidently.utils.data_preprocessing import DataDefinition
 class TextDescriptorsCorrelationMetricResult(MetricResult):
     class Config:
         pd_include = False
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+        }
 
     column_name: str
     current: Dict[str, Dict[str, ColumnCorrelations]]

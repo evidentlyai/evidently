@@ -1,5 +1,4 @@
-from starlette.responses import JSONResponse
-from starlette.responses import Response
+from litestar import Response
 
 
 class EvidentlyServiceError(Exception):
@@ -11,7 +10,7 @@ class EntityNotFound(EvidentlyServiceError):
     entity_name: str = ""
 
     def to_response(self) -> Response:
-        return JSONResponse(
+        return Response(
             status_code=404,
             content={"detail": f"{self.entity_name} not found"},
         )
@@ -31,7 +30,7 @@ class UserNotFound(EntityNotFound):
 
 class NotEnoughPermissions(EvidentlyServiceError):
     def to_response(self) -> Response:
-        return JSONResponse(
+        return Response(
             status_code=403,
             content={"detail": "Not enough permissions"},
         )
@@ -39,7 +38,7 @@ class NotEnoughPermissions(EvidentlyServiceError):
 
 class NotAuthorized(EvidentlyServiceError):
     def to_response(self) -> Response:
-        return JSONResponse(
+        return Response(
             status_code=401,
             content={"detail": "Not authorized"},
         )

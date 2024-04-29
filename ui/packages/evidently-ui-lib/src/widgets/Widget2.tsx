@@ -70,18 +70,25 @@ const Widget2 = (props: WidgetProps) => {
       // className={classes.widget}
     >
       <Card
-        // className={classes.widgetInner}
-        square
-        elevation={2}
+        sx={{
+          border: '1px solid',
+          borderColor: '#d6d6d6',
+          borderRadius: '4px'
+        }}
+        elevation={0}
       >
-        <CardContent
-        // className={classes.cardContentOverride}
-        >
+        <CardContent>
           <Grid container spacing={1} direction={'column'}>
             {alertsPosition === 'row' ? (
               <Grid container spacing={1} item>
                 <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
-                  {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
+                  {title ? (
+                    <Typography fontWeight={500} variant={'h5'}>
+                      {title}
+                    </Typography>
+                  ) : (
+                    <div />
+                  )}
                   <div>{content}</div>
                   {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
                 </Grid>

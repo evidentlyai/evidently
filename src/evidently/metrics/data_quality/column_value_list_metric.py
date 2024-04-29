@@ -9,6 +9,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -22,6 +23,13 @@ from evidently.renderers.html_widgets import widget_tabs
 
 
 class ValueListStat(MetricResult):
+    class Config:
+        field_tags = {
+            "values_in_list": {IncludeTags.Extra},
+            "values_not_in_list": {IncludeTags.Extra},
+            "rows_count": {IncludeTags.Extra},
+        }
+
     number_in_list: int
     number_not_in_list: int
     share_in_list: float
@@ -32,6 +40,14 @@ class ValueListStat(MetricResult):
 
 
 class ColumnValueListMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+            "values": {IncludeTags.Parameter},
+        }
+
     column_name: str
     values: List[Any]
     current: ValueListStat

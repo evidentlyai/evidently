@@ -106,6 +106,9 @@ class TextCharacteristics(ColumnCharacteristics):
 
 
 class DataInTimePlots(MetricResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     current: pd.DataFrame
     reference: Optional[pd.DataFrame]
 
@@ -309,6 +312,11 @@ class ColumnSummaryResult(ColumnMetricResult):
             "current_characteristics": "current",
         }
 
+        field_tags = {
+            "current_characteristics": {IncludeTags.Current},
+            "reference_characteristics": {IncludeTags.Reference},
+        }
+
     reference_characteristics: Optional[ColumnCharacteristics]
     current_characteristics: ColumnCharacteristics
     plot_data: DataQualityPlot
@@ -342,7 +350,6 @@ class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
         return [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
 
     def calculate(self, data: InputData) -> ColumnSummaryResult:
-
         if not data.has_column(self.column_name):
             raise ValueError(f"Column '{self.column_name.display_name}' not found in dataset.")
 

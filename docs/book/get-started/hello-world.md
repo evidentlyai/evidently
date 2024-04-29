@@ -14,13 +14,6 @@ Install **Evidently** using the pip package manager:
 $ pip install evidently
 ```
 
-Install and enable Jupyter **nbextension**. Run the two following commands in the terminal from the Evidently directory:
-
-```
-$ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
-$ jupyter nbextension enable evidently --py --sys-prefix
-```
-
 ## Colab
 
 Install **Evidently**:

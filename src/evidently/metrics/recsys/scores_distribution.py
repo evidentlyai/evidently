@@ -9,6 +9,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
@@ -25,6 +26,17 @@ from evidently.utils.visualizations import plot_4_distr
 
 
 class ScoreDistributionResult(MetricResult):
+    class Config:
+        field_tags = {
+            "k": {IncludeTags.Parameter},
+            "current_top_k_distr": {IncludeTags.Current},
+            "current_other_distr": {IncludeTags.Current},
+            "current_entropy": {IncludeTags.Current},
+            "reference_top_k_distr": {IncludeTags.Reference},
+            "reference_other_distr": {IncludeTags.Reference},
+            "reference_entropy": {IncludeTags.Reference},
+        }
+
     k: int
     current_top_k_distr: Distribution
     current_other_distr: Optional[Distribution] = None

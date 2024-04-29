@@ -243,8 +243,79 @@ export interface ProjectInfo {
   team_id?: string
 }
 
+type PanelTestFilter =
+  | { test_hash: string }
+  | {
+      test_id: string
+      test_args: Record<string, string>
+    }
+
+type PanelValueBase = { field_path: string; legend: string }
+export type PanelValue = PanelValueBase &
+  (
+    | { metric_hash: string }
+    | {
+        metric_id: string
+        metric_args: Record<string, string>
+      }
+  )
+
+export type MetricAlert = {
+  path: PanelValue
+  condition: Partial<{
+    eq?: number | null
+    gt?: number | null
+    gte?: number | null
+    lt?: number | null
+    lte?: number | null
+  }>
+}
+
+type DashboardPanelBase = {
+  id: string
+  title: string
+  size: 1 | 2
+  filter: {
+    metadata_values: MetadataValueType
+    include_test_suites: boolean
+    tag_values: string[]
+  }
+}
+
+export type DashboardPanel = DashboardPanelBase &
+  (
+    | {
+        type: 'evidently.ui.dashboards.reports.DashboardPanelCounter'
+        agg: 'last' | 'sum' | 'none'
+        text: string
+        value: PanelValue | null
+      }
+    | {
+        type: 'evidently.ui.dashboards.reports.DashboardPanelPlot'
+        plot_type: 'line' | 'bar' | 'histogram' | 'scatter'
+        values: PanelValue[]
+      }
+    | {
+        type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuite'
+        panel_type: 'aggregate' | 'detailed'
+        time_agg: string
+        test_filters: PanelTestFilter[]
+      }
+    | {
+        type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuiteCounter'
+        agg: 'none' | 'last'
+        statuses: ('SUCCESS' | 'ERROR' | 'FAIL' | 'SKIPPED' | 'WARNING')[]
+        test_filters: PanelTestFilter[]
+      }
+  )
+
 export interface ProjectDetails extends ProjectInfo {
-  dashboard: { tabs: DashboardTab[]; tab_id_to_panel_ids: Record<string, string[]> }
+  dashboard: {
+    name: string
+    tabs: DashboardTab[]
+    tab_id_to_panel_ids: Record<string, string[]>
+    panels: DashboardPanel[]
+  }
 }
 
 export type MetadataValueType = Record<string, string | string[] | Record<string, string>>

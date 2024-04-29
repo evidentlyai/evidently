@@ -9,6 +9,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_curr_and_ref_df
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -18,6 +19,7 @@ from evidently.renderers.base_renderer import default_renderer
 class PrecisionRecallCalculationResult(MetricResult):
     class Config:
         pd_include = False
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Dict[str, list]
     reference: Optional[Dict[str, list]] = None

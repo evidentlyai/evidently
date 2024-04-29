@@ -34,21 +34,6 @@ To install Evidently using the pip package manager, run:
 ```bash
 $ pip install evidently
 ```
-If you want to explore the plots inside a Jupyter notebook, you must install Jupyter **nbextension**. After installing `evidently`, run the **two following commands** in the terminal from the Evidently directory.
-
-To install jupyter nbextension, run:
-
-```
-$ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
-```
-
-To enable it, run:
-
-```
-$ jupyter nbextension enable evidently --py --sys-prefix
-```
-
-That's it!
 
 ### Hosted notebooks
 
@@ -65,8 +50,6 @@ To install Evidently in Jupyter notebook on Windows, run:
 ```bash
 $ pip install evidently
 ```
-
-**Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you will need to use a different visualization method (see instructions in step 4). If you face issues, you can get the output as a separate HTML file and view it in a browser.
 
 ## 2. Import Evidently
 
@@ -146,10 +129,6 @@ report
 ```
 
 It will display the HTML report directly in the notebook. 
-
-{% hint style="info" %}
-**Note**: If you are using other notebook environments, e.g., Databricks, Kaggle and Deepnote notebooks, or Jupyter notebook on Windows, you should add an argument to display the report inline: report.show(mode='inline'). Consult [this section](../integrations/notebook-environments.md) for help.
-{% endhint %}
 
 First, you can see the Data Drift summary.
 

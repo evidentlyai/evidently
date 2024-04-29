@@ -8,6 +8,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.metrics.recsys.train_stats import TrainStats
@@ -25,6 +26,20 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class PopularityBiasResult(MetricResult):
+    class Config:
+        field_tags = {
+            "k": {IncludeTags.Parameter},
+            "normalize_arp": {IncludeTags.Parameter},
+            "current_apr": {IncludeTags.Current},
+            "current_coverage": {IncludeTags.Current},
+            "current_gini": {IncludeTags.Current},
+            "current_distr": {IncludeTags.Current},
+            "reference_apr": {IncludeTags.Reference},
+            "reference_coverage": {IncludeTags.Reference},
+            "reference_gini": {IncludeTags.Reference},
+            "reference_distr": {IncludeTags.Reference},
+        }
+
     k: int
     normalize_arp: bool
     current_apr: float

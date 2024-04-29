@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { TestSuiteWidgetParams, TestDataInfo, TestGroupData, TestGroupTypeData } from '~/api'
 import TestInfo, { StateToSeverity } from './TestData'
-import { Button, Collapse, Grid, Paper, Select } from '@mui/material'
+import { Box, Button, Collapse, Grid, Select } from '@mui/material'
 import { Alert, AlertTitle } from '@mui/material'
 
 type TestSuiteFoldingProps = {
@@ -33,7 +33,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
   const [collapse, setCollapse] = useState({ active: false })
   return (
     <>
-      <Paper>
+      <Box mt={2} px={2}>
         <Alert
           severity={StateToSeverity(groupInfo.severity ?? 'unknown')}
           icon={false}
@@ -59,7 +59,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
             ))}
           </Grid>
         </Collapse>
-      </Paper>
+      </Box>
     </>
   )
 }

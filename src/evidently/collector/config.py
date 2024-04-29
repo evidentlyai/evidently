@@ -10,6 +10,7 @@ from typing import Union
 import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.collector.storage import CollectorStorage
@@ -44,23 +45,31 @@ class CollectorTrigger(PolymorphicModel):
 
 
 class IntervalTrigger(CollectorTrigger):
-    interval: float
+    interval: float = Field(gt=0)
     last_triggered: float = 0
 
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
         now = time.time()
-        if now - self.last_triggered > self.interval:
+        is_ready = (now - self.last_triggered) > self.interval
+        if is_ready:
             self.last_triggered = now
-            return True
-        return False
+        return is_ready
 
 
 class RowsCountTrigger(CollectorTrigger):
-    rows_count: int = 1
+    rows_count: int = Field(default=1, gt=0)
 
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
         buffer_size = storage.get_buffer_size(config.id)
         return buffer_size > 0 and buffer_size >= self.rows_count
+
+
+class RowsCountOrIntervalTrigger(CollectorTrigger):
+    rows_count_trigger: RowsCountTrigger
+    interval_trigger: IntervalTrigger
+
+    def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
+        return self.interval_trigger.is_ready(config, storage) or self.rows_count_trigger.is_ready(config, storage)
 
 
 class ReportConfig(Config):

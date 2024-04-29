@@ -70,13 +70,26 @@ const Widget = (
   const isAlertsExists = alerts === undefined ? false : alerts.length > 0
   const isInsightsExists = insights === undefined ? false : insights.length > 0
   const Component = (
-    <Card square elevation={2}>
+    <Card
+      sx={{
+        border: '1px solid',
+        borderColor: '#d6d6d6',
+        borderRadius: '4px'
+      }}
+      elevation={0}
+    >
       <CardContent>
         <Grid container spacing={1} direction={'column'}>
           {alertsPosition === 'row' ? (
             <Grid container spacing={1} item>
               <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
-                {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
+                {title ? (
+                  <Typography fontWeight={500} variant={'h5'}>
+                    {title}
+                  </Typography>
+                ) : (
+                  <div />
+                )}
                 <div>{content}</div>
                 {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
               </Grid>

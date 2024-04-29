@@ -1,11 +1,11 @@
 import os
+from typing import Dict
 from typing import Optional
 
-from fastapi import APIRouter
+from litestar import Router
+from litestar import get
 
 import evidently
-
-service_api = APIRouter(prefix="")
 
 # todo: move to config
 DEV = True
@@ -13,14 +13,14 @@ DEV = True
 EVIDENTLY_APPLICATION_NAME = "Evidently UI"
 
 
-@service_api.get("/version")
-async def version():
+@get("/version")
+async def version() -> Dict[str, str]:
     result = {
         "application": EVIDENTLY_APPLICATION_NAME,
         "version": evidently.__version__,
     }
     if DEV:
-        result["commit"] = get_git_revision_short_hash(os.path.dirname(evidently.__file__))
+        result["commit"] = get_git_revision_short_hash(os.path.dirname(evidently.__file__)) or "-"
     return result
 
 
@@ -34,3 +34,7 @@ def get_git_revision_short_hash(path: str) -> Optional[str]:
         return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=path).decode("ascii").strip()
     except Exception:
         return None
+
+
+def service_api():
+    return Router("", route_handlers=[version])

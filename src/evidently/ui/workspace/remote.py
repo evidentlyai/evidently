@@ -40,18 +40,19 @@ from evidently.utils import NumpyEncoder
 
 
 class RemoteMetadataStorage(MetadataStorage):
-    base_url: str
-    secret: Optional[str] = None
+    def __init__(self, base_url: str, secret: Optional[str] = None):
+        self.base_url = base_url
+        self.secret = secret
 
     def _request(
-            self,
-            path: str,
-            method: str,
-            query_params: Optional[dict] = None,
-            body: Optional[dict] = None,
-            response_model=None,
-            cookies=None,
-            headers: Dict[str, str] = None
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        response_model=None,
+        cookies=None,
+        headers: Dict[str, str] = None,
     ):
         # todo: better encoding
         headers = headers or {}
@@ -64,7 +65,12 @@ class RemoteMetadataStorage(MetadataStorage):
             data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
 
         response = requests.request(
-            method, urllib.parse.urljoin(self.base_url, path), params=query_params, data=data, headers=headers, cookies=cookies
+            method,
+            urllib.parse.urljoin(self.base_url, path),
+            params=query_params,
+            data=data,
+            headers=headers,
+            cookies=cookies,
         )
         response.raise_for_status()
         if response_model is not None:
@@ -107,7 +113,9 @@ class RemoteMetadataStorage(MetadataStorage):
             for p in self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[Project])
         ]
 
-    def list_snapshots(self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True) -> List[SnapshotMetadata]:
+    def list_snapshots(
+        self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
+    ) -> List[SnapshotMetadata]:
         raise NotImplementedError
 
     def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
@@ -136,13 +144,25 @@ class NoopDataStorage(DataStorage):
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
 
-    def load_points(self, project_id: ProjectID, filter: ReportFilter, values: List["PanelValue"],
-                    timestamp_start: Optional[datetime.datetime],
-                    timestamp_end: Optional[datetime.datetime]) -> DataPoints:
+    def load_points(
+        self,
+        project_id: ProjectID,
+        filter: ReportFilter,
+        values: List["PanelValue"],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPoints:
         return []
 
-    def load_test_results(self, project_id: ProjectID, filter: ReportFilter, test_filters: List[TestFilter], time_agg: Optional[str],
-                          timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]) -> TestResultPoints:
+    def load_test_results(
+        self,
+        project_id: ProjectID,
+        filter: ReportFilter,
+        test_filters: List[TestFilter],
+        time_agg: Optional[str],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> TestResultPoints:
         return {}
 
 
@@ -161,7 +181,7 @@ class RemoteWorkspaceView(WorkspaceView):
             metadata=(RemoteMetadataStorage(base_url=self.base_url, secret=self.secret)),
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
-            auth=(NoopAuthManager())
+            auth=(NoopAuthManager()),
         )
         super().__init__(None, pm)
         self.verify()

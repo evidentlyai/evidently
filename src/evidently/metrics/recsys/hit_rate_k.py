@@ -6,12 +6,20 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_curr_and_ref_df
+from evidently.core import IncludeTags
 from evidently.metrics.recsys.base_top_k import TopKMetricRenderer
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import default_renderer
 
 
 class HitRateKMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "k": {IncludeTags.Parameter},
+        }
+
     k: int
     current: pd.Series
     reference: Optional[pd.Series] = None

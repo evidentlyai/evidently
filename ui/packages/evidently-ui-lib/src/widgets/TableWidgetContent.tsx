@@ -1,19 +1,11 @@
 import React from 'react'
 
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow
-} from '@mui/material'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 
 import { TableWidgetParams } from '~/api'
 
 const TableWidgetContent: React.FunctionComponent<TableWidgetParams> = (props) => (
-  <TableContainer component={Paper}>
+  <TableContainer>
     <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
       <TableHead>
         <TableRow>

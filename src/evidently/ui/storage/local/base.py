@@ -88,6 +88,10 @@ class FSSpecBlobStorage(BlobStorage):
 
     _location: FSLocation = PrivateAttr(None)
 
+    def __init__(self, base_path: str):
+        self.base_path = base_path
+        self._location = FSLocation(self.base_path)
+
     @property
     def location(self) -> FSLocation:
         if self._location is None:
@@ -176,6 +180,10 @@ class JsonFileMetadataStorage(MetadataStorage):
 
     _state: LocalState = PrivateAttr(None)
 
+    def __init__(self, path: str, state: Optional[LocalState] = None):
+        self.path = path
+        self._state = state or LocalState.load(self.path, None)
+
     @property
     def state(self):
         if self._state is None:
@@ -205,7 +213,10 @@ class JsonFileMetadataStorage(MetadataStorage):
             self.state.location.rmtree(path)
 
     def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
-        return [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
+        projects = [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
+        default_date = datetime.datetime.fromisoformat("1900-01-01T00:00:00")
+        projects.sort(key=lambda x: x.created_at or default_date, reverse=True)
+        return projects
 
     def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
         project = self.get_project(project_id)
@@ -249,6 +260,10 @@ class InMemoryDataStorage(DataStorage):
     path: str
 
     _state: LocalState = PrivateAttr(None)
+
+    def __init__(self, path: str, state: Optional[LocalState] = None):
+        self.path = path
+        self._state = state or LocalState.load(self.path, None)
 
     @property
     def state(self):

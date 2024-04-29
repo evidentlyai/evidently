@@ -84,7 +84,7 @@ export default class LocalApi implements Api {
     return Promise.resolve({
       id: 'project1',
       name: 'Project #1',
-      dashboard: { tabs: [], tab_id_to_panel_ids: {} }
+      dashboard: { tabs: [], tab_id_to_panel_ids: {}, panels: [], name: '' }
     })
   }
 
@@ -104,7 +104,7 @@ export default class LocalApi implements Api {
     return Promise.resolve({
       id: 'new-project-id',
       name: 'name',
-      dashboard: { tab_id_to_panel_ids: {}, tabs: [] }
+      dashboard: { tab_id_to_panel_ids: {}, tabs: [], panels: [], name: '' }
     })
   }
 
