@@ -144,15 +144,9 @@ export const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
 
 interface ProjectProps {
   project: ProjectInfo
-  EditComponent?: React.FC<{ project: Partial<ProjectInfo>; action: string }>
-  InfoComponent?: React.FC<{ project: Partial<ProjectInfo> }>
 }
 
-export const ProjectCard: React.FC<ProjectProps> = ({
-  project,
-  EditComponent = EditProjectInfoForm,
-  InfoComponent = ProjectInfoCard
-}) => {
+export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
   const [isEditMode, setEditMode] = useState(false)
 
   const navigation = useNavigation()
@@ -218,9 +212,9 @@ export const ProjectCard: React.FC<ProjectProps> = ({
       </Box>
 
       {isEditMode ? (
-        <EditComponent project={project} action={'edit-project'} />
+        <EditProjectInfoForm project={project} action={'edit-project'} />
       ) : (
-        <InfoComponent project={project} />
+        <ProjectInfoCard project={project} />
       )}
     </Paper>
   )
