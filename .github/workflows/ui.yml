@@ -113,11 +113,6 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: Temporary workaround for GitVersion
-        shell: bash
-        run: |
-          git config --unset-all extensions.worktreeconfig
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
@@ -128,7 +123,7 @@ jobs:
         run: pip install -e .
 
       - name: Install dvc
-        run: pip install 'dvc[gs]==3.50.0'
+        run: pip install 'dvc[gs]==3.50.1'
 
       - name: Pull test data
         run: dvc pull
