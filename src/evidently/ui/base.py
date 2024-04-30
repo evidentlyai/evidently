@@ -288,6 +288,9 @@ class BlobStorage(ABC):
     def delete_dataset(self, org_id: OrgID, file_id: str) -> None:
         return None
 
+    def check_dataset(self, org_id: OrgID, file_id: str) -> bool:
+        return True
+
 
 class DataStorage(ABC):
     @abstractmethod

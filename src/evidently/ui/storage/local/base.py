@@ -136,9 +136,13 @@ class FSSpecBlobStorage(BlobStorage):
             bytes_read = f.read()
         return bytes_read
 
-    async def delete_dataset(self, org_id: OrgID, file_id: str) -> None:
+    def delete_dataset(self, org_id: OrgID, file_id: str) -> None:
         path = self.get_dataset_blob_id(org_id, file_id)
         self.location.rmtree(path)
+
+    def check_dataset(self, org_id: OrgID, file_id: str) -> bool:
+        path = self.get_dataset_blob_id(org_id, file_id)
+        return self.location.exists(path)
 
 
 def load_project(location: FSLocation, path: str) -> Optional[Project]:
