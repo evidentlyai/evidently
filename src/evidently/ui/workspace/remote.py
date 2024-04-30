@@ -37,7 +37,6 @@ from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
-from evidently.ui.type_aliases import UserID
 from evidently.ui.workspace.view import WorkspaceView
 from evidently.utils import NumpyEncoder
 
@@ -141,14 +140,6 @@ class NoopBlobStorage(BlobStorage):
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         pass
-
-    @staticmethod
-    def get_dataset_blob_id(user_id: UserID, project_id: ProjectID, filename: str) -> BlobID:
-        return filename
-
-    def put_dataset(self, user_id: UserID, project_id: ProjectID, filename: str, data: bytes) -> BlobID:
-        ds_id = self.get_dataset_blob_id(user_id, project_id, filename)
-        return ds_id
 
 
 class NoopDataStorage(DataStorage):

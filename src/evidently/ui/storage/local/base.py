@@ -36,8 +36,13 @@ from evidently.ui.errors import ProjectNotFound
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
+<<<<<<< HEAD
 from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import PointType
+=======
+from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import OrgID
+>>>>>>> bc51031b (add dataset io methods to BlobStorage)
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
@@ -122,8 +127,18 @@ class FSSpecBlobStorage(BlobStorage):
         return path
 
     @staticmethod
-    def get_dataset_blob_id(project_id: ProjectID, ds_id: str) -> BlobID:
-        return posixpath.join(TMP_DATASETS, str(project_id), ds_id)
+    def get_dataset_blob_id(org_id: OrgID, ds_id: str) -> BlobID:
+        return posixpath.join(TMP_DATASETS, str(org_id), ds_id)
+
+    def get_dataset(self, org_id: OrgID, file_id: str) -> bytes:
+        path = self.get_dataset_blob_id(org_id, file_id)
+        with self.location.open(path, "rb") as f:
+            bytes_read = f.read()
+        return bytes_read
+
+    async def delete_dataset(self, org_id: OrgID, file_id: str) -> None:
+        path = self.get_dataset_blob_id(org_id, file_id)
+        self.location.rmtree(path)
 
 
 def load_project(location: FSLocation, path: str) -> Optional[Project]:

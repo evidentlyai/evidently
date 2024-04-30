@@ -265,7 +265,7 @@ class BlobStorage(ABC):
         return id
 
     @staticmethod
-    def get_dataset_blob_id(project_id: ProjectID, ds_id: str) -> BlobID:
+    def get_dataset_blob_id(org_id: OrgID, ds_id: str) -> BlobID:
         return ds_id
 
     def put_bytes(self, path: str, obj: bytes) -> str:
@@ -274,13 +274,19 @@ class BlobStorage(ABC):
     @staticmethod
     def get_tmp_file_name(user_id: UserID, filename: str):
         timestamp = int(time.time())
-        return f"{user_id}-{filename}-{timestamp}"
+        return f"{user_id}-{timestamp}-{filename}"
 
-    def put_dataset(self, user_id: UserID, project_id: ProjectID, filename: str, data: bytes) -> BlobID:
+    def put_dataset(self, user_id: UserID, org_id: OrgID, filename: str, data: bytes) -> str:
         ds_id = self.get_tmp_file_name(user_id, filename)
-        path = self.get_dataset_blob_id(project_id, ds_id)
+        path = self.get_dataset_blob_id(org_id, ds_id)
         self.put_bytes(path, data)
         return ds_id
+
+    def get_dataset(self, org_id: OrgID, file_id: str) -> bytes:
+        return b""
+
+    def delete_dataset(self, org_id: OrgID, file_id: str) -> None:
+        return None
 
 
 class DataStorage(ABC):
