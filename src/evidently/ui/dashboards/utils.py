@@ -41,6 +41,13 @@ class PlotType(Enum):
     HISTOGRAM = "histogram"
 
 
+class HistBarMode(Enum):
+    STACK = "stack"
+    GROUP = "group"
+    OVERLAY = "overlay"
+    RELATIVE = "relative"
+
+
 class CounterAgg(Enum):
     SUM = "sum"
     LAST = "last"
