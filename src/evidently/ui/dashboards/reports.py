@@ -1,5 +1,4 @@
 import datetime
-from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -22,6 +21,7 @@ from .base import DashboardPanel
 from .base import PanelValue
 from .base import assign_panel_id
 from .utils import CounterAgg
+from .utils import HistBarMode
 from .utils import PlotType
 from .utils import _get_metric_hover
 
@@ -121,13 +121,6 @@ class DashboardPanelCounter(DashboardPanel):
         if self.agg == CounterAgg.SUM:
             return sum(v or 0 for vs in points.values() for ts, v in vs)
         raise ValueError(f"Unknown agg type {self.agg}")
-
-
-class HistBarMode(Enum):
-    STACK = "stack"
-    GROUP = "group"
-    OVERLAY = "overlay"
-    RELATIVE = "relative"
 
 
 class DashboardPanelHist(DashboardPanel):
