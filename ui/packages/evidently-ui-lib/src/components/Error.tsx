@@ -22,6 +22,7 @@ export const GenericErrorBoundary = () => {
           {typeof error.data === 'string' && <Typography>{error.data}</Typography>}
         </>
       )}
+      {typeof error === 'string' && <Typography fontWeight={'bold'}>{error}</Typography>}
     </Alert>
   )
 }
