@@ -7,6 +7,7 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import Union
 
 from plotly import graph_objs as go
 
@@ -16,6 +17,7 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.ui.type_aliases import ProjectID
 
+from ...metric_results import Distribution
 from ...metric_results import HistogramData
 from ...model.widget import BaseWidgetInfo
 from .base import DashboardPanel
@@ -142,14 +144,24 @@ class DashboardPanelHist(DashboardPanel):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
-        bins_for_hists: Dict[Metric, List[Tuple[datetime.datetime, HistogramData]]] = data_storage.load_points_as_type(
-            HistogramData, project_id, self.filter, [self.value], timestamp_start, timestamp_end
-        )[0]
+        bins_for_hists: Dict[Metric, List[Tuple[datetime.datetime, Union[HistogramData, Distribution]]]] = (
+            data_storage.load_points_as_type(
+                Union[HistogramData, Distribution],  # type: ignore[arg-type]
+                project_id,
+                self.filter,
+                [self.value],
+                timestamp_start,
+                timestamp_end,
+            )[0]
+        )
         if len(bins_for_hists) == 0:
             raise ValueError(f"Cannot build hist from {self.value}")
         if len(bins_for_hists) > 1:
             raise ValueError(f"Ambiguious metrics for {self.value}")
-        bins_for_hist: List[Tuple[datetime.datetime, HistogramData]] = next(iter(bins_for_hists.values()))
+        bins_for_hist: List[Tuple[datetime.datetime, HistogramData]] = next(
+            [(d, h if isinstance(h, HistogramData) else HistogramData.from_distribution(h)) for d, h in v]
+            for v in bins_for_hists.values()
+        )
 
         timestamps: List[datetime.datetime] = []
         names: Set[str] = set()

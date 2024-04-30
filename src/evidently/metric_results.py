@@ -77,6 +77,7 @@ class Distribution(MetricResult):
         pd_include = False
         tags = {IncludeTags.Render}
         smart_union = True
+        extract_as_obj = True
 
     x: Union[np.ndarray, list, pd.Categorical, pd.Series]
     y: Union[np.ndarray, list, pd.Categorical, pd.Series]
