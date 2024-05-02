@@ -104,11 +104,20 @@ class DashboardPanelTestSuite(DashboardPanel):
             layout={"showlegend": True},
         )
         fig.update_layout(barmode="stack")
+        fig.update_yaxes(showticklabels=False)
         return fig
 
     def _create_detailed_fig(self, points: Dict[datetime.datetime, Dict[Test, TestStatus]]):
         dates = list(sorted(points.keys()))
         tests = list(set(t for p in points.values() for t in p.keys()))
+        date_to_test: Dict[datetime.datetime, Dict[Test, Test]] = {
+            d: {t: t for t in tst.keys()} for d, tst in points.items()
+        }
+
+        def get_description(test, date):
+            t = date_to_test[date].get(test)
+            return t.get_result().description if t is not None else ""
+
         fig = go.Figure(
             data=[
                 go.Bar(
@@ -117,6 +126,7 @@ class DashboardPanelTestSuite(DashboardPanel):
                     y=[1 for _ in range(len(dates))],
                     marker_color=[TEST_COLORS.get(points[d].get(test, TestStatus.SKIPPED)) for d in dates],
                     hovertemplate=_get_test_hover(test),
+                    customdata=[get_description(test, d) for i, d in enumerate(dates)],
                     showlegend=False,
                 )
                 for test in tests
@@ -138,6 +148,7 @@ class DashboardPanelTestSuite(DashboardPanel):
             bargap=0.01,
             barnorm="fraction",
         )
+        fig.update_yaxes(showticklabels=False)
         return fig
 
 
