@@ -186,6 +186,3 @@ class DashboardPanelDistribution(DashboardPanel):
         fig.update_layout(barmode=self.barmode.value)
 
         return plotly_figure(title=self.title, figure=fig, size=self.size)
-
-
-DashboardPanelHist = DashboardPanelDistribution
