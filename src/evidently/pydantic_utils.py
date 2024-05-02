@@ -128,7 +128,7 @@ def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["Polym
         raise ValueError(f"Cannot register alias: {cls.__name__} is not subclass of {base_class.__name__}")
 
     key = (base_class, alias)
-    if key in TYPE_ALIASES and TYPE_ALIASES[key] != cls:
+    if key in LOADED_TYPE_ALIASES and LOADED_TYPE_ALIASES[key] != cls:
         warnings.warn(f"Duplicate key {key} in alias map")
     LOADED_TYPE_ALIASES[key] = cls
 

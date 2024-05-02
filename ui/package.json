@@ -14,7 +14,7 @@
     "full-build": "pnpm build && pnpm clean-assets-all && pnpm copy-assets-all"
   },
   "engines": {
-    "node": ">=16",
-    "pnpm": ">=8"
+    "node": ">=20",
+    "pnpm": ">=9"
   }
 }

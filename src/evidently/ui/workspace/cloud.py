@@ -19,7 +19,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
     def __init__(self, base_url: str, token: str, cookie_name: str):
         self.token = token
         self.cookie_name = cookie_name
-        self._jwt_token = None
+        self._jwt_token: Optional[str] = None
         self._logged_in: bool = False
         super().__init__(base_url=base_url)
 
