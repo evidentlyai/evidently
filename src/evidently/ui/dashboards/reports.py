@@ -125,7 +125,7 @@ class DashboardPanelCounter(DashboardPanel):
         raise ValueError(f"Unknown agg type {self.agg}")
 
 
-class DashboardPanelHist(DashboardPanel):
+class DashboardPanelDistribution(DashboardPanel):
     value: PanelValue
     barmode: HistBarMode = HistBarMode.STACK
 
