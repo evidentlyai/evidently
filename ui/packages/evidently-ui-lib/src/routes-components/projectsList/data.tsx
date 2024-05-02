@@ -4,6 +4,10 @@ import { InJectAPI, expectJsonRequest } from '~/utils'
 
 export type loaderData = ProjectInfo[]
 
+export const editProjectSchema = z.object({
+  action: z.literal('edit-project')
+})
+
 export const createNewProjectSchema = z.object({
   action: z.literal('create-new-project')
 })
@@ -20,16 +24,19 @@ export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
 
     const json = await request.json()
 
-    const isCreateAction = createNewProjectSchema.safeParse(json)
-    if (isCreateAction.success && isCreateAction.data.action === 'create-new-project') {
+    if (createNewProjectSchema.safeParse(json).success) {
       return api.createProject(json)
     }
 
     const isDeleteAction = deleteProjectAction.safeParse(json)
-    if (isDeleteAction.success && isDeleteAction.data.action === 'delete-project') {
+    if (isDeleteAction.success) {
       return api.deleteProject(isDeleteAction.data.projectId)
     }
 
-    return api.editProjectInfo(json)
+    if (editProjectSchema.safeParse(json).success) {
+      return api.editProjectInfo(json)
+    }
+
+    throw 'Undefined action'
   }
 })

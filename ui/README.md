@@ -7,9 +7,8 @@ We have two UI projects:
 
 ## Requirements
 
-- [node.js](https://nodejs.org/en/download) (v16 or higher)
-
-- we also use [pnpm](https://pnpm.io/installation) (v8) as package manager
+- [node.js](https://nodejs.org/en/download) (v20 or higher)
+- we also use [pnpm](https://pnpm.io/installation) (v9) as package manager
 
 ## Install dependencies
 

@@ -105,6 +105,18 @@ class PopularityBias(Metric[PopularityBiasResult]):
             (n_items - 1) * np.sum(recommended_counter_sorted)
         )
 
+    def get_coverage(
+        self,
+        k: int,
+        df: pd.DataFrame,
+        train_stats: pd.Series,
+        prediction_name: str,
+        item_name: str,
+    ):
+        return len(np.intersect1d(df[df[prediction_name] <= k][item_name].unique(), train_stats.index)) / len(
+            train_stats
+        )
+
     def calculate(self, data: InputData) -> PopularityBiasResult:
         train_result = self._train_stats.get_result()
         curr_user_interacted = train_result.current
@@ -133,9 +145,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
             user_id,
             item_id,
         )
-        curr_coverage = len(np.intersect1d(current_data[item_id].unique(), curr_user_interacted.index)) / len(
-            curr_user_interacted
-        )
+        curr_coverage = self.get_coverage(self.k, current_data, curr_user_interacted, prediction_name, item_id)
 
         curr_gini = self.get_gini(self.k, current_data, prediction_name, item_id)
 
@@ -166,7 +176,9 @@ class PopularityBias(Metric[PopularityBiasResult]):
 
             ref_gini = self.get_gini(self.k, reference_data, prediction_name, item_id)
         current_distr, reference_distr = get_distribution_for_column(
-            column_type="num", current=current_distr_data, reference=reference_distr_data
+            column_type="num",
+            current=current_distr_data,
+            reference=reference_distr_data,
         )
 
         return PopularityBiasResult(
@@ -192,9 +204,21 @@ class PopularityBiasRenderer(MetricRenderer):
             is_normed = " normilized"
         result = [header_text(label=f"Popularity bias (top-{metric_result.k})")]
         counters = [
-            CounterData.float(label="current ARP" + is_normed, value=metric_result.current_apr, precision=4),
-            CounterData.float(label="current coverage", value=metric_result.current_coverage, precision=4),
-            CounterData.float(label="current gini index", value=metric_result.current_gini, precision=4),
+            CounterData.float(
+                label="current ARP" + is_normed,
+                value=metric_result.current_apr,
+                precision=4,
+            ),
+            CounterData.float(
+                label="current coverage",
+                value=metric_result.current_coverage,
+                precision=4,
+            ),
+            CounterData.float(
+                label="current gini index",
+                value=metric_result.current_gini,
+                precision=4,
+            ),
         ]
         result.append(counter(counters=counters))
         if (
@@ -203,9 +227,21 @@ class PopularityBiasRenderer(MetricRenderer):
             and metric_result.reference_gini is not None
         ):
             counters = [
-                CounterData.float(label="reference ARP" + is_normed, value=metric_result.reference_apr, precision=4),
-                CounterData.float(label="reference coverage", value=metric_result.reference_coverage, precision=4),
-                CounterData.float(label="reference gini index", value=metric_result.reference_gini, precision=4),
+                CounterData.float(
+                    label="reference ARP" + is_normed,
+                    value=metric_result.reference_apr,
+                    precision=4,
+                ),
+                CounterData.float(
+                    label="reference coverage",
+                    value=metric_result.reference_coverage,
+                    precision=4,
+                ),
+                CounterData.float(
+                    label="reference gini index",
+                    value=metric_result.reference_gini,
+                    precision=4,
+                ),
             ]
             result.append(counter(counters=counters))
 

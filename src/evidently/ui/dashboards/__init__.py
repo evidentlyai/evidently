@@ -4,6 +4,7 @@ from .base import ReportFilter
 from .reports import CounterAgg
 from .reports import DashboardPanelCounter
 from .reports import DashboardPanelPlot
+from .reports import HistBarMode
 from .reports import PlotType
 from .test_suites import DashboardPanelTestSuite
 from .test_suites import DashboardPanelTestSuiteCounter
@@ -22,5 +23,6 @@ __all__ = [
     "PanelValue",
     "CounterAgg",
     "PlotType",
+    "HistBarMode",
     "DashboardPanelTestSuiteCounter",
 ]
