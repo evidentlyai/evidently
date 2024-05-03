@@ -36,13 +36,9 @@ from evidently.ui.errors import ProjectNotFound
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
-<<<<<<< HEAD
 from evidently.ui.type_aliases import DataPointsAsType
-from evidently.ui.type_aliases import PointType
-=======
-from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import OrgID
->>>>>>> bc51031b (add dataset io methods to BlobStorage)
+from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
