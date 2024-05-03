@@ -488,7 +488,7 @@ def create_column_mapping(data_definition: DataDefinition) -> ColumnMapping:
         embeddings=data_definition.embeddings,
         user_id=get_column_name_or_none(data_definition.get_user_id_column()),
         item_id=get_column_name_or_none(data_definition.get_item_id_column()),
-        recommendations_type=data_definition.recommendations_type,
+        recommendations_type=RecomType(data_definition.recommendations_type),
     )
     return column_mapping
 
