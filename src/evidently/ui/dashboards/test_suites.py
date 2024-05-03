@@ -104,7 +104,6 @@ class DashboardPanelTestSuite(DashboardPanel):
             layout={"showlegend": True},
         )
         fig.update_layout(barmode="stack")
-        fig.update_yaxes(showticklabels=False)
         return fig
 
     def _create_detailed_fig(self, points: Dict[datetime.datetime, Dict[Test, TestStatus]]):
@@ -116,7 +115,11 @@ class DashboardPanelTestSuite(DashboardPanel):
 
         def get_description(test, date):
             t = date_to_test[date].get(test)
-            return t.get_result().description if t is not None else ""
+            try:
+                return t.get_result().description if t is not None else ""
+            except ValueError:
+                # if context is not set we don't have access to result
+                return ""
 
         fig = go.Figure(
             data=[
