@@ -465,8 +465,9 @@ def get_column_name_or_none(column: Optional[ColumnDefinition]) -> Optional[str]
 
 def create_column_mapping(data_definition: DataDefinition) -> ColumnMapping:
     prediction = None
-    if data_definition.get_prediction_columns() and data_definition.get_prediction_columns().predicted_values:
-        prediction = data_definition.get_prediction_columns().predicted_values.column_name
+    prediction_columns = data_definition.get_prediction_columns()
+    if prediction_columns and prediction_columns.predicted_values:
+        prediction = prediction_columns.predicted_values.column_name
 
     column_mapping = ColumnMapping(
         target=get_column_name_or_none(data_definition.get_target_column()),
