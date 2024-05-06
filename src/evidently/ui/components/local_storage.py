@@ -1,4 +1,5 @@
 from typing import Callable
+from typing import Optional
 
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
@@ -9,6 +10,7 @@ from evidently.ui.components.storage import MetadataStorageComponent
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.storage.local import InMemoryDataStorage
 from evidently.ui.storage.local import JsonFileMetadataStorage
+from evidently.ui.storage.local import LocalState
 
 
 class FSSpecBlobComponent(BlobStorageComponent):
@@ -28,7 +30,10 @@ class JsonMetadataComponent(MetadataStorageComponent):
     path: str
 
     def dependency_factory(self) -> Callable[..., MetadataStorage]:
-        return lambda: JsonFileMetadataStorage(path=self.path)
+        def json_meta(local_state: Optional[LocalState] = None):
+            return JsonFileMetadataStorage(path=self.path, local_state=local_state)
+
+        return json_meta
 
 
 class InmemoryDataComponent(DataStorageComponent):
@@ -38,4 +43,7 @@ class InmemoryDataComponent(DataStorageComponent):
     path: str
 
     def dependency_factory(self) -> Callable[..., DataStorage]:
-        return lambda: InMemoryDataStorage(path=self.path)
+        def inmemory_data(local_state: Optional[LocalState] = None):
+            return InMemoryDataStorage(path=self.path, local_state=local_state)
+
+        return inmemory_data
