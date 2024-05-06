@@ -5,12 +5,14 @@ import uuid
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import NamedTuple
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 from typing import Union
 
@@ -35,8 +37,10 @@ from evidently.ui.errors import TeamNotFound
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import EntityID
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import RoleID
 from evidently.ui.type_aliases import SnapshotID
@@ -283,7 +287,6 @@ class DataStorage(ABC):
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         raise NotImplementedError
 
-    @abstractmethod
     def load_points(
         self,
         project_id: ProjectID,
@@ -292,7 +295,15 @@ class DataStorage(ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPoints:
-        raise NotImplementedError
+        return self.load_points_as_type(float, project_id, filter, values, timestamp_start, timestamp_end)
+
+    @staticmethod
+    def parse_value(cls: Type[PointType], value: Any) -> PointType:
+        if isinstance(value, cls):
+            return value
+        if isinstance(value, str):
+            value = json.loads(value)
+        return parse_obj_as(cls, value)
 
     @abstractmethod
     def load_test_results(
@@ -304,6 +315,18 @@ class DataStorage(ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_points_as_type(
+        self,
+        cls: Type[PointType],
+        project_id: ProjectID,
+        filter: "ReportFilter",
+        values: List["PanelValue"],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPointsAsType[PointType]:
         raise NotImplementedError
 
 

@@ -8,6 +8,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Type
 
 from fsspec import AbstractFileSystem
 from fsspec import get_fs_token_paths
@@ -37,7 +38,8 @@ from evidently.ui.storage.common import NO_ORG
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
-from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
@@ -276,30 +278,6 @@ class InMemoryDataStorage(DataStorage):
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
 
-    def load_points(
-        self,
-        project_id: ProjectID,
-        filter: ReportFilter,
-        values: List["PanelValue"],
-        timestamp_start: Optional[datetime.datetime],
-        timestamp_end: Optional[datetime.datetime],
-    ) -> DataPoints:
-        points: DataPoints = [{} for _ in range(len(values))]
-        for report in (s.as_report() for s in self.state.snapshot_data[project_id].values() if s.is_report):
-            if not (
-                filter.filter(report)
-                and (timestamp_start is None or report.timestamp >= timestamp_start)
-                and (timestamp_end is None or report.timestamp < timestamp_end)
-            ):
-                continue
-
-            for i, value in enumerate(values):
-                for metric, metric_field_value in value.get(report).items():
-                    if metric not in points[i]:
-                        points[i][metric] = []
-                    points[i][metric].append((report.timestamp, metric_field_value))
-        return points
-
     def load_test_results(
         self,
         project_id: ProjectID,
@@ -322,4 +300,29 @@ class InMemoryDataStorage(DataStorage):
             else:
                 points[ts].update(TestFilter().get(report))
 
+        return points
+
+    def load_points_as_type(
+        self,
+        cls: Type[PointType],
+        project_id: ProjectID,
+        filter: "ReportFilter",
+        values: List["PanelValue"],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPointsAsType[PointType]:
+        points: DataPointsAsType[PointType] = [{} for _ in range(len(values))]
+        for report in (s.as_report() for s in self.state.snapshot_data[project_id].values() if s.is_report):
+            if not (
+                filter.filter(report)
+                and (timestamp_start is None or report.timestamp >= timestamp_start)
+                and (timestamp_end is None or report.timestamp < timestamp_end)
+            ):
+                continue
+
+            for i, value in enumerate(values):
+                for metric, metric_field_value in value.get(report).items():
+                    if metric not in points[i]:
+                        points[i][metric] = []
+                    points[i][metric].append((report.timestamp, self.parse_value(cls, metric_field_value)))
         return points

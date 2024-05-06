@@ -18,6 +18,6 @@ class TokenSecurity(SecurityService):
         self.config = config
 
     def authenticate(self, request: Request) -> Optional[User]:
-        if request.headers.get(SECRET_HEADER_NAME) == self.config.token:
+        if request.headers.get(SECRET_HEADER_NAME) == self.config.token.get_secret_value():
             return default_user
         return None

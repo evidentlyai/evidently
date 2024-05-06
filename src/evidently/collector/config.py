@@ -22,6 +22,8 @@ from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
 from evidently.ui.remote import RemoteWorkspace
+from evidently.ui.workspace import CloudWorkspace
+from evidently.ui.workspace.view import WorkspaceView
 from evidently.utils import NumpyEncoder
 
 CONFIG_PATH = "collector_config.json"
@@ -128,14 +130,21 @@ class CollectorConfig(Config):
     api_url: str = "http://localhost:8000"
     api_secret: Optional[str] = None
     cache_reference: bool = True
+    is_cloud: Optional[bool] = None  # None means autodetect
 
     _reference: Any = None
-    _workspace: Optional[RemoteWorkspace] = None
+    _workspace: Optional[WorkspaceView] = None
 
     @property
-    def workspace(self) -> RemoteWorkspace:
+    def workspace(self) -> WorkspaceView:
         if self._workspace is None:
-            self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
+            is_cloud = self.is_cloud if self.is_cloud is not None else self.api_url == "https://app.evidently.cloud"
+            if is_cloud:
+                if self.api_secret is None:
+                    raise ValueError("Please provide token for CloudWorkspace")
+                self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url)
+            else:
+                self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
         return self._workspace
 
     def _read_reference(self):

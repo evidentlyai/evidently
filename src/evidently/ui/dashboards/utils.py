@@ -41,6 +41,13 @@ class PlotType(Enum):
     HISTOGRAM = "histogram"
 
 
+class HistBarMode(Enum):
+    STACK = "stack"
+    GROUP = "group"
+    OVERLAY = "overlay"
+    RELATIVE = "relative"
+
+
 class CounterAgg(Enum):
     SUM = "sum"
     LAST = "last"
@@ -127,5 +134,5 @@ tests_colors_order = {ts: i for i, ts in enumerate(TEST_COLORS)}
 def _get_test_hover(test: Test):
     params = [f"{k}: {v}" for k, v in _flatten_params(test).items()]
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test.name}</b><br>{params_join}<br>"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test.name}</b><br>{params_join}<br>%{{customdata}}<br>"
     return hover

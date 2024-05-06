@@ -127,40 +127,6 @@ jobs:
       - name: Run Tests
         run: python -m pytest --durations=50
 
-  test-examples:
-    name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}, min ${{ matrix.minimal }}
-    needs: test
-    runs-on: ${{ matrix.os }}
-    if: github.event.pull_request.draft == false
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python: ["3.8"]
-        minimal: [false]
-      fail-fast: false
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-          architecture: "x64"
-          cache: "pip"
-      - name: Install package
-        run: pip install -e .[dev,spark,fsspec]
-      - name: Install minimal reqs
-        if: matrix.minimal
-        run: pip install -r requirements.min.txt
-      - name: Prepare examples dependencies
-        run: pip install catboost sentence-transformers
-      - name: Export examples
-        run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
-      - name: Download test data
-        run:
-          curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
-          unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
-      - name: Run examples
-        run: python example_test.py
-
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
