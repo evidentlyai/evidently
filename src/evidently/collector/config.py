@@ -127,6 +127,7 @@ class CollectorConfig(Config):
     reference_path: Optional[str]
 
     project_id: str
+    org_id: Optional[str] = None
     api_url: str = "http://localhost:8000"
     api_secret: Optional[str] = None
     cache_reference: bool = True
@@ -140,9 +141,9 @@ class CollectorConfig(Config):
         if self._workspace is None:
             is_cloud = self.is_cloud if self.is_cloud is not None else self.api_url == "https://app.evidently.cloud"
             if is_cloud:
-                if self.api_secret is None:
-                    raise ValueError("Please provide token for CloudWorkspace")
-                self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url)
+                if self.api_secret is None or self.org_id is None:
+                    raise ValueError("Please provide token and org_id for CloudWorkspace")
+                self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url, org_id=self.org_id)
             else:
                 self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
         return self._workspace
