@@ -182,9 +182,9 @@ class JsonFileMetadataStorage(MetadataStorage):
 
     _state: LocalState = PrivateAttr(None)
 
-    def __init__(self, path: str, state: Optional[LocalState] = None):
+    def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
-        self._state = state or LocalState.load(self.path, None)
+        self._state = local_state or LocalState.load(self.path, None)
 
     @property
     def state(self):
@@ -263,9 +263,9 @@ class InMemoryDataStorage(DataStorage):
 
     _state: LocalState = PrivateAttr(None)
 
-    def __init__(self, path: str, state: Optional[LocalState] = None):
+    def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
-        self._state = state or LocalState.load(self.path, None)
+        self._state = local_state or LocalState.load(self.path, None)
 
     @property
     def state(self):
