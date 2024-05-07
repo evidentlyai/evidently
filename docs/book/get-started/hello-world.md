@@ -70,5 +70,5 @@ data_drift_report
 
 # Want to see more?
 
-* Take the complete [Report & Test Suite tutorial.](tutorial.md) to learn how to run one-off checks like this in detail (15 minutes). You can also evaluate ML model quality, e.g., for classification, regression, and ranking models, and work with text data.
+* Take the complete [Report & Test Suite tutorial](tutorial.md) to learn how to run one-off checks like this in detail (15 minutes). You can also evaluate ML model quality, e.g., for classification, regression, and ranking models, and work with text data.
 * Start with ML monitoring. Go through the [Evidently Cloud Quickstart](quickstart-cloud.md) (2 min) to get a dashboard to track metrics over time.
