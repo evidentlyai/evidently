@@ -1,7 +1,6 @@
 import uuid
 from typing import Optional
 
-import evaluate
 import pandas as pd
 
 from evidently.base_metric import ColumnName
@@ -40,6 +39,8 @@ class HFFeature(GeneratedFeature):
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        import evaluate
+
         column_data = data[self.column_name].values.tolist()
         model = evaluate.load(
             self.path,

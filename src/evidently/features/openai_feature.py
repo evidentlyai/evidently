@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 
 import pandas as pd
-from openai import OpenAI
 
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
@@ -53,6 +52,8 @@ class OpenAIFeature(GeneratedFeature):
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        from openai import OpenAI
+
         column_data = data[self.column_name].values.tolist()
         client = OpenAI()
         result = []
