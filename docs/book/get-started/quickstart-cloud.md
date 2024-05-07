@@ -8,11 +8,11 @@ If not already, [sign up for an Evidently Cloud account](https://app.evidently.c
 
 # 2. Get an access token
 
-Click your username, select "personal token," generate and save the token.
+Click on the left menu with a key sign, select "personal token," generate and save the token.
 
 # 3. Install the Python library
 
-Install the Evidently Python library. You can this example in Colab or other Python environment.
+Install the Evidently Python library. You can run this example in Colab or another Python environment.
 
 ```
 !pip install evidently
@@ -76,7 +76,7 @@ Go to the "Dashboard" tab and enter the "Edit" mode. Add a new tab, and select t
 
 ![](../.gitbook/assets/cloud/qs_add_data_quality_tab_2.gif)
 
-You'll see a set of panels with a single data point. As you send more snapshots, you can track trends and set up alerts. You can choose from 100+ metrics and tests and add yours.
+You'll see a set of panels with a single data point. As you send more snapshots, you can track trends and set up alerts. You can choose from 100+ metrics and tests on data quality, data drift, ML quality (regression, classification, ranking, recsys), LLM quality and text data, and add your own metrics.
 
 # Want to see more?
 
