@@ -37,7 +37,6 @@ from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
-from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -45,7 +44,6 @@ from evidently.ui.type_aliases import TestResultPoints
 from evidently.utils import NumpyEncoder
 
 SNAPSHOTS = "snapshots"
-TMP_DATASETS = "loading_datasets"
 METADATA_PATH = "metadata.json"
 
 
@@ -115,30 +113,6 @@ class FSSpecBlobStorage(BlobStorage):
         with self.location.open(path, "w") as f:
             f.write(obj)
         return path
-
-    def put_bytes(self, path: str, obj: bytes) -> str:
-        self.location.makedirs(posixpath.dirname(path))
-        with self.location.open(path, "wb") as f:
-            f.write(obj)
-        return path
-
-    @staticmethod
-    def get_dataset_blob_id(org_id: OrgID, ds_id: str) -> BlobID:
-        return posixpath.join(TMP_DATASETS, str(org_id), ds_id)
-
-    def get_dataset(self, org_id: OrgID, file_id: str) -> bytes:
-        path = self.get_dataset_blob_id(org_id, file_id)
-        with self.location.open(path, "rb") as f:
-            bytes_read = f.read()
-        return bytes_read
-
-    def delete_dataset(self, org_id: OrgID, file_id: str) -> None:
-        path = self.get_dataset_blob_id(org_id, file_id)
-        self.location.rmtree(path)
-
-    def check_dataset(self, org_id: OrgID, file_id: str) -> bool:
-        path = self.get_dataset_blob_id(org_id, file_id)
-        return self.location.exists(path)
 
 
 def load_project(location: FSLocation, path: str) -> Optional[Project]:
