@@ -67,53 +67,42 @@ It'll take a few moments to populate the data. In the background, Evidently will
 
 If you navigate to the "Reports" or "Test Suites" section using the left menu, you can see individual snapshots. They display the performance on a given day and act as a data source for the monitoring panels.
 
-Now, let's see how you can create something similar for your dataset step by step.
+Now, let's see how you can create something similar for your dataset!
 
 # Add a new project
 
-You will now create a dashboard to monitor data quality and drift, using a toy dataset to imitate a production ML model.
-
-You will go through the following steps:
+Now, let's create a dashboard to monitor data quality and drift using a toy dataset to mimic a production ML model. We'll go through the following steps:
 * Prepare the tabular dataset.
-* Compute the data quality and data drift Reports in daily batches.
-* Send them to the Evidently Cloud.
-* Create dashboards to visualize metrics in time.
-* (Optional) Run Test Suites to perform conditional tests.
+* Run data quality and data drift Reports in daily batches.
+* Send them to Evidently Cloud.
+* Get dashboards to track metrics over time.
+* (Optional) Add custom monitoring panels.
+* (Optional) Run Test Suites for continuous testing.
 
-This shows a simple batch workflow. You can later explore more advanced workflows, like using the collector for near real-time monitoring, or monitoring NLP models.
+You can later explore more advanced workflows, such as monitoring the ML model quality, using the collector for near real-time monitoring, or tracking NLP and LLM models.
 
-![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
+To complete the tutorial, you can use the code snippets on this page or run a sample notebook.
 
-<details>
+Jupyter notebook:
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/data_and_ml_monitoring_tutorial.ipynb" %}
 
-<summary>How does the data collection work?</summary>
-
-Evidently Cloud does not store raw data or model inferences. Instead, you will use the Evidently open-source library to compute JSON `snapshots` locally and send them to the Evidently Cloud.
-
-Each snapshot contains data statistics, metrics, and test results for a specific period. You can choose which evaluations to compute and how often. This hybrid architecture helps avoid duplicating your inference data and preserves raw data privacy. Evidently Cloud stores only aggregates and metadata.  
-
-There are two ways to send the snapshots:
-* **Use the Evidently Python library.** You can compute snapshots in any Python environment, for example, as a regular batch job.
-* **Deploy a collector service**. You can alternatively deploy and configure an Evidently collector service. Then, you must send inferences from your ML service to the collector. It will manage data batching, compute snapshots, and send them to the Evidently Cloud.
-
-</details>
+Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/evidently/blob/main/examples/sample_notebooks/data_and_ml_monitoring_tutorial.ipynb).
 
 ## 1. Installation and imports
 
-Evidently is available as a PyPi package. Run the `pip install evidently` command to install it:
+Evidently is available as a PyPi package. Run the command to install it:
 
 ```python
 pip install evidently
 ```
 
 You can also install Evidently from Conda:
+
 ```python
 conda install -c conda-forge evidently
 ```
 
-You must import several components to complete the tutorial.
-
-Import the components to prepare the toy data:
+You'll need several components to complete the tutorial. Import the components to prepare the toy data:
 
 ```python
 import pandas as pd
@@ -136,7 +125,7 @@ from evidently.test_preset import DataDriftTestPreset
 from evidently.tests.base_test import TestResult, TestStatus
 ```
 
-Import the components to create the monitoring panels. You only need this to design the monitoring panels via API, for example, during the initial setup.
+**Optional**. Import the components to design monitoring panels via API. This is entirely optional: you can also add the panels using the UI. 
 
 ```python
 from evidently import metrics
@@ -152,9 +141,11 @@ from evidently.renderers.html_widgets import WidgetSize
 
 ## 2. Prepare toy data
 
-You will use the `adult` dataset from OpenML.
+You'll use the `adult` dataset from OpenML. 
 * Import it as a pandas `DataFrame`.
-* Split it into `adult_ref` (reference dataset) and `adult_prod` (production data). For demo purposes, we base the split on the "education" feature. Production data will include persons with specific education levels not seen in the reference. We do it to introduce some artificial drift.
+* Split it into two datasets: `adult_ref` (reference dataset) and `adult_prod` (current production data).
+  
+To introduce some artificial drift for demo purposes, we'll base the split on the "education" feature. Current data will include people with education levels unseen in the reference dataset. Here's how you can do it:
 
 ```python
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
@@ -164,7 +155,7 @@ adult_prod = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"]
 ```
 
 {% hint style="info" %}
-**What is a reference dataset?** Reference dataset is a baseline for distribution comparison when you compute data drift. In this case, the `reference` is required. You can use the data from model validation or a past production batch. You can also use the reference dataset to generate the test conditions quickly. For example, when testing if column values stay within the range. In this case, the reference is optional: you can also specify the test conditions manually.
+**What is a reference dataset?** You need one to evaluate distribution drift. Here, you compare the current data against a past period, like an earlier data batch. You must provide this reference to compute the distance between two datasets. A reference dataset is optional when you compute descriptive stats or model quality metrics.
 {% endhint %}
 
 ## 3. Create a Project
