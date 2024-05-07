@@ -1,53 +1,76 @@
-In this tutorial, you will monitor a toy ML model using Evidently Cloud and learn the core workflows. 
+---
+description: Get started with Evidently Cloud. Send data and customize a dashboard in 15 minutes. 
+---
 
-It will take you 15 minutes to launch a demo dashboard and complete the tutorial for a new dataset. You must have basic knowledge of Python to work with Evidently Cloud using the API. 
+In this tutorial, you'll set up production data and ML monitoring for a toy ML model. You'll run evaluations in Python and access a web dashboard in Evidently Cloud.
 
-Have only a couple of minutes? Check this [Evidently Cloud "Hello World"](quickstart-cloud.md) instead.
+The tutorial consists of three parts:
+* Overview of the architecture (2 min).
+* Launching a pre-built demo dashboard (2-3 min).
+* Setting up monitoring for a new toy dataset (10 min).
 
-# Part 1. Demo dashboard
-
-## 1. Create an account
-
-Evidently Cloud is currently in beta. 
+You'll need basic knowledge of Python. Once you connect the data, you can continue working in the web interface.
 
 {% hint style="success" %}
-**Can I try Evidently Cloud?** To start your free trial, [create an account](https://app.evidently.cloud/signup).
+**Want a very simple example first?** Check this [Evidently Cloud "Hello World"](quickstart-cloud.md) instead.
+{% endhint %}
+
+Video version:
+{% embed url="https://youtu.be/ivhhS7extgE" %}
+
+# How it all works
+
+The monitoring setup consists of two components:
+* **Open-source Evidently Python library**. You run evaluations in your environment. Each evaluation produces a JSON snapshot with statistics, metrics, or test results for a specific period. You then send these snapshots to Evidently Cloud using an API key.
+* **Evidently Cloud web app**. After sending the data, you can access it in the Evidently Cloud UI. You can view individual evaluation results, dashboards with trends over time, and set up alerts to be notified about any issues.
+
+![](../.gitbook/assets/cloud/cloud_service_overview-min.png)
+
+{% hint style="success" %}
+Data security by design. By default, Evidently Cloud does not store raw data or model inferences. Snapshots contain data aggregates and metadata with test results. This hybrid architecture helps avoid data duplication and preserves its privacy. 
 {% endhint %}
 
 <details>
 
-<summary>What can I do with Evidently Cloud?</summary>
+<summary>What can you evaluate with Evidently Cloud?</summary>
 
 In Evidently Cloud, you can:
+* Monitor tabular and text **data quality** in your production pipelines and services.
+* Track **data and prediction drift** over time.
+* Monitor **text data** (e.g., sentiment, drift, trigger words) for NLP and **LLM models**.
+* Track embeddings drift.
+* Monitor **ML model quality** for classification, regression, ranking, and recommendations, including champion/challenger and shadow models, and delayed ground truth.
+* Track the results of **Test Suites** that include multiple evaluations.
+Evidently computes and visualizes over 100 pre-built Metrics and Tests. You can customize or add your own metrics.
 
-* Monitor data quality, feature, and prediction drift over time.
-* Track ML model quality for classification, regression, ranking, and recommendations. This includes assessing models in champion/challenger and shadow mode.
-* Monitor changes in text data (e.g., sentiment, drift, trigger words) for NLP and LLM models.
-* Monitor embeddings drift.
-* Track the results of test suites that include multiple evaluations.
-
-Evidently computes and visualizes 100+ pre-built metrics and tests. You can customize them or add your metrics.
-
-You can conduct evaluations in batch mode, e.g., hourly, daily, weekly, or on demand. You can also monitor data directly from a live ML service for near real-time insights.
-
-Evidently Cloud uses the open-source [Evidently Python library](https://github.com/evidentlyai/evidently) for tests and metric computation. All evaluations are open-source.
+Evidently computes and visualizes over 100 pre-built Metrics and Tests. You can customize or add your own metrics.
 </details>
+
+You can run checks as batch monitoring jobs (e.g., hourly, daily, weekly). For near real-time computation, you can use Evidently Collector service. This tutorial shows a simple batch workflow. You can later explore alternative deployment architectures.
+
+# Demo dashboard
+
+Let's quickly look at an example monitoring dashboard.
+
+## 1. Create an account
+
+If you do not have one yet, [create an Evidently Cloud account](https://app.evidently.cloud/signup).
 
 ## 2. View a demo project 
 
-After you log in, you will see an empty dashboard. Click on "Generate Demo Project" to see a pre-built example dashboard.
+After logging in, click on "Generate Demo Project". It will create a Project for a toy regression model that forecasts bike demand. 
 
 ![](../.gitbook/assets/cloud/generate_demo_project.png)
 
-It will take a few moments to populate the project. You can then see a sample dashboard wih different tabs that show data quality, data drift and model quality for a regression model that forecasts bike demand. 
+It'll take a few moments to populate the data. In the background, Evidently will run the code to generate Reports and Test Suites for 20 days. Once it's ready, open the Project to see a monitoring dashboard with multiple tabs that show data quality, data drift, and model quality. You can customize the choice of panels and tabs.
 
 ![](../.gitbook/assets/cloud/demo_dashboard.gif)
 
-You can also open the "Reports" and "Test Suites" tabs to see the individual `snapshots` that serve as a data source for the monitoring panels and help explore the results of the individual daily checks.
+If you navigate to the "Reports" or "Test Suites" section using the left menu, you can see individual snapshots. They display the performance on a given day and act as a data source for the monitoring panels.
 
-Now, let's see how you can create something similar for your project! 
+Now, let's see how you can create something similar for your dataset step by step.
 
-# Part 2. Add a new project
+# Add a new project
 
 You will now create a dashboard to monitor data quality and drift, using a toy dataset to imitate a production ML model.
 
