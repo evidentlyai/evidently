@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from evidently._pydantic_compat import BaseModel
 from evidently.pydantic_utils import PolymorphicModel
@@ -52,3 +53,6 @@ def smart_assert_equal(actual, expected, path=""):
         np.testing.assert_equal(actual, expected, f"path: {path}")
     except AssertionError:
         raise
+
+
+slow = pytest.mark.slow

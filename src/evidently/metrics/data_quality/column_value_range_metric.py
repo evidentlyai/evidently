@@ -11,6 +11,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -30,6 +31,9 @@ from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
 
 class ValuesInRangeStat(MetricResult):
+    class Config:
+        field_tags = {"number_of_values": {IncludeTags.Extra}}
+
     number_in_range: int
     number_not_in_range: int
     share_in_range: float
@@ -40,6 +44,15 @@ class ValuesInRangeStat(MetricResult):
 
 
 class ColumnValueRangeMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+            "left": {IncludeTags.Parameter},
+            "right": {IncludeTags.Parameter},
+        }
+
     column_name: str
     left: Numeric
     right: Numeric

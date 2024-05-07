@@ -3,6 +3,7 @@ import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshot
 import { api } from 'api/RemoteApi'
 
 import TestSuiteRoute from './testSuiteId'
+import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 
 const { loader, action } = injectTestSuitesAPI({ api })
 
@@ -10,15 +11,16 @@ export default {
   id: 'test_suites',
   path: 'test-suites',
   lazy: async () => {
-    const { SnapshotTemplate, ...rest } = await import(
+    const { SnapshotsListTemplate, ...rest } = await import(
       'evidently-ui-lib/routes-components/snapshots'
     )
 
-    const Component = () => <SnapshotTemplate type="test-suite" />
+    const Component = () => <SnapshotsListTemplate type="test suites" />
 
     return { ...rest, Component }
   },
   loader,
   action,
+  ErrorBoundary: GenericErrorBoundary,
   children: [TestSuiteRoute]
 } satisfies RouteObject

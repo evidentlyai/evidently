@@ -38,6 +38,7 @@ class RegressionPredictedVsActualScatterResults(MetricResult):
     class Config:
         dict_include = False
         tags = {IncludeTags.Render}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Union[PredActualScatter, AggPredActualScatter]
     reference: Optional[Union[PredActualScatter, AggPredActualScatter]]

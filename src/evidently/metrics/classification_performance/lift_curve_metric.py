@@ -8,6 +8,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_lift_table
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import IncludeTags
 from evidently.metric_results import LiftCurve
 from evidently.metric_results import LiftCurveData
 from evidently.metric_results import PredictionData
@@ -24,6 +25,8 @@ from evidently.utils.data_operations import process_columns
 class ClassificationLiftCurveResults(MetricResult):
     class Config:
         pd_include = False
+
+        field_tags = {"current_lift_curve": {IncludeTags.Current}, "reference_lift_curve": {IncludeTags.Reference}}
 
     current_lift_curve: Optional[LiftCurve] = None
     reference_lift_curve: Optional[LiftCurve] = None

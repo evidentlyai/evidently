@@ -33,7 +33,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
   const [collapse, setCollapse] = useState({ active: false })
   return (
     <>
-      <Box>
+      <Box mt={2} px={2}>
         <Alert
           severity={StateToSeverity(groupInfo.severity ?? 'unknown')}
           icon={false}

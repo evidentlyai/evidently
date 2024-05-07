@@ -2,10 +2,13 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
 from typing import Dict
+from typing import Iterator
 from typing import Optional
 from typing import Set
 from typing import Type
+from typing import TypeVar
 from typing import Union
+from typing import get_args
 
 import numpy as np
 import pandas as pd
@@ -18,7 +21,8 @@ from evidently._pydantic_compat import ModelField
 from evidently.pydantic_utils import pydantic_type_validator
 
 if TYPE_CHECKING:
-    from evidently._pydantic_compat import MappingIntStrAny, AbstractSetIntStr
+    from evidently._pydantic_compat import AbstractSetIntStr
+    from evidently._pydantic_compat import MappingIntStrAny
 
 from enum import Enum
 
@@ -66,8 +70,12 @@ class AllDict(dict):
 
 
 class IncludeTags(Enum):
+    Parameter = "parameter"
+    Current = "current"
+    Reference = "reference"
     Render = "render"
     TypeField = "type_field"
+    Extra = "extra"
 
 
 @pydantic_type_validator(pd.Series)
@@ -109,6 +117,7 @@ class BaseResult(BaseModel):
 
         tags: Set[IncludeTags] = set()
         field_tags: Dict[str, set] = {}
+        extract_as_obj: bool = False
 
     if TYPE_CHECKING:
         __config__: ClassVar[Type[Config]] = Config
@@ -119,21 +128,17 @@ class BaseResult(BaseModel):
         include: Optional[IncludeOptions] = None,
         exclude: Optional[IncludeOptions] = None,
     ):
-        include_tags = set()
-        if include_render:
-            include_tags.add(IncludeTags.Render)
-        return self.dict(include=include or self._build_include(include_tags=include_tags), exclude=exclude)
+        exclude_tags = {IncludeTags.TypeField}
+        if not include_render:
+            exclude_tags.add(IncludeTags.Render)
+        return self.dict(include=include or self._build_include(exclude_tags=exclude_tags), exclude=exclude)
 
     def _build_include(
         self,
-        include_tags: Set[IncludeTags],
+        exclude_tags: Set[IncludeTags],
         include=None,
     ) -> "MappingIntStrAny":
-        if (
-            not self.__config__.dict_include
-            and not include
-            and all(t not in include_tags for t in self.__config__.tags)
-        ):
+        if not self.__config__.dict_include and not include or any(t in exclude_tags for t in self.__config__.tags):
             return {}
         include = include or {}
         dict_include_fields = (
@@ -142,17 +147,16 @@ class BaseResult(BaseModel):
             or set(self.__fields__.keys())
         )
         dict_exclude_fields = self.__config__.dict_exclude_fields or set()
-        field_tags = self.__config__.field_tags or {}
+        field_tags = get_all_fields_tags(self.__class__)
         result: Dict[str, Any] = {}
         for name, field in self.__fields__.items():
-            if field_tags.get(name) and all(tag not in include_tags for tag in field_tags.get(name, set())):
+            if field_tags.get(name) and any(tag in exclude_tags for tag in field_tags.get(name, set())):
                 continue
             if isinstance(field.type_, type) and issubclass(field.type_, BaseResult):
                 if (
                     (not field.type_.__config__.dict_include or name in dict_exclude_fields)
                     and not field.field_info.include
                     and name not in include
-                    and all(tag not in include_tags for tag in field.type_.__config__.tags)
                 ):
                     continue
 
@@ -162,20 +166,20 @@ class BaseResult(BaseModel):
                 elif _is_mapping_field(field):
                     build_include = {
                         k: v._build_include(
-                            include_tags=include_tags, include=field.field_info.include or include.get(name, {})
+                            exclude_tags=exclude_tags, include=field.field_info.include or include.get(name, {})
                         )
                         for k, v in field_value.items()
                     }
                 elif _is_sequence_field(field):
                     build_include = {
                         i: v._build_include(
-                            include_tags=include_tags, include=field.field_info.include or include.get(name, {})
+                            exclude_tags=exclude_tags, include=field.field_info.include or include.get(name, {})
                         )
                         for i, v in enumerate(field_value)
                     }
                 else:
                     build_include = field_value._build_include(
-                        include_tags=include_tags, include=field.field_info.include or include.get(name, {})
+                        exclude_tags=exclude_tags, include=field.field_info.include or include.get(name, {})
                     )
                 result[name] = build_include
                 continue
@@ -231,3 +235,46 @@ class BaseResult(BaseModel):
 
     def get_pandas(self) -> pd.DataFrame:
         return pd.DataFrame([self.collect_pandas_columns()])
+
+
+T = TypeVar("T")
+
+
+def _get_actual_type(cls: Type[T]) -> Type[T]:
+    if isinstance(cls, type):
+        return cls
+    if cls is Any:
+        return type
+    return _get_actual_type(get_args(cls)[0])
+
+
+def _iterate_base_result_types(cls: Type[BaseModel]) -> Iterator[Type[BaseResult]]:
+    for type_ in cls.__mro__:
+        if not issubclass(type_, BaseResult):
+            return
+        yield type_
+
+
+def get_cls_tags(cls: Type[BaseModel]) -> Set[IncludeTags]:
+    if issubclass(cls, BaseResult):
+        return cls.__config__.tags
+    return set()
+
+
+def get_field_tags(cls: Type[BaseModel], field_name: str) -> Set[IncludeTags]:
+    field_tags = set()
+    for type_ in _iterate_base_result_types(cls):
+        if field_name not in type_.__config__.field_tags:
+            continue
+        field_tags = type_.__config__.field_tags[field_name]
+        break
+
+    field = cls.__fields__[field_name]
+    field_type = _get_actual_type(field.type_)
+    self_tags = set() if not issubclass(cls, BaseResult) else cls.__config__.tags
+    cls_tags = get_cls_tags(field_type)
+    return self_tags.union(field_tags).union(cls_tags)
+
+
+def get_all_fields_tags(cls: Type[BaseResult]) -> Dict[str, Set[IncludeTags]]:
+    return {field_name: get_field_tags(cls, field_name) for field_name in cls.__fields__}

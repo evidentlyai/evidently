@@ -35,7 +35,7 @@ _TYPES_MAPPING = (
 
 
 def add_type_mapping(types: Tuple[Type], encoder: Callable):
-    global _TYPES_MAPPING
+    global _TYPES_MAPPING  # noqa: PLW0603
     _TYPES_MAPPING += ((types, encoder),)  # type: ignore[assignment]
 
 

@@ -79,7 +79,6 @@ class ColumnsDriftParameters(ConditionTestParameters):
         )
 
     def to_dataframe(self) -> pd.DataFrame:
-
         return pd.DataFrame(
             [
                 {

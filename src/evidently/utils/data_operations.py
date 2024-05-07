@@ -1,4 +1,5 @@
 """Methods for clean null or NaN values in a dataset"""
+
 from typing import Optional
 
 import numpy as np

@@ -1,6 +1,6 @@
 outs:
-- md5: 9136a5067f431ded98869250d0476667.dir
-  size: 9283262
+- md5: e8e23a6208d9d419e5d0961f2c06ae09.dir
+  size: 9283403
   nfiles: 97
   hash: md5
   path: workspace-for-visual-testing

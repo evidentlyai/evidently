@@ -26,6 +26,7 @@ from evidently.metrics.data_drift.text_domain_classifier_drift_metric import Tex
 from evidently.metrics.data_drift.text_metric import Comment
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.tests.utils import approx_result
+from tests.conftest import slow
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import AssertResultFields
 from tests.multitest.conftest import NoopOutcome
@@ -79,6 +80,7 @@ def text_descriptors_drift_metric():
         TextDescriptorsDriftMetric(column_name="Review_Text"),
         NoopOutcome(),
         dataset_names=["reviews"],
+        marks=[slow],
     )
 
 
@@ -89,7 +91,6 @@ def column_drift_metric():
 
 @metric
 def column_drift_metric_values():
-
     test_stattest = StatTest(
         name="test_stattest",
         display_name="test stattest",
@@ -253,7 +254,11 @@ def embeddings_dataset():
 @metric
 def embeddings_drift_metric():
     return TestMetric(
-        "embeddings_drift_metric", EmbeddingsDriftMetric("small_subset"), NoopOutcome(), datasets=[embeddings_dataset()]
+        "embeddings_drift_metric",
+        EmbeddingsDriftMetric("small_subset"),
+        NoopOutcome(),
+        datasets=[embeddings_dataset()],
+        marks=[slow],
     )
 
 

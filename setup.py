@@ -6,12 +6,13 @@
 import os
 from os.path import join as pjoin
 
+from setuptools import setup
+
 from setupbase import HERE
 from setupbase import combine_commands
 from setupbase import create_cmdclass
 from setupbase import ensure_targets
 from setupbase import install_npm
-from setuptools import setup
 
 nb_path = pjoin(HERE, "src", "evidently", "nbextension", "static")
 
@@ -24,10 +25,10 @@ package_data_spec = {
     "evidently": [
         "nbextension/static/*.*js*",
         "nbextension/static/*.*woff2*",
-        "ui/ui/*",
-        "ui/ui/static/css/*",
-        "ui/ui/static/js/*",
-        "ui/ui/static/img/*",
+        "ui/assets/*",
+        "ui/assets/static/css/*",
+        "ui/assets/static/js/*",
+        "ui/assets/static/img/*",
     ]
 }
 
@@ -46,7 +47,7 @@ cmdclass["jsdeps"] = combine_commands(
 setup_args = dict(
     cmdclass=cmdclass,
     author_email="emeli.dral@gmail.com",
-    long_description=open('README.md').read(),
+    long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
@@ -59,10 +60,10 @@ setup_args = dict(
         "scipy>=1.10.0",
         "requests>=2.31.0",
         "PyYAML>=5.4",
-        "pydantic>=1.10.14",
-        "litestar>=2.6.3",
+        "pydantic>=1.10.13",
+        "litestar>=2.8.3",
         "typing-inspect>=0.9.0",
-        "uvicorn>=0.22.0",
+        "uvicorn[standard]>=0.22.0",
         "watchdog>=3",
         "typer>=0.3",
         "rich>=13",
@@ -79,7 +80,6 @@ setup_args = dict(
             "wheel==0.38.1",
             "setuptools==65.5.1; python_version < '3.12'",
             "setuptools==68.2.2; python_version >= '3.12'",
-            "flake8==4.0.1",
             "jupyter==1.0.0",
             "mypy==0.981",
             "pytest==7.4.4",
@@ -88,26 +88,20 @@ setup_args = dict(
             "types-dataclasses==0.6",
             "types-python-dateutil==2.8.19",
             "types-ujson>=5.4.0",
-            "pillow==10.2.0",
-            "black==22.8.0",
-            "isort==5.10.1",
-            "httpx==0.24.1"
+            "pillow==10.3.0",
+            "httpx==0.24.1",
+            "ruff==0.3.7",
+            "pre-commit==3.5.0",
         ],
         "llm": [
             "openai>=1.16.2",
             "evaluate>=0.4.1",
             "transformers[torch]>=4.39.3"
         ],
-        "spark": [
-            "pyspark>=3.4.0"
-        ],
-        "fsspec": [
-            "fsspec[full]>=2024.2.0"
-        ]
+        "spark": ["pyspark>=3.4.0"],
+        "fsspec": ["fsspec[full]>=2024.2.0"],
     },
-    entry_points={
-        "console_scripts": ["evidently=evidently.cli:app"]
-    },
+    entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )
 
 if __name__ == "__main__":

@@ -5,10 +5,12 @@ import uuid
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Type
 from typing import Union
 from uuid import UUID
 
@@ -18,7 +20,6 @@ from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
 from evidently.model.dashboard import DashboardInfo
-from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.renderers.notebook_utils import determine_template
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
@@ -32,7 +33,9 @@ from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
@@ -103,6 +106,7 @@ class Team(BaseModel):
 class User(BaseModel):
     id: UserID = Field(default_factory=uuid.uuid4)
     name: str
+    email: str = ""
 
 
 def _default_dashboard():
@@ -124,6 +128,8 @@ class Project(BaseModel):
 
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
+    created_at: Optional[datetime.datetime] = Field(default=None)
+    # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
     _project_manager: "ProjectManager" = PrivateAttr(None)
     _user_id: UserID = PrivateAttr(None)
@@ -192,7 +198,7 @@ class Project(BaseModel):
             self.project_manager.reload_snapshots(self._user_id, self.id)
 
 
-class MetadataStorage(EvidentlyBaseModel, ABC):
+class MetadataStorage(ABC):
     @abstractmethod
     def add_project(self, project: Project, user: User, team: Team) -> Project:
         raise NotImplementedError
@@ -240,7 +246,7 @@ class MetadataStorage(EvidentlyBaseModel, ABC):
         raise NotImplementedError
 
 
-class BlobStorage(EvidentlyBaseModel, ABC):
+class BlobStorage(ABC):
     @abstractmethod
     @contextlib.contextmanager
     def open_blob(self, id: BlobID):
@@ -258,12 +264,11 @@ class BlobStorage(EvidentlyBaseModel, ABC):
         return id
 
 
-class DataStorage(EvidentlyBaseModel, ABC):
+class DataStorage(ABC):
     @abstractmethod
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         raise NotImplementedError
 
-    @abstractmethod
     def load_points(
         self,
         project_id: ProjectID,
@@ -272,7 +277,15 @@ class DataStorage(EvidentlyBaseModel, ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPoints:
-        raise NotImplementedError
+        return self.load_points_as_type(float, project_id, filter, values, timestamp_start, timestamp_end)
+
+    @staticmethod
+    def parse_value(cls: Type[PointType], value: Any) -> PointType:
+        if isinstance(value, cls):
+            return value
+        if isinstance(value, str):
+            value = json.loads(value)
+        return parse_obj_as(cls, value)
 
     @abstractmethod
     def load_test_results(
@@ -284,6 +297,18 @@ class DataStorage(EvidentlyBaseModel, ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_points_as_type(
+        self,
+        cls: Type[PointType],
+        project_id: ProjectID,
+        filter: "ReportFilter",
+        values: List["PanelValue"],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPointsAsType[PointType]:
         raise NotImplementedError
 
 
@@ -304,7 +329,7 @@ class ProjectPermission(Enum):
     SNAPSHOT_DELETE = "project_snapshot_delete"
 
 
-class AuthManager(EvidentlyBaseModel):
+class AuthManager(ABC):
     allow_default_user: bool = True
 
     @abstractmethod
@@ -406,20 +431,21 @@ class AuthManager(EvidentlyBaseModel):
         self._delete_team(team_id)
 
     @abstractmethod
-    def _list_team_users(self, team_id: TeamID) -> List[User]:
+    def _list_team_users(self, team_id: TeamID) -> Dict[UserID, bool]:
         raise NotImplementedError
 
-    def list_team_users(self, user_id: UserID, team_id: TeamID) -> List[User]:
+    def list_team_users(self, user_id: UserID, team_id: TeamID) -> Dict[UserID, bool]:
         if not self.check_team_permission(user_id, team_id, TeamPermission.READ):
             raise TeamNotFound()
         return self._list_team_users(team_id)
 
 
-class ProjectManager(EvidentlyBaseModel):
-    metadata: MetadataStorage
-    blob: BlobStorage
-    data: DataStorage
-    auth: AuthManager
+class ProjectManager:
+    def __init__(self, metadata: MetadataStorage, blob: BlobStorage, data: DataStorage, auth: AuthManager):
+        self.metadata: MetadataStorage = metadata
+        self.blob: BlobStorage = blob
+        self.data: DataStorage = data
+        self.auth: AuthManager = auth
 
     def create_project(
         self,
@@ -447,6 +473,7 @@ class ProjectManager(EvidentlyBaseModel):
         user = self.auth.get_or_default_user(user_id)
         team = self.auth.get_or_default_team(team_id, user.id)
         project.team_id = team_id
+        project.created_at = datetime.datetime.now()
         return self.metadata.add_project(project, user, team).bind(self, user.id)
 
     def update_project(self, user_id: Optional[UserID], project: Project):

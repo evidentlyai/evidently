@@ -36,6 +36,7 @@ jobs:
             ui:
               - ui/**
             evidently_python:
+              - workspace-for-visual-testing.dvc
               - src/evidently/**
               - requirements.dev.txt
               - requirements.min.txt
@@ -62,18 +63,18 @@ jobs:
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
     strategy:
       matrix:
-        node-version: [16, 18]
+        node-version: [20]
 
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
@@ -95,7 +96,7 @@ jobs:
         working-directory: ui/service
         run: npx vite-bundle-visualizer@1.0.0 -o vite-bundle-report/index.html
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: vite-bundle-visualizer-${{ matrix.node-version }}
@@ -112,7 +113,7 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           architecture: "x64"
@@ -122,19 +123,19 @@ jobs:
         run: pip install -e .
 
       - name: Install dvc
-        run: pip install dvc[gs]
+        run: pip install 'dvc[gs]==3.50.1'
 
-      - name: Pull data
+      - name: Pull test data
         run: dvc pull
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "pnpm"
           cache-dependency-path: ui/pnpm-lock.yaml
 
@@ -144,7 +145,7 @@ jobs:
 
       - name: Install Playwright Browsers
         working-directory: ui
-        run: pnpm dlx playwright@1.41.0 install --with-deps
+        run: pnpm dlx playwright@1.43.0 install --with-deps
 
       - name: Run UI
         run: evidently ui --port 8000 --workspace workspace-for-visual-testing &
@@ -157,7 +158,7 @@ jobs:
         working-directory: ui/service
         run: pnpm test
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
