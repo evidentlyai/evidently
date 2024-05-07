@@ -1,6 +1,7 @@
 import uuid
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 
@@ -56,7 +57,7 @@ class OpenAIFeature(GeneratedFeature):
 
         column_data = data[self.column_name].values.tolist()
         client = OpenAI()
-        result = []
+        result: List[Union[str, float, None]] = []
         prompt = self.prompt.replace(self.context_replace_string, self.context)
         for value in column_data:
             prompt = prompt.replace(self.prompt_replace_string, value)
@@ -70,7 +71,7 @@ class OpenAIFeature(GeneratedFeature):
                 result.append(processed_response)
             else:
                 try:
-                    result.append(float(processed_response))
+                    result.append(float(processed_response) if processed_response else None)
                 except ValueError:
                     result.append(None)
 
@@ -89,7 +90,7 @@ class OpenAIFeature(GeneratedFeature):
         return self.column_name + "_" + self.feature_id
 
 
-def _postprocess_response(response: str, check_mode: str, possible_values: List[str]) -> Optional[str]:
+def _postprocess_response(response: str, check_mode: str, possible_values: Optional[List[str]]) -> Optional[str]:
     for line in response.split("\n"):
         line = line.strip().lower()
         if line:
