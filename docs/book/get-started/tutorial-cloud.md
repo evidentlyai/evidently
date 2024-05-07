@@ -38,10 +38,9 @@ In Evidently Cloud, you can:
 * Monitor tabular and text **data quality** in your production pipelines and services.
 * Track **data and prediction drift** over time.
 * Monitor **text data** (e.g., sentiment, drift, trigger words) for NLP and **LLM models**.
-* Track embeddings drift.
+* Track **embeddings** drift.
 * Monitor **ML model quality** for classification, regression, ranking, and recommendations, including champion/challenger and shadow models, and delayed ground truth.
 * Track the results of **Test Suites** that include multiple evaluations.
-Evidently computes and visualizes over 100 pre-built Metrics and Tests. You can customize or add your own metrics.
 
 Evidently computes and visualizes over 100 pre-built Metrics and Tests. You can customize or add your own metrics.
 </details>
