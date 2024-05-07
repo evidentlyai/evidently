@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 
 import pandas as pd
-
 from openai import OpenAI
 
 from evidently.base_metric import ColumnName
