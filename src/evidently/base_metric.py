@@ -16,6 +16,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import PrivateAttr
 
 from evidently._pydantic_compat import ModelMetaclass
 from evidently.core import BaseResult
@@ -72,12 +73,13 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: str
     dataset: DatasetType
-    feature_class: Optional[GeneratedFeature]
+    _feature_class: Optional[GeneratedFeature] = PrivateAttr(None)
 
     def __init__(
         self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional[GeneratedFeature] = None
     ):
-        super().__init__(name=name, display_name=display_name, dataset=dataset, feature_class=feature_class)
+        self._feature_class = feature_class
+        super().__init__(name=name, display_name=display_name, dataset=dataset)
 
     def is_main_dataset(self):
         return self.dataset == DatasetType.MAIN
@@ -92,6 +94,10 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     @classmethod
     def from_any(cls, column_name: Union[str, "ColumnName"]):
         return column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
+
+    @property
+    def feature_class(self) -> Optional[GeneratedFeature]:
+        return self._feature_class
 
 
 def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
@@ -156,8 +162,8 @@ class InputData:
         return self._determine_type(column), self.get_current_column(column), ref_data
 
     def _determine_type(self, column: Union[str, ColumnName]) -> ColumnType:
-        if isinstance(column, ColumnName) and column.feature_class is not None:
-            column_type = ColumnType.Numerical
+        if isinstance(column, ColumnName) and column._feature_class is not None:
+            column_type = column._feature_class.feature_type
         else:
             if isinstance(column, ColumnName):
                 column_name = column.name
