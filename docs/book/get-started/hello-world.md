@@ -43,7 +43,7 @@ iris_frame = iris_data.frame
 
 # Run a Test Suite
 
-Split the data into two batches. Run a set of pre-built data stability Tests to compare them:
+Split the data into two batches. Run a set of pre-built data quality Tests to compare them:
 
 ```python
 data_stability= TestSuite(tests=[
