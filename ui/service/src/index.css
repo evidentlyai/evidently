@@ -1,6 +1,6 @@
 html,
 body {
-  overflow: auto !important;
+  overflow: auto;
   max-height: 100vh;
 }
 
