@@ -49,7 +49,7 @@ ws = Workspace.create("evidently_ui_workspace")
 You can pass a `path` parameter to specify the path to a local directory.
 
 {% hint style="info" %}
-**Code example** [Self-hosting tutorial](../get-started/tutorial-monitoring.md) shows a complete Python script to create and populate a local workspace..
+**Code example** [Self-hosting tutorial](../get-started/tutorial-monitoring.md) shows a complete Python script to create and populate a local workspace.
 {% endhint %}
 
 # Remote Workspace
@@ -77,7 +77,7 @@ You can pass the following parameters:
 
 In the examples above, you store the snapshots and run the UI on the same server. Alternatively, you can store snapshots in a remote data store (such as an S3 bucket). In this case, the Monitoring UI service will interface with the designated data store to read the snapshot data.
 
-To connect to data stores, Evidently uses `fsspec` that allows accessing data on remote file systems via a standard Python interface. 
+To connect to data stores Evidently uses `fsspec` that allows accessing data on remote file systems via a standard Python interface. 
 
 You can verify supported data stores in the [Fsspec documentation](https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations](https://filesystem-spec.readthedocs.io/en/latest/api.html#other-known-implementations).
 
@@ -125,7 +125,6 @@ rm -r workspace
 {% hint style="danger" %}
 **You are deleting all the data**. This command will delete the snapshots stored in the folder. To maintain access to the generated snapshots, you must store them elsewhere.
 {% endhint %}
-
 
 # What’s next?
 
