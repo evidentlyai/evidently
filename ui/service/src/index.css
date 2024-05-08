@@ -1,5 +1,7 @@
-html, body {
-  overflow-x: clip;
+html,
+body {
+  overflow: auto !important;
+  max-height: 100vh;
 }
 
 body {
