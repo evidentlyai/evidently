@@ -30,7 +30,7 @@ In Evidently Cloud, you can:
 * Monitor tabular and text **data quality** in your production pipelines and services.
 * Track **data and prediction drift** over time for text, tabular data and **embeddings**.
 * Monitor **text data** (e.g., sentiment, drift, trigger words) for NLP and **LLM models**.
-* Monitor **ML model quality** for classification, regression, ranking, and recommendations, including champion/challenger and shadow models, and delayed ground truth.
+* Monitor **ML model quality** for classification, regression, ranking, and recommendations, including champion/challenger and shadow models and delayed ground truth.
 * Track the results of **Test Suites** that bundle multiple evaluations.
 
 Evidently supports over 100 pre-built Metrics and Tests. You can also add custom metrics.
@@ -38,14 +38,14 @@ Evidently supports over 100 pre-built Metrics and Tests. You can also add custom
 
 The monitoring setup consists of two components:
 * **Open-source Evidently Python library**. You perform evaluations in your environment. Each run produces a JSON `snapshot` with statistics, metrics, or test results for a specific period. You then send these `snapshots` to Evidently Cloud using an API key.
-* **Evidently Cloud web app**. After sending the data, you can access it in the Evidently Cloud UI. You can view individual evaluation results, build dashboards with trends over time, and set up alerts to be notified about any issues.
+* **Evidently Cloud web app**. After sending the data, you can access it in the Evidently Cloud UI. You can view individual evaluation results, build dashboards with trends over time, and set up alerts to notify on issues.
 
-You can run batch monitoring jobs (e.g., hourly, daily, weekly), or use Evidently Collector for near real-time checks. This tutorial shows a simple batch workflow first. You can later explore alternative deployment architectures.
+You can run batch monitoring jobs (e.g., hourly, daily, weekly) or use Evidently Collector for near real-time checks. This tutorial shows a simple batch workflow. You can later explore alternative deployment architectures.
 
 ![](../.gitbook/assets/cloud/cloud_service_overview-min.png)
 
 {% hint style="success" %}
-Data security by design. By default, Evidently Cloud does not store raw data or model inferences. Snapshots contain only data aggregates (e.g., histograms of data distributions, descriptive stats, etc.) and metadata with test results. This hybrid architecture helps avoid data duplication and preserves its privacy. 
+**Data security by design**. By default, Evidently Cloud does not store raw data or model inferences. Snapshots contain only data aggregates (e.g., histograms of data distributions, descriptive stats, etc.) and metadata with test results. This hybrid architecture helps avoid data duplication and preserves its privacy. 
 {% endhint %}
 
 # Demo dashboard
@@ -68,11 +68,11 @@ It'll take a few moments to populate the data. In the background, Evidently will
 
 You can customize the choice of Panels and Tabs for your Project – this is just an example.
 
-If you navigate to the "Reports" or "Test Suites" section using the left menu, you can also see individual snapshots. They display the performance on a given day and act as a data source for the monitoring panels.
+You can also see individual snapshots if you navigate to the "Reports" or "Test Suites" section using the left menu. They display the performance on a given day and act as a data source for the monitoring panels.
 
 Now, let's see how you can create something similar for your dataset!
 
-# Add a new project
+# Add a new Project
 
 You'll use a toy dataset to mimic a production ML model. You'll follow these steps:
 * Prepare a tabular dataset.
@@ -82,7 +82,9 @@ You'll use a toy dataset to mimic a production ML model. You'll follow these ste
 * (Optional) Add custom monitoring panels.
 * (Optional) Run Test Suites for continuous testing.
 
-In this example, you'll track data quality and drift. ML monitoring often starts here because true labels for assessing model quality come with a delay - until then, you can only monitor the incoming data and predictions. The tutorial covers the core workflow from data to dashboard which works for any evaluation. You can later expand it to monitor ML model quality and text-based LLM models too.
+In this example, you'll track data quality and drift. ML monitoring often starts here because true labels for assessing model quality come with a delay. Until then, you can only monitor the incoming data and predictions. 
+
+However, the core workflow tutorial covers works for any evaluation. You can later expand it to monitor ML model quality and text-based LLM models.
 
 To complete the tutorial, use the provided code snippets or run a sample notebook.
 
@@ -148,7 +150,7 @@ You'll use the `adult` dataset from OpenML.
 * Import it as a pandas `DataFrame`.
 * Split it into two datasets: `adult_ref` (reference dataset) and `adult_prod` (current production data).
   
-To introduce some artificial drift for demo purposes, we'll base the split on the "education" feature. Current data will include people with education levels unseen in the reference dataset. Here's how you can do it:
+We'll base the split on the "education" feature to introduce some artificial drift for demo purposes. Current data will include people with education levels unseen in the reference dataset. Here's how you can do it:
 
 ```python
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
@@ -188,7 +190,9 @@ Click on the “plus” sign on the home page and type your Project name and des
 
 ![](../.gitbook/assets/cloud/add_project_wide-min.png)
 
-After creating a Project, click its name to open the Dashboard. Since there's no data yet, it will be empty. Copy the Project ID from the top left corner. To send data to this Project, you'll need to connect to it from your Python environment. Run the following code, including the ID of the Project you created:
+After creating a Project, click its name to open the Dashboard. Since there's no data yet, it will be empty. 
+
+To send data to this Project, you'll need to connect to it from your Python environment using `get_project` method. You can find your Project ID above the monitoring dashboard.
 
 ```python
 project = ws.get_project("PROJECT_ID")
@@ -209,25 +213,25 @@ project.save()
 {% endtabs %}
 
 {% hint style="info" %}
-**What is a Project?** Projects help organize monitoring for different use cases. Each project has a shared dashboard and alerting. You can create a Project for a single ML model or dataset, or put related models together. For example, you can group shadow and production models, and use tags to distinguish them within the Project. 
+**What is a Project?** Projects help organize monitoring for different use cases. Each project has a shared dashboard and alerting. You can create a Project for a single ML model or dataset or put related models together. For example, you can group shadow and production models and use tags to distinguish them within the Project. 
 {% endhint %}
 
 ## 4. Run first evaluation
 
-To send snapshots to the Project, start by computing them using the Evidently Python library. Here's the process:
+To send snapshots to the Project, you must compute them using the Evidently Python library. Here's the process:
 * Prepare the data batch to evaluate.
 * Create a Report or Test Suite object. 
 * Define metrics or tests to include.
-* Pass optional parameters, like data drift detetion method or test conditions.
+* Pass optional parameters, like data drift detection method or test conditions.
 * Compute and send the snapshot.
 
 {% hint style="info" %}
-**What are Reports and Test Suites?** Check out the [open-source Evidently Tutorial](https://docs.evidentlyai.com/get-started/tutorial) for an introduction. You can pick from 100+ individual evaluations or use Presets. A `snapshot` is simply a "JSON version" of a Report or Test Suite.  
+**What are Reports and Test Suites?** These are pre-built evaluations available in the open-source Evidently Python library. They cover 100+ checks for data quality, data drift, and model quality. You can check out the [open-source Evidently Tutorial](https://docs.evidentlyai.com/get-started/tutorial) for an introduction. A `snapshot` is a "JSON version" of a Report or Test Suite.  
 {% endhint %}
 
-Let’s start with a daily check to monitor data quality and drift using a preset combination of metrics. This helps understand how model inputs and outputs are changing. For each batch of data, you'll generate:
+Let’s start with data quality and drift checks using a preset metric combination. This helps observe how model inputs and outputs are changing. For each batch of data, you'll generate:
 * **Data Quality Preset**. It captures stats like feature ranges and missing values.
-* **Data Drift Preset**. This compares current and reference data distributions using PSI (Population Stability Index), with a 0.3 threshold for significant drift. 
+* **Data Drift Preset**. This compares current and reference data distributions. You will use PSI (Population Stability Index) method, with a 0.3 threshold for significant drift. 
 
 To create a single Report using the first 100 rows of our "production" data:
 
@@ -242,23 +246,23 @@ data_report = Report(
 data_report.run(reference_data=adult_ref, current_data=adult_prod.iloc[0 : 100, :])
 ```
 
+{% hint style="info" %}
+**Defining the current dataset.** To specify which dataset you're evaluating, you pass it as the `current_dataset` inside the `run` method. In our example, we used a slice function `adult_prod.iloc[0 : 100, :]` to select the first 100 rows from the `adult_prod` dataset. In practice, you can simply pass your data batch: `current_data=your_batch_name`.
+{% endhint %}
+
 To send this Report to the Evidently Cloud, use the `add_report` method. 
 
 ```python
 ws.add_report(project.id, data_report)
 ```
 
-{% hint style="info" %}
-**Defining the current dataset.** To specify which dataset you're evaluating, you pass it as the `current_dataset`  inside the `run` method. In our example, we used a slice function `adult_prod.iloc[0 : 100, :]` to select the first 100 rows from the `adult_prod` dataset. In practice, you can simply pass your complete data batch: `current_data=your_batch_name`.
-{% endhint %}
-
 You can now view the Report in the Evidently Cloud web app. Go to the "Reports" section via the left menu and click to open the first Report. You can also download it as an HTML or JSON.
 
 ## 5. Send multiple snapshots
 
-For production use, you can run evaluations like this on a regular schedule – for example, daily, hourly, or weekly – each time passing a new batch of data. Once you have multiple snapshots in the Project, you can observe trends over time on a monitoring dashboard.
+For production use, you can run evaluations like this on a schedule – for example, daily, hourly, or weekly – each time passing a new batch of data. Once you have multiple snapshots in the Project, you can observe trends over time on a monitoring dashboard.
 
-To simulate production use, let’s create a script to compute multiple Reports, taking 100 rows per day:
+To simulate production use, let’s create a script to compute multiple Reports, taking 100 rows per "day":
 
 ```python
 def create_report(i: int):
@@ -286,8 +290,8 @@ for i in range(0, 10):
 
 <summary>What happens in this code?</summary>
 
-* You create a `Report` with two preset metric combinations. The **[Data Quality](https://docs.evidentlyai.com/presets/data-quality)** preset includes summary statistics like nulls, min-max, etc. The **[Data Drift](https://docs.evidentlyai.com/presets/data-drift)** preset compares new data to reference, using the Population Stability Index (PSI) test ([optional parameter](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests)).
-* You add a **timestamp** to each `Report`: `datetime.now` for the first data batch, and the next day's date for subsequent batches. In real use, you can skip this step – the current timestamp will be automatically assigned. 
+* You create a `Report` with two preset metric combinations. The **[Data Quality](https://docs.evidentlyai.com/presets/data-quality)** preset includes summary statistics like nulls, min-max, etc. The **[Data Drift](https://docs.evidentlyai.com/presets/data-drift)** preset compares new data to reference, using the Population Stability Index (PSI) test as an [optional parameter](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests).
+* You add a **timestamp** to each `Report`: `datetime.now` for the first data batch, and the next day's date for subsequent batches. In real use, you can skip this step – the current timestamp will be automatically assigned. We do it for demo purposes.
 * You compute each `Report` changing the `current_data` and keeping the `reference_data` static. For current data, you pass 100 new rows for `i` days to simulate batch inference.
 * The `add_report` method computes the Report in the JSON snapshot format and sends it to the workspace `ws` (which is Evidently Cloud).
 
@@ -302,35 +306,34 @@ Once you run the script, you will compute and send 10 daily snapshots. Navigate 
 However, each such Report is static. To see trends over time, you need a monitoring dashboard!
 
 {% hint style="info" %}
-**Want to reuse this script for your data?**  If you replace the toy dataset for your data, increase the `i`, or add more metrics, we recommend sending Reports one by one instead of running a script. Otherwise you might hit Rate Limits when sending many Reports together. For free trial users, the limit on the single data upload is 50MB; for paying users is 500MB. Snapshot size varies based on metrics and tests included. 
+**Want to reuse this script for your data?**  If you try replacing the toy dataset for your data, increasing the `i`, or adding more metrics, it's best to send Reports one by one instead of running a script. Otherwise, you might hit Rate Limits when sending many Reports together. For free trial users, the limit on the single data upload is 50MB; for paying users, it is 500MB. Snapshot size varies based on metrics and tests included. 
 {% endhint %}
 
 ## 6. Add monitoring Tabs 
 
 Monitoring Dashboard helps observe trends. It pulls selected values from individual Reports to show them over time. You can add multiple individual monitoring panels and organize them using Tabs. 
 
-For a simple start, you can use Tab templates which are pre-built combinations of monitoring panels. You can choose:
+For a simple start, you can use Tab templates, which are pre-built combinations of monitoring panels. You can choose:
 * **Data Quality Tab**: displays data quality metrics (nulls, duplicates, etc.).
 * **Columns Tab**: shows descriptive statistics for each column over time.
 * **Data Drift Tab**: illustrates the share of drifting features over time.
 
-To add these pre-built Tabs, enter "Edit" mode in the top right corner of the Dashboard and click the plus sign to add a new Tab. Then, choose the desired Tab template. You will then observe how the data in the Reports changed over 10 days.
+To add these pre-built Tabs, enter "Edit" mode in the top right corner of the Dashboard, and click the plus sign to add a new Tab. Then, choose the Tab template. You will then observe how the data in the Reports changed over 10 days.
 
 ## 7. Add custom Panels [OPTIONAL]
 
 You can also add individual monitoring panels one by one. You can:
-* Add them to existing or a new Tab.
+* Add them to an existing or a new Tab.
 * Choose the panel type, including Line Plot, Bar Plot, Histogram, Counter, etc.
 * Customize panel name, legend, etc.
 
 {% hint style="info" %}
-**You can only view values stored inside snapshots.**  In our example, these are values related to data drift and quality. You can't see model quality metrics yet, even if you add a panel of this type, since there is no such data in a snapshot. However, once you add new snapshots - for example, with `ClassificationPreset()`.
+**You can only view values stored inside snapshots.**  In our example, these are values related to data drift and quality. You can't see model quality metrics yet, since there is no such data in a snapshot. If you add a panel for model quality metrics, it will be empty. To populate, you must add more snapshots, for example, with `ClassificationPreset()`.
 {% endhint %}
 
-
 Say, you want to add a new “Summary” Tab and add a couple of panels:
-* the number of inferences over time.
-* the share of drifting features over time.
+* inferences over time.
+* share of drifting features over time.
 
 You can add panels both in the UI or using the Python API. 
 
@@ -340,7 +343,7 @@ You can add panels both in the UI or using the Python API.
 Enter the “edit” mode on the Dashboard, and use the “add Tab” and “add Panel” buttons to add a new Panel. Follow the prompts to point to a specific measurement.
 * To view inferences over time, plot the value `current.number_of_rows` inside the `DatasetSummaryMetric`.
 * To view the share of drifting columns, plot the value `share_of_drifted_columns` inside the `DatasetDriftMetric`.
-Choose a Panel type - for example LINE or BAR plot, and add your legend.
+Choose a Panel type - for example, LINE or BAR plot, and add your legend.
 
 ![](../.gitbook/assets/cloud/add_new_panel_2.gif)
 
@@ -348,7 +351,7 @@ Choose a Panel type - for example LINE or BAR plot, and add your legend.
 
 {% tab title="API" %} 
 
-**Connect to a Project**. If you've made changes to the dashboard in the UI since creating the Project (such as adding Tabs), use the "get_project" method to load the latest dashboard configuration into your Python environment. This ensures that new dashboard code won't overwrite (delete) Panels previously added in the UI.
+**Connect to a Project**. If you've made changes to the dashboard in the UI since creating the Project (such as adding Tabs), use the "get_project" method to load the latest dashboard configuration into your Python environment. This ensures that the new dashboard code won't overwrite Panels previously added in the UI.
 
 ```python
 project = ws.get_project("YOUR PROJECT ID HERE")
@@ -401,7 +404,7 @@ Return to the Evidently Cloud web app to view the dashboards you created. Refres
 **How to add and modify Panels?** Check the detailed instructions on how to [design monitoring panels](https://docs.evidentlyai.com/user-guide/monitoring/design_dashboard). You can also add text-only Panels and counters. 
 {% endhint %}
 
-## 7. Monitor Test runs [OPTIONAL]
+## 8. Monitor Test runs [OPTIONAL]
 
 You just created a dashboard to track individual metric values over time. Another option is to conduct your evaluations as Tests and monitor their outcomes.
 
@@ -414,7 +417,7 @@ To do this, use Test Suites instead of Reports. Each Test in a Test Suite checks
 {% endhint %}
 
 Let’s create a Test Suite that includes:
-* **Data Drift Test Preset**. It will generate a data drift check for all columns in the dataset, using the same PSI method with a 0.3 threshold.
+* **Data Drift Test Preset**. It will generate a data drift check for all columns in the dataset using the same PSI method with a 0.3 threshold.
 * **Individual data quality tests**. They will check for missing values, empty rows, columns, duplicates, and constant columns. You can set test conditions using parameters like `eq` (equal) or `lte` (less than or equal). If no condition is set, Evidently will auto-generate them based on the reference data and heuristics. 
 
 Here's a script that again simulates generating Test Suites for 10 days in a row:  
@@ -500,7 +503,7 @@ project.save()
 
 {% endtabs %}
 
-You'll see dashboards with Test results over time in the new Tab. Head to the "Test Suites" section in the left menu for individual Test Suites. This aids in debugging Test outcomes.
+You'll see dashboards with Test results over time in the new Tab. Head to the "Test Suites" section in the left menu for individual Test Suites. This helps debug Test outcomes.
 
 ![](../.gitbook/assets/cloud/view-tests-min.gif)
 
@@ -508,98 +511,26 @@ You'll see dashboards with Test results over time in the new Tab. Head to the "T
 
 <summary>When to use Test Suites?</summary>
 
-Examples include:
+You can choose between Reports and Test Suites or both in combination. Test Suites are useful for:
+* **Monitoring multiple conditions at once**. Bundling checks in a Test Suite helps reduce alert fatigue and ease condition setup. For example, you can quickly check if all columns in a dataset are within a defined min-max range. 
+* **Batch testing scenarios** like comparing new vs. old models in CI/CD or validating the quality of input data batch.
+* **Using Test results outside Evidently Cloud**. For instance, you can stop your pipeline if data quality tests fail.
 
-* **Monitoring compliance with multiple conditions at once**. For example, if you track min-max ranges and null percentages for each column. To reduce alert fatigue, you can monitor aggregate results like the number of failed data quality tests over time.
-* **Using test results outside Evidently Cloud.** For instance, if tests fail, you can execute a conditional action in your pipeline (e.g., stop pipeline, avoid promoting a new model, etc.), besides sending snapshots to Evidently Cloud.
-* **Any batch testing scenarios.** Whenever you want to explicitly compare e.g. new model vs. old, model or data quality against expected levels, and record the test results over time.
+However, Test Suites require you to define pass or fail conditions upfront. If you only want to plot metrics, you can start with Reports instead. 
+
+Note that if you use Test Suites, you can also plot the individual metric values (e.g., nulls over time) in addition to the Test-specific panels.
 
 </details>
 
 <details>
 
-<summary>Should I use Reports or Test Suites?</summary>
+## What's next?
 
-You can choose between Reports or Test Suites or use both in combination.
+To go through all the steps in more detail, read to the complete [Monitoring User Guide](https://docs.evidentlyai.com/user-guide/monitoring/monitoring_overview). Here are some of the things you might want to explore next:
 
-* You can create identical **metric monitoring Panels** from either source. For example, you can pull the data on the share of missing values from any Report or Test Suite that captures this information.
-* However, **individual Reports and Test Suites** have distinct looks. Reports offer more explorative visuals, while Test Suites clearly summarize each individual test result. You might prefer one to another.
-* If you want to **track the failed tests** (not just the values of the underlying metrics) on the monitoring dashboard, you must use Test Suites.
-* If you have **a batch testing scenario** and you can define your success conditions upfront, consider using Test Suites.
+* **Customize your evaluations**. Check available [Presets](https://docs.evidentlyai.com/presets), [Metrics](https://docs.evidentlyai.com/reference/all-metrics), and [Tests](https://docs.evidentlyai.com/reference/all-tests) to see other evaluations you can run.
+* **Build your batch or real-time workflow**. For batch evaluations, you can run regular monitoring jobs - for example, using a tool like Airflow or a script to orchestrate them. If you have a live ML service, you use [Evidently collector service](https://docs.evidentlyai.com/user-guide/monitoring/collector_service) to collect incoming production data and manage the computation of Reports and Test Suites following your configuration.
+* **Add alerts**. You enable email, Slack, or Discord alerts for Test Suites failures or when specific metrics are out of bounds. 
+* **Use Tags**. You can add metadata or tags to your snapshots. For instance, indicate shadow and production models and build individual monitoring panels.
 
-</details>
-
-You can also enable email Alerts. Navigate to the "Alerts" tab, toggle it on, and add the email for alerting. Currently, the alerts are tied to the failed Tests in a Test Suite. If any of the Tests fail, Evidently will set an alert.
-
-![](../.gitbook/assets/cloud/add_alerts-min.png)
-
-If you want to allow some Tests to fail without generating an alert, you can set the `is_critical` flag to False.
-
-```
-tests = TestSuite(tests=[
-    TestColumnAllConstantValues(column_name='education', is_critical=False),
-])
-```
-
-{% hint style="info" %}
-**Coming soon**: More granular alerting conditions and alternative alerting channels (e.g. Slack).
-{% endhint %}
-
-
-## 9. (Optional) Work with existing Project
-
-You can continue using Evidently Cloud API to make changes to an existing Project or send new snapshots.
-
-**Connect to an existing Project**. Use the `get_project` method. You can copy the Project ID directly from the UI: it appears above the monitoring dashboard.
-
-```python
-project = ws.get_project("PROJECT_ID")
-```
-
-**Send new snapshots**. For example, to add a new report with data summaries for the `cur` data batch (without reference), with an automatically assigned current timestamp:
-
-```python
-data_report = Report(
-       metrics=[
-           DataQualityPreset(),
-       ],
-    )
-data_report.run(reference_data=None, current_data=cur)
-ws.add_report(project.id, data_report)
-```
-
-**Add new monitoring Panels and Tabs**. Use the `add_panel` method as shown above, and run `project.save()` to update the config after you make the changes. New Panels and Tabs will be added to existing ones.
-
-**Clean up panels**. To delete the existing monitoring panels (**not** the snapshots):
-
-```python
-project.dashboard.panels = []
-project.save()
-```
-
-**[DANGER]. Delete the project.** To delete the project and all the data.
-
-```python
-# ws.delete_project("PROJECT ID")
-```
-
-# What's next?
-
-* **Read the monitoring guide**. To go through all the steps in more detail, refer to the complete [Monitoring User Guide](https://docs.evidentlyai.com/user-guide/monitoring/monitoring_overview) in the docs.
-* **Browse available evaluations**. You can check all available [Presets](https://docs.evidentlyai.com/presets), [Metrics](https://docs.evidentlyai.com/reference/all-metrics), and [Tests](https://docs.evidentlyai.com/reference/all-tests). A good next step is to explore model quality metrics you can compute once the ground truth is available.
-* **Build a batch workflow**. To add monitoring for an existing ML model, you must collect the data from your production pipelines or run monitoring jobs over inferences stored in a data warehouse. For example, you can use a tool like Airflow or set up a script to compute snapshots on a regular cadence.
-* **Explore real-time monitoring**. If you have a live ML service, you can run an [Evidently collector service](https://docs.evidentlyai.com/user-guide/monitoring/collector_service) and send the predictions for near real-time monitoring.
-
-Need any help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
-
-
-<details>
-
-<summary>How to modify it for your data later?</summary>
-
-* **Run `Reports` sequentially**. In production, simply pass the `current` data for each run. Evidently will automatically assign the `datetime.now` timestamp (or you can set a custom one). Learn more about [timestamps](https://docs.evidentlyai.com/user-guide/monitoring/snapshots).
-* **Choose evaluations**. Pick any available Metrics to include in Report - data quality, integrity, drift (tabular, text, embeddings), or model quality (classification, regression, ranking, recommendations). Explore available [Presets](https://docs.evidentlyai.com/presets), [Metrics](https://docs.evidentlyai.com/reference/all-metrics), and [Tests](https://docs.evidentlyai.com/reference/all-tests).
-* **Use Column Mapping**. You might need a [ColumnMapping object](https://docs.evidentlyai.com/user-guide/input-data/column-mapping) to define data structure: like pointing to columns with encoded categorical features, prediction or target column, etc.
-* **Include Tags**. Optionally, add metadata or tags to your snapshot. For example, you can indicate whether a Report refers to a shadow or production model. Learn more about [tags](https://docs.evidentlyai.com/user-guide/monitoring/snapshots).
-
-</details>
+Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
