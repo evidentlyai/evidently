@@ -522,8 +522,6 @@ Note that if you use Test Suites, you can also plot the individual metric values
 
 </details>
 
-<details>
-
 ## What's next?
 
 To go through all the steps in more detail, read to the complete [Monitoring User Guide](https://docs.evidentlyai.com/user-guide/monitoring/monitoring_overview). Here are some of the things you might want to explore next:
