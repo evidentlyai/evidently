@@ -5,7 +5,11 @@ from .openai_descriptor import OpenAIPrompting
 from .regexp_descriptor import RegExp
 from .sentence_count_descriptor import SentenceCount
 from .sentiment_descriptor import Sentiment
+from .text_contains_descriptor import TextContains
+from .text_contains_descriptor import TextNotContains
 from .text_length_descriptor import TextLength
+from .text_part_descriptor import TextBegins
+from .text_part_descriptor import TextEnds
 from .trigger_words_presence_descriptor import TriggerWordsPresence
 from .word_count_descriptor import WordCount
 

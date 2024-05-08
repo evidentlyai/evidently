@@ -3,7 +3,8 @@ from typing import List
 import pandas as pd
 import pytest
 
-from evidently.features.text_part_feature import TextPart
+from evidently.features.text_part_feature import TextBegins
+from evidently.features.text_part_feature import TextEnds
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
 
@@ -17,15 +18,27 @@ test_data = [
 ]
 
 
-@pytest.mark.parametrize(("substr", "case", "mode", "expected"), [
-    ("abc", True, "prefix", [True, False, False, True, False]),
-    ("abc", False, "prefix", [True, True, False, True, False]),
-    ("ABC", False, "prefix", [True, True, False, True, False]),
-    ("efg", True, "suffix", [True, False, True, False, False]),
-    ("efg", False, "suffix", [True, True, True, False, False]),
+@pytest.mark.parametrize(("substr", "case", "expected"), [
+    ("abc", True, [True, False, False, True, False]),
+    ("abc", False, [True, True, False, True, False]),
+    ("ABC", False, [True, True, False, True, False]),
 ])
-def test_text_contains_feature(substr: str, case: bool, mode: str, expected: List[bool]):
-    feature_generator = TextPart("column_1", substr, case_sensitive=case, mode=mode)
+def test_text_begins_feature(substr: str, case: bool, mode: str, expected: List[bool]):
+    feature_generator = TextBegins("column_1", substr, case_sensitive=case)
+    data = pd.DataFrame(dict(column_1=test_data))
+    result = feature_generator.generate_feature(
+        data=data,
+        data_definition=create_data_definition(None, data, ColumnMapping()),
+    )
+    assert result.equals(pd.DataFrame(dict(column_1=expected)))
+
+
+@pytest.mark.parametrize(("substr", "case", "expected"), [
+    ("efg", True, [True, False, True, False, False]),
+    ("efg", False, [True, True, True, False, False]),
+])
+def test_text_ends_feature(substr: str, case: bool, expected: List[bool]):
+    feature_generator = TextEnds("column_1", substr, case_sensitive=case)
     data = pd.DataFrame(dict(column_1=test_data))
     result = feature_generator.generate_feature(
         data=data,

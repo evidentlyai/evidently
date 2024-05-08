@@ -8,41 +8,31 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class TextPart(GeneratedFeature):
+class TextBegins(GeneratedFeature):
     column_name: str
     case_sensitive: bool
-    substring: str
-    mode: str
+    prefix: str
 
     def __init__(
         self,
         column_name: str,
-        substring: str,
+        prefix: str,
         case_sensitive: bool = True,
-        mode: str = "prefix",
         display_name: Optional[str] = None,
     ):
         self.column_name = column_name
         self.display_name = display_name
         self.case_sensitive = case_sensitive
-        if mode not in ["prefix", "suffix"]:
-            raise ValueError("mode must be either 'prefix' or 'suffix'")
-        self.mode = mode
-        self.substring = substring
+        self.prefix = prefix
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         data = data[self.column_name]
-        substr = self.substring
+        substr = self.prefix
         if not self.case_sensitive:
             data = data.str.casefold()
             substr = substr.casefold()
-        if self.mode == "prefix":
-            calculated = data.str.startswith(substr)
-        elif self.mode == "suffix":
-            calculated = data.str.endswith(substr)
-        else:
-            raise ValueError("mode must be either 'prefix' or 'suffix'")
+        calculated = data.str.startswith(substr)
         return pd.DataFrame(dict([(
             self.column_name,
             calculated,
@@ -52,5 +42,43 @@ class TextPart(GeneratedFeature):
         return additional_feature(
             self,
             self.column_name,
-            self.display_name or f"Text {self.mode.capitalize()} [{self.substring}] for {self.column_name}",
+            self.display_name or f"Text Begins with [{self.prefix}] for {self.column_name}",
+        )
+
+
+class TextEnds(GeneratedFeature):
+    column_name: str
+    case_sensitive: bool
+    suffix: str
+
+    def __init__(
+        self,
+        column_name: str,
+        suffix: str,
+        case_sensitive: bool = True,
+        display_name: Optional[str] = None,
+    ):
+        self.column_name = column_name
+        self.display_name = display_name
+        self.case_sensitive = case_sensitive
+        self.suffix = suffix
+        super().__init__()
+
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        data = data[self.column_name]
+        substr = self.suffix
+        if not self.case_sensitive:
+            data = data.str.casefold()
+            substr = substr.casefold()
+        calculated = data.str.endswith(substr)
+        return pd.DataFrame(dict([(
+            self.column_name,
+            calculated,
+        )]))
+
+    def feature_name(self) -> ColumnName:
+        return additional_feature(
+            self,
+            self.column_name,
+            self.display_name or f"Text Ends with [{self.suffix}] for {self.column_name}",
         )
