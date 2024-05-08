@@ -25,7 +25,7 @@ test_data = [
         ("ABC", False, [True, True, False, True, False]),
     ],
 )
-def test_text_begins_feature(substr: str, case: bool, mode: str, expected: List[bool]):
+def test_text_begins_feature(substr: str, case: bool, expected: List[bool]):
     feature_generator = BeginsWith("column_1", substr, case_sensitive=case)
     data = pd.DataFrame(dict(column_1=test_data))
     result = feature_generator.generate_feature(
