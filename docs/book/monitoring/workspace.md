@@ -52,7 +52,7 @@ You can pass a `path` parameter to specify the path to a local directory.
 **Code example** [Self-hosting tutorial](../get-started/tutorial-monitoring.md) shows a complete Python script to create and populate a local workspace.
 {% endhint %}
 
-# Remote Workspace
+## Remote Workspace
 
 In this scenario, after generating the snapshots, you will send them to the remote server. You must run the Monitoring UI on the same remote server, so that it directly interfaces with the filesystem where the snapshots are stored.
 
