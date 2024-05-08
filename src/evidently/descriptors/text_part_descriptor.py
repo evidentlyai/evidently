@@ -3,12 +3,12 @@ from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 
 
-class TextBeginsWith(FeatureDescriptor):
+class BeginsWith(FeatureDescriptor):
     prefix: str
     case_sensitive: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
-        return text_part_feature.TextBeginsWith(
+        return text_part_feature.BeginsWith(
             column_name,
             self.prefix,
             self.case_sensitive,
@@ -16,7 +16,7 @@ class TextBeginsWith(FeatureDescriptor):
         )
 
     def for_column(self, column_name: str):
-        return text_part_feature.TextBeginsWith(
+        return text_part_feature.BeginsWith(
             column_name,
             self.prefix,
             self.case_sensitive,
@@ -24,12 +24,12 @@ class TextBeginsWith(FeatureDescriptor):
         ).feature_name()
 
 
-class TextEndsWith(FeatureDescriptor):
+class EndsWith(FeatureDescriptor):
     suffix: str
     case_sensitive: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
-        return text_part_feature.TextEndsWith(
+        return text_part_feature.EndsWith(
             column_name,
             self.suffix,
             self.case_sensitive,
@@ -37,7 +37,7 @@ class TextEndsWith(FeatureDescriptor):
         )
 
     def for_column(self, column_name: str):
-        return text_part_feature.TextEndsWith(
+        return text_part_feature.EndsWith(
             column_name,
             self.suffix,
             self.case_sensitive,

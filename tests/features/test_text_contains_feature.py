@@ -3,8 +3,8 @@ from typing import List
 import pandas as pd
 import pytest
 
-from evidently.features.text_contains_feature import TextContains
-from evidently.features.text_contains_feature import TextNotContains
+from evidently.features.text_contains_feature import Contains
+from evidently.features.text_contains_feature import NotContains
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
 
@@ -29,7 +29,7 @@ test_data = [
     (["a", "b"], False, "all", [True, False, False, False, True]),
 ])
 def test_text_contains_feature(items: List[str], case: bool, mode: str, expected: List[bool]):
-    feature_generator = TextContains("column_1", items, case_sensitive=case, mode=mode)
+    feature_generator = Contains("column_1", items, case_sensitive=case, mode=mode)
     data = pd.DataFrame(dict(column_1=test_data))
     result = feature_generator.generate_feature(
         data=data,
@@ -45,7 +45,7 @@ def test_text_contains_feature(items: List[str], case: bool, mode: str, expected
     (["a", "b"], False, "all", [False, True, True, True, False]),
 ])
 def test_text_not_contains_feature(items: List[str], case: bool, mode: str, expected: List[bool]):
-    feature_generator = TextNotContains("column_1", items, case_sensitive=case, mode=mode)
+    feature_generator = NotContains("column_1", items, case_sensitive=case, mode=mode)
     data = pd.DataFrame(dict(column_1=test_data))
     result = feature_generator.generate_feature(
         data=data,

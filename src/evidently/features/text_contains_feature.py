@@ -9,7 +9,7 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class TextContains(GeneratedFeature):
+class Contains(GeneratedFeature):
     column_name: str
     items: List[str]
     case_sensitive: bool
@@ -57,7 +57,7 @@ class TextContains(GeneratedFeature):
         return item.casefold() in string.casefold()
 
 
-class TextNotContains(GeneratedFeature):
+class NotContains(GeneratedFeature):
     column_name: str
     items: List[str]
     case_sensitive: bool

@@ -5,13 +5,13 @@ from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 
 
-class TextContains(FeatureDescriptor):
+class Contains(FeatureDescriptor):
     items: List[str]
     mode: str = "any"
     case_sensitive: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
-        return text_contains_feature.TextContains(
+        return text_contains_feature.Contains(
             column_name,
             self.items,
             self.case_sensitive,
@@ -20,7 +20,7 @@ class TextContains(FeatureDescriptor):
         )
 
     def for_column(self, column_name: str):
-        return text_contains_feature.TextContains(
+        return text_contains_feature.Contains(
             column_name,
             self.items,
             self.case_sensitive,
@@ -29,13 +29,13 @@ class TextContains(FeatureDescriptor):
         ).feature_name()
 
 
-class TextNotContains(FeatureDescriptor):
+class NotContains(FeatureDescriptor):
     items: List[str]
     mode: str = "any"
     case_sensitive: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
-        return text_contains_feature.TextNotContains(
+        return text_contains_feature.NotContains(
             column_name,
             self.items,
             self.case_sensitive,
@@ -44,7 +44,7 @@ class TextNotContains(FeatureDescriptor):
         )
 
     def for_column(self, column_name: str):
-        return text_contains_feature.TextNotContains(
+        return text_contains_feature.NotContains(
             column_name,
             self.items,
             self.case_sensitive,
