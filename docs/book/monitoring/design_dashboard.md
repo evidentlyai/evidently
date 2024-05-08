@@ -1,8 +1,8 @@
----
-description: How to add and configure monitoring panels.
----   
 
-New dashboards are empty by default. You must define the dashboard composition in the code. You can choose which values or test results to display and select from several monitoring panel types. 
+
+
+
+
 
 # Code example
 
