@@ -33,10 +33,7 @@ class BeginsWith(GeneratedFeature):
             data = data.str.casefold()
             substr = substr.casefold()
         calculated = data.str.startswith(substr)
-        return pd.DataFrame(dict([(
-            self.column_name,
-            calculated,
-        )]))
+        return pd.DataFrame(dict([(self.column_name, calculated)]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
@@ -71,10 +68,16 @@ class EndsWith(GeneratedFeature):
             data = data.str.casefold()
             substr = substr.casefold()
         calculated = data.str.endswith(substr)
-        return pd.DataFrame(dict([(
-            self.column_name,
-            calculated,
-        )]))
+        return pd.DataFrame(
+            dict(
+                [
+                    (
+                        self.column_name,
+                        calculated,
+                    )
+                ]
+            )
+        )
 
     def feature_name(self) -> ColumnName:
         return additional_feature(

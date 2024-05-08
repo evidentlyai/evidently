@@ -39,10 +39,7 @@ class Contains(GeneratedFeature):
             calculated = data[self.column_name].apply(lambda x: all(self.comparison(i, x) for i in self.items))
         else:
             raise ValueError("mode must be either 'any' or 'all'")
-        return pd.DataFrame(dict([(
-            self.column_name,
-            calculated,
-        )]))
+        return pd.DataFrame(dict([(self.column_name, calculated)]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
@@ -87,10 +84,16 @@ class NotContains(GeneratedFeature):
             calculated = ~data[self.column_name].apply(lambda x: all(self.comparison(i, x) for i in self.items))
         else:
             raise ValueError("mode must be either 'any' or 'all'")
-        return pd.DataFrame(dict([(
-            self.column_name,
-            calculated,
-        )]))
+        return pd.DataFrame(
+            dict(
+                [
+                    (
+                        self.column_name,
+                        calculated,
+                    )
+                ]
+            )
+        )
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
