@@ -34,22 +34,22 @@ jobs:
       - check
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.9"
-    - name: Install dependencies
-      run: pip install -r requirements.min.txt
-    - name: Install wheel
-      run: pip install wheel
-    - name: Build a binary wheel and a source tarball
-      run: python setup.py sdist bdist_wheel
-    - name: Store the distribution packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: pip install -r requirements.min.txt
+      - name: Install wheel
+        run: pip install wheel
+      - name: Build a binary wheel and a source tarball
+        run: python setup.py sdist bdist_wheel
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
 
   publish_to_pypi:
     name: Publish Python distributions to PyPI and TestPyPI
@@ -121,7 +121,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:

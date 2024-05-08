@@ -457,6 +457,43 @@ def create_data_definition(
     )
 
 
+def get_column_name_or_none(column: Optional[ColumnDefinition]) -> Optional[str]:
+    if column is None:
+        return None
+    return column.column_name
+
+
+def create_column_mapping(data_definition: DataDefinition) -> ColumnMapping:
+    prediction = None
+    prediction_columns = data_definition.get_prediction_columns()
+    if prediction_columns and prediction_columns.predicted_values:
+        prediction = prediction_columns.predicted_values.column_name
+
+    column_mapping = ColumnMapping(
+        target=get_column_name_or_none(data_definition.get_target_column()),
+        prediction=prediction,
+        datetime=get_column_name_or_none(data_definition.get_datetime_column()),
+        id=get_column_name_or_none(data_definition.get_id_column()),
+        numerical_features=[
+            x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Numerical
+        ],
+        categorical_features=[
+            x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Categorical
+        ],
+        datetime_features=[
+            x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Datetime
+        ],
+        text_features=[x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Text],
+        target_names=data_definition.classification_labels,
+        task=data_definition.task,
+        embeddings=data_definition.embeddings,
+        user_id=get_column_name_or_none(data_definition.get_user_id_column()),
+        item_id=get_column_name_or_none(data_definition.get_item_id_column()),
+        recommendations_type=RecomType(data_definition.recommendations_type),
+    )
+    return column_mapping
+
+
 class ColumnPresenceState(Enum):
     Present = 0
     Partially = 1

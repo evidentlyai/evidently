@@ -102,7 +102,7 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
             if data.reference_data is not None:
                 reference_column = data.get_reference_column(val.feature_name())
             current, reference = get_distribution_for_column(
-                column_type="num",
+                column_type=val.feature_type.value,
                 current=current_column,
                 reference=reference_column,
             )
