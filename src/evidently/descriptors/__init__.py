@@ -8,8 +8,8 @@ from .sentiment_descriptor import Sentiment
 from .text_contains_descriptor import TextContains
 from .text_contains_descriptor import TextNotContains
 from .text_length_descriptor import TextLength
-from .text_part_descriptor import TextBegins
-from .text_part_descriptor import TextEnds
+from .text_part_descriptor import TextBeginsWith
+from .text_part_descriptor import TextEndsWith
 from .trigger_words_presence_descriptor import TriggerWordsPresence
 from .word_count_descriptor import WordCount
 
@@ -18,6 +18,10 @@ __all__ = [
     "OpenAIPrompting",
     "NonLetterCharacterPercentage",
     "OOV",
+    "TextBeginsWith",
+    "TextContains",
+    "TextEndsWith",
+    "TextNotContains",
     "TextLength",
     "TriggerWordsPresence",
     "WordCount",

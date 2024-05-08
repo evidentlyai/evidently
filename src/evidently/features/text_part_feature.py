@@ -8,7 +8,7 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class TextBegins(GeneratedFeature):
+class TextBeginsWith(GeneratedFeature):
     column_name: str
     case_sensitive: bool
     prefix: str
@@ -46,7 +46,7 @@ class TextBegins(GeneratedFeature):
         )
 
 
-class TextEnds(GeneratedFeature):
+class TextEndsWith(GeneratedFeature):
     column_name: str
     case_sensitive: bool
     suffix: str

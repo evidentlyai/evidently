@@ -3,8 +3,8 @@ from typing import List
 import pandas as pd
 import pytest
 
-from evidently.features.text_part_feature import TextBegins
-from evidently.features.text_part_feature import TextEnds
+from evidently.features.text_part_feature import TextBeginsWith
+from evidently.features.text_part_feature import TextEndsWith
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
 
@@ -24,7 +24,7 @@ test_data = [
     ("ABC", False, [True, True, False, True, False]),
 ])
 def test_text_begins_feature(substr: str, case: bool, mode: str, expected: List[bool]):
-    feature_generator = TextBegins("column_1", substr, case_sensitive=case)
+    feature_generator = TextBeginsWith("column_1", substr, case_sensitive=case)
     data = pd.DataFrame(dict(column_1=test_data))
     result = feature_generator.generate_feature(
         data=data,
@@ -38,7 +38,7 @@ def test_text_begins_feature(substr: str, case: bool, mode: str, expected: List[
     ("efg", False, [True, True, True, False, False]),
 ])
 def test_text_ends_feature(substr: str, case: bool, expected: List[bool]):
-    feature_generator = TextEnds("column_1", substr, case_sensitive=case)
+    feature_generator = TextEndsWith("column_1", substr, case_sensitive=case)
     data = pd.DataFrame(dict(column_1=test_data))
     result = feature_generator.generate_feature(
         data=data,
