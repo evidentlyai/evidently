@@ -38,11 +38,11 @@ Optionally, give a custom name to the Tab.
 
 You can choose between the following options:
 
-| Tab Template | Description | How to Populate |
+| Tab Template | Description | Data source |
 |---|---|---|
-| Columns | Shows column values (e.g., mean, quantiles) over time for categorical and numerical columns. | Capture the `DataQualityPreset()` inside snapshots or log `ColumnSummaryMetric` for individual columns. |
-| Data Quality | Shows data quality metrics (e.g., missing values, duplicates) over time for the complete dataset and results of Data Quality tests. | Capture the `DataQualityPreset()` inside snapshots or log the `DatasetSummaryMetric()`. For the Test panel, include any individual Tests from Data Quality or Data Integrity groups.|
-| Data Drift | Shows the share of drifting features over time. | Capture `DataDriftPreset()` or `DataDriftTestPreset()` inside snapshots. For the Test panel, capture individual `TestColumnDrift()` results per column. |
+| Columns | Shows column values (e.g., mean, quantiles) over time for categorical and numerical columns. | Capture the `DataQualityPreset()` or `ColumnSummaryMetric()` for individual columns. |
+| Data Quality | Shows data quality metrics (e.g., missing values, duplicates) over time for the complete dataset and results of Data Quality tests. | Capture the `DataQualityPreset()` or `DatasetSummaryMetric()`. For the Test panel, include any individual Tests from Data Quality or Data Integrity groups.|
+| Data Drift | Shows the share of drifting features over time. | Capture `DataDriftPreset()` or `DataDriftTestPreset()`. For the Test panel, include individual `TestColumnDrift()` results per column. |
 
 # What’s next?
 
