@@ -122,9 +122,12 @@ class GenericInputData:
     data_definition: DataDefinition
     additional_data: Dict[str, Any]
 
+    def get_datasets(self) -> Tuple[Optional[object], object]:
+        raise NotImplementedError()
+
 
 @dataclass
-class InputData:
+class InputData(GenericInputData):
     reference_data: Optional[pd.DataFrame]
     current_data: pd.DataFrame
     reference_additional_features: Optional[pd.DataFrame]
@@ -186,6 +189,15 @@ class InputData:
         else:
             _column = column
         return _column
+
+    def get_datasets(self) -> Tuple[Optional[pd.DataFrame], pd.DataFrame]:
+        current = self.current_data
+        if self.current_additional_features is not None:
+            current = self.current_data.join(self.current_additional_features)
+        reference = self.reference_data
+        if self.reference_additional_features is not None:
+            reference = self.reference_data.join(self.reference_additional_features)
+        return reference, current
 
 
 TResult = TypeVar("TResult", bound=MetricResult)

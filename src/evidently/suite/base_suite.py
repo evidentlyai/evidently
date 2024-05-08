@@ -515,3 +515,6 @@ class ReportBase(Display):
         except Exception as e:
             raise ValueError("Cannot create snapshot because of calculation error") from e
         return self._get_snapshot()
+
+    def datasets(self):
+        return self._inner_suite.context.data.get_datasets()
