@@ -1,10 +1,10 @@
-html,
-body {
-  overflow: auto;
-  max-height: 100vh;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-body {
+* {
   margin: 0;
   padding: 0;
 }
