@@ -20,8 +20,6 @@ from evidently.pipeline.column_mapping import TargetNames
 from evidently.pipeline.column_mapping import TaskType
 from evidently.pydantic_utils import EnumValueMixin
 
-MAX_CATEGORICAL_FEATURES_CARDINALITY: Optional[int] = None
-
 
 @dataclasses.dataclass
 class _InputData:
@@ -161,9 +159,11 @@ def _process_column(
             return None
         if if_partially_present == "keep":
             pass
-    if cardinality_limit and _is_cardinality_exceeded(column_name, data, cardinality_limit):
-        raise DataDefinitionError(f"The cardinality of column ({column_name}) has been exceeded")
-    column_type = predefined_type if predefined_type is not None else _get_column_type(column_name, data, mapping)
+    column_type = (
+        predefined_type
+        if predefined_type is not None
+        else _get_column_type(column_name, data, mapping, cardinality_limit)
+    )
     return ColumnDefinition(column_name, column_type)
 
 
@@ -247,6 +247,7 @@ def create_data_definition(
     reference_data: Optional[pd.DataFrame],
     current_data: pd.DataFrame,
     mapping: ColumnMapping,
+    categorical_features_cardinality_limit: Optional[int] = None,
 ) -> DataDefinition:
     data = _InputData(reference_data, current_data)
     embedding_columns = set()
@@ -330,22 +331,28 @@ def create_data_definition(
     ]
     utility_column_names = [column.column_name for column in all_columns if column is not None]
     data_columns = set(data.current.columns) | (set(data.reference.columns) if data.reference is not None else set())
-    # col_defs = [
-    #     _process_column(column_name, data, if_partially_present="skip", mapping=mapping) for column_name in data_columns
-    # ]
-    col_defs = []
-    for column_name in data_columns:
-        try:
-            column = _process_column(
-                column_name,
-                data,
-                if_partially_present="skip",
-                mapping=mapping,
-                cardinality_limit=mapping.categorical_features_cardinality_limit,
-            )
-            col_defs.append(column)
-        except DataDefinitionError:
-            pass
+    col_defs = [
+        _process_column(
+            column_name,
+            data,
+            if_partially_present="skip",
+            mapping=mapping,
+            cardinality_limit=categorical_features_cardinality_limit,
+        )
+        for column_name in data_columns
+    ]
+    # for column_name in data_columns:
+    #     try:
+    #         column = _process_column(
+    #             column_name,
+    #             data,
+    #             if_partially_present="skip",
+    #             mapping=mapping,
+    #             cardinality_limit=categorical_features_cardinality_limit,
+    #         )
+    #         col_defs.append(column)
+    #     except DataDefinitionError:
+    #         pass
 
     if mapping.numerical_features is None:
         num = [
@@ -384,7 +391,6 @@ def create_data_definition(
             if column is not None
             and _filter_by_type(column, ColumnType.Categorical, utility_column_names)
             and _column_not_present_in_list(column.column_name, embedding_columns, "skip", "")
-            and not _is_cardinality_exceeded(column.column_name, data, mapping.categorical_features_cardinality_limit)
         ]
         all_columns.extend(cat)
     else:
@@ -556,9 +562,13 @@ def _get_column_cardinality(column_name: str, data: _InputData) -> float:
 NUMBER_UNIQUE_AS_CATEGORICAL = 5
 
 
-def _get_column_type(column_name: str, data: _InputData, mapping: Optional[ColumnMapping] = None) -> ColumnType:
+def _get_column_type(
+    column_name: str, data: _InputData, mapping: Optional[ColumnMapping] = None, cardinality_limit: Optional[int] = None
+) -> ColumnType:
     if mapping is not None:
         if mapping.categorical_features and column_name in mapping.categorical_features:
+            if cardinality_limit and _is_cardinality_exceeded(column_name, data, cardinality_limit):
+                raise DataDefinitionError(f"The cardinality of column ({column_name}) has been exceeded")
             return ColumnType.Categorical
         if mapping.numerical_features and column_name in mapping.numerical_features:
             return ColumnType.Numerical
@@ -644,4 +654,6 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
         return ColumnType.Numerical
     if pd.api.types.is_datetime64_dtype(column_dtype):
         return ColumnType.Datetime
+    if _is_cardinality_exceeded(column_name, data, cardinality_limit):
+        return ColumnType.Unknown
     return ColumnType.Categorical

@@ -4,6 +4,7 @@ import logging
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Optional
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
@@ -51,7 +52,13 @@ class Engine(Generic[TMetricImplementation, TInputData]):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+    def get_data_definition(
+        self,
+        current_data,
+        reference_data,
+        column_mapping: ColumnMapping,
+        categorical_features_cardinality: Optional[int] = None,
+    ):
         raise NotImplementedError()
 
     @abc.abstractmethod

@@ -118,7 +118,13 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData]):
             additional_data=data.additional_data,
         )
 
-    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+    def get_data_definition(
+        self,
+        current_data,
+        reference_data,
+        column_mapping: ColumnMapping,
+        categorical_features_cardinality: Optional[int] = None,
+    ):
         return create_data_definition_spark(current_data, reference_data, column_mapping)
 
     def generate_additional_features(self, data: SparkInputData):

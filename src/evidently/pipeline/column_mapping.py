@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from dataclasses import field
 from enum import Enum
 from typing import Dict
 from typing import List
@@ -40,7 +39,6 @@ class ColumnMapping:
     user_id: Optional[str] = "user_id"
     item_id: Optional[str] = "item_id"
     recommendations_type: Union[RecomType, str] = RecomType.SCORE
-    categorical_features_cardinality_limit: Optional[int] = field(repr=False, default=None)
 
     @property
     def recom_type(self) -> RecomType:
