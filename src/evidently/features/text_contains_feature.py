@@ -5,6 +5,7 @@ import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -23,6 +24,7 @@ class Contains(GeneratedFeature):
         mode: str = "any",
         display_name: Optional[str] = None,
     ):
+        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.display_name = display_name
         self.case_sensitive = case_sensitive
@@ -68,6 +70,7 @@ class DoesNotContain(GeneratedFeature):
         mode: str = "any",
         display_name: Optional[str] = None,
     ):
+        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.display_name = display_name
         self.case_sensitive = case_sensitive
