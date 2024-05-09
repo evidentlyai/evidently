@@ -12,6 +12,8 @@ from .text_part_descriptor import BeginsWith
 from .text_part_descriptor import EndsWith
 from .trigger_words_presence_descriptor import TriggerWordsPresence
 from .word_count_descriptor import WordCount
+from .words_descriptor import ExcludesWords
+from .words_descriptor import IncludesWords
 
 __all__ = [
     "HuggingFaceModel",
@@ -22,6 +24,8 @@ __all__ = [
     "Contains",
     "EndsWith",
     "DoesNotContain",
+    "IncludesWords",
+    "ExcludesWords",
     "TextLength",
     "TriggerWordsPresence",
     "WordCount",
