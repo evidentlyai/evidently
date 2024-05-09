@@ -6,7 +6,7 @@ from .regexp_descriptor import RegExp
 from .sentence_count_descriptor import SentenceCount
 from .sentiment_descriptor import Sentiment
 from .text_contains_descriptor import Contains
-from .text_contains_descriptor import NotContains
+from .text_contains_descriptor import DoesNotContain
 from .text_length_descriptor import TextLength
 from .text_part_descriptor import BeginsWith
 from .text_part_descriptor import EndsWith
@@ -21,7 +21,7 @@ __all__ = [
     "BeginsWith",
     "Contains",
     "EndsWith",
-    "NotContains",
+    "DoesNotContain",
     "TextLength",
     "TriggerWordsPresence",
     "WordCount",

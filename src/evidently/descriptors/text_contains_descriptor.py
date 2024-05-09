@@ -29,13 +29,13 @@ class Contains(FeatureDescriptor):
         ).feature_name()
 
 
-class NotContains(FeatureDescriptor):
+class DoesNotContain(FeatureDescriptor):
     items: List[str]
     mode: str = "any"
     case_sensitive: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
-        return text_contains_feature.NotContains(
+        return text_contains_feature.DoesNotContain(
             column_name,
             self.items,
             self.case_sensitive,
@@ -44,7 +44,7 @@ class NotContains(FeatureDescriptor):
         )
 
     def for_column(self, column_name: str):
-        return text_contains_feature.NotContains(
+        return text_contains_feature.DoesNotContain(
             column_name,
             self.items,
             self.case_sensitive,

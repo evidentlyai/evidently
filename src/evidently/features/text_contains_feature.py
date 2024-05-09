@@ -54,7 +54,7 @@ class Contains(GeneratedFeature):
         return item.casefold() in string.casefold()
 
 
-class NotContains(GeneratedFeature):
+class DoesNotContain(GeneratedFeature):
     column_name: str
     items: List[str]
     case_sensitive: bool

@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from evidently.features.text_contains_feature import Contains
-from evidently.features.text_contains_feature import NotContains
+from evidently.features.text_contains_feature import DoesNotContain
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
 
@@ -50,7 +50,7 @@ def test_text_contains_feature(items: List[str], case: bool, mode: str, expected
     ],
 )
 def test_text_not_contains_feature(items: List[str], case: bool, mode: str, expected: List[bool]):
-    feature_generator = NotContains("column_1", items, case_sensitive=case, mode=mode)
+    feature_generator = DoesNotContain("column_1", items, case_sensitive=case, mode=mode)
     data = pd.DataFrame(dict(column_1=test_data))
     result = feature_generator.generate_feature(
         data=data,
