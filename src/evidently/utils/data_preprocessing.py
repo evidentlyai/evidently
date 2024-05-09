@@ -541,9 +541,8 @@ def _get_column_presence(column_name: str, data: _InputData) -> ColumnPresenceSt
 
 
 def _get_column_cardinality(column_name: Optional[str], data: _InputData) -> float:
-    if column_name in data.current.columns and data.current.shape[0] > 0:
-        count = data.current[column_name].nunique()
-        return count
+    if column_name in data.current.columns:
+        return data.current[column_name].nunique()
     return 0
 
 
