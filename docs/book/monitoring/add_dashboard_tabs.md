@@ -41,8 +41,8 @@ You can choose between the following options:
 | Tab Template | Description | Data source |
 |---|---|---|
 | Columns | Shows column values (e.g., mean, quantiles) over time for categorical and numerical columns. | Capture the `DataQualityPreset()` or `ColumnSummaryMetric()` for individual columns. |
-| Data Quality | Shows data quality metrics (e.g., missing values, duplicates) over time for the complete dataset and results of Data Quality Tests. | Capture the `DataQualityPreset()` or `DatasetSummaryMetric()`. For the Test panel, include any individual Tests from Data Quality or Data Integrity groups.|
-| Data Drift | Shows the share of drifting features over time, and the results of Column Drift Tests. | Capture the `DataDriftPreset()` or `DataDriftTestPreset()`. For the Test panel, you must include individual `TestColumnDrift()` or `DataDriftTestPreset()`. |
+| Data Quality | Shows data quality metrics (e.g., missing values, duplicates) over time for the complete dataset and results of Data Quality Tests. | For the Metric Panels, capture the `DataQualityPreset()` or `DatasetSummaryMetric()`. For the Test Panel, include any individual Tests from Data Quality or Data Integrity groups.|
+| Data Drift | Shows the share of drifting features over time, and the results of Column Drift Tests. | For the Metric Panel, capture the `DataDriftPreset()` or `DataDriftTestPreset()`. For the Test Panel, include individual `TestColumnDrift()` or `DataDriftTestPreset()`. |
 
 # What’s next?
 
