@@ -27,7 +27,7 @@ In Evidently Cloud, you can also:
 Dashboard templates is a Pro feature available in the Evidently Cloud. 
 {% endhint %}
 
-It is convenient to start with template Dashboard Tabs: you immediately get a set of useful monitoring Panels without manually adding them one by one.
+Starting with template Dashboard Tabs is convenient: you get a set of monitoring Panels out of the box without adding them individually.
 
 To use a template:
 * Enter the “Edit” mode clicking on the top right corner of the Dashboard. 
