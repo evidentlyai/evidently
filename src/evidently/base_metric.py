@@ -195,7 +195,7 @@ class InputData(GenericInputData):
         if self.current_additional_features is not None:
             current = self.current_data.join(self.current_additional_features)
         reference = self.reference_data
-        if self.reference_additional_features is not None:
+        if self.reference_data is not None and self.reference_additional_features is not None:
             reference = self.reference_data.join(self.reference_additional_features)
         return reference, current
 
