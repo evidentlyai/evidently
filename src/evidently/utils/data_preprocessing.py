@@ -341,18 +341,6 @@ def create_data_definition(
         )
         for column_name in data_columns
     ]
-    # for column_name in data_columns:
-    #     try:
-    #         column = _process_column(
-    #             column_name,
-    #             data,
-    #             if_partially_present="skip",
-    #             mapping=mapping,
-    #             cardinality_limit=categorical_features_cardinality_limit,
-    #         )
-    #         col_defs.append(column)
-    #     except DataDefinitionError:
-    #         pass
 
     if mapping.numerical_features is None:
         num = [
@@ -400,7 +388,7 @@ def create_data_definition(
                 data,
                 predefined_type=ColumnType.Categorical,
                 mapping=mapping,
-                cardinality_limit=mapping.categorical_features_cardinality_limit,
+                cardinality_limit=categorical_features_cardinality_limit,
             )
             for column_name in mapping.categorical_features
             if column_name not in utility_column_names
@@ -552,7 +540,7 @@ def _get_column_presence(column_name: str, data: _InputData) -> ColumnPresenceSt
     return ColumnPresenceState.Partially
 
 
-def _get_column_cardinality(column_name: str, data: _InputData) -> float:
+def _get_column_cardinality(column_name: Optional[str], data: _InputData) -> float:
     if column_name in data.current.columns and data.current.shape[0] > 0:
         count = data.current[column_name].nunique()
         return count
