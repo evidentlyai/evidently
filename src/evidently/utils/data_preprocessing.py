@@ -20,6 +20,8 @@ from evidently.pipeline.column_mapping import TargetNames
 from evidently.pipeline.column_mapping import TaskType
 from evidently.pydantic_utils import EnumValueMixin
 
+MAX_CATEGORICAL_FEATURES_CARDINALITY: Optional[int] = None
+
 
 @dataclasses.dataclass
 class _InputData:
@@ -124,12 +126,28 @@ class DataDefinition(EnumValueMixin):
         return self.datetime_column
 
 
+class DataDefinitionError(ValueError):
+    pass
+
+
+def _is_cardinality_exceeded(
+    column_name: Optional[str],
+    data: _InputData,
+    limit: Optional[int],
+) -> bool:
+    cardinality = _get_column_cardinality(column_name, data)
+    if limit and cardinality >= min(limit, data.current.shape[0]):
+        return True
+    return False
+
+
 def _process_column(
     column_name: Optional[str],
     data: _InputData,
     if_partially_present: str = "raise",
     predefined_type: Optional[ColumnType] = None,
     mapping: Optional[ColumnMapping] = None,
+    cardinality_limit: Optional[int] = None,
 ) -> Optional[ColumnDefinition]:
     if column_name is None:
         return None
@@ -143,6 +161,8 @@ def _process_column(
             return None
         if if_partially_present == "keep":
             pass
+    if cardinality_limit and _is_cardinality_exceeded(column_name, data, cardinality_limit):
+        raise DataDefinitionError(f"The cardinality of column ({column_name}) has been exceeded")
     column_type = predefined_type if predefined_type is not None else _get_column_type(column_name, data, mapping)
     return ColumnDefinition(column_name, column_type)
 
@@ -224,7 +244,9 @@ def _column_not_present_in_list(
 
 
 def create_data_definition(
-    reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame, mapping: ColumnMapping
+    reference_data: Optional[pd.DataFrame],
+    current_data: pd.DataFrame,
+    mapping: ColumnMapping,
 ) -> DataDefinition:
     data = _InputData(reference_data, current_data)
     embedding_columns = set()
@@ -308,9 +330,22 @@ def create_data_definition(
     ]
     utility_column_names = [column.column_name for column in all_columns if column is not None]
     data_columns = set(data.current.columns) | (set(data.reference.columns) if data.reference is not None else set())
-    col_defs = [
-        _process_column(column_name, data, if_partially_present="skip", mapping=mapping) for column_name in data_columns
-    ]
+    # col_defs = [
+    #     _process_column(column_name, data, if_partially_present="skip", mapping=mapping) for column_name in data_columns
+    # ]
+    col_defs = []
+    for column_name in data_columns:
+        try:
+            column = _process_column(
+                column_name,
+                data,
+                if_partially_present="skip",
+                mapping=mapping,
+                cardinality_limit=mapping.categorical_features_cardinality_limit,
+            )
+            col_defs.append(column)
+        except DataDefinitionError:
+            pass
 
     if mapping.numerical_features is None:
         num = [
@@ -349,28 +384,29 @@ def create_data_definition(
             if column is not None
             and _filter_by_type(column, ColumnType.Categorical, utility_column_names)
             and _column_not_present_in_list(column.column_name, embedding_columns, "skip", "")
+            and not _is_cardinality_exceeded(column.column_name, data, mapping.categorical_features_cardinality_limit)
         ]
         all_columns.extend(cat)
     else:
-        all_columns.extend(
-            [
-                _process_column(
-                    column_name,
-                    data,
-                    predefined_type=ColumnType.Categorical,
-                    mapping=mapping,
-                )
-                for column_name in mapping.categorical_features
-                if column_name not in utility_column_names
-                and _column_not_present_in_list(
-                    column_name,
-                    embedding_columns,
-                    "warning",
-                    "Column {column} is in embedding list and in categorical features list."
-                    " Ignoring it in a features list.",
-                )
-            ]
-        )
+        categorical_features = [
+            _process_column(
+                column_name,
+                data,
+                predefined_type=ColumnType.Categorical,
+                mapping=mapping,
+                cardinality_limit=mapping.categorical_features_cardinality_limit,
+            )
+            for column_name in mapping.categorical_features
+            if column_name not in utility_column_names
+            and _column_not_present_in_list(
+                column_name,
+                embedding_columns,
+                "warning",
+                "Column {column} is in embedding list and in categorical features list."
+                " Ignoring it in a features list.",
+            )
+        ]
+        all_columns.extend(categorical_features)
 
     if mapping.datetime_features is None:
         dt = [
@@ -508,6 +544,13 @@ def _get_column_presence(column_name: str, data: _InputData) -> ColumnPresenceSt
     if data.reference is None or column_name not in data.reference.columns:
         return ColumnPresenceState.Missing
     return ColumnPresenceState.Partially
+
+
+def _get_column_cardinality(column_name: str, data: _InputData) -> float:
+    if column_name in data.current.columns and data.current.shape[0] > 0:
+        count = data.current[column_name].nunique()
+        return count
+    return 0
 
 
 NUMBER_UNIQUE_AS_CATEGORICAL = 5
