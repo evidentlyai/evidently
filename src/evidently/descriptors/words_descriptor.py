@@ -7,7 +7,7 @@ from evidently.features.generated_features import GeneratedFeature
 
 class ExcludesWords(FeatureDescriptor):
     words_list: List[str]
-    mode: str
+    mode: str = "all"
     lemmatize: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
@@ -22,7 +22,7 @@ class ExcludesWords(FeatureDescriptor):
 
 class IncludesWords(FeatureDescriptor):
     words_list: List[str]
-    mode: str
+    mode: str = "any"
     lemmatize: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:

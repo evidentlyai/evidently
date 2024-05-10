@@ -31,7 +31,7 @@ class Contains(FeatureDescriptor):
 
 class DoesNotContain(FeatureDescriptor):
     items: List[str]
-    mode: str = "any"
+    mode: str = "all"
     case_sensitive: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
