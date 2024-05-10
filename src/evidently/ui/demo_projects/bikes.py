@@ -1,4 +1,5 @@
 import io
+import os
 import zipfile
 from datetime import datetime
 from datetime import time
@@ -27,10 +28,14 @@ from evidently.ui.workspace.base import WorkspaceBase
 
 
 def create_data():
-    content = requests.get(
-        "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip",
-        verify=False,
-    ).content
+    if os.path.exists("Bike-Sharing-Dataset.zip"):
+        with open("Bike-Sharing-Dataset.zip", "rb") as f:
+            content = f.read()
+    else:
+        content = requests.get(
+            "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip",
+            verify=False,
+        ).content
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         raw_data = pd.read_csv(
             arc.open("hour.csv"),

@@ -1,6 +1,6 @@
 *.egg-info
 venv
-.venv
+.venv*
 .vscode
 .DS_Store
 examples/.DS_Store
