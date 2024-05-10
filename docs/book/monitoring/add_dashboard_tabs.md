@@ -13,14 +13,14 @@ Each Project has a monitoring Dashboard to visualize metrics and test results ov
 **Data source**. To populate the Dashboard, you must send the relevant data inside the snapshots. The Panels will be empty otherwise. Read more about [sending snapshots](snapshots.md).  
 {% endhint %}
 
-You can choose how exactly to organize your Dashboard and which values to plot. By default, the Dashboard for a new Project is empty. 
+You choose how exactly to organize your Dashboard and which values to plot. By default, the Dashboard for a new Project is empty. 
 
-For both Evidently Cloud and self-hosted, you can design the monitoring Panels via API. This is great for version control.
+For both Evidently Cloud and open-source, you can define the composition of monitoring Panels via API. This is great for version control.
 
 In Evidently Cloud, you can also:
+* Get pre-built Dashboards for Data Quality, Data Drift, etc.
 * Add and modify Panels directly in the user interface.
 * Add multiple Tabs on the Dashboard to logically group the Panels.
-* Use pre-built Dashboards for Data Quality, Data Drift, etc.
 
 # Pre-built dashboards
 {% hint style="success" %}
@@ -46,5 +46,5 @@ You can choose between the following options:
 
 # What’s next?
 
-* How to create [custom monitoring Panels and Tabs](design_dashboard.md)
-* How to configure Dashboard via Python API
+* See available [monitoring Panels types](design_dashboard.md)
+* How to add [custom monitoring Panels and Tabs to your dashboard](design_dashboard_api.md)
