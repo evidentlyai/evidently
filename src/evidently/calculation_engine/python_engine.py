@@ -31,10 +31,10 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
         return PythonInputData(
             data.reference_data,
             data.current_data,
-            None,
-            None,
-            data.column_mapping,
-            data.data_definition,
+            current_additional_features=None,
+            reference_additional_features=None,
+            column_mapping=data.column_mapping,
+            data_definition=data.data_definition,
             additional_data=data.additional_data,
         )
 
