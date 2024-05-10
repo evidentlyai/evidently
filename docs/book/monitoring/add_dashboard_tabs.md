@@ -1,5 +1,5 @@
 ---
-description: How to visualize data and model quality in the Monitoring UI.
+description: How to get a pre-built monitoring dashboard using templates.
 ---   
 
 # What is a Dashboard? 
