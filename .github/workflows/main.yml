@@ -91,6 +91,17 @@ jobs:
           python-version: "3.8"
           architecture: "x64"
           cache: "pip"
+      - uses: actions/cache@v3
+        id: cache-bikes-dataset
+        env:
+          cache-name: cache-bikes-dataset
+        with:
+          path: Bike-Sharing-Dataset.zip
+          key: cache-bikes-dataset
+      - name: Download test data
+        if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
+        run:
+          curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
       - name: Update pip
         run: python -m pip install --upgrade pip
       - name: Install package
