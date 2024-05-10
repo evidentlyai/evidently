@@ -296,6 +296,11 @@ export type DashboardPanel = DashboardPanelBase &
         values: PanelValue[]
       }
     | {
+        type: 'evidently.ui.dashboards.reports.DashboardPanelDistribution'
+        barmode: 'stack' | 'group' | 'overlay' | 'relative'
+        value: PanelValue
+      }
+    | {
         type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuite'
         panel_type: 'aggregate' | 'detailed'
         time_agg: string
