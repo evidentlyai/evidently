@@ -1,6 +1,7 @@
 import abc
 import logging
 from typing import Generic
+from typing import Optional
 from typing import TypeVar
 
 import pandas as pd
@@ -37,12 +38,18 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
             additional_data=data.additional_data,
         )
 
-    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+    def get_data_definition(
+        self,
+        current_data,
+        reference_data,
+        column_mapping: ColumnMapping,
+        categorical_features_cardinality: Optional[int] = None,
+    ):
         if not isinstance(current_data, pd.DataFrame) or (
             reference_data is not None and not isinstance(reference_data, pd.DataFrame)
         ):
             raise ValueError("PandasEngine works only with pd.DataFrame input data")
-        return create_data_definition(reference_data, current_data, column_mapping)
+        return create_data_definition(reference_data, current_data, column_mapping, categorical_features_cardinality)
 
     def generate_additional_features(self, data: PythonInputData):
         curr_additional_data = None

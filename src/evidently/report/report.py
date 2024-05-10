@@ -97,6 +97,7 @@ class Report(ReportBase):
                 current_data,
                 reference_data,
                 column_mapping,
+                self.options.data_definition_options.categorical_features_cardinality,
             )
 
         # get each item from metrics/presets and add to metrics list
