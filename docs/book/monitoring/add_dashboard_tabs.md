@@ -46,5 +46,5 @@ You can choose between the following options:
 
 # What’s next?
 
-* See available [monitoring Panels types](design_dashboard.md)
-* How to add [custom monitoring Panels and Tabs to your dashboard](design_dashboard_api.md)
+* See available individual [monitoring Panels types](design_dashboard.md).
+* How to add [custom monitoring Panels and Tabs to your dashboard](design_dashboard_api.md).
