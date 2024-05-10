@@ -18,3 +18,78 @@ Broadly, there are Metric, Distribution, and Test Panels. This page details the 
 **How to add Panels**. Check the next [docs section](design_dashboard_api.md).  
 {% endhint %}
 
+# Metric Panels
+
+Metric Panels (`DashboardPanel`) show individual values from inside the snapshots. 
+
+For example, if you capture Data Quality Reports (include mean, max, min, etc., for each column) or Data Drift Reports (include the share of drifting columns), you can plot any of these values over time.
+
+![](../.gitbook/assets/monitoring/metric_panels.png)
+
+Panel time resolution depends on snapshot frequency. For instance, if you log Data Drift Reports daily, you can plot the `share_of_drifting_features` with daily granularity. You can also open the source Report to see feature distributions on a specific day.
+
+You can create metric Panels from either Reports or Test Suites. 
+
+## Counter
+
+Class `DashboardPanelCounter`
+
+| Panel Type| Example  |
+|---|---|
+|Shows a value with supporting text or text alone (perfect for dashboard titles).|![](../.gitbook/assets/monitoring/panel_counter_example-min.png)|
+
+## Plot
+
+Class `DashboardPanelPlot`
+
+Shows a value over time (bar, line, scatter plot, histogram).
+
+| Panel Type| Example  |
+|---|---|
+|Line plot: `PlotType.LINE`|![](../.gitbook/assets/monitoring/panel_line_plot_example.png)|
+|Scatter plot: `PlotType.SCATTER`|![](../.gitbook/assets/monitoring/panel_scatter_plot_example.png) |
+|Bar plot: `PlotType.BAR`| ![](../.gitbook/assets/monitoring/panel_bar_plot_example.png) |
+|Histogram: `PlotType.HISTOGRAM`| ![](../.gitbook/assets/monitoring/panel_hist_example.png) |
+
+# Test Panels
+
+Test Panels show the Test results. 
+
+For example, if you run the same Test Suite repeatedly, you can visualize the pass/fail outcomes or result counts. You choose which Test results to include.
+
+![](../.gitbook/assets/monitoring/test_panels.png)
+
+To improve the readability of Test plots in case of frequent runs (e.g., multiple runs per day), you can additionally aggregate Test results on a plot (e.g., inside 1 Day).
+
+Test Panels only work with Test Suites. You cannot create it from Reports. 
+
+## Test counter 
+Class `DashboardPanelTestSuiteCounter`
+
+| Panel Type| Example  |
+|---|---|
+|Shows a counter of Tests with selected status (pass, fail). |![](../.gitbook/assets/monitoring/panel_tests_counter_example.png)|
+
+## Test plot
+Class `DashboardPanelTestSuite`
+
+| Panel Type| Example  |
+|---|---|
+|Detailed plot: `TestSuitePanelType.DETAILED`. Individual Test results are visible. |![](../.gitbook/assets/monitoring/panel_tests_detailed_hover_example.png)|
+|Aggregated plot: `TestSuitePanelType.AGGREGATE`. Only the total number of Tests by status is visible. |![](../.gitbook/assets/monitoring/panel_tests_aggregated_hover_example.png)|
+
+# Distribution Panel
+Class `DashboardPanelDistribution`.
+
+The distribution Panel shows a distribution of values (histograms) from inside the snapshots. For example, if you capture Data Quality or Data Drift Reports that include histograms for categorical values, you can visualize the distribution over time.
+
+![](../.gitbook/assets/monitoring/distribution_panels.png)
+
+You can create distribution plots from either Reports or Test Suites.  
+
+| Panel Type| Example  |
+|---|---|
+|Stacked bar chart: `HistBarMode.STACK`. Shows absolute counts.|![](../.gitbook/assets/monitoring/panel_dist_stacked_2-min.png)|
+|Grouped bar chart:``HistBarMode.GROUP`. Shows absolute counts.|![](../.gitbook/assets/monitoring/panel_dist_group_2-min.png)|
+|Overlay bar chart:``HistBarMode.OVERLAY`. Shows absolute counts. Values overlay each other.|![](../.gitbook/assets/monitoring/panel_dist_overlay-min.png)|
+|Stacked bar chart:``HistBarMode.RELATIVE`. Shows relative frequency (percentage).|![](../.gitbook/assets/monitoring/panel_dist_relative-min.png)|
