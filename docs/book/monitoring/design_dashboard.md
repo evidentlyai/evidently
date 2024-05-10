@@ -90,6 +90,6 @@ You can create distribution plots from either Reports or Test Suites.
 | Panel Type| Example  |
 |---|---|
 |Stacked bar chart: `HistBarMode.STACK`. Shows absolute counts.|![](../.gitbook/assets/monitoring/panel_dist_stacked_2-min.png)|
-|Grouped bar chart:``HistBarMode.GROUP`. Shows absolute counts.|![](../.gitbook/assets/monitoring/panel_dist_group_2-min.png)|
-|Overlay bar chart:``HistBarMode.OVERLAY`. Shows absolute counts. Values overlay each other.|![](../.gitbook/assets/monitoring/panel_dist_overlay-min.png)|
-|Stacked bar chart:``HistBarMode.RELATIVE`. Shows relative frequency (percentage).|![](../.gitbook/assets/monitoring/panel_dist_relative-min.png)|
+|Grouped bar chart: `HistBarMode.GROUP`. Shows absolute counts.|![](../.gitbook/assets/monitoring/panel_dist_group_2-min.png)|
+|Overlay bar chart: `HistBarMode.OVERLAY`. Shows absolute counts. Values overlay each other.|![](../.gitbook/assets/monitoring/panel_dist_overlay-min.png)|
+|Stacked bar chart: `HistBarMode.RELATIVE`. Shows relative frequency (percentage).|![](../.gitbook/assets/monitoring/panel_dist_relative-min.png)|
