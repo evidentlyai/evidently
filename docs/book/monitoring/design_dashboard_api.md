@@ -1,16 +1,72 @@
+---
+description: How to add individual monitoring Panels to your dashboard.
+---   
 
+{% hint style="info" %}
+**Available panel types**. Check the previous [docs section](design_dashboard.md). This page explains how edit and modify the Panels.  
+{% endhint %}
 
+You can add monitoring Panel from UI (Evidently Cloud only), or using the Python API. 
 
+{% tabs %}
 
+{% tab title="UI" %} 
+Enter the “edit” mode on the Dashboard or chosen Tab, and click “add Panel” button. Follow the prompts to create a Panel. 
+* Add panel title. 
+* Choose the Panel type (text, counter, plot, distribution, test counter, counter).
+* Choose the Panel size (full or half screen).
+* Optionally, choose Tags. Otherwise, proceed using all snapshots in the Project as a data source.
+* Choose the parameters specific to the Panel type.
+* Select values to display. Point to the source Metric or Test ID and specify the `field_path` to the chosen value. By default, you can only select values from existing snapshots. Alternatively, switch to "manual mode". This mode mirrors the Python API and allow selecting values not yet in the Project. Note: the Panel stays empty until the corresponding value is logged.
+* Preview and publish the Panel.
 
+You can use the “Show description” Toggle to get an explanation for specific steps. 
+  
+![](../.gitbook/assets/cloud/add_new_panel_2.gif)
+
+{% endtab %}
+
+{% tab title="API" %} 
+
+**Connect to a Project**. Load the latest dashboard configuration into your Python environment.
+
+```python
+project = ws.get_project("YOUR PROJECT ID HERE")
+```
+
+**Add new Panels**. Use the `add_panel` method. You can specify the Panel name, legend, plot type, destination Tab, etc. After implementing the changes, save the configuration with `project.save()`. Here is an example:
+
+```python
+project.dashboard.add_panel(
+        DashboardPanelPlot(
+            title="Share of drifting features (PSI > 0.3)",
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            values=[
+                PanelValue(
+                	metric_id="DatasetDriftMetric",
+                	field_path="share_of_drifted_columns",
+                	legend="share",
+                ),
+            ],
+            plot_type=PlotType.LINE,
+            size=WidgetSize.FULL,
+        ),
+        tab="Summary"
+)
+project.save()
+```
+
+Return to the web app to view the dashboards you created. Refresh the page if necessary.
+
+{% endtab %}
+
+{% endtabs %}
 
 # Code example
 
-Refer to the QuickStart Tutorial for a complete Python script with multiple monitoring panels.
-
-{% content-ref url="../get-started/tutorial-monitoring.md" %}
-[Get started tutorial](../get-started/tutorial-monitoring.md). 
-{% endcontent-ref %}
+To see end-to-end examples that include creating multiple monitoring Panels, check the tutorials.
+* Get Started with [Evidently Cloud]((../get-started/tutorial-cloud.md)
+* Get Started with [self-hosted ML Monitoring](../get-started/tutorial-monitoring.md) 
 
 You can also explore [live demo dashboards](https://demo.evidentlyai.com/) and the corresponding [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects). 
 
