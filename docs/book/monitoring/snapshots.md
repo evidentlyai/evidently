@@ -6,9 +6,9 @@ To visualize data in the Evidently ML monitoring interface, you must capture dat
 
 # What is snapshot?
 
-Evidently `snapshot` is a JSON file summarizing data and model performance for a specific period. Each snapshot includes metrics, data summaries, test results, and supporting render data. You choose which metrics to include when creating a snapshot.
+Evidently `snapshot` is a JSON file summarizing data and model performance for a specific period. Each snapshot includes metrics, data summaries, test results, and supporting render data. You choose which metrics to include when creating a snapshot. This determines what you can later plot on the monitoring dashboard or alert on. 
 
-Snapshots power the backend of Evidently ML monitoring. By sending multiple snapshots to the Project (e.g., hourly, daily, or weekly), you create a data source for monitoring panels. You can plot metrics and trends over time from multiple snapshots and view individual ones for each period.
+By sending multiple snapshots to the Project (e.g., hourly, daily, or weekly), you create a data source for monitoring panels. You can plot trends over time by parsing values from individual snapshots. You can also view individual snapshots for each period.
 
 You can:
 * Send the snapshots sequentially on a schedule (e.g., send a data summary every hour or every day).
