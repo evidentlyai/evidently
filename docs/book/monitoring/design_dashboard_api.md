@@ -6,7 +6,19 @@ description: How to add individual monitoring Panels to your dashboard.
 **Available panel types**. Check the previous [docs section](design_dashboard.md). This page explains how edit and modify the Panels.  
 {% endhint %}
 
-You can add monitoring Panel from UI (Evidently Cloud only), or using the Python API. 
+# Code example
+
+To see end-to-end examples that include creating multiple monitoring Panels, check the tutorials.
+* Get Started with [Evidently Cloud]((../get-started/tutorial-cloud.md)
+* Get Started with [self-hosted ML Monitoring](../get-started/tutorial-monitoring.md) 
+
+You can also explore [live demo dashboards](https://demo.evidentlyai.com/) and the corresponding [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects). 
+
+# Adding Panels
+
+## Add a new Panel
+
+You can add monitoring Panels using the Python API, or directly in the user interface (Evidently Cloud only). 
 
 {% tabs %}
 
@@ -34,7 +46,7 @@ You can use the “Show description” Toggle to get an explanation for specific
 project = ws.get_project("YOUR PROJECT ID HERE")
 ```
 
-**Add new Panels**. Use the `add_panel` method. You can specify the Panel name, legend, plot type, destination Tab, etc. After implementing the changes, save the configuration with `project.save()`. Here is an example:
+**Add new Panels**. Use the `add_panel` method. You can specify the Panel name, legend, plot type, destination Tab, etc. You can add multiple Panels: they will appear in the listed order. After implementing the changes, save the configuration with `project.save()`. Here is an example:
 
 ```python
 project.dashboard.add_panel(
@@ -62,13 +74,13 @@ Return to the web app to view the dashboards you created. Refresh the page if ne
 
 {% endtabs %}
 
-# Code example
+## Add a new Tab
 
-To see end-to-end examples that include creating multiple monitoring Panels, check the tutorials.
-* Get Started with [Evidently Cloud]((../get-started/tutorial-cloud.md)
-* Get Started with [self-hosted ML Monitoring](../get-started/tutorial-monitoring.md) 
+## Delete Tabs or Panels
 
-You can also explore [live demo dashboards](https://demo.evidentlyai.com/) and the corresponding [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects). 
+## Fix time range
+
+
 
 # How it works 
 
