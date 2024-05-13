@@ -12,7 +12,7 @@ To see end-to-end examples that include creating multiple monitoring Panels, che
 * Get Started with [Evidently Cloud](../get-started/tutorial-cloud.md).
 * Get Started with [self-hosted ML Monitoring](../get-started/tutorial-monitoring.md). 
 
-You can also explore [live demo dashboards](https://demo.evidentlyai.com/) and the corresponding [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects). 
+You can also explore [live open-source demo dashboards](https://demo.evidentlyai.com/) and the corresponding [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects). 
 
 # Adding Panels
 
