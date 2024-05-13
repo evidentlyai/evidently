@@ -105,18 +105,18 @@ data_drift_report = Report(
 )
 ```
 
-Since you can assign arbitrary timestamps, you can log snapshots asynchronously or with a delay (for example, when you receive ground truth).
+Since you can assign arbitrary timestamps, you can log snapshots asynchronously or with a delay (for example, after you receive ground truth).
 
 ## Add tags and metadata
 
-You can include `tags` and `metadata` in snapshots. This is optional but useful for search and data filtering.
+You can include `tags` and `metadata` in snapshots. This is optional but useful for search and data filtering for monitoring Panels.
 
 Examples of when to use tags include:
 * You have production/shadow or champion/challenger models and want to visualize them separately on a dashboard.
 * You compute snapshots with different reference datasets (for example, to compare distribution drift week-by-week and month-by-month).
-* You have multiple models of the same type inside a Project.
+* You have data for multiple models of the same type inside a Project.
 * You capture snapshots for multiple segments in your data.
-* You want to tag specific individual Reports in a Project, such as a datasheet card for the training dataset, a model card, etc.
+* You want to tag individual Reports in a Project, such as a datasheet card for the training dataset, a model card, etc.
 
 **Custom tags**. Pass any custom tags as a list: 
 
