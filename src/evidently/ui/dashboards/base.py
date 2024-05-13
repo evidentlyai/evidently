@@ -69,7 +69,7 @@ class PanelValue(BaseModel):
 
     def metric_matched(self, metric: Metric) -> bool:
         if self.metric_hash is not None:
-            return metric.get_object_hash() == self.metric_hash
+            return metric.get_object_hash() == self.metric_hash or metric.get_object_hash_legacy() == self.metric_hash
         if self.metric_id is not None and self.metric_id != metric.get_id():
             return False
         for field, value in self.metric_args.items():

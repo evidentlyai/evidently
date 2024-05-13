@@ -3,6 +3,7 @@ import itertools
 import json
 import os
 import warnings
+from copy import deepcopy
 from enum import Enum
 from functools import lru_cache
 from typing import TYPE_CHECKING
@@ -200,6 +201,9 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def get_object_hash(self):
         return get_object_hash(self)
 
+    def get_object_hash_legacy(self):
+        return get_object_hash_legacy(self)
+
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
     def __evidently_dependencies__(self):
@@ -377,3 +381,11 @@ def get_object_hash(obj: Union[BaseModel, dict]):
     if isinstance(obj, BaseModel):
         obj = obj.dict()
     return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8")).hexdigest()  # nosec: B324
+
+
+def get_object_hash_legacy(obj: Union[BaseModel, dict]):
+    if isinstance(obj, BaseModel):
+        obj = deepcopy(obj.dict())
+        if "options" in obj and "data_definition" in obj["options"]:
+            del obj["options"]["data_definition"]
+    return get_object_hash(obj)
