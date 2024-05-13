@@ -125,7 +125,7 @@ data_drift_report = Report(
 	metrics=[
 	DatasetSummaryMetric().
 	],
-	tags=[groupA, shadow],
+	tags=["groupA", "shadow"],
 )
 ```
 
