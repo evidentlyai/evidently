@@ -7,7 +7,7 @@ ML monitoring helps you track data and ML model performance over time, identify 
 
 * **Instrumentation**: You use the open-source Evidently Python library to collect metrics and generate JSON `snapshots` containing data summaries, metrics, and test results.
 * **Snapshot Storage**: You save `snapshots` in Evidently Cloud or in a local or remote workspace.
-* **Monitoring Service**: You visualize metrics from `snapshots` on dashboards in the Evidently Cloud web app or a self-hosted UI service.
+* **Monitoring Service**: You visualize metrics from `snapshots` on a Dashboard in the Evidently Cloud web app or a self-hosted UI service.
 
 The evaluation functionality relies on Evidently `Reports` and `Test Suites` available in the open-source Python library. You can use all 100+ metrics and tests on data quality, data and prediction drift, model quality (classification, regression, ranking, LLMs, NLP models), etc. You can also add custom metrics.
 
@@ -56,7 +56,9 @@ For an end-to-end example, check these tutorials:
 * [Self-hosting ML Monitoring](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
 
 This user guide explains each step in detail:
-* [Add workspace and project](workspace_project.md)
-* [Log snapshots](snapshots.md)
-* [Design dashboard](design_dashboard.md)
-* [Monitoring UI](monitoring_ui.md)
+* [Set up your Workspace](workspace.md)
+* [Create a Project](add_project.md)
+* [Log snapshots](snapshots.md) or set up a near real-time [collector service](collector_service.md) 
+* [Get a pre-built Dashboard](add_dashboard_tabs.md)
+* Understand available [Panel types](design_dashboard.md) and add custom [monitoring Panels](design_dashboard_api.md)
+* [Send alerts](alerting.md)
