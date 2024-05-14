@@ -10,7 +10,7 @@ To see end-to-end examples with custom Panels, check:
 * [Evidently Cloud Tutorial](../get-started/tutorial-cloud.md)
 * [Self-hosting ML Monitoring](../get-started/tutorial-monitoring.md). 
 
-You can also explore the [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects) for the open-source[live demo dashboards](https://demo.evidentlyai.com/). 
+You can also explore the [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects) for the open-source [live demo dashboards](https://demo.evidentlyai.com/). 
 
 # Adding Panels
 
