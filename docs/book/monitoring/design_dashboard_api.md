@@ -1,8 +1,8 @@
 ---
-description: How to add monitoring panels to the dashboard.
+description: How to add monitoring Panels to the Dashboard.
 ---   
 
-We recommend starting with [pre-built tabs](add_dashboard_tabs.md) for a quick start. 
+We recommend starting with [pre-built Tabs](add_dashboard_tabs.md) for a quick start. 
 
 # Code example
 
@@ -17,12 +17,12 @@ You can also explore the [source code](https://github.com/evidentlyai/evidently/
 You can add monitoring Panels using the Python API or the Evidently Cloud user interface.
 
 Here is the general flow:
-* Define the **Panel type**: metric counter, metric plot, distribution panel, test counter, or test plot. (See [panel types](design_dashboard.md)).
+* Define the **Panel type**: metric Counter, metric Plot, Distribution, Test Counter, or Test Plot. (See [Panel types](design_dashboard.md)).
 * Specify panel **title** and **size**.
 * Add optional **Tags** to filter data. If no Tag is specified, the Panel will use data from all snapshots in the Project.
-* Select **parameters** based on panel type, e.g., aggregation level. (See the section on Parameters below).
+* Select **parameters** based on the Panel type, e.g., aggregation level. (See the section on Parameters below).
 * Define the **Panel value(s)** to show: 
-  * For Test panels, specify `test_id`. 
+  * For Test Panels, specify `test_id`. 
   * For Metric and Distribution Panels, specify `metric_id` and `field_path`. (See the section on `PanelValue` below).
 * Pass arguments (`test_args` or `metric_args`) to identify the exact value when they repeat inside the snapshot. For instance, to plot the mean value of a given column, you need the column name as an argument. (See the section on `PanelValue` below).
 
@@ -79,7 +79,7 @@ project.dashboard.add_panel(
 project.save()
 ```
 
-Go back to the web app to see the dashboard. Refresh the page if needed.
+Go back to the web app to see the Dashboard. Refresh the page if needed.
 
 {% endtab %}
 
@@ -111,7 +111,7 @@ project.dashboard.add_panel(
 )
 project.save()
 ```
-Go back to the web app to see the dashboard. Refresh the page if needed.
+Go back to the web app to see the Dashboard. Refresh the page if needed.
 
 {% endtab %}
 
@@ -123,7 +123,7 @@ Go back to the web app to see the dashboard. Refresh the page if needed.
 Multiple tabs is a Pro feature available in the Evidently Cloud.
 {% endhint %}
 
-By default, all new Panels appear on the same monitoring dashboard. You can create named Tabs to organize them. 
+By default, all new Panels appear on the same monitoring Dashboard. You can create named Tabs to organize them. 
 
 {% tabs %}
 
@@ -134,7 +134,7 @@ Proceed with adding Panels to this Tab as usual.
 {% endtab %}
 
 {% tab title=”API" %}
-**Connect to a Project**. Load the latest dashboard configuration into your Python environment.
+**Connect to a Project**. Load the latest Dashboard configuration into your Python environment.
 
 ```python
 project = ws.get_project("YOUR PROJECT ID HERE")
@@ -219,7 +219,7 @@ See examples.
 
 {% tab title="Text Panel" %}  
 
-**Text Panel**. To create a Panel with the dashboard title only:
+**Text Panel**. To create a Panel with the Dashboard title only:
 
 ```python
 project.dashboard.add_panel(
