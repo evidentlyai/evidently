@@ -138,9 +138,21 @@ Go to the "home page", and hover over a Project name. Click on the bin sign and 
 
 {% endtabs %}
 
+## Project parameters
+
+Each Project has the following parameters.
+
+| Parameter | Description |
+|---|---|
+| `name: str` | Project name. |
+| `id: UUID4 = Field(default_factory=uuid.uuid4)` | Unique identifier of the Project. Assigned automatically. |
+| `description: Optional[str] = None` | Optional description. Visible when you browse Projects. |
+| `dashboard: DashboardConfig` | Configuration of the Project dashboard. It describes the monitoring Panels that appear on the dashboard.<br><br>**Note**: Explore the [Dashboard Design](design_dashboard_api.md) section for details. There is no need to explicitly pass `DashboardConfig` as a parameter if you use the `.dashboard.add_panel` method to add Panels. |
+| `date_from: Optional[datetime.datetime] = None` | Start DateTime of the monitoring dashboard. By default, Evidently shows data for all available periods based on the snapshot timestamps. <br><br>You can set a specific date or a relative DateTime. For example, to refer to the last 30 days:<br>`from datetime import datetime, timedelta`<br>`datetime.now() + timedelta(-30)`<br>When you view the dashboard, the data will be visible from this start date. You can switch to other dates in the interface. |
+| `date_to: Optional[datetime.datetime] = None` | End datetime of the monitoring dashboard. <br>Works the same as above. |
+
 # What’s next?
 
 Once you create or connect to a Project, you can:
 * [Send snapshots](snapshots.md) using the `add_report` or `add_test_suite` methods. 
-* [Configure the monitoring dashboard](design_dashboard.md) in the user interface or specify the `DashboardConfig`.
-
+* Configure the monitoring dashboard in the [user interface](add_dashboard_tabs.md) or via the [Python API](design_dashboard_api.md).
