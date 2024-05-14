@@ -612,43 +612,21 @@ values=[
 
 Let's take an example of `DataDriftPreset()`. It contains two Metrics: `DatasetDriftMetric()` and `DataDriftTable()`. (Check the composition of Presets [here](https://docs.evidentlyai.com/reference/all-metrics). You can point to any of them as a `metric_id`, depending on what you’d like to plot. 
 
+![](../.gitbook/assets/monitoring/field_path.png)
 
-**Option 1**. Use autocomplete.
+Most Metrics contain multiple measurements inside (MetricResults) and some render data. To point to the specific value, use the `field path`. To find available fields in the chosen Metric, you can explore the contents of the individual snapshot or use automated suggestions in UI or Python.
 
-You can use autocomplete in interactive Python environments (like Jupyter notebook or Colab) to see available fields inside a specific Metric. They appear as you start typing the `.fields.` path for a specific Metric.
+{% tabs %}
 
-![](../.gitbook/assets/monitoring/metric_fields_autocomplete-min.png)
-
-**Note**: some types of values (e.g. mean, sum, max, min) will not be visible using this method. This is because they match the names of the standard Python fields.
+{% tab title="Open the snapshot" %} 
 
 **Option 2**. Explore the contents of the snapshot, Metric or Test and find the relevant keys. 
 
-To look at all available measurements, you can also:
-* Open an existing `snapshot` file and explore its contents.
-* Generate a Report or a Test Suite, include the selected Metric or Test, and get the output as a Python dictionary. You can then explore the keys that contain the metric field names.
+Each snapshot is a JSON file. You can open an existing snapshot and see available fields. (You can download an individual Report as JSON from the UI or open it in Python). 
 
-{% tabs %}
-{% tab title="UI" %}  
-{% endtab %}
-{% tab title=”API" %}
-{% endtab %}
-{% tab title=”API" %}
-{% endtab %}
-{% endtabs %}
+Alternatively, you can [generate a Report](../tests-and-reports/get-reports.md) with the selected Metrics on any test data. Get the output as a Python dictionary using `as_dict()` and explore the keys with field names.
 
-Once you identify the specific name of the field you would like to add to a panel, you can pass it as the `field_path` to the `PanelValue` parameter.
-
-
-
-## Fix time range
-
-
-{% hint style="info" %}
-**Available panel types**. Check the previous [docs section](design_dashboard.md). This page explains how edit and modify the Panels.  
-{% endhint %}
-# How it works 
-
-Evidently `snapshots` contain multiple measurements. For example, when you log the `DataDriftTable()` Metric in a `snapshot`, it will contain the dataset drift summary, similar to this:
+Here is a partial example of the contents of DatasetDriftMetric():
 
 ```python
 'number_of_columns': 15,
@@ -657,54 +635,28 @@ Evidently `snapshots` contain multiple measurements. For example, when you log t
 'dataset_drift': False,
 ```
 
-It will also contain data on individual column drift. Here is a partial example:
-
-```python
-'column_name': 'age',
-'column_type': 'num',
-'stattest_name': 'Wasserstein distance (normed)',
-'stattest_threshold': 0.1,
-'drift_score': 0.18534692319042428,
-'drift_detected': True,
-```
-
-The same logic applies to other Metrics and Tests.
-
-You can visualize any measurement captured in the `snapshots` over time. To do that, you must add a `panel` to a monitoring `dashboard` of a specific `project` and specify the value you'd like to plot. 
-
-For example, if you logged the `DataDriftTable()` metric, you may later choose to plot measurements like:
-* `share_of_drifted_columns`
-* `number_of_drifted_columns`
-* `drift_score` for a specific column. 
-
-All these measurements will be available as **MetricResults** inside the `snapshot`.
-
-To create a monitoring panel, you will also need to specify other parameters, such as panel type, width, title and legend. This docs section explains how.
-
-
-
-## Project parameters
-
-You can pass the following parameters to a project:
-
-| Parameter | Description |
-|---|---|
-| `name: str` | Project name. |
-| `id: UUID4 = Field(default_factory=uuid.uuid4)` | Unique identifier of the project. Assigned automatically. |
-| `description: Optional[str] = None` | Optional description. It will be visible in the interface when you browse projects. |
-| `dashboard: DashboardConfig` | Configuration of the project dashboard. It describes the monitoring panels which will appear on the dashboard.<br><br>**Note**: Explore the [Dashboard Design](design_dashboard.md) section for details. There is no need to explicitly pass `DashboardConfig` as a parameter if you use the `.dashboard.add_panel` method. |
-| `date_from: Optional[datetime.datetime] = None` | Start DateTime of the monitoring dashboard. By default, Evidently will show all available periods based on the snapshot timestamps. <br><br>You can set a specific date or a relative DateTime. For example, to refer to the last 30 days:<br>`from datetime import datetime, timedelta`<br>`datetime.now() + timedelta(-30)`<br>When you view the dashboard, the data will be visible from this start date. You can switch to other dates in the interface. |
-| `date_to: Optional[datetime.datetime] = None` | End datetime of the monitoring dashboard. <br>Works the same as above. |
-
-
-{% tabs %}
-
-{% tab title="UI" %} 
+Once you identify the value you’d like to plot (e.g., `number_of_drifted_columns`), pass it as the `field_path` to the `PanelValue` parameter. Include the `DatasetDriftMetricz as the `metric_id`. 
 
 {% endtab %}
 
-{% tab title=”API" %}
+{% tab title=”Python autocomplete" %}
+
+You can use autocomplete in interactive Python environments (like Jupyter notebook or Colab) to see available fields inside a specific Metric. They appear as you start typing the `.fields.` path for a specific Metric.
+
+![](../.gitbook/assets/monitoring/metric_fields_autocomplete-min.png)
+
+**Note**: some types of values (e.g. mean, sum, max, min) will not be visible using this method. This is because they match the names of the standard Python fields.
+
+{% endtab %}
+
+{% tab title=”Suggestions in UI" %}
+
+When working in the Evidently Cloud, you can see available fields in the drop-down menu when adding the new Panel.
 
 {% endtab %}
 
 {% endtabs %}
+
+Other Metrics and Tests follow the same logic. Note that there is some data inside the snapshots that you cannot currently plot on a monitoring dashboard (for example, render data or dictionaries). You can only plot values that exist as individual data points or histograms. 
+
+
