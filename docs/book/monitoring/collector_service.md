@@ -1,5 +1,5 @@
 ---
-description: Deployment scenario for near real-time monitoring.
+description: Send data in near real-time.
 ---   
 
 # Overview
