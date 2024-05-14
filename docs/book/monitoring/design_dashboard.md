@@ -32,7 +32,7 @@ You can create metric Panels from either Reports or Test Suites. 
 
 ## Counter
 
-Class `DashboardPanelCounter`
+Class `DashboardPanelCounter`.
 
 | Panel Type| Example  |
 |---|---|
@@ -40,16 +40,14 @@ Class `DashboardPanelCounter`
 
 ## Plot
 
-Class `DashboardPanelPlot`
-
-Shows a value over time (bar, line, scatter plot, histogram).
+Class `DashboardPanelPlot`. Shows individual values as bar, line, scatter plot, or histogram.
 
 | Panel Type| Example  |
 |---|---|
-|Line plot: `PlotType.LINE`|![](../.gitbook/assets/monitoring/panel_line_plot_example.png)|
-|Scatter plot: `PlotType.SCATTER`|![](../.gitbook/assets/monitoring/panel_scatter_plot_example.png) |
-|Bar plot: `PlotType.BAR`| ![](../.gitbook/assets/monitoring/panel_bar_plot_example.png) |
-|Histogram: `PlotType.HISTOGRAM`| ![](../.gitbook/assets/monitoring/panel_hist_example.png) |
+|Line plot: `PlotType.LINE`. Shows values over time.|![](../.gitbook/assets/monitoring/panel_line_plot_example.png)|
+|Scatter plot: `PlotType.SCATTER`. Shows values over time.|![](../.gitbook/assets/monitoring/panel_scatter_plot_example.png) |
+|Bar plot: `PlotType.BAR`. Shows values over time.| ![](../.gitbook/assets/monitoring/panel_bar_plot_example.png) |
+|Histogram: `PlotType.HISTOGRAM`. Shows the frequency of individual values across snapshots.| ![](../.gitbook/assets/monitoring/panel_hist_example.png) |
 
 # Test Panels
 
@@ -71,7 +69,7 @@ Class `DashboardPanelTestSuiteCounter`
 |Shows a counter of Tests with selected status (pass, fail). |![](../.gitbook/assets/monitoring/panel_tests_counter_example.png)|
 
 ## Test plot
-Class `DashboardPanelTestSuite`
+Class `DashboardPanelTestSuite`.
 
 | Panel Type| Example  |
 |---|---|
@@ -79,9 +77,7 @@ Class `DashboardPanelTestSuite`
 |Aggregated plot: `TestSuitePanelType.AGGREGATE`. Only the total number of Tests by status is visible. |![](../.gitbook/assets/monitoring/panel_tests_aggregated_hover_example.png)|
 
 # Distribution Panel
-Class `DashboardPanelDistribution`.
-
-The distribution Panel shows a distribution of values (histograms) from inside the snapshots. For example, if you capture Data Quality or Data Drift Reports that include histograms for categorical values, you can visualize the distribution over time.
+Class `DashboardPanelDistribution`. Shows a distribution of values over time. For example, if you capture Data Quality or Data Drift Reports that include histograms for categorical values, you can visualize the distribution over time.
 
 ![](../.gitbook/assets/monitoring/distribution_panels.png)
 
@@ -93,6 +89,11 @@ You can create distribution plots from either Reports or Test Suites.
 |Grouped bar chart: `HistBarMode.GROUP`. Shows absolute counts.|![](../.gitbook/assets/monitoring/panel_dist_group_2-min.png)|
 |Overlay bar chart: `HistBarMode.OVERLAY`. Shows absolute counts. Values overlay each other.|![](../.gitbook/assets/monitoring/panel_dist_overlay-min.png)|
 |Stacked bar chart: `HistBarMode.RELATIVE`. Shows relative frequency (percentage).|![](../.gitbook/assets/monitoring/panel_dist_relative-min.png)|
+
+{% hint style="info" %}
+**What is the difference between a Distribution Panel and a Histograms Plot?**. A Histogram Plot displays the distribution of individual values from all snapshots over a period. Each source snapshot must contain a **single value** of the type (e.g., a "number of drifting features"). The Plot shows how frequently each of the numbers occurs. A Distribution Panel, in contrast, shows changes in distribution over time. Each source snapshot must contain a **distribution histogram** (e.g., a histogram of categorical values). The Plot shows how these distributions change within the selected timeframe.
+{% endhint %}
+
 
 # What's next?
 How to add [monitoring Panels and Tabs](design_dashboard_api.md).
