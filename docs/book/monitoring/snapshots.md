@@ -163,6 +163,14 @@ data_drift_report = Report(
 data_summary_report.tags=["training_data"]
 ```
 
+# Delete snapshots
+
+To delete snapshots in the workspace `ws`, pass the Project ID and snapshot ID. You can verify the ID of the snapshot on the Report or Test Suite page.
+
+```python
+ws.delete_snapshot(project_id, snapshot_id)
+```
+
 # What's next?
 
 Now that you've sent data to the Project, you can design monitoring panels. Check the next [section](design_dashboard.md.md) to learn more.
