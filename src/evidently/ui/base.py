@@ -218,7 +218,7 @@ class Project(BaseModel):
 
 class MetadataStorage(ABC):
     @abstractmethod
-    def add_project(self, project: Project, user: User, team: Team, org: Org) -> Project:
+    def add_project(self, project: Project, user: User, team: Team) -> Project:
         raise NotImplementedError
 
     @abstractmethod
@@ -436,7 +436,9 @@ class AuthManager(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_available_project_ids(self, user_id: UserID, org_id: OrgID) -> Optional[Set[ProjectID]]:
+    def get_available_project_ids(
+        self, user_id: UserID, team_id: Optional[TeamID], org_id: Optional[OrgID]
+    ) -> Optional[Set[ProjectID]]:
         raise NotImplementedError
 
     @abstractmethod
@@ -623,20 +625,17 @@ class ProjectManager:
             ),
             user_id,
             team_id,
-            org_id,
         )
         return project
 
-    def add_project(self, project: Project, user_id: UserID, team_id: TeamID, org_id: OrgID) -> Project:
-        project.created_at = project.created_at or datetime.datetime.now()
+    def add_project(self, project: Project, user_id: UserID, team_id: TeamID) -> Project:
         user = self.auth.get_or_default_user(user_id)
         team = self.auth.get_team_or_error(team_id)
-        org = self.auth.get_org_or_error(org_id)
         if not self.auth.check_entity_permission(user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT):
             raise NotEnoughPermissions()
         project.team_id = team_id if team_id != ZERO_UUID else None
-        project.created_at = datetime.datetime.now()
-        project = self.metadata.add_project(project, user, team, org).bind(self, user.id)
+        project.created_at = project.created_at or datetime.datetime.now()
+        project = self.metadata.add_project(project, user, team).bind(self, user.id)
         self.auth.grant_entity_role(
             user.id,
             EntityType.Project,
@@ -668,9 +667,9 @@ class ProjectManager:
             raise ProjectNotFound()
         return self.metadata.delete_project(project_id)
 
-    def list_projects(self, user_id: UserID, org_id: OrgID) -> List[Project]:
+    def list_projects(self, user_id: UserID, team_id: Optional[TeamID], org_id: Optional[OrgID]) -> List[Project]:
         user = self.auth.get_or_default_user(user_id)
-        project_ids = self.auth.get_available_project_ids(user.id, org_id)
+        project_ids = self.auth.get_available_project_ids(user.id, team_id, org_id)
         return [p.bind(self, user.id) for p in self.metadata.list_projects(project_ids)]
 
     def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot):
@@ -694,9 +693,11 @@ class ProjectManager:
         # self.blob.delete_snapshot(project_id, snapshot_id)
         self.metadata.delete_snapshot(project_id, snapshot_id)
 
-    def search_project(self, user_id: UserID, org_id: OrgID, project_name: str) -> List[Project]:
+    def search_project(
+        self, user_id: UserID, project_name: str, team_id: Optional[TeamID], org_id: Optional[OrgID]
+    ) -> List[Project]:
         user = self.auth.get_or_default_user(user_id)
-        project_ids = self.auth.get_available_project_ids(user.id, org_id)
+        project_ids = self.auth.get_available_project_ids(user.id, team_id, org_id)
         return [p.bind(self, user.id) for p in self.metadata.search_project(project_name, project_ids)]
 
     def list_snapshots(

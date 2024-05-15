@@ -32,9 +32,7 @@ class WorkspaceView(WorkspaceBase):
         )
 
     def add_project(self, project: Project, team_id: TeamID = None) -> Project:
-        project = self.project_manager.add_project(
-            project, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id
-        )
+        project = self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or self.team_id)
         return project
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
@@ -47,8 +45,8 @@ class WorkspaceView(WorkspaceBase):
             project_id = uuid.UUID(project_id)
         self.project_manager.delete_project(self.user_id, project_id)
 
-    def list_projects(self) -> List[Project]:
-        return self.project_manager.list_projects(self.user_id, self.org_id)
+    def list_projects(self, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None) -> List[Project]:
+        return self.project_manager.list_projects(self.user_id, team_id or self.team_id, org_id or self.org_id)
 
     def add_snapshot(self, project_id: STR_UUID, snapshot: Snapshot):
         if isinstance(project_id, str):
@@ -62,8 +60,12 @@ class WorkspaceView(WorkspaceBase):
             snapshot_id = uuid.UUID(snapshot_id)
         self.project_manager.delete_snapshot(self.user_id, project_id, snapshot_id)
 
-    def search_project(self, project_name: str) -> List[Project]:
-        return self.project_manager.search_project(self.user_id, self.org_id, project_name)
+    def search_project(
+        self, project_name: str, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
+    ) -> List[Project]:
+        return self.project_manager.search_project(
+            self.user_id, project_name, team_id or self.team_id, org_id or self.org_id
+        )
 
 
 class LocalWorkspaceView(WorkspaceView):

@@ -23,7 +23,6 @@ from evidently.tests.base_test import TestStatus
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
-from evidently.ui.base import Org
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
@@ -34,7 +33,6 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.dashboards.test_suites import to_period
 from evidently.ui.errors import ProjectNotFound
-from evidently.ui.storage.common import NO_ORG
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
@@ -194,7 +192,7 @@ class JsonFileMetadataStorage(MetadataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    def add_project(self, project: Project, user: User, team: Team, org: Org) -> Project:
+    def add_project(self, project: Project, user: User, team: Team) -> Project:
         project_id = str(project.id)
         self.state.location.makedirs(posixpath.join(project_id, SNAPSHOTS))
         with self.state.location.open(posixpath.join(project_id, METADATA_PATH), "w") as f:
@@ -204,7 +202,7 @@ class JsonFileMetadataStorage(MetadataStorage):
         return project
 
     def update_project(self, project: Project) -> Project:
-        return self.add_project(project, NO_USER, NO_TEAM, NO_ORG)
+        return self.add_project(project, NO_USER, NO_TEAM)
 
     def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
         return self.state.projects.get(project_id)

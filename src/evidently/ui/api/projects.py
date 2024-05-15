@@ -27,7 +27,6 @@ from evidently.ui.api.models import TestSuiteModel
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards.base import DashboardPanel
-from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
@@ -54,9 +53,10 @@ def list_projects(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-    org_id: OrgID,
+    team_id: Annotated[Optional[TeamID], Parameter(title="filter by team")] = None,
+    org_id: Annotated[Optional[OrgID], Parameter(title="filter by org")] = None,
 ) -> Sequence[Project]:
-    projects = project_manager.list_projects(user_id, org_id)
+    projects = project_manager.list_projects(user_id, team_id, org_id)
     log_event("list_projects", project_count=len(projects))
     return projects
 
@@ -81,10 +81,11 @@ def search_projects(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-    org_id: OrgID,
+    team_id: Annotated[Optional[TeamID], Parameter(title="filter by team")] = None,
+    org_id: Annotated[Optional[OrgID], Parameter(title="filter by org")] = None,
 ) -> List[Project]:
     log_event("search_projects")
-    return project_manager.search_project(user_id, org_id=org_id, project_name=project_name)
+    return project_manager.search_project(user_id, team_id=team_id, org_id=org_id, project_name=project_name)
 
 
 @post("/{project_id:uuid}/info", sync_to_thread=True)
@@ -265,10 +266,9 @@ def add_project(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-    org_id: OrgID,
-    team_id: TeamID = ZERO_UUID,
+    team_id: TeamID,
 ) -> Project:
-    p = project_manager.add_project(data, user_id, team_id, org_id)
+    p = project_manager.add_project(data, user_id, team_id)
     log_event("add_project")
     return p
 
