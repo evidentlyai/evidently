@@ -89,7 +89,7 @@ You can create distribution plots from either Reports or Test Suites.
 |Stacked bar chart: `HistBarMode.RELATIVE`. Shows relative frequency (percentage).|![](../.gitbook/assets/monitoring/panel_dist_relative-min.png)|
 
 {% hint style="info" %}
-**What is the difference between a Distribution Panel and a Histogram Plot?** A Histogram Plot shows the distribution of values from all snapshots. Each source snapshot contains a **single value** (e.g., a "number of drifting features"). A Distribution Panel shows how a distribution changes in time. Each source snapshot contains a **histogram** (e.g. frequency of different categories).
+**What is the difference between a Distribution Panel and a Histogram Plot?** A Histogram Plot shows the distribution of values from all snapshots. Each source snapshot contains a **single value** (e.g., a "number of drifting features"). A Distribution Panel shows how a distribution changes over time. Each source snapshot contains a **histogram** (e.g. frequency of different categories).
 {% endhint %}
 
 # What's next?
