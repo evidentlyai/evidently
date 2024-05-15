@@ -6,7 +6,7 @@ description: How to send alerts.
 Built-in alerting is a Pro feature available in the Evidently Cloud. 
 {% endhint %}
 
-To enable alerts, open the Project and navigate to the "Alerts" section in the left menu. To enable alerts, you must set:
+To enable alerts, open the Project and navigate to the "Alerts" section in the left menu. You must set:
 * A notification channel.
 * An alert condition. 
 
