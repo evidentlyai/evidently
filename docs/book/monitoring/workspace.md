@@ -15,7 +15,7 @@ If you do not have one yet, create an [Evidently Cloud account](https://app.evid
 
 **Get the API token**. You will use it to connect with Evidently Cloud Workspace from your Python environment. Use the "key" sign in the left menu to get to the token page, and click "generate token." Save it in a temporary file since it won't be visible once you leave the page.
 
-**Connect to the workspace**. To connect to the Evidently Cloud workspace, you must first [install Evidently](../installation/install-evidently.md).
+**Connect to the Workspace**. To connect to the Evidently Cloud Workspace, you must first [install Evidently](../installation/install-evidently.md).
 
 ```python
 pip install evidently
@@ -49,7 +49,7 @@ ws = Workspace.create("evidently_ui_workspace")
 You can pass a `path` parameter to specify the path to a local directory.
 
 {% hint style="info" %}
-**Code example** [Self-hosting tutorial](../get-started/tutorial-monitoring.md) shows a complete Python script to create and populate a local workspace.
+**Code example** [Self-hosting tutorial](../get-started/tutorial-monitoring.md) shows a complete Python script to create and populate a local Workspace.
 {% endhint %}
 
 ## Remote Workspace
@@ -111,11 +111,11 @@ evidently ui --workspace . /workspace
 evidently ui --workspace ./workspace --port 8080
 ```
 
-To view the Evidently interface, go to URL http://localhost:8000 or a different specified port in your web browser.
+To view the Evidently interface, go to URL http://localhost:8000 or a specified port in your web browser.
 
-## [DANGER] Delete workspace
+## [DANGER] Delete Workspace
 
-If you want to delete an existing workspace (for example, an empty or a test workspace), run the command from the Terminal:
+To delete a Workspace (for example, an empty or a test Workspace), run the command from the Terminal:
 
 ```
 cd src/evidently/ui/
@@ -128,5 +128,4 @@ rm -r workspace
 
 # What’s next?
 
-Regardless of the workspace type (cloud, local, or remote), you can use the same methods to create and manage Projects. Head to the next section to see how.
-
+After you set up a Workspace, you can add and manage Projects. Head to the [next section to see how](add_project.md).
