@@ -42,7 +42,7 @@ After creating a Project, you can click to open a Dashboard. Since there's no da
 
 {% endtabs %}
 
-**Project ID**. Once you run `create_project`, you will see the Project ID. You can later use it to reference the Project. You can also copy the Project ID directly from the UI: it appears above the monitoring dashboard.
+**Project ID**. Once you run `create_project`, you will see the Project ID. You can later use it to reference the Project. You can also copy the Project ID directly from the UI: it appears above the monitoring Dashboard.
 
 ## Add a Team Project
 
@@ -155,4 +155,4 @@ Each Project has the following parameters.
 
 Once you create or connect to a Project, you can:
 * [Send snapshots](snapshots.md) using the `add_report` or `add_test_suite` methods. 
-* Configure the monitoring dashboard in the [user interface](add_dashboard_tabs.md) or via the [Python API](design_dashboard_api.md).
+* Configure the monitoring Dashboard in the [user interface](add_dashboard_tabs.md) or via the [Python API](design_dashboard_api.md).
