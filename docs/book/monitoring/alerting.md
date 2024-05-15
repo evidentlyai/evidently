@@ -1,5 +1,5 @@
 ---
-description: How to send alerts. 
+description: Get notifications in Slack or email. 
 ---   
 
 {% hint style="success" %} 
@@ -24,7 +24,7 @@ You can choose between the following options:
 If you use Test Suites, you can tie alerting to the failed Tests in a Test Suite. Toggle this option on the Alerts page. Evidently will set an alert to the defined channel if any of the Tests fail.
 
 {% hint style="info" %} 
-**How to avoid alert fatigue?** When you create a Test Suite, you can [mark certain conditions as Warnings](../tests-and-reports/custom-test-suite.md) using the `is_critical` parameters. This helps distinguish between critical failures that trigger alerts (set `is_critical` as `True`; default) and non-critical ones for which no alerts will be generated (set `is_critical` as `False`).
+**How to avoid alert fatigue?** When you create a Test Suite, you can [mark certain conditions as Warnings](../tests-and-reports/custom-test-suite.md) using the `is_critical` parameter. Set is `False` for non-critical checks to avoid triggering alerts.
 {% endhint %}
 
 ## Custom conditions 
