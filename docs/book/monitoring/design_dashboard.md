@@ -6,16 +6,14 @@ description: Overview of the available monitoring Panel types.
 
 A monitoring Panel is an individual plot or counter on the Monitoring Dashboard. 
 
-You can add multiple Panels and organize them by **Tabs**. There are several Panel types to choose from, and you can customize titles and legends.
+You can add multiple Panels and organize them by **Tabs**. You can choose from Metric, Distribution, and Test Panels, and customize titles and legends.
 
 When adding a Panel, you point to the **source Metric or Test** and the value (`field_path`) inside it. Evidently will pull selected value(s) from all snapshots in the Projects and add them to the Panel. 
 
-You can use **Tags** to filter data from specific snapshots. For example, you can plot the accuracy of Model A and Model B next to each other. To achieve this, add relevant tags when creating a snapshot.
-
-Broadly, there are Metric, Distribution, and Test Panels. This page details the panel types.
+You can use **Tags** to filter data from specific snapshots. For example, you can plot the accuracy of Model A and Model B next to each other. To achieve this, add relevant Tags when creating a snapshot.
 
 {% hint style="info" %}
-**How to add Panels**. Check the next [docs section](design_dashboard_api.md).  
+**How to add Panels**. This page explains the Panel types. Check the next section on [adding Panels](design_dashboard_api.md).  
 {% endhint %}
 
 # Metric Panels
@@ -66,7 +64,7 @@ Class `DashboardPanelTestSuiteCounter`
 
 | Panel Type| Example  |
 |---|---|
-|Shows a counter of Tests with selected status (pass, fail). |![](../.gitbook/assets/monitoring/panel_tests_counter_example.png)|
+|Shows a counter of Tests with selected status. |![](../.gitbook/assets/monitoring/panel_tests_counter_example.png)|
 
 ## Test plot
 Class `DashboardPanelTestSuite`.
@@ -77,11 +75,11 @@ Class `DashboardPanelTestSuite`.
 |Aggregated plot: `TestSuitePanelType.AGGREGATE`. Only the total number of Tests by status is visible. |![](../.gitbook/assets/monitoring/panel_tests_aggregated_hover_example.png)|
 
 # Distribution Panel
-Class `DashboardPanelDistribution`. Shows a distribution of values over time. For example, if you capture Data Quality or Data Drift Reports that include histograms for categorical values, you can visualize the distribution over time.
-
-![](../.gitbook/assets/monitoring/distribution_panels.png)
+Class `DashboardPanelDistribution`. Shows a distribution of values over time. For example, if you capture Data Quality or Data Drift Reports that include histograms for categorical values, you can plot how the frequency of categories changes.
 
 You can create distribution plots from either Reports or Test Suites.  
+
+![](../.gitbook/assets/monitoring/distribution_panels.png)
 
 | Panel Type| Example  |
 |---|---|
@@ -91,9 +89,8 @@ You can create distribution plots from either Reports or Test Suites.
 |Stacked bar chart: `HistBarMode.RELATIVE`. Shows relative frequency (percentage).|![](../.gitbook/assets/monitoring/panel_dist_relative-min.png)|
 
 {% hint style="info" %}
-**What is the difference between a Distribution Panel and a Histograms Plot?**. A Histogram Plot displays the distribution of individual values from all snapshots over a period. Each source snapshot must contain a **single value** of the type (e.g., a "number of drifting features"). The Plot shows how frequently each of the numbers occurs. A Distribution Panel, in contrast, shows changes in distribution over time. Each source snapshot must contain a **distribution histogram** (e.g., a histogram of categorical values). The Plot shows how these distributions change within the selected timeframe.
+**What is the difference between a Distribution Panel and a Histogram Plot?** A Histogram Plot shows the distribution of values from all snapshots. Each source snapshot contains a **single value** (e.g., a "number of drifting features"). A Distribution Panel shows how a distribution changes in time. Each source snapshot contains a **histogram** (e.g. frequency of different categories).
 {% endhint %}
-
 
 # What's next?
 How to add [monitoring Panels and Tabs](design_dashboard_api.md).
