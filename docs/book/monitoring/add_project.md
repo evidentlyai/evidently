@@ -1,5 +1,5 @@
 ---
-description: Create a Project for your use case.
+description: Set up a Project for your use case.
 ---   
 
 # What is a Project?
