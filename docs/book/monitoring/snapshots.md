@@ -45,6 +45,10 @@ For monitoring, you can also add `tags` and `timestamp` to your snapshots.
 
 3. **Send the snapshot**. After you compute the Report or Test Suite, use the `add_report` or `add_test_suite` methods to send them to a corresponding Project in your workspace.
 
+{% hint style="info" %}
+**Collector service.** To compute snapshots in near real-time, you can configure a [collector service](collector_service.md). 
+{% endhint %}
+
 # Send snapshots
 
 **Send a Report**. To create and send a Report with data summaries for a single dataset `batch1`:
