@@ -6,6 +6,7 @@ from abc import ABC
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import NamedTuple
@@ -104,12 +105,25 @@ class SnapshotMetadata(BaseModel):
         return self._additional_graphs
 
 
-class Org(BaseModel):
+class EntityType(Enum):
+    Project = "project"
+    Team = "team"
+    Org = "org"
+
+
+class Entity(BaseModel):
+    entity_type: ClassVar[EntityType]
+    id: EntityID
+
+
+class Org(Entity):
+    entity_type: ClassVar[EntityType] = EntityType.Org
     id: OrgID = Field(default_factory=uuid.uuid4)
     name: str
 
 
-class Team(BaseModel):
+class Team(Entity):
+    entity_type: ClassVar[EntityType] = EntityType.Team
     id: TeamID = Field(default_factory=uuid.uuid4)
     name: str
 
@@ -133,7 +147,9 @@ def _default_dashboard():
     return DashboardConfig(name="", panels=[])
 
 
-class Project(BaseModel):
+class Project(Entity):
+    entity_type: ClassVar[EntityType] = EntityType.Project
+
     class Config:
         underscore_attrs_are_private = True
 
@@ -349,12 +365,6 @@ class Permission(Enum):
     PROJECT_DELETE = "project_delete"
     PROJECT_SNAPSHOT_ADD = "project_snapshot_add"
     PROJECT_SNAPSHOT_DELETE = "project_snapshot_delete"
-
-
-class EntityType(Enum):
-    Project = "project"
-    Team = "team"
-    Org = "org"
 
 
 class Role(BaseModel):

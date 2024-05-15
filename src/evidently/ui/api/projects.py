@@ -27,6 +27,7 @@ from evidently.ui.api.models import TestSuiteModel
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards.base import DashboardPanel
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
@@ -266,7 +267,7 @@ def add_project(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-    team_id: TeamID,
+    team_id: TeamID = ZERO_UUID,
 ) -> Project:
     p = project_manager.add_project(data, user_id, team_id)
     log_event("add_project")
