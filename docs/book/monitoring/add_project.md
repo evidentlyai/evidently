@@ -1,5 +1,5 @@
 ---
-description: Organize your data in a Project.
+description: Create a Project for your use case.
 ---   
 
 # What is a Project?
