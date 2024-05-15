@@ -1,5 +1,5 @@
 ---
-description: How to add monitoring Panels to the Dashboard.
+description: Design your own Dashboard with custom Panels.
 ---   
 
 We recommend starting with [pre-built Tabs](add_dashboard_tabs.md) for a quick start. 
@@ -17,14 +17,14 @@ You can also explore the [source code](https://github.com/evidentlyai/evidently/
 You can add monitoring Panels using the Python API or the Evidently Cloud user interface.
 
 Here is the general flow:
-* Define the **Panel type**: metric Counter, metric Plot, Distribution, Test Counter, or Test Plot. (See [Panel types](design_dashboard.md)).
+* Define the **Panel type**: Counter, Plot, Distribution, Test Counter, or Test Plot. (See [Panel types](design_dashboard.md)).
 * Specify panel **title** and **size**.
-* Add optional **Tags** to filter data. If no Tag is specified, the Panel will use data from all snapshots in the Project.
-* Select **parameters** based on the Panel type, e.g., aggregation level. (See the section on Parameters below).
+* Add optional **Tags** to filter data. Without Tags, the Panel will use data from all Project snapshots.
+* Select Panel **parameters**, e.g., aggregation level. 
 * Define the **Panel value(s)** to show: 
   * For Test Panels, specify `test_id`. 
-  * For Metric and Distribution Panels, specify `metric_id` and `field_path`. (See the section on `PanelValue` below).
-* Pass arguments (`test_args` or `metric_args`) to identify the exact value when they repeat inside the snapshot. For instance, to plot the mean value of a given column, you need the column name as an argument. (See the section on `PanelValue` below).
+  * For Metric and Distribution Panels, specify `metric_id` and `field_path`. .
+* Pass `test_args` or `metric_args` to identify the exact value when they repeat in a snapshot. For instance, to plot the mean value of a given column, pass the column name as an argument. 
 
 This page explains each step in detail.
 
@@ -49,7 +49,6 @@ Some tips:
 {% endtab %}
 
 {% tab title="API - Metric Panel" %} 
-Each Project has a `DashboardConfig` that describes the composition of the monitoring Panels. You can edit it remotely.
 
 **Connect to a Project**. Load the latest dashboard configuration into your Python environment.
 
@@ -57,7 +56,7 @@ Each Project has a `DashboardConfig` that describes the composition of the monit
 project = ws.get_project("YOUR PROJECT ID HERE")
 ```
 
-**Add a new Panel**. Use the `add_panel` method. Specify the Panel type, name, Panel Value, etc. You can add multiple Panels: they will appear in the listed order. Save the configuration with `project.save()`. Here is an example:
+**Add a new Panel**. Use the `add_panel` method and pass the parameters. You can add multiple Panels: they will appear in the listed order. Save the configuration with `project.save()`. 
 
 ```python
 project.dashboard.add_panel(
@@ -84,14 +83,13 @@ Go back to the web app to see the Dashboard. Refresh the page if needed.
 {% endtab %}
 
 {% tab title="API - Test Panel" %} 
-Each Project has a `DashboardConfig` that describes the composition of the monitoring Panels. You can edit it remotely.
 
 **Connect to a Project**. Load the latest dashboard configuration into your Python environment.
 
 ```python
 project = ws.get_project("YOUR PROJECT ID HERE")
 ```
-**Add a new Test Panel**. Use the `add_panel` method, and set `include_test_suites=True`. Specify the Panel type, name, Tests to include, aggregation level, etc. You can add multiple Panels: they will appear in the listed order. Save the configuration with `project.save()`. Here is an example:
+**Add a new Test Panel**. Use the `add_panel` method, set `include_test_suites=True` and pass the parameters. You can add multiple Panels: they will appear in the listed order. Save the configuration with `project.save()`. 
 
 ```python
 project.dashboard.add_panel(
@@ -123,17 +121,20 @@ Go back to the web app to see the Dashboard. Refresh the page if needed.
 Multiple tabs is a Pro feature available in the Evidently Cloud.
 {% endhint %}
 
-By default, all new Panels appear on the same monitoring Dashboard. You can create named Tabs to organize them. 
+By default, you add Panels appear to a single monitoring Dashboard. You can create Tabs to organize them. 
 
 {% tabs %}
 
 {% tab title="UI" %} 
+
 Enter the "edit" mode on the Dashboard (top right corner) and click "add Tab". To create a custom Tab, choose an “empty” tab and give it a name.
 
-Proceed with adding Panels to this Tab as usual. 
+Proceed with adding Panels to this Tab as usual.
+
 {% endtab %}
 
-{% tab title=”API" %}
+{% tab title="API" %}
+
 **Connect to a Project**. Load the latest Dashboard configuration into your Python environment.
 
 ```python
@@ -191,7 +192,7 @@ To delete the Tabs or Panels in the UI, use the “Edit” mode and click the �
 # Panel parameters
 
 {% hint style="success" %} 
-**Panel types**. To preview all Panel types, check the previous [docs section](design_dashboard.md. This page details the parameters and API.
+**Panel types**. To preview all Panel types, check the previous [docs section](design_dashboard.md). This page details the parameters and API.
 {% endhint %}
 
 Class `DashboardPanel` is a base class. Its parameters apply to all Panel types. 
@@ -209,11 +210,11 @@ See usage examples below together with panel-specific parameters.
 
 | Parameter | Description |
 |---|---|
-| `value: Optional[PanelValue] = None` | Specifies the value to display in the Counter. If empty, you will get a text-only panel. <br><br>*Refer to the Panel Value section below for examples.* |
+| `value: Optional[PanelValue] = None` | Specifies the value to display. If empty, you get a text-only panel. <br><br>*Refer to the Panel Value section below for examples.* |
 | `text: Optional[str] = None` | Supporting text to display on the Counter. |
-| `agg: CounterAgg`<br><br>**Available:**<br> `SUM`, `LAST`, `NONE` | Data aggregation options:<br>`SUM`: Calculates the sum of values from all snapshots (or filtered by tags).<br>`LAST`: Displays the last available value.<br>`NONE`: Reserved for text panels. |
+| `agg: CounterAgg`<br><br>**Available:**<br> `SUM`, `LAST`, `NONE` | Data aggregation options:<br>`SUM`: Calculates the value sum (from all snapshots or filtered by Tag).<br>`LAST`: Displays the last available value.<br>`NONE`: Reserved for text panels. |
 
-See examples.
+See examples:
 
 {% tabs %}
 
@@ -235,7 +236,7 @@ project.dashboard.add_panel(
 
 {% tab title="Value sum" %}  
 
-**Panel with a sum of values**. To create a panel that sums up the number of rows over time.
+**Panel with a sum of values**. To create a Panel that sums up the number of rows over time:
 
 ```python
 project.dashboard.add_panel(
@@ -267,14 +268,13 @@ project.dashboard.add_panel(
 | `values: List[PanelValue]` | Specifies the value(s) to display in the Plot. <br><br> The field path must point to the individual **MetricResult** (e.g., not a dictionary or a histogram).<br><br> If you pass multiple values, they will appear together, e.g., as separate lines on a Line plot, bars on a Bar Chart, or points on a Scatter Plot.<br><br>*Refer to the Panel Value section below for examples.* |
 | `plot_type: PlotType`<br><br>**Available:** `SCATTER`, `BAR`, `LINE`, `HISTOGRAM` | Specifies the plot type: scatter, bar, line, or histogram. |
 
+See examples:
 
 {% tabs %}
 
 {% tab title="Single value" %} 
 
-See examples.
-
-**Single value on a Plot**. To plot MAPE over time in a line plot.
+**Single value on a Plot**. To plot MAPE over time in a line plot:
 
 ```python
 project.dashboard.add_panel(
@@ -296,9 +296,9 @@ project.dashboard.add_panel(
 
 {% endtab %}
 
-{% tab title=”Multiple values" %}
+{% tab title="Multiple values" %}
 
-**Multiple values on a Plot**. To plot MAPE and reference MAPE on the same plot. 
+**Multiple values on a Plot**. To plot MAPE and reference MAPE on the same plot: 
 
 ```python
 project.dashboard.add_panel(
@@ -335,7 +335,7 @@ project.dashboard.add_panel(
 | `value: PanelValue` | Specifies the distribution to display on the Panel. <br><br> The `field_path` must point to a histogram.<br><br>*Refer to the Panel Value section below for examples.* |
 | `barmode: HistBarMode`<br><br>**Available:** `STACK`, `GROUP`, `OVERLAY`, `RELATIVE` | Specifies the distribution plot type: stacked, grouped, overlay or relative. |
 
-**Example**: to plot the distribution of the "education" column over time using STACK plot:
+**Example**. To plot the distribution of the "education" column over time using STACK plot:
 
 ```python
 p.dashboard.add_panel(
@@ -360,15 +360,15 @@ p.dashboard.add_panel(
 |---|---|
 | `test_filters: List[TestFilter]=[]`<br>`test_id: test_id`<br>`test_arg: List[str]`|Test filters select specific Test(s). Without a filter, the Panel considers the results of all Tests. <br><br>You must reference a `test_id` even if you used a Preset. You can check the Tests included in each Preset [here](https://docs.evidentlyai.com/reference/all-tests).|
 | `statuses: List[statuses]`<br><br>**Available**:<br>`TestStatus.ERROR`, `TestStatus.FAIL`, `TestStatus.SUCCESS`, `TestStatus.WARNING`, `TestStatus.SKIPPED`| Status filters select Tests with a specific outcomes. (E.g., choose the FAIL status to display a counter of failed Tests). Without a filter, the Panel considers Tests with any status.|
-| <br>`agg: CounterAgg`<br><br>**Available**:<br>`SUM`, `LAST`  | Data aggregation options:<br>`SUM`: Calculates the sum of Test results from all snapshots (or filtered by tags). <br>`LAST`: Displays the last available Test result. |
+| <br>`agg: CounterAgg`<br><br>**Available**:<br>`SUM`, `LAST`  | Data aggregation options:<br>`SUM`: Calculates the sum of Test results from all snapshots (or filtered by Tags). <br>`LAST`: Displays the last available Test result. |
 
 See examples.
 
 {% tabs %}
 
-{% tab title="Show latesr" %} 
+{% tab title="Show latest" %} 
 
-**Last Tast**. To display the result of the last Test only. All Tests are considered.
+**Last Test**. To display the result of the latest Test in the Project.
 
 ```python
 project.dashboard.add_panel(
@@ -381,9 +381,9 @@ project.dashboard.add_panel(
 
 {% endtab %}
 
-{% tab title=”Filter by Test and Status" %}
+{% tab title="Filter by Test and Status" %}
 
-**Filter by Test ID and Status**. To display the number of failed Tests and errors for a specific Test (Number of unique values in the column “age”).
+**Filter by Test ID and Status**. To display the number of failed Tests and errors for a specific Test (Number of unique values in the column "age").
 
 ```python
 project.dashboard.add_panel(
@@ -403,19 +403,18 @@ project.dashboard.add_panel(
 
 `DashboardPanelTestSuite` shows Test results over time. 
 
-
 | Parameter | Description |
 |---|---|
-| `test_filters: List[TestFilter]=[]`<br>`test_id: test_id`<br>`test_arg: List[str]`|Test filters select specific Test(s). Without a filter, the Panel shows the results of all Tests in the Project. <br><br>You must reference a `test_id` even if you used a Preset. You can check the Tests included in each Preset [here](https://docs.evidentlyai.com/reference/all-tests).|
-| `statuses: List[statuses]`<br><br>**Available**:<br>`TestStatus.ERROR`, `TestStatus.FAIL`, `TestStatus.SUCCESS`, `TestStatus.WARNING`, `TestStatus.SKIPPED`| Status filters select Tests with specific outcomes. Without a filter, the Panel plots all Test statuses over time.|
+| `test_filters: List[TestFilter]=[]`<br>`test_id: test_id`<br>`test_arg: List[str]`|Test filters select specific Test(s). Without a filter, the Panel shows the results of all Tests. <br><br>You must reference a `test_id` even if you used a Preset. Check the [Preset composition](https://docs.evidentlyai.com/reference/all-tests).|
+| `statuses: List[statuses]`<br><br>**Available**:<br>`TestStatus.ERROR`, `TestStatus.FAIL`, `TestStatus.SUCCESS`, `TestStatus.WARNING`, `TestStatus.SKIPPED`| Status filters select Tests with specific outcomes. Without a filter, the Panel shows all Test statuses.|
 | `panel_type=TestSuitePanelType`<br><br>**Available**:<br>`TestSuitePanelType.DETAILED`<br>`TestSuitePanelType.AGGREGATE`| Defines the Panel type. **Detailed** shows individual Test results. **Aggregate** (default) shows the total number of Tests by status.|
-| <br>`time_agg: Optional[str] = None`<br><br>**Available**:<br>`1H`, `1D`, `1W`, `1M` (see [period aliases](https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-period-aliases))| Groups all Test results within a defined period (e.g., 1 DAY).|
+| <br>`time_agg: Optional[str] = None`<br><br>**Available**:<br>`1H`, `1D`, `1W`, `1M` (see [period aliases](https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-period-aliases))| Groups all Test results in a period (e.g., 1 DAY).|
 
 {% tabs %}
 
 {% tab title="Detailed Tests" %} 
 
-**Detailed Tests** To show the detailed results (any status) of all individual Tests, with daily level aggregation.
+**Detailed Tests**. To show the results of all individual Tests, with daily level aggregation.
 
 ```python
 project.dashboard.add_panel(
@@ -431,9 +430,9 @@ project.dashboard.add_panel(
 
 {% endtab %}
 
-{% tab title=”Aggregated Tests" %}
+{% tab title="Aggregated by Status" %}
 
-**Aggregated Tests by Status**. To show the total number of failed Tests (status filter), with daily level aggregation.
+**Aggregated by Status**. To show the total number of failed Tests (status filter), with daily level aggregation.
 
 ```
 project.dashboard.add_panel(
@@ -449,9 +448,9 @@ project.dashboard.add_panel(
 
 {% endtab %}
 
-{% tab title=”Filtered by Test ID" %}
+{% tab title="Filtered by Test ID" %}
 
-**Filtered by Test ID**. To show the results (any status) of specified Tests (on constant columns, missing values, empty rows), with daily level aggregation.
+**Filtered by Test ID**. To show all results for a specified list of Tests (on constant columns, missing values, empty rows) with daily-level aggregation.
 
 ```
 project.dashboard.add_panel(
@@ -473,7 +472,7 @@ project.dashboard.add_panel(
 
 {% endtab %}
 
-{% tab title=”Filtered with Test Args" %}
+{% tab title="Filtered by Args" %}
 
 **Filtered by Test ID and Test Args**. To show the results of individual column-level Tests with daily aggregation, you must use both `test_id` and `test_arg` (column name):
 
@@ -497,15 +496,14 @@ project.dashboard.add_panel(
 
 {% endtabs %}
 
-# Panel value 
+# Panel Value 
 
 To define the value to show on a Metric Panel (Counter, Distribution, or Plot), you must pass the `PanelValue`. This includes source `metric_id`, `field_path` and `metric_args`.
 
 | Parameter | Description |
 |---|---|
-| `metric_id` | A metric ID that corresponds to the Evidently Metric logged inside the snapshots. You must specify the `metric_id` even if you use Test Suites.  
-A metric ID corresponding to the Evidently Metric in a snapshot.<br><br> Note that if you used a Metric Preset, you must still reference a `metric_id`. You can check the Metrics included in each Preset [here](https://docs.evidentlyai.com/reference/all-metrics).<br><br> If you used a Test Suite but want to plot individual values from it on a Metric Panel, you must also reference the `metric_id` that the Test relies on.|
-| `field_path` | The path to the specific computed Result inside the Metric. You can provide either a complete field path or a `field_name`. For Counters and Plot, the `field_path` must point to a single value. For the Distribution Panel, the `field_path` must point to a histogram.|
+| `metric_id` | The ID corresponds to the Evidently `metric` in a snapshot.<br><br> Note that if you used a Metric Preset, you must still reference a `metric_id`. Check the Metric [Preset composition](https://docs.evidentlyai.com/reference/all-metrics).<br><br> If you used a Test Suite but want to plot individual values from it on a Metric Panel, you must also reference the `metric_id` that the Test relies on.|
+| `field_path` | The path to the computed Result inside the Metric. You can provide a complete field path or a `field_name`. For Counter and Plot, the `field_path` must point to a single value. For the Distribution Panel, the `field_path` must point to a histogram.|
 | `metric_args` (optional) | Use additional arguments (e.g., column name, text descriptor, drift detection method) to identify the exact value when it repeats inside the same snapshot.|
 | `legend` (optional) | Value legend to show on the Plot.|
 
@@ -529,7 +527,7 @@ In this example, you pass the exact name of the field.
 
 {% endtab %}
 
-{% tab title=”Complete field path" %}
+{% tab title="Complete field path" %}
 
 **Complete field path**. To include the `current.share_of_missing_values` available inside the `DatasetMissingValueMetric()`:  
 
@@ -552,7 +550,7 @@ See examples using different `metric_args`:
 
 {% tab title="Column names" %} 
 
-**Column names as arguments**. To display the mean values of target and prediction over time in a line plot.  
+**Column names as arguments**. To shows the mean values of target and prediction on a line plot.  
 
 ```python
 values=[
@@ -573,7 +571,7 @@ values=[
 
 {% endtab %}
 
-{% tab title=”Descriptors" %}
+{% tab title="Descriptors" %}
 
 **Descriptors as arguments**. To specify the text descriptor (share of out-of-vocabulary words) using `metric_args`:
 
@@ -590,7 +588,7 @@ values=[
 
 {% endtab %}
 
-{% tab title=”Metric parameters" %}
+{% tab title="Metric parameters" %}
 
 **Metric parameters as arguments**. To specify the `euclidean` drift detection method (when results from multiple methods logged inside a snapshot) using `metric_args`:
 
@@ -607,26 +605,27 @@ values=[
 
 {% endtabs %}
 
-
 ### How to find the field path?
 
-Let's take an example of `DataDriftPreset()`. It contains two Metrics: `DatasetDriftMetric()` and `DataDriftTable()`. (Check the composition of Presets [here](https://docs.evidentlyai.com/reference/all-metrics). You can point to any of them as a `metric_id`, depending on what you’d like to plot. 
+Let's take an example of `DataDriftPreset()`. It contains two Metrics: `DatasetDriftMetric()` and `DataDriftTable()`. (Check the [Preset ccomposition](https://docs.evidentlyai.com/reference/all-metrics). 
+
+You can point to any of them as a `metric_id`, depending on what you’d like to plot. 
 
 ![](../.gitbook/assets/monitoring/field_path.png)
 
-Most Metrics contain multiple measurements inside (MetricResults) and some render data. To point to the specific value, use the `field path`. To find available fields in the chosen Metric, you can explore the contents of the individual snapshot or use automated suggestions in UI or Python.
+Most Metrics contain multiple measurements inside (MetricResults) and some render data. To point to the specific value, use the `field path`. 
+
+To find available fields in the chosen Metric, you can explore the contents of the individual snapshot or use automated suggestions in UI or Python.
 
 {% tabs %}
 
 {% tab title="Open the snapshot" %} 
 
-**Option 2**. Explore the contents of the snapshot, Metric or Test and find the relevant keys. 
-
-Each snapshot is a JSON file. You can open an existing snapshot and see available fields. (You can download an individual Report as JSON from the UI or open it in Python). 
+Each snapshot is a JSON file. You can download or open it in Python to see the available fields.  
 
 Alternatively, you can [generate a Report](../tests-and-reports/get-reports.md) with the selected Metrics on any test data. Get the output as a Python dictionary using `as_dict()` and explore the keys with field names.
 
-Here is a partial example of the contents of DatasetDriftMetric():
+Here is a partial example of the contents of `DatasetDriftMetric()`:
 
 ```python
 'number_of_columns': 15,
@@ -635,11 +634,13 @@ Here is a partial example of the contents of DatasetDriftMetric():
 'dataset_drift': False,
 ```
 
-Once you identify the value you’d like to plot (e.g., `number_of_drifted_columns`), pass it as the `field_path` to the `PanelValue` parameter. Include the `DatasetDriftMetricz as the `metric_id`. 
+Once you identify the value you’d like to plot (e.g., `number_of_drifted_columns`), pass it as the `field_path` to the `PanelValue` parameter. Include the `DatasetDriftMetric` as the `metric_id`. 
+
+Other Metrics and Tests follow the same logic.
 
 {% endtab %}
 
-{% tab title=”Python autocomplete" %}
+{% tab title="Python autocomplete" %}
 
 You can use autocomplete in interactive Python environments (like Jupyter notebook or Colab) to see available fields inside a specific Metric. They appear as you start typing the `.fields.` path for a specific Metric.
 
@@ -649,14 +650,12 @@ You can use autocomplete in interactive Python environments (like Jupyter notebo
 
 {% endtab %}
 
-{% tab title=”Suggestions in UI" %}
+{% tab title="Suggestions in UI" %}
 
-When working in the Evidently Cloud, you can see available fields in the drop-down menu when adding the new Panel.
+When working in the Evidently Cloud, you can see available fields in the drop-down menu as you add a new Panel.
 
 {% endtab %}
 
 {% endtabs %}
 
-Other Metrics and Tests follow the same logic. Note that there is some data inside the snapshots that you cannot currently plot on a monitoring dashboard (for example, render data or dictionaries). You can only plot values that exist as individual data points or histograms. 
-
-
+Note that there is some data inside the snapshots that you cannot currently plot on a monitoring Dashboard (for example, render data or dictionaries). You can only plot values that exist as individual data points or histograms. 
