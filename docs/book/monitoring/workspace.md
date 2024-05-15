@@ -1,19 +1,19 @@
 ---
-description: Set up an Evidently Cloud account or self-hosted workspace.
+description: Connect to Evidently Cloud or self-hosted Workspace.
 ---   
 
 # What is a Workspace?
 
 You need a workspace to organize your data and Projects. 
 
-* In Evidently Cloud, your account is your workspace. As simple as that! 
-* In self-hosted deployments, a workspace means a remote or local directory where you store the snapshots. The Monitoring UI will read the data from this source. 
+* In Evidently Cloud, your account is your Workspace. As simple as that! 
+* In self-hosted deployments, a Workspace is a remote or local directory where you store the snapshots. The Monitoring UI will read the data from this source. 
 
 # Evidently Cloud 
 
 If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup).
 
-**Get the API token**. You will use it to connect to the Evidently Cloud workspace from your Python environment. Use the "key" sign in the left menu to get to the token page, and click "generate token." Save it in a temporary file since it won't be visible once you leave the page.
+**Get the API token**. You will use it to connect with Evidently Cloud Workspace from your Python environment. Use the "key" sign in the left menu to get to the token page, and click "generate token." Save it in a temporary file since it won't be visible once you leave the page.
 
 **Connect to the workspace**. To connect to the Evidently Cloud workspace, you must first [install Evidently](../installation/install-evidently.md).
 
@@ -40,7 +40,7 @@ url="https://app.evidently.cloud")
 ## Local Workspace
 In this scenario, you will generate, store the snapshots and run the monitoring UI on the same machine.
 
-To create a local workspace and assign a name:
+To create a local Workspace and assign a name:
 
 ```python
 ws = Workspace.create("evidently_ui_workspace")
@@ -54,9 +54,9 @@ You can pass a `path` parameter to specify the path to a local directory.
 
 ## Remote Workspace
 
-In this scenario, after generating the snapshots, you will send them to the remote server. You must run the Monitoring UI on the same remote server, so that it directly interfaces with the filesystem where the snapshots are stored.
+In this scenario, you send the snapshots to a remote server. You must run the Monitoring UI on the same remote server. It will directly interface with the filesystem where the snapshots are stored.
 
-To create a remote workspace (UI should be running at this address):
+To create a remote Workspace (UI should be running at this address):
 
 ```python
 workspace = RemoteWorkspace("http://localhost:8000")
@@ -75,13 +75,13 @@ You can pass the following parameters:
 
 ## Remote snapshot storage
 
-In the examples above, you store the snapshots and run the UI on the same server. Alternatively, you can store snapshots in a remote data store (such as an S3 bucket). In this case, the Monitoring UI service will interface with the designated data store to read the snapshot data.
+In the examples above, you store the snapshots and run the UI on the same server. Alternatively, you can store snapshots in a remote data store (such as an S3 bucket). The Monitoring UI service will interface with the designated data store to read the snapshot data.
 
 To connect to data stores Evidently uses `fsspec` that allows accessing data on remote file systems via a standard Python interface. 
 
-You can verify supported data stores in the [Fsspec documentation](https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations](https://filesystem-spec.readthedocs.io/en/latest/api.html#other-known-implementations).
+You can verify supported data stores in the Fsspec documentation: [built-in implementations](https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations) and [other implementations](https://filesystem-spec.readthedocs.io/en/latest/api.html#other-known-implementations).
 
-For example, to read snapshots from an S3 bucket (in this example we have MinIO running on localhost:9000), you must specify environment variables:
+For example, to read snapshots from an S3 bucket (with MinIO running on localhost:9000), you must specify environment variables:
 
 ```
 FSSPEC_S3_ENDPOINT_URL=http://localhost:9000/
