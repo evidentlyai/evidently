@@ -1,5 +1,5 @@
 ---
-description: Connect to Evidently Cloud or self-hosted Workspace.
+description: Connect to the Evidently Cloud or a self-hosted Workspace.
 ---   
 
 # What is a Workspace?
