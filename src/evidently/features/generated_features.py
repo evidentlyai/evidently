@@ -1,9 +1,13 @@
 import abc
 import logging
 import typing
+import uuid
+from typing import List
 from typing import Optional
+from uuid import UUID
 
 import pandas as pd
+from pydantic import Field
 
 from evidently.core import ColumnType
 from evidently.pydantic_utils import EvidentlyBaseModel
@@ -16,6 +20,7 @@ if typing.TYPE_CHECKING:
 class GeneratedFeature(EvidentlyBaseModel):
     display_name: Optional[str] = None
     feature_type: ColumnType = ColumnType.Numerical
+    feature_id: UUID = Field(default_factory=uuid.uuid4)
     """
     Class for computation of additional features.
     """
@@ -58,6 +63,27 @@ class GeneratedFeature(EvidentlyBaseModel):
             logging.warning(f"unhashable params for {type(self)}. Fallback to unique.")
             return None
         return params
+
+
+class GeneralDescriptor(EvidentlyBaseModel):
+    display_name: Optional[str] = None
+
+    @abc.abstractmethod
+    def feature(self) -> GeneratedFeature:
+        raise NotImplementedError()
+
+    def as_column_name(self):
+        return self.feature().feature_name()
+
+
+class MultiColumnFeatureDescriptor(EvidentlyBaseModel):
+    display_name: Optional[str] = None
+
+    def feature(self, columns: List[str]) -> GeneratedFeature:
+        raise NotImplementedError()
+
+    def for_columns(self, columns: List[str]) -> "ColumnName":
+        return self.feature(columns).feature_name()
 
 
 class FeatureDescriptor(EvidentlyBaseModel):

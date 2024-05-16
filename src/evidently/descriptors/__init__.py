@@ -1,8 +1,11 @@
+from .custom_descriptor import CustomColumnEval
+from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
 from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage
 from .oov_words_percentage_descriptor import OOV
 from .openai_descriptor import OpenAIPrompting
 from .regexp_descriptor import RegExp
+from .semantic_similarity import SemanticSimilarity
 from .sentence_count_descriptor import SentenceCount
 from .sentiment_descriptor import Sentiment
 from .text_contains_descriptor import Contains
@@ -16,6 +19,8 @@ from .words_descriptor import ExcludesWords
 from .words_descriptor import IncludesWords
 
 __all__ = [
+    "CustomColumnEval",
+    "CustomPairColumnEval",
     "HuggingFaceModel",
     "OpenAIPrompting",
     "NonLetterCharacterPercentage",
@@ -29,6 +34,7 @@ __all__ = [
     "TextLength",
     "TriggerWordsPresence",
     "WordCount",
+    "SemanticSimilarity",
     "SentenceCount",
     "Sentiment",
     "RegExp",
