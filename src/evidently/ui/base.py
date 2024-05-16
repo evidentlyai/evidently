@@ -382,7 +382,16 @@ class DefaultRole(Enum):
 
 DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
     (DefaultRole.OWNER, None): set(Permission),
-    (DefaultRole.EDITOR, EntityType.Org): {Permission.ORG_READ, Permission.ORG_WRITE, Permission.ORG_CREATE_TEAM},
+    (DefaultRole.EDITOR, EntityType.Org): {
+        Permission.ORG_READ,
+        Permission.ORG_CREATE_TEAM,
+        Permission.TEAM_READ,
+        Permission.TEAM_WRITE,
+        Permission.TEAM_CREATE_PROJECT,
+        Permission.PROJECT_READ,
+        Permission.PROJECT_WRITE,
+        Permission.PROJECT_SNAPSHOT_ADD,
+    },
     (DefaultRole.EDITOR, EntityType.Team): {
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
