@@ -122,8 +122,13 @@ class CloudMetadataStorage(RemoteMetadataStorage):
     def list_orgs(self) -> List[OrgModel]:
         return self._request("/api/orgs", "GET", response_model=List[OrgModel])
 
-    def create_team(self, team: Team) -> TeamModel:
-        return self._request("/api/teams", "POST", query_params={"name": team.name}, response_model=TeamModel)
+    def create_team(self, team: Team, org_id: Optional[OrgID] = None) -> TeamModel:
+        return self._request(
+            "/api/teams",
+            "POST",
+            query_params={"name": team.name, "org_id": org_id or self.org_id},
+            response_model=TeamModel,
+        )
 
     def switch_team(self, team_id: TeamID):
         # self.team_id = team_id
@@ -181,9 +186,9 @@ class CloudWorkspace(WorkspaceView):
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         return [o.to_org() for o in self.project_manager.metadata.list_orgs()]
 
-    def create_team(self, team: Team) -> Team:
+    def create_team(self, team: Team, org_id: Optional[OrgID] = None) -> Team:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_team(team).to_team()
+        return self.project_manager.metadata.create_team(team, org_id or self.org_id).to_team()
 
     def switch_team(self, team_id: STR_UUID):
         team_id_uuid = UUID(team_id) if isinstance(team_id, str) else team_id
