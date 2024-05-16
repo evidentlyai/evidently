@@ -597,7 +597,7 @@ class AuthManager(ABC):
         return self._list_entity_users_with_roles(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
 
     @abstractmethod
-    def list_user_teams(self, user_id: UserID, org_id: OrgID) -> List[Team]:
+    def list_user_teams(self, user_id: UserID, org_id: Optional[OrgID]) -> List[Team]:
         raise NotImplementedError
 
     @abstractmethod

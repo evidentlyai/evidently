@@ -99,7 +99,7 @@ class NoopAuthManager(AuthManager):
     def get_team(self, team_id: TeamID) -> Optional[Team]:
         return self.team
 
-    def list_user_teams(self, user_id: UserID, org_id: OrgID) -> List[Team]:
+    def list_user_teams(self, user_id: UserID, org_id: Optional[OrgID]) -> List[Team]:
         return []
 
     def _delete_team(self, team_id: TeamID):
