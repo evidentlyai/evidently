@@ -107,11 +107,19 @@ class Context:
     options: Options = Options()
     data_definition: Optional["DataDefinition"] = None
 
-    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+    def get_data_definition(
+        self,
+        current_data,
+        reference_data,
+        column_mapping: ColumnMapping,
+        categorical_features_cardinality: Optional[int] = None,
+    ) -> DataDefinition:
         if self.data_definition is None:
             if self.engine is None:
                 raise ValueError("Cannot create data definition when engine is not set")
-            self.data_definition = self.engine.get_data_definition(current_data, reference_data, column_mapping)
+            self.data_definition = self.engine.get_data_definition(
+                current_data, reference_data, column_mapping, categorical_features_cardinality
+            )
         return self.data_definition
 
 
@@ -515,3 +523,6 @@ class ReportBase(Display):
         except Exception as e:
             raise ValueError("Cannot create snapshot because of calculation error") from e
         return self._get_snapshot()
+
+    def datasets(self):
+        return self._inner_suite.context.data.get_datasets()

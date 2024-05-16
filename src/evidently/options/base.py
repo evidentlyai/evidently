@@ -7,6 +7,7 @@ from typing import Union
 
 from evidently._pydantic_compat import BaseModel
 from evidently.options import ColorOptions
+from evidently.options.agg_data import DataDefinitionOptions
 from evidently.options.agg_data import RenderOptions
 from evidently.options.option import Option
 
@@ -17,6 +18,7 @@ class Options(BaseModel):
     color: Optional[ColorOptions] = None
     render: Optional[RenderOptions] = None
     custom: Dict[Type[Option], Option] = {}
+    data_definition: Optional[DataDefinitionOptions] = None
 
     @property
     def color_options(self) -> ColorOptions:
@@ -25,6 +27,10 @@ class Options(BaseModel):
     @property
     def render_options(self) -> RenderOptions:
         return self.render or RenderOptions()
+
+    @property
+    def data_definition_options(self) -> DataDefinitionOptions:
+        return self.data_definition or DataDefinitionOptions()
 
     def get(self, option_type: Type[TypeParam]) -> TypeParam:
         if option_type in _option_cls_mapping:

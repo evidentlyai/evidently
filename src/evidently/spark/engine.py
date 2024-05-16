@@ -111,14 +111,20 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData]):
         return SparkInputData(
             data.reference_data,
             data.current_data,
-            None,
-            None,
-            data.column_mapping,
-            data.data_definition,
+            reference_additional_features=None,
+            current_additional_features=None,
+            column_mapping=data.column_mapping,
+            data_definition=data.data_definition,
             additional_data=data.additional_data,
         )
 
-    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+    def get_data_definition(
+        self,
+        current_data,
+        reference_data,
+        column_mapping: ColumnMapping,
+        categorical_features_cardinality: Optional[int] = None,
+    ):
         return create_data_definition_spark(current_data, reference_data, column_mapping)
 
     def generate_additional_features(self, data: SparkInputData):

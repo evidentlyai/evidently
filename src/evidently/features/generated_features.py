@@ -63,9 +63,8 @@ class GeneratedFeature(EvidentlyBaseModel):
 class FeatureDescriptor(EvidentlyBaseModel):
     display_name: Optional[str] = None
 
-    @abc.abstractmethod
     def for_column(self, column_name: str):
-        raise NotImplementedError()
+        return self.feature(column_name).feature_name()
 
     @abc.abstractmethod
     def feature(self, column_name: str) -> GeneratedFeature:

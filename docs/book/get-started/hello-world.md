@@ -1,8 +1,8 @@
 ---
-description: Get to know Evidently in a couple of minutes.
+description: Run your first evaluation using Evidently open-source, for tabular data.
 ---
 
-You can launch this hello-world example in Jupyter notebook or Colab. 
+You can launch this hello-world example in Jupyter notebook, Colab or other Python environment.
 
 # Installation 
 
@@ -24,7 +24,7 @@ Install **Evidently**:
 
 # Imports 
 
-Import toy data and required Evidently components:
+Import the Evidently components and a toy “Iris” dataset:
 
 ```python
 import pandas as pd
@@ -41,9 +41,9 @@ iris_data = datasets.load_iris(as_frame='auto')
 iris_frame = iris_data.frame
 ``` 
 
-# Run a test suite
+# Run a Test Suite
 
-Split the toy data into two batches and compare them: 
+Split the data into two batches. Run a set of pre-built data quality Tests to compare them:
 
 ```python
 data_stability= TestSuite(tests=[
@@ -51,11 +51,13 @@ data_stability= TestSuite(tests=[
 ])
 data_stability.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_stability 
-``` 
+```
 
-# Get a report
+This will automatically generate tests on share of nulls, out-of-range values, etc. – with test conditions generated based on the first "reference" dataset.
 
-Get a visual report to explore the feature distribution drift in detail:
+# Get a Report
+
+Get a Data Drift Report to see if the data distributions shifted between two datasets:
 
 ```python
 data_drift_report = Report(metrics=[
@@ -64,8 +66,9 @@ data_drift_report = Report(metrics=[
 
 data_drift_report.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_drift_report
-``` 
+```
 
 # Want to see more?
 
-You can explore a more detailed [Getting Started tutorial](tutorial.md).
+* Take the complete [Report & Test Suite Tutorial](tutorial.md) to learn how to run checks like this in detail (15 minutes). You can also evaluate ML model quality, e.g., for classification, regression, and ranking models, and work with text data.
+* Start with ML monitoring. Go through the [Evidently Cloud Quickstart](quickstart-cloud.md) (2 min) to get a dashboard to track metrics over time.

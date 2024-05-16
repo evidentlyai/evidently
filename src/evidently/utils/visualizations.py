@@ -593,8 +593,8 @@ def plot_cat_cat_rel(
     visible = []
     for i, val in enumerate(curr[target_name].astype(str).unique()):
         trace = go.Bar(
-            x=curr.loc[curr[target_name] == val, feature_name],
-            y=curr.loc[curr[target_name] == val, "count_objects"],
+            x=curr.loc[curr[target_name].astype(str) == val, feature_name],
+            y=curr.loc[curr[target_name].astype(str) == val, "count_objects"],
             marker_color=color_options.color_sequence[i],
             name=str(val),
             legendgroup=str(val),
@@ -603,8 +603,8 @@ def plot_cat_cat_rel(
         fig.add_trace(trace, 1, 1)
 
         trace = go.Bar(
-            x=curr.loc[curr[target_name] == val, feature_name],
-            y=curr.loc[curr[target_name] == val, "count_objects"] * 100 / curr["count_objects"].sum(),
+            x=curr.loc[curr[target_name].astype(str) == val, feature_name],
+            y=curr.loc[curr[target_name].astype(str) == val, "count_objects"] * 100 / curr["count_objects"].sum(),
             marker_color=color_options.color_sequence[i],
             name=str(val),
             legendgroup=str(val),
@@ -617,8 +617,8 @@ def plot_cat_cat_rel(
     if ref is not None:
         for i, val in enumerate(ref[target_name].astype(str).unique()):
             trace = go.Bar(
-                x=ref.loc[ref[target_name] == val, feature_name],
-                y=ref.loc[ref[target_name] == val, "count_objects"],
+                x=ref.loc[ref[target_name].astype(str) == val, feature_name],
+                y=ref.loc[ref[target_name].astype(str) == val, "count_objects"],
                 marker_color=color_options.color_sequence[i],
                 opacity=0.6,
                 name=str(val),
@@ -627,8 +627,8 @@ def plot_cat_cat_rel(
             fig.add_trace(trace, 1, 2)
 
             trace = go.Bar(
-                x=ref.loc[ref[target_name] == val, feature_name],
-                y=ref.loc[ref[target_name] == val, "count_objects"] * 100 / ref["count_objects"].sum(),
+                x=ref.loc[ref[target_name].astype(str) == val, feature_name],
+                y=ref.loc[ref[target_name].astype(str) == val, "count_objects"] * 100 / ref["count_objects"].sum(),
                 marker_color=color_options.color_sequence[i],
                 opacity=0.6,
                 name=str(val),
