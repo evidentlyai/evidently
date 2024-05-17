@@ -406,7 +406,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_SNAPSHOT_ADD,
     },
     (DefaultRole.VIEWER, EntityType.Org): {Permission.ORG_READ},
-    (DefaultRole.VIEWER, EntityType.Team): {Permission.TEAM_READ},
+    (DefaultRole.VIEWER, EntityType.Team): {Permission.TEAM_READ, Permission.PROJECT_READ},
     (DefaultRole.VIEWER, EntityType.Project): {Permission.PROJECT_READ},
 }
 

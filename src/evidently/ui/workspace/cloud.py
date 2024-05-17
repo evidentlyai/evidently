@@ -22,7 +22,6 @@ from evidently.ui.workspace.remote import RemoteMetadataStorage
 from evidently.ui.workspace.view import WorkspaceView
 
 TOKEN_HEADER_NAME = "X-Evidently-Token"
-ORG_HEADER_NAME = "X-Org-Id"
 
 
 class Cookie(NamedTuple):
@@ -39,8 +38,7 @@ ACCESS_TOKEN_COOKIE = Cookie(
 
 
 class CloudMetadataStorage(RemoteMetadataStorage):
-    def __init__(self, base_url: str, token: str, token_cookie_name: str, org_id: OrgID, org_id_header_name: str):
-        self.org_id_header_name = org_id_header_name
+    def __init__(self, base_url: str, token: str, token_cookie_name: str, org_id: OrgID):
         self.org_id = org_id
         self.token = token
         self.token_cookie_name = token_cookie_name
@@ -71,7 +69,6 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         if path == "/api/users/login":
             return r
         r.cookies[self.token_cookie_name] = self.jwt_token
-        r.headers[self.org_id_header_name] = str(self.org_id)
         return r
 
     def _request(
@@ -157,7 +154,6 @@ class CloudWorkspace(WorkspaceView):
             token=self.token,
             token_cookie_name=ACCESS_TOKEN_COOKIE.key,
             org_id=org_id_uuid or ZERO_UUID,
-            org_id_header_name=ORG_HEADER_NAME,
         )
 
         pm = ProjectManager(
