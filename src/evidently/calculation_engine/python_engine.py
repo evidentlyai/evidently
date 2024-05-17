@@ -1,6 +1,7 @@
 import abc
 import logging
 from typing import Generic
+from typing import Optional
 from typing import TypeVar
 
 import pandas as pd
@@ -30,19 +31,25 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
         return PythonInputData(
             data.reference_data,
             data.current_data,
-            None,
-            None,
-            data.column_mapping,
-            data.data_definition,
+            current_additional_features=None,
+            reference_additional_features=None,
+            column_mapping=data.column_mapping,
+            data_definition=data.data_definition,
             additional_data=data.additional_data,
         )
 
-    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+    def get_data_definition(
+        self,
+        current_data,
+        reference_data,
+        column_mapping: ColumnMapping,
+        categorical_features_cardinality: Optional[int] = None,
+    ):
         if not isinstance(current_data, pd.DataFrame) or (
             reference_data is not None and not isinstance(reference_data, pd.DataFrame)
         ):
             raise ValueError("PandasEngine works only with pd.DataFrame input data")
-        return create_data_definition(reference_data, current_data, column_mapping)
+        return create_data_definition(reference_data, current_data, column_mapping, categorical_features_cardinality)
 
     def generate_additional_features(self, data: PythonInputData):
         curr_additional_data = None
@@ -78,6 +85,7 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
                     ref_additional_data = ref_additional_data.join(ref_feature_data)
         data.current_additional_features = curr_additional_data
         data.reference_additional_features = ref_additional_data
+        return features
 
     def get_metric_implementation(self, metric):
         impl = super().get_metric_implementation(metric)

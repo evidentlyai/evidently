@@ -4,6 +4,7 @@ from typing import Optional
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -14,6 +15,14 @@ from evidently.utils.data_operations import process_columns
 
 
 class ConflictTargetMetricResults(MetricResult):
+    class Config:
+        field_tags = {
+            "number_not_stable_target": {IncludeTags.Current},
+            "share_not_stable_target": {IncludeTags.Current},
+            "number_not_stable_target_ref": {IncludeTags.Reference},
+            "share_not_stable_target_ref": {IncludeTags.Reference},
+        }
+
     number_not_stable_target: int
     share_not_stable_target: float
     number_not_stable_target_ref: Optional[int] = None

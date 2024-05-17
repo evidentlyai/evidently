@@ -7,9 +7,11 @@ excludes = [
     "mlflow_integration.py",
     "ibm_hr_attrition_model_validation.py",
     "bicycle_demand_monitoring_setup.py",
+    "data_and_ml_monitoring_tutorial.py",
     "how_to_run_drift_report_for_text_encoders.py",
     "comparing_custom_statest_with_classic_distributions.py",
-    "how_to_run_drift_report_for_text_data.py"  # too slow & torch version conflict?
+    "how_to_evaluate_llm_with_text_descriptors.py",
+    "how_to_run_drift_report_for_text_data.py",  # too slow & torch version conflict?
 ]
 
 

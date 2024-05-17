@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List
 
 from evidently.features import trigger_words_presence_feature
 from evidently.features.generated_features import FeatureDescriptor
@@ -6,7 +6,7 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class TriggerWordsPresence(FeatureDescriptor):
-    words_list: Tuple
+    words_list: List[str]
     lemmatize: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:

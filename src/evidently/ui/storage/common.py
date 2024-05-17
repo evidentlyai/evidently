@@ -1,4 +1,5 @@
 from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
@@ -14,6 +15,7 @@ from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 
 EVIDENTLY_SECRET_ENV = "EVIDENTLY_SECRET"
+SECRET_HEADER_NAME = "evidently-secret"
 
 
 class NoUser(User):
@@ -73,8 +75,5 @@ class NoopAuthManager(AuthManager):
     def _delete_team(self, team_id: TeamID):
         pass
 
-    def _list_team_users(self, team_id: TeamID) -> List[User]:
-        return []
-
-
-SECRET_HEADER_NAME = "evidently-secret"
+    def _list_team_users(self, team_id: TeamID) -> Dict[UserID, bool]:
+        return {}

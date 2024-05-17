@@ -334,7 +334,7 @@ To understand the contents of each Preset, head to the [Preset overview](../pres
 
 * **Learn how to get a Monitoring Dashboard**
  
-If you want to track the results of different checks over time, you get an ML monitoring dashboard. Go through the [ML monitoring quickstart (Self-hosting)](tutorial-monitoring.md) or [ML monitoring quickstart (Evidently Cloud)](tutorial-cloud.md) to monitor metrics over time.  
+If you want to track the results of different checks over time, you get an ML monitoring dashboard. Go through the [ML monitoring quickstart (Evidently Cloud) - Recommended](tutorial-cloud.md) or [ML monitoring quickstart (Self-hosting)](tutorial-monitoring.md) to see how to monitor metrics over time.  
 
 * **Explore available integrations**
 

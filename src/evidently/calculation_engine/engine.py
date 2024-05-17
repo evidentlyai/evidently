@@ -4,6 +4,7 @@ import logging
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Optional
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
@@ -35,6 +36,8 @@ class Engine(Generic[TMetricImplementation, TInputData]):
         calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
         converted_data = self.convert_input_data(data)
         self.generate_additional_features(converted_data)
+        context.features = self.generate_additional_features(converted_data)
+        context.data = converted_data
         for metric, calculation in self.get_metric_execution_iterator():
             if calculation not in calculations:
                 logging.debug(f"Executing {type(calculation)}...")
@@ -51,7 +54,13 @@ class Engine(Generic[TMetricImplementation, TInputData]):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+    def get_data_definition(
+        self,
+        current_data,
+        reference_data,
+        column_mapping: ColumnMapping,
+        categorical_features_cardinality: Optional[int] = None,
+    ):
         raise NotImplementedError()
 
     @abc.abstractmethod

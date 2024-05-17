@@ -2,6 +2,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Set
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
@@ -73,10 +74,10 @@ def column_scatter_valudator(value):
 
 class Distribution(MetricResult):
     class Config:
-        dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
         smart_union = True
+        extract_as_obj = True
 
     x: Union[np.ndarray, list, pd.Categorical, pd.Series]
     y: Union[np.ndarray, list, pd.Categorical, pd.Series]
@@ -85,6 +86,8 @@ class Distribution(MetricResult):
 class ConfusionMatrix(MetricResult):
     class Config:
         smart_union = True
+
+        field_tags = {"labels": {IncludeTags.Parameter}}
 
     labels: Sequence[Label]
     values: list  # todo better typing
@@ -139,6 +142,7 @@ class DatasetColumns(MetricResult):
     class Config:
         dict_exclude_fields = {"task", "target_type"}
         pd_include = False
+        tags = {IncludeTags.Parameter}
 
     utility_columns: DatasetUtilityColumns
     target_type: Optional[str]
@@ -263,6 +267,7 @@ class ColumnScatterResult(MetricResult):
         pd_include = False
 
         tags = {IncludeTags.Render}
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: ColumnScatter
     reference: Optional[ColumnScatter]
@@ -271,6 +276,9 @@ class ColumnScatterResult(MetricResult):
 
 
 class ColumnAggScatterResult(ColumnScatterResult):
+    class Config:
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+
     current: ColumnAggScatter
     reference: Optional[ColumnAggScatter]
 
@@ -354,6 +362,7 @@ class HistogramData(MetricResult):
     class Config:
         dict_include = False
         tags = {IncludeTags.Render}
+        extract_as_obj = True
 
     x: pd.Series
     count: pd.Series
@@ -377,6 +386,12 @@ class Histogram(MetricResult):
     class Config:
         dict_include = False
         tags = {IncludeTags.Render}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "current_log": {IncludeTags.Current},
+            "reference_log": {IncludeTags.Reference},
+        }
 
     current: HistogramData
     reference: Optional[HistogramData]
@@ -388,10 +403,15 @@ class Histogram(MetricResult):
 # todo need better config overriding logic in metricresult
 class DistributionIncluded(Distribution):
     class Config:
+        tags: Set[IncludeTags] = set()
         dict_include = True
+        field_tags = {"x": {IncludeTags.Extra}}
 
 
 class ColumnCorrelations(MetricResult):
+    class Config:
+        field_tags = {"column_name": {IncludeTags.Parameter}, "kind": {IncludeTags.Parameter}}
+
     column_name: str
     kind: str
     values: DistributionIncluded
@@ -425,15 +445,15 @@ TA = TypeVar("TA")
 
 
 @overload
-def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]) -> Tuple[TR, TA]:
-    ...
+def raw_agg_properties(
+    field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[False]
+) -> Tuple[TR, TA]: ...
 
 
 @overload
 def raw_agg_properties(
     field_name, raw_type: Type[TR], agg_type: Type[TA], optional: Literal[True]
-) -> Tuple[Optional[TR], Optional[TA]]:
-    ...
+) -> Tuple[Optional[TR], Optional[TA]]: ...
 
 
 def raw_agg_properties(field_name, raw_type: Type[TR], agg_type: Type[TA], optional: bool) -> Tuple[TR, TA]:

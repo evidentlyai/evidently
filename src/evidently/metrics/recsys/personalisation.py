@@ -10,6 +10,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import RecomType
@@ -26,6 +27,14 @@ from evidently.renderers.html_widgets import widget_tabs
 class PersonalizationMetricResult(MetricResult):
     class Config:
         pd_include = False
+
+        field_tags = {
+            "k": {IncludeTags.Parameter},
+            "current_value": {IncludeTags.Current},
+            "current_table": {IncludeTags.Current, IncludeTags.Extra},
+            "reference_value": {IncludeTags.Reference},
+            "reference_table": {IncludeTags.Reference, IncludeTags.Extra},
+        }
 
     k: int
     current_value: float

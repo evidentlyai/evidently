@@ -1,19 +1,11 @@
 import uuid
-from typing import Literal
 from typing import Optional
 
 from litestar import Request
 
-from evidently._pydantic_compat import SecretStr
-from evidently.ui.security.config import SecurityConfig
+from evidently.ui.components.security import TokenSecurityComponent
 from evidently.ui.security.service import SecurityService
 from evidently.ui.security.service import User
-
-
-class TokenSecurityConfig(SecurityConfig):
-    type: Literal["token"] = "token"
-    token: SecretStr
-
 
 SECRET_HEADER_NAME = "evidently-secret"
 
@@ -25,10 +17,10 @@ default_user = User(
 
 
 class TokenSecurity(SecurityService):
-    def __init__(self, config: TokenSecurityConfig):
+    def __init__(self, config: TokenSecurityComponent):
         self.config = config
 
     def authenticate(self, request: Request) -> Optional[User]:
-        if request.headers.get(SECRET_HEADER_NAME) == self.config.token:
+        if request.headers.get(SECRET_HEADER_NAME) == self.config.token.get_secret_value():
             return default_user
         return None

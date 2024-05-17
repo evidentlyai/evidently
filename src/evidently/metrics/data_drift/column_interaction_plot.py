@@ -39,6 +39,16 @@ class ColumnInteractionPlotResults(MetricResult):
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "current_scatter": {IncludeTags.Current},
+            "current_contour": {IncludeTags.Current},
+            "current_boxes": {IncludeTags.Current},
+            "reference_scatter": {IncludeTags.Reference},
+            "reference_contour": {IncludeTags.Reference},
+            "reference_boxes": {IncludeTags.Reference},
+        }
 
     y_type: ColumnType
     x_type: ColumnType
@@ -63,7 +73,6 @@ class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
         super().__init__(options=options)
 
     def calculate(self, data: InputData) -> ColumnInteractionPlotResults:
-
         for col in [self.x_column, self.y_column]:
             if not data.has_column(col):
                 raise ValueError(f"Column '{col}' not found in dataset.")

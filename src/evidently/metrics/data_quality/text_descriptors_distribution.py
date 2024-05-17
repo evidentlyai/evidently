@@ -6,6 +6,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import ColumnType
+from evidently.core import IncludeTags
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import TextLength
@@ -30,6 +31,11 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 class TextDescriptorsDistributionResult(MetricResult):
     class Config:
         pd_include = False
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+        }
 
     column_name: str
     current: Dict[str, Distribution]
@@ -96,7 +102,7 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
             if data.reference_data is not None:
                 reference_column = data.get_reference_column(val.feature_name())
             current, reference = get_distribution_for_column(
-                column_type="num",
+                column_type=val.feature_type.value,
                 current=current_column,
                 reference=reference_column,
             )

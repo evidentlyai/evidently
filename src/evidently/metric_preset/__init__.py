@@ -4,14 +4,16 @@ from .data_quality import DataQualityPreset
 from .recsys import RecsysPreset
 from .regression_performance import RegressionPreset
 from .target_drift import TargetDriftPreset
+from .text_evals import TextEvals
 from .text_overview import TextOverviewPreset
 
 __all__ = [
-    ClassificationPreset.__name__,
-    DataDriftPreset.__name__,
-    DataQualityPreset.__name__,
-    RegressionPreset.__name__,
-    TargetDriftPreset.__name__,
-    TextOverviewPreset.__name__,
-    RecsysPreset.__name__,
+    "ClassificationPreset",
+    "DataDriftPreset",
+    "DataQualityPreset",
+    "RegressionPreset",
+    "TargetDriftPreset",
+    "TextEvals",
+    "TextOverviewPreset",
+    "RecsysPreset",
 ]

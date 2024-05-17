@@ -1,24 +1,31 @@
 import re
+from typing import List
 from typing import Optional
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
 from evidently.base_metric import additional_feature
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TriggerWordsPresent(GeneratedFeature):
     column_name: str
-    words_list: Tuple = ()
+    words_list: List[str]
     lemmatize: bool = True
     _lem: WordNetLemmatizer
 
-    def __init__(self, column_name: str, words_list=(), lemmatize=True, display_name: Optional[str] = None):
-
+    def __init__(
+        self,
+        column_name: str,
+        words_list: List[str],
+        lemmatize: bool = True,
+        display_name: Optional[str] = None,
+    ):
+        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize

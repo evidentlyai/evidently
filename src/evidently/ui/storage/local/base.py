@@ -8,6 +8,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Type
 
 from fsspec import AbstractFileSystem
 from fsspec import get_fs_token_paths
@@ -35,7 +36,8 @@ from evidently.ui.errors import ProjectNotFound
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
-from evidently.ui.type_aliases import DataPoints
+from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
@@ -87,6 +89,10 @@ class FSSpecBlobStorage(BlobStorage):
     base_path: str
 
     _location: FSLocation = PrivateAttr(None)
+
+    def __init__(self, base_path: str):
+        self.base_path = base_path
+        self._location = FSLocation(self.base_path)
 
     @property
     def location(self) -> FSLocation:
@@ -176,10 +182,9 @@ class JsonFileMetadataStorage(MetadataStorage):
 
     _state: LocalState = PrivateAttr(None)
 
-    def __init__(self, path: str, state: Optional[LocalState] = None):
-        super().__init__(path=path)
-        if state is not None:
-            self._state = state
+    def __init__(self, path: str, local_state: Optional[LocalState] = None):
+        self.path = path
+        self._state = local_state or LocalState.load(self.path, None)
 
     @property
     def state(self):
@@ -210,7 +215,10 @@ class JsonFileMetadataStorage(MetadataStorage):
             self.state.location.rmtree(path)
 
     def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
-        return [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
+        projects = [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
+        default_date = datetime.datetime.fromisoformat("1900-01-01T00:00:00")
+        projects.sort(key=lambda x: x.created_at or default_date, reverse=True)
+        return projects
 
     def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
         project = self.get_project(project_id)
@@ -255,10 +263,9 @@ class InMemoryDataStorage(DataStorage):
 
     _state: LocalState = PrivateAttr(None)
 
-    def __init__(self, path: str, state: Optional[LocalState] = None):
-        super().__init__(path=path)
-        if state is not None:
-            self._state = state
+    def __init__(self, path: str, local_state: Optional[LocalState] = None):
+        self.path = path
+        self._state = local_state or LocalState.load(self.path, None)
 
     @property
     def state(self):
@@ -268,30 +275,6 @@ class InMemoryDataStorage(DataStorage):
 
     def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
-
-    def load_points(
-        self,
-        project_id: ProjectID,
-        filter: ReportFilter,
-        values: List["PanelValue"],
-        timestamp_start: Optional[datetime.datetime],
-        timestamp_end: Optional[datetime.datetime],
-    ) -> DataPoints:
-        points: DataPoints = [{} for _ in range(len(values))]
-        for report in (s.as_report() for s in self.state.snapshot_data[project_id].values() if s.is_report):
-            if not (
-                filter.filter(report)
-                and (timestamp_start is None or report.timestamp >= timestamp_start)
-                and (timestamp_end is None or report.timestamp < timestamp_end)
-            ):
-                continue
-
-            for i, value in enumerate(values):
-                for metric, metric_field_value in value.get(report).items():
-                    if metric not in points[i]:
-                        points[i][metric] = []
-                    points[i][metric].append((report.timestamp, metric_field_value))
-        return points
 
     def load_test_results(
         self,
@@ -315,4 +298,29 @@ class InMemoryDataStorage(DataStorage):
             else:
                 points[ts].update(TestFilter().get(report))
 
+        return points
+
+    def load_points_as_type(
+        self,
+        cls: Type[PointType],
+        project_id: ProjectID,
+        filter: "ReportFilter",
+        values: List["PanelValue"],
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
+    ) -> DataPointsAsType[PointType]:
+        points: DataPointsAsType[PointType] = [{} for _ in range(len(values))]
+        for report in (s.as_report() for s in self.state.snapshot_data[project_id].values() if s.is_report):
+            if not (
+                filter.filter(report)
+                and (timestamp_start is None or report.timestamp >= timestamp_start)
+                and (timestamp_end is None or report.timestamp < timestamp_end)
+            ):
+                continue
+
+            for i, value in enumerate(values):
+                for metric, metric_field_value in value.get(report).items():
+                    if metric not in points[i]:
+                        points[i][metric] = []
+                    points[i][metric].append((report.timestamp, self.parse_value(cls, metric_field_value)))
         return points

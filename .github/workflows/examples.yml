@@ -1,0 +1,45 @@
+name: Example Tests
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-examples:
+    name: Test examples on ${{ matrix.os }} with py${{ matrix.python }}, min ${{ matrix.minimal }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.8"]
+        minimal: [false]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: "x64"
+          cache: "pip"
+      - name: Install package
+        run: pip install -e .[dev,spark,fsspec]
+      - name: Install minimal reqs
+        if: matrix.minimal
+        run: pip install -r requirements.min.txt
+      - name: Prepare examples dependencies
+        run: pip install catboost sentence-transformers
+      - name: Export examples
+        run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
+      - name: Download test data
+        run:
+          curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
+          unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
+      - name: Run examples
+        run: python example_test.py

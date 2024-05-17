@@ -6,6 +6,7 @@ import numpy as np
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -20,6 +21,8 @@ class RegressionErrorDistributionResults(MetricResult):
     class Config:
         dict_exclude_fields = {"current_bins", "reference_bins"}
         pd_exclude_fields = {"current_bins", "reference_bins"}
+
+        field_tags = {"current_bins": {IncludeTags.Current}, "reference_bins": {IncludeTags.Reference}}
 
     current_bins: HistogramData
     reference_bins: Optional[HistogramData]

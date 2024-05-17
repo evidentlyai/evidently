@@ -10,6 +10,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.recommender_systems import get_prediciton_name
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import RecomType
@@ -20,6 +21,7 @@ from evidently.renderers.base_renderer import default_renderer
 class PairwiseDistanceResult(MetricResult):
     class Config:
         pd_include = False
+        field_tags = {"dist_matrix": {IncludeTags.Extra}}
 
     dist_matrix: np.ndarray
     name_dict: Dict[Union[int, str], int]

@@ -1,6 +1,7 @@
 """Available statistical tests.
 For detailed information about statistical tests see module documentation.
 """
+
 from .anderson_darling_stattest import anderson_darling_test
 from .chisquare_stattest import chi_stat_test
 from .cramer_von_mises_stattest import cramer_von_mises

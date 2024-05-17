@@ -1,4 +1,5 @@
 """Methods and types for data drift calculations."""
+
 from dataclasses import dataclass
 from typing import Dict
 from typing import List
@@ -40,7 +41,7 @@ class DriftStatsField(MetricResult):
             "characteristic_examples": {IncludeTags.Render},
             "characteristic_words": {IncludeTags.Render},
             "correlations": {IncludeTags.Render},
-            "type": {IncludeTags.TypeField},
+            "small_distribution": {IncludeTags.Extra},
         }
         pd_include = False
 
@@ -56,6 +57,11 @@ class ColumnDataDriftMetrics(ColumnMetricResult):
         # todo: change to field_tags: render
         dict_exclude_fields = {"scatter"}
         pd_exclude_fields = {"scatter"}
+        field_tags = {
+            "stattest_name": {IncludeTags.Parameter},
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+        }
 
     stattest_name: str
     stattest_threshold: Optional[float]

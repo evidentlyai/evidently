@@ -18,10 +18,14 @@ class WorkspaceView(WorkspaceBase):
         self.team_id = team_id
 
     def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
-        return self.project_manager.create_project(name, description, user_id=self.user_id, team_id=team_id or self.team_id, org_id=None)
+        return self.project_manager.create_project(
+            name, description, user_id=self.user_id, team_id=team_id or self.team_id, org_id=None
+        )
 
     def add_project(self, project: Project, team_id: TeamID = None) -> Project:
-        project = self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or self.team_id, org_id=None)
+        project = self.project_manager.add_project(
+            project, user_id=self.user_id, team_id=team_id or self.team_id, org_id=None
+        )
         return project
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
@@ -56,6 +60,7 @@ class WorkspaceView(WorkspaceBase):
 class LocalWorkspaceView(WorkspaceView):
     def __init__(self, path: str):
         from evidently.ui.storage.local import create_local_project_manager
+
         self.path = path
         super().__init__(None, create_local_project_manager(path=path, autorefresh=False))
 
@@ -65,6 +70,7 @@ class LocalWorkspaceView(WorkspaceView):
 
     def refresh(self):
         from evidently.ui.storage.local import create_local_project_manager
+
         self.project_manager = create_local_project_manager(path=self.path, autorefresh=False)
 
 

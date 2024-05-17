@@ -16,6 +16,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from pydantic import PrivateAttr
 
 from evidently._pydantic_compat import ModelMetaclass
 from evidently.core import BaseResult
@@ -72,12 +73,13 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: str
     dataset: DatasetType
-    feature_class: Optional[GeneratedFeature]
+    _feature_class: Optional[GeneratedFeature] = PrivateAttr(None)
 
     def __init__(
         self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional[GeneratedFeature] = None
     ):
-        super().__init__(name=name, display_name=display_name, dataset=dataset, feature_class=feature_class)
+        self._feature_class = feature_class
+        super().__init__(name=name, display_name=display_name, dataset=dataset)
 
     def is_main_dataset(self):
         return self.dataset == DatasetType.MAIN
@@ -92,6 +94,10 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     @classmethod
     def from_any(cls, column_name: Union[str, "ColumnName"]):
         return column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
+
+    @property
+    def feature_class(self) -> Optional[GeneratedFeature]:
+        return self._feature_class
 
 
 def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
@@ -116,9 +122,12 @@ class GenericInputData:
     data_definition: DataDefinition
     additional_data: Dict[str, Any]
 
+    def get_datasets(self) -> Tuple[Optional[object], object]:
+        raise NotImplementedError()
+
 
 @dataclass
-class InputData:
+class InputData(GenericInputData):
     reference_data: Optional[pd.DataFrame]
     current_data: pd.DataFrame
     reference_additional_features: Optional[pd.DataFrame]
@@ -156,8 +165,8 @@ class InputData:
         return self._determine_type(column), self.get_current_column(column), ref_data
 
     def _determine_type(self, column: Union[str, ColumnName]) -> ColumnType:
-        if isinstance(column, ColumnName) and column.feature_class is not None:
-            column_type = ColumnType.Numerical
+        if isinstance(column, ColumnName) and column._feature_class is not None:
+            column_type = column._feature_class.feature_type
         else:
             if isinstance(column, ColumnName):
                 column_name = column.name
@@ -180,6 +189,15 @@ class InputData:
         else:
             _column = column
         return _column
+
+    def get_datasets(self) -> Tuple[Optional[pd.DataFrame], pd.DataFrame]:
+        current = self.current_data
+        if self.current_additional_features is not None:
+            current = self.current_data.join(self.current_additional_features)
+        reference = self.reference_data
+        if self.reference_data is not None and self.reference_additional_features is not None:
+            reference = self.reference_data.join(self.reference_additional_features)
+        return reference, current
 
 
 TResult = TypeVar("TResult", bound=MetricResult)
@@ -214,8 +232,15 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
         self.options = Options.from_any_options(options)
         super().__init__(**data)
 
-    def get_id(self) -> str:
-        return self.__class__.__name__
+    @classmethod
+    def get_id(cls) -> str:
+        return cls.__name__
+
+    @classmethod
+    def get_group(cls) -> str:
+        if cls.__module__.startswith("evidently.metrics."):
+            return cls.__module__.split(".")[2]
+        return ""
 
     @abc.abstractmethod
     def calculate(self, data: InputData) -> TResult:
@@ -268,6 +293,12 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
 
 
 class ColumnMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "column_name": {IncludeTags.Parameter},
+            "column_type": {IncludeTags.Parameter},
+        }
+
     column_name: str
     # todo: use enum
     column_type: str

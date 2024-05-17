@@ -1,16 +1,14 @@
 from typing import TYPE_CHECKING
 
-try:
-    from pydantic import v1  # noqa
+import pydantic
 
-    v = 2
-except ImportError:
-    v = 1
+v = 1 if pydantic.__version__.startswith("1") else 2
 
 if v == 2:
     from pydantic.v1 import UUID4
     from pydantic.v1 import BaseConfig
     from pydantic.v1 import BaseModel
+    from pydantic.v1 import Extra
     from pydantic.v1 import Field
     from pydantic.v1 import PrivateAttr
     from pydantic.v1 import SecretStr
@@ -36,6 +34,7 @@ else:
     from pydantic import UUID4
     from pydantic import BaseConfig
     from pydantic import BaseModel
+    from pydantic import Extra
     from pydantic import Field
     from pydantic import PrivateAttr
     from pydantic import SecretStr
@@ -80,4 +79,5 @@ __all__ = [
     "AbstractSetIntStr",
     "DictStrAny",
     "PrivateAttr",
+    "Extra",
 ]

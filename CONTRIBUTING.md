@@ -84,30 +84,23 @@ pip install -e .[dev]
 
 ## 5. Run formatters, linters, unit tests
 
-### Running black
+### Installing pre-commit hook
 
-We use black for code auto formatting.
+We use pre-commit hook that runs all the needed checks. To install it, run
 
 ```sh
-black -l 120 -t py38 src
-black -l 120 -t py38 tests
+pre-commit install
 ```
 
-### Running isort
+But you can run all the checks manually.
 
-We use black for imports auto formatting.
+### Running ruff
 
-```sh
-isort .
-```
-
-### Running flake8
-
-We use flake8 for code style checks.
+We use ruff for code linting and formatting.
 
 ```sh
-flake8 src
-flake8 tests
+ruff check
+ruff format
 ```
 
 ### Running mypy

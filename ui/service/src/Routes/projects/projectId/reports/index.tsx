@@ -1,3 +1,4 @@
+import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectReportsAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { api } from 'api/RemoteApi'
@@ -14,15 +15,16 @@ export default {
   id: 'reports',
   path: 'reports',
   lazy: async () => {
-    const { SnapshotTemplate, ...rest } = await import(
+    const { SnapshotsListTemplate, ...rest } = await import(
       'evidently-ui-lib/routes-components/snapshots'
     )
 
-    const Component = () => <SnapshotTemplate type="report" />
+    const Component = () => <SnapshotsListTemplate type="reports" />
 
     return { ...rest, Component }
   },
   loader,
   action,
+  ErrorBoundary: GenericErrorBoundary,
   children: [ReportRoute]
 } satisfies RouteObject

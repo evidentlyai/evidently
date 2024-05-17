@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import Union
 
 import pytest
 
@@ -6,6 +7,8 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.core import get_all_fields_tags
+from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 
 
@@ -229,3 +232,59 @@ def test_list_with_tags():
         ("f3.f1", {IncludeTags.Render}),
         ("f3.f2", set()),
     ]
+
+
+def test_list_with_tags_with_union():
+    class A(MetricResult):
+        class Config:
+            tags = {IncludeTags.Render}
+
+        f1: str
+
+    class B(MetricResult):
+        class Config:
+            tags = {IncludeTags.Render}
+
+        f1: str
+
+    fp = FieldPath([], Union[A, B])
+    assert not fp.has_instance
+    assert fp._cls == A
+
+    class SomeModel(MetricResult):
+        f2: Union[A, B]
+        f1: str
+
+    assert list(sorted(SomeModel.fields.list_nested_fields_with_tags())) == [
+        ("f1", set()),
+        ("f2.f1", {IncludeTags.Render}),
+        ("f2.type", {IncludeTags.Render, IncludeTags.TypeField}),
+        ("type", {IncludeTags.TypeField}),
+    ]
+
+
+def test_get_field_tags_no_overwrite():
+    class A(MetricResult):
+        class Config:
+            field_tags = {"f": {IncludeTags.Current}}
+
+        f: str
+
+    class B(A):
+        class Config:
+            tags = {IncludeTags.Reference}
+
+    class C(MetricResult):
+        class Config:
+            field_tags = {"f": {IncludeTags.Reference}}
+
+        f: A
+
+    assert A.fields.get_field_tags("f") == {IncludeTags.Current}
+    assert B.fields.get_field_tags("f") == {IncludeTags.Current, IncludeTags.Reference}
+    assert C.fields.get_field_tags(["f", "f"]) == {IncludeTags.Current, IncludeTags.Reference}
+    B.fields.list_nested_fields_with_tags()
+    C.fields.list_nested_fields_with_tags()
+    get_all_fields_tags(B)
+    get_all_fields_tags(C)
+    assert A.fields.get_field_tags("f") == {IncludeTags.Current}

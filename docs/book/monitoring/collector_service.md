@@ -1,20 +1,20 @@
 ---
-description: Deployment scenario for near real-time monitoring.
+description: Send data in near real-time.
 ---   
 
 # Overview
 
 In this scenario, you deploy an **Evidently Collector** service for near real-time monitoring. 
 
-Evidently Collector is a service that allows you to collect online events into batches, create Reports or Test Suites over batches of data, and save them as `snapshots` into the `workspace`.
+Evidently Collector is a service that allows you to collect online events into batches, create `Reports` or `TestSuites` over batches of data, and save them as `snapshots` to your Workspace.
 
-You will need to POST the predictions from the ML service to the Evidently Collector service. You can POST data on every prediction or batch them. The Evidently collector service will perform asynchronous computation of monitoring snapshots based on the provided config. 
+You will need to POST the predictions from the ML service to the Evidently Collector service. You can POST data on every prediction or batch them. The Evidently collector service will perform asynchronous computation of monitoring snapshots based on the provided configuration. 
 
 You can also pass the path to the optional reference dataset. 
 
 ![](../.gitbook/assets/monitoring/monitoring_collector_min.png)
 
-If you receive delayed ground truth, you can also later compute and log the model quality to the same project. You can run it as a separate process or batch monitoring job. 
+If you receive delayed ground truth, you can later compute and log the model quality to the same Project. You can run it as a separate process or a batch job. 
 
 ![](../.gitbook/assets/monitoring/monitoring_collector_delayed_labels_min.png)
 
@@ -32,7 +32,7 @@ You can choose either of the two options:
 * Create configuration via code, save it to a JSON file, and run the service using it.
 * Run the service first and create configuration via API.
 
-The collector service can simultaneously run multiple “collectors” that compute and save snapshots to different workspaces or projects. Each one is represented by a `CollectorConfig` object.
+The collector service can simultaneously run multiple “collectors” that compute and save snapshots to different Workspaces or Projects. Each one is represented by a `CollectorConfig` object.
 
 ## `CollectorConfig` Object
 
@@ -41,14 +41,14 @@ You can configure the following parameters:
 | Parameter       | Type             | Description                                                                                      |
 |-----------------|------------------|--------------------------------------------------------------------------------------------------|
 | `trigger`         | `CollectorTrigger`| Defines when to create a new snapshot from the current batch.                                 |
-| `report_config`   | `ReportConfig`    | Configures the contents of the snapshot: Report or TestSuite computed for each batch of data. |
+| `report_config`   | `ReportConfig`    | Configures the contents of the snapshot: `Report` or `TestSuite` computed for each batch of data. |
 | `reference_path`  | Optional[str]     | Local path to a *.parquet* file with the reference dataset.                                   |
 | `cache_reference` | bool              | Defines whether to cache reference data or re-read it each time.                              |
-| `api_url`         | str               | URL where the Evidently UI Service runs and snapshots will be saved to.                       |
+| `api_url`         | str               | URL where the Evidently UI Service runs and snapshots will be saved to. For Evidently Cloud, use `api_url="https://app.evidently.cloud"`|
 | `api_secret`      | Optional[str]     | Evidently UI Service secrets.                                                                 |
 | `project_id`      | str               | ID of the project to save snapshots to.                                                       |
 
-You can create a `ReportConfig` object from Report or TestSuite objects. You must run them first so that all Metrics and Tests are collected (including when you use Presets or Test/Metric generators).
+You can create a `ReportConfig` object from `Report` or `TestSuite` objects. You must run them first so that all `Metrics` and `Tests` are collected (including when you use Presets or Test/Metric generators).
 
 ```python
 report = Report(...) 
@@ -65,8 +65,8 @@ report_config = ReportConfig.from_test_suite(test_suite)
 ## CollectorTrigger
 
 Currently, there are two options available: 
-* `IntervalTrigger`: triggers the snapshot calculation each interval seconds 
-* `RowsCountTrigger`: triggers the snapshot calculation every time the configured amount of rows have been sent to the collector service
+* `IntervalTrigger`: triggers the snapshot calculation at set intervals (in seconds).
+* `RowsCountTrigger`: triggers the snapshot calculation when a specific row count is reached.
 
 **Note**: we are also working on `CronTrigger` and other triggers. Would you like to see additional scenarios? Please open a GitHub issue with your suggestions.
 
@@ -102,7 +102,7 @@ First, run the collector service:
 evidently collector
 ```
 
-Then, use the `CollectorClient` to add new collector config:
+Then, use the `CollectorClient` to add a new collector config:
 
 ```python
 config = CollectorConfig(
@@ -159,12 +159,8 @@ This is how it looks in the Terminal.
 
 Sending data:
 
-![](../.gitbook/assets/monitoring/collector_send-min.png)
+![](../.gitbook/assets/monitoring/collector_data-min.png)
 
 The data is received by the collector service:
 
-![](../.gitbook/assets/monitoring/collector_data-min.png)
-
-
-
-
+![](../.gitbook/assets/monitoring/collector_send-min.png)

@@ -120,7 +120,8 @@ class TeamModel(BaseModel):
 class UserModel(BaseModel):
     id: UserID
     name: str
+    email: str
 
     @classmethod
     def from_user(cls, user: User):
-        return TeamModel(id=user.id, name=user.name)
+        return UserModel(id=user.id, name=user.name, email=user.email)

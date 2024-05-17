@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.6.0"
+    hooks:
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+        exclude: '(docs|examples)/.*'
+      - id: end-of-file-fixer
+        exclude: '(docs|examples)/.*'
+      - id: trailing-whitespace
+        exclude: '(docs|examples)/.*'
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.3.7"
+    hooks:
+      - id: ruff
+        args: [--exit-non-zero-on-fix, --fix]
+      - id: ruff-format
+
+#  - repo: https://github.com/pre-commit/mirrors-prettier
+#    rev: "v3.0.3"
+#    hooks:
+#      - id: prettier

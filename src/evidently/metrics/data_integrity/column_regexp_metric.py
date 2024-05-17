@@ -11,6 +11,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
+from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -29,6 +30,12 @@ class DataIntegrityValueByRegexpStat(MetricResult):
     class Config:
         pd_exclude_fields = {"table_of_matched", "table_of_not_matched"}
 
+        field_tags = {
+            "number_of_rows": {IncludeTags.Extra},
+            "table_of_matched": {IncludeTags.Extra},
+            "table_of_not_matched": {IncludeTags.Extra},
+        }
+
     # count of matched values in the column, without NaNs
     number_of_matched: int
     # count of not matched values in the column, without NaNs
@@ -42,6 +49,15 @@ class DataIntegrityValueByRegexpStat(MetricResult):
 
 
 class DataIntegrityValueByRegexpMetricResult(MetricResult):
+    class Config:
+        field_tags = {
+            "current": {IncludeTags.Current},
+            "reference": {IncludeTags.Reference},
+            "column_name": {IncludeTags.Parameter},
+            "reg_exp": {IncludeTags.Parameter},
+            "top": {IncludeTags.Parameter},
+        }
+
     # name of the column that we check by the regular expression
     column_name: str
     # the regular expression as a string

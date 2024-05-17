@@ -25,7 +25,9 @@ from evidently.renderers.html_widgets import counter
 from evidently.report import Report
 from evidently.suite.base_suite import ReportBase
 from evidently.test_suite import TestSuite
+from evidently.ui.type_aliases import PanelID
 from evidently.ui.type_aliases import ProjectID
+from evidently.ui.type_aliases import TabID
 
 from .utils import getattr_nested
 
@@ -105,7 +107,7 @@ def assign_panel_id(f):
 
 
 class DashboardPanel(EnumValueMixin, PolymorphicModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    id: PanelID = Field(default_factory=uuid.uuid4)
     title: str
     filter: ReportFilter
     size: WidgetSize = WidgetSize.FULL
@@ -113,7 +115,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     def build(
         self,
         data_storage: "DataStorage",
-        project_id: uuid.UUID,
+        project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
@@ -122,7 +124,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     def safe_build(
         self,
         data_storage: "DataStorage",
-        project_id: uuid.UUID,
+        project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
@@ -134,7 +136,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
 
 
 class DashboardTab(BaseModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    id: TabID = Field(default_factory=uuid.uuid4)
     title: Optional[str] = "Untitled"
 
 
@@ -148,7 +150,7 @@ class DashboardConfig(BaseModel):
         self,
         panel: DashboardPanel,
         *,
-        tab: Optional[Union[str, uuid.UUID, DashboardTab]] = None,
+        tab: Optional[Union[str, TabID, DashboardTab]] = None,
         create_if_not_exists=True,
     ):
         self.panels.append(panel)
@@ -174,7 +176,7 @@ class DashboardConfig(BaseModel):
         if any(tab.title == tab_title for tab in self.tabs):
             raise ValueError(f"""tab with title "{tab_title}" already exists""")
 
-    def _find_tab_by_id(self, tab_id: uuid.UUID) -> Optional[DashboardTab]:
+    def _find_tab_by_id(self, tab_id: TabID) -> Optional[DashboardTab]:
         tabs = [t for t in self.tabs if t.id == tab_id]
         if len(tabs) == 0:
             return None
@@ -188,7 +190,7 @@ class DashboardConfig(BaseModel):
 
     def _get_or_create_tab(
         self,
-        tab_descriptor: Union[DashboardTab, uuid.UUID, str],
+        tab_descriptor: Union[DashboardTab, TabID, str],
         create_if_not_exists=True,
     ) -> DashboardTab:
         tab: Optional[DashboardTab] = None
@@ -202,7 +204,7 @@ class DashboardConfig(BaseModel):
             except ValueError:
                 tab = self._find_tab_by_title(tab_descriptor)
                 to_create = DashboardTab(title=tab_descriptor)
-        if isinstance(tab_descriptor, uuid.UUID):
+        if isinstance(tab_descriptor, TabID):
             tab = self._find_tab_by_id(tab_descriptor)
 
         if tab is not None:

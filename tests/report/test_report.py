@@ -16,7 +16,7 @@ from evidently.report import Report
 
 class MockMetricResult(MetricResult):
     class Config:
-        dict_exclude_fields = {"series", "distribution"}
+        dict_exclude_fields = {"series"}
 
     value: str
     series: pd.Series
@@ -44,13 +44,14 @@ def report():
 
 def test_as_dict(report: Report):
     assert report.as_dict() == {"metrics": [{"metric": "MockMetric", "result": {"value": "a"}}]}
-    include_series = report.as_dict(include={"MockMetric": {"value", "series"}})
-    assert "series" in include_series["metrics"][0]["result"]
-    assert (pd.Series([0]) == include_series["metrics"][0]["result"]["series"]).all()
+    include_series = report.as_dict(include={"MockMetric": {"value", "series"}})["metrics"][0]["result"]
+    assert "series" in include_series
+    assert (pd.Series([0]) == include_series["series"]).all()
+    assert "distribution" not in include_series
 
-    include_render = report.as_dict(include_render=True)
+    include_render = report.as_dict(include_render=True)["metrics"][0]["result"]
 
-    assert "distribution" in include_render["metrics"][0]["result"]
+    assert "distribution" in include_render
 
 
 def test_json(report: Report):

@@ -2,7 +2,9 @@ import hashlib
 import itertools
 import json
 import os
+import warnings
 from enum import Enum
+from functools import lru_cache
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -15,6 +17,9 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
+from typing import get_args
+
+from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
 from evidently._pydantic_compat import BaseModel
@@ -24,7 +29,6 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
-    from evidently._pydantic_compat import Model
     from evidently.core import IncludeTags
 T = TypeVar("T")
 
@@ -107,18 +111,56 @@ ALLOWED_TYPE_PREFIXES = ["evidently."]
 EVIDENTLY_TYPE_PREFIXES_ENV = "EVIDENTLY_TYPE_PREFIXES"
 ALLOWED_TYPE_PREFIXES.extend([p for p in os.environ.get(EVIDENTLY_TYPE_PREFIXES_ENV, "").split(",") if p])
 
-TYPE_ALIASES: Dict[str, Type["PolymorphicModel"]] = {}
+TYPE_ALIASES: Dict[Tuple[Type["PolymorphicModel"], str], str] = {}
+LOADED_TYPE_ALIASES: Dict[Tuple[Type["PolymorphicModel"], str], Type["PolymorphicModel"]] = {}
+
+
+def register_type_alias(base_class: Type["PolymorphicModel"], classpath: str, alias: str):
+    key = (base_class, alias)
+
+    if key in TYPE_ALIASES and TYPE_ALIASES[key] != classpath:
+        warnings.warn(f"Duplicate key {key} in alias map")
+    TYPE_ALIASES[key] = classpath
+
+
+def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["PolymorphicModel"], alias: str):
+    if not issubclass(cls, base_class):
+        raise ValueError(f"Cannot register alias: {cls.__name__} is not subclass of {base_class.__name__}")
+
+    key = (base_class, alias)
+    if key in LOADED_TYPE_ALIASES and LOADED_TYPE_ALIASES[key] != cls:
+        warnings.warn(f"Duplicate key {key} in alias map")
+    LOADED_TYPE_ALIASES[key] = cls
+
+
+@lru_cache()
+def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
+    for cls_ in cls.mro():
+        if not issubclass(cls_, PolymorphicModel):
+            continue
+        config = cls_.__dict__.get("Config")
+        if config is not None and config.__dict__.get("is_base_type", False):
+            return cls_
+    return PolymorphicModel
+
+
+TPM = TypeVar("TPM", bound="PolymorphicModel")
 
 
 class PolymorphicModel(BaseModel):
     class Config:
         type_alias: ClassVar[Optional[str]] = None
+        is_base_type: ClassVar[bool] = False
 
     @classmethod
     def __get_type__(cls):
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
+        return cls.__get_classpath__()
+
+    @classmethod
+    def __get_classpath__(cls):
         return f"{cls.__module__}.{cls.__name__}"
 
     type: str = Field("")
@@ -129,22 +171,27 @@ class PolymorphicModel(BaseModel):
             return
         typename = cls.__get_type__()
         cls.__fields__["type"].default = typename
-        TYPE_ALIASES[typename] = cls
+        register_loaded_alias(get_base_class(cls), cls, typename)
 
     @classmethod
     def __subtypes__(cls):
         return Union[tuple(all_subclasses(cls))]
 
     @classmethod
-    def validate(cls: Type["Model"], value: Any) -> "Model":
+    def validate(cls: Type[TPM], value: Any) -> TPM:
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
-            if typename in TYPE_ALIASES:
-                subcls = TYPE_ALIASES[typename]
+            key = (get_base_class(cls), typename)  # type: ignore[arg-type]
+            if key in LOADED_TYPE_ALIASES:
+                subcls = LOADED_TYPE_ALIASES[key]
             else:
-                if not any(typename.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
-                    raise ValueError(f"{typename} does not match any allowed prefixes")
-                subcls = import_string(typename)
+                if key in TYPE_ALIASES:
+                    classpath = TYPE_ALIASES[key]
+                else:
+                    classpath = typename
+                if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
+                    raise ValueError(f"{classpath} does not match any allowed prefixes")
+                subcls = import_string(classpath)
             return subcls.validate(value)
         return super().validate(value)  # type: ignore[misc]
 
@@ -192,6 +239,8 @@ class FieldPath:
         self._path = path
         self._cls: Type
         self._instance: Any
+        if is_union_type(cls_or_instance):
+            cls_or_instance = get_args(cls_or_instance)[0]
         if isinstance(cls_or_instance, type):
             self._cls = cls_or_instance
             self._instance = None
@@ -232,37 +281,16 @@ class FieldPath:
                 return FieldPath(self._path + [item], field_value, is_mapping=True)
         return FieldPath(self._path + [item], field_value, is_mapping=is_mapping)
 
-    @staticmethod
-    def _get_field_tags_rec(mro, name):
-        from evidently.base_metric import BaseResult
-
-        cls = mro[0]
-        if not issubclass(cls, BaseResult):
-            return None
-        if name in cls.__config__.field_tags:
-            return cls.__config__.field_tags[name]
-        return FieldPath._get_field_tags_rec(mro[1:], name)
-
-    @staticmethod
-    def _get_field_tags(cls, name, type_) -> Optional[Set["IncludeTags"]]:
-        from evidently.base_metric import BaseResult
-
-        if not issubclass(cls, BaseResult):
-            return None
-        field_tags = FieldPath._get_field_tags_rec(cls.__mro__, name)
-        if field_tags is not None:
-            return field_tags
-        if isinstance(type_, type) and issubclass(type_, BaseResult):
-            return type_.__config__.tags
-        return set()
-
     def list_nested_fields(self, exclude: Set["IncludeTags"] = None) -> List[str]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
-            field_tags = self._get_field_tags(self._cls, name, field_value)
+            # todo: do something with recursive imports
+            from evidently.core import get_field_tags
+
+            field_tags = get_field_tags(self._cls, name)
             if field_tags is not None and (exclude is not None and any(t in exclude for t in field_tags)):
                 continue
             is_mapping = field.shape == SHAPE_DICT
@@ -284,7 +312,11 @@ class FieldPath:
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
-            field_tags = self._get_field_tags(self._cls, name, field_value) or set()
+
+            # todo: do something with recursive imports
+            from evidently.core import get_field_tags
+
+            field_tags = get_field_tags(self._cls, name)
 
             is_mapping = field.shape == SHAPE_DICT
             if self.has_instance:
@@ -327,8 +359,10 @@ class FieldPath:
         if len(path) == 0:
             return self_tags
         field_name, *path = path
+        # todo: do something with recursive imports
+        from evidently.core import get_field_tags
 
-        field_tags = self._get_field_tags(self._cls, field_name, self._cls.__fields__[field_name].type_) or set()
+        field_tags = get_field_tags(self._cls, field_name)
         return self_tags.union(field_tags).union(self.child(field_name).get_field_tags(path) or tuple())
 
 

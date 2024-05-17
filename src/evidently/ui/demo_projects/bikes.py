@@ -114,7 +114,6 @@ def create_report(i: int, data):
 
 
 def create_test_suite(i: int, data):
-
     current, reference, column_mapping = data
     data_drift_test_suite = TestSuite(
         tests=[DataDriftTestPreset()],

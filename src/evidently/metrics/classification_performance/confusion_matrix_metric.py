@@ -7,6 +7,7 @@ from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
+from evidently.core import IncludeTags
 from evidently.metric_results import ConfusionMatrix
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
@@ -22,6 +23,13 @@ DEFAULT_THRESHOLD = 0.5
 
 
 class ClassificationConfusionMatrixResult(MetricResult):
+    class Config:
+        field_tags = {
+            "current_matrix": {IncludeTags.Current},
+            "reference_matrix": {IncludeTags.Reference},
+            "target_names": {IncludeTags.Parameter},
+        }
+
     current_matrix: ConfusionMatrix
     reference_matrix: Optional[ConfusionMatrix]
     target_names: Optional[TargetNames] = None

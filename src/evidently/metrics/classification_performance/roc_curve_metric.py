@@ -8,6 +8,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.core import IncludeTags
 from evidently.metric_results import PredictionData
 from evidently.metric_results import ROCCurve
 from evidently.metric_results import ROCCurveData
@@ -24,6 +25,8 @@ from evidently.utils.data_operations import process_columns
 class ClassificationRocCurveResults(MetricResult):
     class Config:
         pd_include = False
+
+        field_tags = {"current_roc_curve": {IncludeTags.Current}, "reference_roc_curve": {IncludeTags.Reference}}
 
     current_roc_curve: Optional[ROCCurve] = None
     reference_roc_curve: Optional[ROCCurve] = None

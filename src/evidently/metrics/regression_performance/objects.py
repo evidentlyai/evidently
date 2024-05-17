@@ -7,6 +7,7 @@ import pandas as pd
 from pandas import Interval
 
 from evidently.base_metric import MetricResult
+from evidently.core import IncludeTags
 from evidently.metric_results import ScatterData
 
 
@@ -16,13 +17,11 @@ class PredActualScatter(MetricResult):
 
 
 @overload
-def scatter_as_dict(scatter: PredActualScatter) -> Dict[str, ScatterData]:
-    ...
+def scatter_as_dict(scatter: PredActualScatter) -> Dict[str, ScatterData]: ...
 
 
 @overload
-def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]:
-    ...
+def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]: ...
 
 
 def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]:
@@ -71,6 +70,7 @@ class IntervalSeries(MetricResult):
 class RegressionMetricScatter(MetricResult):
     class Config:
         smart_union = True
+        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: IntervalSeries
     reference: Optional[IntervalSeries] = None

@@ -259,7 +259,6 @@ class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
         stattest_threshold: Optional[float] = None,
         options: AnyOptions = None,
     ):
-
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
         super().__init__(column_name=column_name, options=options)
