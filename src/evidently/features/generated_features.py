@@ -72,7 +72,7 @@ class GeneralDescriptor(EvidentlyBaseModel):
     def feature(self) -> GeneratedFeature:
         raise NotImplementedError()
 
-    def as_column_name(self):
+    def as_column(self):
         return self.feature().feature_name()
 
 
@@ -85,11 +85,17 @@ class MultiColumnFeatureDescriptor(EvidentlyBaseModel):
     def for_columns(self, columns: List[str]) -> "ColumnName":
         return self.feature(columns).feature_name()
 
+    def on(self, columns: List[str]) -> "ColumnName":
+        return self.feature(columns).feature_name()
+
 
 class FeatureDescriptor(EvidentlyBaseModel):
     display_name: Optional[str] = None
 
     def for_column(self, column_name: str):
+        return self.feature(column_name).feature_name()
+
+    def on(self, column_name: str):
         return self.feature(column_name).feature_name()
 
     @abc.abstractmethod
