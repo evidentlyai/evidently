@@ -9,6 +9,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class CustomFeature(GeneratedFeature):
+    display_name: str
     func: Callable[[pd.DataFrame, DataDefinition], pd.Series]
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
@@ -20,6 +21,7 @@ class CustomFeature(GeneratedFeature):
 
 
 class CustomSingleColumnFeature(GeneratedFeature):
+    display_name: str
     func: Callable[[pd.Series], pd.Series]
     column_name: str
 
@@ -32,6 +34,7 @@ class CustomSingleColumnFeature(GeneratedFeature):
 
 
 class CustomPairColumnFeature(GeneratedFeature):
+    display_name: str
     func: Callable[[pd.Series, pd.Series], pd.Series]
     first_column: str
     second_column: str

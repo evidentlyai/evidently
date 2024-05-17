@@ -4,7 +4,6 @@ import typing
 import uuid
 from typing import List
 from typing import Optional
-from uuid import UUID
 
 import pandas as pd
 from pydantic import Field
@@ -20,7 +19,7 @@ if typing.TYPE_CHECKING:
 class GeneratedFeature(EvidentlyBaseModel):
     display_name: Optional[str] = None
     feature_type: ColumnType = ColumnType.Numerical
-    feature_id: UUID = Field(default_factory=uuid.uuid4)
+    feature_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     """
     Class for computation of additional features.
     """

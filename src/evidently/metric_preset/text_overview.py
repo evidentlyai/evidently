@@ -36,14 +36,17 @@ class TextOverviewPreset(MetricPreset):
         self,
         column_name: Optional[str] = None,
         columns: Optional[List[str]] = None,
-        descriptors: Optional[Dict[str, FeatureDescriptor]] = None,
+        descriptors: Optional[List[FeatureDescriptor]] = None,
     ):
         super().__init__()
         if column_name is not None and columns is not None:
             raise ValueError("Cannot specify both `columns` and `columns`.")
-        if columns is None and columns is None:
+        if columns is not None:
+            self.columns = columns
+        elif column_name is not None:
+            self.columns = [column_name]
+        else:
             raise ValueError("Must specify either `columns` or `columns`.")
-        self.columns = columns or [column_name]
         self.descriptors = descriptors
 
     def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
