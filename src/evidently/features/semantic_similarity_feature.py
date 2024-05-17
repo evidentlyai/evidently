@@ -20,17 +20,19 @@ class SemanticSimilarityFeature(GeneratedFeature):
 
         model = SentenceTransformer(self.model)
 
-        def score(row):
-            first_str = row[self.columns[0]]
-            if not isinstance(first_str, str):
-                first_str = ""
-            second_str = row[self.columns[1]]
-            if not isinstance(second_str, str):
-                second_str = ""
-            return 1.0 - distance.cosine(model.encode(first_str), model.encode(second_str))
+        first = model.encode(data[self.columns[0]].fillna(""))
+        second = model.encode(data[self.columns[1]].fillna(""))
 
-        result = data.apply(score, axis=1)
-        return pd.DataFrame(dict([("|".join(self.columns), result)]))
+        return pd.DataFrame(
+            dict(
+                [
+                    (
+                        "|".join(self.columns),
+                        pd.Series([distance.cosine(x, y) for x, y in zip(first, second)]),
+                    )
+                ]
+            )
+        )
 
     def feature_name(self) -> "ColumnName":
         return additional_feature(

@@ -1,4 +1,3 @@
-import itertools
 from typing import Any
 from typing import Dict
 from typing import List
@@ -65,9 +64,7 @@ class TextOverviewPreset(MetricPreset):
                 result.append(ColumnSummaryMetric(feature))
 
         if len(self.columns) > 1:
-            column_x_column = itertools.product(self.columns, self.columns)
-            for pair in column_x_column:
-                if pair[0] == pair[1]:
-                    continue
-                result.append(ColumnSummaryMetric(SemanticSimilarity(columns=pair).as_column()))
+            for idx, col in enumerate(self.columns[:-1]):
+                for col2 in self.columns[idx + 1 :]:
+                    result.append(ColumnSummaryMetric(SemanticSimilarity(columns=[col, col2]).as_column()))
         return result
