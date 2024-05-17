@@ -100,7 +100,7 @@ class DataDriftPreset(MetricPreset):
                 per_column_stattest_threshold=self.per_column_stattest_threshold,
             ),
         ]
-        embeddings_data = data_definition.embeddings()
+        embeddings_data = data_definition.embeddings
         if embeddings_data is None:
             return result
         result = add_emb_drift_to_reports(

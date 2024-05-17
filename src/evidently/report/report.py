@@ -93,7 +93,7 @@ class Report(ReportBase):
         if self._inner_suite.context.engine is None:
             raise ValueError("No Engine is set")
         else:
-            data_definition = self._inner_suite.context.engine.get_data_definition(
+            data_definition = self._inner_suite.context.get_data_definition(
                 current_data,
                 reference_data,
                 column_mapping,

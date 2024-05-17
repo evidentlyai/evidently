@@ -9,6 +9,10 @@ export const injectReportsAPI: InJectAPI<loaderData> = ({ api }) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
 
+    if (params.snapshotId) {
+      return Promise.resolve([])
+    }
+
     return api.getReports(params.projectId)
   },
   action: async ({ params }: ActionFunctionArgs) => {
@@ -21,6 +25,10 @@ export const injectReportsAPI: InJectAPI<loaderData> = ({ api }) => ({
 export const injectTestSuitesAPI: InJectAPI<loaderData> = ({ api }) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
+
+    if (params.snapshotId) {
+      return Promise.resolve([])
+    }
 
     return api.getTestSuites(params.projectId)
   },

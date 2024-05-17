@@ -1,5 +1,15 @@
-from starlette.responses import JSONResponse
-from starlette.responses import Response
+import json
+
+from litestar import Response
+
+
+class JSONResponse(Response):
+    def __init__(self, status_code, content: dict):
+        super().__init__(
+            status_code=status_code,
+            media_type="application/json",
+            content=json.dumps(content),
+        )
 
 
 class EvidentlyServiceError(Exception):

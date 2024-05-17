@@ -2,14 +2,18 @@ import json
 import urllib.parse
 from typing import Any
 from typing import Optional
+from typing import Type
+from typing import TypeVar
+from typing import Union
 
 import requests
-from starlette.responses import JSONResponse
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.utils import NumpyEncoder
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class RemoteClientBase:
@@ -23,8 +27,8 @@ class RemoteClientBase:
         method: str,
         query_params: Optional[dict] = None,
         body: Optional[dict] = None,
-        response_model=None,
-    ):
+        response_model: Optional[Type[T]] = None,
+    ) -> Union[T, requests.Response]:
         # todo: better encoding
         headers = {SECRET_HEADER_NAME: self.secret}
         data = None
@@ -40,13 +44,6 @@ class RemoteClientBase:
         if response_model is not None:
             return parse_obj_as(response_model, response.json())
         return response
-
-
-class NumpyJsonResponse(JSONResponse):
-    def render(self, content: Any) -> bytes:
-        return json.dumps(
-            content, ensure_ascii=False, allow_nan=True, indent=None, separators=(",", ":"), cls=NumpyEncoder
-        ).encode("utf-8")
 
 
 _skip_jsonable_encoder_cache = {}
@@ -72,3 +69,7 @@ def skip_jsonable_encoder(f):
         _skip_jsonable_encoder_cache[return_model] = new_return_model
     f.__annotations__["return"] = _skip_jsonable_encoder_cache[return_model]
     return f
+
+
+async def parse_json(body: bytes) -> Any:
+    return json.loads(body)

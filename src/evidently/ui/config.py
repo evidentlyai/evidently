@@ -1,17 +1,43 @@
-import os.path
-from abc import ABC
-from abc import abstractmethod
-from typing import Callable
-from typing import Optional
+import dataclasses
+from typing import Type
+from typing import TypeVar
+from typing import Union
 
-import yaml
+import dynaconf
+import pydantic
+from dynaconf import LazySettings
+from dynaconf.utils.boxing import DynaBox
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently.pydantic_utils import EvidentlyBaseModel
-from evidently.ui.base import ProjectManager
-from evidently.ui.type_aliases import OrgID
-from evidently.ui.type_aliases import UserID
+from evidently.ui.security.config import NoSecurityConfig
+from evidently.ui.security.token import TokenSecurityConfig
+
+TConfig = TypeVar("TConfig")
+
+
+def load_config(config_type: Type[TConfig]):
+    def _wrap(box: dict) -> TConfig:
+        new_box = _convert_keys(box)
+        if pydantic.__version__.startswith("2") and issubclass(
+            config_type,
+            (pydantic.BaseModel, pydantic.v1.BaseModel),
+        ):
+            return config_type.parse_obj(new_box)  # type: ignore
+        elif pydantic.__version__.startswith("1") and issubclass(config_type, (pydantic.BaseModel,)):
+            return config_type.parse_obj(new_box)  # type: ignore
+        elif dataclasses.is_dataclass(config_type):
+            keys = [k.name for k in dataclasses.fields(config_type)]
+        else:
+            keys = [k for k in config_type.__annotations__.keys()]
+        return config_type(**{k: box.get(k) for k in keys if k in new_box})
+
+    return _wrap
+
+
+def _convert_keys(box):
+    if isinstance(box, (DynaBox, LazySettings)):
+        return {k.lower(): _convert_keys(v) for k, v in box.items()}
+    return box
 
 
 class TelemetryConfig(BaseModel):
@@ -27,60 +53,18 @@ class ServiceConfig(BaseModel):
     port: int = 8000
 
 
-class SecurityConfig(EvidentlyBaseModel):
-    @abstractmethod
-    def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
-        raise NotImplementedError
-
-    def get_org_id_dependency(self) -> Callable[..., Optional[OrgID]]:
-        return lambda: None
-
-    def get_is_authorized_dependency(self) -> Callable[..., bool]:
-        get_user_id = self.get_user_id_dependency()
-
-        from fastapi import Depends
-
-        def is_authorized(user_id: Optional[UserID] = Depends(get_user_id)):
-            return user_id is not None
-
-        return is_authorized
+class StorageConfig(BaseModel):
+    path: str = "workspace"
+    autorefresh: bool = True
 
 
-class NoSecurityConfig(SecurityConfig):
-    def get_user_id_dependency(self) -> Callable[..., Optional[UserID]]:
-        return lambda: None
-
-    def get_is_authorized_dependency(self) -> Callable[..., bool]:
-        return lambda: True
-
-
-class StorageConfig(EvidentlyBaseModel, ABC):
-    @abstractmethod
-    def create_project_manager(self) -> ProjectManager:
-        raise NotImplementedError
+class Config(BaseModel):
+    service: ServiceConfig = ServiceConfig()
+    storage: StorageConfig = StorageConfig()
+    security: Union[NoSecurityConfig, TokenSecurityConfig] = NoSecurityConfig()
+    telemetry: TelemetryConfig = TelemetryConfig()
 
 
-def _default_storage():
-    from evidently.ui.storage.local import LocalStorageConfig
-
-    return LocalStorageConfig(path="workspace", autorefresh=True)
-
-
-class Configuration(BaseModel):
-    service: ServiceConfig = Field(default_factory=ServiceConfig)
-    telemetry: TelemetryConfig = Field(default_factory=TelemetryConfig)
-    storage: StorageConfig = Field(default_factory=_default_storage)
-    security: SecurityConfig = NoSecurityConfig()
-
-    @classmethod
-    def read(cls, path: str) -> Optional["Configuration"]:
-        return read_configuration(path)
-
-
-def read_configuration(path: str) -> Optional[Configuration]:
-    if not os.path.exists(path):
-        return None
-    with open(path) as f:
-        dict_obj = yaml.load(f, yaml.SafeLoader)
-        _configuration = Configuration.parse_obj(dict_obj)
-    return _configuration
+settings = dynaconf.Dynaconf(
+    envvar_prefix="EVIDENTLY",
+)

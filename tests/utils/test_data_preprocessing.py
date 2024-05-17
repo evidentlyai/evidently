@@ -17,22 +17,23 @@ from evidently.utils.data_preprocessing import create_data_definition
 
 
 def test_get_columns():
+    columns = [
+        ColumnDefinition("id", ColumnType.Categorical),
+        ColumnDefinition("datetime", ColumnType.Datetime),
+        ColumnDefinition("target", ColumnType.Categorical),
+        ColumnDefinition("predicted", ColumnType.Categorical),
+        ColumnDefinition("class_1", ColumnType.Numerical),
+        ColumnDefinition("class_2", ColumnType.Numerical),
+        ColumnDefinition("class_3", ColumnType.Numerical),
+        ColumnDefinition("column_1", ColumnType.Categorical),
+        ColumnDefinition("column_2", ColumnType.Numerical),
+        ColumnDefinition("column_3", ColumnType.Numerical),
+        ColumnDefinition("column_4", ColumnType.Datetime),
+        ColumnDefinition("column_5", ColumnType.Datetime),
+        ColumnDefinition("column_6", ColumnType.Datetime),
+    ]
     definition = DataDefinition(
-        columns=[
-            ColumnDefinition("id", ColumnType.Categorical),
-            ColumnDefinition("datetime", ColumnType.Datetime),
-            ColumnDefinition("target", ColumnType.Categorical),
-            ColumnDefinition("predicted", ColumnType.Categorical),
-            ColumnDefinition("class_1", ColumnType.Numerical),
-            ColumnDefinition("class_2", ColumnType.Numerical),
-            ColumnDefinition("class_3", ColumnType.Numerical),
-            ColumnDefinition("column_1", ColumnType.Categorical),
-            ColumnDefinition("column_2", ColumnType.Numerical),
-            ColumnDefinition("column_3", ColumnType.Numerical),
-            ColumnDefinition("column_4", ColumnType.Datetime),
-            ColumnDefinition("column_5", ColumnType.Datetime),
-            ColumnDefinition("column_6", ColumnType.Datetime),
-        ],
+        columns={c.column_name: c for c in columns},
         id_column=ColumnDefinition("id", ColumnType.Categorical),
         datetime_column=ColumnDefinition("datetime", ColumnType.Datetime),
         target=ColumnDefinition("target", ColumnType.Categorical),
@@ -414,4 +415,4 @@ def test_create_data_definition(reference, current, mapping, target, id, datetim
     assert definition.get_datetime_column() == datetime
     assert definition.get_prediction_columns() == prediction
     assert definition.get_columns() == columns
-    assert definition.embeddings() == embeddings
+    assert definition.embeddings == embeddings

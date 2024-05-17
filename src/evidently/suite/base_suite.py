@@ -15,7 +15,10 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+import ujson
+
 import evidently
+from evidently import ColumnMapping
 from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
@@ -42,6 +45,9 @@ from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
+from evidently.utils.data_preprocessing import DataDefinition
+
+USE_UJSON = False
 
 
 @dataclasses.dataclass
@@ -96,6 +102,14 @@ class Context:
     state: State
     renderers: RenderersDefinitions
     options: Options = Options()
+    data_definition: Optional["DataDefinition"] = None
+
+    def get_data_definition(self, current_data, reference_data, column_mapping: ColumnMapping):
+        if self.data_definition is None:
+            if self.engine is None:
+                raise ValueError("Cannot create data definition when engine is not set")
+            self.data_definition = self.engine.get_data_definition(current_data, reference_data, column_mapping)
+        return self.data_definition
 
 
 class ContextPayload(BaseModel):
@@ -104,6 +118,7 @@ class ContextPayload(BaseModel):
     tests: List[Test]
     test_results: List[TestResult]
     options: Options = Options()
+    data_definition: Optional[DataDefinition]
 
     @classmethod
     def from_context(cls, context: Context):
@@ -113,6 +128,7 @@ class ContextPayload(BaseModel):
             tests=list(context.test_results.keys()),
             test_results=list(context.test_results.values()),
             options=context.options,
+            data_definition=context.data_definition,
         )
 
     def to_context(self) -> Context:
@@ -125,6 +141,7 @@ class ContextPayload(BaseModel):
             state=States.Calculated,
             renderers=DEFAULT_RENDERERS,
             options=self.options,
+            data_definition=self.data_definition,
         )
         for m in ctx.metrics:
             m.set_context(ctx)
@@ -156,6 +173,13 @@ class Display:
         return self._render(determine_template("auto"), template_params)
 
     def show(self, mode="auto"):
+        """
+        Keyword arguments:
+        `mode` - Deprecated.
+
+        Now you should call
+        this function without any args, like: `.show()`
+        """
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
             dashboard_id=dashboard_id,
@@ -395,7 +419,10 @@ class Snapshot(BaseModel):
 
     def save(self, filename):
         with open(filename, "w") as f:
-            json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
+            if USE_UJSON:
+                ujson.dump(self.dict(), f, indent=2, default=NumpyEncoder().default)
+            else:
+                json.dump(self.dict(), f, indent=2, cls=NumpyEncoder)
 
     @classmethod
     def load(cls, filename):
@@ -470,7 +497,7 @@ class ReportBase(Display):
     def _parse_snapshot(cls: Type[T], payload: Snapshot) -> T:
         raise NotImplementedError
 
-    def save(self, filename):
+    def save(self, filename) -> None:
         """Save state to file (experimental)"""
         self._get_snapshot().save(filename)
 

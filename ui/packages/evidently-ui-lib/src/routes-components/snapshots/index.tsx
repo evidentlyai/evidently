@@ -25,7 +25,8 @@ import {
   useMatches,
   useSearchParams,
   useSubmit,
-  useNavigation
+  useNavigation,
+  ShouldRevalidateFunction
 } from 'react-router-dom'
 
 import type { MetadataValueType } from '~/api'
@@ -44,6 +45,8 @@ import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import dayjs from 'dayjs'
 import { loaderData } from './data'
+
+export const shouldRevalidate: ShouldRevalidateFunction = () => true
 
 export const handle: { crumb: crumbFunction<loaderData> } = {
   crumb: (_, { pathname }) => ({

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { TestDataInfo, TestState } from '~/api'
-import { Button, Collapse, Paper, Alert, AlertTitle, AlertColor } from '@mui/material'
+import { Button, Collapse, Alert, AlertTitle, AlertColor, Box } from '@mui/material'
 
 import { BigTableDetails } from '~/widgets/BigTableWidget/BigTableDetails'
 import ReactMarkdown from 'react-markdown'
@@ -30,7 +30,7 @@ const TestData: React.FC<TestDataInfo> = ({ title, description, state, details }
   }
   return (
     <>
-      <Paper>
+      <Box>
         <Alert
           severity={StateToSeverity(state)}
           action={
@@ -52,12 +52,12 @@ const TestData: React.FC<TestDataInfo> = ({ title, description, state, details }
           <></>
         ) : (
           <Collapse in={detailsPart.active} mountOnEnter={true} unmountOnExit={true}>
-            <Paper style={{ padding: '2px' }}>
+            <Box style={{ padding: '2px' }}>
               <BigTableDetails details={details!} widgetSize={2} />
-            </Paper>
+            </Box>
           </Collapse>
         )}
-      </Paper>
+      </Box>
     </>
   )
 }
