@@ -9,7 +9,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class CustomFeature(GeneratedFeature):
-    func:  Callable[[pd.DataFrame, DataDefinition], pd.Series]
+    func: Callable[[pd.DataFrame, DataDefinition], pd.Series]
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         result = self.func(data, data_definition)
