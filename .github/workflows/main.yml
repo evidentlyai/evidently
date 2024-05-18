@@ -104,10 +104,10 @@ jobs:
           curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
       - name: Update pip
         run: python -m pip install --upgrade pip
-      - name: Install package
-        run: pip install -e .[dev,spark,fsspec]
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
+      - name: Install package
+        run: pip install -e .[dev,spark,fsspec]
       - name: Run pip-audit
         run: pip-audit --ignore-vuln PYSEC-2024-48
       - name: Run Tests
@@ -136,7 +136,7 @@ jobs:
       - uses: actions/cache@v3
         id: cache-scipy-data
         with:
-          path: ~/.cache/scipy-data
+          path: ~/scikit_learn_data
           key: cache-scipy-data
       - uses: actions/cache@v3
         id: cache-bikes-dataset
