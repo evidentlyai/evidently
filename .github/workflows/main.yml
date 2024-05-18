@@ -71,6 +71,7 @@ jobs:
           python-version: "3.9"
           architecture: "x64"
           cache: "pip"
+          cache-dependency-path: requirements.min.txt
       # Runs a single command using the runners shell
       - name: Install dependencies
         run: pip install -r requirements.min.txt && pip install -r requirements.dev.txt
