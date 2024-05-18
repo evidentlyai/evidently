@@ -1,3 +1,4 @@
+import sys
 from typing import Callable
 from typing import List
 
@@ -20,6 +21,10 @@ from tests.conftest import smart_assert_equal
 
 
 @slow
+@pytest.mark.skipif(
+    sys.version_info == (3, 12) and sys.platform.startswith("win"),
+    reason="on Windows 2022 with python 3.12 pyspark package is broken",
+)
 @pytest.mark.parametrize(
     "metric,column_mapping,result_adjust",
     [
