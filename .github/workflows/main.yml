@@ -111,6 +111,7 @@ jobs:
           python-version: "3.8"
           architecture: "x64"
           cache: "pip"
+          cache-dependency-path: requirements.min.txt
       - uses: actions/cache@v3
         id: cache-bikes-dataset
         env:
@@ -155,6 +156,7 @@ jobs:
           python-version: ${{ matrix.python }}
           architecture: "x64"
           cache: "pip"
+          cache-dependency-path: setup.py
       - uses: actions/cache@v3
         id: cache-scipy-data
         with:
@@ -188,6 +190,7 @@ jobs:
           python-version: "3.8"
           architecture: "x64"
           cache: "pip"
+          cache-dependency-path: setup.py
       - name: Install dependencies
         run: pip install -e ".[dev]"
       - name: Install wheel

@@ -43,6 +43,7 @@ jobs:
           python-version: ${{ matrix.python }}
           architecture: "x64"
           cache: "pip"
+          cache-dependency-path: setup.py
       - name: Install package
         run: pip install -e .[dev,spark,fsspec]
       - name: Install minimal reqs
