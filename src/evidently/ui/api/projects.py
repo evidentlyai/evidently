@@ -24,9 +24,12 @@ from evidently.test_suite.test_suite import TEST_PRESETS
 from evidently.ui.api.models import DashboardInfoModel
 from evidently.ui.api.models import ReportModel
 from evidently.ui.api.models import TestSuiteModel
+from evidently.ui.base import EntityType
+from evidently.ui.base import Permission
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards.base import DashboardPanel
+from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
@@ -100,6 +103,10 @@ def update_project_info(
     project = project_manager.get_project(user_id, project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
+    if not project_manager.auth.check_entity_permission(
+        user_id, EntityType.Project, project.id, Permission.PROJECT_WRITE
+    ):
+        raise NotEnoughPermissions()
     project.description = data.description
     project.name = data.name
     project.date_from = data.date_from
