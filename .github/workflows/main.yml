@@ -120,6 +120,7 @@ jobs:
         with:
           path: Bike-Sharing-Dataset.zip
           key: cache-bikes-dataset
+          enableCrossOsArchive: true
       - name: Download test data
         if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
         run:
@@ -163,6 +164,7 @@ jobs:
         with:
           path: ~/scikit_learn_data
           key: cache-scipy-data
+          enableCrossOsArchive: true
       - uses: actions/cache@v3
         id: cache-bikes-dataset
         env:
@@ -170,6 +172,7 @@ jobs:
         with:
           path: Bike-Sharing-Dataset.zip
           key: cache-bikes-dataset
+          enableCrossOsArchive: true
       - name: Download test data
         if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
         run:
