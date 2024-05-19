@@ -9,7 +9,7 @@ from tests.conftest import slow
 @pytest.mark.parametrize("demo_project", list(DEMO_PROJECTS.keys()))
 def test_create_demo_project(demo_project, tmp_path):
     dp = DEMO_PROJECTS[demo_project]
-    dp.count = 1
+    dp.count = 2
     dp.create(str(tmp_path))
 
     ws = Workspace(path=str(tmp_path))
