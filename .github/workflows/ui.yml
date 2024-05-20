@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   changed_files:
-    runs-on: ubuntu-latest # windows-latest || macos-latest
+    runs-on: ubuntu-22.04 # windows-latest || macos-latest
     name: 👀 List Changed UI Files
     outputs:
       ui_any_modified: ${{ steps.changed-files.outputs.ui_any_modified == 'true' }}
@@ -58,7 +58,7 @@ jobs:
 
   ui-build:
     name: UI type-check and build with node v${{ matrix.node-version }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
     strategy:
@@ -105,7 +105,7 @@ jobs:
 
   ui-test:
     name: Playwright tests for Service
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
 

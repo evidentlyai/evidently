@@ -27,3 +27,4 @@ ujson==5.4.0
 openai==1.16.2
 evaluate==0.4.1
 transformers[torch]==4.39.3
+sentence-transformers==2.7.0
