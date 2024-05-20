@@ -38,7 +38,7 @@ ACCESS_TOKEN_COOKIE = Cookie(
 
 
 class CloudMetadataStorage(RemoteMetadataStorage):
-    def __init__(self, base_url: str, token: str, token_cookie_name: str, org_id: OrgID):
+    def __init__(self, base_url: str, token: str, token_cookie_name: str, org_id: Optional[OrgID]):
         self.org_id = org_id
         self.token = token
         self.token_cookie_name = token_cookie_name
@@ -120,10 +120,13 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         return self._request("/api/orgs", "GET", response_model=List[OrgModel])
 
     def create_team(self, team: Team, org_id: Optional[OrgID] = None) -> TeamModel:
+        org_id = org_id or self.org_id
+        if org_id is None:
+            raise ValueError("Please provide org_id ")
         return self._request(
             "/api/teams",
             "POST",
-            query_params={"name": team.name, "org_id": org_id or self.org_id},
+            query_params={"name": team.name, "org_id": org_id},
             response_model=TeamModel,
         )
 
@@ -139,7 +142,7 @@ class CloudWorkspace(WorkspaceView):
     def __init__(
         self,
         token: str,
-        org_id: STR_UUID,
+        org_id: Optional[STR_UUID] = None,
         team_id: Optional[STR_UUID] = None,
         url: str = None,
     ):
