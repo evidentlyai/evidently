@@ -15,7 +15,6 @@ Import the necessary components:
 ```python
 import pandas as pd
 from sklearn import datasets
-from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metric_preset import TextEvals
 
