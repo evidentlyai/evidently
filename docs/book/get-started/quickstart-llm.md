@@ -78,7 +78,7 @@ project.description = "My project description"
 project.save()
 ```
 
-Visit Evidently Cloud, open your Project, and navigate to the "Report" to see evaluation result.
+Visit Evidently Cloud, open your Project, and navigate to the "Report" to see evaluation results.
 
 ![](../.gitbook/assets/cloud/toy_text_report_preview.gif)
 
