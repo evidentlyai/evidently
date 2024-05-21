@@ -27,7 +27,7 @@ class CustomSingleColumnFeature(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         result = self.func(data[self.column_name])
-        return pd.DataFrame(dict([(str(self.feature_id), result)]))
+        return pd.DataFrame(dict([(str(self.feature_id), result)]), index=data.index)
 
     def feature_name(self) -> "ColumnName":
         return additional_feature(self, str(self.feature_id), self.display_name)

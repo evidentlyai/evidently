@@ -28,7 +28,7 @@ class SemanticSimilarityFeature(GeneratedFeature):
                 [
                     (
                         "|".join(self.columns),
-                        pd.Series([distance.cosine(x, y) for x, y in zip(first, second)]),
+                        pd.Series([distance.cosine(x, y) for x, y in zip(first, second)], index=data.index),
                     )
                 ]
             )
