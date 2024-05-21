@@ -633,7 +633,6 @@ class ProjectManager:
         name: str,
         user_id: UserID,
         team_id: TeamID,
-        org_id: OrgID,
         description: Optional[str] = None,
     ) -> Project:
         from evidently.ui.dashboards import DashboardConfig

@@ -143,7 +143,7 @@ class CollectorConfig(Config):
             if is_cloud:
                 if self.api_secret is None or self.org_id is None:
                     raise ValueError("Please provide token and org_id for CloudWorkspace")
-                self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url, org_id=self.org_id)
+                self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url)
             else:
                 self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
         return self._workspace

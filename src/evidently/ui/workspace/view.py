@@ -18,21 +18,17 @@ class WorkspaceView(WorkspaceBase):
         self,
         user_id: Optional[UserID],
         project_manager: ProjectManager,
-        team_id: Optional[TeamID] = None,
-        org_id: Optional[OrgID] = None,
     ):
         self.project_manager = project_manager
         self.user_id = user_id or ZERO_UUID
-        self.team_id = team_id or ZERO_UUID
-        self.org_id = org_id or ZERO_UUID
 
     def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
         return self.project_manager.create_project(
-            name, user_id=self.user_id, team_id=team_id or self.team_id, org_id=self.org_id, description=description
+            name, user_id=self.user_id, team_id=team_id or ZERO_UUID, description=description
         )
 
     def add_project(self, project: Project, team_id: TeamID = None) -> Project:
-        project = self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or self.team_id)
+        project = self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or ZERO_UUID)
         return project
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
@@ -46,7 +42,7 @@ class WorkspaceView(WorkspaceBase):
         self.project_manager.delete_project(self.user_id, project_id)
 
     def list_projects(self, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None) -> List[Project]:
-        return self.project_manager.list_projects(self.user_id, team_id or self.team_id, org_id or self.org_id)
+        return self.project_manager.list_projects(self.user_id, team_id or ZERO_UUID, org_id or ZERO_UUID)
 
     def add_snapshot(self, project_id: STR_UUID, snapshot: Snapshot):
         if isinstance(project_id, str):
@@ -64,7 +60,7 @@ class WorkspaceView(WorkspaceBase):
         self, project_name: str, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
     ) -> List[Project]:
         return self.project_manager.search_project(
-            self.user_id, project_name, team_id or self.team_id, org_id or self.org_id
+            self.user_id, project_name, team_id or ZERO_UUID, org_id or ZERO_UUID
         )
 
 

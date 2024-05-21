@@ -2,7 +2,6 @@ from typing import Dict
 from typing import List
 from typing import NamedTuple
 from typing import Optional
-from uuid import UUID
 
 from requests import HTTPError
 
@@ -12,7 +11,6 @@ from evidently.ui.base import Org
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import Team
 from evidently.ui.storage.common import NoopAuthManager
-from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
@@ -38,8 +36,7 @@ ACCESS_TOKEN_COOKIE = Cookie(
 
 
 class CloudMetadataStorage(RemoteMetadataStorage):
-    def __init__(self, base_url: str, token: str, token_cookie_name: str, org_id: Optional[OrgID]):
-        self.org_id = org_id
+    def __init__(self, base_url: str, token: str, token_cookie_name: str):
         self.token = token
         self.token_cookie_name = token_cookie_name
         self._jwt_token: Optional[str] = None
@@ -109,30 +106,19 @@ class CloudMetadataStorage(RemoteMetadataStorage):
                 )
             raise
 
-    def switch_org(self, org_id: OrgID):
-        # todo: make not pydantic
-        object.__setattr__(self, "org_id", org_id)
-
     def create_org(self, org: Org) -> OrgModel:
         return self._request("/api/orgs", "POST", body=org.dict(), response_model=OrgModel)
 
     def list_orgs(self) -> List[OrgModel]:
         return self._request("/api/orgs", "GET", response_model=List[OrgModel])
 
-    def create_team(self, team: Team, org_id: Optional[OrgID] = None) -> TeamModel:
-        org_id = org_id or self.org_id
-        if org_id is None:
-            raise ValueError("Please provide org_id ")
+    def create_team(self, team: Team, org_id: OrgID = None) -> TeamModel:
         return self._request(
             "/api/teams",
             "POST",
             query_params={"name": team.name, "org_id": org_id},
             response_model=TeamModel,
         )
-
-    def switch_team(self, team_id: TeamID):
-        # self.team_id = team_id
-        pass
 
 
 class CloudWorkspace(WorkspaceView):
@@ -142,21 +128,17 @@ class CloudWorkspace(WorkspaceView):
     def __init__(
         self,
         token: str,
-        org_id: Optional[STR_UUID] = None,
-        team_id: Optional[STR_UUID] = None,
         url: str = None,
     ):
         self.token = token
         self.url = url if url is not None else self.URL
 
         # todo: default org if user have only one
-        org_id_uuid = UUID(org_id) if isinstance(org_id, str) else org_id
         user_id = ZERO_UUID  # todo: get from /me
         meta = CloudMetadataStorage(
             base_url=self.url,
             token=self.token,
             token_cookie_name=ACCESS_TOKEN_COOKIE.key,
-            org_id=org_id_uuid or ZERO_UUID,
         )
 
         pm = ProjectManager(
@@ -168,14 +150,7 @@ class CloudWorkspace(WorkspaceView):
         super().__init__(
             user_id,
             pm,
-            UUID(team_id) if isinstance(team_id, str) else team_id,
-            org_id_uuid,
         )
-
-    def switch_org(self, org_id: STR_UUID):
-        org_id_uuid = UUID(org_id) if isinstance(org_id, str) else org_id
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        self.project_manager.metadata.switch_org(org_id_uuid)
 
     def create_org(self, org: Org) -> Org:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
@@ -185,14 +160,9 @@ class CloudWorkspace(WorkspaceView):
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         return [o.to_org() for o in self.project_manager.metadata.list_orgs()]
 
-    def create_team(self, team: Team, org_id: Optional[OrgID] = None) -> Team:
+    def create_team(self, team: Team, org_id: OrgID) -> Team:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_team(team, org_id or self.org_id).to_team()
-
-    def switch_team(self, team_id: STR_UUID):
-        team_id_uuid = UUID(team_id) if isinstance(team_id, str) else team_id
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        self.project_manager.metadata.switch_team(team_id_uuid)
+        return self.project_manager.metadata.create_team(team, org_id).to_team()
 
 
 class CloudAuthManager(NoopAuthManager):
