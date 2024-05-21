@@ -78,6 +78,7 @@ class OpenAIFeature(GeneratedFeature):
             context_column = repeat(self.context)
 
         for message, context in zip(column_data, context_column):
+            context = "" if context is None else context
             prompt_answer = func(
                 client,
                 model=self.model,
