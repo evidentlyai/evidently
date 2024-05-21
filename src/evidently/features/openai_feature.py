@@ -11,6 +11,8 @@ from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
+_legacy_models = ["gpt-3.5-turbo-instruct", "babbage-002", "davinci-002"]
+
 
 class OpenAIFeature(GeneratedFeature):
     column_name: str
@@ -59,11 +61,17 @@ class OpenAIFeature(GeneratedFeature):
         client = OpenAI()
         result: List[Union[str, float, None]] = []
         prompt = self.prompt.replace(self.context_replace_string, self.context)
+
+        if self.model in _legacy_models:
+            func = _completions_openai_call
+        else:
+            func = _chat_completions_openai_call
+
         for value in column_data:
             prompt = prompt.replace(self.prompt_replace_string, value)
-            prompt_answer = client.completions.create(model=self.model, prompt=prompt, **self.openai_params)
+            prompt_answer = func(client, model=self.model, prompt=prompt, **self.openai_params)
             processed_response = _postprocess_response(
-                prompt_answer.choices[0].text,
+                prompt_answer,
                 self.check_mode,
                 self.possible_values,
             )
@@ -88,6 +96,18 @@ class OpenAIFeature(GeneratedFeature):
         if self.display_name:
             return self.display_name.replace(" ", "_").lower()
         return self.column_name + "_" + self.feature_id
+
+
+def _completions_openai_call(client, model: str, prompt: str, params: dict):
+    prompt_answer = client.completions.create(model=model, prompt=prompt, **params)
+    return prompt_answer.choices[0].text
+
+
+def _chat_completions_openai_call(client, model: str, prompt: str, params: dict):
+    prompt_answer = client.chat.completions.create(
+        model=model, messages=[{"role": "user", "content": prompt}], **params
+    )
+    return prompt_answer.choices[0].message.content
 
 
 def _postprocess_response(response: str, check_mode: str, possible_values: Optional[List[str]]) -> Optional[str]:
