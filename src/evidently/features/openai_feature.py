@@ -86,7 +86,7 @@ class OpenAIFeature(GeneratedFeature):
                 context_replace_string=self.context_replace_string,
                 prompt_message=message,
                 context=context,
-                **self.openai_params,
+                params=self.openai_params,
             )
             processed_response = _postprocess_response(
                 prompt_answer,
