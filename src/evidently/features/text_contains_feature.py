@@ -106,6 +106,8 @@ class DoesNotContain(GeneratedFeature):
         )
 
     def comparison(self, item: str, string: str):
+        if not isinstance(string, str):
+            return False
         if self.case_sensitive:
             return item in string
         return item.casefold() in string.casefold()
