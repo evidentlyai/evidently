@@ -22,7 +22,7 @@ def _listed_words_present(
     wl = set(words_list)
     result = False
     if in_str is None or (isinstance(in_str, float) and np.isnan(in_str)):
-        result = False
+        return False
     words = re.sub("[^A-Za-z0-9 ]+", "", in_str).split()
     for word_ in words:
         word = word_.lower()

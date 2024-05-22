@@ -1,20 +1,20 @@
 ---
-description: How to send snapshots for data and ML monitoring.
+description: Run evaluations and send the results.
 ---   
 
 To visualize data in the Evidently ML monitoring interface, you must capture data and model metrics as Evidently JSON `snapshots`. 
 
 # What is snapshot?
 
-Evidently `snapshot` is a JSON file summarizing data and model performance for a specific period. Each snapshot includes metrics, data summaries, test results, and supporting render data. You choose which metrics to include when creating a snapshot. This determines what you can later plot on the monitoring dashboard or alert on. 
+`Snapshots` are JSON summaries of data and model performance for a given period. They contain metrics, data summaries, test results, and supporting render data. You pick what exactly goes in a `snapshot`: this also determines what you can alert on. 
 
-By sending multiple snapshots to the Project (e.g., hourly, daily, or weekly), you create a data source for monitoring panels. You can plot trends over time by parsing values from individual snapshots. You can also view individual snapshots for each period.
+By sending multiple `snapshots` to the Project (e.g., hourly, daily, or weekly), you create a data source for monitoring Panels. You can plot trends over time by parsing values from individual snapshots. 
 
 You can:
-* Send the snapshots sequentially on a schedule (e.g., send a data summary every hour or every day).
-* Send one-off snapshots after specific evaluations (e.g., send results of CI/CD checks).
-* Backdate your snapshots (e.g., to log model quality after you get the labels).
-* Log multiple snapshots for the same period (e.g., for shadow and production models).
+* Send the snapshots sequentially (e.g., hourly or daily data summaries).
+* Send one-off snapshots after specific evaluations (e.g., results of CI/CD checks).
+* Backdate your snapshots (e.g., log model quality after you get the labels).
+* Add multiple snapshots for the same period (e.g., for shadow and production models).
 
 {% hint style="info" %}
 **Snapshots vs. Reports.** The snapshot functionality is directly based on the Evidently Reports and Test Suites. Put simply, a snapshot is a JSON "version" of the Evidently Report or Test Suite. 
@@ -24,13 +24,13 @@ You can:
 
 Here is the general workflow.
 
-**1. Connect to a Project**. Connect to a [Project](add_project.md) in your workspace where you want to send the snapshots.
+**1. Connect to a [Project](add_project.md)** in your workspace where you want to send the snapshots.
 
 ```python
 project = ws.get_project("PROJECT_ID")
 ```
 
-**2. Define and compute a snapshot**. Define an Evidently Test Suite or Report as usual:
+**2. Define and compute a snapshot**. 
 * Create a `Report` or `Test Suite` object. Define the `metrics` or `tests`.
 * Pass the `current` dataset you want to evaluate or profile.
 * Optional: pass the `column_mapping` to define the data schema. (Required for model quality or text data checks to map target, prediction, text columns, etc.).
@@ -40,10 +40,14 @@ project = ws.get_project("PROJECT_ID")
 For monitoring, you can also add `tags` and `timestamp` to your snapshots. 
 
 {% hint style="info" %}
-**New to Evidently?** Check the [Reports and Test Suites tutorial](../get-started/tutorial.md)) and a related [docs section](../tests-and-reports/) for end-to-end examples.  Browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md) to see available checks.
+**New to Evidently?** Check the [Reports and Tests Tutorial](../get-started/tutorial.md) and a related [docs section](../tests-and-reports/) for end-to-end examples.  Browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md) to see available checks.
 {% endhint %}
 
 3. **Send the snapshot**. After you compute the Report or Test Suite, use the `add_report` or `add_test_suite` methods to send them to a corresponding Project in your workspace.
+
+{% hint style="info" %}
+**Collector service.** To compute snapshots in near real-time, you can configure a [collector service](collector_service.md). 
+{% endhint %}
 
 # Send snapshots
 
@@ -59,7 +63,7 @@ data_report.run(reference_data=None, current_data=batch1)
 ws.add_report(project.id, data_report)
 ```
 
-**Send a Test Suite**. To create and send Test Suite with data drift checks, passing both current and reference datasets:
+**Send a Test Suite**. To create and send Test Suite with data drift checks, passing current and reference data:
 
 ```python
 drift_checks = TestSuite(tests=[
@@ -69,19 +73,19 @@ drift_checks.run(reference_data=reference_batch, current_data=batch1)
 ws.add_test_suite(project.id, drift_checks)
 ```
 
-**Send a snapshot**. The `add_report` or `add_test_suite` methods generate snapshots automatically. But if you already have a snapshot (e.g., a previously saved Report), you can load it into Python and send it to your workspace:
+**Send a snapshot**. The `add_report` or `add_test_suite` methods generate snapshots automatically. If you already have a snapshot (e.g., a previously saved Report), you can load it to Python and add to your Project:
 
 ```
 ws.add_snapshot(project.id, snapshot.load("data_drift_snapshot.json"))
 ```
 
 {% hint style="info" %}
-**Snapshot size**. Ensure that a single upload to Evidently Cloud does not exceed 50 GB for free trial users or 500 GB for users on the Pro plan. Note that this limitation applies to the size of the resulting JSON, not the dataset itself. For example, a data drift report for 50 columns and 10,000 rows of current and reference data results in a snapshot of approximately 1MB. (For 100 columns x 10,000 rows: ~ 3.5MB; for 100 columns x 100,000 rows: ~ 9MB). However, the size varies depending on the metrics or tests used.
+**Snapshot size**. A single upload to Evidently Cloud should not exceed 50MB for free trial users or 500MB for Pro plan. This limitation applies to the size of the resulting JSON, not the dataset itself. For example, a data drift report for 50 columns and 10,000 rows of current and reference data results in a snapshot of approximately 1MB. (For 100 columns x 10,000 rows: ~ 3.5MB; for 100 columns x 100,000 rows: ~ 9MB). However, the size varies depending on the metrics or tests used.
 {% endhint %}
 
 ## Add timestamp
 
-Each `snapshot` is associated with a single timestamp. By default, Evidently will assign the `datetime.now()` timestamp using the Report/Test Suite computation time based on the user time zone.
+Each `snapshot` is associated with a single timestamp. By default, Evidently will assign the `datetime.now()` using the Report/Test Suite computation time based on the user time zone.
 
 You can also add your own timestamp: 
 
@@ -112,13 +116,13 @@ Since you can assign arbitrary timestamps, you can log snapshots asynchronously 
 You can include `tags` and `metadata` in snapshots. This is optional but useful for search and data filtering for monitoring Panels.
 
 Examples of when to use tags include:
-* You have production/shadow or champion/challenger models and want to visualize them separately on a dashboard.
+* You have production/shadow or champion/challenger models.
 * You compute snapshots with different reference datasets (for example, to compare distribution drift week-by-week and month-by-month).
 * You have data for multiple models of the same type inside a Project.
 * You capture snapshots for multiple segments in your data.
-* You want to tag individual Reports in a Project, such as a datasheet card for the training dataset, a model card, etc.
+* You want to tag individual Reports in a Project, e.g., datasheet card, a model card, etc.
 
-**Custom tags**. Pass any custom tags as a list: 
+**Custom tags**. Pass any custom Tags as a list: 
 
 ```python
 data_drift_report = Report(
@@ -143,7 +147,7 @@ data_drift_report = Report(
 )
 ```
 
-**Default metadata**. You can also use built-in metadata fields `model_id`, `reference_id`, `batch_size`, `dataset_id`:
+**Default metadata**. Use built-in metadata fields `model_id`, `reference_id`, `batch_size`, `dataset_id`:
 
 ```python
 data_drift_report = Report(
@@ -157,7 +161,7 @@ data_drift_report = Report(
 )
 ```
 
-**Add tags to existing Reports.**. You can also add tags to a previously generated Report or Test Suite:
+**Add Tags to existing Reports.**. You can add Tags to a previously generated Report or Test Suite:
 
 ```python
 data_summary_report.tags=["training_data"]
@@ -165,7 +169,7 @@ data_summary_report.tags=["training_data"]
 
 # Delete snapshots
 
-To delete snapshots in the workspace `ws`, pass the Project ID and snapshot ID. You can verify the ID of the snapshot on the Report or Test Suite page.
+To delete snapshots in the Workspace `ws`, pass the Project ID and snapshot ID. You can see the snapshot ID on the Report or Test Suite page.
 
 ```python
 ws.delete_snapshot(project_id, snapshot_id)
@@ -173,7 +177,4 @@ ws.delete_snapshot(project_id, snapshot_id)
 
 # What's next?
 
-Now that you've sent data to the Project, you can design monitoring panels. Check the next [section](design_dashboard.md.md) to learn more.
-{% endhint %}
-
-
+Once you've sent data to the Project, you can [add monitoring Panels and Tabs](design_dashboard.md).
