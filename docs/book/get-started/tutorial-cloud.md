@@ -56,7 +56,7 @@ Let's quickly look at an example monitoring Dashboard.
 
 If you do not have one yet, [create an Evidently Cloud account](https://app.evidently.cloud/signup).
 
-## 2. Cretae a team
+## 2. Create a team
 
 Go to the main page, click on "plus" sign and create a new Team. For example, "personal" Team. 
 
