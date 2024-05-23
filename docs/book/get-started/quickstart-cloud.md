@@ -4,13 +4,17 @@ description: ML Monitoring “Hello world.” From data to dashboard in a couple
 
 # 1. Create an account  
 
-If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup).
+If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup). Upon registration, click on the "plus" sign in the UI to create a Team. For example, "Personal" team. 
 
-# 2. Get an access token
+# 2. Copy the team ID
+
+Go to the [Teams page](https://app.evidently.cloud/teams), copy and save the team ID. 
+
+# 3. Get an access token
 
 Click on the left menu with a key sign, select "personal token," generate and save the token.
 
-# 3. Install the Python library
+# 4. Install the Python library
 
 Install the Evidently Python library. You can run this example in Colab or another Python environment.
 
@@ -29,19 +33,19 @@ from evidently.report import Report
 from evidently.metric_preset import DataQualityPreset
 ```
 
-# 4. Create a new Project 
+# 5. Create a new Project 
 
-Connect to Evidently Cloud using your access token and create a Project.
+Connect to Evidently Cloud using your access token and Team ID and create a Project.
 
 ```python
-ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
+ws = CloudWorkspace(token="YOUR_TOKEN_HERE", team_ID="YOUR_TEAM_ID_HERE", url="https://app.evidently.cloud")
 
 project = ws.create_project("My test project")
 project.description = "My project description"
 project.save()
 ```
 
-# 5. Collect metrics
+# 6. Collect metrics
 
 Import the demo "adult" dataset as a pandas DataFrame. 
 
