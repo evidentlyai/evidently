@@ -212,9 +212,9 @@ Evidently provides a library of ready-made descriptors to parametrize. The follo
 
 These evals are fast and cheap to compute at scale. Evidently has built-in descriptors for:
 * **Regular expression checks** (custom `RegExp`, `BeginsWith`, `EndsWith`, `Contains`, `IncludesWords`, etc.). Then return a binary score ("True" or "False") for each row.
-* **Numerical descriptors** like `OOV` (share of out-of-vocabulary words), `SentenceCount`, `WordCount`, etc., which return a numerical score for each row in the dataset.
+* **Numerical descriptors** like `OOV` (share of out-of-vocabulary words), `SentenceCount`, `WordCount`, etc. They return a numerical score for each row in the dataset.
 
-You will again use `TextEvals` preset, but now add a list of descriptors with their parameters. Display names are optional but make the Report easier to read.
+You will again use `TextEvals` Preset, but now add a list of `descriptors` with their parameters. Display names are optional but make the Report easier to read.
 
 ```python
 text_evals_report = Report(metrics=[
