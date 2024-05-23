@@ -320,7 +320,7 @@ text_evals_report
 
 ## Metadata columns
 
-Our dataset also includes pre-existing metadata like a categorical columns with upvotes and downvotes. You can include summaries for any numerical or categorical column in the Report.
+Our dataset also includes pre-existing user evaluations in a categorical `feedback` column with upvotes and downvotes. You can include summaries for any numerical or categorical column in the Report.
 
 To add a summary on the “feedback” column, use `ColumnSummaryMetric()`:
 
@@ -334,7 +334,7 @@ data_report.run(reference_data=None, current_data=assistant_logs[:100], column_m
 data_report
 ```
 
-You will see a summary of upvotes and downvotes.
+You will see a distribution of upvotes and downvotes.
 
 ![](../.gitbook/assets/cloud/llm_feedback_one-min.png)
 
