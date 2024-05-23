@@ -31,3 +31,7 @@ pnpm dev
 # inside service folder
 pnpm build
 ```
+
+```shell
+litestar --app evidently.ui.cli_app:create_app schema openapi --output my-specs.yml && npx openapi-typescript ./my-specs.yml -o ./ui/packages/evidently-ui-lib/src/api/types/schema.d.ts
+```

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { ProjectInfo } from '~/api'
+import { apiV2 } from '~/api/RemoteApiV2'
 import { InJectAPI, expectJsonRequest } from '~/utils'
 
 export type loaderData = ProjectInfo[]
@@ -25,12 +26,14 @@ export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
     const json = await request.json()
 
     if (createNewProjectSchema.safeParse(json).success) {
+      return apiV2.projects.create(json)
       return api.createProject(json)
     }
 
     const isDeleteAction = deleteProjectAction.safeParse(json)
     if (isDeleteAction.success) {
-      return api.deleteProject(isDeleteAction.data.projectId)
+      return apiV2.projects.delete({ id: isDeleteAction.data.projectId })
+      // return api.deleteProject(isDeleteAction.data.projectId)
     }
 
     if (editProjectSchema.safeParse(json).success) {
