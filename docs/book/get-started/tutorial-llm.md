@@ -365,7 +365,7 @@ text_evals_report
 
 Here is how a summary of upvotes and downvotes looks for two datasets:
 
-![](../.gitbook/assets/cloud/llm_feedback_one-two.png)
+![](../.gitbook/assets/cloud/llm_feedback_two.png)
 
 ## Data Drift detection
 
@@ -541,7 +541,7 @@ Once you go to the Evidently Cloud, you can see the Test results over time. We c
 ![](../.gitbook/assets/cloud/llm_test_suite_panel-min.png)
 
 {% hint style="success" %}
-**Monitoring Panel types**. You can plot not only Test results, but also statistics and distributions of individual metrics and descriptors over time. See [available Panels]([../.](https://docs.evidentlyai.com/user-guide/monitoring/design_dashboard)
+**Monitoring Panel types**. You can plot not only Test results, but also statistics and distributions of individual metrics and descriptors over time. See [available Panels](https://docs.evidentlyai.com/user-guide/monitoring/design_dashboard).
 {% endhint %}
 
 # What's next?
