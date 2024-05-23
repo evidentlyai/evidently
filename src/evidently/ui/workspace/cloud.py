@@ -152,17 +152,17 @@ class CloudWorkspace(WorkspaceView):
             pm,
         )
 
-    def create_org(self, org: Org) -> Org:
+    def create_org(self, name: str) -> Org:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_org(org).to_org()
+        return self.project_manager.metadata.create_org(Org(name=name)).to_org()
 
     def list_orgs(self) -> List[Org]:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         return [o.to_org() for o in self.project_manager.metadata.list_orgs()]
 
-    def create_team(self, team: Team, org_id: OrgID) -> Team:
+    def create_team(self, name: str, org_id: OrgID) -> Team:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_team(team, org_id).to_team()
+        return self.project_manager.metadata.create_team(Team(name=name), org_id).to_team()
 
 
 class CloudAuthManager(NoopAuthManager):
