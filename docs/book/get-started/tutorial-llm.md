@@ -138,7 +138,7 @@ column_mapping = ColumnMapping(
     categorical_features=['organization', 'model_ID', 'region', 'environment', 'feedback'],
 )
 ```
-** Run simple evals**. Let's generate a Report with some text statistics using a `TextEval` Preset. We'll look at the "response" column in the first 100 rows `assistant_logs[:100]`:
+**Run simple evals**. Let's generate a Report with some text statistics using a `TextEval` Preset. We'll look at the "response" column in the first 100 rows `assistant_logs[:100]`:
 
 ```python
 text_evals_report = Report(metrics=[
@@ -201,8 +201,8 @@ You can create a custom evaluation suite with different types of checks:
 * **Rule-based**. Detect specific words or patterns in your data.
 * **ML-based**. Use external models to score data (e.g., for toxicity, topic, tone).
 * **LLM-as-a-judge**. Prompt LLMs to categorize or score texts.
-* **Statistical evals**. Apply similarity and distance metrics.
-* **Custom Python functions**.
+* **Similarity metrics**. Use distance metrics to compare pairs of texts.
+* **Custom Python functions**. Pass your own eval.
   
 Evidently provides a library of ready-made descriptors to parametrize. The following section will show a few examples. For clarity, we'll generate separate Reports for each group of checks. In practice, you can put all evals together in a single Report. 
 
