@@ -7,6 +7,7 @@ from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.ui.base import Project
 from evidently.ui.type_aliases import STR_UUID
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 
 
@@ -28,7 +29,7 @@ class WorkspaceBase(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def list_projects(self) -> List[Project]:
+    def list_projects(self, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None) -> List[Project]:
         raise NotImplementedError
 
     def add_report(self, project_id: STR_UUID, report: Report):
@@ -46,5 +47,7 @@ class WorkspaceBase(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def search_project(self, project_name: str) -> List[Project]:
+    def search_project(
+        self, project_name: str, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
+    ) -> List[Project]:
         raise NotImplementedError

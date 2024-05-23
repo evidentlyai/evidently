@@ -50,13 +50,16 @@ class TextOverviewPreset(MetricPreset):
 
     def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         result = []
-        descriptors = self.descriptors or [
-            TextLength(),
-            SentenceCount(),
-            Sentiment(),
-            OOV(),
-            NonLetterCharacterPercentage(),
-        ]
+        if self.descriptors is None:
+            descriptors = [
+                TextLength(),
+                SentenceCount(),
+                Sentiment(),
+                OOV(),
+                NonLetterCharacterPercentage(),
+            ]
+        else:
+            descriptors = self.descriptors
         for column in self.columns:
             result.append(ColumnSummaryMetric(column_name=column))
             for descriptor in descriptors:

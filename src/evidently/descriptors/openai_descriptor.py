@@ -9,7 +9,8 @@ from evidently.features.openai_feature import OpenAIFeature
 class OpenAIPrompting(FeatureDescriptor):
     prompt: str
     prompt_replace_string: str
-    context: str
+    context: Optional[str]
+    context_column: Optional[str]
     context_replace_string: str
     openai_params: Optional[dict]
     model: str
@@ -22,7 +23,8 @@ class OpenAIPrompting(FeatureDescriptor):
         prompt: str,
         model: str,
         feature_type: str,
-        context: str = "",
+        context: Optional[str] = None,
+        context_column: Optional[str] = None,
         prompt_replace_string: str = "REPLACE",
         context_replace_string: str = "CONTEXT",
         display_name: Optional[str] = None,
@@ -37,25 +39,11 @@ class OpenAIPrompting(FeatureDescriptor):
         self.display_name = display_name
         self.possible_values = possible_values
         self.context = context
+        self.context_column = context_column
         self.context_replace_string = context_replace_string
         self.openai_params = openai_params
         self.check_mode = check_mode
         super().__init__()
-
-    def for_column(self, column_name: str):
-        return OpenAIFeature(
-            column_name,
-            model=self.model,
-            prompt=self.prompt,
-            prompt_replace_string=self.prompt_replace_string,
-            feature_type=self.feature_type,
-            display_name=self.display_name,
-            possible_values=self.possible_values,
-            context=self.context,
-            context_replace_string=self.context_replace_string,
-            openai_params=self.openai_params,
-            check_mode=self.check_mode,
-        ).feature_name()
 
     def feature(self, column_name: str) -> GeneratedFeature:
         return OpenAIFeature(
@@ -67,6 +55,7 @@ class OpenAIPrompting(FeatureDescriptor):
             display_name=self.display_name,
             possible_values=self.possible_values,
             context=self.context,
+            context_column=self.context_column,
             context_replace_string=self.context_replace_string,
             openai_params=self.openai_params,
             check_mode=self.check_mode,

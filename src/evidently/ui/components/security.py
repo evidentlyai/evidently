@@ -2,7 +2,6 @@ import uuid
 from abc import ABC
 from typing import ClassVar
 from typing import Dict
-from typing import Optional
 
 from litestar import Request
 from litestar.connection import ASGIConnection
@@ -20,7 +19,7 @@ from evidently.ui.components.base import ComponentContext
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.security.service import SecurityService
 from evidently.ui.storage.common import NoopAuthManager
-from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import UserID
 
 
@@ -47,7 +46,6 @@ class SecurityComponent(Component, ABC):
                 else:
                     scope["auth"] = {
                         "user_id": auth.id,
-                        "org_id": auth.org_id,
                         "authenticated": True,
                     }
                 await app(scope, receive, send)
@@ -74,18 +72,13 @@ register_type_alias(SecurityComponent, "evidently.ui.components.security.TokenSe
 
 
 async def get_user_id() -> UserID:
-    return UserID("00000000-0000-0000-0000-000000000001")
-
-
-async def get_org_id() -> Optional[OrgID]:
-    return None
+    return ZERO_UUID
 
 
 class SimpleSecurity(SecurityComponent):
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         return {
             "user_id": Provide(get_user_id),
-            "org_id": Provide(get_org_id),
             "security": Provide(self.get_security),
             "security_config": Provide(lambda: self),
             "auth_manager": Provide(lambda: NoopAuthManager()),

@@ -17,6 +17,7 @@ def assets_router(base_path: str = BASE_PATH):
             "/",
             "/projects",
             "/signup",
+            "/organizations",
             "/auth",
             "/teams",
             "/token",

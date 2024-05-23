@@ -56,9 +56,13 @@ Let's quickly look at an example monitoring Dashboard.
 
 If you do not have one yet, [create an Evidently Cloud account](https://app.evidently.cloud/signup).
 
+## 2. Create a team
+
+Go to the main page, click on "plus" sign and create a new Team. For example, "personal" Team. 
+
 ## 2. View a demo project 
 
-After logging in, click on "Generate Demo Project". It will create a Project for a toy regression model that forecasts bike demand. 
+Click on "Generate Demo Project" inside your Team. It will create a Project for a toy regression model that forecasts bike demand. 
 
 ![](../.gitbook/assets/cloud/generate_demo_project.png)
 
@@ -188,7 +192,7 @@ Now, you need to create a new Project. You can do this programmatically or in th
 {% tabs %}
 
 {% tab title="UI" %} 
-Click on the “plus” sign on the home page and type your Project name and description.
+Click on the “plus” sign on the home page. Create a Team if you do not have one yet. Type your Project name and description.
 
 ![](../.gitbook/assets/cloud/add_project_wide-min.png)
 
@@ -203,10 +207,10 @@ project = ws.get_project("PROJECT_ID")
 {% endtab %}
 
 {% tab title="API" %} 
-Use the `create_project` command to create a new Project. Add a name and description. 
+Use the `create_project` command to create a new Project. Add a name and description. Copy the Team ID from the [teams page](https://app.evidently.cloud/teams). 
 
 ```python
-project = ws.create_project("My project name")
+project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
 project.description = "My project description"
 project.save()
 ```
