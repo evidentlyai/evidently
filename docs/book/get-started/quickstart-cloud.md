@@ -12,11 +12,11 @@ Go to the main page, and click "plus" to create a new Team. For example, "Person
 
 Copy and save the Team ID from the [Teams page](https://app.evidently.cloud/teams).
 
-# 2. Get an access token
+# 3. Get an access token
 
 Click on the left menu with a key sign, select "personal token," generate and save the token.
 
-# 3. Install the Python library
+# 4. Install the Python library
 
 Install the Evidently Python library. You can run this example in Colab or another Python environment.
 
@@ -35,9 +35,9 @@ from evidently.report import Report
 from evidently.metric_preset import DataQualityPreset
 ```
 
-# 4. Create a new Project 
+# 5. Create a new Project 
 
-Connect to Evidently Cloud using your access token and create a Project inside your team.
+Connect to Evidently Cloud using your access token and create a Project inside your Team.
 
 ```python
 ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
@@ -47,7 +47,7 @@ project.description = "My project description"
 project.save()
 ```
 
-# 5. Collect metrics
+# 6. Collect metrics
 
 Import the demo "adult" dataset as a pandas DataFrame. 
 
