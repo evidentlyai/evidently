@@ -40,7 +40,7 @@ from evidently.metric_preset import DataQualityPreset
 Connect to Evidently Cloud using your access token and Team ID and create a Project.
 
 ```python
-ws = CloudWorkspace(token="YOUR_TOKEN_HERE", team_ID="YOUR_TEAM_ID_HERE", url="https://app.evidently.cloud")
+ws = CloudWorkspace(token="YOUR_TOKEN_HERE", team_id="YOUR_TEAM_ID_HERE", url="https://app.evidently.cloud")
 
 project = ws.create_project("My test project")
 project.description = "My project description"
