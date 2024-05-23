@@ -56,9 +56,13 @@ Let's quickly look at an example monitoring Dashboard.
 
 If you do not have one yet, [create an Evidently Cloud account](https://app.evidently.cloud/signup).
 
-## 2. View a demo project 
+## 2. Create a Team
 
-After logging in, click on "Generate Demo Project". It will create a Project for a toy regression model that forecasts bike demand. 
+Upon registration, click on the "plus" sign in the UI to create a Team. For example, "Personal" team. 
+
+## 3. View a demo project 
+
+Click on "Generate Demo Project" inside your new Team. It will create a Project for a toy regression model that forecasts bike demand. 
 
 ![](../.gitbook/assets/cloud/generate_demo_project.png)
 
@@ -175,12 +179,15 @@ Now, let's start monitoring!
 
 **Get the API token**. To connect to Evidently Cloud, you need an access token. Use the "key" sign in the left menu to get to the token page, and click "generate token." 
 
+**Team ID**. Go to the [Teams page](https://app.evidently.cloud/teams), copy and save the team ID. 
+
 To connect to the Evidently Cloud workspace, run:
 
 ```python
 ws = CloudWorkspace(
 token="YOUR_TOKEN_HERE",
-url="https://app.evidently.cloud")
+url="https://app.evidently.cloud",
+team_id="YOUR_TEAM_ID_HERE")
 ```
 
 Now, you need to create a new Project. You can do this programmatically or in the UI. 
