@@ -158,7 +158,7 @@ We call these generated statistics `descriptors`. They can be numerical or categ
 
 This simple example is just a starting point. We’ll show more evaluations later on.
 
-## 5. Export results
+# 5. Export results
 
 {% hint style="info" %}
 **This step is optional**. You can proceed with exporting or sending data.
@@ -375,7 +375,7 @@ You can compare both the distribution of raw texts (“how different the texts a
 
 This is useful for detecting pattern shifts. For example, you might notice a sudden increase in responses of fixed length or that responses generally become shorter or longer. You can also use the "drift score" as a metric in monitoring to detect when things change significantly.
 
-**Descriptor drift**. To compare the distribution of descriptors:
+**Descriptor drift**. To compare the distribution of descriptors, pass them to the `TextDescriptorsDriftMetric`:
 
 ```python
 drift_report = Report(metrics=[
@@ -390,4 +390,165 @@ drift_report.run(reference_data=assistant_logs[:100], current_data=assistant_log
 drift_report
 ```
 
+Here is the output. In our case, we work with the same distribution so there is no drift.
 
+![](../.gitbook/assets/cloud/llm_desriptor_drift-min.png)
+
+{% hint style="success" %}
+**Data drift methods**. You might want to tweak data drift detection methods and thresholds to adjust the sensitivity. Check more [here](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests). It’s also important to choose appropriate comparison windows where you expect the distributions to be generally similar. 
+{% endhint %}
+
+**Raw data drift**. To perform drift detection on raw text data, pass the column with texts to `ColumnDriftMetric()`:
+
+```python
+drift_report = Report(metrics=[
+    ColumnDriftMetric(column_name="response")
+])
+
+drift_report.run(reference_data=assistant_logs[:100], current_data=assistant_logs[100:200], column_mapping=column_mapping)
+drift_report
+```
+
+{% hint style="success" %}
+**Data Drift Preset**. You can also use `DataDriftPreset()` to compare distribution of all columns - text and metadata - in the dataset at once.
+{% endhint %}
+
+To detect drift on raw data, Evidently will train and evaluate a classifier model to differentiate the two text datasets. If the model can identify if a text sample belongs to the “reference” or “current” dataset, you can consider them different enough. The resulting score is the [ROC AUC](https://www.evidentlyai.com/classification-metrics/explain-roc-curve) of the classifier.
+
+If drift is detected, Evidently shows phrases that help differentiate between the two datasets. In our case, there is no drift, so there is no interpretation.
+
+<details>
+
+<summary>Bonus: let's imitate some drift!</summary>
+
+To demonstrate drift explanation, let's create some data drift by filtering our dataset for HR-related keywords.
+
+```python
+salary_hr_keywords = ['salary', 'hr', 'human resources', 'bonus', 'compensation', 'pay', 'wage', 'employee portal', 'benefits']
+
+salary_hr_filter = assistant_logs['question'].str.contains('|'.join(salary_hr_keywords), case=False, na=False)
+df_salary_hr = assistant_logs[salary_hr_filter]
+
+df_random_sample = assistant_logs.sample(frac=0.5, random_state=1)
+```
+
+This code gives you two DataFrames:
+* `df_random_sample` with a random sample of the original questions (`reference`).
+* `df_salary_hr` with questions about salary and HR (`current`).
+  
+This situation emulates an increase in HR-related questions. Let's rerun the Report for this data:
+
+```python
+drift_report = Report(metrics=[
+    ColumnDriftMetric(column_name="response")
+])
+
+drift_report.run(reference_data=df_random_sample, current_data=df_salary_hr, column_mapping=column_mapping)
+drift_report
+```
+
+The result will now show drift with a score of 0.631. You will also see examples of texts that help differentiate between the two datasets. For instance, questions about the "employee portal" are typical for the "current" dataset, indicating that HR-related questions became more frequent.
+
+![](../.gitbook/assets/cloud/llm_text_drift-min.png)
+
+</details>
+
+# 8. Regression testing 
+
+Up to now, you've used Reports to view computed values. However, manually comparing results can be inconvenient at scale. You might want to set specific expectations for your text qualities and only review results when something goes wrong.
+
+You can use Evidently `Test Suites` for this purpose. They have a similar API to `Reports`, but instead of listing `metrics`, you list `tests` and pass conditions using parameters like `gt` (greater than), `lt` (less than), `eq` (equal), etc.
+
+Let’s run an example. 
+
+```python
+test_suite = TestSuite(tests=[
+    TestColumnValueMin(column_name = TextLength().on("response"), gt=100),
+    TestShareOfOutRangeValues(column_name = TextLength().on("question"), left=30, right=100, lt=0.1),
+    TestColumnValueMin(column_name = Sentiment().on("response"), gt=0),
+    TestColumnValueMean(column_name = OOV().on("response"), lt=15),
+])
+
+test_suite.run(reference_data=None, current_data=assistant_logs[:100])
+test_suite
+```
+
+This checks the following conditions:
+
+* **Response Length**: Should always be more than 100 characters. The Test will fail if at least one response is under 100 characters.
+* **Question Length Range**: Should be between 30 and 100 characters 90% of the time. The Test will fail if more than 10% of the values are outside this range.
+* **Response Sentiment Score**: Should always be above 0. The Test will fail if at least one response is slightly negative (below 0).
+* **Out-of-Vocabulary Words in Response**: Should be under 15%. The Test will fail if more than 15% of the words are out of vocabulary. This might signal a change in the generated text (e.g., language or special symbols usage) we might want to know about it.
+
+Here’s how the resulting Test Suite looks. In our case, the sentiment Test failed. You can open “Details” to see supporting visuals to debug.
+
+![](../.gitbook/assets/cloud/llm_tests.gif)
+
+{% hint style="success" %}
+**Setting Test conditions**. You can flexibly encode conditions using in-built Tests and parameters. You can also automatically generate conditions from a reference dataset (e.g. expect +/- 10% of the reference values). [Read more about Tests](https://docs.evidentlyai.com/user-guide/tests-and-reports/custom-test-suite).
+{% endhint %}
+
+# 9. Monitoring dashboard
+
+You can also create a live dashboard to monitor values and check results over time. You can use Evidently Cloud or self-host a UI service. Let's run a quick example with Evidently Cloud.
+
+Let's write a script to simulate several production runs, each time passing 20 data rows to generate a new Test Suite (same as in example above). We will also add a daily timestamp.
+
+**Note**: We do this loop for demonstration. In production, you would run checks sequentially.
+
+```python
+def create_test_suite(i: int):
+    test_suite = TestSuite(
+        tests=[
+            TestColumnValueMin(column_name=TextLength().on("response"), gt=100),
+            TestShareOfOutRangeValues(column_name=TextLength().on("question"), left=30, right=100, lt=0.1),
+            TestColumnValueMin(column_name=Sentiment().on("response"), gt=0),
+            TestColumnValueMean(column_name=OOV().on("response"), lt=15),
+        ],
+        timestamp=datetime.now() + timedelta(days=i),
+    )
+    test_suite.run(reference_data=None, current_data=assistant_logs.iloc[20 * i : 20 * (i + 1), :], column_mapping=column_mapping)
+    return test_suite
+```
+
+Compute and send ten Test Suites to Evidently Cloud.
+
+```python
+for i in range(0, 10):
+        test_suite = create_test_suite(i=i)
+        ws.add_test_suite(project.id, test_suite)
+```
+
+Finally, define what you'd like to see on the dashboard. You can add monitoring Panels and Tabs from the UI or define them programmatically. 
+
+Let's add a simple Panel to show Test results over time using the Python API.
+
+```python
+project.dashboard.add_panel(
+    DashboardPanelTestSuite(
+        title="Test results",
+        filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+        size=WidgetSize.FULL,
+        panel_type=TestSuitePanelType.DETAILED,
+        time_agg="1D",
+    )
+)
+project.save()
+```
+
+Once you go to the Evidently Cloud, you can see the Test results over time. We can clearly see that we consistently fail the sentiment check.
+
+![](../.gitbook/assets/cloud/llm_test_suite_panel-min.png)
+
+{% hint style="success" %}
+**Monitoring Panel types**. You can plot not only Test results, but also statistics and distributions of individual metrics and descriptors over time. See [available Panels]([../.](https://docs.evidentlyai.com/user-guide/monitoring/design_dashboard)
+{% endhint %}
+
+# What's next?
+
+Here are some of the things you might want to explore next:
+
+* **Explore other Reports**. For example, if you have a classification use case and can obtain ground truth labels, there are other checks to run.  See available [Presets](https://docs.evidentlyai.com/presets), [Metrics](https://docs.evidentlyai.com/reference/all-metrics), and [Tests](https://docs.evidentlyai.com/reference/all-tests) to see other checks you can run.
+* **Designing monitoring**. Read more about how to design monitoring panels, configure alerts, or send data in near real-time in the [Monitoring User Guide](https://docs.evidentlyai.com/user-guide/monitoring/monitoring_overview). 
+
+Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
