@@ -99,7 +99,7 @@ assistant_logs.index = assistant_logs.start_time
 assistant_logs.index.rename('index', inplace=True)
 ```
 
-Here is a preview. Use `assistant_logs.head()` to see it:
+Here is a preview with `assistant_logs.head()`:
 
 ![](../.gitbook/assets/cloud/llm_data_preview-min.png)
 
