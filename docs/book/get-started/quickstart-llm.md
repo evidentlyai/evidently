@@ -66,14 +66,15 @@ You can export results as HTML, JSON, or a Python dictionary to use elsewhere, o
 
 To record and track evaluation results over time, send them to Evidently Cloud. You need an API key.
 * Sign up for [an Evidently Cloud account](https://app.evidently.cloud/signup).
+* Once you log in, click "plus" to create a new Team. For example, "Personal". Copy the team ID from [Team's page](https://app.evidently.cloud/teams).
 * Click the key icon in the left menu, select "personal token," generate and save the token.
 
-Connect to Evidently Cloud using your token and create a Project:
+Connect to Evidently Cloud using your token and create a Project inside your Team:
 
 ```python
 ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
 
-project = ws.create_project("My test project")
+project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
 project.description = "My project description"
 project.save()
 ```
