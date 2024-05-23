@@ -179,7 +179,6 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
             else:
                 scope["auth"] = {
                     "user_id": auth.id,
-                    "org_id": auth.org_id,
                     "authenticated": True,
                 }
             await app(scope, receive, send)

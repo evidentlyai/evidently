@@ -5,6 +5,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import TypeVar
 
 from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import Metric
@@ -12,10 +13,15 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
+from evidently.ui.base import EntityType
+from evidently.ui.base import Org
 from evidently.ui.base import Project
+from evidently.ui.base import Role
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
+from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import RoleID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 
@@ -108,6 +114,18 @@ class DashboardInfoModel(BaseModel):
         return cls(**dataclasses.asdict(info), **time_range)
 
 
+class OrgModel(BaseModel):
+    id: OrgID
+    name: str
+
+    @classmethod
+    def from_org(cls, org: Org):
+        return OrgModel(id=org.id, name=org.name)
+
+    def to_org(self) -> Org:
+        return Org(id=self.id, name=self.name)
+
+
 class TeamModel(BaseModel):
     id: TeamID
     name: str
@@ -115,6 +133,12 @@ class TeamModel(BaseModel):
     @classmethod
     def from_team(cls, team: Team):
         return TeamModel(id=team.id, name=team.name)
+
+    def to_team(self) -> Team:
+        return Team(id=self.id, name=self.name)
+
+
+UT = TypeVar("UT", bound="UserModel")
 
 
 class UserModel(BaseModel):
@@ -125,3 +149,17 @@ class UserModel(BaseModel):
     @classmethod
     def from_user(cls, user: User):
         return UserModel(id=user.id, name=user.name, email=user.email)
+
+    def merge(self: UT, other: "UserModel") -> UT:
+        kwargs = {f: getattr(other, f, None) or getattr(self, f) for f in self.__fields__}
+        return self.__class__(**kwargs)
+
+
+class RoleModel(BaseModel):
+    id: RoleID
+    name: str
+    entity_type: Optional[EntityType]
+
+    @classmethod
+    def from_role(cls, role: Role):
+        return RoleModel(id=role.id, name=role.name, entity_type=role.entity_type)

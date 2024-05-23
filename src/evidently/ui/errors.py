@@ -20,12 +20,20 @@ class ProjectNotFound(EntityNotFound):
     entity_name = "Project"
 
 
+class OrgNotFound(EntityNotFound):
+    entity_name = "Org"
+
+
 class TeamNotFound(EntityNotFound):
     entity_name = "Team"
 
 
 class UserNotFound(EntityNotFound):
     entity_name = "User"
+
+
+class RoleNotFound(EntityNotFound):
+    entity_name = "Role"
 
 
 class NotEnoughPermissions(EvidentlyServiceError):
