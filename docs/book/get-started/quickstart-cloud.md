@@ -6,6 +6,12 @@ description: ML Monitoring “Hello world.” From data to dashboard in a couple
 
 If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup).
 
+# 2. Create a team 
+
+Go to the main page, and click "plus" to create a new Team. For example, "Personal".
+
+Copy and save the Team ID from the [Teams page](https://app.evidently.cloud/teams).
+
 # 2. Get an access token
 
 Click on the left menu with a key sign, select "personal token," generate and save the token.
@@ -31,12 +37,12 @@ from evidently.metric_preset import DataQualityPreset
 
 # 4. Create a new Project 
 
-Connect to Evidently Cloud using your access token and create a Project.
+Connect to Evidently Cloud using your access token and create a Project inside your team.
 
 ```python
 ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
 
-project = ws.create_project("My test project")
+project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
 project.description = "My project description"
 project.save()
 ```
