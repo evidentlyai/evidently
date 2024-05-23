@@ -13,6 +13,8 @@ You need a workspace to organize your data and Projects.
 
 If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup).
 
+**Create a Team**. In the UI, create a new team - for example, "Personal". Copy the Team ID from [teams page](https://app.evidently.cloud/teams).
+
 **Get the API token**. You will use it to connect with Evidently Cloud Workspace from your Python environment. Use the "key" sign in the left menu to get to the token page, and click "generate token." Save it in a temporary file since it won't be visible once you leave the page.
 
 **Connect to the Workspace**. To connect to the Evidently Cloud Workspace, you must first [install Evidently](../installation/install-evidently.md).
@@ -21,14 +23,15 @@ If you do not have one yet, create an [Evidently Cloud account](https://app.evid
 pip install evidently
 ```
 
-Then, run imports and pass your API token to connect: 
+Then, run imports and pass your API token and Team ID to connect: 
 
 ```python
 from evidently.ui.workspace.cloud import CloudWorkspace
 
 ws = CloudWorkspace(
 token="YOUR_TOKEN_HERE",
-url="https://app.evidently.cloud")
+url="https://app.evidently.cloud",
+team_id="YOUR_TEAM_ID")
 ```
 
 {% hint style="info" %}
