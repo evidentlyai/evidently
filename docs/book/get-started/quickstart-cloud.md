@@ -4,7 +4,9 @@ description: ML Monitoring “Hello world.” From data to dashboard in a couple
 
 # 1. Create an account  
 
-If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup). Upon registration, click on the "plus" sign in the UI to create a Team. For example, "Personal" team. 
+If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup). 
+
+Upon registration, click on the "plus" sign in the UI to create a Team. For example, "Personal" team. 
 
 # 2. Copy the team ID
 
