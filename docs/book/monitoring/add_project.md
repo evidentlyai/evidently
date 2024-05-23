@@ -16,14 +16,28 @@ Once you create a Project, you can connect via Python to send data or edit the D
 
 ## Add a new Project
 
+{% hint style="success" %}
+Team management is a Pro feature available in the Evidently Cloud.
+{% endhint %}
+
 {% tabs %}
 
 {% tab title="API" %} 
 
-To create a Project inside a workspace `ws`, assign a name and description, and save the changes:
+To create a Project inside a workspace `ws` and team with a `team_id`, assign a name and description, and save the changes:
 
 ```
-project = ws.create_project("My project name")
+project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
+project.description = "My project description"
+project.save()
+```
+
+You must always create a Team to be able to add a Project in Evidently Cloud. You can copy your Team ID from the [Teams page](https://app.evidently.cloud/teams) in the UI.
+
+In self-hosted installation, you do not need to pass the team ID. To create a Project:
+
+```
+project = ws.create_project("My test project")
 project.description = "My project description"
 project.save()
 ```
@@ -32,7 +46,7 @@ project.save()
 
 {% tab title="UI" %} 
 
-Click on the “plus” sign on the home page and type your Project name and description.
+Click on the “plus” sign on the home page, create a Team if you do not have one yet and type your Project name and description.
 
 ![](../.gitbook/assets/cloud/add_project_wide-min.png)
 
@@ -43,40 +57,6 @@ After creating a Project, you can click to open a Dashboard. Since there's no da
 {% endtabs %}
 
 **Project ID**. Once you run `create_project`, you will see the Project ID. You can later use it to reference the Project. You can also copy the Project ID directly from the UI: it appears above the monitoring Dashboard.
-
-## Add a Team Project
-
-{% hint style="success" %}
-Team management is a Pro feature available in the Evidently Cloud.
-{% endhint %}
-
-You can associate a Project with a particular Team: it becomes visible to all Team members.
-
-You must create a Team before adding a Project. Navigate to the “Teams” section in the left menu, and add a new one. You can add other users to this Team at any point after creating it.
-
-{% tabs %}
-
-{% tab title="API" %} 
-
-After creating the team, copy the `team_id` from the team page. To add a Project to a Team, reference the `team_id` when creating the Project:
-
-```
-project = ws.create_project("Add your project name", team_id="TEAM ID")
-project.description = "Add your project description"
-project.save()
-```
-
-{% endtab %}
-
-{% tab title="UI" %} 
-
-Click on the “plus” sign on the home page and type your Project name and description. Select the team name from the dropdown menu to add a Project to a team.
-
-![](../.gitbook/assets/cloud/add_project_wide-min.png)
-
-{% endtab %}
-
-{% endtabs %}
 
 {% hint style="info" %}
 **What's next?** Head to the next section to see how to [send data to a Project](snapshots.md).
