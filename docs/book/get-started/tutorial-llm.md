@@ -413,9 +413,9 @@ drift_report
 **Data Drift Preset**. You can also use `DataDriftPreset()` to compare distribution of all columns - text and metadata - in the dataset at once.
 {% endhint %}
 
-To detect drift on raw data, Evidently will train and evaluate a classifier model to differentiate the two text datasets. If the model can identify if a text sample belongs to the “reference” or “current” dataset, you can consider them different enough. The resulting score is the [ROC AUC](https://www.evidentlyai.com/classification-metrics/explain-roc-curve) of the classifier.
+To detect drift on raw data, Evidently will train and evaluate a classifier model to differentiate the two text datasets. If the model can identify if a text sample belongs to the “reference” or “current” dataset, you can consider them different enough. The resulting score is the [ROC AUC](https://www.evidentlyai.com/classification-metrics/explain-roc-curve) of the classifier. If drift is detected, Evidently shows phrases that help differentiate between the two datasets. 
 
-If drift is detected, Evidently shows phrases that help differentiate between the two datasets. In our case, there is no drift, so there is no interpretation.
+In our case, there is no drift, so there is no interpretation.
 
 <details>
 
