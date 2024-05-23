@@ -482,7 +482,7 @@ This checks the following conditions:
 
 Here’s how the resulting Test Suite looks. In our case, the sentiment Test failed. You can open “Details” to see supporting visuals to debug.
 
-![](../.gitbook/assets/cloud/llm_tests.gif)
+![](../.gitbook/assets/cloud/llm_tests-min.gif)
 
 {% hint style="success" %}
 **Setting Test conditions**. You can flexibly encode conditions using in-built Tests and parameters. You can also automatically generate conditions from a reference dataset (e.g. expect +/- 10% of the reference values). [Read more about Tests](https://docs.evidentlyai.com/user-guide/tests-and-reports/custom-test-suite).
