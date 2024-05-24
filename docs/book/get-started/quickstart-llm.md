@@ -89,6 +89,6 @@ In the future, you can log ongoing evaluation results to build monitoring panels
 
 Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional test suites, and more.
 
-{% content-ref url="tutorial-cloud.md" %}
+{% content-ref url="tutorial-llm.md" %}
 [Evidently LLM Tutorial](tutorial-llm.md). 
 {% endcontent-ref %}
