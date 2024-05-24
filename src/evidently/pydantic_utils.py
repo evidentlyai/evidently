@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
 from typing import Dict
+from typing import FrozenSet
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -255,7 +256,7 @@ class FieldInfo(BaseModel):
         frozen = True
 
     path: str
-    tags: Set["IncludeTags"]
+    tags: FrozenSet[FieldTags]
     classpath: str
 
     def __lt__(self, other):
@@ -337,6 +338,10 @@ class FieldPath:
     def _list_with_tags(self, current_tags: Set["IncludeTags"]) -> List[Tuple[str, Set["IncludeTags"]]]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [(repr(self), current_tags)]
+        from evidently.core import BaseResult
+
+        if issubclass(self._cls, BaseResult) and self._cls.__config__.extract_as_obj:
+            return [(repr(self), current_tags)]
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
@@ -368,7 +373,9 @@ class FieldPath:
 
     def list_nested_field_infos(self) -> List[FieldInfo]:
         return [
-            FieldInfo(path=path, tags=tags, classpath=get_classpath(self._get_field_info(path.split(".")).type_))
+            FieldInfo(
+                path=path, tags=frozenset(tags), classpath=get_classpath(self._get_field_info(path.split(".")).type_)
+            )
             for path, tags in self.list_nested_fields_with_tags()
         ]
 
@@ -376,7 +383,7 @@ class FieldPath:
         if len(path) == 0:
             raise ValueError("Empty path provided")
         if len(path) == 1:
-            if isinstance(self._cls, BaseModel):
+            if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
                 return self._cls.__fields__[path[0]]
             raise NotImplementedError(f"Not implemented for {self._cls.__name__}")
         child, *path = path
