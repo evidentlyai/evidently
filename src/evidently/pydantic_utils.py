@@ -24,12 +24,12 @@ from typing_inspect import is_union_type
 from evidently._pydantic_compat import SHAPE_DICT
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import ModelField
 from evidently._pydantic_compat import ModelMetaclass
 from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
-    from evidently.core import IncludeTags
 T = TypeVar("T")
 
 
@@ -144,6 +144,10 @@ def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
     return PolymorphicModel
 
 
+def get_classpath(cls: Type) -> str:
+    return f"{cls.__module__}.{cls.__name__}"
+
+
 TPM = TypeVar("TPM", bound="PolymorphicModel")
 
 
@@ -161,7 +165,7 @@ class PolymorphicModel(BaseModel):
 
     @classmethod
     def __get_classpath__(cls):
-        return f"{cls.__module__}.{cls.__name__}"
+        return get_classpath(cls)
 
     type: str = Field("")
 
@@ -232,6 +236,30 @@ class ExcludeNoneMixin(BaseModel):
     def dict(self, *args, **kwargs) -> "DictStrAny":
         kwargs["exclude_none"] = True
         return super().dict(*args, **kwargs)
+
+
+class FieldTags(Enum):
+    Parameter = "parameter"
+    Current = "current"
+    Reference = "reference"
+    Render = "render"
+    TypeField = "type_field"
+    Extra = "extra"
+
+
+IncludeTags = FieldTags  # fixme: tmp for compatibility, remove in separate PR
+
+
+class FieldInfo(BaseModel):
+    class Config:
+        frozen = True
+
+    path: str
+    tags: Set["IncludeTags"]
+    classpath: str
+
+    def __lt__(self, other):
+        return self.path < other.path
 
 
 class FieldPath:
@@ -337,6 +365,22 @@ class FieldPath:
 
     def list_nested_fields_with_tags(self) -> List[Tuple[str, Set["IncludeTags"]]]:
         return self._list_with_tags(set())
+
+    def list_nested_field_infos(self) -> List[FieldInfo]:
+        return [
+            FieldInfo(path=path, tags=tags, classpath=get_classpath(self._get_field_info(path.split(".")).type_))
+            for path, tags in self.list_nested_fields_with_tags()
+        ]
+
+    def _get_field_info(self, path: List[str]) -> ModelField:
+        if len(path) == 0:
+            raise ValueError("Empty path provided")
+        if len(path) == 1:
+            if isinstance(self._cls, BaseModel):
+                return self._cls.__fields__[path[0]]
+            raise NotImplementedError(f"Not implemented for {self._cls.__name__}")
+        child, *path = path
+        return self.child(child)._get_field_info(path)
 
     def __repr__(self):
         return self.get_path()
