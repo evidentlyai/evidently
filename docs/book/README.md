@@ -4,25 +4,11 @@ It helps evaluate, test, and monitor data and ML models from validation to produ
 
 # Quick Start
 
-New to Evidently? Check out the ["Hello world"](get-started/hello-world.md) example (1 min) or go through the Tutorial (15 min):
+New to Evidently? Pick your Quickstart (each takes 1 min) or a Tutorial (15 min). 
 
-{% content-ref url="get-started/tutorial.md" %}
-[Get started tutorial](get-started/tutorial.md). 
-{% endcontent-ref %}
-
-Want a dashboard to track metrics over time? 
-
-Get started with [Evidently Cloud](https://www.evidentlyai.com/cloud-signup): 
-
-{% content-ref url="get-started/tutorial-cloud.md" %}
-[Get started tutorial](get-started/tutorial-cloud.md). 
-{% endcontent-ref %}
-
-Or self-host an open-source dashboard: 
-
-{% content-ref url="get-started/tutorial-monitoring.md" %}
-[Get started tutorial](get-started/tutorial-monitoring.md). 
-{% endcontent-ref %}
+|         |                                                        |   |
+| ------- | ------------------------------------------------------ | - |
+| **LLM evaluations**<br><br>Run checks on text data and LLM outputs. Open-source and Cloud. <br><br> [-> **LLM Quickstart**](get-started/quickstart-llm.md)<br>[-> **LLM Tutorial**](get-started/tutorial-llm.md)| **Tabular data checks**<br><br>Create Reports and Test Suites for tabular data. Open-source.<br><br>[-> **Tabular Quickstart**](get-started/hello-world.md)<br>[-> **Tabular Tutorial**](get-started/tutorial.md) | **Monitoring Dashboard**<br><br>Get a live dashboard to track metrics over time.<br><br>[-> **Monitoring Quickstart**](quickstart-cloud.md)<br>[-> **Monitoring Tutorial**](tutorial-cloud.md)|
 
 You can explore more code [examples](examples/examples.md). 
 
