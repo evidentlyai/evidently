@@ -92,7 +92,7 @@ Check out a more in-depth tutorial to learn the key workflows:
 [Evidently Cloud Tutorial](tutorial-cloud.md). 
 {% endcontent-ref %}
 
-Working with LLMs? See a Quicktart. 
+Working with LLMs? See a Quickstart. 
 {% content-ref url="quickstart-llm.md" %}
 [LLM Evaluation Quickstart](quickstart-llm.md). 
 {% endcontent-ref %}
