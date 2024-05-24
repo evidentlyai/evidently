@@ -365,7 +365,7 @@ text_evals_report
 
 Here is how a summary of upvotes and downvotes looks for two datasets:
 
-![](../.gitbook/assets/cloud/llm_feedback_two.png)
+![](../.gitbook/assets/cloud/llm_feedback_two-min.png)
 
 ## Data Drift detection
 
