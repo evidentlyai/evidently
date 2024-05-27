@@ -45,7 +45,7 @@ reviews = reviews_data.frame[:100]
 # 3. Run the evals
 
 Run an evaluation Preset to check basic text descriptive text properties:
-* text sentiment (on a scale of -1 to 1)
+* text sentiment (scale -1 to 1)
 * text length (number of symbols)
 * number of sentences in a text 
 * percentage of out-of-vocabulary words (scale 0 to 100)
