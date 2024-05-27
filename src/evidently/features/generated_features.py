@@ -8,6 +8,7 @@ from typing import Optional
 import pandas as pd
 
 from evidently._pydantic_compat import Field
+from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
@@ -62,6 +63,18 @@ class GeneratedFeature(EvidentlyBaseModel):
             logging.warning(f"unhashable params for {type(self)}. Fallback to unique.")
             return None
         return params
+
+
+class DataFeature(GeneratedFeature):
+    @abc.abstractmethod
+    def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
+        raise NotImplementedError()
+
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        return pd.DataFrame(dict([(self.feature_id, self.generate_data(data, data_definition))]))
+
+    def feature_name(self) -> "ColumnName":
+        return additional_feature(self, self.feature_id, self.display_name)
 
 
 class GeneralDescriptor(EvidentlyBaseModel):
