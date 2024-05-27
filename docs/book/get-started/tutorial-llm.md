@@ -2,9 +2,9 @@
 description: Evaluate and test your LLM use case in 15 minutes. 
 ---
 
-Evaluating output quality is a crucial element of building production-grade LLM applications. During development, you must compare different prompts and models and catch issues as you tweak them. Once your application is live, you must monitor its performance on actual data to ensure it's safe and accurate and learn from user interactions.
+Evaluating output quality is a crucial element of building production-grade LLM applications. During development, you must compare different prompts and models and catch issues as you tweak them. Once your app is live, you must monitor its performance on actual data to ensure it's safe and accurate.
 
-Simple "vibe checks" of individual outputs don't scale well. This tutorial shows how you can automate LLM evaluations from experiments to productions.
+Simple "vibe checks" of individual outputs don't scale well. This tutorial shows how you can automate LLM evaluations from experiments to production.
 
 {% hint style="success" %}
 **Want a very simple example first?** This ["Hello World"](quickstart-llm.md) will take a couple minutes.
@@ -114,7 +114,7 @@ Here is a preview with `assistant_logs.head()`:
 
 To be able to save and share results and get a live monitoring dashboard, create a Project in Evidently Cloud. Here's how to set it up:
 
-1. **Sign up**: Create an [Evidently Cloud account](https://app.evidently.cloud/signup)).
+1. **Sign up**: Create an [Evidently Cloud account](https://app.evidently.cloud/signup).
 2. **Add a Team**: Click “plus” on the homepage. Copy the team ID from the [team page](https://app.evidently.cloud/teams).
 3. **Get your API token**: Click the key icon in the left menu. Generate and save a token.
 4. **Create a Project**: Connect to Evidently Cloud using the API key. Create a new Project inside your Team, adding your title and description.
@@ -246,7 +246,7 @@ You can also use any pre-trained machine learning model to score your texts. Evi
 * In-built model-basded descriptors like `Sentiment` (scores texts from negative -1 to positive 1).
 * Wrappers to call external Python functions or models published on HuggingFace (`HuggingFaceModel` descriptor).
 
-Let's score the data by Sentiment (in-built model) and a Toxicity (exteranl HuggingFace model). 
+Let's score the data by Sentiment (in-built model) and a Toxicity (external HuggingFace model). 
 
 ```python
 text_evals_report = Report(metrics=[
