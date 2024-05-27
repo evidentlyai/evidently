@@ -74,8 +74,8 @@ You will see a summary distribution of results for each evaluation.
 
 To record and monitor evaluations over time, send them to Evidently Cloud. You'll need an API key.
 * Sign up for an [Evidently Cloud account](https://app.evidently.cloud/signup), and create your Organization.
-* Click on the Teams icon on the left menu. Create a Team - for example, "Personal". Copy and save the team ID. [Team page](https://app.evidently.cloud/teams).
-* Click the Key icon in the left menu to go. Generate and save the token. [Token page](https://app.evidently.cloud/token).
+* Click on the **Teams** icon on the left menu. Create a Team - for example, "Personal". Copy and save the team ID. [Team page](https://app.evidently.cloud/teams).
+* Click the **Key** icon in the left menu to go. Generate and save the token. [Token page](https://app.evidently.cloud/token).
 
 Connect to Evidently Cloud using your token.
 
