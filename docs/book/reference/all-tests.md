@@ -131,7 +131,7 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 **How to set custom Test conditions?** Use parameters (e.g. equal, not equal, greater than, etc.) to set [Test Conditions](../tests-and-reports/custom-test-suite.md#custom-conditions). 
 {% endhint %}
 
-# Data Quality - Dataset
+# Data Quality
 
 | Test name  | Description | Parameters | Default test condition | 
 |---|---|---|---|
@@ -145,11 +145,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | **TestConflictTarget()**| Dataset-level. <br><br> Tests if there are conflicts in the target (instances where a different label is assigned for an identical input). | N/A | Expects no conflicts in the target (with or without reference). |
 | **TestConflictPrediction()**| Dataset-level. <br><br> Tests if there are conflicts in the prediction (instances where a different prediction is made for an identical input). | N/A | Expects no conflicts in the target (with or without reference). |
 | **TestColumnsType()**| Dataset-level. <br><br> Tests the types of all columns against the reference.| **Required**:<br> N/A <br><br> **Optional**:<br> `columns_type: dict` <br><br>**Test conditions**:<br> N/A | Expects types to match.<br><br>**With reference**: the test fails if at least one column type does not match. <br>**No reference**: N/A |
-
-# Data Quality - Columns
-
-| Test name  | Description | Parameters | Default test condition | 
-|---|---|---|---|
 | **TestColumnAllConstantValues**(column_name='name') | Column-level. <br><br> Tests if all the values in a given column are constant.|**Required**: <ul><li>`column_name`</li></ul>**Optional**:<br> N/A<br><br>**Test conditions**: <br> N/A| Expects non-constant.<br><br>The test fails if all values in a given column are constant.|
 | **TestColumnAllUniqueValues**(column_name='name') | Column-level. <br><br> Tests if all the values in a given column are unique.| **Required**: <ul><li>`column_name`</li></ul>**Optional**:<br> N/A<br><br>**Test conditions**:<br> N/A | Expects all unique (e.g., IDs).<br><br>The test fails if at least one value in a given column is not unique.|
 | **TestColumnRegExp**(column_name='name, reg_exp='^[0..9]') | Column-level. <br><br> Tests the number of values in a column that do not match a defined regular expression, against reference or a defined condition. |**Required**: <ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional**:<br>N/A<br><br>**Test conditions**:<ul><li>*standard parameters* </li></ul>| **With reference**: the test fails if the share of values that match a regular expression is over 10% higher or lower than in the reference.<br><br>**No reference**: the test fails if at least one of the values does not match a regular expression. |
