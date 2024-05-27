@@ -133,6 +133,8 @@ project.save()
 ```
 # 4. Run your first eval
 
+You will know run a few simple out-of-the-box evals and generate a visual Report in your Python environment.
+
 **Create column mapping**. This optional step helps identify specific columns in your data. For example, pointing to a "datetime" column will add a time index to the plots.
 
 ```python
@@ -166,7 +168,9 @@ The Report will show stats like:
 
 We call these generated statistics `descriptors`. They can be numerical or categorical. 
 
-This simple example is just a starting point. We’ll show more evaluations later on.
+{% hint style="success" %}
+**What else is there?** This simple example is just a starting point. We’ll show more complex evaluations later in the tutorial. There are also other interfaces beyond visual Reports: we'll also cover how to automate pass/fail checks with Test Suites and get a monitoring dashboard. 
+{% endhint %}
 
 # 5. Export results
 
@@ -207,6 +211,8 @@ To see it in the UI, go to the Reports section using the left menu.
 
 # 6. Customize evaluations
 
+You will notw 
+
 You can create a custom evaluation suite with different types of checks:
 * **Rule-based**. Detect specific words or patterns in your data.
 * **ML-based**. Use external models to score data (e.g., for toxicity, topic, tone).
@@ -216,7 +222,6 @@ You can create a custom evaluation suite with different types of checks:
   
 Evidently provides a library of ready-made descriptors to parametrize. The following section will show a few examples. For clarity, we'll generate separate Reports for each group of checks. In practice, you can put all evals together in a single Report. 
 
-**Note**: These are not just visual Reports! Later sections will also cover automating pass/fail checks with Test Suites and monitoring dashboards. 
 
 ## Rule-based evals 
 
