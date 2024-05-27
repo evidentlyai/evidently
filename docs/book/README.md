@@ -1,90 +1,133 @@
-Evidently is an open-source Python library for data scientists and ML engineers. 
+Evidently helps evaluate, test, and monitor data and ML-powered systems.
+* Predictive tasks: classification, regression, ranking, recommendations.
+* Generative tasks: chatbots, RAGs, Q&A, summarization.
+* Data monitoring: data quality and data drift for text, tabular, texts, embeddings.
 
-It helps evaluate, test, and monitor data and ML models from validation to production. It works with tabular, text data and embeddings.
+Evidently is available both as an open-source Python library and Evidently Cloud platform.
 
 # Quick Start
 
-New to Evidently? Pick your Quickstart (each takes 1 min) or a Tutorial (15 min). 
+Choose a Quickstart (1-2min) or a Tutorial (15 min) to start.
 
-|         |                                                        |   |
-| ------- | ------------------------------------------------------ | - |
-| **LLM evaluations**<br><br>Run checks on text data and LLM outputs. Open-source and Cloud. <br><br> [-> **LLM Quickstart**](get-started/quickstart-llm.md)<br>[-> **LLM Tutorial**](get-started/tutorial-llm.md)| **Tabular data checks**<br><br>Create Reports and Test Suites for tabular data. Open-source.<br><br>[-> **Tabular Quickstart**](get-started/hello-world.md)<br>[-> **Tabular Tutorial**](get-started/tutorial.md) | **Monitoring Dashboard**<br><br>Get a live dashboard to track metrics over time.<br><br>[-> **Monitoring Quickstart**](quickstart-cloud.md)<br>[-> **Monitoring Tutorial**](tutorial-cloud.md)|
+<table data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><strong></strong><strong>LLM evaluations</strong><strong></strong></td><td>Run checks for text data and generative LLM outputs.</td><td><p><a href="get-started/quickstart-llm.md">→ LLM Quickstart</a><br><a href="get-started/tutorial-llm.md">→ LLM Tutorial</a></p></td></tr><tr><td><strong></strong><strong>Tabular data checks</strong><strong></strong></td><td>Run evaluations for tabular data and ML models.</td><td><p><a href="get-started/hello-world.md">→ Tabular Quickstart</a><br><a href="get-started/tutorial.md">→ Tabular Tutorial</a></p></td></tr><tr><td><strong></strong><strong>Monitoring Dashboard</strong><strong></strong></td><td>Get a live dashboard to track evaluation results over time.</td><td><p><a href="quickstart-cloud.md">→ Monitoring Quickstart</a><br><a href="tutorial-cloud.md">→ Monitoring Tutorial</a></p></td></tr></tbody></table>
 
 You can explore more code [examples](examples/examples.md). 
 
 # How it works 
 
-Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
+Evidently helps evaluate and track quality of ML-based systems, from experimentation to production. 
 
-Evidently has a modular approach with 3 components: **Reports**, **Test Suites**, and a **Monitoring Dashboard**. They cover different usage scenarios: from ad hoc analysis to automated pipeline testing and continuous monitoring.
+Evidently is both a library of 100+ ready-made evaluations, and a framework to easily implement yours: from Python functions to LLM judges. 
 
-Evidently has a simple, declarative API and a library of in-built metrics, tests, and visualizations.
+Evidently has a modular architecture, and you can start with ad hoc checks without complex installations. There are 3 key components: Reports, Test Suites and Monitoring Dashboard. 
 
-# 1. Tests suites: batch model checks 
+## Reports
 
-Tests perform structured data and ML model quality checks. You can set the conditions manually or let Evidently generate them based on the reference dataset. Tests will return an explicit **pass** or **fail** result. 
+Reports compute different metrics on data and ML quality. You can use Reports for visual analysis and debugging, or as a computation layer for the monitoring dashboard. 
+
+You can be as hands-off or hands-on as you like: start with Presets, and customize metrics as you go.
+
+![](.gitbook/assets/main/reports-min.png)
+
+<details>
+
+<summary>More on Reports</summary>
+
+* You can pass a single dataset or two for side-by-side comparison. 
+  * Pass data as a CSV, pandas or Spark dataframe.
+* You can get pre-built Reports with [Presets](presets/all-presets.md), or combine [individual Metrics](reference/all-metrics.md).
+* You can use Reports as a standalone tool:
+  * For exploration and debugging: view results in Python or export as HTML.
+  * As a computation layer: export results to Python dictionary, JSON or dataframe.
+  * For documentation: add text comments and save Model Card.   
+* You can also use Reports as a logging component of ML Monitoring system:
+  * Compute Reports on a cadence over live data and save as JSON snapshots.
+  * Visualize results from multiple Reports over time on the Monitoring Dashboard.
+  * Configure alerts when metrics are out of bounds.
+
+**Docs**:
+* [Quickstart - LLM and text evals](get-started/quickstart-llm.md) 
+* [Quickstart - ML and tabular](get-started/hello-world.md)
+* [Reference: available Metrics](reference/all-metrics.md)
+* [User guide: how to get Reports](tests-and-reports/get-reports.md) 
+</details>
+
+## Tests suites 
+
+Tests verify whether computed metrics satisfy defined conditions. Each test in a suite returns a pass or fail result. This interface helps automate your evaluations for regression testing, checks during CI/CD, or validation steps in data pipelines. 
  
-You can create a **Test Suite** from 50+ tests or run one of the **Presets**. For example, to test Data Stability or Regression Performance.
+![](.gitbook/assets/main/tests.gif)
 
-Tests are best for automated batch checks.
- 
-![](.gitbook/assets/main/evidently_tests_main-min.png)
+<details>
 
-**Input**: one or two datasets as pandas.DataFrames or csv.
- 
-**How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML, JSON, or Python dictionary.
- 
-**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, labels, or generate predictions. You can build a conditional workflow based on the results, e.g., to trigger an alert, retrain, or get a report.  
+<summary>More on Test Suites</summary>
 
-**Read more**:
-* [Overview: what is a test and a test suite](introduction/core-concepts.md) 
-* [User guide: how to generate tests](tests-and-reports/run-tests.md) 
-* [Reference: available tests and presets](reference/all-tests.md) 
+* You can set Test conditions manually or auto-generate them from a reference dataset. 
+* You can get pre-built Test Suites with [Presets](presets/all-presets.md), or combine [individual Tests](reference/all-tests.md).
+* You can see Test results in a visual report or get a JSON or Python export.
+* You can use Test Suites as a standalone tool:
+  * Regression testing during experimentation.
+  * Automated CI/CD checks after you get new labeled data or update models.
+  * Pipeline testing: add a validation step to your data pipelines.   
+* You can also use Test Suites as a logging component of ML Monitoring system:
+  * Run automated Test Suites and save results as JSON snapshots.
+  * Show test outcomes and metrics metrics on the Monitoring Dashboard. 
+  * Configure alerts on failed Tests.
 
-# 2. Reports: interactive visualizations
+**Docs**:
+* [Tutorial - LLM and text evals](get-started/tutorial-llm.md) 
+* [Quickstart - ML and tabular](get-started/tutorial.md)
+* [Reference: available Tests](reference/all-tests.md)
+* [User guide: how to generate Tests](tests-and-reports/run-tests.md) 
+</details>
 
-Reports calculate various metrics and provide rich interactive visualizations. 
- 
-You can create a custom **Report** from individual metrics or run one of the **Presets** that cover a specific aspect of the model or data performance. For example, Data Quality or Classification Performance.
- 
-Reports are best for exploratory analysis, debugging, and documentation.
-
-![](.gitbook/assets/main/evidently_reports_main-min.png)
-
-**Input**: one or two datasets as pandas.DataFrames or csv. 
- 
-**How you get the output**: inside Jupyter notebook or Colab, as an exportable HTML file, JSON, or Python dictionary.
- 
-**Primary use case**: analysis and exploration. Reports help visually evaluate the data or model performance. For example, during exploratory data analysis, model evaluation on the training set, when debugging the model quality decay, or comparing several models.  
- 
-**Secondary use cases**:
-* **Reporting and documentation**. You can generate visual HTML reports and ML model cards.
-* **Performance logging**. You can integrate an evaluation step in the data/ML pipeline, get outputs as JSON, and log it for further analysis or to visualize using BI tools.
-
-**Read more**:
-* [Overview: what is a report and a metric](introduction/core-concepts.md) 
-* [User guide: how to run reports](tests-and-reports/get-reports.md) 
-* [Reference: available metrics and metric presets](reference/all-metrics.md) 
 
 # 3. ML monitoring dashboard
 
-*Available starting from v0.4.0*. 
+The monitoring dashboard helps visualize ML system performance over time and detect issues. You can track key metrics and test outcomes. 
 
-You can self-host an ML monitoring dashboard to visualize metrics and test results over time. This functionality sits on top of Reports and Test Suites. You must store their outputs as Evidently JSON `snapshots` that serve as a data source for the Evidently Monitoring UI.
-
-You can visualize any and track 100+ metrics available in Evidently, from number nulls in data to text sentiment and embedding drift.
-
-![](.gitbook/assets/main/evidently_ml_monitoring_main.png)
-
-**Input**: Evidently `snapshots`, logged to an object storage. 
-
-**Output**: a monitoring dashboard available as a web app.
-  
-**Primary use case: continuous monitoring**. When you need a live dashboard to see all your models and metrics over time. 
+You can use Evidently Cloud or self-host. Evidently Cloud offers extra features like user authentication and roles, built-in alerting, and a no-code interface. 
  
-**Read more**:
+![](.gitbook/assets/main/dashboard.gif)
+
+<details>
+
+<summary>More on Monitoring Dashboard</summary>
+
+* You save Reports or Test Suites as JSON snapshots. The monitoring dashboard runs over these evaluation results as a data source.
+* You can create custom combinations of Panels and choose what exactly to plot. 
+* You can get dashboards as code for version control and reproducibility. 
+* You can send data in near real-time using a Collector service or in batches. 
+* For Evidently Cloud: send alerts to Slack, Discord, and email. 
+* For Evidently Cloud: get pre-built Tabs and manage everything in the UI. 
+
+**Docs**:
 * [Get Started - Evidently Cloud](get-started/tutorial-cloud.md)
 * [Get Started - Self-hosting](get-started/tutorial-monitoring.md)
+* [Monitoring user guide](monitoring/monitoring_overview.md)
+</details>
+
+# What can you evaluate?
+Evidently Reports, Test Suites and ML Monitoring dashboard rely on the shared set of metrics. 
+
+For every single evaluation - be it share of nulls, text sentiment, or embedding drift distance - you can get a `Report` with a pre-built visualization, use it in a `TestSuite` to define a conditional check (“tell me if the value is out of bounds”), and plot the values over time on a `Dashboard`.
+
+Here are some of the things you can evaluate with Evidently:
+* **Tabular Data Quality**: missing values, duplicates, empty rows or columns, min-max ranges, new categorical values, correlation changes, etc.
+* **Text Descriptors**: text length, out-of-vocabulary words, share of special symbols, regular expressions matches. 
+* **Data Drift**: statistical test and distance metrics to compare distributions of model predictions, numerical and categorical features, text data, or embeddings: 
+* **Classification quality**: from accuracy, precision, recall, ROC AUC, confusion matrices to classification bias and comparisons to dummy model quality. 
+* **Regression quality**: from MAE, RMSE, and error distributions to analyzing under- and over-predictions. 
+* **Ranking and recommendations quality**: from NDCG, MAP, and Hit Rate to serendipity, novelty, and diversity of recommendations.
+* **LLM output quality**: using model-based scoring with external models and LLMs to detect toxicity, sentiment, evaluate retrieval relevance, etc.
+
+You can also implement custom Metrics and Tests as a Python function or define your prompts for LLM-as-a-judge.
+
+**See more**:
+* [Reference: available Metrics](reference/all-metrics.md)
+* [Reference: available Tests](reference/all-tests.md)
+* [Presets: pre-built evaluation suites](presets/all-presets.md)
+
 
 # Community and support 
 
