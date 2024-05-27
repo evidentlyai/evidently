@@ -260,7 +260,7 @@ You can also use any pre-trained machine learning model to score your texts. Evi
 * In-built model-based descriptors like `Sentiment`.
 * Wrappers to call external Python functions or models published on HuggingFace (`HuggingFaceModel` descriptor).
 
-Let's evaluate the responses for Sentiment (in-built model, scores from - 1 to 1) and Toxicity (using external HuggingFace model). 
+Let's evaluate the responses for Sentiment (in-built model, scores from - 1 to 1) and Toxicity (using [external HuggingFace classifier model](https://huggingface.co/spaces/evaluate-measurement/toxicity) that returns the score between 0 to 1 for the "toxic" class). 
 
 ```python
 text_evals_report = Report(metrics=[
