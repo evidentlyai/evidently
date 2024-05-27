@@ -41,9 +41,9 @@ reviews = reviews_data.frame[:100]
 ```
 # 3. Run the evals
 
-Run basic numeric evaluations to check text sentiment (on a scale of -1 to 1), text length, etc., for the "Reviews" column.
+Run a basic evaluation Preset to check text sentiment (on a scale of -1 to 1), text length, etc., for the "Reviews" column.
 
-```
+```python
 text_evals_report = Report(metrics=[
     TextEvals(column_name="Review_Text")
     ]
@@ -52,7 +52,7 @@ text_evals_report = Report(metrics=[
 text_evals_report.run(reference_data=None, current_data=reviews)
 ```
 
-This runs a pre-built set of checks. You can pick others or create custom evaluations, including LLM-as-a-judge.
+There are more evals to choose from. You can also create custom ones, including LLM-as-a-judge.
 
 View a Report in Python:
 
@@ -66,7 +66,7 @@ You can export results as HTML, JSON, or a Python dictionary to use elsewhere, o
 
 To record and track evaluation results over time, send them to Evidently Cloud. You need an API key.
 * Sign up for [an Evidently Cloud account](https://app.evidently.cloud/signup).
-* Once you log in, click "plus" to create a new Team. For example, "Personal". Copy the team ID from [Team's page](https://app.evidently.cloud/teams).
+* After login, click "plus" to add a new Team. For example, "Personal". Copy the team ID from [Team's page](https://app.evidently.cloud/teams).
 * Click the key icon in the left menu, select "personal token," generate and save the token.
 
 Connect to Evidently Cloud using your token and create a Project inside your Team:
@@ -87,7 +87,7 @@ In the future, you can log ongoing evaluation results to build monitoring panels
 
 # Want to see more?
 
-Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional test suites, and more.
+Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional test suites, monitoring results over time and more.
 
 {% content-ref url="tutorial-llm.md" %}
 [Evidently LLM Tutorial](tutorial-llm.md). 
