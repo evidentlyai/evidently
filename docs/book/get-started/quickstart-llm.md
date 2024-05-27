@@ -1,13 +1,15 @@
 ---
-description: LLM evaluation “Hello world.” Open-source and cloud workflow.
+description: LLM evaluation "Hello world." 
 ---
+
+You can run this example in Colab or any Python environment.
 
 # 1. Installation
 
-Install the Evidently Python library. You can run this example in Colab or any Python environment.
+Install the Evidently Python library. 
 
 ```
-!pip install evidently
+!pip install evidently[llm]
 ```
 
 Import the necessary components:
@@ -33,15 +35,21 @@ from evidently.ui.workspace.cloud import CloudWorkspace
 
 # 2. Import the toy dataset 
 
-Import a toy dataset with e-commerce reviews. 
+Import a toy dataset with e-commerce reviews. It contains a column with "Review_Text" that you'll analyze.
 
 ```python
 reviews_data = datasets.fetch_openml(name='Womens-E-Commerce-Clothing-Reviews', version=2, as_frame='auto')
 reviews = reviews_data.frame[:100]
 ```
+
 # 3. Run the evals
 
-Run a basic evaluation Preset to check text sentiment (on a scale of -1 to 1), text length, etc., for the "Reviews" column.
+Run an evaluation Preset to check basic text descriptive text properties:
+* text sentiment (on a scale of -1 to 1)
+* text length (number of symbols)
+* number of sentences in a text 
+* percentage of out-of-vocabulary words (scale 0 to 100)
+* percentage of non-letter characters (scale 0 to 100)
 
 ```python
 text_evals_report = Report(metrics=[
@@ -60,26 +68,36 @@ View a Report in Python:
 text_evals_report
 ```
 
-You can export results as HTML, JSON, or a Python dictionary to use elsewhere, or send to Evidently Cloud for monitoring.
+You will see a summary distribution of results for each evaluation.
 
 # 4. Send results to Evidently Cloud 
 
-To record and track evaluation results over time, send them to Evidently Cloud. You need an API key.
-* Sign up for [an Evidently Cloud account](https://app.evidently.cloud/signup).
-* After login, click "plus" to add a new Team. For example, "Personal". Copy the team ID from [Team's page](https://app.evidently.cloud/teams).
-* Click the key icon in the left menu, select "personal token," generate and save the token.
+To record and monitor evaluations over time, send them to Evidently Cloud. You'll need an API key.
+* Sign up for an [Evidently Cloud account](https://app.evidently.cloud/signup), and create your Organization.
+* Click on the Teams icon on the left menu. Create a Team - for example, "Personal". Copy and save the team ID. [Team page](https://app.evidently.cloud/teams).
+* Click the Key icon in the left menu to go. Generate and save the token. [Token page](https://app.evidently.cloud/token).
 
-Connect to Evidently Cloud using your token and create a Project inside your Team:
+Connect to Evidently Cloud using your token.
 
 ```python
 ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
+```
 
+Create a Project inside your Team:
+
+```python
 project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
 project.description = "My project description"
 project.save()
 ```
 
-Visit Evidently Cloud, open your Project, and navigate to the "Report" to see evaluation results.
+Send the Report to the Cloud: 
+
+```python
+ws.add_report(project.id, text_evals_report)
+```
+
+Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. [Cloud home](https://app.evidently.cloud/).
 
 ![](../.gitbook/assets/cloud/toy_text_report_preview.gif)
 
