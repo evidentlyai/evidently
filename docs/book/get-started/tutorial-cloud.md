@@ -60,7 +60,7 @@ If you do not have one yet, [create an Evidently Cloud account](https://app.evid
 
 Go to the main page, click on "plus" sign and create a new Team. For example, "personal" Team. 
 
-## 2. View a demo project 
+## 3. View a demo project 
 
 Click on "Generate Demo Project" inside your Team. It will create a Project for a toy regression model that forecasts bike demand. 
 
