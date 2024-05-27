@@ -133,7 +133,7 @@ project.save()
 ```
 # 4. Run your first eval
 
-You will know run a few simple out-of-the-box evals and generate a visual Report in your Python environment.
+You will now run a few simple out-of-the-box evals and generate a visual Report in your Python environment.
 
 **Create column mapping**. This optional step helps identify specific columns in your data. For example, pointing to a "datetime" column will add a time index to the plots.
 
@@ -211,9 +211,9 @@ To see it in the UI, go to the Reports section using the left menu.
 
 # 6. Customize evaluations
 
-You will notw 
+You will now learn to create a custom evaluation suite for your LLM system inputs and outputs.
 
-You can create a custom evaluation suite with different types of checks:
+You can combine different types of checks:
 * **Rule-based**. Detect specific words or patterns in your data.
 * **ML-based**. Use external models to score data (e.g., for toxicity, topic, tone).
 * **LLM-as-a-judge**. Prompt LLMs to categorize or score texts.
@@ -221,7 +221,6 @@ You can create a custom evaluation suite with different types of checks:
 * **Custom Python functions**. Pass your own eval.
   
 Evidently provides a library of ready-made descriptors to parametrize. The following section will show a few examples. For clarity, we'll generate separate Reports for each group of checks. In practice, you can put all evals together in a single Report. 
-
 
 ## Rule-based evals 
 
