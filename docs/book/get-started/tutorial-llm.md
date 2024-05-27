@@ -69,13 +69,13 @@ nltk.download('omw-1.4')
 nltk.download('vader_lexicon')
 ```
 
-**Optional**. To be able to send results to Evidently Cloud.
+**Optional**. To be able to send results to Evidently Cloud:
 
 ```python
 from evidently.ui.workspace.cloud import CloudWorkspace
 ```
 
-**Optional**. To remotely manage the dashboard design.
+**Optional**. To remotely manage the dashboard design in Evidently Cloud:
 
 ```python
 from evidently.ui.dashboards import DashboardPanelTestSuite
@@ -88,7 +88,9 @@ from evidently.renderers.html_widgets import WidgetSize
 
 # 2. Prepare a dataset
 
-We'll use an example dialogue dataset imitating a company Q&A system where employees ask questions about HR, finance, etc. Download the CSV file from GitHub: 
+We'll use an example dialogue dataset that imitates a company Q&A system in which employees ask questions about HR, finance, etc. 
+
+Download the CSV file from GitHub: 
 * [Example dataset](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/chat_df.csv)
 
 Import it as a pandas DataFrame and add a datetime index:
@@ -114,21 +116,24 @@ Here is a preview with `assistant_logs.head()`:
 
 To be able to save and share results and get a live monitoring dashboard, create a Project in Evidently Cloud. Here's how to set it up:
 
-1. **Sign up**: Create an [Evidently Cloud account](https://app.evidently.cloud/signup).
-2. **Add a Team**: Click “plus” on the homepage. Copy the team ID from the [team page](https://app.evidently.cloud/teams).
-3. **Get your API token**: Click the key icon in the left menu. Generate and save a token.
-4. **Create a Project**: Connect to Evidently Cloud using the API key. Create a new Project inside your Team, adding your title and description.
+* **Sign up**. If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup) and your Organization.
+* **Add a Team**. Click on the **Teams** icon on the left menu. Create a Team, copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
+* **Connect to Evidently Cloud**. Pass your API key to connect. 
 
 ```python
 ws = CloudWorkspace(token="YOUR_API_TOKEN", url="https://app.evidently.cloud")
+```
+* **Create a Project**. Create a new Project inside your Team, adding your title and description:
 
+```python
 project = ws.create_project("My сhatbot project", team_id="YOUR_TEAM_ID")
 project.description = "My project description"
 project.save()
 ```
 # 4. Run your first eval
 
-**Column mapping**. This optional step helps identify specific columns in your data. For example, pointing to a "datetime" column will add a time index to the plots.
+**Create column mapping**. This optional step helps identify specific columns in your data. For example, pointing to a "datetime" column will add a time index to the plots.
 
 ```python
 column_mapping = ColumnMapping(
@@ -150,7 +155,12 @@ text_evals_report.run(reference_data=None, current_data=assistant_logs[:100], co
 text_evals_report
 ```
 
-The Report will show stats like text length, sentiment and % of out-of-vocabulary words. 
+The Report will show stats like:
+* text sentiment (scale -1 to 1)
+* text length (number of symbols)
+* number of sentences in a text
+* percentage of out-of-vocabulary words (scale 0 to 100)
+* percentage of non-letter characters (scale 0 to 100)
 
 ![](../.gitbook/assets/cloud/llm_report_preview-min.gif)
 
@@ -243,10 +253,10 @@ Here is an example result for `IncludesWords(words_list=['salary'])` descriptor.
 ## ML models
 
 You can also use any pre-trained machine learning model to score your texts. Evidently has:
-* In-built model-basded descriptors like `Sentiment` (scores texts from negative -1 to positive 1).
+* In-built model-based descriptors like `Sentiment`.
 * Wrappers to call external Python functions or models published on HuggingFace (`HuggingFaceModel` descriptor).
 
-Let's score the data by Sentiment (in-built model) and a Toxicity (external HuggingFace model). 
+Let's evaluate the responses for Sentiment (in-built model, scores from - 1 to 1) and Toxicity (using external HuggingFace model). 
 
 ```python
 text_evals_report = Report(metrics=[
@@ -263,8 +273,7 @@ text_evals_report.run(reference_data=None, current_data=assistant_logs[:100], co
 text_evals_report
 ```
 
-This code downloads the Hugging Face model to score your data locally. 
-Example result with distribution of toxicity scores:
+This code downloads the Hugging Face model to score your data locally. Example result with the distribution of toxicity scores:
 
 ![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png)
 
@@ -320,7 +329,7 @@ text_evals_report
 
 ## Metadata columns
 
-Our dataset also includes pre-existing user evaluations in a categorical `feedback` column with upvotes and downvotes. You can include summaries for any numerical or categorical column in the Report.
+Our dataset also includes pre-existing user evaluations in a categorical `feedback` column with upvotes and downvotes. You can add summaries for any numerical or categorical column in the Report.
 
 To add a summary on the “feedback” column, use `ColumnSummaryMetric()`:
 
@@ -344,7 +353,7 @@ You might want to compare two datasets using the same criteria. For example, you
 
 ## Side-by-side Reports
 
-You can generate similar Report as before but with two datasets. This lets you visualize the distributions side by side.
+You can generate similar Reports as before but with two datasets. This lets you visualize the distributions side by side.
 
 For simplicity, let's take the first 100 rows as "reference" and the next 100 as "current". You can combine text evals and metadata summary.
 
@@ -413,9 +422,9 @@ drift_report
 **Data Drift Preset**. You can also use `DataDriftPreset()` to compare distribution of all columns - text and metadata - in the dataset at once.
 {% endhint %}
 
-To detect drift on raw data, Evidently will train and evaluate a classifier model to differentiate the two text datasets. If the model can identify if a text sample belongs to the “reference” or “current” dataset, you can consider them different enough. The resulting score is the [ROC AUC](https://www.evidentlyai.com/classification-metrics/explain-roc-curve) of the classifier. If drift is detected, Evidently shows phrases that help differentiate between the two datasets. 
+To detect drift on raw data, Evidently will train and evaluate a classifier model to differentiate the two text datasets. If the model can identify if a text sample belongs to the “reference” or “current” dataset, you can consider them different enough. The resulting score is the [ROC AUC](https://www.evidentlyai.com/classification-metrics/explain-roc-curve) of the classifier. (0.5 means the classifier is no better than random, and the datasets are very similar. Values between 0.5 and 1 show the model is able to differentiate between the two datasets, and there is a likely change between the datasets.) 
 
-In our case, there is no drift, so there is no interpretation.
+If drift is detected, Evidently shows phrases that help differentiate between the two datasets. In our case, there is no drift, so there is no interpretation.
 
 <details>
 
@@ -447,7 +456,7 @@ drift_report.run(reference_data=df_random_sample, current_data=df_salary_hr, col
 drift_report
 ```
 
-The result will now show drift with a score of 0.631. You will also see examples of texts that help differentiate between the two datasets. For instance, questions about the "employee portal" are typical for the "current" dataset, indicating that HR-related questions became more frequent.
+The result will now detect some drift. You will also see examples of texts that help differentiate between the two datasets. For instance, questions about the "employee portal" are typical for the "current" dataset, indicating that HR-related questions became more frequent.
 
 ![](../.gitbook/assets/cloud/llm_text_drift-min.png)
 
