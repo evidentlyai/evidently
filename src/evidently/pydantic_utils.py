@@ -25,7 +25,6 @@ from typing_inspect import is_union_type
 from evidently._pydantic_compat import SHAPE_DICT
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import ModelField
 from evidently._pydantic_compat import ModelMetaclass
 from evidently._pydantic_compat import import_string
 
@@ -373,21 +372,24 @@ class FieldPath:
 
     def list_nested_field_infos(self) -> List[FieldInfo]:
         return [
-            FieldInfo(
-                path=path, tags=frozenset(tags), classpath=get_classpath(self._get_field_info(path.split(".")).type_)
-            )
+            FieldInfo(path=path, tags=frozenset(tags), classpath=get_classpath(self._get_field_type(path.split("."))))
             for path, tags in self.list_nested_fields_with_tags()
         ]
 
-    def _get_field_info(self, path: List[str]) -> ModelField:
+    def _get_field_type(self, path: List[str]) -> Type:
         if len(path) == 0:
             raise ValueError("Empty path provided")
         if len(path) == 1:
             if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-                return self._cls.__fields__[path[0]]
+                return self._cls.__fields__[path[0]].type_
+            if self.has_instance:
+                # fixme: tmp fix
+                # in case of field like f: Dict[str, A] we wont know that value was type annotated with A when we get to it
+                if isinstance(self._instance, dict):
+                    return type(self._instance.get(path[0]))
             raise NotImplementedError(f"Not implemented for {self._cls.__name__}")
         child, *path = path
-        return self.child(child)._get_field_info(path)
+        return self.child(child)._get_field_type(path)
 
     def __repr__(self):
         return self.get_path()
