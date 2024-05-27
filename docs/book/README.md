@@ -54,7 +54,9 @@ You can be as hands-off or hands-on as you like: start with Presets, and customi
 
 ## Tests suites 
 
-Tests verify whether computed metrics satisfy defined conditions. Each test in a suite returns a pass or fail result. This interface helps automate your evaluations for regression testing, checks during CI/CD, or validation steps in data pipelines. 
+Tests verify whether computed metrics satisfy defined conditions. Each Test in a suite returns a pass or fail result. 
+
+This interface helps automate your evaluations for regression testing, checks during CI/CD, or validation steps in data pipelines. 
  
 ![](.gitbook/assets/main/tests.gif)
 
@@ -112,14 +114,15 @@ Evidently Reports, Test Suites and ML Monitoring dashboard rely on the shared se
 
 For every single evaluation - be it share of nulls, text sentiment, or embedding drift distance - you can get a `Report` with a pre-built visualization, use it in a `TestSuite` to define a conditional check (“tell me if the value is out of bounds”), and plot the values over time on a `Dashboard`.
 
-Here are some of the things you can evaluate with Evidently:
-* **Tabular Data Quality**: missing values, duplicates, empty rows or columns, min-max ranges, new categorical values, correlation changes, etc.
-* **Text Descriptors**: text length, out-of-vocabulary words, share of special symbols, regular expressions matches. 
-* **Data Drift**: statistical test and distance metrics to compare distributions of model predictions, numerical and categorical features, text data, or embeddings: 
-* **Classification quality**: from accuracy, precision, recall, ROC AUC, confusion matrices to classification bias and comparisons to dummy model quality. 
-* **Regression quality**: from MAE, RMSE, and error distributions to analyzing under- and over-predictions. 
-* **Ranking and recommendations quality**: from NDCG, MAP, and Hit Rate to serendipity, novelty, and diversity of recommendations.
-* **LLM output quality**: using model-based scoring with external models and LLMs to detect toxicity, sentiment, evaluate retrieval relevance, etc.
+| Evaluation group | Examples |
+|------|------|
+| **Tabular Data Quality** | Missing values, duplicates, empty rows or columns, min-max ranges, new categorical values, correlation changes, etc. |
+| **Text Descriptors** | Text length, out-of-vocabulary words, share of special symbols, regular expressions matches. |
+| **Data Drift** | Statistical test and distance metrics to compare distributions of model predictions, numerical and categorical features, text data, or embeddings. |
+| **Classification Quality** | From accuracy, precision, recall, ROC AUC, confusion matrices to classification bias and comparisons to dummy model quality. |
+| **Regression Quality** | From MAE, RMSE, and error distributions to analyzing under- and over-predictions. |
+| **Ranking and Recommendations quality** | From NDCG, MAP, and Hit Rate to serendipity, novelty, and diversity of recommendations. |
+| **LLM Output Quality** | Model-based scoring with external models and LLMs to detect toxicity, sentiment, evaluate retrieval relevance, etc. |
 
 You can also implement custom Metrics and Tests as a Python function or define your prompts for LLM-as-a-judge.
 
@@ -127,7 +130,6 @@ You can also implement custom Metrics and Tests as a Python function or define y
 * [Reference: available Metrics](reference/all-metrics.md)
 * [Reference: available Tests](reference/all-tests.md)
 * [Presets: pre-built evaluation suites](presets/all-presets.md)
-
 
 # Community and support 
 
