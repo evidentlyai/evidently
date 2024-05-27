@@ -7,25 +7,25 @@ description: List of all tests and test presets available in Evidently.
 <summary>How to use this page</summary>
  
 This is a reference page. You can return here:
-* To discover **available tests** and choose which to include in a custom test suite.
-* To understand which **parameters** you can change for a specific test or preset.
-* To verify which tests are included in a **test preset**.
+* To discover **available Tests** and choose which to include in a custom Test suite.
+* To understand which **parameters** you can change for a specific Test or Preset.
+* To verify which tests are included in a **Test Preset**.
 
 You can use the menu on the right to navigate the sections. We organize individual tests into groups, e.g. Data Quality, Data Integrity, Regression, etc. Note that these groups do **not** match the presets with similar names. For example, there are more Data Quality tests than in the `DataQualityTestPreset`. 
 
 # How to read the tables
 
-* **Name**: the name of the test or test preset.  
-* **Description**: plain text explanation of the test, or the content of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
+* **Name**: the name of the Test or Test preset.  
+* **Description**: plain text explanation. For Tests, we specify whether it applies to the whole dataset or individual columns.
 * **Parameters**: available configurations. 
   * Required parameters are necessary for calculations, e.g. a column name for a column-level test.
   * Optional parameters modify how the underlying metric is calculated, e.g. which statistical test or correlation method is used.
-  * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/custom-test-suite.md#custom-conditions). They apply to most of the tests, and are optional.
-* **Default tests condition**: they apply if you do not set a custom сondition. 
-  * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
-  * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
+  * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the Test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/custom-test-suite.md#custom-conditions). They apply to most of the Tests, and are optional.
+* **Default Test condition**: they apply if you do not set a custom сondition. 
+  * With reference: the Test conditions that apply when you pass a reference dataset and Evidently can derive conditions from it. 
+  * No reference: the Test conditions that apply if you do not provide the reference. They are based on heuristics.
  
-**Test visualizations**. Each test also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../examples/examples.md).
+**Test visualizations**. Each Test also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../examples/examples.md).
 
 </details>
 
@@ -37,17 +37,95 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 Default conditions for each Test in the Preset match the Test's defaults. You can see them in the tables below. The listed Preset parameters apply to the relevant individual Tests inside the Preset.
 
+<details>
+
+<summary>NoTargetPerformance Test Preset</summary>
+
 | Preset name and Description | Parameters |
 |---|---|
 | **`NoTargetPerformanceTestPreset`**<br><ul><li> `TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=prediction)`</li><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `сolumns` if provided </li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+
+</details>
+
+<details>
+
+<summary>Data Stability Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`DataStabilityTestPreset`**<br><ul><li>`TestNumberOfRows()`</li><li>`TestNumberOfColumns()`</li><li>`TestColumnsType()`</li><li>`TestColumnShareOfMissingValues()`</li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li></ul> |
+
+</details>
+
+<details>
+
+<summary>Data Quality Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`DataQualityTestPreset`**<br>  <ul><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `columns` </li><li>`TestMostCommonValueShare(column_name=column_name)` for `all` or `columns`</li><li>`TestNumberOfConstantColumns()`</li><li>`TestNumberOfDuplicatedColumns()`</li><li>`TestNumberOfDuplicatedRows()`</li><li>`TestHighlyCorrelatedColumns()`</li></ul>| **Optional:**<ul><li>`columns`</li></ul> |
+
+</details>
+
+<details>
+
+<summary>Data Drift Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`DataDriftTestPreset`**<br> <ul><li>`TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=column_name)` for `all` or `сolumns` if provided </li></ul> | **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+
+</details>
+
+<details>
+
+<summary>Regression Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`RegressionTestPreset`**<br> <ul><li>`TestValueMeanError()`</li><li>`TestValueMAE()`</li><li>`TestValueRMSE()`</li><li>`TestValueMAPE()`</li></ul> | N/A |
+
+</details>
+
+<details>
+
+<summary>Multiclass Classification Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`MulticlassClassificationTestPreset`**<br> <ul><li>`TestAccuracyScore()`</li><li>`TestF1Score()`</li><li>`TestPrecisionByClass()`</li><li>`TestRecallByClass()`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestNumberOfRows()`</li></ul>If probabilistic classification, also: <ul><li>`TestLogLoss()`</li><li>`TestRocAuc()`</li></ul>| **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md).  |
+
+</details>
+
+<details>
+
+<summary>Binary Classification (Top K) Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`BinaryClassificationTopKTestPreset`**<br> <ul><li>`TestAccuracyScore(k=k)`</li><li>`TestPrecisionScore(k=k)`</li><li>`TestRecallScore(k=k)`</li><li>`TestF1Score(k=k)`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestRocAuc()`</li><li>`TestLogLoss()`</li></ul> |**Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
+
+</details>
+
+<details>
+
+<summary>Binary Classification Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`BinaryClassificationTestPreset`** <br><ul><li>`TestColumnDrift(column_name=target)`</li><li>`TestPrecisionScore()`</li><li>`TestRecallScore()`</li><li>`TestF1Score()`</li><li>`TestAccuracyScore()`</li></ul>If probabilistic classification, also:<ul><li>`TestRocAuc()`</li></ul> | **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)|
+
+</details>
+
+<details>
+ 
+<summary>RecSys (Recommender Systems) Test Preset</summary>
+
+| Preset name and Description | Parameters |
+|---|---|
 | **`RecsysTestPreset`** <br><ul><li>`TestPrecisionTopK()`</li><li>`TestRecallTopK()`</li><li>`TestMAPK()`</li><li>`TestNDCGK()`</li><li>`TestHitRateK()`</li></ul> | **Required:**<ul><li>`k`</li></ul> **Optional:**<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li></ul>
+
+</details>
 
 # Data Integrity
 
