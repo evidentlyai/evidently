@@ -74,8 +74,8 @@ You will see a summary distribution of results for each evaluation.
 
 To record and monitor evaluations over time, send them to Evidently Cloud. You'll need an API key.
 * Sign up for an [Evidently Cloud account](https://app.evidently.cloud/signup), and create your Organization.
-* Click on the **Teams** icon on the left menu. Create a Team - for example, "Personal". Copy and save the team ID. [Team page](https://app.evidently.cloud/teams).
-* Click the **Key** icon in the left menu to go. Generate and save the token. [Token page](https://app.evidently.cloud/token).
+* Click on the **Teams** icon on the left menu. Create a Team - for example, "Personal". Copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
+* Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 
 Connect to Evidently Cloud using your token.
 
@@ -97,7 +97,7 @@ Send the Report to the Cloud:
 ws.add_report(project.id, text_evals_report)
 ```
 
-Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. [Cloud home](https://app.evidently.cloud/).
+Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
 
 ![](../.gitbook/assets/cloud/toy_text_report_preview.gif)
 
