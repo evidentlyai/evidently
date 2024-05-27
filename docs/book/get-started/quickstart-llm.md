@@ -83,7 +83,7 @@ Connect to Evidently Cloud using your token.
 ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
 ```
 
-Create a Project inside your Team:
+Create a Project inside your Team. Pass the `team_id`:
 
 ```python
 project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
