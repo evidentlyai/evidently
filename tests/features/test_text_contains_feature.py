@@ -37,7 +37,7 @@ def test_text_contains_feature(items: List[str], case: bool, mode: str, expected
         data=data,
         data_definition=create_data_definition(None, data, ColumnMapping()),
     )
-    assert result.equals(pd.DataFrame(dict(column_1=expected)))
+    assert result.equals(pd.DataFrame(dict(column_expected=expected)))
 
 
 @pytest.mark.parametrize(

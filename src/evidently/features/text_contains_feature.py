@@ -35,7 +35,7 @@ class Contains(GeneratedFeature):
         super().__init__()
 
     def _feature_column_name(self) -> str:
-        return f"{self.column_name}_" + "_".join(self.items)
+        return f"{self.column_name}_" + "_".join(self.items) + "_" + str(self.case_sensitive) + "_" + self.mode
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         if self.mode == "any":
@@ -84,7 +84,7 @@ class DoesNotContain(GeneratedFeature):
         super().__init__()
 
     def _feature_column_name(self) -> str:
-        return f"{self.column_name}_" + "_".join(self.items)
+        return f"{self.column_name}_" + "_".join(self.items) + "_" + str(self.case_sensitive) + "_" + self.mode
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         if self.mode == "any":

@@ -29,7 +29,7 @@ class BeginsWith(GeneratedFeature):
         super().__init__()
 
     def _feature_column_name(self) -> str:
-        return f"{self.column_name}.{self.prefix}"
+        return f"{self.column_name}.{self.prefix}.{self.case_sensitive}"
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         data = data[self.column_name]
@@ -68,7 +68,7 @@ class EndsWith(GeneratedFeature):
         super().__init__()
 
     def _feature_column_name(self) -> str:
-        return f"{self.column_name}.{self.suffix}"
+        return f"{self.column_name}.{self.suffix}.{self.case_sensitive}"
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         data = data[self.column_name]
