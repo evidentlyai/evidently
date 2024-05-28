@@ -34,6 +34,9 @@ class Contains(GeneratedFeature):
         self.items = items
         super().__init__()
 
+    def _feature_column_name(self) -> str:
+        return f"{self.column_name}_" + "_".join(self.items)
+
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         if self.mode == "any":
             calculated = data[self.column_name].str.contains("|".join(self.items), case=self.case_sensitive)
@@ -41,12 +44,12 @@ class Contains(GeneratedFeature):
             calculated = data[self.column_name].apply(lambda x: all(self.comparison(i, x) for i in self.items))
         else:
             raise ValueError("mode must be either 'any' or 'all'")
-        return pd.DataFrame(dict([(self.column_name, calculated)]))
+        return pd.DataFrame(dict([(self._feature_column_name(), calculated)]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
             self,
-            self.column_name,
+            self._feature_column_name(),
             self.display_name or f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
         )
 
@@ -80,6 +83,9 @@ class DoesNotContain(GeneratedFeature):
         self.items = items
         super().__init__()
 
+    def _feature_column_name(self) -> str:
+        return f"{self.column_name}_" + "_".join(self.items)
+
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         if self.mode == "any":
             calculated = ~data[self.column_name].str.contains("|".join(self.items), case=self.case_sensitive)
@@ -91,7 +97,7 @@ class DoesNotContain(GeneratedFeature):
             dict(
                 [
                     (
-                        self.column_name,
+                        self._feature_column_name(),
                         calculated,
                     )
                 ]
@@ -101,7 +107,7 @@ class DoesNotContain(GeneratedFeature):
     def feature_name(self) -> ColumnName:
         return additional_feature(
             self,
-            self.column_name,
+            self._feature_column_name(),
             self.display_name or f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
         )
 
