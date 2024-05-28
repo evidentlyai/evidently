@@ -35,12 +35,14 @@ class BeginsWith(GeneratedFeature):
             data = data.str.casefold()
             substr = substr.casefold()
         calculated = data.str.startswith(substr)
-        return pd.DataFrame(dict([(self.column_name, calculated)]))
+        generated_column_name = f"{self.column_name}.{self.prefix}"
+        return pd.DataFrame(dict([(generated_column_name, calculated)]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
             self,
-            self.column_name,
+            # self.column_name,
+            f"{self.column_name}.{self.prefix}",
             self.display_name or f"Text Begins with [{self.prefix}] for {self.column_name}",
         )
 
