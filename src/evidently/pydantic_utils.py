@@ -225,6 +225,12 @@ class EnumValueMixin(BaseModel):
 
         if isinstance(value, list):
             return [v.value if isinstance(v, Enum) else v for v in value]
+
+        if isinstance(value, frozenset):
+            return frozenset(v.value if isinstance(v, Enum) else v for v in value)
+
+        if isinstance(value, set):
+            return {v.value if isinstance(v, Enum) else v for v in value}
         return value.value if isinstance(value, Enum) else value
 
     def dict(self, *args, **kwargs) -> "DictStrAny":
@@ -250,7 +256,7 @@ class FieldTags(Enum):
 IncludeTags = FieldTags  # fixme: tmp for compatibility, remove in separate PR
 
 
-class FieldInfo(BaseModel):
+class FieldInfo(EnumValueMixin):
     class Config:
         frozen = True
 
