@@ -8,7 +8,6 @@ import pandas as pd
 from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
 
-from evidently.base_metric import additional_feature
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -22,7 +21,7 @@ class OOVWordsPercentage(GeneratedFeature):
     def __init__(self, column_name: str, ignore_words=(), display_name: Optional[str] = None):
         self.column_name = column_name
         self.ignore_words = ignore_words
-        self.display_name = display_name
+        self.display_name = display_name or f"OOV Words % for {column_name}"
         super().__init__()
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
@@ -46,19 +45,7 @@ class OOVWordsPercentage(GeneratedFeature):
                     oov_num += 1
             return 100 * oov_num / len(words_)
 
-        return pd.DataFrame(
-            dict(
-                [
-                    (
-                        self.column_name,
-                        data[self.column_name].apply(lambda x: oov_share(x, ignore_words=self.ignore_words)),
-                    )
-                ]
-            )
-        )
-
-    def feature_name(self):
-        return additional_feature(self, self.column_name, self.display_name or f"OOV Words % for {self.column_name}")
+        return data[self.column_name].apply(lambda x: oov_share(x, ignore_words=self.ignore_words))
 
     def get_parameters(self) -> Optional[tuple]:
         return self.column_name, self.ignore_words

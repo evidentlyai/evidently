@@ -42,6 +42,11 @@ class ColumnType(Enum):
     Unknown = "unknown"
 
 
+class DatasetType(Enum):
+    MAIN = "main"
+    ADDITIONAL = "additional"
+
+
 def _is_mapping_field(field: ModelField):
     return field.shape in (SHAPE_DICT,)
 

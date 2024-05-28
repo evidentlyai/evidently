@@ -69,20 +69,17 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
                         continue
                     features[_id] = feature
                 feature_data = feature.generate_feature(data.current_data, data.data_definition)
-                feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
                 if curr_additional_data is None:
-                    curr_additional_data = feature_data
-                else:
-                    curr_additional_data = curr_additional_data.join(feature_data)
+                    curr_additional_data = pd.DataFrame()
+                feature_name = feature.feature_name()
+                curr_additional_data[feature_name.name] = feature_data
                 if data.reference_data is None:
                     continue
                 ref_feature_data = feature.generate_feature(data.reference_data, data.data_definition)
-                ref_feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns]
 
                 if ref_additional_data is None:
-                    ref_additional_data = ref_feature_data
-                else:
-                    ref_additional_data = ref_additional_data.join(ref_feature_data)
+                    ref_additional_data = pd.DataFrame()
+                ref_additional_data[feature_name.name] = ref_feature_data
         data.current_additional_features = curr_additional_data
         data.reference_additional_features = ref_additional_data
         return features
@@ -97,6 +94,21 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
 
             return _Wrapper(self, metric)
         return impl
+
+    def get_datasets(self, context):
+        current: pd.DataFrame = context.data.current_data
+        if context.data.current_additional_features is not None:
+            current = context.data.current_data.join(context.data.current_additional_features)
+        reference: pd.DataFrame = context.data.reference_data
+        if context.data.reference_data is not None and context.data.reference_additional_features is not None:
+            reference = context.data.reference_data.join(context.data.reference_additional_features)
+        values_ = {
+            feature.feature_name().name: feature.feature_name().display_name for feature in context.features.values()
+        }
+        current.rename(columns=values_, inplace=True)
+        if reference is not None:
+            reference.rename(columns=values_, inplace=True)
+        return reference, current
 
 
 class PythonMetricImplementation(Generic[TMetric], MetricImplementation):

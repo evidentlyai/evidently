@@ -3,8 +3,6 @@ from typing import Optional
 
 import pandas as pd
 
-from evidently.base_metric import ColumnName
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
@@ -26,7 +24,10 @@ class Contains(GeneratedFeature):
     ):
         self.feature_type = ColumnType.Categorical
         self.column_name = column_name
-        self.display_name = display_name
+        if display_name:
+            self.display_name = display_name
+        else:
+            self.display_name = f"Text Contains of {mode} [{', '.join(items)}] for {column_name}"
         self.case_sensitive = case_sensitive
         if mode not in ["any", "all"]:
             raise ValueError("mode must be either 'any' or 'all'")
@@ -34,21 +35,14 @@ class Contains(GeneratedFeature):
         self.items = items
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
         if self.mode == "any":
             calculated = data[self.column_name].str.contains("|".join(self.items), case=self.case_sensitive)
         elif self.mode == "all":
             calculated = data[self.column_name].apply(lambda x: all(self.comparison(i, x) for i in self.items))
         else:
             raise ValueError("mode must be either 'any' or 'all'")
-        return pd.DataFrame(dict([(self.column_name, calculated)]))
-
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
-            self.column_name,
-            self.display_name or f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
-        )
+        return calculated
 
     def comparison(self, item: str, string: str):
         if self.case_sensitive:
@@ -72,7 +66,10 @@ class DoesNotContain(GeneratedFeature):
     ):
         self.feature_type = ColumnType.Categorical
         self.column_name = column_name
-        self.display_name = display_name
+        if display_name:
+            self.display_name = display_name
+        else:
+            self.display_name = f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}"
         self.case_sensitive = case_sensitive
         if mode not in ["any", "all"]:
             raise ValueError("mode must be either 'any' or 'all'")
@@ -80,30 +77,14 @@ class DoesNotContain(GeneratedFeature):
         self.items = items
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
         if self.mode == "any":
             calculated = ~data[self.column_name].str.contains("|".join(self.items), case=self.case_sensitive)
         elif self.mode == "all":
             calculated = ~data[self.column_name].apply(lambda x: all(self.comparison(i, x) for i in self.items))
         else:
             raise ValueError("mode must be either 'any' or 'all'")
-        return pd.DataFrame(
-            dict(
-                [
-                    (
-                        self.column_name,
-                        calculated,
-                    )
-                ]
-            )
-        )
-
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
-            self.column_name,
-            self.display_name or f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
-        )
+        return calculated
 
     def comparison(self, item: str, string: str):
         if self.case_sensitive:

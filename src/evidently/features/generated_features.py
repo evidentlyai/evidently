@@ -8,7 +8,9 @@ from typing import Optional
 import pandas as pd
 from pydantic import Field
 
+from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
+from evidently.core import DatasetType
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -25,7 +27,7 @@ class GeneratedFeature(EvidentlyBaseModel):
     """
 
     @abc.abstractmethod
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
         """
         generate DataFrame with new features from source data.
 
@@ -34,7 +36,6 @@ class GeneratedFeature(EvidentlyBaseModel):
         """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def feature_name(self) -> "ColumnName":
         """
         get feature name for given features and parameters.
@@ -42,7 +43,12 @@ class GeneratedFeature(EvidentlyBaseModel):
         Returns:
             Special feature name for unique identification results of give feature.
         """
-        raise NotImplementedError()
+        return ColumnName(
+            name=self.__class__.__name__ + "." + self.feature_id,
+            display_name=self.display_name,
+            dataset=DatasetType.ADDITIONAL,
+            feature_class=self,
+        )
 
     def get_parameters(self) -> Optional[tuple]:
         attributes = []
