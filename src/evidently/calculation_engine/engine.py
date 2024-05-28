@@ -35,7 +35,6 @@ class Engine(Generic[TMetricImplementation, TInputData]):
     def execute_metrics(self, context, data: GenericInputData):
         calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
         converted_data = self.convert_input_data(data)
-        self.generate_additional_features(converted_data)
         context.features = self.generate_additional_features(converted_data)
         context.data = converted_data
         for metric, calculation in self.get_metric_execution_iterator():
@@ -90,6 +89,9 @@ class Engine(Generic[TMetricImplementation, TInputData]):
                     metric_to_calculations[metric] = metrics_by_parameters[parameters][0]
 
         return [(metric, self.get_metric_implementation(metric_to_calculations[metric])) for metric in self.metrics]
+
+    def get_datasets(self, context):
+        raise NotImplementedError()
 
 
 def _aggregate_metrics(agg, item):

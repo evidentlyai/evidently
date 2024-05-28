@@ -8,7 +8,6 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
@@ -106,18 +105,11 @@ class SimpleGeneratedFeature(GeneratedFeature):
 
     def __init__(self, column_name: str, display_name: str = ""):
         self.column_name = column_name
-        self.display_name = display_name
+        self.display_name = display_name or "SGF: {self.column_name}"
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        return pd.DataFrame(dict([(self.column_name, data[self.column_name] * 2)]))
-
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
-            self.column_name,
-            self.display_name if self.display_name else "SGF: {self.column_name}",
-        )
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
+        return data[self.column_name] * 2
 
 
 class LengthFeature(GeneratedFeature):
@@ -127,13 +119,11 @@ class LengthFeature(GeneratedFeature):
     def __init__(self, column_name: str, max_length: Optional[int] = None):
         self.column_name = column_name
         self.max_length = max_length
+        self.display_name = f"Length of {self.column_name}"
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(len))]))
-
-    def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name, f"Length of {self.column_name}")
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
+        return data[self.column_name].apply(len)
 
 
 @pytest.mark.parametrize(

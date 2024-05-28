@@ -6,8 +6,6 @@ from typing import Union
 
 import pandas as pd
 
-from evidently.base_metric import ColumnName
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
@@ -55,12 +53,12 @@ class OpenAIFeature(GeneratedFeature):
         self.model = model
         self.feature_type = ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical
         self.column_name = column_name
-        self.display_name = display_name
+        self.display_name = display_name if display_name is not None else f"OpenAI for {column_name}"
         self.check_mode = check_mode
         self.possible_values = [v.lower() for v in possible_values] if possible_values else None
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
         from openai import OpenAI
 
         column_data = data[self.column_name].values.tolist()
@@ -102,19 +100,7 @@ class OpenAIFeature(GeneratedFeature):
                 except ValueError:
                     result.append(None)
 
-        return pd.DataFrame(dict([(self._feature_column_name(), result)]), index=data.index)
-
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
-            self._feature_column_name(),
-            self.display_name or f"OpenAI for {self.column_name}",
-        )
-
-    def _feature_column_name(self) -> str:
-        if self.display_name:
-            return self.display_name.replace(" ", "_").lower()
-        return self.column_name + "_" + self.feature_id
+        return pd.Series(result, index=data.index)
 
 
 def _completions_openai_call(

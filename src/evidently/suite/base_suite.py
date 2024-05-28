@@ -525,4 +525,4 @@ class ReportBase(Display):
         return self._get_snapshot()
 
     def datasets(self):
-        return self._inner_suite.context.data.get_datasets()
+        return self._inner_suite.context.engine.get_datasets(self._inner_suite.context)
