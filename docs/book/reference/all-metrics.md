@@ -186,9 +186,38 @@ How to set [data drift parameters](../customization/options-for-statistical-test
   
 <summary>RecSys (Recommender System) Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-|**`RecsysPreset`** <br>Evaluates the quality of the recommender system. <br><br>Recommendations and true relevance scores are required. For some metrics, training data and item features are required. <br><br>**Contents**:<ul><li>`PrecisionTopKMetric()`</li><li>`RecallTopKMetric()`</li><li>`FBetaTopKMetric()`</li><li>`MAPKMetric()`</li><li>`NDCGKMetric()`</li><li>`MRRKMetric()`</li><li>`HitRateKMetric()`</li><li>`PersonalizationMetric()`</li><li>`PopularityBias()` </li><li>`RecCasesTable()`</li><li>`ScoreDistribution()`</li><li>`DiversityMetric()`</li><li>`SerendipityMetric()`</li><li>`NoveltyMetric()`</li><li>`ItemBiasMetric()` (pass column as a parameter)</li><li>`UserBiasMetric()`(pass column as a parameter)</li></ul>| **Required**:<br>`k` <br> **Optional**:<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li><li>`normalize_arp: bool`</li><li>`user_ids: Optional[List[Union[int, str]]]`</li><li>`display_features: Optional[List[str]]`</li><li>`item_features: Optional[List[str]]`</li><li>`user_bias_columns: Optional[List[str]]`</li><li>`item_bias_columns: Optional[List[str]]`</li></ul>
+`RecsysPreset` evaluates the quality of the recommender system. Recommendations and true relevance scores are required. For some metrics, training data and item features are required. 
+
+**Composition**:
+* `PrecisionTopKMetric()`
+* `RecallTopKMetric()`
+* `FBetaTopKMetric()`
+* `MAPKMetric()`
+* `NDCGKMetric()`
+* `MRRKMetric()`
+* `HitRateKMetric()`
+* `PersonalizationMetric()`
+* `PopularityBias()`
+* `RecCasesTable()`
+* `ScoreDistribution()`
+* `DiversityMetric()`
+* `SerendipityMetric()`
+* `NoveltyMetric()`
+* `ItemBiasMetric()` (pass column as a parameter)
+* `UserBiasMetric()`(pass column as a parameter)
+
+**Required parameter**:
+* `k`
+
+**Optional parameters***:
+* `min_rel_score: Optional[int]`
+* `no_feedback_users: bool`
+* `normalize_arp: bool`
+* `user_ids: Optional[List[Union[int, str]]]`
+* `display_features: Optional[List[str]]`
+* `item_features: Optional[List[str]]`
+* `user_bias_columns: Optional[List[str]]`
+* `item_bias_columns: Optional[List[str]]`
 
 </details>
 
