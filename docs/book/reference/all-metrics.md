@@ -37,6 +37,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 | **`DataQualityPreset`**<br><br>Evaluates the data quality and provides descriptive stats. <br><br>Input features are required. Prediction and target are optional. <br><br>**Contents:**<ul><li>`DatasetSummaryMetric()`</li><li>`ColumnSummaryMetric(column_name=column_name)` for `all` or `сolumns` if provided</li><li>`DatasetMissingValuesMetric()`</li><li>`DatasetCorrelationsMetric()`</li></ul> | **Optional**:<br>`columns`<br> |
+
 </details>
 
 <details>
@@ -46,6 +47,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 | **`DataDriftPreset`**<br> Evaluates the data drift in the individual columns and the dataset. <br><br> Input features are required. <br><br>**Contents**:<ul><li>`DataDriftTable(сolumns=сolumns)` or `all` if not listed</li><li>`DatasetDriftMetric(сolumns=сolumns)` or `all` if not listed</li></ul>| **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+
 </details>
 
 <details>
@@ -55,6 +57,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 | **`TargetDriftPreset`** <br><br>Evaluates the prediction or target drift. <br><br>Target or prediction is required. Input features are optional.<br><br>**Contents**:<ul><li>`ColumnDriftMetric(column_name=target, prediction)`</li><li>`ColumnCorrelationsMetric(column_name=target, prediction)`</li><li>`TargetByFeaturesTable(columns=columns)` or `all` if not listed</li></ul> If regression:<ul><li>`ColumnValuePlot(column_name=target, prediction)`</li></ul> | **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold` </li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
+
 </details>
 
 <details>
@@ -64,6 +67,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 | **`RegressionPreset`**<br> Evaluates the quality of a regression model. <br><br>Prediction and target are required. Input features are optional.<br><br>**Contents**:<ul><li>`RegressionQualityMetric()`</li><li>`RegressionPredictedVsActualScatter()`</li><li>`RegressionPredictedVsActualPlot()`</li><li>`RegressionErrorPlot()`</li><li>`RegressionAbsPercentageErrorPlot()`</li><li>`RegressionErrorDistribution()`</li><li>`RegressionErrorNormality()`</li><li>`RegressionTopErrorMetric()`</li><li>`RegressionErrorBiasTable(columns=columns)` or `all` if not listed</li></ul>| **Optional**:<br>`columns` |
+
 </details>
 
 <details>
@@ -73,6 +77,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 | **`ClassificationPreset`** <br>Evaluates the quality of a classification model. <br><br>Prediction and target are required. Input features are optional.<br><br>**Contents**:<ul><li>`ClassificationQualityMetric()`</li><li>`ClassificationClassBalance()`</li><li>`ClassificationConfusionMatrix()`</li><li>`ClassificationQualityByClass()`</li></ul>If probabilistic classification, also:<ul><li>`ClassificationClassSeparationPlot()`</li><li>`ClassificationProbDistribution()`</li><li>`ClassificationRocCurve()`</li><li>`ClassificationPRCurve()`</li><li>`ClassificationPRTable()`</li><li>`ClassificationQualityByFeatureTable(columns=columns)` or `all` if not listed</li></ul>| **Optional**:<ul><li>`columns`</li><li>`probas_threshold`</li><li>`k`</li></ul> |
+
 </details>
 
 <details>
@@ -82,6 +87,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 |**`TextOverviewPreset(column_name=”text”)`** <br>Evaluates descriptive statistics for all text columns in the dataset. <br><br>Text columns (inputs and/or outputs) are required.<br><br>**Contents**:<ul><li>`ColumnSummaryMetric()`</li> for text descriptors: `Sentiment()`, `SentenceCount()`, `OOV()`, `TextLength()`, `NonLetterCharacterPercentage()` </ul>If more than one text column is provided, also for:<ul><li>`SemanticSimilarity` between the columns</li></ul>| **Required**:<br>`column_name` or `columns` | 
+
 </details>
 
 <details>
@@ -91,6 +97,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 |**`TextEvals(column_name=”text”)`** <br>Evaluates descriptive statistics a defined text column. Simplifies interface to add other descriptors <br><br>A text column (input or output) is required.<br><br>**Contents**:<ul><li>`ColumnSummaryMetric()`</li> for text descriptors: `Sentiment()`, `SentenceCount()`, `OOV()`, `TextLength()`, `NonLetterCharacterPercentage()`| **Required**:<br>`column_name`| 
+
 </details>
 
 <details>
@@ -100,6 +107,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 | Preset name and Description | Parameters |
 |---|---|
 |**`RecsysPreset`** <br>Evaluates the quality of the recommender system. <br><br>Recommendations and true relevance scores are required. For some metrics, training data and item features are required. <br><br>**Contents**:<ul><li>`PrecisionTopKMetric()`</li><li>`RecallTopKMetric()`</li><li>`FBetaTopKMetric()`</li><li>`MAPKMetric()`</li><li>`NDCGKMetric()`</li><li>`MRRKMetric()`</li><li>`HitRateKMetric()`</li><li>`PersonalizationMetric()`</li><li>`PopularityBias()` </li><li>`RecCasesTable()`</li><li>`ScoreDistribution()`</li><li>`DiversityMetric()`</li><li>`SerendipityMetric()`</li><li>`NoveltyMetric()`</li><li>`ItemBiasMetric()` (pass column as a parameter)</li><li>`UserBiasMetric()`(pass column as a parameter)</li></ul>| **Required**:<br>`k` <br> **Optional**:<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li><li>`normalize_arp: bool`</li><li>`user_ids: Optional[List[Union[int, str]]]`</li><li>`display_features: Optional[List[str]]`</li><li>`item_features: Optional[List[str]]`</li><li>`user_bias_columns: Optional[List[str]]`</li><li>`item_bias_columns: Optional[List[str]]`</li></ul>
+
 </details>
 
 # Data Quality
