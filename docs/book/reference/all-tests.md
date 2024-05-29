@@ -37,11 +37,34 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 Default conditions for each Test in the Preset match the Test's defaults. You can see them in the tables below. The listed Preset parameters apply to the relevant individual Tests inside the Preset.
 
 <details>
+ 
 <summary>NoTargetPerformance Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`NoTargetPerformanceTestPreset`**<br><ul><li> `TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=prediction)`</li><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `сolumns` if provided </li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+**`NoTargetPerformanceTestPreset`** contents: 
+* `TestShareOfDriftedColumns()`
+* `TestColumnDrift(column_name=prediction)`
+* `TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `сolumns` if provided
+* `TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or specified `columns`
+* `TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or specified `columns` 
+* `TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or specified  `columns`
+
+Optional parameters:
+*   `columns`
+*   `stattest`
+*   `cat_stattest`
+*   `num_stattest`
+*   `per_column_stattest`
+*   `text_stattest`
+*   `stattest_threshold`
+*   `cat_stattest_threshold`
+*   `num_stattest_threshold`
+*   `per_column_stattest_threshold`
+*   `text_stattest_threshold`
+*   `embeddings`
+*   `embeddings_drift_method`
+*   `drift_share`
+
+[How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
 
 </details>
 
