@@ -46,6 +46,7 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 </details>
 
 <details>
+ 
 <summary>Data Stability Test Preset</summary>
 
 | Preset name and Description | Parameters |
@@ -55,6 +56,7 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 </details>
 
 <details>
+ 
 <summary>Data Quality Test Preset</summary>
 
 | Preset name and Description | Parameters |
@@ -63,6 +65,7 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 </details>
 
 <details>
+ 
 <summary>Data Drift Test Preset</summary>
 
 | Preset name and Description | Parameters |
@@ -72,14 +75,17 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 </details>
 
 <details>
+ 
 <summary>Regression Test Preset</summary>
 
 | Preset name and Description | Parameters |
 |---|---|
 | **`RegressionTestPreset`**<br> <ul><li>`TestValueMeanError()`</li><li>`TestValueMAE()`</li><li>`TestValueRMSE()`</li><li>`TestValueMAPE()`</li></ul> | N/A |
+
 </details>
 
 <details>
+ 
 <summary>Multiclass Classification Test Preset</summary>
 
 | Preset name and Description | Parameters |
@@ -89,6 +95,7 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 </details>
 
 <details>
+ 
 <summary>Binary Classification (Top K) Test Preset</summary>
 
 | Preset name and Description | Parameters |
@@ -98,6 +105,7 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 </details>
 
 <details>
+ 
 <summary>Binary Classification Test Preset</summary>
 
 | Preset name and Description | Parameters |
@@ -107,6 +115,7 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 </details>
 
 <details>
+ 
 <summary>RecSys (Recommender Systems) Test Preset</summary>
 
 | Preset name and Description | Parameters |
