@@ -15,14 +15,7 @@ def assets_router(base_path: str = BASE_PATH):
     @litestar.get(
         [
             "/",
-            "/projects",
-            "/signup",
-            "/organizations",
-            "/auth",
-            "/teams",
-            "/token",
-            "/projects/{path:path}",
-            "/teams/{path:path}",
+            "/projects/{path:path}"
         ],
         include_in_schema=False,
     )
