@@ -26,7 +26,6 @@ You can use the menu on the right to navigate the sections.
   * No reference: the Test conditions that apply if you do not provide the reference. They are based on heuristics.
  
 **Test visualizations**. Each Test also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../examples/examples.md).
-
 </details>
 
 {% hint style="info" %} 
@@ -44,7 +43,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`NoTargetPerformanceTestPreset`**<br><ul><li> `TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=prediction)`</li><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `сolumns` if provided </li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
-
 </details>
 
 <details>
@@ -54,7 +52,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`DataStabilityTestPreset`**<br><ul><li>`TestNumberOfRows()`</li><li>`TestNumberOfColumns()`</li><li>`TestColumnsType()`</li><li>`TestColumnShareOfMissingValues()`</li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li></ul> |
-
 </details>
 
 <details>
@@ -64,7 +61,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`DataQualityTestPreset`**<br>  <ul><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `columns` </li><li>`TestMostCommonValueShare(column_name=column_name)` for `all` or `columns`</li><li>`TestNumberOfConstantColumns()`</li><li>`TestNumberOfDuplicatedColumns()`</li><li>`TestNumberOfDuplicatedRows()`</li><li>`TestHighlyCorrelatedColumns()`</li></ul>| **Optional:**<ul><li>`columns`</li></ul> |
-
 </details>
 
 <details>
@@ -74,7 +70,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`DataDriftTestPreset`**<br> <ul><li>`TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=column_name)` for `all` or `сolumns` if provided </li></ul> | **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
-
 </details>
 
 <details>
@@ -84,7 +79,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`RegressionTestPreset`**<br> <ul><li>`TestValueMeanError()`</li><li>`TestValueMAE()`</li><li>`TestValueRMSE()`</li><li>`TestValueMAPE()`</li></ul> | N/A |
-
 </details>
 
 <details>
@@ -94,7 +88,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`MulticlassClassificationTestPreset`**<br> <ul><li>`TestAccuracyScore()`</li><li>`TestF1Score()`</li><li>`TestPrecisionByClass()`</li><li>`TestRecallByClass()`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestNumberOfRows()`</li></ul>If probabilistic classification, also: <ul><li>`TestLogLoss()`</li><li>`TestRocAuc()`</li></ul>| **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md).  |
-
 </details>
 
 <details>
@@ -104,7 +97,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`BinaryClassificationTopKTestPreset`**<br> <ul><li>`TestAccuracyScore(k=k)`</li><li>`TestPrecisionScore(k=k)`</li><li>`TestRecallScore(k=k)`</li><li>`TestF1Score(k=k)`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestRocAuc()`</li><li>`TestLogLoss()`</li></ul> |**Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
-
 </details>
 
 <details>
@@ -124,7 +116,6 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | Preset name and Description | Parameters |
 |---|---|
 | **`RecsysTestPreset`** <br><ul><li>`TestPrecisionTopK()`</li><li>`TestRecallTopK()`</li><li>`TestMAPK()`</li><li>`TestNDCGK()`</li><li>`TestHitRateK()`</li></ul> | **Required:**<ul><li>`k`</li></ul> **Optional:**<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li></ul>
-
 </details>
 
 {% hint style="info" %} 
@@ -132,6 +123,8 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 {% endhint %}
 
 # Data Quality
+
+## Data Integrity
 
 | Test name  | Description | Parameters | Default test condition | 
 |---|---|---|---|
@@ -147,12 +140,12 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
 | **TestColumnsType()**| Dataset-level. <br><br> Tests the types of all columns against the reference.| **Required**:<br> N/A <br><br> **Optional**:<br> `columns_type: dict` <br><br>**Test conditions**:<br> N/A | Expects types to match.<br><br>**With reference**: the test fails if at least one column type does not match. <br>**No reference**: N/A |
 | **TestColumnAllConstantValues**(column_name='name') | Column-level. <br><br> Tests if all the values in a given column are constant.|**Required**: <ul><li>`column_name`</li></ul>**Optional**:<br> N/A<br><br>**Test conditions**: <br> N/A| Expects non-constant.<br><br>The test fails if all values in a given column are constant.|
 | **TestColumnAllUniqueValues**(column_name='name') | Column-level. <br><br> Tests if all the values in a given column are unique.| **Required**: <ul><li>`column_name`</li></ul>**Optional**:<br> N/A<br><br>**Test conditions**:<br> N/A | Expects all unique (e.g., IDs).<br><br>The test fails if at least one value in a given column is not unique.|
-| **TestColumnRegExp**(column_name='name, reg_exp='^[0..9]') | Column-level. <br><br> Tests the number of values in a column that do not match a defined regular expression, against reference or a defined condition. |**Required**: <ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional**:<br>N/A<br><br>**Test conditions**:<ul><li>*standard parameters* </li></ul>| **With reference**: the test fails if the share of values that match a regular expression is over 10% higher or lower than in the reference.<br><br>**No reference**: the test fails if at least one of the values does not match a regular expression. |
 | **TestNumberOfUniqueValues**(column_name='name')<br>    | Column-level. <br><br> Tests the number of unique values in a given column against reference or a defined condition. |   **Required**:<ul><li>`column_name`</li></ul> **Optional:**<br> N/A <br><br> **Test conditions**: <ul><li>*standard parameters*</li></ul> | Expects +/-10%.<br><br>**With reference**: the test fails if the share of unique values is different by more than 10%.<br><br>**No reference**: N/A |
 | **TestUniqueValuesShare**(column_name='name') | Column-level. <br><br> Tests the share of unique values in a given column against reference or a defined condition.  |   **Required**:<ul><li>`column_name`</li></ul> **Optional:**<br> N/A <br><br> **Test conditions**: <ul><li>*standard parameters*</li></ul> | Expects +/-10%.<br><br>**With reference**: the test fails if the share of unique values is different by more than 10%.<br><br>**No reference**: N/A |
 | **TestMostCommonValueShare**(column_name='name') | Column-level. <br><br> Tests the share of the most common value in a given column against reference or a defined condition. |   **Required**:<ul><li>`column_name`</li></ul> **Optional:**<br> N/A <br><br> **Test conditions**: <ul><li>*standard parameters*</li></ul> | Expects +/-10%.<br><br>**With reference**: the test fails if the share of the most common value is different by more than 10% from the reference.<br><br>**No reference**: the test fails if the share of the most common value is >= 80%. |
+| **TestColumnRegExp**(column_name='name, reg_exp='^[0..9]') | Column-level. <br><br> Tests the number of values in a column that do not match a defined regular expression, against reference or a defined condition. |**Required**: <ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional**:<br>N/A<br><br>**Test conditions**:<ul><li>*standard parameters* </li></ul>| **With reference**: the test fails if the share of values that match a regular expression is over 10% higher or lower than in the reference.<br><br>**No reference**: the test fails if at least one of the values does not match a regular expression. |
 
-# Missing Values
+## Missing Values
 
 **Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
@@ -173,7 +166,7 @@ TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=Tr
 | **TestColumnShareOfMissingValues**(column_name='name')| Column-level. <br><br> Tests the share of missing values in a given column against the reference or a defined condition.| **Required**:<ul><li>`column_name`</li></ul>**Optional**:<ul><li>`missing_values = [], replace = True/False` (default = default list)</li></ul>**Test conditions** <ul><li>*standard parameters*</li></ul> | Expects up to 10% or none.<br><br>**With reference**: the test fails if the share of missing values in a column is over 10% higher than in reference. <br>**No reference**: the test fails if the column contains missing values.|
 | **TestColumnNumberOfDifferentMissingValues**(column_name='name')| Column-level. <br><br> Tests the number of differently encoded missing values in the column against reference or a defined condition. Detects 4 types of missing values by default and/or values from a user list. | **Required**:<ul><li>`column_name`</li></ul>**Optional**:<ul><li>`missing_values = [], replace = True/False` (default = default list)</li></ul> **Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects <= or none.<br><br>**With reference**: the test fails if the current column has more types of missing values. <br><br>**No reference**: The test fails if the column contains missing values.|
 
-# Correlations 
+## Correlations 
 
 | Test name  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
@@ -183,7 +176,7 @@ TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=Tr
 | **TestPredictionFeaturesCorrelations()**| Dataset-level. <br><br> Tests if any of the features is highly correlated with the prediction <br>Example use: to detect when predictions rely on a single feature. | **Required**:<br>N/A<br><br> **Optional:**  <ul><li>`method` (default = `pearson`, available = `pearson`, `spearman`, `kendall`, `cramer_v`)</li></ul> **Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects +/- 10% in max correlation strength, or < 0.9.<br><br>**With reference**: the test fails if there is a 10%+ change in the correlation strength for the feature most correlated with the prediction.<br><br>**No reference**: the test fails if at least one feature is correlated with the prediction >= 0.9 |
 | **TestCorrelationChanges()** | Dataset-level. <br><br> Tests the number of correlation violations (significant change in the correlation strength between any two columns).|  **Required**:<br>N/A<br><br> **Optional:**  <ul><li>`method` (default = `pearson`, available = `pearson`, `spearman`, `kendall`, `cramer_v`)</li><li>`corr_diff` (default = 0.25) </li><li>`column_name`(checks for correlation changes only between a chosen column and other columns in the dataset) </li></ul> **Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects none.<br><br>**With reference**: the test fails if at least 1 correlation violation is detected. <br><br>**No reference**: N/A |
 
-# Column Value Checks
+## Column Values
 
 | Test name  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
