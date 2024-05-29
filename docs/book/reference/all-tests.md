@@ -106,6 +106,7 @@ Preset name: `DataQualityTestPreset()`
 
 **Optional parameters**: 
 * `columns`
+
 </details>
 
 <details>
