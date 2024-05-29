@@ -40,15 +40,17 @@ Default conditions for each Test in the Preset match the Test's defaults. You ca
  
 <summary>NoTargetPerformance Test Preset</summary>
 
-**`NoTargetPerformanceTestPreset`** contents: 
+Preset name: `NoTargetPerformanceTestPreset()`
+
+**Composition**: 
 * `TestShareOfDriftedColumns()`
 * `TestColumnDrift(column_name=prediction)`
-* `TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `сolumns` if provided
-* `TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or specified `columns`
-* `TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or specified `columns` 
-* `TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or specified  `columns`
+* `TestColumnShareOfMissingValues()` for `all` or `сolumns` if provided
+* `TestShareOfOutRangeValues()` for all numerical or specified `columns`
+* `TestShareOfOutListValues()` for all categorical or specified `columns` 
+* `TestMeanInNSigmas()` for all numerical or specified  `columns`
 
-Optional parameters:
+**Optional parameters**:
 *   `columns`
 *   `stattest`
 *   `cat_stattest`
@@ -64,7 +66,7 @@ Optional parameters:
 *   `embeddings_drift_method`
 *   `drift_share`
 
-[How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+How to set [data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).
 
 </details>
 
@@ -72,9 +74,19 @@ Optional parameters:
  
 <summary>Data Stability Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`DataStabilityTestPreset`**<br><ul><li>`TestNumberOfRows()`</li><li>`TestNumberOfColumns()`</li><li>`TestColumnsType()`</li><li>`TestColumnShareOfMissingValues()`</li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li></ul> |
+Preset name: `DataStabilityTestPreset()`
+
+**Composition**: 
+* `TestNumberOfRows()`
+* `TestNumberOfColumns()`
+* `TestColumnsType()`
+* `TestColumnShareOfMissingValues()` for all or specified `columns`
+* `TestShareOfOutRangeValues()` for all numerical or specified `columns`
+* `TestShareOfOutListValues()` for all categorical or specified  `columns`
+* `TestMeanInNSigmas()` for all numerical or specified `columns`
+
+**Optional parameters**: 
+* `columns`
 
 </details>
 
@@ -82,18 +94,47 @@ Optional parameters:
  
 <summary>Data Quality Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`DataQualityTestPreset`**<br>  <ul><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `columns` </li><li>`TestMostCommonValueShare(column_name=column_name)` for `all` or `columns`</li><li>`TestNumberOfConstantColumns()`</li><li>`TestNumberOfDuplicatedColumns()`</li><li>`TestNumberOfDuplicatedRows()`</li><li>`TestHighlyCorrelatedColumns()`</li></ul>| **Optional:**<ul><li>`columns`</li></ul> |
+Preset name: `DataQualityTestPreset()`
+
+**Composition**: 
+* `TestColumnShareOfMissingValues()` for all or specified `columns`
+* `TestMostCommonValueShare()` for all or specified `columns`
+* `TestNumberOfConstantColumns()`
+* `TestNumberOfDuplicatedColumns()`
+* `TestNumberOfDuplicatedRows()`
+* `TestHighlyCorrelatedColumns()`
+
+**Optional parameters**: 
+* `columns`
 </details>
 
 <details>
  
 <summary>Data Drift Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`DataDriftTestPreset`**<br> <ul><li>`TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=column_name)` for `all` or `сolumns` if provided </li></ul> | **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+Preset name: `DataDriftTestPreset()`
+
+**Composition**: 
+* `TestShareOfDriftedColumns()`
+* `TestColumnDrift()` for all or specified `columns`
+
+**Optional parameters**:
+*   `columns`
+*   `stattest`
+*   `cat_stattest`
+*   `num_stattest`
+*   `per_column_stattest`
+*   `text_stattest`
+*   `stattest_threshold`
+*   `cat_stattest_threshold`
+*   `num_stattest_threshold`
+*   `per_column_stattest_threshold`
+*   `text_stattest_threshold`
+*   `embeddings`
+*   `embeddings_drift_method`
+*   `drift_share`
+
+How to set [data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).
 
 </details>
 
@@ -101,9 +142,16 @@ Optional parameters:
  
 <summary>Regression Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`RegressionTestPreset`**<br> <ul><li>`TestValueMeanError()`</li><li>`TestValueMAE()`</li><li>`TestValueRMSE()`</li><li>`TestValueMAPE()`</li></ul> | N/A |
+Preset name: `RegressionTestPreset()`
+
+**Composition**: 
+* `TestValueMeanError()`
+* `TestValueMAE()`
+* `TestValueRMSE()`
+* `TestValueMAPE()`
+
+**Optional parameters**: 
+N/A
 
 </details>
 
@@ -111,9 +159,23 @@ Optional parameters:
  
 <summary>Multiclass Classification Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`MulticlassClassificationTestPreset`**<br> <ul><li>`TestAccuracyScore()`</li><li>`TestF1Score()`</li><li>`TestPrecisionByClass()`</li><li>`TestRecallByClass()`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestNumberOfRows()`</li></ul>If probabilistic classification, also: <ul><li>`TestLogLoss()`</li><li>`TestRocAuc()`</li></ul>| **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md).  |
+Preset name: `MulticlassClassificationTestPreset()`
+
+**Composition**: 
+* `TestAccuracyScore()`
+* `TestF1Score()`
+* `TestPrecisionByClass()`
+* `TestRecallByClass()`
+* `TestColumnDrift(column_name=target)`
+* `TestNumberOfRows()`
+* `TestLogLoss()` - if probabilistic classification
+* `TestRocAuc()` - if probabilistic classification
+
+**Optional parameters** for target drift:
+* `stattest`
+* `stattest_threshold`
+
+How to set [data drift parameters](../customization/options-for-statistical-tests.md)
 
 </details>
 
@@ -121,9 +183,26 @@ Optional parameters:
  
 <summary>Binary Classification (Top K) Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`BinaryClassificationTopKTestPreset`**<br> <ul><li>`TestAccuracyScore(k=k)`</li><li>`TestPrecisionScore(k=k)`</li><li>`TestRecallScore(k=k)`</li><li>`TestF1Score(k=k)`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestRocAuc()`</li><li>`TestLogLoss()`</li></ul> |**Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
+Preset name: `BinaryClassificationTopKTestPreset()`
+
+**Composition**: 
+* `TestAccuracyScore(k=k)`
+* `TestPrecisionScore(k=k)`
+* `TestRecallScore(k=k)`
+* `TestF1Score(k=k)`
+* `TestColumnDrift(column_name=target)`
+* `TestRocAuc()`
+* `TestLogLoss()`
+
+**Required parameters**:
+* `k`
+
+**Optional parameters**:
+* `stattest`
+* `stattest_threshold`
+* `probas_threshold`
+
+How to set [data drift parameters](../customization/options-for-statistical-tests.md)
 
 </details>
 
@@ -131,9 +210,22 @@ Optional parameters:
  
 <summary>Binary Classification Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`BinaryClassificationTestPreset`** <br><ul><li>`TestColumnDrift(column_name=target)`</li><li>`TestPrecisionScore()`</li><li>`TestRecallScore()`</li><li>`TestF1Score()`</li><li>`TestAccuracyScore()`</li></ul>If probabilistic classification, also:<ul><li>`TestRocAuc()`</li></ul> | **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)|
+Preset name: `BinaryClassificationTestPreset()`
+
+**Composition**: 
+* `TestColumnDrift(column_name=target)`
+* `TestPrecisionScore()`
+* `TestRecallScore()`
+* `TestF1Score()`
+* `TestAccuracyScore()`
+* `TestRocAuc()` - if probabilistic classification
+
+**Optional parameters**:
+* `stattest`
+* `stattest_threshold`
+* `probas_threshold`
+
+How to set [data drift parameters](../customization/options-for-statistical-tests.md)
 
 </details>
 
@@ -141,9 +233,21 @@ Optional parameters:
  
 <summary>RecSys (Recommender Systems) Test Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`RecsysTestPreset`** <br><ul><li>`TestPrecisionTopK()`</li><li>`TestRecallTopK()`</li><li>`TestMAPK()`</li><li>`TestNDCGK()`</li><li>`TestHitRateK()`</li></ul> | **Required:**<ul><li>`k`</li></ul> **Optional:**<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li></ul>
+Preset name: `RecsysTestPreset()`
+
+**Composition**: 
+* `TestPrecisionTopK()`
+* `TestRecallTopK()`
+* `TestMAPK()`
+* `TestNDCGK()`
+* `TestHitRateK()`
+
+**Required parameters:**
+* `k`
+
+**Optional parameters:**
+* `min_rel_score: Optional[int]`
+* `no_feedback_users: bool`
 
 </details>
 
