@@ -55,7 +55,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 **Composition**:
 * `DataDriftTable()` for all or specified `columns`
-* `DatasetDriftMetric(сolumns=сolumns)` for all or specified `columns`
+* `DatasetDriftMetric()` for all or specified `columns`
 
 **Optional parameters**:
 * `columns`
@@ -84,10 +84,10 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 `TargetDriftPreset` evaluates the prediction or target drift. Target and/or prediction is required. Input features are optional.
 
 **Composition**:
-* `ColumnDriftMetric(column_name=target, prediction)`
-* `ColumnCorrelationsMetric(column_name=target, prediction)`
-* `TargetByFeaturesTable(columns=columns)` for all or specified `columns`
-* `ColumnValuePlot(column_name=target, prediction)` if the task is `regression`
+* `ColumnDriftMetric()` for `target` and/or `prediction` columns
+* `ColumnCorrelationsMetric()`  for `target` and/or `prediction` columns
+* `TargetByFeaturesTable()` for all or specified `columns`
+* `ColumnValuePlot()` for `target` and/or `prediction` columns - if the task is `regression`
 
 **Optional parameters**:
 * `columns`
@@ -142,7 +142,7 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 * `ClassificationRocCurve()` - if probabilistic classification
 * `ClassificationPRCurve()` - if probabilistic classification
 * `ClassificationPRTable()` - if probabilistic classification
-* `ClassificationQualityByFeatureTable()` for all or specified `columns`d</li></ul>
+* `ClassificationQualityByFeatureTable()` for all or specified `columns`</li></ul>
 
 **Optional parameters**:
 * `columns`
@@ -157,8 +157,13 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 `TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns (inputs and/or outputs) are required.
 
 **Comoposition**:
-* `ColumnSummaryMetric()` for text descriptors: `Sentiment()`, `SentenceCount()`, `OOV()`, `TextLength()`, `NonLetterCharacterPercentage()` for all columns
-* `SemanticSimilarity` between each pair of text columns - if more than one text column is provided.
+* `ColumnSummaryMetric()` for text descriptors for all columns. Descriptors included:
+  * `Sentiment()`
+  * `SentenceCount()`
+  * `OOV()`
+  * `TextLength()`
+  * `NonLetterCharacterPercentage()` 
+* `SemanticSimilarity()` between each pair of text columns - if more than one text column is provided.
 
 **Required parameters**:
 * `column_name` or `columns` list
@@ -172,10 +177,15 @@ How to set [data drift parameters](../customization/options-for-statistical-test
   
 <summary>Text Evals</summary>
 
-`TextEvals()` returns a summary of text evaluation results for a defined text column (required). This Preset provides a simplified interface to list Descriptors for a given text column.
+`TextEvals()` provides a simplified interface to list `Descriptors` for a given text column. It it returns a summary of evaluation results.
 
 **Composition**:
-* `ColumnSummaryMetric()` for text descriptors: `Sentiment()`, `SentenceCount()`, `OOV()`, `TextLength()`, `NonLetterCharacterPercentage()` for the specified text column.
+* `ColumnSummaryMetric()` for text descriptors for the specified text column:
+  * `Sentiment()`
+  * `SentenceCount()`
+  * `OOV()`
+  * `TextLength()`
+  * `NonLetterCharacterPercentage()`
   
 **Required parameters**:
 * `column_name`
@@ -209,7 +219,7 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 **Required parameter**:
 * `k`
 
-**Optional parameters***:
+**Optional parameters**:
 * `min_rel_score: Optional[int]`
 * `no_feedback_users: bool`
 * `normalize_arp: bool`
