@@ -273,19 +273,19 @@ To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. Y
 
 ## Descriptors: Text stats
 
-| Descriptor | What it Does | Parameters |
-| - | - | - |
-| **TextLength()** | Measures the length of the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **OOV()** | Calculates the percentage of out-of-vocabulary words. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
-| **NonLetterCharacterPercentage()** | Calculates the percentage of non-letter characters. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
-| **SentenceCount()** | Counts the number of sentences in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **WordCount()** | Counts the number of words in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| Descriptor | Parameters |
+| - | - |
+| **TextLength()** <br><br> Measures the length of the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **OOV()** <br><br> Calculates the percentage of out-of-vocabulary words. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
+| **NonLetterCharacterPercentage()** <br><br> Calculates the percentage of non-letter characters. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
+| **SentenceCount()** <br><br> Counts the number of sentences in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **WordCount()** <br><br> Counts the number of words in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Descriptors: Model-based
 
-| Descriptor | What it Does | Parameters |
-| - | - | - |
-| **Sentiment()** | Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| Descriptor | Parameters |
+| - | - |
+| **Sentiment()** <br><br> Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
 
 ## Text-Specific Metrics
