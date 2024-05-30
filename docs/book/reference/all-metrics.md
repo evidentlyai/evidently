@@ -6,29 +6,29 @@ description: List of all the metrics and metric presets available in Evidently.
 
 <summary>How to use this page</summary>
 
-This is a reference page. It shows all the metrics and metric presets available in the library, and their parameters. 
+This is a reference page. It shows all the available Metrics and Metric Presets. 
   
-You can use the menu on the right to navigate the sections. We organize the metrics by logical groups. Note that these groups do **not** match the presets with a similar name. For example, there are more Data Quality metrics below than in the `DataQualityPreset`. 
+You can use the menu on the right to navigate the sections. We organize the Metrics by logical groups. Note that these groups do **not** match the Presets with a similar name. For example, there are more Data Quality Metrics than included in the `DataQualityPreset`. 
   
-You can use this reference page to discover additional metrics to include in your custom report.
+You can use this reference page to discover Metrics to include in your custom Reports.
 
 # How to read the tables
 
-* **Name**: the name of the metric of a preset.  
-* **Description**: plain text explanation of the metric, or the contents of the preset. For metrics, we also specify whether the metric applies to the whole dataset or individual columns.
-* **Parameters**: description of the required parameters and optional parameters you can pass to the corresponding metric or preset. For metrics, we also specify the default conditions. They apply if you do not pass a custom parameter.
+* **Name**: the name of the Metric.  
+* **Description**: plain text explanation. For Metrics, we also specify whether it applies to the whole dataset or individual columns.
+* **Parameters**: required and optional parameters for the Metric or Preset. We also specify the defaults that apply if you do not pass a custom parameter.
 
-**Metric visualizations**. Each metric also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../get-started/examples.md) and run the notebook with all metrics or with all metric presets.
+**Metric visualizations**. Each Metric includes a default render. To see the visualization, navigate to the [example notebooks](../get-started/examples.md) and run the notebook with all Metrics or Metric Presets.
 
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All metrics" example notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All metrics" example notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 # Metric Presets
 
-**Defaults**: each Metric in a Preset uses the default parameters for this Metric. You can see them in the tables below. 
+**Defaults**: Presets use the default parameters for each Metric. You can see them in the tables below. 
 
 <details>
 
@@ -255,7 +255,29 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 | **ColumnValueListMetric**(column_name="relationship", values=["Husband", "Unmarried"]) | Column-level.<br><br>Calculates the number of values in the list / out of the list / not found in a given column. The value list should be specified. | **Required:**<ul><li>`column_name`</li><li>`values`</li></ul>**Optional:**<br>n/a |
 | **ColumnValueRangeMetric**(column_name="age", left=10, right=20) | Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. | **Required:**<ul><li>`column_name` </li><li>`left`</li><li>`right`</li></ul> |
 
-# Text Metrics
+# Text Evals
+
+## Text Descriptors 
+
+To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) to visualize it. 
+
+| Descriptor | What it Does | Parameters |
+|---|---|---|
+| **RegExp** | Matches text against a specified regular expression. (Scale: Boolean) | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **BeginsWith** | Checks if the text begins with a specified combination. (Scale: Boolean) | **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **EndsWith** | Checks if the text ends with a specified combination. (Scale: Boolean) | **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **Contains** | Checks if the text contains any or all specified items. (Scale: Boolean) | **Required:**<br>`items`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **DoesNotContain** | Checks if the text does not contain any or all specified items. (Scale: Boolean) | **Required:**<br>`items`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **IncludesWords** | Checks if the text includes any or all specified words. (Scale: Boolean) | **Required:**<br>`words_list`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **ExcludesWords** | Checks if the text excludes any or all specified words. (Scale: Boolean) | **Required:**<br>`words_list`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **TextLength** | Measures the length of the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **OOV** | Calculates the percentage of out-of-vocabulary words. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
+| **NonLetterCharacterPercentage** | Calculates the percentage of non-letter characters. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
+| **SentenceCount** | Counts the number of sentences in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **WordCount** | Counts the number of words in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **Sentiment** | Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+
+## Text-Specific Metrics
 
 | Metric name | Description | Parameters |
 |---|---|---|
@@ -311,7 +333,6 @@ All metrics are dataset-level.
 | **RegressionErrorNormality()**  | Visualizes the quantile-quantile plot (Q-Q plot) to estimate value normality. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionTopErrorMetric()**  | Calculates the regression performance metrics for different groups: top-X% of predictions with overestimation, top-X% of predictions with underestimation, and the rest.<br>Visualizes the group division on a scatter plot with predicted vs. actual values. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul> |
 | **RegressionErrorBiasTable()** | Plots the relationship between feature values and model quality per group (for top-X% error groups, as above). | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`columns`(default = all categorical and numerical columns)</li><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul>|
-
 
 # Ranking and Recommendations 
 
