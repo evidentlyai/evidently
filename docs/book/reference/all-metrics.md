@@ -263,19 +263,19 @@ To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. Y
 
 | Descriptor | What it Does | Parameters |
 |---|---|---|
-| **RegExp** | Matches text against a specified regular expression. (Scale: Boolean) | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **BeginsWith** | Checks if the text begins with a specified combination. (Scale: Boolean) | **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **EndsWith** | Checks if the text ends with a specified combination. (Scale: Boolean) | **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **Contains** | Checks if the text contains any or all specified items. (Scale: Boolean) | **Required:**<br>`items`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **DoesNotContain** | Checks if the text does not contain any or all specified items. (Scale: Boolean) | **Required:**<br>`items`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **IncludesWords** | Checks if the text includes any or all specified words. (Scale: Boolean) | **Required:**<br>`words_list`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
-| **ExcludesWords** | Checks if the text excludes any or all specified words. (Scale: Boolean) | **Required:**<br>`words_list`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
-| **TextLength** | Measures the length of the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **OOV** | Calculates the percentage of out-of-vocabulary words. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
-| **NonLetterCharacterPercentage** | Calculates the percentage of non-letter characters. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
-| **SentenceCount** | Counts the number of sentences in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **WordCount** | Counts the number of words in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **Sentiment** | Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **RegExp()** | Matches text against a specified regular expression. (Scale: Binary.) | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **BeginsWith()** | Checks if the text begins with a specified combination. (Scale: Binary) | **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **EndsWith()** | Checks if the text ends with a specified combination. (Scale: Binary) | **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **Contains()** | Checks if the text contains any or all specified items. (Scale: Binary) | **Required:**<br>`items`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **DoesNotContain()** | Checks if the text does not contain any or all specified items. (Scale: Binary) | **Required:**<br>`items`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **IncludesWords()** | Checks if the text includes any or all specified words. (Scale: Binary) | **Required:**<br>`words_list`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **ExcludesWords()** | Checks if the text excludes any or all specified words. (Scale: Binary) | **Required:**<br>`words_list`<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **TextLength()** | Measures the length of the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **OOV()** | Calculates the percentage of out-of-vocabulary words. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
+| **NonLetterCharacterPercentage()** | Calculates the percentage of non-letter characters. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
+| **SentenceCount()** | Counts the number of sentences in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **WordCount()** | Counts the number of words in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **Sentiment()** | Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Text-Specific Metrics
 
