@@ -263,7 +263,7 @@ To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. Y
 
 | Descriptor | What it Does | Parameters |
 | - | - | - |
-| **RegExp()** | Matches text against any defined specified regular expression. Example: `RegExp(reg_exp=r"^I")`. (Scale: Binary.) | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **RegExp()** | Matches text against any specified regular expression. Example: `RegExp(reg_exp=r"^I")`. (Scale: Binary.) | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **BeginsWith()** | Checks if the text begins with a specified combination. (Scale: Binary) | **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
 | **EndsWith()** | Checks if the text ends with a specified combination. (Scale: Binary) | **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
 | **Contains()** | Checks if the text contains any or all specified items. (Scale: Binary) | **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
