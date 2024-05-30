@@ -37,7 +37,9 @@ def test_text_contains_feature(items: List[str], case: bool, mode: str, expected
         data=data,
         data_definition=create_data_definition(None, data, ColumnMapping()),
     )
-    assert result.equals(pd.DataFrame(dict(column_1=expected)))
+    column_expected = feature_generator._feature_column_name()
+    expected_df = pd.DataFrame({column_expected: expected})
+    assert result.equals(expected_df)
 
 
 @pytest.mark.parametrize(
@@ -56,4 +58,6 @@ def test_text_not_contains_feature(items: List[str], case: bool, mode: str, expe
         data=data,
         data_definition=create_data_definition(None, data, ColumnMapping()),
     )
-    assert result.equals(pd.DataFrame(dict(column_1=expected)))
+    column_expected = feature_generator._feature_column_name()
+    expected_df = pd.DataFrame({column_expected: expected})
+    assert result.equals(expected_df)
