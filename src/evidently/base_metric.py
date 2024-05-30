@@ -224,7 +224,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
     # TODO: if we want metric-specific options
     options: Options
 
-    fields: ClassVar = FieldsDescriptor()
+    fields: ClassVar[FieldsDescriptor] = FieldsDescriptor()
     # resulting options will be determined via
     # options = global_option.override(display_options).override(metric_options)
 

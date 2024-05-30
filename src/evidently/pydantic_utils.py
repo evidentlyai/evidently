@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
 from typing import Dict
+from typing import FrozenSet
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -29,7 +30,6 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
-    from evidently.core import IncludeTags
 T = TypeVar("T")
 
 
@@ -144,6 +144,10 @@ def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
     return PolymorphicModel
 
 
+def get_classpath(cls: Type) -> str:
+    return f"{cls.__module__}.{cls.__name__}"
+
+
 TPM = TypeVar("TPM", bound="PolymorphicModel")
 
 
@@ -161,7 +165,7 @@ class PolymorphicModel(BaseModel):
 
     @classmethod
     def __get_classpath__(cls):
-        return f"{cls.__module__}.{cls.__name__}"
+        return get_classpath(cls)
 
     type: str = Field("")
 
@@ -221,6 +225,12 @@ class EnumValueMixin(BaseModel):
 
         if isinstance(value, list):
             return [v.value if isinstance(v, Enum) else v for v in value]
+
+        if isinstance(value, frozenset):
+            return frozenset(v.value if isinstance(v, Enum) else v for v in value)
+
+        if isinstance(value, set):
+            return {v.value if isinstance(v, Enum) else v for v in value}
         return value.value if isinstance(value, Enum) else value
 
     def dict(self, *args, **kwargs) -> "DictStrAny":
@@ -232,6 +242,30 @@ class ExcludeNoneMixin(BaseModel):
     def dict(self, *args, **kwargs) -> "DictStrAny":
         kwargs["exclude_none"] = True
         return super().dict(*args, **kwargs)
+
+
+class FieldTags(Enum):
+    Parameter = "parameter"
+    Current = "current"
+    Reference = "reference"
+    Render = "render"
+    TypeField = "type_field"
+    Extra = "extra"
+
+
+IncludeTags = FieldTags  # fixme: tmp for compatibility, remove in separate PR
+
+
+class FieldInfo(EnumValueMixin):
+    class Config:
+        frozen = True
+
+    path: str
+    tags: FrozenSet[FieldTags]
+    classpath: str
+
+    def __lt__(self, other):
+        return self.path < other.path
 
 
 class FieldPath:
@@ -309,6 +343,10 @@ class FieldPath:
     def _list_with_tags(self, current_tags: Set["IncludeTags"]) -> List[Tuple[str, Set["IncludeTags"]]]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [(repr(self), current_tags)]
+        from evidently.core import BaseResult
+
+        if issubclass(self._cls, BaseResult) and self._cls.__config__.extract_as_obj:
+            return [(repr(self), current_tags)]
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
@@ -337,6 +375,27 @@ class FieldPath:
 
     def list_nested_fields_with_tags(self) -> List[Tuple[str, Set["IncludeTags"]]]:
         return self._list_with_tags(set())
+
+    def list_nested_field_infos(self) -> List[FieldInfo]:
+        return [
+            FieldInfo(path=path, tags=frozenset(tags), classpath=get_classpath(self._get_field_type(path.split("."))))
+            for path, tags in self.list_nested_fields_with_tags()
+        ]
+
+    def _get_field_type(self, path: List[str]) -> Type:
+        if len(path) == 0:
+            raise ValueError("Empty path provided")
+        if len(path) == 1:
+            if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
+                return self._cls.__fields__[path[0]].type_
+            if self.has_instance:
+                # fixme: tmp fix
+                # in case of field like f: Dict[str, A] we wont know that value was type annotated with A when we get to it
+                if isinstance(self._instance, dict):
+                    return type(self._instance.get(path[0]))
+            raise NotImplementedError(f"Not implemented for {self._cls.__name__}")
+        child, *path = path
+        return self.child(child)._get_field_type(path)
 
     def __repr__(self):
         return self.get_path()
