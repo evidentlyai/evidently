@@ -69,7 +69,7 @@ def create_report(i: int, data):
             metrics.ColumnSummaryMetric(column_name=descriptors.OOV(display_name="OOV").for_column("Review_Text")),
             metrics.ColumnSummaryMetric(
                 column_name=descriptors.NonLetterCharacterPercentage(
-                    display_name="NonLetterCharacterPercentage"
+                    display_name="Non Letter Character Percentage"
                 ).for_column("Review_Text")
             ),
             metrics.ColumnSummaryMetric(
