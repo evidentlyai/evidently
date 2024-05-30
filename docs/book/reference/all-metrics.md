@@ -34,9 +34,16 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Data Quality Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`DataQualityPreset`**<br><br>Evaluates the data quality and provides descriptive stats. <br><br>Input features are required. Prediction and target are optional. <br><br>**Contents:**<ul><li>`DatasetSummaryMetric()`</li><li>`ColumnSummaryMetric(column_name=column_name)` for `all` or `сolumns` if provided</li><li>`DatasetMissingValuesMetric()`</li><li>`DatasetCorrelationsMetric()`</li></ul> | **Optional**:<br>`columns`<br> |
+`DataQualityPreset` captures column and dataset summaries. Input features are required. Prediction and target are optional.
+
+**Composition**:
+* `DatasetSummaryMetric()`
+* `ColumnSummaryMetric()` for `all` or specified `сolumns`
+* `DatasetMissingValuesMetric()`
+* `DatasetCorrelationsMetric()`
+
+**Optional parameters**:
+* `columns`
 
 </details>
 
@@ -44,9 +51,29 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Data Drift Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`DataDriftPreset`**<br> Evaluates the data drift in the individual columns and the dataset. <br><br> Input features are required. <br><br>**Contents**:<ul><li>`DataDriftTable(сolumns=сolumns)` or `all` if not listed</li><li>`DatasetDriftMetric(сolumns=сolumns)` or `all` if not listed</li></ul>| **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`text_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`text_stattest_threshold`</li><li>`embeddings`</li><li>`embeddings_drift_method`</li><li>`drift_share`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+`DataDriftPreset` evaluates the data distribution drift in all individual columns, and share of drifting columns in the dataset. Input features are required. 
+
+**Composition**:
+* `DataDriftTable()` for all or specified `columns`
+* `DatasetDriftMetric()` for all or specified `columns`
+
+**Optional parameters**:
+* `columns`
+* `stattest`
+* `cat_stattest`
+* `num_stattest`
+* `per_column_stattest`
+* `text_stattest`
+* `stattest_threshold`
+* `cat_stattest_threshold`
+* `num_stattest_threshold`
+* `per_column_stattest_threshold`
+* `text_stattest_threshold`
+* `embeddings`
+* `embeddings_drift_method`
+* `drift_share`
+
+How to set [data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).
 
 </details>
 
@@ -54,9 +81,26 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Target Drift Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`TargetDriftPreset`** <br><br>Evaluates the prediction or target drift. <br><br>Target or prediction is required. Input features are optional.<br><br>**Contents**:<ul><li>`ColumnDriftMetric(column_name=target, prediction)`</li><li>`ColumnCorrelationsMetric(column_name=target, prediction)`</li><li>`TargetByFeaturesTable(columns=columns)` or `all` if not listed</li></ul> If regression:<ul><li>`ColumnValuePlot(column_name=target, prediction)`</li></ul> | **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold` </li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
+`TargetDriftPreset` evaluates the prediction or target drift. Target and/or prediction is required. Input features are optional.
+
+**Composition**:
+* `ColumnDriftMetric()` for `target` and/or `prediction` columns
+* `ColumnCorrelationsMetric()`  for `target` and/or `prediction` columns
+* `TargetByFeaturesTable()` for all or specified `columns`
+* `ColumnValuePlot()` for `target` and/or `prediction` columns - if the task is `regression`
+
+**Optional parameters**:
+* `columns`
+* `stattest`
+* `cat_stattest`
+* `num_stattest`
+* `per_column_stattest`
+* `stattest_threshold`
+* `cat_stattest_threshold`
+* `num_stattest_threshold`
+* `per_column_stattest_threshold`
+
+How to set [data drift parameters](../customization/options-for-statistical-tests.md). 
 
 </details>
 
@@ -64,9 +108,21 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Regression Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`RegressionPreset`**<br> Evaluates the quality of a regression model. <br><br>Prediction and target are required. Input features are optional.<br><br>**Contents**:<ul><li>`RegressionQualityMetric()`</li><li>`RegressionPredictedVsActualScatter()`</li><li>`RegressionPredictedVsActualPlot()`</li><li>`RegressionErrorPlot()`</li><li>`RegressionAbsPercentageErrorPlot()`</li><li>`RegressionErrorDistribution()`</li><li>`RegressionErrorNormality()`</li><li>`RegressionTopErrorMetric()`</li><li>`RegressionErrorBiasTable(columns=columns)` or `all` if not listed</li></ul>| **Optional**:<br>`columns` |
+`RegressionPreset` evaluates the quality of a regression model. Prediction and target are required. Input features are optional.
+
+**Composition**:
+* `RegressionQualityMetric()`
+* `RegressionPredictedVsActualScatter()`
+* `RegressionPredictedVsActualPlot()`
+* `RegressionErrorPlot()`
+* `RegressionAbsPercentageErrorPlot()`
+* `RegressionErrorDistribution()`
+* `RegressionErrorNormality()`
+* `RegressionTopErrorMetric()`
+* `RegressionErrorBiasTable()` for all or specified `columns`
+
+**Optional parameters**:
+* `columns`
 
 </details>
 
@@ -74,9 +130,23 @@ We are doing our best to maintain this page up to date. In case of discrepancies
   
 <summary>Classification Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-| **`ClassificationPreset`** <br>Evaluates the quality of a classification model. <br><br>Prediction and target are required. Input features are optional.<br><br>**Contents**:<ul><li>`ClassificationQualityMetric()`</li><li>`ClassificationClassBalance()`</li><li>`ClassificationConfusionMatrix()`</li><li>`ClassificationQualityByClass()`</li></ul>If probabilistic classification, also:<ul><li>`ClassificationClassSeparationPlot()`</li><li>`ClassificationProbDistribution()`</li><li>`ClassificationRocCurve()`</li><li>`ClassificationPRCurve()`</li><li>`ClassificationPRTable()`</li><li>`ClassificationQualityByFeatureTable(columns=columns)` or `all` if not listed</li></ul>| **Optional**:<ul><li>`columns`</li><li>`probas_threshold`</li><li>`k`</li></ul> |
+`ClassificationPreset` evaluates the quality of a classification model. Prediction and target are required. Input features are optional.
+
+**Composition**:
+* `ClassificationQualityMetric()`
+* `ClassificationClassBalance()`
+* `ClassificationConfusionMatrix()`
+* `ClassificationQualityByClass()`
+* `ClassificationClassSeparationPlot()` - if probabilistic classification
+* `ClassificationProbDistribution()`- if probabilistic classification
+* `ClassificationRocCurve()` - if probabilistic classification
+* `ClassificationPRCurve()` - if probabilistic classification
+* `ClassificationPRTable()` - if probabilistic classification
+* `ClassificationQualityByFeatureTable()` for all or specified `columns`</li></ul>
+
+**Optional parameters**:
+* `columns`
+* `probas_threshold`
 
 </details>
 
@@ -84,9 +154,22 @@ We are doing our best to maintain this page up to date. In case of discrepancies
   
 <summary>Text Overview Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-|**`TextOverviewPreset(column_name=”text”)`** <br>Evaluates descriptive statistics for all text columns in the dataset. <br><br>Text columns (inputs and/or outputs) are required.<br><br>**Contents**:<ul><li>`ColumnSummaryMetric()`</li> for text descriptors: `Sentiment()`, `SentenceCount()`, `OOV()`, `TextLength()`, `NonLetterCharacterPercentage()` </ul>If more than one text column is provided, also for:<ul><li>`SemanticSimilarity` between the columns</li></ul>| **Required**:<br>`column_name` or `columns` | 
+`TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns (inputs and/or outputs) are required.
+
+**Comoposition**:
+* `ColumnSummaryMetric()` for text descriptors for all columns. Descriptors included:
+  * `Sentiment()`
+  * `SentenceCount()`
+  * `OOV()`
+  * `TextLength()`
+  * `NonLetterCharacterPercentage()` 
+* `SemanticSimilarity()` between each pair of text columns - if more than one text column is provided.
+
+**Required parameters**:
+* `column_name` or `columns` list
+
+**Optional parameters**:
+* `descriptors` list
 
 </details>
 
@@ -94,9 +177,18 @@ We are doing our best to maintain this page up to date. In case of discrepancies
   
 <summary>Text Evals</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-|**`TextEvals(column_name=”text”)`** <br>Evaluates descriptive statistics a defined text column. Simplifies interface to add other descriptors <br><br>A text column (input or output) is required.<br><br>**Contents**:<ul><li>`ColumnSummaryMetric()`</li> for text descriptors: `Sentiment()`, `SentenceCount()`, `OOV()`, `TextLength()`, `NonLetterCharacterPercentage()`| **Required**:<br>`column_name`| 
+`TextEvals()` provides a simplified interface to list `Descriptors` for a given text column. It it returns a summary of evaluation results.
+
+**Composition**:
+* `ColumnSummaryMetric()` for text descriptors for the specified text column:
+  * `Sentiment()`
+  * `SentenceCount()`
+  * `OOV()`
+  * `TextLength()`
+  * `NonLetterCharacterPercentage()`
+  
+**Required parameters**:
+* `column_name`
 
 </details>
 
@@ -104,13 +196,42 @@ We are doing our best to maintain this page up to date. In case of discrepancies
   
 <summary>RecSys (Recommender System) Preset</summary>
 
-| Preset name and Description | Parameters |
-|---|---|
-|**`RecsysPreset`** <br>Evaluates the quality of the recommender system. <br><br>Recommendations and true relevance scores are required. For some metrics, training data and item features are required. <br><br>**Contents**:<ul><li>`PrecisionTopKMetric()`</li><li>`RecallTopKMetric()`</li><li>`FBetaTopKMetric()`</li><li>`MAPKMetric()`</li><li>`NDCGKMetric()`</li><li>`MRRKMetric()`</li><li>`HitRateKMetric()`</li><li>`PersonalizationMetric()`</li><li>`PopularityBias()` </li><li>`RecCasesTable()`</li><li>`ScoreDistribution()`</li><li>`DiversityMetric()`</li><li>`SerendipityMetric()`</li><li>`NoveltyMetric()`</li><li>`ItemBiasMetric()` (pass column as a parameter)</li><li>`UserBiasMetric()`(pass column as a parameter)</li></ul>| **Required**:<br>`k` <br> **Optional**:<ul><li>`min_rel_score: Optional[int]`</li><li>`no_feedback_users: bool`</li><li>`normalize_arp: bool`</li><li>`user_ids: Optional[List[Union[int, str]]]`</li><li>`display_features: Optional[List[str]]`</li><li>`item_features: Optional[List[str]]`</li><li>`user_bias_columns: Optional[List[str]]`</li><li>`item_bias_columns: Optional[List[str]]`</li></ul>
+`RecsysPreset` evaluates the quality of the recommender system. Recommendations and true relevance scores are required. For some metrics, training data and item features are required. 
+
+**Composition**:
+* `PrecisionTopKMetric()`
+* `RecallTopKMetric()`
+* `FBetaTopKMetric()`
+* `MAPKMetric()`
+* `NDCGKMetric()`
+* `MRRKMetric()`
+* `HitRateKMetric()`
+* `PersonalizationMetric()`
+* `PopularityBias()`
+* `RecCasesTable()`
+* `ScoreDistribution()`
+* `DiversityMetric()`
+* `SerendipityMetric()`
+* `NoveltyMetric()`
+* `ItemBiasMetric()` (pass column as a parameter)
+* `UserBiasMetric()`(pass column as a parameter)
+
+**Required parameter**:
+* `k`
+
+**Optional parameters**:
+* `min_rel_score: Optional[int]`
+* `no_feedback_users: bool`
+* `normalize_arp: bool`
+* `user_ids: Optional[List[Union[int, str]]]`
+* `display_features: Optional[List[str]]`
+* `item_features: Optional[List[str]]`
+* `user_bias_columns: Optional[List[str]]`
+* `item_bias_columns: Optional[List[str]]`
 
 </details>
 
-# Data Integrity
+# Data Quality
 
 **Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
@@ -124,11 +245,6 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 | **ColumnSummaryMetric**(column_name="age") | Column-level.<br><br>Calculates various descriptive statistics for the column, incl. the number of missing, empty, duplicate values, etc. <br><br>The stats depend on the column type: numerical, categorical, text or DateTime. | **Required**:<br>`column_name`<br><br>**Optional:**<br>n/a|
 | **ColumnMissingValuesMetric**(column_name="education")<br>  | Column-level.<br><br>Calculates the number and share of missing values in the column. |  **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
 | **ColumnRegExpMetric**(column_name="relationship", reg_exp=r".*child.*") | Column-level.<br><br>Calculates the number and share of the values that do not match a defined regular expression.  | **Required:**<ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional:**<ul><li>`top` (the number of the most mismatched columns to return, default = 10)</li></ul>|
-
-# Data Quality
-
-| Metric name | Description | Parameters |
-|---|---|---|
 | **ConflictPredictionMetric()** | Dataset-level.<br><br>Calculates the number of instances where the model returns a different output for an identical input. Can be a signal of low-quality model or data errors.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **ConflictTargetMetric()** | Dataset-level.<br><br>Calculates the number of instances where there is a different target value or label for an identical input. Can be a signal of a labeling or data error.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **DatasetCorrelationsMetric()**| Dataset-level.<br><br>Calculates the correlations between the columns in the dataset. Visualizes the heatmap. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
@@ -138,8 +254,14 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 | **ColumnCorrelationsMetric**(column_name="education") | Column-level.<br><br>Calculates the correlations between the defined column and all the other columns in the dataset. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
 | **ColumnValueListMetric**(column_name="relationship", values=["Husband", "Unmarried"]) | Column-level.<br><br>Calculates the number of values in the list / out of the list / not found in a given column. The value list should be specified. | **Required:**<ul><li>`column_name`</li><li>`values`</li></ul>**Optional:**<br>n/a |
 | **ColumnValueRangeMetric**(column_name="age", left=10, right=20) | Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. | **Required:**<ul><li>`column_name` </li><li>`left`</li><li>`right`</li></ul> |
+
+# Text Metrics
+
+| Metric name | Description | Parameters |
+|---|---|---|
 | **TextDescriptorsDistribution**(column_name=”text”)| Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
 | **TextDescriptorsCorrelationMetric**(column_name=”text”) | Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsDriftMetric**(column_name=”text”) | Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
 
 # Data Drift
 
@@ -152,7 +274,6 @@ To modify the logic or select a different test, you should set [data drift param
 | **DatasetDriftMetric()** <br>  | Dataset-level.<br><br>Calculates the number and share of drifted features. Returns true/false for the dataset drift at a given threshold (defined by the share of drifting features). Each feature is tested for drift individually using the default algorithm, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`сolumns` (default=all)</li><li>`drift_share`(default for dataset drift = 0.5)</li> <li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md).|
 | **DataDriftTable()** | Dataset-level.<br><br>Calculates data drift for all columns in the dataset, or for a defined list of columns. Returns drift detection results for each column and visualizes distributions in a table. Uses the default drift algorithm of test selection, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:** <ul><li>`сolumns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
 | **ColumnDriftMetric('age')** | Column-level. <br><br>Calculates data drift for a defined column (tabular or text). Visualizes distributions. Uses the default-selected test unless a custom is specified. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
-| **TextDescriptorsDriftMetric**(column_name=”text”) | Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
 | **EmbeddingsDriftMetric**('small_subset')| Column-level. <br><br>Calculates data drift for embeddings. | **Required:**<ul><li>`embeddings_name`</li></ul><br>**Optional:**<ul><li>`drift_method`</li></ul>[How to set embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
 
 
