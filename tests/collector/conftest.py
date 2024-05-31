@@ -24,7 +24,7 @@ from tests.ui.test_app import MockMetricResult
 
 @pytest.fixture
 def collector_test_client(tmp_path):
-    app = create_app(str(tmp_path / "config.json"))
+    app = create_app(str(tmp_path / "config.json"), debug=True)
 
     state = {}
 
