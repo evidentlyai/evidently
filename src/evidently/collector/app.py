@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import logging
+import os.path
 from typing import Any
 from typing import AsyncGenerator
 from typing import Dict
@@ -53,11 +54,13 @@ def create_collector(
     parsed_json: CollectorConfig,
     service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
     storage: Annotated[CollectorStorage, Dependency(skip_validation=True)],
+    service_config_path: str,
 ) -> CollectorConfig:
     parsed_json.id = id
     service.collectors[id] = parsed_json
     storage.init(id)
-    service.save(CONFIG_PATH)
+    if service.autosave:
+        service.save(service_config_path)
     return parsed_json
 
 
@@ -72,24 +75,27 @@ async def get_collector(
 
 
 @post("/{id:str}/reference", sync_to_thread=True)
-def reference(
+def set_reference(
     id: Annotated[str, Parameter(description="Collector ID")],
     parsed_json: Any,
     service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
+    service_config_path: str,
+    service_workspace: str,
 ) -> Dict[str, str]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     collector = service.collectors[id]
     data = pd.DataFrame.from_dict(parsed_json)
     path = collector.reference_path or f"{id}_reference.parquet"
-    data.to_parquet(path)
+    data.to_parquet(os.path.join(service_workspace, path))
     collector.reference_path = path
-    service.save(CONFIG_PATH)
+    if service.autosave:
+        service.save(service_config_path)
     return {}
 
 
 @post("/{id:str}/data")
-async def data(
+async def push_data(
     id: Annotated[str, Parameter(description="Collector ID")],
     data: Any,
     service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
@@ -212,8 +218,8 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
         route_handlers=[
             create_collector,
             get_collector,
-            reference,
-            data,
+            set_reference,
+            push_data,
             get_logs,
         ],
         dependencies={
@@ -221,6 +227,8 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
             "service": Provide(lambda: service, use_cache=True, sync_to_thread=False),
             "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=False),
             "parsed_json": Provide(parse_json, sync_to_thread=False),
+            "service_config_path": Provide(lambda: config_path),
+            "service_workspace": Provide(lambda: os.path.dirname(config_path)),
         },
         middleware=[auth_middleware_factory],
         guards=[is_authenticated],
