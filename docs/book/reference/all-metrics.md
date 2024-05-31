@@ -233,43 +233,46 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 
 # Data Quality
 
+| Metric | Parameters |
+| - | - |
+| **DatasetSummaryMetric()** <br><br> Dataset-level.<br><br>Calculates descriptive dataset statistics, including:<ul><li>Number of columns by type</li><li>Number of rows</li><li>Missing values</li><li>Empty columns</li><li>Constant and almost constant columns</li><li>Duplicated and almost duplicated columns</li></ul>| **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (see default types below)</li><li>`almost_constant_threshold` (default = 0.95)</li><li>`almost_duplicated_threshold` (default = 0.95)</li></ul> |
+| **DatasetMissingValuesMetric()** <br><br> Dataset-level.<br><br>Calculates the number and share of missing values in the dataset. <br><br> Displays the number of missing values per column. | **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
+| **DatasetCorrelationsMetric()** <br><br>Dataset-level.<br><br>Calculates the correlations between all columns in the dataset. Uses: Pearson, Spearman, Kendall, Cramer_V. <br><br> Visualizes the heatmap. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ColumnSummaryMetric()** <br><br> Column-level.<br><br>Calculates various descriptive statistics for numerical, categorical, text or DateTime columns, including: <ul><li>Count</li><li>Min, max, mean (for numerical)</li><li>Standard deviation (for numerical)</li><li>Quantiles - 25%, 50%, 75% (for numerical)</li><li>Unique value share</li><li>Most common value share</li><li>Missing value share</li><li>New and missing categories (for categorical)</li><li>Last and first date (for DateTime)</li><li>Length, OOV% and Non-letter % (for text)</li></ul><br>Plots the distribution histogram. If DateTime is provided, also plots the distribution over time. If Target is provided, also plots the relation with Target. | **Required**:<br>`column_name`<br><br>**Optional:**<br>n/a|
+| **ColumnMissingValuesMetric()** <br><br> Column-level.<br><br>Calculates the number and share of missing values in the column. |  **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
+| **ColumnRegExpMetric()** <br><br> Column-level.<br><br>Calculates the number and share of the values that do not match a defined regular expression. <br><br> Example use: `ColumnRegExpMetric(column_name="status", reg_exp=r".*child.*")`  | **Required:**<ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional:**<ul><li>`top` (the number of the most mismatched columns to return, default = 10)</li></ul>|
+| **ColumnDistributionMetric()** <br><br> Column-level.<br><br>Plots the distribution histogram and returns bin positions and values for the given column.  | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
+| **ColumnValuePlot()** <br><br> Column-level.<br><br>Plots the values in time. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
+| **ColumnQuantileMetric()** <br><br> Column-level.<br><br>Calculates the defined quantile value and plots the distribution for the given numerical column.  <br><br> Example use: `ColumnQuantileMetric(column_name="name", quantile=0.75)` | **Required:**<ul><li>`column_name`</li><li>`quantile`</li></ul>**Optional:**<br>n/a |
+| **ColumnCorrelationsMetric()** <br><br>Column-level.<br><br>Calculates the correlations between the defined column and all the other columns in the dataset. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
+| **ColumnValueListMetric()** <br><br> Column-level.<br><br>Calculates the number of values in the list / out of the list / not found in a given column. The value list should be specified.<br><br> Example use: `ColumnValueListMetric(column_name="city", values=["London", "Paris"])` | **Required:**<ul><li>`column_name`</li><li>`values`</li></ul>**Optional:**<br>n/a |
+| **ColumnValueRangeMetric()** <br><br> Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. <br><br> Example use: `ColumnValueRangeMetric(column_name="age", left=10, right=20)`  | **Required:**<ul><li>`column_name` </li><li>`left`</li><li>`right`</li></ul> |
+| **ConflictPredictionMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where the model returns a different output for an identical input. Can be a signal of low-quality model or data errors.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ConflictTargetMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where there is a different target value or label for an identical input. Can be a signal of a labeling or data error.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+
 **Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
 ```python
 DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
 ```
-| Metric | Parameters |
-| - | - |
-| **DatasetSummaryMetric()** <br><br> Dataset-level.<br><br>Calculates descriptive dataset statistics, including:<ul><li>Number of columns by type</li><li>Number of rows</li><li>Missing values</li><li>Empty columns</li><li>Constant and almost constant columns</li><li>Duplicated and almost duplicated columns</li></ul>| **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (see default types above)</li><li>`almost_constant_threshold` (default = 0.95)</li><li>`almost_duplicated_threshold` (default = 0.95)</li></ul> |
-| **DatasetMissingValuesMetric()** <br><br> Dataset-level.<br><br>Calculates the number and share of missing values in the dataset. <br><br> Displays the number of missing values per column. | **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
-| **ColumnSummaryMetric()** <br><br> Column-level.<br><br>Calculates various descriptive statistics for numerical, categorical, text or DateTime columns, including: <ul><li>Count</li><li>Min, max, mean (for numerical)</li><li>Standard deviation (for numerical)</li><li>Quantiles - 25%, 50%, 75% (for numerical)</li><li>Unique value share</li><li>Most common value share</li><li>Missing value share</li><li>New and missing categories (for categorical)</li><li>Last and first date (for DateTime)</li><li>Length, OOV% and Non-letter % (for text)</li></ul><br>Plots the distribution histogram. If DateTime is provided, also plots the distribution over time. If Target is provided, also plots the relation with Target. | **Required**:<br>`column_name`<br><br>**Optional:**<br>n/a|
-| **ColumnMissingValuesMetric()**<br><br> Column-level.<br><br>Calculates the number and share of missing values in the column. |  **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
-| **ColumnRegExpMetric()** <br><br> Column-level.<br><br>Calculates the number and share of the values that do not match a defined regular expression. <br><br> Example use: `ColumnRegExpMetric(column_name="status", reg_exp=r".*child.*"`  | **Required:**<ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional:**<ul><li>`top` (the number of the most mismatched columns to return, default = 10)</li></ul>|
-| **ConflictPredictionMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where the model returns a different output for an identical input. Can be a signal of low-quality model or data errors.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ConflictTargetMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where there is a different target value or label for an identical input. Can be a signal of a labeling or data error.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **DatasetCorrelationsMetric()** <br><br>Dataset-level.<br><br>Calculates the correlations between the columns in the dataset. Visualizes the heatmap. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ColumnDistributionMetric()** <br><br> Column-level.<br><br>Plots the distribution histogram and returns bin positions and values for the given column.  | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
-| **ColumnValuePlot()** <br><br> Column-level.<br><br>Plots the values in time. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
-| **ColumnQuantileMetric()** <br><br> Column-level.<br><br>Calculates the defined quantile value and plots the distribution for the given numerical column.  <br><br> Example use: `ColumnQuantileMetric(column_name="name", quantile=0.75)` | **Required:**<ul><li>`column_name`</li><li>`quantile`</li></ul>**Optional:**<br>n/a |
-| **ColumnCorrelationsMetric()** <br><br>Column-level.<br><br>Calculates the correlations between the defined column and all the other columns in the dataset. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
-| **ColumnValueListMetric()** <br><br> Column-level.<br><br>Calculates the number of values in the list / out of the list / not found in a given column. The value list should be specified.<br><br> Example use: `ColumnValueListMetric(column_name="city", values=["London", "Paris"]` | **Required:**<ul><li>`column_name`</li><li>`values`</li></ul>**Optional:**<br>n/a |
-| **ColumnValueRangeMetric()** <br><br> Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. <br><br> Example use: `ColumnValueRangeMetric(column_name="age", left=10, right=20)`  | **Required:**<ul><li>`column_name` </li><li>`left`</li><li>`right`</li></ul> |
 
-# Text Evals
+# Text Evals 
 
-To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) to visualize it, or a Test (e.g., `TestColumnValueMin`) to run validations. 
+Text Evals apply only apply to text columns. To compute a Descriptor for a chosen Column, use a `TextEvals` Preset. 
+
+You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) to visualize it, or a Test (e.g., `TestColumnValueMin`) to run validations. 
 
 ## Descriptors: Patterns
 
 | Descriptor | Parameters |
 | - | - |
-| **RegExp()** <br><br> Matches text against any specified regular expression. Example: `RegExp(reg_exp=r"^I")`. Returns True/False for every input. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **BeginsWith()** <br><br> Checks if the text begins with a specified combination. Returns True/False for every input.| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **EndsWith()** <br><br> Checks if the text ends with a specified combination. Returns True/False for every input.| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **Contains()** <br><br> Checks if the text contains any or all specified items. Returns True/False for every input.| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **DoesNotContain()** <br><br> Checks if the text does not contain any or all specified items. Returns True/False for every input. | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **IncludesWords()** <br><br> Checks if the text includes any (default) or all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input. | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
-| **ExcludesWords()** <br><br> Checks if the text excludes all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input. | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **RegExp()** <br><br> Matches text against any specified regular expression. Returns True/False for every input.<br><br> Example use: `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **BeginsWith()** <br><br> Checks if the text begins with a specified combination. Returns True/False for every input.<br><br> Example use: `*BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **EndsWith()** <br><br> Checks if the text ends with a specified combination. Returns True/False for every input. <br><br> Example use: `*EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **Contains()** <br><br> Checks if the text contains any or all specified items. Returns True/False for every input. <br><br> Example use: `Contains(items=["medical leave"]`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **DoesNotContain()** <br><br> Checks if the text does not contain any or all specified items. Returns True/False for every input. <br><br> Example use: `DoesNotContain(items=["as a large language model"]` | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **IncludesWords()** <br><br> Checks if the text includes any (default) or all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input.  <br><br> Example use: `IncludesWords(words_list=['booking', 'hotel', `flight`]` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **ExcludesWords()** <br><br> Checks if the text excludes all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input. <br><br> Example use: `ExcludesWords(words_list=['buy', 'sell', `bet`]`| **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
 
 ## Descriptors: Text stats
 
@@ -287,14 +290,15 @@ To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. Y
 | - | - |
 | **Sentiment()** <br><br> Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
-
 ## Text-Specific Metrics
+
+The following metrics only apply for text columns. 
 
 | Metric | Parameters |
 |---|---|
-| **TextDescriptorsDistribution("text_col")** <br><br> Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsCorrelationMetric("text_col")** <br><br> Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsDriftMetric("text_col")** <br><br> Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
+| **TextDescriptorsDistribution()** <br><br> Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsCorrelationMetric()** <br><br> Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsDriftMetric()** <br><br> Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br> **Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
 
 # Data Drift
 
@@ -306,13 +310,13 @@ To modify the logic or select a different test, you should set [data drift param
 | - | - |
 | **DatasetDriftMetric()** <br><br>  Dataset-level.<br><br>Calculates the number and share of drifted features. Returns true/false for the dataset drift at a given threshold (defined by the share of drifting features). Each feature is tested for drift individually using the default algorithm, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`сolumns` (default=all)</li><li>`drift_share`(default for dataset drift = 0.5)</li> <li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md).|
 | **DataDriftTable()** <br><br> Dataset-level.<br><br>Calculates data drift for all columns in the dataset, or for a defined list of columns. Returns drift detection results for each column and visualizes distributions in a table. Uses the default drift algorithm of test selection, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:** <ul><li>`сolumns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
-| **ColumnDriftMetric("col")** <br><br>  Column-level. <br><br>Calculates data drift for a defined column (tabular or text). Visualizes distributions. Uses the default-selected test unless a custom is specified. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
-| **EmbeddingsDriftMetric**("small_subset")<br><br> Column-level. <br><br>Calculates data drift for embeddings. | **Required:**<ul><li>`embeddings_name`</li></ul><br>**Optional:**<ul><li>`drift_method`</li></ul>[How to set embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+| **ColumnDriftMetric()** <br><br>  Column-level. <br><br>Calculates data drift for a defined column (tabular or text). Visualizes distributions. Uses the default-selected test unless a custom is specified. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
+| **EmbeddingsDriftMetric()** <br><br> Column-level. <br><br>Calculates data drift for embeddings. Requires embedding column mapping. | **Required:**<ul><li>`embeddings_name`</li></ul><br>**Optional:**<ul><li>`drift_method`</li></ul>[How to set embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
 
 
 # Classification
 
-The metrics work both for probabilistic and non-probabilistic classification. All metrics are dataset-level.
+The metrics work both for probabilistic and non-probabilistic classification. All metrics are dataset-level. All metrics require column mapping of target and prediction.
 
 | Metric | Parameters |
 |---|---|
@@ -330,7 +334,7 @@ The metrics work both for probabilistic and non-probabilistic classification. Al
 
 # Regression
 
-All metrics are dataset-level.
+All metrics are dataset-level. All metrics require column mapping of target and prediction.
 
 | Metric | Parameters |
 |---|---|
@@ -347,7 +351,7 @@ All metrics are dataset-level.
 
 # Ranking and Recommendations 
 
-All metrics are dataset-level. Check individual metric descriptions [here](ranking-metrics.md).
+All metrics are dataset-level. Check individual metric descriptions [here](ranking-metrics.md). All metrics require recommandations column mapping.
 
 Optional shared parameters for multiple metrics:
 * `no_feedback_users: bool = False`. Specifies whether to include the users who did not select any of the items, when computing the quality metric. Default: False.
