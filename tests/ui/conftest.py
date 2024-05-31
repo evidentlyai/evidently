@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Optional
 
 import pytest
@@ -19,6 +20,8 @@ from evidently.ui.security.service import SecurityService
 from evidently.utils import NumpyEncoder
 
 HEADERS = {"Content-Type": "application/json"}
+
+os.environ["DO_NOT_TRACK"] = "1"
 
 
 class TestsSetupComponent(Component):

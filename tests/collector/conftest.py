@@ -1,4 +1,5 @@
 import datetime
+import os
 import uuid
 from typing import Dict
 
@@ -20,6 +21,8 @@ from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from tests.ui.test_app import MockMetric
 from tests.ui.test_app import MockMetricResult
+
+os.environ["DO_NOT_TRACK"] = "1"
 
 
 @pytest.fixture

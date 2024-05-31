@@ -16,7 +16,8 @@ from tests.ui.conftest import HEADERS
 from tests.ui.conftest import _dumps
 
 
-def test_create_collector(
+@pytest.mark.asyncio
+async def test_create_collector(
     collector_test_client: TestClient, collector_service_config: CollectorServiceConfig, mock_collector_config
 ):
     r = collector_test_client.post("/new", content=_dumps(mock_collector_config), headers=HEADERS)
