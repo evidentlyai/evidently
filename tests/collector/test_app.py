@@ -79,14 +79,6 @@ def test_push_data(
     assert collector_service_config.storage.get_buffer_size("new") == 1
 
 
-# @pytest.fixture
-# def ui_test_client(tmp_path) -> TestClient:
-#     config = LocalConfig(
-#         storage=LocalStorageComponent(path=str(tmp_path)), additional_components={"_setup_tests": TestsSetupComponent()}
-#     )
-#     return TestClient(create_app(config=config))
-
-
 @pytest.fixture()
 def ui_workspace(tmp_path) -> WorkspaceView:
     project_manager = create_local_project_manager(str(tmp_path / "ui_ws"), False, NoopAuthManager())

@@ -1,3 +1,4 @@
+import os
 from functools import partial
 from typing import ClassVar
 from typing import Dict
@@ -6,7 +7,7 @@ from iterative_telemetry import IterativeTelemetryLogger
 from litestar.di import Provide
 
 import evidently
-from evidently.telemetry import DO_NOT_TRACK
+from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.ui.components.base import Component
 from evidently.ui.components.base import ComponentContext
 
@@ -31,6 +32,6 @@ class TelemetryComponent(Component):
             evidently.__version__,
             url=self.url,
             token=self.token,
-            enabled=self.enabled and DO_NOT_TRACK is None,
+            enabled=self.enabled and os.environ.get(DO_NOT_TRACK_ENV, None) is None,
         )
         return partial(_event_logger.send_event, self.service_name)
