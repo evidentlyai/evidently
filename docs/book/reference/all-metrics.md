@@ -290,8 +290,8 @@ To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. Y
 
 ## Text-Specific Metrics
 
-| Metric name | Description | Parameters |
-|---|---|---|
+| Metric | Parameters |
+|---|---|
 | **TextDescriptorsDistribution("text_col")** <br><br> Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
 | **TextDescriptorsCorrelationMetric("text_col")** <br><br> Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
 | **TextDescriptorsDriftMetric("text_col")** <br><br> Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
@@ -314,8 +314,8 @@ To modify the logic or select a different test, you should set [data drift param
 
 The metrics work both for probabilistic and non-probabilistic classification. All metrics are dataset-level.
 
-| Metric name | Description | Parameters |
-|---|---|---|
+| Metric | Parameters |
+|---|---|
 | **ClassificationDummyMetric()** <br><br> Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **ClassificationQualityMetric()** <br><br> Calculates various classification performance metrics, incl. precision, accuracy, recall, F1-score, TPR, TNR, FPR, and FNR. For probabilistic classification, also: ROC AUC score, LogLoss. | **Required:**:<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold` (default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul> |
 | **ClassificationClassBalance()** <br><br> Calculates the number of objects for each label. Plots the histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
@@ -332,8 +332,8 @@ The metrics work both for probabilistic and non-probabilistic classification. Al
 
 All metrics are dataset-level.
 
-| Metric name | Description | Parameters |
-|---|---|---|
+| Metric | Parameters |
+|---|---|
 | **RegressionDummyMetric()** <br><br> Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionQualityMetric()** <br><br> Calculates various regression performance metrics, incl. Mean Error, MAE, MAPE, etc.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionPredictedVsActualScatter()** <br><br> Visualizes predicted vs actual values in a scatter plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
@@ -353,8 +353,8 @@ Optional shared parameters for multiple metrics:
 * `no_feedback_users: bool = False`. Specifies whether to include the users who did not select any of the items, when computing the quality metric. Default: False.
 * `min_rel_score: Optional[int] = None`. Specifies the minimum relevance score to consider relevant when calculating the quality metrics for non-binary targets (e.g., if a target is a rating or a custom score).
 
-| Metric name | Description | Parameters |
-|---|---|---|
+| Metric | Parameters |
+|---|---|
 | **RecallTopKMetric()** <br><br> Calculates the recall at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
 | **PrecisionTopKMetric()** <br><br> Calculates the precision at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
 | **FBetaTopKMetric()** <br><br> Calculates the F-measure at `k`.| **Required**:<ul><li>`beta`(default = 1)</li><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
