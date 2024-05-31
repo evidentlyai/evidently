@@ -306,7 +306,7 @@ def test_download_snapshot(
         data = r.json()
         data["timestamp"] = None
         assert data == {
-            "metrics": [{"metric": "MockMetric", "result": {"value": "value"}}],
+            "metrics": [{"metric": "MockMetric", "result": {"value": 1}}],
             "timestamp": None,
             "version": evidently.__version__,
         }
