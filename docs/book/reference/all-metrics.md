@@ -292,9 +292,9 @@ To compute a Text Descriptor for a specified Column, use a `TextEvals` Preset. Y
 
 | Metric name | Description | Parameters |
 |---|---|---|
-| **TextDescriptorsDistribution("text_col")**| Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsCorrelationMetric("text_col")** | Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsDriftMetric("text_col")** | Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
+| **TextDescriptorsDistribution("text_col")** <br><br> Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsCorrelationMetric("text_col")** <br><br> Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsDriftMetric("text_col")** <br><br> Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
 
 # Data Drift
 
