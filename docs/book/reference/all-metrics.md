@@ -250,7 +250,7 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 | **ConflictPredictionMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where the model returns a different output for an identical input. Can be a signal of low-quality model or data errors.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **ConflictTargetMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where there is a different target value or label for an identical input. Can be a signal of a labeling or data error.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 
-**Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
+**Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of missing values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass custom missing values as a parameter and specify if you want to replace the default list. Example:
 
 ```python
 DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
@@ -258,9 +258,9 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 # Text Evals 
 
-Text Evals apply only apply to text columns. To compute a Descriptor for a chosen Column, use a `TextEvals` Preset. 
+Text Evals only apply to text columns. To compute a Descriptor for a chosen text column, use a `TextEvals` Preset. 
 
-You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) to visualize it, or a Test (e.g., `TestColumnValueMin`) to run validations. 
+You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) for the descriptor, or pick a Test (e.g., `TestColumnValueMin`) to run validations. 
 
 ## Descriptors: Patterns
 
@@ -292,7 +292,7 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 
 ## Text-Specific Metrics
 
-The following metrics only apply for text columns. 
+The following metrics only apply to text columns. 
 
 | Metric | Parameters |
 |---|---|
@@ -302,15 +302,15 @@ The following metrics only apply for text columns.
 
 # Data Drift
 
-**Defaults for Data Drift**. By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
+**Defaults for Data Drift**. By default, all data drift metrics use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a drift detection method based on feature type and volume. You always need a reference dataset.
 
-To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md) or [embeddings drift parameters](../customization/embeddings-drift-parameters.md).
+To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md) or [embeddings drift parameters](../customization/embeddings-drift-parameters.md). You can choose from 20+ drift detection methods. You can optionally pass feature importances.
 
 | Metric | Parameters |
 | - | - |
-| **DatasetDriftMetric()** <br><br>  Dataset-level.<br><br>Calculates the number and share of drifted features. Returns true/false for the dataset drift at a given threshold (defined by the share of drifting features). Each feature is tested for drift individually using the default algorithm, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`сolumns` (default=all)</li><li>`drift_share`(default for dataset drift = 0.5)</li> <li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md).|
-| **DataDriftTable()** <br><br> Dataset-level.<br><br>Calculates data drift for all columns in the dataset, or for a defined list of columns. Returns drift detection results for each column and visualizes distributions in a table. Uses the default drift algorithm of test selection, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:** <ul><li>`сolumns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
-| **ColumnDriftMetric()** <br><br>  Column-level. <br><br>Calculates data drift for a defined column (tabular or text). Visualizes distributions. Uses the default-selected test unless a custom is specified. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
+| **DatasetDriftMetric()** <br><br>  Dataset-level.<br><br>Calculates the number and share of drifted features in the dataset. Each feature is tested for drift individually using the default algorithm, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`сolumns` (default=all)</li><li>`drift_share`(default for dataset drift = 0.5)</li> <li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md).|
+| **DataDriftTable()** <br><br> Dataset-level.<br><br>Calculates data drift for all or selected columns. Returns drift detection results for each column. <br><br> Visualizes distributions for all columns in a table.| **Required:**<br>n/a<br><br>**Optional:** <ul><li>`сolumns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+| **ColumnDriftMetric()** <br><br>  Column-level. <br><br>Calculates data drift for a defined column (tabular or text). <br><br>Visualizes distributions.| **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
 | **EmbeddingsDriftMetric()** <br><br> Column-level. <br><br>Calculates data drift for embeddings. Requires embedding column mapping. | **Required:**<ul><li>`embeddings_name`</li></ul><br>**Optional:**<ul><li>`drift_method`</li></ul>[How to set embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
 
 
@@ -346,12 +346,12 @@ All metrics are dataset-level. All metrics require column mapping of target and 
 | **RegressionAbsPercentageErrorPlot()** <br><br> Visualizes the absolute percentage error in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionErrorDistribution()** <br><br> Visualizes the distribution of the model error in a histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionErrorNormality()** <br><br> Visualizes the quantile-quantile plot (Q-Q plot) to estimate value normality. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionTopErrorMetric()** <br><br> Calculates the regression performance metrics for different groups: top-X% of predictions with overestimation, top-X% of predictions with underestimation, and the rest.<br>Visualizes the group division on a scatter plot with predicted vs. actual values. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul> |
+| **RegressionTopErrorMetric()** <br><br> Calculates the regression performance metrics for different groups: top-X% of predictions with overestimation, top-X% of predictions with underestimation, and the rest.<br><br>Visualizes the group division on a scatter plot with predicted vs. actual values. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul> |
 | **RegressionErrorBiasTable()** <br><br> Plots the relationship between feature values and model quality per group (for top-X% error groups, as above). | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`columns`(default = all categorical and numerical columns)</li><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul>|
 
 # Ranking and Recommendations 
 
-All metrics are dataset-level. Check individual metric descriptions [here](ranking-metrics.md). All metrics require recommandations column mapping.
+All metrics are dataset-level. Check individual metric descriptions [here](ranking-metrics.md). All metrics require recommendations column mapping.
 
 Optional shared parameters for multiple metrics:
 * `no_feedback_users: bool = False`. Specifies whether to include the users who did not select any of the items, when computing the quality metric. Default: False.
