@@ -1,100 +1,118 @@
-import socket
-import time
-from multiprocessing import Process
-from typing import Optional
+import asyncio
+import os.path
 
 import pandas as pd
 import pytest
+from litestar.testing import TestClient
 
-from evidently.collector.app import run
-from evidently.collector.client import CollectorClient
+from evidently._pydantic_compat import parse_obj_as
+from evidently.collector.app import check_snapshots_factory
 from evidently.collector.config import CollectorConfig
-from evidently.collector.config import IntervalTrigger
-from evidently.collector.config import ReportConfig
-from evidently.test_suite import TestSuite
-from evidently.tests import TestNumberOfOutRangeValues
-
-COLLECTOR_ID = "1"
-PROJECT_ID = "2"
-
-HOST = "localhost"
-PORT = 8080
-BASE_URL = f"http://{HOST}:{PORT}"
+from evidently.collector.config import CollectorServiceConfig
+from evidently.ui.storage.common import NoopAuthManager
+from evidently.ui.storage.local import create_local_project_manager
+from evidently.ui.workspace.view import WorkspaceView
+from tests.ui.conftest import HEADERS
+from tests.ui.conftest import _dumps
 
 
-def create_test_data() -> pd.DataFrame:
-    return pd.DataFrame([{"values1": 5.0, "values2": 0.0}])
-
-
-def create_test_suite() -> TestSuite:
-    return TestSuite(tests=[TestNumberOfOutRangeValues("values1", left=5)], tags=["quality"])
-
-
-def create_report_config(
-    current_data: pd.DataFrame,
-    test_suite: TestSuite,
-    references: Optional[pd.DataFrame] = None,
+@pytest.mark.asyncio
+async def test_create_collector(
+    collector_test_client: TestClient, collector_service_config: CollectorServiceConfig, mock_collector_config
 ):
-    test_suite.run(reference_data=references, current_data=current_data)
-    return ReportConfig.from_test_suite(test_suite)
+    r = collector_test_client.post("/new", content=_dumps(mock_collector_config), headers=HEADERS)
+    r.raise_for_status()
+
+    assert "new" in collector_service_config.collectors
+    mock_collector_config.id = "new"
+    assert collector_service_config.collectors["new"] == mock_collector_config
 
 
-def create_collector_config(data: pd.DataFrame, test_suite: TestSuite) -> CollectorConfig:
-    return CollectorConfig(
-        trigger=IntervalTrigger(interval=1),
-        report_config=create_report_config(current_data=data, test_suite=test_suite),
-        project_id=PROJECT_ID,
+def test_get_collector(
+    collector_test_client: TestClient, collector_service_config: CollectorServiceConfig, mock_collector_config
+):
+    mock_collector_config.id = "new"
+    collector_service_config.collectors["new"] = mock_collector_config
+
+    r = collector_test_client.get("/new")
+    r.raise_for_status()
+
+    assert parse_obj_as(CollectorConfig, r.json()) == mock_collector_config
+
+
+def test_set_reference(
+    collector_test_client: TestClient,
+    collector_service_config: CollectorServiceConfig,
+    mock_collector_config,
+    mock_reference,
+    collector_workspace: str,
+):
+    mock_collector_config.id = "new"
+    collector_service_config.collectors["new"] = mock_collector_config
+
+    r = collector_test_client.post("/new/reference", json=mock_reference.to_dict())
+    r.raise_for_status()
+
+    assert mock_collector_config.reference_path == "new_reference.parquet"
+    path = os.path.join(collector_workspace, mock_collector_config.reference_path)
+    assert os.path.exists(path)
+    saved_reference = pd.read_parquet(path)
+    pd.testing.assert_frame_equal(saved_reference, mock_reference)
+
+
+def test_push_data(
+    collector_test_client: TestClient,
+    collector_service_config: CollectorServiceConfig,
+    mock_collector_config,
+    mock_reference,
+):
+    mock_collector_config.id = "new"
+    collector_service_config.collectors["new"] = mock_collector_config
+    mock_collector_config._reference = mock_reference
+    mock_collector_config.reference_path = ""
+    mock_collector_config.trigger.rows_count = 2
+    collector_service_config.storage.init("new")
+
+    r = collector_test_client.post("/new/data", json=mock_reference.to_dict())
+    r.raise_for_status()
+
+    assert collector_service_config.storage.get_buffer_size("new") == 1
+
+
+@pytest.fixture()
+def ui_workspace(tmp_path) -> WorkspaceView:
+    project_manager = create_local_project_manager(str(tmp_path / "ui_ws"), False, NoopAuthManager())
+    return WorkspaceView(None, project_manager)
+
+
+def test_create_snapshot_and_get_logs(
+    collector_test_client: TestClient,
+    collector_service_config: CollectorServiceConfig,
+    mock_collector_config,
+    mock_reference,
+    ui_workspace: WorkspaceView,
+):
+    mock_collector_config.id = "new"
+    collector_service_config.collectors["new"] = mock_collector_config
+    mock_collector_config._reference = mock_reference
+    mock_collector_config.reference_path = ""
+    collector_service_config.storage.init("new")
+
+    mock_collector_config._workspace = ui_workspace
+    project = ui_workspace.create_project("proj")
+    mock_collector_config.project_id = str(project.id)
+
+    r = collector_test_client.post("/new/data", json=mock_reference.to_dict())
+    r.raise_for_status()
+
+    assert len(project.list_snapshots()) == 0
+    asyncio.get_event_loop().run_until_complete(
+        check_snapshots_factory(collector_service_config, collector_service_config.storage)
     )
+    assert len(project.list_snapshots()) == 1
 
+    r = collector_test_client.get("/new/logs")
+    r.raise_for_status()
 
-def create_collector_client(base_url: str = BASE_URL) -> CollectorClient:
-    return CollectorClient(base_url=base_url)
-
-
-def wait_server_start(host: str = HOST, port: int = PORT, timeout: float = 10.0, check_interval: float = 0.01) -> None:
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        time.sleep(check_interval)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.connect((host, port))
-            except ConnectionRefusedError:
-                continue
-            return
-    raise TimeoutError()
-
-
-@pytest.fixture
-def server() -> None:
-    proc = Process(target=run, args=(HOST, PORT))
-    proc.start()
-    wait_server_start()
-    try:
-        yield
-    finally:
-        proc.kill()
-
-
-@pytest.mark.skip
-def test_create_collector_handler_work_with_collector_client(server: None):
-    collector_config = create_collector_config(create_test_data(), create_test_suite())
-    client = create_collector_client()
-    resp = client.create_collector(COLLECTOR_ID, collector_config)
-    assert resp["id"] == COLLECTOR_ID
-    assert resp["project_id"] == PROJECT_ID
-
-
-@pytest.mark.skip
-def test_data_handler_work_with_collector_client(server: None):
-    collector_config = create_collector_config(create_test_data(), create_test_suite())
-    client = create_collector_client()
-    client.create_collector(COLLECTOR_ID, collector_config)
-    client.send_data(COLLECTOR_ID, create_test_data())
-
-
-@pytest.mark.skip
-def test_references_handler_work_with_collector_client(server: None):
-    collector_config = create_collector_config(create_test_data(), create_test_suite())
-    client = create_collector_client()
-    client.create_collector(COLLECTOR_ID, collector_config)
-    client.set_reference(COLLECTOR_ID, create_test_data())
+    data = r.json()
+    assert data == [{"error": "", "ok": True}]

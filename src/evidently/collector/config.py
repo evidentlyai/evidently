@@ -167,6 +167,7 @@ class CollectorServiceConfig(Config):
     check_interval: float = 1
     collectors: Dict[str, CollectorConfig] = {}
     storage: CollectorStorage = InMemoryStorage()
+    autosave: bool = True
 
     @classmethod
     def load_or_default(cls, path: str):

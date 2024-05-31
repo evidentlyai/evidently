@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import logging
+import os.path
 from typing import Any
 from typing import AsyncGenerator
 from typing import Dict
@@ -21,7 +22,9 @@ from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import BaseRouteHandler
 from litestar.params import Dependency
 from litestar.params import Parameter
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.types import ASGIApp
+from litestar.types import ExceptionHandlersMap
 from litestar.types import Receive
 from litestar.types import Scope
 from litestar.types import Send
@@ -53,11 +56,13 @@ def create_collector(
     parsed_json: CollectorConfig,
     service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
     storage: Annotated[CollectorStorage, Dependency(skip_validation=True)],
+    service_config_path: str,
 ) -> CollectorConfig:
     parsed_json.id = id
     service.collectors[id] = parsed_json
     storage.init(id)
-    service.save(CONFIG_PATH)
+    if service.autosave:
+        service.save(service_config_path)
     return parsed_json
 
 
@@ -72,24 +77,27 @@ async def get_collector(
 
 
 @post("/{id:str}/reference", sync_to_thread=True)
-def reference(
+def set_reference(
     id: Annotated[str, Parameter(description="Collector ID")],
     parsed_json: Any,
     service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
+    service_config_path: str,
+    service_workspace: str,
 ) -> Dict[str, str]:
     if id not in service.collectors:
         raise HTTPException(status_code=404, detail=f"Collector config with id '{id}' not found")
     collector = service.collectors[id]
     data = pd.DataFrame.from_dict(parsed_json)
     path = collector.reference_path or f"{id}_reference.parquet"
-    data.to_parquet(path)
+    data.to_parquet(os.path.join(service_workspace, path))
     collector.reference_path = path
-    service.save(CONFIG_PATH)
+    if service.autosave:
+        service.save(service_config_path)
     return {}
 
 
 @post("/{id:str}/data")
-async def data(
+async def push_data(
     id: Annotated[str, Parameter(description="Collector ID")],
     data: Any,
     service: Annotated[CollectorServiceConfig, Dependency(skip_validation=True)],
@@ -152,7 +160,7 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
         storage.log(collector.id, LogEvent(ok=True))
 
 
-def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> Litestar:
+def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, debug: bool = False) -> Litestar:
     service = CollectorServiceConfig.load_or_default(config_path)
     service.storage.init_all(service)
 
@@ -208,12 +216,20 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
             stop_event.set()
             await task
 
+    exception_handlers: ExceptionHandlersMap = {}
+    if debug:
+
+        def reraise(_, exception: Exception):
+            raise exception
+
+        exception_handlers[HTTP_500_INTERNAL_SERVER_ERROR] = reraise
+
     return Litestar(
         route_handlers=[
             create_collector,
             get_collector,
-            reference,
-            data,
+            set_reference,
+            push_data,
             get_logs,
         ],
         dependencies={
@@ -221,10 +237,13 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None) -> 
             "service": Provide(lambda: service, use_cache=True, sync_to_thread=False),
             "storage": Provide(lambda: service.storage, use_cache=True, sync_to_thread=False),
             "parsed_json": Provide(parse_json, sync_to_thread=False),
+            "service_config_path": Provide(lambda: config_path),
+            "service_workspace": Provide(lambda: os.path.dirname(config_path)),
         },
         middleware=[auth_middleware_factory],
         guards=[is_authenticated],
         lifespan=[check_snapshots_factory_lifespan],
+        exception_handlers=exception_handlers,
     )
 
 
