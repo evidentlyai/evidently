@@ -24,6 +24,7 @@ from litestar.params import Dependency
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.types import ASGIApp
+from litestar.types import ExceptionHandlersMap
 from litestar.types import Receive
 from litestar.types import Scope
 from litestar.types import Send
@@ -215,7 +216,7 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, deb
             stop_event.set()
             await task
 
-    exception_handlers = {}
+    exception_handlers: ExceptionHandlersMap = {}
     if debug:
 
         def reraise(_, exception: Exception):
