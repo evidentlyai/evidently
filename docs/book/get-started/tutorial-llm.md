@@ -544,7 +544,8 @@ project.dashboard.add_panel(
         size=WidgetSize.FULL,
         panel_type=TestSuitePanelType.DETAILED,
         time_agg="1D",
-    )
+    ),
+    tab="Tests"
 )
 project.save()
 ```
