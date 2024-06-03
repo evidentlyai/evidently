@@ -112,7 +112,7 @@ To delete the Project and all the data inside it:
 
 {% tab title="UI" %} 
 
-Go to the "home page", and hover over a Project name. Click on the bin sign and confirm that you want to delte the Project.
+Go to the "home page", and hover over a Project name. Click on the bin sign and confirm that you want to delete the Project.
 
 {% endtab %}
 
