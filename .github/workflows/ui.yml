@@ -57,7 +57,7 @@ jobs:
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
   ui-build:
-    name: UI type-check and build with node v${{ matrix.node-version }}
+    name: UI type-check and build
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
@@ -84,7 +84,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: vite-bundle-visualizer-${{ matrix.node-version }}
+          name: vite-bundle-visualizer
           path: ui/service/vite-bundle-report
           retention-days: 30
 
