@@ -13,8 +13,6 @@ export class Result<T> {
   Error = (error: string) => new Result<T>(undefined, error)
 }
 
-// trigger type check
-
 export interface GraphWidgetParams {}
 
 export interface TableWidgetParams {
