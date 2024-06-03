@@ -33,5 +33,5 @@ pnpm build
 ```
 
 ```shell
-litestar --app evidently.ui.app:litestar_app schema openapi --output my-specs.yml && npx openapi-typescript@6 ./my-specs.yml -o ./ui/packages/evidently-ui-lib/src/api/types/schema.d.ts
+litestar --app evidently.ui.app:litestar_app schema openapi --output openapi-schema.yml && npx openapi-typescript@6 ./openapi-schema.yml -o ./ui/packages/evidently-ui-lib/src/api/types/endpoints.d.ts
 ```

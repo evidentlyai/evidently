@@ -1,13 +1,14 @@
 import createClient from 'openapi-fetch'
 import { json } from 'react-router-dom'
-import type { paths } from '~/api/types/schema.js'
-import type { ErrorResponse, JSONStrExtended } from '~/api/types/utils'
 import { API } from '~/api/types'
 import { JSONParseExtended } from '~/api/JsonParser'
 
 import { DashboardInfoModel } from '~/api/types'
 
-const client = createClient<paths>({ baseUrl: '/' })
+import type { BackendPaths } from '~/api/types'
+import type { ErrorResponse, JSONStrExtended } from '~/api/types/utils'
+
+const client = createClient<BackendPaths>({ baseUrl: '/' })
 
 export const apiV2: API = {
   projects: {
