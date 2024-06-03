@@ -341,7 +341,7 @@ All metrics are dataset-level. All metrics require column mapping of target and 
 | Metric | Parameters |
 |---|---|
 | **RegressionDummyMetric()** <br><br> Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionQualityMetric()** <br><br> Calculates various regression performance metrics, incl. Mean Error, MAE, MAPE, etc.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionQualityMetric()** <br><br> Calculates various regression performance metrics, including:<ul><li>RMSE</li><li>Mean error (+ standard deviation)</li><li>MAE(+ standard deviation)</li><li>MAPE (+ standard deviation)</li><li>Max absolute error</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionPredictedVsActualScatter()** <br><br> Visualizes predicted vs actual values in a scatter plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionPredictedVsActualPlot()** <br><br> Visualizes predicted vs. actual values in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | **RegressionErrorPlot()** <br><br> Visualizes the model error (predicted - actual) in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
