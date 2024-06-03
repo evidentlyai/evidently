@@ -66,7 +66,8 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - uses: ./.github/share/ui-install
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share/ui-node-pnpm-install
 
       - name: 🔬 Type check
         working-directory: ui
@@ -112,20 +113,8 @@ jobs:
       - name: Pull test data
         run: dvc pull
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: ui/pnpm-lock.yaml
-
-      - name: 📥 Install node dependencies
-        working-directory: ui
-        run: pnpm i --frozen-lockfile --ignore-scripts
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share/ui-node-pnpm-install
 
       - name: Install Playwright Browsers
         working-directory: ui
