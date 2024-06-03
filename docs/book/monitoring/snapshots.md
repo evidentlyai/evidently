@@ -72,7 +72,7 @@ ws.add_test_suite(project.id, drift_checks)
 
 **Send a snapshot**. The `add_report` or `add_test_suite` methods generate snapshots automatically. If you already have a snapshot (e.g., a previously saved Report), you can load it to Python and add to your Project:
 
-```
+```python
 ws.add_snapshot(project.id, snapshot.load("data_drift_snapshot.json"))
 ```
 
