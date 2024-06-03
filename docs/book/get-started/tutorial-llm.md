@@ -288,7 +288,7 @@ This code downloads the Hugging Face model to score your data locally. Example r
 {% endhint %}
 
 {% hint style="info" %}
-**OpenAI key**. Pass it as an environmental variable. You will incur costs when running this eval.
+**OpenAI key**. Pass it as an environment variable: [see docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety). You will incur costs when running this eval.
 {% endhint %}
 
 For more complex or nuanced checks, you can use LLMs as a judge. This requires creating an evaluation prompt asking LLMs to assess the text by specific criteria, for example, tone or conciseness.
