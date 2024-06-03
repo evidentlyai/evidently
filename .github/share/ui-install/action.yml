@@ -16,3 +16,4 @@ runs:
     - name: 📥 Install node dependencies
       working-directory: ui
       run: pnpm i --frozen-lockfile --ignore-scripts
+      shell: bash
