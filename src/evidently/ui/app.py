@@ -32,6 +32,7 @@ def run_local(
     workspace: str = "workspace",
     secret: str = None,
     conf_path: str = None,
+    return_litestar_app: bool = False,
 ):
     settings.configure(settings_module=conf_path)
     config = load_config(LocalConfig, settings)
@@ -42,7 +43,15 @@ def run_local(
     secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)
     if secret is not None:
         config.security = TokenSecurityComponent(token=SecretStr(secret))
+
+    if return_litestar_app:
+        return create_app(config)
+
     run(config)
+
+
+def litestar_app():
+    return run_local(return_litestar_app=True)
 
 
 def main():
