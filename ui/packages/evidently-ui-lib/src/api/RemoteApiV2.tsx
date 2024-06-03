@@ -64,26 +64,26 @@ export const apiV2: API = {
       }
 
       return data
-    }
-  },
-  dashboard: {
-    async get({ project, options }) {
-      const { data, error, response } = await client.GET('/api/projects/{project_id}/dashboard', {
-        parseAs: 'text',
-        params: {
-          path: { project_id: project.id },
-          query: {
-            timestamp_start: options.timestamp_start,
-            timestamp_end: options.timestamp_end
+    },
+    dashboard: {
+      async get({ project, options }) {
+        const { data, error, response } = await client.GET('/api/projects/{project_id}/dashboard', {
+          parseAs: 'text',
+          params: {
+            path: { project_id: project.id },
+            query: {
+              timestamp_start: options.timestamp_start,
+              timestamp_end: options.timestamp_end
+            }
           }
+        })
+
+        if (error) {
+          throw json(error satisfies ErrorResponse, { status: response.status })
         }
-      })
 
-      if (error) {
-        throw json(error satisfies ErrorResponse, { status: response.status })
+        return JSONParseExtended<DashboardInfoModel>(data satisfies JSONStrExtended)
       }
-
-      return JSONParseExtended<DashboardInfoModel>(data satisfies JSONStrExtended)
     }
   }
 }

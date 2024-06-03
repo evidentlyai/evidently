@@ -17,8 +17,8 @@ export type DashboardInfoModel = Schemas['DashboardInfoModel']
 ///  CRUDS
 ///////////////////////////////
 
-export type ProjectsCRUD = CreateCRUD<Project>
-export type DashboardCRUD = {
+export type ProjectsProvider = CreateCRUD<Project>
+export type DashboardProvider = {
   get(args: {
     project: ID
     options: {
@@ -33,6 +33,5 @@ export type DashboardCRUD = {
 ///////////////////////////////
 
 export interface API {
-  projects: ProjectsCRUD
-  dashboard: DashboardCRUD
+  projects: ProjectsProvider & { dashboard: DashboardProvider }
 }

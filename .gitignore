@@ -21,3 +21,4 @@ __pycache__
 test-workspace
 workspace
 workspace-for-visual-testing
+evidently-openapi-schema.yml
