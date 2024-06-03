@@ -13,8 +13,10 @@ export const apiV2: API = {
       const { data, error, response } = await client.GET('/api/projects')
 
       if (error) {
-        // @ts-ignore
-        throw json(error satisfies ErrorResponse, { status: response.status })
+        throw json(error satisfies ErrorResponse, {
+          // @ts-ignore
+          status: response.status
+        })
       }
 
       return data
