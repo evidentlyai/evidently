@@ -145,7 +145,7 @@ column_mapping = ColumnMapping(
     categorical_features=['organization', 'model_ID', 'region', 'environment', 'feedback'],
 )
 ```
-**Run simple evals**. Let's generate a Report with some text statistics using a `TextEval` Preset. We'll look at the "response" column in the first 100 rows `assistant_logs[:100]`:
+**Run simple evals**. Let's generate a Report with some pre-selected text statistics using a `TextEval` Preset. We'll look at the "response" column in the first 100 rows `assistant_logs[:100]`:
 
 ```python
 text_evals_report = Report(metrics=[
@@ -169,7 +169,7 @@ The Report will show stats like:
 We call these generated statistics `descriptors`. They can be numerical or categorical. 
 
 {% hint style="success" %}
-**What else is there?** This simple example is just a starting point. We’ll show more complex evaluations later in the tutorial. There are also other interfaces beyond visual Reports: we'll also cover how to automate pass/fail checks with Test Suites and get a monitoring dashboard. 
+**What else is there?** See available descriptors in the [All Metrics](https://docs.evidentlyai.com/reference/all-metrics) table. We’ll show more complex evaluations later in the tutorial. Additionally, you can run your evals as a Test Suite (get a pass/fail for each check), or see trends on a monitoring dashboard. 
 {% endhint %}
 
 # 5. Export results
