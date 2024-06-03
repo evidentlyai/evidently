@@ -21,7 +21,7 @@ The evaluation functionality relies on the open-source Evidently `Reports` and `
 
 * **Evidently Cloud (Recommended)**: This is the easiest way to start, with UI service and snapshots hosted by Evidently. Evidently Cloud includes support, a scalable backend, and premium features such as built-in alerting, user management, and visual dashboard design.
 * **Self-hosted ML Monitoring**: Best for proof of concept, small-scale deployments, or teams with advanced infrastructure knowledge. In this case, you must host the open-source UI dashboard service and manage the data storage on your own. 
-* **Self-hosted Enterprise Deployment**: For a scalable self-hosted version of Evidently Platform with support, contact us for a [demo of Evidently Enterprise](https://www.evidentlyai.com/get-demo). Evidently Enterprise be hosted in your private cloud or on-premises.
+* **Private Enterprise Deployment**: For a scalable self-hosted version of Evidently Platform with support, contact us for a [demo of Evidently Enterprise](https://www.evidentlyai.com/get-demo). The platform be hosted in your private cloud or on-premises.
 
 # Deployment architecture 
 
@@ -31,13 +31,15 @@ You can start by sending snapshots ad hoc. For production monitoring, you can or
 
 You can run monitoring jobs using a Python script or a workflow manager tool like Airflow. 
 
-You can add a monitoring or validation step to an existing batch pipeline. Say you generate predictions daily: on every run, you can capture a snapshot with the input data summary and check for data quality and prediction drift. Once you get the true labels, you can compute the model quality and add model quality metrics to the Dashboard.
+You can add a monitoring or validation step to an existing batch pipeline. Say, you generate predictions daily:
+* on every run, you can capture a data summary snapshot and check for data quality and prediction drift
+* once you get the true labels, you can compute the model quality metrics.
 
 ![](../.gitbook/assets/monitoring/monitoring_batch_workflow_min.png)
 
-You can also run tests during CI/CD (e.g.m after model retraining), and implement automatic actions based on the validation results.
+You can also run tests during CI/CD (e.g., after model retraining), and implement automatic actions based on the validation results.
 
-You can design separate monitoring jobs if you store your data (model inference logs) in a data warehouse. For example, you can set up a script to query the data and compute snapshots on a regular cadence, e.g., hourly, daily, weekly, or after new data or labels are added. 
+If you store your data (model inference logs) in a data warehouse, you can design separate monitoring jobs. For example, you can set up a script to query the data and compute snapshots on a regular cadence, e.g., hourly, daily, weekly, or after new data or labels are added. 
 
 # Near real-time
 
