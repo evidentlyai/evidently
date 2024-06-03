@@ -110,7 +110,7 @@ Since you can assign arbitrary timestamps, you can log snapshots asynchronously 
 
 ## Add tags and metadata
 
-You can include `tags` and `metadata` in snapshots. This is optional but useful for search and data filtering for monitoring Panels.
+You can include `tags` and `metadata` in snapshots. This is useful for search and data filtering for monitoring Panels.
 
 Examples of when to use tags include:
 * You have production/shadow or champion/challenger models.
