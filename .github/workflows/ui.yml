@@ -61,28 +61,12 @@ jobs:
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
-    strategy:
-      matrix:
-        node-version: [20]
 
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
-          cache-dependency-path: ui/pnpm-lock.yaml
-
-      - name: 📥 Install node dependencies
-        working-directory: ui
-        run: pnpm i --frozen-lockfile --ignore-scripts
+      - uses: ./.github/share/ui-install.yml
 
       - name: 🔬 Type check
         working-directory: ui
