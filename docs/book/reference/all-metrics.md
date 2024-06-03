@@ -267,8 +267,8 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 | Descriptor | Parameters |
 | - | - |
 | **RegExp()** <br><br> Matches text against any specified regular expression. Returns True/False for every input.<br><br> Example use: `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **BeginsWith()** <br><br> Checks if the text begins with a specified combination. Returns True/False for every input.<br><br> Example use: `*BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **EndsWith()** <br><br> Checks if the text ends with a specified combination. Returns True/False for every input. <br><br> Example use: `*EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **BeginsWith()** <br><br> Checks if the text begins with a specified combination. Returns True/False for every input.<br><br> Example use: `BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **EndsWith()** <br><br> Checks if the text ends with a specified combination. Returns True/False for every input. <br><br> Example use: `EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
 | **Contains()** <br><br> Checks if the text contains any or all specified items. Returns True/False for every input. <br><br> Example use: `Contains(items=["medical leave"]`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
 | **DoesNotContain()** <br><br> Checks if the text does not contain any or all specified items. Returns True/False for every input. <br><br> Example use: `DoesNotContain(items=["as a large language model"]` | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
 | **IncludesWords()** <br><br> Checks if the text includes any (default) or all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input.  <br><br> Example use: `IncludesWords(words_list=['booking', 'hotel', `flight`]` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
@@ -289,6 +289,8 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 | Descriptor | Parameters |
 | - | - |
 | **Sentiment()** <br><br> Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [example](https://docs.evidentlyai.com/get-started/tutorial-llm) in the tutorial.|
+| **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model (requires API key).| See [example](https://docs.evidentlyai.com/get-started/tutorial-llm) in the tutorial.|
 
 ## Text-Specific Metrics
 
