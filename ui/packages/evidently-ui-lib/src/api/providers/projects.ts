@@ -1,14 +1,14 @@
-import createClient from 'openapi-fetch'
 import { json } from 'react-router-dom'
-import { JSONParseExtended } from '~/api/JsonParser'
+import createClient from 'openapi-fetch'
 
-import type { API, BackendPaths, DashboardInfoModel } from '~/api/types'
-import type { ErrorResponse, JSONStrExtended } from '~/api/types/utils'
+import type { ProjectsProvider } from '~/api/types/providers/projects'
+import type { BackendPaths } from '~/api/types'
+import { ErrorResponse } from '../types/utils'
 
-const client = createClient<BackendPaths>({ baseUrl: '/' })
+export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (baseUrl) => {
+  const client = createClient<BackendPaths>({ baseUrl })
 
-export const apiV2: API = {
-  projects: {
+  return {
     async list() {
       const { data, error, response } = await client.GET('/api/projects')
 
@@ -63,26 +63,6 @@ export const apiV2: API = {
       }
 
       return data
-    },
-    dashboard: {
-      async get({ project, options }) {
-        const { data, error, response } = await client.GET('/api/projects/{project_id}/dashboard', {
-          parseAs: 'text',
-          params: {
-            path: { project_id: project.id },
-            query: {
-              timestamp_start: options.timestamp_start,
-              timestamp_end: options.timestamp_end
-            }
-          }
-        })
-
-        if (error) {
-          throw json(error satisfies ErrorResponse, { status: response.status })
-        }
-
-        return JSONParseExtended<DashboardInfoModel>(data satisfies JSONStrExtended)
-      }
     }
   }
 }
