@@ -23,8 +23,13 @@ OutcomeKey = Tuple[OutcomeKeyType, ...]
 SUGGEST_FINGERPRINT = False
 _code_cache: Dict[str, List[str]] = {}
 
+if hasattr(dataclasses, "KW_ONLY"):
+    dec = dataclasses.dataclass(kw_only=True)
+else:
+    dec = dataclasses.dataclass
 
-@dataclasses.dataclass(kw_only=True)
+
+@dec
 class TestMetric:
     name: str
     metric: Metric
