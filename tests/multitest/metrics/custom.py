@@ -17,9 +17,10 @@ def custom_callable_metric():
     reference_data = current_data = pd.DataFrame({"text": [1, 2, 3]})
 
     return TestMetric(
-        "custom_callable_metric",
-        CustomValueMetric(func=custom_func, title="aaa"),
-        AssertResultFields({"value": 0.3}),
+        name="custom_callable_metric",
+        metric=CustomValueMetric(func=custom_func, title="aaa"),
+        fingerprint="6c82feee80f03c1ee1568ce250785b0f",
+        outcomes=AssertResultFields({"value": 0.3}),
         datasets=[
             TestDataset("custom_callable_metric_data", current=current_data, reference=reference_data, tags=[]),
         ],

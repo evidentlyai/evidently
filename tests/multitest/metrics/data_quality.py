@@ -20,9 +20,10 @@ from tests.multitest.metrics.conftest import metric
 @metric
 def column_correlations_metric():
     return TestMetric(
-        "column_correlations_metric",
-        ColumnCorrelationsMetric(column_name="education"),
-        NoopOutcome(),
+        name="column_correlations_metric",
+        metric=ColumnCorrelationsMetric(column_name="education"),
+        fingerprint="1335ba8694746383a255a9785bf1ea4e",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
 
@@ -30,9 +31,10 @@ def column_correlations_metric():
 @metric
 def dataset_correlations_metric():
     return TestMetric(
-        "dataset_correlations_metric",
-        DatasetCorrelationsMetric(),
-        NoopOutcome(),
+        name="dataset_correlations_metric",
+        metric=DatasetCorrelationsMetric(),
+        fingerprint="8c019a41b048119661f0d40b91557f06",
+        outcomes=NoopOutcome(),
         exclude_tags=[DatasetTags.RECSYS],
         marks=[slow],
     )
@@ -41,16 +43,21 @@ def dataset_correlations_metric():
 @metric
 def conflict_target_metric():
     return TestMetric(
-        "conflict_target_metric", ConflictTargetMetric(), NoopOutcome(), include_tags=[DatasetTags.HAS_TARGET]
+        name="conflict_target_metric",
+        metric=ConflictTargetMetric(),
+        fingerprint="b422147bfa24f93cfab9aa4a6610e393",
+        outcomes=NoopOutcome(),
+        include_tags=[DatasetTags.HAS_TARGET],
     )
 
 
 @metric
 def text_descriptors_correlation_metric():
     return TestMetric(
-        "text_descriptors_correlation_metric",
-        TextDescriptorsCorrelationMetric(column_name="Review_Text"),
-        NoopOutcome(),
+        name="text_descriptors_correlation_metric",
+        metric=TextDescriptorsCorrelationMetric(column_name="Review_Text"),
+        fingerprint="d58bda68fb5c345fe3b36190d94e23ea",
+        outcomes=NoopOutcome(),
         dataset_names=["reviews"],
         marks=[slow],
     )
@@ -59,9 +66,10 @@ def text_descriptors_correlation_metric():
 @metric
 def text_descriptors_distribution():
     return TestMetric(
-        "text_descriptors_distribution",
-        TextDescriptorsDistribution(column_name="Review_Text"),
-        NoopOutcome(),
+        name="text_descriptors_distribution",
+        metric=TextDescriptorsDistribution(column_name="Review_Text"),
+        fingerprint="c67f116de18a37af48a20e198714d701",
+        outcomes=NoopOutcome(),
         dataset_names=["reviews"],
         marks=[slow],
     )
@@ -70,9 +78,10 @@ def text_descriptors_distribution():
 @metric
 def column_distribution_metric():
     return TestMetric(
-        "column_distribution_metric",
-        ColumnDistributionMetric(column_name="education"),
-        NoopOutcome(),
+        name="column_distribution_metric",
+        metric=ColumnDistributionMetric(column_name="education"),
+        fingerprint="d6a4ce56cb698e59919362dc3f6157fb",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
 
@@ -80,9 +89,10 @@ def column_distribution_metric():
 @metric
 def column_value_list_metric():
     return TestMetric(
-        "column_value_list_metric",
-        ColumnValueListMetric(column_name="relationship", values=["Husband", "Unmarried"]),
-        NoopOutcome(),
+        name="column_value_list_metric",
+        metric=ColumnValueListMetric(column_name="relationship", values=["Husband", "Unmarried"]),
+        fingerprint="3038db11eb98707753bd53e6a12731c2",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
 
@@ -90,9 +100,10 @@ def column_value_list_metric():
 @metric
 def column_value_range_metric():
     return TestMetric(
-        "column_value_range_metric",
-        ColumnValueRangeMetric(column_name="age", left=10, right=20),
-        NoopOutcome(),
+        name="column_value_range_metric",
+        metric=ColumnValueRangeMetric(column_name="age", left=10, right=20),
+        fingerprint="38afbe08382fd9a9a066282871fdc139",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
 
@@ -100,24 +111,31 @@ def column_value_range_metric():
 @metric
 def conflict_prediction_metric():
     return TestMetric(
-        "conflict_prediction_metric",
-        ConflictPredictionMetric(),
-        NoopOutcome(),
+        name="conflict_prediction_metric",
+        metric=ConflictPredictionMetric(),
+        fingerprint="d056e58a16180405ff1f95a1deea55be",
+        outcomes=NoopOutcome(),
         include_tags=[DatasetTags.HAS_PREDICTION],
     )
 
 
 @metric
 def data_quality_stability_metric():
-    return TestMetric("data_quality_stability_metric", DataQualityStabilityMetric(), NoopOutcome())
+    return TestMetric(
+        name="data_quality_stability_metric",
+        metric=DataQualityStabilityMetric(),
+        fingerprint="c0720c2182a865e8e2ce276445badf19",
+        outcomes=NoopOutcome(),
+    )
 
 
 @metric
 def column_quantile_metric():
     return TestMetric(
-        "column_quantile_metric",
-        ColumnQuantileMetric(column_name="education-num", quantile=0.75),
-        NoopOutcome(),
+        name="column_quantile_metric",
+        metric=ColumnQuantileMetric(column_name="education-num", quantile=0.75),
+        fingerprint="3a9991c361d9ad3b9c2ee8c26df5ab05",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
 
@@ -125,8 +143,9 @@ def column_quantile_metric():
 @metric
 def column_category_metric():
     return TestMetric(
-        "column_category_metric",
-        ColumnCategoryMetric(column_name="education", category="Some-college"),
-        NoopOutcome(),
+        name="column_category_metric",
+        metric=ColumnCategoryMetric(column_name="education", category="Some-college"),
+        fingerprint="f418f44eee0ec102aea190031417e0db",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )

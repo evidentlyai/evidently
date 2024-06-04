@@ -20,11 +20,15 @@ from tests.multitest.datasets import dataset_fixtures
 OutcomeKeyType = Union[str, DatasetTags]
 OutcomeKey = Tuple[OutcomeKeyType, ...]
 
+SUGGEST_FINGERPRINT = False
+_code_cache: Dict[str, List[str]] = {}
 
-@dataclasses.dataclass
+
+@dataclasses.dataclass(kw_only=True)
 class TestMetric:
     name: str
     metric: Metric
+    fingerprint: str
     outcomes: Union[TestOutcome, Dict[Union[str, OutcomeKey, TestDataset], TestOutcome]]
 
     include_tags: List[DatasetTags] = dataclasses.field(default_factory=list)
@@ -40,6 +44,27 @@ class TestMetric:
     marks: List[Mark] = dataclasses.field(default_factory=list)
     # additional_check: Optional[Callable[[Report], None]] = None
     # """Additional callable to call on report"""
+
+    if SUGGEST_FINGERPRINT:
+
+        def __post_init__(self):
+            import inspect
+
+            if self.fingerprint is None or self.fingerprint != self.metric.get_fingerprint():
+                stack = inspect.stack()
+                init_call = stack[2]
+                if init_call.filename not in _code_cache:
+                    with open(init_call.filename, "r", encoding="utf8") as f:
+                        _code_cache[init_call.filename] = list(f.readlines())
+                lineno = init_call.lineno - 1
+                line = _code_cache[init_call.filename][lineno]
+                if "TestMetric(" not in line:
+                    raise Exception(f"Cannot find TestMetric init in line {line}")
+                _code_cache[init_call.filename][lineno] = line.replace(
+                    "TestMetric(", f'TestMetric(\nfingerprint="{self.metric.get_fingerprint()}",'
+                )
+                with open(init_call.filename, "w", encoding="utf8") as f:
+                    f.write("".join(_code_cache[init_call.filename]))
 
     def get_outcome(self, dataset: TestDataset) -> TestOutcome:
         if isinstance(self.outcomes, TestOutcome):

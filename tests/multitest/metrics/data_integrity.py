@@ -27,9 +27,10 @@ from tests.multitest.metrics.conftest import metric
 @metric
 def column_missing_values_metric():
     return TestMetric(
-        "column_missing_values_metric",
-        ColumnMissingValuesMetric(column_name="education"),
-        NoopOutcome(),
+        name="column_missing_values_metric",
+        outcomes=NoopOutcome(),
+        fingerprint="5d3b481ddcecc29ae0b4d13b6320584d",
+        metric=ColumnMissingValuesMetric(column_name="education"),
         dataset_names=["adult"],
     )
 
@@ -37,7 +38,11 @@ def column_missing_values_metric():
 @metric
 def column_summary_metric():
     return TestMetric(
-        "column_summary_metric", ColumnSummaryMetric(column_name="age"), NoopOutcome(), dataset_names=["adult"]
+        name="column_summary_metric",
+        metric=ColumnSummaryMetric(column_name="age"),
+        fingerprint="197479ae0fbf53d686a80879c6dc15a0",
+        outcomes=NoopOutcome(),
+        dataset_names=["adult"],
     )
 
 
@@ -45,8 +50,9 @@ def column_summary_metric():
 def column_summary_metric_period():
     m = ColumnSummaryMetric(column_name="feature1")
     return TestMetric(
-        "column_summary_metric_period",
-        m,
+        name="column_summary_metric_period",
+        metric=m,
+        fingerprint="70e0137212718c89b2ce52f86ab05568",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -130,8 +136,9 @@ def column_summary_metric_period():
 def column_summary_metric_success():
     m = ColumnSummaryMetric(column_name="target")
     return TestMetric(
-        "column_summary_metric_success",
-        m,
+        name="column_summary_metric_success",
+        metric=m,
+        fingerprint="57b116392d131f49a9bfddc96ed47981",
         outcomes={
             TestDataset(
                 current=pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
@@ -191,19 +198,30 @@ def column_summary_metric_success():
 
 @metric
 def dataset_summary_metric():
-    return TestMetric("dataset_summary_metric", DatasetSummaryMetric(), NoopOutcome())
+    return TestMetric(
+        name="dataset_summary_metric",
+        metric=DatasetSummaryMetric(),
+        fingerprint="73e2d2120edf79849d278a646b956563",
+        outcomes=NoopOutcome(),
+    )
 
 
 @metric
 def column_reg_exp_metric():
     return TestMetric(
-        "column_reg_exp_metric",
-        ColumnRegExpMetric(column_name="relationship", reg_exp=r".*child.*"),
-        NoopOutcome(),
+        name="column_reg_exp_metric",
+        metric=ColumnRegExpMetric(column_name="relationship", reg_exp=r".*child.*"),
+        fingerprint="1df27c0657e9d250aca810f0b4a5d0d1",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
 
 
 @metric
 def dataset_missing_values_metric():
-    return TestMetric("dataset_missing_values_metric", DatasetMissingValuesMetric(), NoopOutcome())
+    return TestMetric(
+        name="dataset_missing_values_metric",
+        metric=DatasetMissingValuesMetric(),
+        fingerprint="3f7377d36855eeb727e71a2a8cc255b9",
+        outcomes=NoopOutcome(),
+    )

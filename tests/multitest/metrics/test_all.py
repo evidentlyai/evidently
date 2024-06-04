@@ -26,6 +26,9 @@ def _check_dataframe(report: Report):
     "raw_data", [pytest.param(True, marks=[slow], id="raw_data"), pytest.param(False, id="agg_data")]
 )
 def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome, raw_data, tmp_path):
+    if tmetric.metric.get_fingerprint() != tmetric.fingerprint:
+        raise AssertionError()
+    assert tmetric.metric.get_fingerprint() == tmetric.fingerprint
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
     if isinstance(outcome, Error):
@@ -81,7 +84,7 @@ def test_all_metrics_tested():
     suggestion_template = """
 @metric
 def {snake_case}():
-    return TestMetric("{snake_case}", {cls}())
+    return TestMetric("name={snake_case}", metric={cls}())
     """
     suggestion = "\n".join(
         suggestion_template.format(cls=m.__name__, snake_case=re.sub(r"(?<!^)(?=[A-Z])", "_", m.__name__).lower())
