@@ -23,7 +23,7 @@ IMPORT_EXCEPTIONS = [os.path.join(*i.split(".")) + ".py" for i in IMPORT_EXCEPTI
 def test_all_imports_from_compat(sourcefile):
     if sourcefile.endswith("_pydantic_compat.py"):
         return
-    with open(sourcefile) as f:
+    with open(sourcefile, encoding="utf8") as f:
         tree = ast.parse(f.read(), filename=sourcefile)
 
     class Visitor(ast.NodeVisitor):
