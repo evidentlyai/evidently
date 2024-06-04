@@ -26,9 +26,9 @@ def _check_dataframe(report: Report):
     "raw_data", [pytest.param(True, marks=[slow], id="raw_data"), pytest.param(False, id="agg_data")]
 )
 def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome, raw_data, tmp_path):
-    if tmetric.metric.get_fingerprint() != tmetric.fingerprint:
-        raise AssertionError()
-    assert tmetric.metric.get_fingerprint() == tmetric.fingerprint
+    assert (
+        tmetric.metric.get_fingerprint() == tmetric.fingerprint
+    ), "wrong fingerprint, try enabling suggestion mode in conftest"
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
 
     if isinstance(outcome, Error):

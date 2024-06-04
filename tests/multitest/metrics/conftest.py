@@ -50,21 +50,31 @@ class TestMetric:
         def __post_init__(self):
             import inspect
 
-            if self.fingerprint is None or self.fingerprint != self.metric.get_fingerprint():
+            fingerprint = self.metric.get_fingerprint()
+            if self.fingerprint is None or self.fingerprint != fingerprint:
                 stack = inspect.stack()
                 init_call = stack[2]
                 if init_call.filename not in _code_cache:
                     with open(init_call.filename, "r", encoding="utf8") as f:
                         _code_cache[init_call.filename] = list(f.readlines())
-                lineno = init_call.lineno - 1
-                line = _code_cache[init_call.filename][lineno]
-                if "TestMetric(" not in line:
-                    raise Exception(f"Cannot find TestMetric init in line {line}")
-                _code_cache[init_call.filename][lineno] = line.replace(
-                    "TestMetric(", f'TestMetric(\nfingerprint="{self.metric.get_fingerprint()}",'
-                )
+
+                lines = _code_cache[init_call.filename]
+                if self.fingerprint is None:
+                    lineno = init_call.lineno - 1
+                    line = lines[lineno]
+                    if "TestMetric(" not in line:
+                        raise Exception(f"Cannot find TestMetric init in line {line}")
+                    lines[lineno] = line.replace("TestMetric(", f'TestMetric(\nfingerprint="{fingerprint}",')
+                if self.fingerprint is not None and self.fingerprint != fingerprint:
+                    template = f'fingerprint="{self.fingerprint}"'
+                    for i, line in list(enumerate(lines)):
+                        if template in line:
+                            lines[i] = line.replace(template, f'fingerprint="{fingerprint}"')
+                            break
+                    else:
+                        raise Exception(f"Cound not find line with {template}")
                 with open(init_call.filename, "w", encoding="utf8") as f:
-                    f.write("".join(_code_cache[init_call.filename]))
+                    f.write("".join(lines))
 
     def get_outcome(self, dataset: TestDataset) -> TestOutcome:
         if isinstance(self.outcomes, TestOutcome):
