@@ -63,6 +63,37 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
       }
 
       return data
+    },
+    async reloadSnapshots({ project }) {
+      const { error, response } = await client.GET('/api/projects/{project_id}/reload', {
+        params: { path: { project_id: project.id } }
+      })
+
+      if (error) {
+        throw json(error satisfies ErrorResponse, { status: response.status })
+      }
+    },
+    async listReports({ project }) {
+      const { data, error, response } = await client.GET('/api/projects/{project_id}/reports', {
+        params: { path: { project_id: project.id } }
+      })
+
+      if (error) {
+        throw json(error satisfies ErrorResponse, { status: response.status })
+      }
+
+      return data
+    },
+    async listTestSuites({ project }) {
+      const { data, error, response } = await client.GET('/api/projects/{project_id}/test_suites', {
+        params: { path: { project_id: project.id } }
+      })
+
+      if (error) {
+        throw json(error satisfies ErrorResponse, { status: response.status })
+      }
+
+      return data
     }
   }
 }

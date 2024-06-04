@@ -125,3 +125,9 @@ class UserModel(BaseModel):
     @classmethod
     def from_user(cls, user: User):
         return UserModel(id=user.id, name=user.name, email=user.email)
+
+
+class Version(BaseModel):
+    application: str
+    version: str
+    commit: str

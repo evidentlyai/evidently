@@ -9,4 +9,7 @@ export type BackendPaths = paths
 type Schemas = components['schemas']
 
 export type Project = Schemas['Project']
+export type ReportModel = Schemas['ReportModel']
+export type TestSuiteModel = Schemas['TestSuiteModel']
 export type DashboardInfoModel = Schemas['DashboardInfoModel']
+export type Version = Schemas['Version']
