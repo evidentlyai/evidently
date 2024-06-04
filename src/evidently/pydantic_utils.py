@@ -268,8 +268,12 @@ class FieldInfo(EnumValueMixin):
         return self.path < other.path
 
 
+def _to_path(path: List[Any]) -> str:
+    return ".".join(str(p) for p in path)
+
+
 class FieldPath:
-    def __init__(self, path: List[str], cls_or_instance: Union[Type, Any], is_mapping: bool = False):
+    def __init__(self, path: List[Any], cls_or_instance: Union[Type, Any], is_mapping: bool = False):
         self._path = path
         self._cls: Type
         self._instance: Any
@@ -340,13 +344,13 @@ class FieldPath:
             res.extend(FieldPath(self._path + [name], field_value).list_nested_fields(exclude=exclude))
         return res
 
-    def _list_with_tags(self, current_tags: Set["IncludeTags"]) -> List[Tuple[str, Set["IncludeTags"]]]:
+    def _list_with_tags(self, current_tags: Set["IncludeTags"]) -> List[Tuple[List[Any], Set["IncludeTags"]]]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
-            return [(repr(self), current_tags)]
+            return [(self._path, current_tags)]
         from evidently.core import BaseResult
 
         if issubclass(self._cls, BaseResult) and self._cls.__config__.extract_as_obj:
-            return [(repr(self), current_tags)]
+            return [(self._path, current_tags)]
         res = []
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
@@ -362,9 +366,7 @@ class FieldPath:
                 if is_mapping and isinstance(field_value, dict):
                     for key, value in field_value.items():
                         res.extend(
-                            FieldPath(self._path + [name, str(key)], value)._list_with_tags(
-                                current_tags.union(field_tags)
-                            )
+                            FieldPath(self._path + [name, key], value)._list_with_tags(current_tags.union(field_tags))
                         )
                     continue
             else:
@@ -374,12 +376,12 @@ class FieldPath:
         return res
 
     def list_nested_fields_with_tags(self) -> List[Tuple[str, Set["IncludeTags"]]]:
-        return self._list_with_tags(set())
+        return [(_to_path(path), tags) for path, tags in self._list_with_tags(set())]
 
     def list_nested_field_infos(self) -> List[FieldInfo]:
         return [
-            FieldInfo(path=path, tags=frozenset(tags), classpath=get_classpath(self._get_field_type(path.split("."))))
-            for path, tags in self.list_nested_fields_with_tags()
+            FieldInfo(path=_to_path(path), tags=frozenset(tags), classpath=get_classpath(self._get_field_type(path)))
+            for path, tags in self._list_with_tags(set())
         ]
 
     def _get_field_type(self, path: List[str]) -> Type:
