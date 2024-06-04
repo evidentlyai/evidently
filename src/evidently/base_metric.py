@@ -16,9 +16,9 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic import PrivateAttr
 
 from evidently._pydantic_compat import ModelMetaclass
+from evidently._pydantic_compat import PrivateAttr
 from evidently.core import BaseResult
 from evidently.core import ColumnType
 from evidently.core import IncludeTags

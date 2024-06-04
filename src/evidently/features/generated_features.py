@@ -6,8 +6,8 @@ from typing import List
 from typing import Optional
 
 import pandas as pd
-from pydantic import Field
 
+from evidently._pydantic_compat import Field
 from evidently.core import ColumnType
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
