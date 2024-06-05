@@ -83,7 +83,7 @@ class GeneralHuggingFaceFeature(DataFeature):
         super().__init__()
 
     def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
-        _, available_params, func = _models.get(self.model, (None, None, None))
+        _, available_params, func = _models.get(self.model, (ColumnType.Unknown, [], None))
         if func is None:
             raise ValueError(f"Model {self.model} not found. Available models: {', '.join(_models.keys())}")
         result = func(data[self.column_name], **{param: self.params.get(param, None) for param in available_params})
