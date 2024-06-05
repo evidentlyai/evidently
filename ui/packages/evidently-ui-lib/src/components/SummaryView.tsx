@@ -2,11 +2,11 @@ import React from 'react'
 
 import { Box, Button, Grid, Select } from '@mui/material'
 
-import { DashboardInfo } from '~/api'
 import { DashboardContentWidgets } from './DashboardContent'
+import { DashboardInfoModel } from '~/api/types'
 
 interface SummaryViewProps {
-  dashboardInfo: DashboardInfo
+  dashboardInfo: DashboardInfoModel
 }
 
 const SummaryView: React.FunctionComponent<SummaryViewProps> = (props) => {

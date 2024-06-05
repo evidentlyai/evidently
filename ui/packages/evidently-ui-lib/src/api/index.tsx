@@ -1,4 +1,5 @@
 import { Layout, PlotData } from 'plotly.js-cartesian-dist-min'
+import { DashboardInfoModel } from './types'
 
 export class Result<T> {
   constructor(result?: T, error?: string) {
@@ -12,8 +13,6 @@ export class Result<T> {
   Ok = (result: T) => new Result<T>(result, undefined)
   Error = (error: string) => new Result<T>(undefined, error)
 }
-
-export interface GraphWidgetParams {}
 
 export interface TableWidgetParams {
   header: string[]
@@ -94,10 +93,6 @@ export interface InsightsParams {
   title: string
   severity: 'info' | 'warning' | 'error' | 'success'
   text: string
-}
-
-export interface GraphOptions {
-  color: string
 }
 
 export interface LineGraphOptions {
@@ -218,119 +213,6 @@ export interface WidgetInfo {
 
 export type AdditionalGraphInfo = BigGraphWidgetParams
 
-type DashboardTab = { id: string; title: string }
-
-export interface DashboardInfo {
-  name: string
-  widgets: WidgetInfo[]
-  max_timestamp: string | null
-  min_timestamp: string | null
-}
-
-export interface SectionInfo {
-  id: string
-  name: string
-  sections?: SectionInfo[]
-  disabled: boolean
-}
-
-export interface ProjectInfo {
-  id: string
-  name: string
-  description?: string
-  date_from?: string
-  date_to?: string
-  team_id?: string
-}
-
-type PanelTestFilter =
-  | { test_hash: string }
-  | {
-      test_id: string
-      test_args: Record<string, string>
-    }
-
-type PanelValueBase = { field_path: string; legend: string }
-export type PanelValue = PanelValueBase &
-  (
-    | { metric_hash: string }
-    | {
-        metric_id: string
-        metric_args: Record<string, string>
-      }
-  )
-
-export type MetricAlert = {
-  path: PanelValue
-  condition: Partial<{
-    eq?: number | null
-    gt?: number | null
-    gte?: number | null
-    lt?: number | null
-    lte?: number | null
-  }>
-}
-
-type DashboardPanelBase = {
-  id: string
-  title: string
-  size: 1 | 2
-  filter: {
-    metadata_values: MetadataValueType
-    include_test_suites: boolean
-    tag_values: string[]
-  }
-}
-
-export type DashboardPanel = DashboardPanelBase &
-  (
-    | {
-        type: 'evidently.ui.dashboards.reports.DashboardPanelCounter'
-        agg: 'last' | 'sum' | 'none'
-        text: string
-        value: PanelValue | null
-      }
-    | {
-        type: 'evidently.ui.dashboards.reports.DashboardPanelPlot'
-        plot_type: 'line' | 'bar' | 'histogram' | 'scatter'
-        values: PanelValue[]
-      }
-    | {
-        type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuite'
-        panel_type: 'aggregate' | 'detailed'
-        time_agg: string
-        test_filters: PanelTestFilter[]
-      }
-    | {
-        type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuiteCounter'
-        agg: 'none' | 'last'
-        statuses: ('SUCCESS' | 'ERROR' | 'FAIL' | 'SKIPPED' | 'WARNING')[]
-        test_filters: PanelTestFilter[]
-      }
-  )
-
-export interface ProjectDetails extends ProjectInfo {
-  dashboard: {
-    name: string
-    tabs: DashboardTab[]
-    tab_id_to_panel_ids: Record<string, string[]>
-    panels: DashboardPanel[]
-  }
-}
-
-export type MetadataValueType = Record<string, string | string[] | Record<string, string>>
-
-export interface SnapshotInfo {
-  id: string
-  timestamp: string
-  tags: string[]
-  metadata: MetadataValueType
-}
-
-export interface VersionInfo {
-  version: string
-}
-
 export interface Api {
   getAdditionalGraphData(
     projectId: string,
@@ -344,29 +226,5 @@ export interface Api {
     widgetId: string
   ): Promise<WidgetInfo>
 
-  getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfo>
-
-  getProjectDashboard(
-    projectId: string,
-    from?: string | null,
-    to?: string | null
-  ): Promise<DashboardInfo>
-
-  getReports(projectId: string): Promise<SnapshotInfo[]>
-
-  getTestSuites(projectId: string): Promise<SnapshotInfo[]>
-
-  getProjects(): Promise<ProjectInfo[]>
-
-  getProjectInfo(projectId: string): Promise<ProjectDetails>
-
-  createProject(project: Partial<ProjectDetails>): Promise<ProjectDetails>
-
-  deleteProject(projectId: string): Promise<Response>
-
-  getVersion(): Promise<VersionInfo>
-
-  editProjectInfo(project: ProjectDetails): Promise<Response>
-
-  reloadProject(projectId: string): Promise<Response>
+  getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfoModel>
 }

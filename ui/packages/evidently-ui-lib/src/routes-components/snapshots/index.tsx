@@ -28,8 +28,6 @@ import {
   ShouldRevalidateFunction
 } from 'react-router-dom'
 
-import type { MetadataValueType } from '~/api'
-
 import { useLocalStorage } from '@uidotdev/usehooks'
 
 import JsonView from 'react18-json-view'
@@ -44,6 +42,7 @@ import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import dayjs from 'dayjs'
 import { ReportsLoaderData, TestSuitesLoaderData } from './data'
+import { MetadataModel } from '~/api/types'
 
 export const shouldRevalidate: ShouldRevalidateFunction = () => true
 
@@ -56,9 +55,7 @@ export const handle: { crumb: crumbFunction<LoaderData> } = {
   })
 }
 
-const metadataToOneString: (metadata: MetadataValueType) => string = (
-  metadata: MetadataValueType
-) =>
+const metadataToOneString: (metadata: MetadataModel) => string = (metadata: MetadataModel) =>
   Object.values(metadata)
     .map((value) => {
       if (Array.isArray(value)) {

@@ -16,3 +16,4 @@ export type TestSuiteModel = Schemas['TestSuiteModel']
 import { WidgetInfo } from '~/api'
 export type DashboardInfoModel = Schemas['DashboardInfoModel'] & { widgets: WidgetInfo[] }
 export type VersionModel = Schemas['Version']
+export type MetadataModel = ReportModel['metadata']

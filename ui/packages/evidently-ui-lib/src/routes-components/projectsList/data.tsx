@@ -27,6 +27,7 @@ export const getLoaderAction: GetLoaderAction<
   action: async ({ request }) => {
     expectJsonRequest(request)
 
+    // TODO: fix this (ensure submit right data in right places)
     const json = (await request.json()) as StrictID<ProjectModel>
 
     if (createNewProjectSchema.safeParse(json).success) {

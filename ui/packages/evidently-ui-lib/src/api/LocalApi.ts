@@ -1,43 +1,17 @@
-import {
-  AdditionalGraphInfo,
-  Api,
-  DashboardInfo,
-  ProjectDetails,
-  ProjectInfo,
-  SnapshotInfo,
-  VersionInfo,
-  WidgetInfo
-} from './index'
+import { AdditionalGraphInfo, Api, WidgetInfo } from './index'
+import { DashboardInfoModel } from './types'
 
 export default class LocalApi implements Api {
-  private readonly dashboard: DashboardInfo
-  private readonly projects: ProjectInfo[]
+  private readonly dashboard: DashboardInfoModel
+
   private additionalGraphs: Map<string, AdditionalGraphInfo | WidgetInfo>
 
   constructor(
-    dashboard: DashboardInfo,
-    additionalGraphs: Map<string, AdditionalGraphInfo | WidgetInfo>,
-    projects?: ProjectInfo[]
+    dashboard: DashboardInfoModel,
+    additionalGraphs: Map<string, AdditionalGraphInfo | WidgetInfo>
   ) {
     this.dashboard = dashboard
     this.additionalGraphs = additionalGraphs
-    this.projects = projects ?? []
-  }
-
-  async getProjectDashboard(
-    _projectId: string,
-    _from?: string,
-    _to?: string
-  ): Promise<DashboardInfo> {
-    return {
-      name: 'Project Dasboard',
-      widgets: [],
-      min_timestamp: new Date(Date.now()).toString(),
-      max_timestamp: new Date(Date.now()).toString()
-    }
-  }
-  async getReports(_projectId: string): Promise<SnapshotInfo[]> {
-    return [{ id: 'report_1', timestamp: new Date(Date.now()).toString(), tags: [], metadata: {} }]
   }
 
   getAdditionalGraphData(
@@ -58,57 +32,7 @@ export default class LocalApi implements Api {
     return graph ? Promise.resolve(graph as WidgetInfo) : Promise.reject('No graph found')
   }
 
-  getDashboard(_projectId: string, _dashboardId: string): Promise<DashboardInfo> {
+  getDashboard(_projectId: string, _dashboardId: string): Promise<DashboardInfoModel> {
     return Promise.resolve(this.dashboard)
-  }
-
-  getProjects(): Promise<ProjectInfo[]> {
-    return Promise.resolve(this.projects)
-  }
-
-  getReport(_projectId: string, _reportId: string): Promise<DashboardInfo> {
-    return Promise.resolve(this.dashboard)
-  }
-
-  getTestSuite(_projectId: string, _reportId: string): Promise<DashboardInfo> {
-    return Promise.resolve(this.dashboard)
-  }
-
-  getTestSuites(_projectId: string): Promise<SnapshotInfo[]> {
-    return Promise.resolve([
-      { id: 'test_suite1', timestamp: new Date(Date.now()).toString(), tags: [], metadata: {} }
-    ])
-  }
-
-  getProjectInfo(_projectId: string): Promise<ProjectDetails> {
-    return Promise.resolve({
-      id: 'project1',
-      name: 'Project #1',
-      dashboard: { tabs: [], tab_id_to_panel_ids: {}, panels: [], name: '' }
-    })
-  }
-
-  getVersion(): Promise<VersionInfo> {
-    return Promise.resolve({ version: 'x.x.x' })
-  }
-
-  editProjectInfo(_project: ProjectDetails) {
-    return Promise.resolve(new Response('ok', { status: 200 }))
-  }
-
-  reloadProject(_projectId: string): Promise<Response> {
-    return Promise.resolve(new Response(null, { status: 200 }))
-  }
-
-  createProject(_project: Partial<ProjectDetails>): Promise<ProjectDetails> {
-    return Promise.resolve({
-      id: 'new-project-id',
-      name: 'name',
-      dashboard: { tab_id_to_panel_ids: {}, tabs: [], panels: [], name: '' }
-    })
-  }
-
-  deleteProject(_projectId: string): Promise<Response> {
-    return Promise.resolve(new Response('ok', { status: 200 }))
   }
 }
