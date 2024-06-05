@@ -1,9 +1,9 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import { injectAPI } from 'evidently-ui-lib/routes-components/snapshotId/data'
+import { getLoaderAction } from 'evidently-ui-lib/routes-components/snapshotId/data'
 import { api, dashboardProvider } from 'api/RemoteApi'
 
-const { loader } = injectAPI({
+const { loader } = getLoaderAction({
   api: {
     // TODO: REMOVE IT
     ...api,

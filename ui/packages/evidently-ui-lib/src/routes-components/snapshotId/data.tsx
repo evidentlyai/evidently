@@ -5,7 +5,7 @@ import { DashboardInfoModel } from '~/api/types'
 
 export type LoaderData = DashboardInfoModel
 
-export const injectAPI: GetLoaderAction<
+export const getLoaderAction: GetLoaderAction<
   Pick<DashboardProvider, 'getSnapshotDashboard'>,
   LoaderData
 > = ({ api }) => ({

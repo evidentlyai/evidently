@@ -8,7 +8,7 @@ import { FILTER_QUERY_PARAMS } from '~/components/DashboardDateFilter'
 import { DashboardInfoModel } from '~/api/types'
 import { DashboardProvider } from '~/api/types/providers/dashboard'
 
-export const injectAPI: GetLoaderAction<
+export const getLoaderAction: GetLoaderAction<
   Pick<DashboardProvider, 'getProjectDashboard'>,
   LoaderData
 > = ({ api }) => ({

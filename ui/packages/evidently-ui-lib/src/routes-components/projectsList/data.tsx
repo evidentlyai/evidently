@@ -19,7 +19,7 @@ export const deleteProjectAction = z.object({
   projectId: z.string().uuid()
 })
 
-export const injectAPI: GetLoaderAction<
+export const getLoaderAction: GetLoaderAction<
   Pick<ProjectsProvider, 'create' | 'delete' | 'update' | 'list'>,
   LoaderData
 > = ({ api }) => ({

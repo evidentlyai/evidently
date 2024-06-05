@@ -1,9 +1,9 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import { injectAPI } from 'evidently-ui-lib/routes-components/projectId/data'
+import { getLoaderAction } from 'evidently-ui-lib/routes-components/projectId/data'
 import { projectProvider } from 'api/RemoteApi'
 
-const { loader } = injectAPI({ api: projectProvider })
+const { loader } = getLoaderAction({ api: projectProvider })
 
 ////////////////////
 // children routes

@@ -5,7 +5,9 @@ import { GetLoaderAction } from '~/utils'
 
 export type LoaderData = ProjectModel
 
-export const injectAPI: GetLoaderAction<Pick<ProjectsProvider, 'get'>, LoaderData> = ({ api }) => ({
+export const getLoaderAction: GetLoaderAction<Pick<ProjectsProvider, 'get'>, LoaderData> = ({
+  api
+}) => ({
   loader: ({ params }) => {
     const { projectId } = params
     invariant(projectId, 'missing projectId')
