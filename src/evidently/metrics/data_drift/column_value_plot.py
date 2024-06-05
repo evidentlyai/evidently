@@ -17,6 +17,7 @@ from evidently.metric_results import ColumnScatterOrAgg
 from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -47,6 +48,9 @@ class ColumnValuePlotResults(MetricResult):
 
 
 class ColumnValuePlot(Metric[ColumnValuePlotResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     column_name: str
 
     def __init__(self, column_name: str, options: AnyOptions = None):

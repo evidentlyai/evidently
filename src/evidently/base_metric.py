@@ -8,6 +8,7 @@ from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import Generic
+from typing import Hashable
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -25,6 +26,8 @@ from evidently.core import IncludeTags
 from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
+from evidently.options.option import Option
+from evidently.options.option import OptionField
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
@@ -32,6 +35,7 @@ from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import FrozenBaseMeta
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
+from evidently.pydantic_utils import get_value_fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
@@ -221,7 +225,12 @@ class WithResultFieldPathMetaclass(FrozenBaseMeta):
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
     _context: Optional["Context"] = None
 
+    class Config(PolymorphicModel.Config):
+        used_options_fields: Optional[List[Union[Type[Option], OptionField]]] = None
+
     # TODO: if we want metric-specific options
+    __config__: ClassVar[Config]
+
     options: Options
 
     fields: ClassVar[FieldsDescriptor] = FieldsDescriptor()
@@ -290,6 +299,39 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
         if self._context is not None:
             options = self._context.options.override(options)
         return options
+
+    def get_field_fingerprint(self, field: str) -> Hashable:
+        if field == "options":
+            return self.get_options_fingerprint()
+        return super().get_field_fingerprint(field)
+
+    def __get_used_options__(self) -> List[Tuple[Type[Option], List[str]]]:
+        if self.__config__.used_options_fields is None:
+            return []
+        result = []
+        for option in self.__config__.used_options_fields:
+            if isinstance(option, OptionField):
+                model = option.model
+                fields = [option.field_name]
+            else:
+                model = option
+                fields = list(model.__fields__)
+
+            result.append((model, fields))
+
+        return result
+
+    def get_options_fingerprint(self):
+        options_data = self.options
+        result = []
+        for model, fields in self.__get_used_options__():
+            for f in fields:
+                field = model.__fields__[f]
+                value = getattr(options_data.get(model), f)
+                if field.required or field.get_default() != value:
+                    result.append(get_value_fingerprint(value))
+
+        return tuple(result)
 
 
 class ColumnMetricResult(MetricResult):

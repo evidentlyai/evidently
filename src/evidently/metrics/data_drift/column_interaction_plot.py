@@ -22,6 +22,7 @@ from evidently.core import IncludeTags
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ContourData
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -64,6 +65,9 @@ class ColumnInteractionPlotResults(MetricResult):
 
 
 class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     x_column: str
     y_column: str
 

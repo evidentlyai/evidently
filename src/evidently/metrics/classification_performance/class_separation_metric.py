@@ -16,6 +16,7 @@ from evidently.metric_results import column_scatter_from_df
 from evidently.metric_results import df_from_column_scatter
 from evidently.metric_results import raw_agg_properties
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -71,6 +72,14 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
 
 
 class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
+    # def get_options_fingerprint(self):
+    #     if self.__config__.used_options_fields is None:
+    #         return super().get_field_fingerprint("options")
+    #
+    #     return super().get_field_fingerprint("options")
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

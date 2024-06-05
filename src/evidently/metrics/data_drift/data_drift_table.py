@@ -15,6 +15,7 @@ from evidently.metric_results import HistogramData
 from evidently.metrics.data_drift.base import WithDriftOptions
 from evidently.metrics.data_drift.feature_importance import FeatureImportanceMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.options.data_drift import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -52,6 +53,9 @@ class DataDriftTableResults(MetricResult):
 
 
 class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     columns: Optional[List[str]]
     feature_importance: Optional[bool]
     _feature_importance_metric: Optional[FeatureImportanceMetric]

@@ -23,6 +23,7 @@ from evidently.features.text_length_feature import TextLength
 from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -48,6 +49,9 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
 
 
 class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
     _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]

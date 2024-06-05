@@ -17,6 +17,7 @@ from evidently.metrics.regression_performance.objects import PredActualScatter
 from evidently.metrics.regression_performance.objects import RegressionScatter
 from evidently.metrics.regression_performance.visualization import plot_error_bias_colored_scatter
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -54,6 +55,9 @@ class RegressionTopErrorMetricResults(MetricResult):
 
 
 class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     def calculate(self, data: InputData) -> RegressionTopErrorMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

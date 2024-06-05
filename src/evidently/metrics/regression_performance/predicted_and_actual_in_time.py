@@ -10,6 +10,7 @@ from evidently.metric_results import ColumnAggScatterResult
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -21,6 +22,9 @@ from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

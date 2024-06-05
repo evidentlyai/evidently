@@ -13,6 +13,7 @@ from evidently.metric_results import raw_agg_properties
 from evidently.metrics.regression_performance.objects import PredActualScatter
 from evidently.metrics.regression_performance.objects import scatter_as_dict
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -49,6 +50,9 @@ class RegressionPredictedVsActualScatterResults(MetricResult):
 
 
 class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatterResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

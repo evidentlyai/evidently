@@ -15,6 +15,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -41,6 +42,9 @@ class RegressionErrorNormalityResults(MetricResult):
 
 
 class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

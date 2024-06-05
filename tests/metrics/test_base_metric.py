@@ -8,11 +8,13 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.base_metric import generate_column_metrics
+from evidently.options.option import Option
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 from evidently.utils.data_preprocessing import DataDefinition
@@ -205,3 +207,81 @@ def test_additional_features_multi_metrics(metrics, result):
     report._inner_suite.raise_for_error()
     assert metrics[0].get_result() == result[0]
     assert metrics[1].get_result() == result[1]
+
+
+def test_options_fingerprint_not_specified():
+    class MyOption(Option):
+        field: str
+
+    class MockMetric(Metric[MetricResult]):
+        def calculate(self, data: InputData):
+            return MetricResult()
+
+    m1 = MockMetric(options=[MyOption(field="a")])
+    m2 = MockMetric(options=[MyOption(field="b")])
+
+    assert m1.get_fingerprint() == m2.get_fingerprint()
+
+
+def test_options_fingerprint_specified_type():
+    class MyOption(Option):
+        field: str
+
+    class MockMetricWithOption(Metric[MetricResult]):
+        class Config(Metric.Config):
+            used_options_fields = [MyOption]
+
+        def calculate(self, data: InputData):
+            return MetricResult()
+
+    m3 = MockMetricWithOption(options=[MyOption(field="a")])
+    m4 = MockMetricWithOption(options=[MyOption(field="b")])
+
+    assert m3.get_fingerprint() != m4.get_fingerprint()
+
+
+def test_options_fingerprint_specified_field():
+    class MyOption(Option):
+        field: str
+
+    class MockMetricWithOptionField(Metric[MetricResult]):
+        class Config(Metric.Config):
+            used_options_fields = [MyOption.field]
+
+        def calculate(self, data: InputData):
+            return MetricResult()
+
+    m5 = MockMetricWithOptionField(options=[MyOption(field="a")])
+    m6 = MockMetricWithOptionField(options=[MyOption(field="b")])
+
+    assert m5.get_fingerprint() != m6.get_fingerprint()
+
+
+def test_options_fingerprint_specified_type_with_new_field():
+    class MyOption(Option):
+        field: str
+
+    class MockMetricWithOptionWithDefault(Metric[MetricResult]):
+        class Config(Metric.Config):
+            used_options_fields = [MyOption]
+
+        def calculate(self, data: InputData):
+            return MetricResult()
+
+    m7 = MockMetricWithOptionWithDefault(options=[MyOption(field="a")])
+
+    class MyOption(Option):
+        field: str
+        field2: str = ""
+
+    class MockMetricWithOptionWithDefault(Metric[MetricResult]):
+        class Config(Metric.Config):
+            used_options_fields = [MyOption]
+
+        def calculate(self, data: InputData):
+            return MetricResult()
+
+    m8 = MockMetricWithOptionWithDefault(options=[MyOption(field="a")])
+    m9 = MockMetricWithOptionWithDefault(options=[MyOption(field="a", field2="b")])
+    assert m8.get_fingerprint() == m7.get_fingerprint()
+    assert m9.get_fingerprint() != m7.get_fingerprint()

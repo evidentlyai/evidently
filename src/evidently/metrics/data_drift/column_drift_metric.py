@@ -22,6 +22,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import HistogramData
 from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.options.data_drift import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -248,6 +249,9 @@ def get_one_column_drift(
 
 class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
     """Calculate drift metric for a column"""
+
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
 
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]

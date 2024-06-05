@@ -22,7 +22,7 @@ def column_correlations_metric():
     return TestMetric(
         name="column_correlations_metric",
         metric=ColumnCorrelationsMetric(column_name="education"),
-        fingerprint="1335ba8694746383a255a9785bf1ea4e",
+        fingerprint="c775c38ca8fd040b3b21f58a1b9f3cd3",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -33,7 +33,7 @@ def dataset_correlations_metric():
     return TestMetric(
         name="dataset_correlations_metric",
         metric=DatasetCorrelationsMetric(),
-        fingerprint="8c019a41b048119661f0d40b91557f06",
+        fingerprint="45e9a7a5b2d8f63a3330648e3c548c3c",
         outcomes=NoopOutcome(),
         exclude_tags=[DatasetTags.RECSYS],
         marks=[slow],
@@ -45,7 +45,7 @@ def conflict_target_metric():
     return TestMetric(
         name="conflict_target_metric",
         metric=ConflictTargetMetric(),
-        fingerprint="b422147bfa24f93cfab9aa4a6610e393",
+        fingerprint="1259855b872f6b12f835cafc7f3b7239",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.HAS_TARGET],
     )
@@ -56,7 +56,7 @@ def text_descriptors_correlation_metric():
     return TestMetric(
         name="text_descriptors_correlation_metric",
         metric=TextDescriptorsCorrelationMetric(column_name="Review_Text"),
-        fingerprint="d58bda68fb5c345fe3b36190d94e23ea",
+        fingerprint="7f4e0c38aa910a24b8490c8c5a889d55",
         outcomes=NoopOutcome(),
         dataset_names=["reviews"],
         marks=[slow],
@@ -68,7 +68,7 @@ def text_descriptors_distribution():
     return TestMetric(
         name="text_descriptors_distribution",
         metric=TextDescriptorsDistribution(column_name="Review_Text"),
-        fingerprint="c67f116de18a37af48a20e198714d701",
+        fingerprint="54465c8723324815de7a671e5d7e4468",
         outcomes=NoopOutcome(),
         dataset_names=["reviews"],
         marks=[slow],
@@ -80,7 +80,7 @@ def column_distribution_metric():
     return TestMetric(
         name="column_distribution_metric",
         metric=ColumnDistributionMetric(column_name="education"),
-        fingerprint="d6a4ce56cb698e59919362dc3f6157fb",
+        fingerprint="72839e5afbe6fc4c9d975e8f072510e2",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -91,7 +91,7 @@ def column_value_list_metric():
     return TestMetric(
         name="column_value_list_metric",
         metric=ColumnValueListMetric(column_name="relationship", values=["Husband", "Unmarried"]),
-        fingerprint="3038db11eb98707753bd53e6a12731c2",
+        fingerprint="9001233bb9fac6941786e5b56dcce15c",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -102,7 +102,7 @@ def column_value_range_metric():
     return TestMetric(
         name="column_value_range_metric",
         metric=ColumnValueRangeMetric(column_name="age", left=10, right=20),
-        fingerprint="38afbe08382fd9a9a066282871fdc139",
+        fingerprint="1eecd0e2ea6701a872526c629bf039e5",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -113,7 +113,7 @@ def conflict_prediction_metric():
     return TestMetric(
         name="conflict_prediction_metric",
         metric=ConflictPredictionMetric(),
-        fingerprint="d056e58a16180405ff1f95a1deea55be",
+        fingerprint="3858a9345275641faf507095d577a4f0",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.HAS_PREDICTION],
     )
@@ -124,7 +124,7 @@ def data_quality_stability_metric():
     return TestMetric(
         name="data_quality_stability_metric",
         metric=DataQualityStabilityMetric(),
-        fingerprint="c0720c2182a865e8e2ce276445badf19",
+        fingerprint="b74e85ea6cbce85b8d968b95aa428bb8",
         outcomes=NoopOutcome(),
     )
 
@@ -134,7 +134,7 @@ def column_quantile_metric():
     return TestMetric(
         name="column_quantile_metric",
         metric=ColumnQuantileMetric(column_name="education-num", quantile=0.75),
-        fingerprint="3a9991c361d9ad3b9c2ee8c26df5ab05",
+        fingerprint="13165afd6df8073f353b7ed6d4983a1a",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -145,7 +145,7 @@ def column_category_metric():
     return TestMetric(
         name="column_category_metric",
         metric=ColumnCategoryMetric(column_name="education", category="Some-college"),
-        fingerprint="f418f44eee0ec102aea190031417e0db",
+        fingerprint="f37ca8273d73f2e31af2790c8a5123b8",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )

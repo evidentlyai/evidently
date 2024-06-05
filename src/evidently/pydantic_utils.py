@@ -1,3 +1,4 @@
+import dataclasses
 import hashlib
 import itertools
 import json
@@ -10,6 +11,7 @@ from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import FrozenSet
+from typing import Hashable
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -152,7 +154,7 @@ TPM = TypeVar("TPM", bound="PolymorphicModel")
 
 
 class PolymorphicModel(BaseModel):
-    class Config:
+    class Config(BaseModel.Config):
         type_alias: ClassVar[Optional[str]] = None
         is_base_type: ClassVar[bool] = False
 
@@ -200,12 +202,45 @@ class PolymorphicModel(BaseModel):
         return super().validate(value)  # type: ignore[misc]
 
 
+def get_value_fingerprint(value: Any) -> Hashable:
+    if isinstance(value, EvidentlyBaseModel):
+        return value.get_fingerprint()
+    if isinstance(value, BaseModel):
+        return get_object_hash(value)
+    if isinstance(value, Enum):
+        return value.value
+    if dataclasses.is_dataclass(value):
+        return get_value_fingerprint(dataclasses.asdict(value))
+    if isinstance(value, (str, int, float, bool, type(None))):
+        return value
+    if isinstance(value, dict):
+        return tuple((get_value_fingerprint(k), get_value_fingerprint(v)) for k, v in sorted(value.items()))
+    if isinstance(value, (list, tuple)):
+        return tuple(get_value_fingerprint(v) for v in value)
+    if isinstance(value, (set, frozenset)):
+        return tuple(get_value_fingerprint(v) for v in sorted(value, key=str))
+    raise NotImplementedError(
+        f"Not implemented for value of type {value.__class__.__module__}.{value.__class__.__name__}"
+    )
+
+
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def get_object_hash(self):
         return get_object_hash(self)
 
     def get_fingerprint(self) -> str:
-        return self.get_object_hash()
+        return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
+
+    def get_fingerprint_parts(self) -> Tuple[Hashable, ...]:
+        return tuple(
+            self.get_field_fingerprint(name)
+            for name, field in self.__fields__.items()
+            if field.required or getattr(self, name) != field.get_default()
+        )
+
+    def get_field_fingerprint(self, field: str) -> Hashable:
+        value = getattr(self, field)
+        return get_value_fingerprint(value)
 
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):

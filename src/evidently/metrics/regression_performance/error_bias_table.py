@@ -25,6 +25,7 @@ from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -68,6 +69,9 @@ class RegressionErrorBiasTableResults(MetricResult):
 
 
 class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
+    class Config:
+        used_options_fields = [RenderOptions.raw_data]
+
     # by default, we get 5% values for the error bias calculations
     TOP_ERROR_DEFAULT: ClassVar[float] = 0.05
     TOP_ERROR_MIN: ClassVar[float] = 0

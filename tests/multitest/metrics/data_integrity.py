@@ -29,7 +29,7 @@ def column_missing_values_metric():
     return TestMetric(
         name="column_missing_values_metric",
         outcomes=NoopOutcome(),
-        fingerprint="5d3b481ddcecc29ae0b4d13b6320584d",
+        fingerprint="b8242edac4764927ecf99587cba8ecdd",
         metric=ColumnMissingValuesMetric(column_name="education"),
         dataset_names=["adult"],
     )
@@ -40,7 +40,7 @@ def column_summary_metric():
     return TestMetric(
         name="column_summary_metric",
         metric=ColumnSummaryMetric(column_name="age"),
-        fingerprint="197479ae0fbf53d686a80879c6dc15a0",
+        fingerprint="6955719b0ad6e9f2e039b90e0077dc77",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -52,7 +52,7 @@ def column_summary_metric_period():
     return TestMetric(
         name="column_summary_metric_period",
         metric=m,
-        fingerprint="70e0137212718c89b2ce52f86ab05568",
+        fingerprint="67578c075d7c4765661a4c28f4e515fb",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -138,7 +138,7 @@ def column_summary_metric_success():
     return TestMetric(
         name="column_summary_metric_success",
         metric=m,
-        fingerprint="57b116392d131f49a9bfddc96ed47981",
+        fingerprint="e7dea921486b3ee8bea14b5f9bfb180f",
         outcomes={
             TestDataset(
                 current=pd.DataFrame({"target": [1, "ff", 3], "prediction": ["a", "b", "c"]}),
@@ -201,7 +201,7 @@ def dataset_summary_metric():
     return TestMetric(
         name="dataset_summary_metric",
         metric=DatasetSummaryMetric(),
-        fingerprint="73e2d2120edf79849d278a646b956563",
+        fingerprint="1499a3a94e12ffd57f96c02c3c10ba4c",
         outcomes=NoopOutcome(),
     )
 
@@ -211,7 +211,7 @@ def column_reg_exp_metric():
     return TestMetric(
         name="column_reg_exp_metric",
         metric=ColumnRegExpMetric(column_name="relationship", reg_exp=r".*child.*"),
-        fingerprint="1df27c0657e9d250aca810f0b4a5d0d1",
+        fingerprint="7982d7402d0fcc4cc5af422f79902174",
         outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
@@ -222,6 +222,6 @@ def dataset_missing_values_metric():
     return TestMetric(
         name="dataset_missing_values_metric",
         metric=DatasetMissingValuesMetric(),
-        fingerprint="3f7377d36855eeb727e71a2a8cc255b9",
+        fingerprint="02c1275b5af7e47e803f06e02267c7c7",
         outcomes=NoopOutcome(),
     )
