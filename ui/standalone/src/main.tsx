@@ -7,7 +7,7 @@ import LocalApi from 'evidently-ui-lib/api/LocalApi'
 import { ThemeProvider } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { theme } from 'evidently-ui-lib/theme/v2'
 
-import { ProjectReport } from 'evidently-ui-lib/standalone/app'
+import { ProjectSnapshot } from 'evidently-ui-lib/standalone/app'
 import { DashboardInfoModel } from 'evidently-ui-lib/api/types'
 
 export function drawDashboard(
@@ -19,7 +19,7 @@ export function drawDashboard(
     <React.StrictMode>
       <ThemeProvider theme={theme}>
         <ApiContext.Provider value={{ Api: new LocalApi(dashboard, additionalGraphs) }}>
-          <ProjectReport projectId={'p1'} reportId={'d1'} />
+          <ProjectSnapshot projectId={'p1'} snapshotId={'d1'} />
         </ApiContext.Provider>
       </ThemeProvider>
     </React.StrictMode>

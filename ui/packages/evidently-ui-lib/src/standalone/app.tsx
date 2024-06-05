@@ -3,8 +3,8 @@ import LoadableView from '~/components/LoadableVIew'
 import ApiContext from '~/contexts/ApiContext'
 import { DashboardWidgets } from '~/components/DashboardWidgets'
 
-export function ProjectReport(props: { projectId: string; reportId: string }) {
-  const { projectId, reportId } = props
+export function ProjectSnapshot(props: { projectId: string; snapshotId: string }) {
+  const { projectId, snapshotId } = props
   return (
     <>
       <ApiContext.Consumer>
@@ -12,12 +12,12 @@ export function ProjectReport(props: { projectId: string; reportId: string }) {
           <DashboardContext.Provider
             value={CreateDashboardContextState({
               getAdditionGraphData: (graphId) =>
-                Api.getAdditionalGraphData(projectId, reportId, graphId),
+                Api.getAdditionalGraphData(projectId, snapshotId, graphId),
               getAdditionWidgetData: (widgetId) =>
-                Api.getAdditionalWidgetData(projectId, reportId, widgetId)
+                Api.getAdditionalWidgetData(projectId, snapshotId, widgetId)
             })}
           >
-            <LoadableView func={() => Api.getDashboard(projectId, reportId)}>
+            <LoadableView func={() => Api.getDashboard(projectId, snapshotId)}>
               {(params) => <DashboardWidgets widgets={params.widgets} />}
             </LoadableView>
           </DashboardContext.Provider>
