@@ -213,7 +213,7 @@ export interface WidgetInfo {
 
 export type AdditionalGraphInfo = BigGraphWidgetParams
 
-export interface Api {
+export interface DashboardAPI {
   getAdditionalGraphData(
     projectId: string,
     dashboardId: string,

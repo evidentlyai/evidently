@@ -4,7 +4,7 @@ import { DashboardContentWidgets } from '~/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
 import { crumbFunction } from '~/components/BreadCrumbs'
 import { LoaderData } from './data'
-import { Api } from '~/api'
+import { DashboardAPI } from '~/api'
 import { Grid } from '@mui/material'
 
 export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Boolean> } = {
@@ -14,7 +14,7 @@ export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Bo
   }
 }
 
-export const SnapshotTemplate = ({ api }: { api: Api }) => {
+export const SnapshotTemplate = ({ api }: { api: DashboardAPI }) => {
   const { projectId, snapshotId } = useParams()
   invariant(projectId, 'missing projectId')
   invariant(snapshotId, 'missing snapshotId')

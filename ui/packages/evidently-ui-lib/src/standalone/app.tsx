@@ -1,28 +1,38 @@
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
-import LoadableView from '~/components/LoadableVIew'
-import ApiContext from '~/contexts/ApiContext'
-import { DashboardWidgets } from '~/components/DashboardWidgets'
 
-export function ProjectSnapshot(props: { projectId: string; snapshotId: string }) {
-  const { projectId, snapshotId } = props
+import { DashboardWidgets } from '~/components/DashboardWidgets'
+import { DashboardInfoModel } from '~/api/types'
+import { AdditionalGraphInfo, WidgetInfo } from '~/api'
+
+export function StandaloneSnapshotWidgets({
+  dashboard: { widgets },
+  additionalGraphs
+}: {
+  dashboard: DashboardInfoModel
+  additionalGraphs: Map<string, AdditionalGraphInfo | WidgetInfo>
+}) {
   return (
-    <>
-      <ApiContext.Consumer>
-        {({ Api }) => (
-          <DashboardContext.Provider
-            value={CreateDashboardContextState({
-              getAdditionGraphData: (graphId) =>
-                Api.getAdditionalGraphData(projectId, snapshotId, graphId),
-              getAdditionWidgetData: (widgetId) =>
-                Api.getAdditionalWidgetData(projectId, snapshotId, widgetId)
-            })}
-          >
-            <LoadableView func={() => Api.getDashboard(projectId, snapshotId)}>
-              {(params) => <DashboardWidgets widgets={params.widgets} />}
-            </LoadableView>
-          </DashboardContext.Provider>
-        )}
-      </ApiContext.Consumer>
-    </>
+    <DashboardContext.Provider
+      value={CreateDashboardContextState({
+        getAdditionGraphData: (graphId) => {
+          const data = additionalGraphs.get(graphId)
+          if (data) {
+            return Promise.resolve(data as AdditionalGraphInfo)
+          }
+
+          return Promise.reject('No graph found')
+        },
+        getAdditionWidgetData: (widgetId) => {
+          const data = additionalGraphs.get(widgetId)
+          if (data) {
+            return Promise.resolve(data as WidgetInfo)
+          }
+
+          return Promise.reject('No graph found')
+        }
+      })}
+    >
+      <DashboardWidgets widgets={widgets} />
+    </DashboardContext.Provider>
   )
 }
