@@ -204,6 +204,9 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def get_object_hash(self):
         return get_object_hash(self)
 
+    def get_fingerprint(self) -> str:
+        return self.get_object_hash()
+
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
     def __evidently_dependencies__(self):

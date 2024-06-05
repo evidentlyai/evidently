@@ -92,7 +92,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
             _missing_values = missing_values
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
-        self.missing_values = frozenset(_missing_values)
+        self.missing_values = frozenset(sorted(_missing_values, key=str))
         super().__init__(options=options)
 
     def _calculate_missing_values_stats(self, column: pd.Series) -> ColumnMissingValues:
