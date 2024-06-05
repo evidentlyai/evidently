@@ -1,7 +1,7 @@
 Evidently helps evaluate, test, and monitor data and ML-powered systems.
 * Predictive tasks: classification, regression, ranking, recommendations.
 * Generative tasks: chatbots, RAGs, Q&A, summarization.
-* Data monitoring: data quality and data drift for text, tabular, texts, embeddings.
+* Data monitoring: data quality and data drift for text, tabular data, embeddings.
 
 Evidently is available both as an open-source Python library and Evidently Cloud platform.
 
@@ -19,7 +19,7 @@ Evidently helps evaluate and track quality of ML-based systems, from experimenta
 
 Evidently is both a library of 100+ ready-made evaluations, and a framework to easily implement yours: from Python functions to LLM judges. 
 
-Evidently has a modular architecture, and you can start with ad hoc checks without complex installations. There are 3 key components: Reports, Test Suites and Monitoring Dashboard. 
+Evidently has a modular architecture, and you can start with ad hoc checks without complex installations. There are 3 interconnected interfaces: for any metric, you can get a `Report` with a pre-built visualization, run a conditional check with `TestSuite` to get a pass/fail outcome, and plot the evaluation results over time on a `Dashboard`.
 
 ## Reports
 
@@ -110,11 +110,7 @@ You can use Evidently Cloud or self-host. Evidently Cloud offers extra features
 </details>
 
 # What can you evaluate?
-Evidently Reports, Test Suites and ML Monitoring dashboard rely on the shared set of metrics. 
-
-For every single evaluation - be it share of nulls, text sentiment, or embedding drift distance - you can get a `Report` with a pre-built visualization, use it in a `TestSuite` to define a conditional check (“tell me if the value is out of bounds”), and plot the values over time on a `Dashboard`.
-
-Here are some examples of what you can evaluate.
+Evidently Reports, Test Suites and ML Monitoring dashboard rely on the shared set of metrics. Here are some examples of what you can evaluate.
 
 | Evaluation group | Examples |
 |------|------|

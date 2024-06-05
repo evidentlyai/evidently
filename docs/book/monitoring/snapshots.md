@@ -17,7 +17,8 @@ You can:
 * Add multiple snapshots for the same period (e.g., for shadow and production models).
 
 {% hint style="info" %}
-**Snapshots vs. Reports.** The snapshot functionality is directly based on the Evidently Reports and Test Suites. Put simply, a snapshot is a JSON "version" of the Evidently Report or Test Suite. 
+**Snapshots vs. Reports.** The snapshot functionality is directly based on the Evidently Reports and Test Suites. Put simply, a snapshot is a JSON "version" of the Evidently Report or Test Suite. To learn the basics, check the [Get Started Tutorial](../get-started/tutorial.md) or a [Report and Test Suite User Guide](../tests-and-reports/). Browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md) to see available checks.
+
 {% endhint %}
 
 # How it works
@@ -39,14 +40,10 @@ project = ws.get_project("PROJECT_ID")
 
 For monitoring, you can also add `tags` and `timestamp` to your snapshots. 
 
-{% hint style="info" %}
-**New to Evidently?** Check the [Reports and Tests Tutorial](../get-started/tutorial.md) and a related [docs section](../tests-and-reports/) for end-to-end examples.  Browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md) to see available checks.
-{% endhint %}
-
 3. **Send the snapshot**. After you compute the Report or Test Suite, use the `add_report` or `add_test_suite` methods to send them to a corresponding Project in your workspace.
 
 {% hint style="info" %}
-**Collector service.** To compute snapshots in near real-time, you can configure a [collector service](collector_service.md). 
+**Collector service.** To compute snapshots in near real-time, you can also configure a [collector service](collector_service.md). 
 {% endhint %}
 
 # Send snapshots
@@ -75,7 +72,7 @@ ws.add_test_suite(project.id, drift_checks)
 
 **Send a snapshot**. The `add_report` or `add_test_suite` methods generate snapshots automatically. If you already have a snapshot (e.g., a previously saved Report), you can load it to Python and add to your Project:
 
-```
+```python
 ws.add_snapshot(project.id, snapshot.load("data_drift_snapshot.json"))
 ```
 
@@ -113,7 +110,7 @@ Since you can assign arbitrary timestamps, you can log snapshots asynchronously 
 
 ## Add tags and metadata
 
-You can include `tags` and `metadata` in snapshots. This is optional but useful for search and data filtering for monitoring Panels.
+You can include `tags` and `metadata` in snapshots. This is useful for search and data filtering for monitoring Panels.
 
 Examples of when to use tags include:
 * You have production/shadow or champion/challenger models.

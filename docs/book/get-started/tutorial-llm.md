@@ -117,7 +117,7 @@ Here is a preview with `assistant_logs.head()`:
 To be able to save and share results and get a live monitoring dashboard, create a Project in Evidently Cloud. Here's how to set it up:
 
 * **Sign up**. If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup) and your Organization.
-* **Add a Team**. Click on the **Teams** icon on the left menu. Create a Team, copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Add a Team**. Click on the **Teams** in the left menu. Create a Team, copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 * **Connect to Evidently Cloud**. Pass your API key to connect. 
 
@@ -145,7 +145,7 @@ column_mapping = ColumnMapping(
     categorical_features=['organization', 'model_ID', 'region', 'environment', 'feedback'],
 )
 ```
-**Run simple evals**. Let's generate a Report with some text statistics using a `TextEval` Preset. We'll look at the "response" column in the first 100 rows `assistant_logs[:100]`:
+**Run simple evals**. Let's generate a Report with some pre-selected text statistics using a `TextEval` Preset. We'll look at the "response" column in the first 100 rows `assistant_logs[:100]`:
 
 ```python
 text_evals_report = Report(metrics=[
@@ -169,7 +169,7 @@ The Report will show stats like:
 We call these generated statistics `descriptors`. They can be numerical or categorical. 
 
 {% hint style="success" %}
-**What else is there?** This simple example is just a starting point. We’ll show more complex evaluations later in the tutorial. There are also other interfaces beyond visual Reports: we'll also cover how to automate pass/fail checks with Test Suites and get a monitoring dashboard. 
+**What else is there?** See available descriptors in the [All Metrics](https://docs.evidentlyai.com/reference/all-metrics) table. We’ll show more complex evaluations later in the tutorial. Additionally, you can run your evals as a Test Suite (get a pass/fail for each check), or see trends on a monitoring dashboard. 
 {% endhint %}
 
 # 5. Export results
@@ -288,7 +288,7 @@ This code downloads the Hugging Face model to score your data locally. Example r
 {% endhint %}
 
 {% hint style="info" %}
-**OpenAI key**. Pass it as an environmental variable. You will incur costs when running this eval.
+**OpenAI key**. Pass it as an environment variable: [see docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety). You will incur costs when running this eval.
 {% endhint %}
 
 For more complex or nuanced checks, you can use LLMs as a judge. This requires creating an evaluation prompt asking LLMs to assess the text by specific criteria, for example, tone or conciseness.
@@ -544,7 +544,8 @@ project.dashboard.add_panel(
         size=WidgetSize.FULL,
         panel_type=TestSuitePanelType.DETAILED,
         time_agg="1D",
-    )
+    ),
+    tab="Tests"
 )
 project.save()
 ```

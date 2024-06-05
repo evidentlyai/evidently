@@ -112,7 +112,7 @@ To delete the Project and all the data inside it:
 
 {% tab title="UI" %} 
 
-Go to the "home page", and hover over a Project name. Click on the bin sign and confirm that you want to delte the Project.
+Go to the "home page", and hover over a Project name. Click on the bin sign and confirm that you want to delete the Project.
 
 {% endtab %}
 
@@ -127,7 +127,7 @@ Each Project has the following parameters.
 | `name: str` | Project name. |
 | `id: UUID4 = Field(default_factory=uuid.uuid4)` | Unique identifier of the Project. Assigned automatically. |
 | `description: Optional[str] = None` | Optional description. Visible when you browse Projects. |
-| `dashboard: DashboardConfig` | Dashboard configuration that describes the composition monitoring Panels.<br><br>**Note**: See [Dashboard Design](design_dashboard_api.md) for details. You don't need to explicitly pass `DashboardConfig` if you use the `.dashboard.add_panel` method to add Panels. |
+| `dashboard: DashboardConfig` | Dashboard configuration that describes the composition of the monitoring Panels.<br><br>**Note**: See [Dashboard Design](design_dashboard_api.md) for details. You don't need to explicitly pass `DashboardConfig` if you use the `.dashboard.add_panel` method to add Panels. |
 | `date_from: Optional[datetime.datetime] = None` | Start DateTime of the monitoring Dashboard. By default, Evidently shows data for all available periods based on the snapshot timestamps. <br><br>You can set a different DateTime. E.g., to refer to the last 30 days:<br>`from datetime import datetime, timedelta`<br>`datetime.now() + timedelta(-30)`|
 | `date_to: Optional[datetime.datetime] = None` | End DateTime of the monitoring Dashboard. <br>Works the same as above. |
 

@@ -6,29 +6,29 @@ description: List of all the metrics and metric presets available in Evidently.
 
 <summary>How to use this page</summary>
 
-This is a reference page. It shows all the metrics and metric presets available in the library, and their parameters. 
+This is a reference page. It shows all the available Metrics and Metric Presets. 
   
-You can use the menu on the right to navigate the sections. We organize the metrics by logical groups. Note that these groups do **not** match the presets with a similar name. For example, there are more Data Quality metrics below than in the `DataQualityPreset`. 
+You can use the menu on the right to navigate the sections. We organize the Metrics by logical groups. Note that these groups do **not** match the Presets with a similar name. For example, there are more Data Quality Metrics than included in the `DataQualityPreset`. 
   
-You can use this reference page to discover additional metrics to include in your custom report.
+You can use this reference page to discover Metrics to include in your custom Reports.
 
 # How to read the tables
 
-* **Name**: the name of the metric of a preset.  
-* **Description**: plain text explanation of the metric, or the contents of the preset. For metrics, we also specify whether the metric applies to the whole dataset or individual columns.
-* **Parameters**: description of the required parameters and optional parameters you can pass to the corresponding metric or preset. For metrics, we also specify the default conditions. They apply if you do not pass a custom parameter.
+* **Name**: the name of the Metric.  
+* **Description**: plain text explanation. For Metrics, we also specify whether it applies to the whole dataset or individual columns.
+* **Parameters**: required and optional parameters for the Metric or Preset. We also specify the defaults that apply if you do not pass a custom parameter.
 
-**Metric visualizations**. Each metric also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../get-started/examples.md) and run the notebook with all metrics or with all metric presets.
+**Metric visualizations**. Each Metric includes a default render. To see the visualization, navigate to the [example notebooks](../get-started/examples.md) and run the notebook with all Metrics or Metric Presets.
 
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All metrics" example notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All metrics" example notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 # Metric Presets
 
-**Defaults**: each Metric in a Preset uses the default parameters for this Metric. You can see them in the tables below. 
+**Defaults**: Presets use the default parameters for each Metric. You can see them in the tables below. 
 
 <details>
 
@@ -233,111 +233,148 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 
 # Data Quality
 
-**Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
+| Metric | Parameters |
+| - | - |
+| **DatasetSummaryMetric()** <br><br> Dataset-level.<br><br>Calculates descriptive dataset statistics, including:<ul><li>Number of columns by type</li><li>Number of rows</li><li>Missing values</li><li>Empty columns</li><li>Constant and almost constant columns</li><li>Duplicated and almost duplicated columns</li></ul>| **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (see default types below)</li><li>`almost_constant_threshold` (default = 0.95)</li><li>`almost_duplicated_threshold` (default = 0.95)</li></ul> |
+| **DatasetMissingValuesMetric()** <br><br> Dataset-level.<br><br>Calculates the number and share of missing values in the dataset. <br><br> Displays the number of missing values per column. | **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
+| **DatasetCorrelationsMetric()** <br><br>Dataset-level.<br><br>Calculates the correlations between all columns in the dataset. Uses: Pearson, Spearman, Kendall, Cramer_V. <br><br> Visualizes the heatmap. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ColumnSummaryMetric()** <br><br> Column-level.<br><br>Calculates various descriptive statistics for numerical, categorical, text or DateTime columns, including: <ul><li>Count</li><li>Min, max, mean (for numerical)</li><li>Standard deviation (for numerical)</li><li>Quantiles - 25%, 50%, 75% (for numerical)</li><li>Unique value share</li><li>Most common value share</li><li>Missing value share</li><li>New and missing categories (for categorical)</li><li>Last and first date (for DateTime)</li><li>Length, OOV% and Non-letter % (for text)</li></ul><br>Plots the distribution histogram. If DateTime is provided, also plots the distribution over time. If Target is provided, also plots the relation with Target. | **Required**:<br>`column_name`<br><br>**Optional:**<br>n/a|
+| **ColumnMissingValuesMetric()** <br><br> Column-level.<br><br>Calculates the number and share of missing values in the column. |  **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see below)</li></ul>|
+| **ColumnRegExpMetric()** <br><br> Column-level.<br><br>Calculates the number and share of the values that do not match a defined regular expression. <br><br> Example use: `ColumnRegExpMetric(column_name="status", reg_exp=r".*child.*")`  | **Required:**<ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional:**<ul><li>`top` (the number of the most mismatched columns to return, default = 10)</li></ul>|
+| **ColumnDistributionMetric()** <br><br> Column-level.<br><br>Plots the distribution histogram and returns bin positions and values for the given column.  | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
+| **ColumnValuePlot()** <br><br> Column-level.<br><br>Plots the values in time. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
+| **ColumnQuantileMetric()** <br><br> Column-level.<br><br>Calculates the defined quantile value and plots the distribution for the given numerical column.  <br><br> Example use: `ColumnQuantileMetric(column_name="name", quantile=0.75)` | **Required:**<ul><li>`column_name`</li><li>`quantile`</li></ul>**Optional:**<br>n/a |
+| **ColumnCorrelationsMetric()** <br><br>Column-level.<br><br>Calculates the correlations between the defined column and all the other columns in the dataset. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
+| **ColumnValueListMetric()** <br><br> Column-level.<br><br>Calculates the number of values in the list / out of the list / not found in a given column. The value list should be specified.<br><br> Example use: `ColumnValueListMetric(column_name="city", values=["London", "Paris"])` | **Required:**<ul><li>`column_name`</li><li>`values`</li></ul>**Optional:**<br>n/a |
+| **ColumnValueRangeMetric()** <br><br> Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. <br><br> Example use: `ColumnValueRangeMetric(column_name="age", left=10, right=20)`  | **Required:**<ul><li>`column_name` </li><li>`left`</li><li>`right`</li></ul> |
+| **ConflictPredictionMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where the model returns a different output for an identical input. Can be a signal of low-quality model or data errors.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ConflictTargetMetric()** <br><br> Dataset-level.<br><br>Calculates the number of instances where there is a different target value or label for an identical input. Can be a signal of a labeling or data error.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+
+**Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of missing values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass custom missing values as a parameter and specify if you want to replace the default list. Example:
 
 ```python
 DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
 ```
-| Metric name | Description | Parameters                                                                                                                                                                                                                       |
-|---|---|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **DatasetSummaryMetric()** | Dataset-level.<br><br>Calculates various descriptive statistics for the dataset, incl. the number of columns, rows, cat/num features, missing values, empty values, and duplicate values.  | **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li><li>`almost_constant_threshold` (default = 0.95)</li><li>`almost_duplicated_threshold` (default = 0.95)</li></ul> |
-| **DatasetMissingValuesMetric()** | Dataset-level.<br><br>Calculates the number and share of missing values in the dataset. Displays the number of missing values per column. | **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
-| **ColumnSummaryMetric**(column_name="age") | Column-level.<br><br>Calculates various descriptive statistics for the column, incl. the number of missing, empty, duplicate values, etc. <br><br>The stats depend on the column type: numerical, categorical, text or DateTime. | **Required**:<br>`column_name`<br><br>**Optional:**<br>n/a|
-| **ColumnMissingValuesMetric**(column_name="education")<br>  | Column-level.<br><br>Calculates the number and share of missing values in the column. |  **Required**:<br>n/a<br><br>**Optional:**<ul><li>`missing_values = [], replace = True/False` (default = four types of missing values, see above)</li></ul>|
-| **ColumnRegExpMetric**(column_name="relationship", reg_exp=r".*child.*") | Column-level.<br><br>Calculates the number and share of the values that do not match a defined regular expression.  | **Required:**<ul><li>`column_name`</li><li>`reg_exp`</li></ul>**Optional:**<ul><li>`top` (the number of the most mismatched columns to return, default = 10)</li></ul>|
-| **ConflictPredictionMetric()** | Dataset-level.<br><br>Calculates the number of instances where the model returns a different output for an identical input. Can be a signal of low-quality model or data errors.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ConflictTargetMetric()** | Dataset-level.<br><br>Calculates the number of instances where there is a different target value or label for an identical input. Can be a signal of a labeling or data error.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **DatasetCorrelationsMetric()**| Dataset-level.<br><br>Calculates the correlations between the columns in the dataset. Visualizes the heatmap. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ColumnDistributionMetric**(column_name="education") | Column-level.<br><br>Plots the distribution histogram and returns bin positions and values for the given column.  | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
-| **ColumnValuePlot**(column_name="education") | Column-level.<br><br>Plots the values in time. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
-| **ColumnQuantileMetric**(column_name="education-num", quantile=0.75)<br> <br>  | Column-level.<br><br>Calculates the defined quantile value and plots the distribution for the given column.  | **Required:**<ul><li>`column_name`</li><li>`quantile`</li></ul>**Optional:**<br>n/a |
-| **ColumnCorrelationsMetric**(column_name="education") | Column-level.<br><br>Calculates the correlations between the defined column and all the other columns in the dataset. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
-| **ColumnValueListMetric**(column_name="relationship", values=["Husband", "Unmarried"]) | Column-level.<br><br>Calculates the number of values in the list / out of the list / not found in a given column. The value list should be specified. | **Required:**<ul><li>`column_name`</li><li>`values`</li></ul>**Optional:**<br>n/a |
-| **ColumnValueRangeMetric**(column_name="age", left=10, right=20) | Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. | **Required:**<ul><li>`column_name` </li><li>`left`</li><li>`right`</li></ul> |
 
-# Text Metrics
+# Text Evals 
 
-| Metric name | Description | Parameters |
-|---|---|---|
-| **TextDescriptorsDistribution**(column_name=”text”)| Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsCorrelationMetric**(column_name=”text”) | Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsDriftMetric**(column_name=”text”) | Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
+Text Evals only apply to text columns. To compute a Descriptor for a chosen text column, use a `TextEvals` Preset. 
+
+You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) for the descriptor, or pick a Test (e.g., `TestColumnValueMin`) to run validations. 
+
+## Descriptors: Patterns
+
+| Descriptor | Parameters |
+| - | - |
+| **RegExp()** <br><br> Matches text against any specified regular expression. Returns True/False for every input.<br><br> Example use: `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **BeginsWith()** <br><br> Checks if the text begins with a specified combination. Returns True/False for every input.<br><br> Example use: `BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **EndsWith()** <br><br> Checks if the text ends with a specified combination. Returns True/False for every input. <br><br> Example use: `EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **Contains()** <br><br> Checks if the text contains any or all specified items. Returns True/False for every input. <br><br> Example use: `Contains(items=["medical leave"]`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **DoesNotContain()** <br><br> Checks if the text does not contain any or all specified items. Returns True/False for every input. <br><br> Example use: `DoesNotContain(items=["as a large language model"]` | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **IncludesWords()** <br><br> Checks if the text includes any (default) or all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input.  <br><br> Example use: `IncludesWords(words_list=['booking', 'hotel', `flight`]` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **ExcludesWords()** <br><br> Checks if the text excludes all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input. <br><br> Example use: `ExcludesWords(words_list=['buy', 'sell', `bet`]`| **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+
+## Descriptors: Text stats
+
+| Descriptor | Parameters |
+| - | - |
+| **TextLength()** <br><br> Measures the length of the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **OOV()** <br><br> Calculates the percentage of out-of-vocabulary words. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
+| **NonLetterCharacterPercentage()** <br><br> Calculates the percentage of non-letter characters. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
+| **SentenceCount()** <br><br> Counts the number of sentences in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **WordCount()** <br><br> Counts the number of words in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+
+## Descriptors: Model-based
+
+| Descriptor | Parameters |
+| - | - |
+| **Sentiment()** <br><br> Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [example](https://docs.evidentlyai.com/get-started/tutorial-llm) in the tutorial.|
+| **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model (requires API key).| See [example](https://docs.evidentlyai.com/get-started/tutorial-llm) in the tutorial.|
+
+## Text-Specific Metrics
+
+The following metrics only apply to text columns. 
+
+| Metric | Parameters |
+|---|---|
+| **TextDescriptorsDistribution()** <br><br> Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsCorrelationMetric()** <br><br> Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsDriftMetric()** <br><br> Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br> **Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
 
 # Data Drift
 
-**Defaults for Data Drift**. By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
+**Defaults for Data Drift**. By default, all data drift metrics use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a drift detection method based on feature type and volume. You always need a reference dataset.
 
-To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md) or [embeddings drift parameters](../customization/embeddings-drift-parameters.md).
+To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md) or [embeddings drift parameters](../customization/embeddings-drift-parameters.md). You can choose from 20+ drift detection methods. You can optionally pass feature importances.
 
-| Metric name | Description | Parameters |
-|---|---|---|
-| **DatasetDriftMetric()** <br>  | Dataset-level.<br><br>Calculates the number and share of drifted features. Returns true/false for the dataset drift at a given threshold (defined by the share of drifting features). Each feature is tested for drift individually using the default algorithm, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`сolumns` (default=all)</li><li>`drift_share`(default for dataset drift = 0.5)</li> <li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md).|
-| **DataDriftTable()** | Dataset-level.<br><br>Calculates data drift for all columns in the dataset, or for a defined list of columns. Returns drift detection results for each column and visualizes distributions in a table. Uses the default drift algorithm of test selection, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:** <ul><li>`сolumns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
-| **ColumnDriftMetric('age')** | Column-level. <br><br>Calculates data drift for a defined column (tabular or text). Visualizes distributions. Uses the default-selected test unless a custom is specified. | **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
-| **EmbeddingsDriftMetric**('small_subset')| Column-level. <br><br>Calculates data drift for embeddings. | **Required:**<ul><li>`embeddings_name`</li></ul><br>**Optional:**<ul><li>`drift_method`</li></ul>[How to set embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+| Metric | Parameters |
+| - | - |
+| **DatasetDriftMetric()** <br><br>  Dataset-level.<br><br>Calculates the number and share of drifted features in the dataset. Each feature is tested for drift individually using the default algorithm, unless a custom approach is specified.| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`сolumns` (default=all)</li><li>`drift_share`(default for dataset drift = 0.5)</li> <li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md).|
+| **DataDriftTable()** <br><br> Dataset-level.<br><br>Calculates data drift for all or selected columns. Returns drift detection results for each column. <br><br> Visualizes distributions for all columns in a table.| **Required:**<br>n/a<br><br>**Optional:** <ul><li>`сolumns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md), [embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
+| **ColumnDriftMetric()** <br><br>  Column-level. <br><br>Calculates data drift for a defined column (tabular or text). <br><br>Visualizes distributions.| **Required:**<ul><li>`column_name`</li></ul><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
+| **EmbeddingsDriftMetric()** <br><br> Column-level. <br><br>Calculates data drift for embeddings. Requires embedding column mapping. | **Required:**<ul><li>`embeddings_name`</li></ul><br>**Optional:**<ul><li>`drift_method`</li></ul>[How to set embeddings drift parameters](../customization/embeddings-drift-parameters.md).|
 
 
 # Classification
 
-The metrics work both for probabilistic and non-probabilistic classification. All metrics are dataset-level.
+The metrics work both for probabilistic and non-probabilistic classification. All metrics are dataset-level. All metrics require column mapping of target and prediction.
 
-| Metric name | Description | Parameters |
-|---|---|---|
-| **ClassificationDummyMetric()** | Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ClassificationQualityMetric()** | Calculates various classification performance metrics, incl. precision, accuracy, recall, F1-score, TPR, TNR, FPR, and FNR. For probabilistic classification, also: ROC AUC score, LogLoss. | **Required:**:<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold` (default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul> |
-| **ClassificationClassBalance()** | Calculates the number of objects for each label. Plots the histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ClassificationConfusionMatrix()** | Calculates the TPR, TNR, FPR, FNR, and plots the confusion matrix.  | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul> |
-| **ClassificationQualityByClass()** | Calculates the classification quality metrics for each class. Plots the matrix. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul>|
-| **ClassificationClassSeparationPlot()** | Visualization of the predicted probabilities by class. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ClassificationProbDistribution()** | Visualization of the probability distribution by class. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ClassificationRocCurve()** | Plots ROC Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ClassificationPRCurve()** | Plots Precision-Recall Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ClassificationPRTable()** | Calculates the Precision-Recall table that shows model quality at a different decision threshold.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **ClassificationQualityByFeatureTable()** | Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`columns`(default = all categorical and numerical columns)</li></ul> |
+| Metric | Parameters |
+|---|---|
+| **ClassificationDummyMetric()** <br><br> Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ClassificationQualityMetric()** <br><br> Calculates various classification performance metrics, including:<ul><li>Accuracy</li><li>Precision</li><li>Recall</li><li>F-1 score</li><li>TPR (True Positive Rate)</li><li>TNR (True Negative Rate)</li><li>FPR (False Positive Rate)</li><li>FNR (False Negative Rate)</li><li>ROC AUC Score (for probabilistic classification)</li><li>LogLoss (for probabilistic classification) </li></ul> | **Required:**:<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold` (default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul> |
+| **ClassificationClassBalance()** <br><br> Calculates the number of objects for each label. Plots the histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ClassificationConfusionMatrix()** <br><br> Calculates the TPR, TNR, FPR, FNR, and plots the confusion matrix.  | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul> |
+| **ClassificationQualityByClass()** <br><br> Calculates the classification quality metrics for each class. Plots the matrix. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul>|
+| **ClassificationClassSeparationPlot()** <br><br> Visualization of the predicted probabilities by class. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ClassificationProbDistribution()** <br><br> Visualization of the probability distribution by class. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ClassificationRocCurve()** <br><br> Plots ROC Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ClassificationPRCurve()** <br><br> Plots Precision-Recall Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ClassificationPRTable()** <br><br> Calculates the Precision-Recall table that shows model quality at a different decision threshold.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **ClassificationQualityByFeatureTable()** <br><br> Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`columns`(default = all categorical and numerical columns)</li></ul> |
 
 # Regression
 
-All metrics are dataset-level.
+All metrics are dataset-level. All metrics require column mapping of target and prediction.
 
-| Metric name | Description | Parameters |
-|---|---|---|
-| **RegressionDummyMetric()** | Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionQualityMetric()** | Calculates various regression performance metrics, incl. Mean Error, MAE, MAPE, etc.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionPredictedVsActualScatter()** | Visualizes predicted vs actual values in a scatter plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionPredictedVsActualPlot()** | Visualizes predicted vs. actual values in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionErrorPlot()** | Visualizes the model error (predicted - actual) in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionAbsPercentageErrorPlot()**  | Visualizes the absolute percentage error in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionErrorDistribution()**  | Visualizes the distribution of the model error in a histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionErrorNormality()**  | Visualizes the quantile-quantile plot (Q-Q plot) to estimate value normality. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| **RegressionTopErrorMetric()**  | Calculates the regression performance metrics for different groups: top-X% of predictions with overestimation, top-X% of predictions with underestimation, and the rest.<br>Visualizes the group division on a scatter plot with predicted vs. actual values. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul> |
-| **RegressionErrorBiasTable()** | Plots the relationship between feature values and model quality per group (for top-X% error groups, as above). | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`columns`(default = all categorical and numerical columns)</li><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul>|
-
+| Metric | Parameters |
+|---|---|
+| **RegressionDummyMetric()** <br><br> Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionQualityMetric()** <br><br> Calculates various regression performance metrics, including:<ul><li>RMSE</li><li>Mean error (+ standard deviation)</li><li>MAE(+ standard deviation)</li><li>MAPE (+ standard deviation)</li><li>Max absolute error</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionPredictedVsActualScatter()** <br><br> Visualizes predicted vs actual values in a scatter plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionPredictedVsActualPlot()** <br><br> Visualizes predicted vs. actual values in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionErrorPlot()** <br><br> Visualizes the model error (predicted - actual) in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionAbsPercentageErrorPlot()** <br><br> Visualizes the absolute percentage error in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionErrorDistribution()** <br><br> Visualizes the distribution of the model error in a histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionErrorNormality()** <br><br> Visualizes the quantile-quantile plot (Q-Q plot) to estimate value normality. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| **RegressionTopErrorMetric()** <br><br> Calculates the regression performance metrics for different groups: <ul><li>top-X% of predictions with overestimation </li><li> top-X% of predictions with underestimation </li><li>Majority(the rest)</li></ul><br>Visualizes the group division on a scatter plot with predicted vs. actual values. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul> |
+| **RegressionErrorBiasTable()** <br><br> Plots the relationship between feature values and model quality per group (for top-X% error groups, as above). | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`columns`(default = all categorical and numerical columns)</li><li>`top_error` (default=0.05; the metrics are calculated for top-5% predictions with overestimation and underestimation).</li></ul>|
 
 # Ranking and Recommendations 
 
-All metrics are dataset-level. Check individual metric descriptions [here](ranking-metrics.md).
+All metrics are dataset-level. Check individual metric descriptions [here](ranking-metrics.md). All metrics require recommendations column mapping.
 
 Optional shared parameters for multiple metrics:
 * `no_feedback_users: bool = False`. Specifies whether to include the users who did not select any of the items, when computing the quality metric. Default: False.
 * `min_rel_score: Optional[int] = None`. Specifies the minimum relevance score to consider relevant when calculating the quality metrics for non-binary targets (e.g., if a target is a rating or a custom score).
 
-| Metric name | Description | Parameters |
-|---|---|---|
-| **RecallTopKMetric()** | Calculates the recall at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **PrecisionTopKMetric()** | Calculates the precision at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **FBetaTopKMetric()** | Calculates the F-measure at `k`.| **Required**:<ul><li>`beta`(default = 1)</li><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **MAPKMetric()** | Calculates the Mean Average Precision (MAP) at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **MARKMetric()** | Calculates the Mean Average Recall (MAR) at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **NDCGKMetric()** | Calculates the Normalized Discounted Cumulative Gain at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
-| **MRRKMetric()** | Calculates the Mean Reciprocal Rank (MRR) at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`min_rel_score`</li><li>`no_feedback_users`</li></ul> |
-| **HitRateKMetric()** | Calculates the hit rate at `k`: a share of users for which at least one relevant item is included in the K. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`min_rel_score`</li><li>`no_feedback_users`</li></ul> |
-| **DiversityMetric()** | Calculates intra-list Diversity at `k`: diversity of recommendations shown to each user in top-K recommendations, averaged by all users.  | **Required**:<ul><li>`k`</li><li>`item_features: List`</li></ul>**Optional:**<ul><li>-</li></ul> |
-| **NoveltyMetric()** | Calculates novelty at `k`: novelty of recommendations shown to each user in top-K recommendations, averaged by all users.<br><br>Requires a training dataset.| **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
-| **SerendipityMetric()** | Calculates serendipity at `k`: how unusual the relevant recommendations are in top-K, averaged by all users.<br><br>Requires a training dataset.| **Required**:<ul><li>`k`</li><li>`item_features: List`</li></ul>**Optional**:<ul><li>`min_rel_score`</li></ul> |
-| **PersonalizationMetric()** | Measures the average uniqueness of each user's top-K recommendations.<br><br> | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
-| **PopularityBias()** | Evaluates the popularity bias in recommendations by computing ARP (average recommendation popularity), Gini index, and coverage. <br><br>Requires a training dataset | **Required**:<ul><li>`K`</li><li>`normalize_arp (default: False)` - whether to normalize ARP calculation by the most popular item in training</li></ul>**Optional**:<ul><li>-</li></ul> |
-| **ItemBiasMetric()** | Visualizes the distribution of recommendations by a chosen dimension (column), сomparative to its distribution in the training set.<br><br>Requires a training dataset. | **Required**:<ul><li>`k`</li><li>`column_name`</li></ul>**Optional**:<ul><li>-</li></ul> |
-| **UserBiasMetric()** | Visualizes the distribution of the chosen category (e.g. user characteristic), comparative to its distribution in the training dataset.<br><br>Requires a training dataset. | **Required**:<ul><li>`k`</li><li>`column_name`</li></ul>**Optional**:<ul><li>-</li></ul> |
-| **ScoreDistribution()** | Computes the predicted score entropy. Visualizes the distribution of the scores at `k` (and all scores, if available).<br><br>Applies only when the `recommendations_type` is a `score`. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
-| **RecCasesTable()** | Shows the list of recommendations for specific user IDs (or 5 random if not specified).  | **Required**:<ul><li>-</li></ul>**Optional**:<ul><li>`display_features: List`</li><li>`user_ids: List`</li><li>`train_item_num: int`</li></ul> |
-
+| Metric | Parameters |
+|---|---|
+| **RecallTopKMetric()** <br><br> Calculates the recall at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **PrecisionTopKMetric()** <br><br> Calculates the precision at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **FBetaTopKMetric()** <br><br> Calculates the F-measure at `k`.| **Required**:<ul><li>`beta`(default = 1)</li><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **MAPKMetric()** <br><br> Calculates the Mean Average Precision (MAP) at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **MARKMetric()** <br><br> Calculates the Mean Average Recall (MAR) at `k`.| **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **NDCGKMetric()** <br><br> Calculates the Normalized Discounted Cumulative Gain at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional:**<ul><li>`no_feedback_users`</li><li>`min_rel_score`</li></ul>|
+| **MRRKMetric()** <br><br> Calculates the Mean Reciprocal Rank (MRR) at `k`. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`min_rel_score`</li><li>`no_feedback_users`</li></ul> |
+| **HitRateKMetric()** <br><br> Calculates the hit rate at `k`: a share of users for which at least one relevant item is included in the K. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`min_rel_score`</li><li>`no_feedback_users`</li></ul> |
+| **DiversityMetric()** <br><br> Calculates intra-list Diversity at `k`: diversity of recommendations shown to each user in top-K recommendations, averaged by all users.  | **Required**:<ul><li>`k`</li><li>`item_features: List`</li></ul>**Optional:**<ul><li>-</li></ul> |
+| **NoveltyMetric()** <br><br> Calculates novelty at `k`: novelty of recommendations shown to each user in top-K recommendations, averaged by all users.<br><br>Requires a training dataset.| **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **SerendipityMetric()** <br><br> Calculates serendipity at `k`: how unusual the relevant recommendations are in top-K, averaged by all users.<br><br>Requires a training dataset.| **Required**:<ul><li>`k`</li><li>`item_features: List`</li></ul>**Optional**:<ul><li>`min_rel_score`</li></ul> |
+| **PersonalizationMetric()** <br><br> Measures the average uniqueness of each user's top-K recommendations.<br><br> | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **PopularityBias()** <br><br> Evaluates the popularity bias in recommendations by computing ARP (average recommendation popularity), Gini index, and coverage. <br><br>Requires a training dataset. | **Required**:<ul><li>`K`</li><li>`normalize_arp (default: False)` - whether to normalize ARP calculation by the most popular item in training</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **ItemBiasMetric()** <br><br> Visualizes the distribution of recommendations by a chosen dimension (column), сomparative to its distribution in the training set.<br><br>Requires a training dataset. | **Required**:<ul><li>`k`</li><li>`column_name`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **UserBiasMetric()** <br><br> Visualizes the distribution of the chosen category (e.g. user characteristic), comparative to its distribution in the training dataset.<br><br>Requires a training dataset. | **Required**:<ul><li>`k`</li><li>`column_name`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **ScoreDistribution()** <br><br> Computes the predicted score entropy. Visualizes the distribution of the scores at `k` (and all scores, if available).<br><br>Applies only when the `recommendations_type` is a `score`. | **Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>-</li></ul> |
+| **RecCasesTable()** <br><br> Shows the list of recommendations for specific user IDs (or 5 random if not specified).  | **Required**:<ul><li>-</li></ul>**Optional**:<ul><li>`display_features: List`</li><li>`user_ids: List`</li><li>`train_item_num: int`</li></ul> |
