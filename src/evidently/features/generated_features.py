@@ -66,6 +66,8 @@ class GeneratedFeature(EvidentlyBaseModel):
 
 
 class DataFeature(GeneratedFeature):
+    display_name: str
+
     @abc.abstractmethod
     def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
         raise NotImplementedError()

@@ -1,6 +1,9 @@
 import uuid
+from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import pandas as pd
 
@@ -120,10 +123,10 @@ def _lmnli_fever(data: pd.Series, labels: List[str]) -> pd.Series:
 
 
 def _model_type(model: str) -> ColumnType:
-    return _models.get(model, (None, None, None))[0]
+    return _models.get(model, (ColumnType.Unknown, None, None))[0]
 
 
-_models = {
+_models: Dict[str, Tuple[ColumnType, List[str], Callable[..., pd.Series]]] = {
     "SamLowe/roberta-base-go_emotions": (ColumnType.Numerical, ["label"], _samlowe_roberta_base_go_emotions),
     "openai-community/roberta-base-openai-detector": (ColumnType.Categorical, ["score_threshold"], _openai_detector),
     "MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli": (
