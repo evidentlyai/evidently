@@ -8,8 +8,11 @@ export type BackendPaths = paths
 ///////////////////////////////
 type Schemas = components['schemas']
 
-export type Project = Schemas['Project']
+export type ProjectModel = Schemas['Project']
 export type ReportModel = Schemas['ReportModel']
 export type TestSuiteModel = Schemas['TestSuiteModel']
-export type DashboardInfoModel = Schemas['DashboardInfoModel']
-export type Version = Schemas['Version']
+
+// TODO: fix this
+import { WidgetInfo } from '~/api'
+export type DashboardInfoModel = Schemas['DashboardInfoModel'] & { widgets: WidgetInfo[] }
+export type VersionModel = Schemas['Version']

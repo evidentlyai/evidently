@@ -1,5 +1,5 @@
-import { Version } from '~/api/types'
+import { VersionModel } from '~/api/types'
 
 export type VersionProvider = {
-  getVersion(): Promise<Version>
+  getVersion(): Promise<VersionModel>
 }

@@ -1,10 +1,10 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectAPI } from 'evidently-ui-lib/routes-components/home/data'
-import { api } from 'api/RemoteApi'
+import { versionProvider } from 'api/RemoteApi'
 import logoSrc from 'assets/logo.png'
 
-const { loader } = injectAPI({ api })
+const { loader } = injectAPI({ api: versionProvider })
 
 export default {
   path: '/',

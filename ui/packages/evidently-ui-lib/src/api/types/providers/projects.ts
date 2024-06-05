@@ -1,8 +1,8 @@
-import type { CreateCRUD, ID } from '~/api/types/utils'
-import { Project, TestSuiteModel, ReportModel } from '~/api/types'
+import type { CreateCRUD, ID, StrictID } from '~/api/types/utils'
+import { ProjectModel, TestSuiteModel, ReportModel } from '~/api/types'
 
-export type ProjectsProvider = CreateCRUD<Project> & {
-  reloadSnapshots: (args: { project: ID }) => Promise<void>
-  listReports: (args: { project: ID }) => Promise<ReportModel[]>
-  listTestSuites: (args: { project: ID }) => Promise<TestSuiteModel[]>
+export type ProjectsProvider = CreateCRUD<ProjectModel> & {
+  reloadSnapshots: (args: { project: ID }) => Promise<null>
+  listReports: (args: { project: ID }) => Promise<StrictID<ReportModel>[]>
+  listTestSuites: (args: { project: ID }) => Promise<StrictID<TestSuiteModel>[]>
 }

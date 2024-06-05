@@ -3,9 +3,9 @@ import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/materia
 import { Link as RouterLink, Outlet, useMatches, useLoaderData } from 'react-router-dom'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { crumbFunction } from '~/components/BreadCrumbs'
-import { loaderData } from './data'
+import { LoaderData } from './data'
 
-export const handle: { crumb: crumbFunction<loaderData> } = {
+export const handle: { crumb: crumbFunction<LoaderData> } = {
   crumb: (data, { pathname }) => ({ to: pathname, linkText: data?.name || 'undefined' })
 }
 
@@ -15,7 +15,7 @@ export const ProjectTemplate = ({
   tabsConfig?: { id: string; link: string; label?: string }[]
 }) => {
   const matches = useMatches()
-  const project = useLoaderData() as loaderData
+  const project = useLoaderData() as LoaderData
   const tabIndex = tabsConfig.findIndex((tab) => matches.find(({ id }) => id === tab.id))
 
   return (
@@ -27,7 +27,11 @@ export const ProjectTemplate = ({
             <IconButton
               size="small"
               style={{ marginLeft: 10 }}
-              onClick={() => navigator.clipboard.writeText(project.id)}
+              onClick={() => {
+                if (project.id) {
+                  navigator.clipboard.writeText(project.id)
+                }
+              }}
             >
               <ContentCopyIcon fontSize="small" />
             </IconButton>

@@ -3,7 +3,17 @@ import createClient from 'openapi-fetch'
 
 import type { ProjectsProvider } from '~/api/types/providers/projects'
 import type { BackendPaths } from '~/api/types'
-import { ErrorResponse } from '../types/utils'
+import { ErrorResponse, StrictID } from '~/api/types/utils'
+
+const ensureID: <Entity extends { id?: string | null | undefined }>(
+  e: Entity
+) => StrictID<Entity> = (e) => {
+  if (e.id) {
+    return { ...e, id: e.id }
+  }
+
+  throw 'id is undefinded'
+}
 
 export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (baseUrl) => {
   const client = createClient<BackendPaths>({ baseUrl })
@@ -19,7 +29,7 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
         })
       }
 
-      return data
+      return data.map(ensureID)
     },
     async update({ body }) {
       const { data, error } = await client.POST('/api/projects/{project_id}/info', {
@@ -31,7 +41,7 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
         return { error }
       }
 
-      return data
+      return ensureID(data)
     },
     async get({ id }) {
       const { data, error, response } = await client.GET('/api/projects/{project_id}/info', {
@@ -42,7 +52,7 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
         throw json(error satisfies ErrorResponse, { status: response.status })
       }
 
-      return data
+      return ensureID(data)
     },
     async delete({ id }) {
       const { error } = await client.DELETE('/api/projects/{project_id}', {
@@ -62,7 +72,7 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
         return { error }
       }
 
-      return data
+      return ensureID(data)
     },
     async reloadSnapshots({ project }) {
       const { error, response } = await client.GET('/api/projects/{project_id}/reload', {
@@ -72,6 +82,8 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
       if (error) {
         throw json(error satisfies ErrorResponse, { status: response.status })
       }
+
+      return null
     },
     async listReports({ project }) {
       const { data, error, response } = await client.GET('/api/projects/{project_id}/reports', {
@@ -82,7 +94,7 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
         throw json(error satisfies ErrorResponse, { status: response.status })
       }
 
-      return data
+      return data.map(ensureID)
     },
     async listTestSuites({ project }) {
       const { data, error, response } = await client.GET('/api/projects/{project_id}/test_suites', {
@@ -93,7 +105,7 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
         throw json(error satisfies ErrorResponse, { status: response.status })
       }
 
-      return data
+      return data.map(ensureID)
     }
   }
 }

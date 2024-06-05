@@ -1,8 +1,9 @@
 import { VersionInfo } from '~/api'
-import { InJectAPI } from '~/utils'
+import { VersionProvider } from '~/api/types/providers/version'
+import { GetLoaderAction } from '~/utils'
 
-export type loaderData = VersionInfo
+export type LoaderData = VersionInfo
 
-export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
+export const injectAPI: GetLoaderAction<VersionProvider, LoaderData> = ({ api }) => ({
   loader: () => api.getVersion()
 })

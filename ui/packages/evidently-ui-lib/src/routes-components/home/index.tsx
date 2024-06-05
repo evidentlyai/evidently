@@ -1,6 +1,6 @@
 import { Outlet, ScrollRestoration, useLoaderData } from 'react-router-dom'
 import { NavigationProgress, BreadCrumbs, ServiceHeader, crumbFunction } from '~/components'
-import type { loaderData } from './data'
+import type { LoaderData } from './data'
 import { Box } from '@mui/material'
 import { ActionErrorSnackbar } from '~/components/Error'
 
@@ -11,7 +11,7 @@ export const HomeComponentTemplate = ({
   logoSrc: string
   authComponent?: React.ReactNode
 }) => {
-  const { version } = useLoaderData() as loaderData
+  const { version } = useLoaderData() as LoaderData
 
   return (
     <>
@@ -27,6 +27,6 @@ export const HomeComponentTemplate = ({
   )
 }
 
-export const handle: { crumb: crumbFunction<loaderData> } = {
+export const handle: { crumb: crumbFunction<LoaderData> } = {
   crumb: () => ({ to: '/', linkText: 'Home' })
 }

@@ -1,16 +1,20 @@
 import invariant from 'tiny-invariant'
-import { DashboardInfo } from '~/api'
-import { InJectAPI } from '~/utils'
+import type { GetLoaderAction } from '~/utils'
+import { DashboardProvider } from '~/api/types/providers/dashboard'
+import { DashboardInfoModel } from '~/api/types'
 
-export type loaderData = DashboardInfo
+export type LoaderData = DashboardInfoModel
 
-export const injectAPI: InJectAPI<loaderData> = ({ api }) => ({
+export const injectAPI: GetLoaderAction<
+  Pick<DashboardProvider, 'getSnapshotDashboard'>,
+  LoaderData
+> = ({ api }) => ({
   loader: ({ params }) => {
     const { projectId, snapshotId } = params
 
     invariant(projectId, 'missing projectId')
     invariant(snapshotId, 'missing testSuiteId')
 
-    return api.getDashboard(projectId, snapshotId)
+    return api.getSnapshotDashboard({ project: { id: projectId }, snapshot: { id: snapshotId } })
   }
 })

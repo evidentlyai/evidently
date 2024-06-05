@@ -1,11 +1,15 @@
 import { ActionFunctionArgs } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { SnapshotInfo } from '~/api'
-import { InJectAPI } from '~/utils'
+import { GetLoaderAction } from '~/utils'
+import { ProjectsProvider } from '~/api/types/providers/projects'
+import { ReportModel, TestSuiteModel } from '~/api/types'
 
-export type loaderData = SnapshotInfo[]
+export type ReportsLoaderData = ReportModel[]
 
-export const injectReportsAPI: InJectAPI<loaderData> = ({ api }) => ({
+export const injectReportsAPI: GetLoaderAction<
+  Pick<ProjectsProvider, 'listReports' | 'reloadSnapshots'>,
+  ReportsLoaderData
+> = ({ api }) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
 
@@ -13,16 +17,21 @@ export const injectReportsAPI: InJectAPI<loaderData> = ({ api }) => ({
       return Promise.resolve([])
     }
 
-    return api.getReports(params.projectId)
+    return api.listReports({ project: { id: params.projectId } })
   },
   action: async ({ params }: ActionFunctionArgs) => {
     invariant(params.projectId, 'missing projectId')
 
-    return api.reloadProject(params.projectId)
+    return api.reloadSnapshots({ project: { id: params.projectId } })
   }
 })
 
-export const injectTestSuitesAPI: InJectAPI<loaderData> = ({ api }) => ({
+export type TestSuitesLoaderData = TestSuiteModel[]
+
+export const injectTestSuitesAPI: GetLoaderAction<
+  Pick<ProjectsProvider, 'listTestSuites' | 'reloadSnapshots'>,
+  TestSuitesLoaderData
+> = ({ api }) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
 
@@ -30,11 +39,11 @@ export const injectTestSuitesAPI: InJectAPI<loaderData> = ({ api }) => ({
       return Promise.resolve([])
     }
 
-    return api.getTestSuites(params.projectId)
+    return api.listTestSuites({ project: { id: params.projectId } })
   },
   action: async ({ params }: ActionFunctionArgs) => {
     invariant(params.projectId, 'missing projectId')
 
-    return api.reloadProject(params.projectId)
+    return api.reloadSnapshots({ project: { id: params.projectId } })
   }
 })

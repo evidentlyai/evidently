@@ -17,11 +17,12 @@ import { Add as AddIcon } from '@mui/icons-material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useToggle } from '@uidotdev/usehooks'
-import { ProjectInfo } from '~/api'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTheme } from '@mui/material/styles'
+import { ProjectModel } from '~/api/types'
+import { StrictID } from '~/api/types/utils'
 
 // validation here
 const editProjectInfoSchema = z.object({
@@ -32,10 +33,15 @@ const editProjectInfoSchema = z.object({
 export const EditProjectInfoForm = ({
   project,
   action
-}: {
-  action: string
-  project: Partial<ProjectInfo>
-}) => {
+}:
+  | {
+      action: 'edit-project'
+      project: StrictID<ProjectModel>
+    }
+  | {
+      action: 'create-new-project'
+      project: Omit<ProjectModel, 'id'>
+    }) => {
   const navigation = useNavigation()
   const isDisabled = navigation.state !== 'idle'
 
@@ -68,15 +74,12 @@ export const EditProjectInfoForm = ({
           // to project object, then it goes to the action
 
           submit(
-            Object.assign(
-              {
-                ...project,
-                name,
-                description
-              },
-              // we use `action` string to identify action type (like `create new` or edit existing)
-              (action && { action }) || null
-            ),
+            {
+              ...project,
+              name,
+              description,
+              action: action
+            },
             { method: 'put', replace: true, encType: 'application/json' }
           )
         )}
@@ -129,7 +132,7 @@ export const EditProjectInfoForm = ({
   )
 }
 
-export const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
+export const ProjectInfoCard = ({ project }: { project: StrictID<ProjectModel> }) => {
   return (
     <>
       <Link component={RouterLink} to={`projects/${project.id}`}>
@@ -143,7 +146,7 @@ export const ProjectInfoCard = ({ project }: { project: ProjectInfo }) => {
 }
 
 interface ProjectProps {
-  project: ProjectInfo
+  project: StrictID<ProjectModel>
 }
 
 export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {

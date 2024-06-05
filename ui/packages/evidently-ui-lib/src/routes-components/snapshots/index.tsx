@@ -43,11 +43,13 @@ import { crumbFunction } from '~/components/BreadCrumbs'
 import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import dayjs from 'dayjs'
-import { loaderData } from './data'
+import { ReportsLoaderData, TestSuitesLoaderData } from './data'
 
 export const shouldRevalidate: ShouldRevalidateFunction = () => true
 
-export const handle: { crumb: crumbFunction<loaderData> } = {
+type LoaderData = ReportsLoaderData | TestSuitesLoaderData
+
+export const handle: { crumb: crumbFunction<LoaderData> } = {
   crumb: (_, { pathname }) => ({
     to: pathname,
     linkText: pathname.split('/').reverse()[0] === 'reports' ? 'Reports' : 'Test Suites'
@@ -73,7 +75,7 @@ const metadataToOneString: (metadata: MetadataValueType) => string = (
 
 export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites' }) => {
   const { projectId } = useParams()
-  const snapshots = useLoaderData() as loaderData
+  const snapshots = useLoaderData() as LoaderData
   const matches = useMatches()
   const submit = useSubmit()
   const navigation = useNavigation()

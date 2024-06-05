@@ -8,13 +8,13 @@ export type ErrorResponse = { status_code: number; detail: string }
 
 export type ErrorData = { error: ErrorResponse }
 
-export type CreateCRUD<Entity> = {
+export type CreateCRUD<Entity extends { id?: string | null | undefined }> = {
   // loaders
-  list(): Promise<Entity[]>
-  get(args: ID): Promise<Entity>
+  list(): Promise<StrictID<Entity>[]>
+  get(args: ID): Promise<StrictID<Entity>>
 
   // actions
   delete(id: ID): Promise<ErrorData | null>
-  update({ body }: { body: StrictID<Entity> }): Promise<Entity | ErrorData | null>
-  create({ body }: { body: Entity }): Promise<Entity | ErrorData | null>
+  update({ body }: { body: StrictID<Entity> }): Promise<StrictID<Entity> | ErrorData | null>
+  create({ body }: { body: Entity }): Promise<StrictID<Entity> | ErrorData | null>
 }
