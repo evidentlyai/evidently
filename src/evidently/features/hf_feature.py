@@ -1,4 +1,5 @@
 import uuid
+from functools import partial
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -91,6 +92,29 @@ class GeneralHuggingFaceFeature(DataFeature):
         return result
 
 
+class HuggingFaceToxicityFeature(DataFeature):
+    column_name: str
+    model: Optional[str]
+    toxic_label: Optional[str]
+
+    def __init__(
+        self,
+        *,
+        column_name: str,
+        display_name: str,
+        model: Optional[str] = None,
+        toxic_label: Optional[str] = None,
+    ):
+        self.column_name = column_name
+        self.display_name = display_name
+        self.model = model
+        self.toxic_label = toxic_label
+        super().__init__()
+
+    def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
+        return _toxicity(self.model, self.toxic_label, data[self.column_name])
+
+
 def _samlowe_roberta_base_go_emotions(data: pd.Series, label: str) -> pd.Series:
     from transformers import pipeline
 
@@ -123,6 +147,15 @@ def _lmnli_fever(data: pd.Series, labels: List[str]) -> pd.Series:
     return pd.Series(output, index=data.index)
 
 
+def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Series) -> pd.Series:
+    import evaluate
+
+    column_data = data.values.tolist()
+    model = evaluate.load("toxicity", model_name, module_type="measurement")
+    scores = model.compute(predictions=column_data, toxic_label=toxic_label)
+    return pd.Series(scores["toxicity"], index=data.index)
+
+
 def _model_type(model: str) -> ColumnType:
     return _models.get(model, (ColumnType.Unknown, None, None))[0]
 
@@ -134,5 +167,15 @@ _models: Dict[str, Tuple[ColumnType, List[str], Callable[..., pd.Series]]] = {
         ColumnType.Categorical,
         ["labels"],
         _lmnli_fever,
+    ),
+    "DaNLP/da-electra-hatespeech-detection": (
+        ColumnType.Numerical,
+        [],
+        partial(_toxicity, "DaNLP/da-electra-hatespeech-detection", "offensive"),
+    ),
+    "facebook/roberta-hate-speech-dynabench-r4-target": (
+        ColumnType.Numerical,
+        [],
+        partial(_toxicity, "facebook/roberta-hate-speech-dynabench-r4-target", "hate"),
     ),
 }
