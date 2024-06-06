@@ -10,7 +10,7 @@ from evidently.ui.api.models import Version
 EVIDENTLY_APPLICATION_NAME = "Evidently UI"
 
 
-@get("/version/oops/renamed")
+@get("/version")
 async def version() -> Version:
     return Version(
         application=EVIDENTLY_APPLICATION_NAME,
