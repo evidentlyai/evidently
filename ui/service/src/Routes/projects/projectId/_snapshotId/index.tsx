@@ -1,7 +1,7 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { getLoaderAction } from 'evidently-ui-lib/routes-components/snapshotId/data'
-import { remoteDashboardAPI, dashboardProvider } from 'api/RemoteApi'
+import { dashboardProvider } from 'api/RemoteApi'
 
 const { loader } = getLoaderAction({ api: dashboardProvider })
 
@@ -13,7 +13,7 @@ export default {
     )
 
     const Component = () => {
-      return <SnapshotTemplate api={remoteDashboardAPI} />
+      return <SnapshotTemplate api={dashboardProvider} />
     }
 
     return { Component, ...rest }

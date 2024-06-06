@@ -4,8 +4,9 @@ import { DashboardContentWidgets } from '~/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
 import { crumbFunction } from '~/components/BreadCrumbs'
 import { LoaderData } from './data'
-import { DashboardAPI } from '~/api'
 import { Grid } from '@mui/material'
+import { DashboardProvider } from '~/api/types/providers/dashboard'
+import { AdditionalGraphInfo, WidgetInfo } from '~/api'
 
 export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Boolean> } = {
   crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
@@ -14,7 +15,7 @@ export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Bo
   }
 }
 
-export const SnapshotTemplate = ({ api }: { api: DashboardAPI }) => {
+export const SnapshotTemplate = ({ api }: { api: DashboardProvider }) => {
   const { projectId, snapshotId } = useParams()
   invariant(projectId, 'missing projectId')
   invariant(snapshotId, 'missing snapshotId')
@@ -25,9 +26,17 @@ export const SnapshotTemplate = ({ api }: { api: DashboardAPI }) => {
       <DashboardContext.Provider
         value={CreateDashboardContextState({
           getAdditionGraphData: (graphId) =>
-            api.getAdditionalGraphData(projectId, snapshotId, graphId),
+            api.getDashboardGraph({
+              project: { id: projectId },
+              snapshot: { id: snapshotId },
+              graph: { id: graphId }
+            }) as Promise<AdditionalGraphInfo>,
           getAdditionWidgetData: (widgetId) =>
-            api.getAdditionalWidgetData(projectId, snapshotId, widgetId)
+            api.getDashboardGraph({
+              project: { id: projectId },
+              snapshot: { id: snapshotId },
+              graph: { id: widgetId }
+            }) as Promise<WidgetInfo>
         })}
       >
         <Grid container spacing={3} direction="row" alignItems="stretch">

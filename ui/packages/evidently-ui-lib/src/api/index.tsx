@@ -1,5 +1,4 @@
 import { Layout, PlotData } from 'plotly.js-cartesian-dist-min'
-import { DashboardInfoModel } from './types'
 
 export class Result<T> {
   constructor(result?: T, error?: string) {
@@ -212,19 +211,3 @@ export interface WidgetInfo {
 }
 
 export type AdditionalGraphInfo = BigGraphWidgetParams
-
-export interface DashboardAPI {
-  getAdditionalGraphData(
-    projectId: string,
-    dashboardId: string,
-    graphId: string
-  ): Promise<AdditionalGraphInfo>
-
-  getAdditionalWidgetData(
-    projectId: string,
-    dashboardId: string,
-    widgetId: string
-  ): Promise<WidgetInfo>
-
-  getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfoModel>
-}
