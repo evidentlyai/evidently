@@ -77,7 +77,7 @@ jobs:
         run: pnpm type-check
 
   ui-deps-analyze:
-    name: UI build
+    name: UI deps analyze
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
@@ -118,7 +118,7 @@ jobs:
         run: pnpm build
 
   ui-test:
-    name: Playwright tests for Service
+    name: UI playwright tests
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
