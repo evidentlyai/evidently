@@ -1587,7 +1587,7 @@ class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
     def get_description(self, value: Numeric) -> str:
         metric_result = self.metric.get_result()
         return (
-            f"The share of category '{metric_result.category}' in the column **{self.column_name.display_name}** is {value:.3g} "
+            f"The share of category '{str(metric_result.category)}' in the column **{self.column_name.display_name}** is {value:.3g} "
             f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
             f"The test threshold is {self.get_condition()}."
         )
@@ -1655,7 +1655,7 @@ class TestCategoryRenderer(TestRenderer):
             df.sort_values("current value counts", ascending=False, inplace=True)
         for col, n in replace:
             df[col] = self._get_number_and_percents(df[col].fillna(0), n)
-
+        df["value"] = df["value"].astype(str)
         info.details = [
             DetailsInfo(
                 id=name,
