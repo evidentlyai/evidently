@@ -75,11 +75,6 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
     class Config:
         used_options_fields = [RenderOptions.raw_data]
 
-    # def get_options_fingerprint(self):
-    #     if self.__config__.used_options_fields is None:
-    #         return super().get_field_fingerprint("options")
-    #
-    #     return super().get_field_fingerprint("options")
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

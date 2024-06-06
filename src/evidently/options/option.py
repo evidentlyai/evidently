@@ -25,14 +25,3 @@ class OptionMeta(FrozenBaseMeta):
 
 class Option(FrozenBaseModel, metaclass=OptionMeta):
     pass
-
-
-def main():
-    class MyOption(Option):
-        f: str
-
-    print(MyOption.f)
-
-
-if __name__ == "__main__":
-    main()

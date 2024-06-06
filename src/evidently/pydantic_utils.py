@@ -206,11 +206,11 @@ def get_value_fingerprint(value: Any) -> Hashable:
     if isinstance(value, EvidentlyBaseModel):
         return value.get_fingerprint()
     if isinstance(value, BaseModel):
-        return get_object_hash(value)
-    if isinstance(value, Enum):
-        return value.value
+        return get_value_fingerprint(value.dict())
     if dataclasses.is_dataclass(value):
         return get_value_fingerprint(dataclasses.asdict(value))
+    if isinstance(value, Enum):
+        return value.value
     if isinstance(value, (str, int, float, bool, type(None))):
         return value
     if isinstance(value, dict):
