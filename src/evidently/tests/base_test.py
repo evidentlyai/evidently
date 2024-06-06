@@ -201,7 +201,6 @@ class TestValueCondition(ExcludeNoneMixin):
     lte: Optional[NumericApprox] = None
     not_eq: Optional[Numeric] = None
     not_in: Optional[List[Union[Numeric, str, bool]]] = None
-    source: str
 
     def has_condition(self) -> bool:
         """
