@@ -94,7 +94,10 @@ def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Se
 
     column_data = data.values.tolist()
     model = evaluate.load("toxicity", model_name, module_type="measurement")
-    scores = model.compute(predictions=column_data, toxic_label=toxic_label)
+    if toxic_label is None:
+        scores = model.compute(predictions=column_data)
+    else:
+        scores = model.compute(predictions=column_data, toxic_label=toxic_label)
     return pd.Series(scores["toxicity"], index=data.index)
 
 
