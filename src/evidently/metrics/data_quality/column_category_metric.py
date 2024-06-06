@@ -65,7 +65,6 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
         current_column = data.get_current_column(self.column_name)
         reference_column = data.get_reference_column(self.column_name)
 
-        counts_of_values = None
         counts_of_values = {}
         current_counts = current_column.value_counts(dropna=False).reset_index()
         current_counts.columns = ["x", "count"]
