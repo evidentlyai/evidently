@@ -265,10 +265,8 @@ Let's evaluate the responses for Sentiment (in-built model, scores from - 1 to 1
 ```python
 text_evals_report = Report(metrics=[
     TextEvals(column_name="response", descriptors=[
-        Sentiment(),
-        HuggingFaceModel("toxicity", "DaNLP/da-electra-hatespeech-detection",
-                         {"module_type": "measurement"}, {"toxic_label": "offensive"},
-                         "toxicity", display_name="Hugging Face Toxicity for response")
+            Sentiment(),
+            HuggingFaceModel(model="DaNLP/da-electra-hatespeech-detection", display_name="Hugging Face Toxicity for response")
         ]
     ),
 ])
