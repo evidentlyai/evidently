@@ -32,7 +32,6 @@ from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.base_test import ValueSource
 from evidently.tests.utils import approx
 from evidently.tests.utils import dataframes_to_table
 from evidently.tests.utils import plot_dicts_to_table
@@ -298,7 +297,6 @@ class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
                     reference.number_of_missing_values * mult,
                     relative=0.1,
                 ),
-                source=ValueSource.REFERENCE,
             )
 
         return TestValueCondition(eq=0)
@@ -419,7 +417,6 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(
                 lte=approx(reference.number_of_rows_with_missing_values * mult, relative=0.1),
-                source=ValueSource.REFERENCE,
             )
 
         return TestValueCondition(eq=0)
