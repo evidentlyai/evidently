@@ -1,8 +1,8 @@
 from litestar import Request
 
+from ..base import User
 from ..components.security import NoSecurityComponent
 from .service import SecurityService
-from .service import User
 
 
 class NoSecurityService(SecurityService):
@@ -10,4 +10,4 @@ class NoSecurityService(SecurityService):
         self.security_config = security_config
 
     def authenticate(self, request: Request) -> User:
-        return User(id=self.security_config.dummy_user_id, org_id=self.security_config.dummy_org_id)
+        return User(id=self.security_config.dummy_user_id, name="")

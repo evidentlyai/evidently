@@ -18,6 +18,7 @@ from evidently._pydantic_compat import SHAPE_LIST
 from evidently._pydantic_compat import SHAPE_SET
 from evidently._pydantic_compat import SHAPE_TUPLE
 from evidently._pydantic_compat import ModelField
+from evidently.pydantic_utils import IncludeTags
 from evidently.pydantic_utils import pydantic_type_validator
 
 if TYPE_CHECKING:
@@ -67,15 +68,6 @@ class AllDict(dict):
 
     def __bool__(self):
         return True
-
-
-class IncludeTags(Enum):
-    Parameter = "parameter"
-    Current = "current"
-    Reference = "reference"
-    Render = "render"
-    TypeField = "type_field"
-    Extra = "extra"
 
 
 @pydantic_type_validator(pd.Series)

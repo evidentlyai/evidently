@@ -16,13 +16,12 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from pydantic import PrivateAttr
 
 from evidently._pydantic_compat import ModelMetaclass
+from evidently._pydantic_compat import PrivateAttr
 from evidently.core import BaseResult
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
-from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -35,6 +34,7 @@ from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
+    from evidently.features.generated_features import GeneratedFeature
     from evidently.suite.base_suite import Context
 
 
@@ -73,10 +73,10 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: str
     dataset: DatasetType
-    _feature_class: Optional[GeneratedFeature] = PrivateAttr(None)
+    _feature_class: Optional["GeneratedFeature"] = PrivateAttr(None)
 
     def __init__(
-        self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional[GeneratedFeature] = None
+        self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional["GeneratedFeature"] = None
     ):
         self._feature_class = feature_class
         super().__init__(name=name, display_name=display_name, dataset=dataset)
@@ -96,11 +96,11 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
         return column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
 
     @property
-    def feature_class(self) -> Optional[GeneratedFeature]:
+    def feature_class(self) -> Optional["GeneratedFeature"]:
         return self._feature_class
 
 
-def additional_feature(feature: GeneratedFeature, feature_name: str, display_name: str) -> ColumnName:
+def additional_feature(feature: "GeneratedFeature", feature_name: str, display_name: str) -> ColumnName:
     return ColumnName(
         name=feature.__class__.__name__ + "." + feature_name,
         display_name=display_name,
@@ -224,7 +224,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
     # TODO: if we want metric-specific options
     options: Options
 
-    fields: ClassVar = FieldsDescriptor()
+    fields: ClassVar[FieldsDescriptor] = FieldsDescriptor()
     # resulting options will be determined via
     # options = global_option.override(display_options).override(metric_options)
 
@@ -276,7 +276,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
             return None
         return params
 
-    def required_features(self, data_definition: DataDefinition) -> List[GeneratedFeature]:
+    def required_features(self, data_definition: DataDefinition) -> List["GeneratedFeature"]:
         required_features = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:

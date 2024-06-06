@@ -4,13 +4,17 @@ description: ML Monitoring “Hello world.” From data to dashboard in a couple
 
 # 1. Create an account  
 
-If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup).
+If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup). Create your Organization.
 
-# 2. Get an access token
+# 2. Create a team 
 
-Click on the left menu with a key sign, select "personal token," generate and save the token.
+Click on the **Teams** icon on the left menu. Create a Team - for example, "Personal". Copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
 
-# 3. Install the Python library
+# 3. Get an access token
+
+Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
+
+# 4. Install the Python library
 
 Install the Evidently Python library. You can run this example in Colab or another Python environment.
 
@@ -29,19 +33,23 @@ from evidently.report import Report
 from evidently.metric_preset import DataQualityPreset
 ```
 
-# 4. Create a new Project 
+# 5. Create a new Project 
 
-Connect to Evidently Cloud using your access token and create a Project.
+Connect to Evidently Cloud using your access token.
 
 ```python
 ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
+```
 
-project = ws.create_project("My test project")
+Create a new Project inside your Team. Pass the `team_id`.
+
+```python
+project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
 project.description = "My project description"
 project.save()
 ```
 
-# 5. Collect metrics
+# 6. Collect metrics
 
 Import the demo "adult" dataset as a pandas DataFrame. 
 
@@ -84,4 +92,9 @@ Check out a more in-depth tutorial to learn the key workflows:
 
 {% content-ref url="tutorial-cloud.md" %}
 [Evidently Cloud Tutorial](tutorial-cloud.md). 
+{% endcontent-ref %}
+
+Working with LLMs? See a Quickstart. 
+{% content-ref url="quickstart-llm.md" %}
+[LLM Evaluation Quickstart](quickstart-llm.md). 
 {% endcontent-ref %}

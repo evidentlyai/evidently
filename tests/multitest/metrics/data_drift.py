@@ -40,45 +40,74 @@ from tests.multitest.metrics.conftest import metric
 @metric
 def comment():
     return TestMetric(
-        "comment",
-        Comment(""),
-        NoopOutcome(),
+        name="comment",
+        metric=Comment(""),
+        fingerprint="70c9afc03c9b9462bb698d6f2cb324c2",
+        outcomes=NoopOutcome(),
     )
 
 
 @metric
 def feature_importance():
-    return TestMetric("feature_importance", FeatureImportanceMetric(), NoopOutcome(), dataset_names=["bcancer"])
+    return TestMetric(
+        name="feature_importance",
+        metric=FeatureImportanceMetric(),
+        fingerprint="374130b75be647e96d0bf12a8ff44d2b",
+        outcomes=NoopOutcome(),
+        dataset_names=["bcancer"],
+    )
 
 
 @metric
 def data_drift_table():
-    return TestMetric("data_drift_table", DataDriftTable(), NoopOutcome(), dataset_names=["adult"])
+    return TestMetric(
+        name="data_drift_table",
+        metric=DataDriftTable(),
+        fingerprint="1b7c7a7a5d02c75cbc6117b4959126ae",
+        outcomes=NoopOutcome(),
+        dataset_names=["adult"],
+    )
 
 
 @metric
 def column_value_plot():
-    return TestMetric("column_value_plot", ColumnValuePlot("age"), NoopOutcome(), dataset_names=["adult"])
+    return TestMetric(
+        name="column_value_plot",
+        metric=ColumnValuePlot("age"),
+        fingerprint="1b07ca1ade67405170ba12ff004eb01a",
+        outcomes=NoopOutcome(),
+        dataset_names=["adult"],
+    )
 
 
 @metric
 def dataset_drift_metric():
-    return TestMetric("dataset_drift_metric", DatasetDriftMetric(), NoopOutcome())
+    return TestMetric(
+        name="dataset_drift_metric",
+        metric=DatasetDriftMetric(),
+        fingerprint="248c833d76b543077d29c121773e597d",
+        outcomes=NoopOutcome(),
+    )
 
 
 @metric
 def target_by_features_table():
     return TestMetric(
-        "target_by_features_table", TargetByFeaturesTable(), NoopOutcome(), include_tags=[DatasetTags.HAS_TARGET]
+        name="target_by_features_table",
+        metric=TargetByFeaturesTable(),
+        fingerprint="0c42b508685f82de5d9aca44e4da339d",
+        outcomes=NoopOutcome(),
+        include_tags=[DatasetTags.HAS_TARGET],
     )
 
 
 @metric
 def text_descriptors_drift_metric():
     return TestMetric(
-        "text_descriptors_drift_metric",
-        TextDescriptorsDriftMetric(column_name="Review_Text"),
-        NoopOutcome(),
+        name="text_descriptors_drift_metric",
+        metric=TextDescriptorsDriftMetric(column_name="Review_Text"),
+        fingerprint="0453b9f12e296e6132382818342b7be9",
+        outcomes=NoopOutcome(),
         dataset_names=["reviews"],
         marks=[slow],
     )
@@ -86,7 +115,13 @@ def text_descriptors_drift_metric():
 
 @metric
 def column_drift_metric():
-    return TestMetric("column_drift_metric", ColumnDriftMetric("age"), NoopOutcome(), dataset_names=["adult"])
+    return TestMetric(
+        name="column_drift_metric",
+        metric=ColumnDriftMetric("age"),
+        fingerprint="aeab198cff7b829ea3708c65c1e27ff4",
+        outcomes=NoopOutcome(),
+        dataset_names=["adult"],
+    )
 
 
 @metric
@@ -101,8 +136,9 @@ def column_drift_metric_values():
 
     return [
         TestMetric(
-            "column_drift_metric_values",
-            ColumnDriftMetric(column_name="col"),
+            name="column_drift_metric_values",
+            metric=ColumnDriftMetric(column_name="col"),
+            fingerprint="d4db5b0ce2c9344fd1fe7324a11d14b4",
             outcomes={
                 TestDataset(
                     current=pd.DataFrame({"col": [1, 2, 3]}),
@@ -128,8 +164,9 @@ def column_drift_metric_values():
             },
         ),
         TestMetric(
-            "column_drift_metric_values",
-            ColumnDriftMetric(column_name="col"),
+            name="column_drift_metric_values",
+            metric=ColumnDriftMetric(column_name="col"),
+            fingerprint="d4db5b0ce2c9344fd1fe7324a11d14b4",
             outcomes={
                 TestDataset(
                     current=pd.DataFrame({"col": [5, 8, 3]}),
@@ -162,8 +199,9 @@ def column_drift_metric_values():
             },
         ),
         TestMetric(
-            "column_drift_metric_values",
-            ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
+            name="column_drift_metric_values",
+            metric=ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
+            fingerprint="a2e27baefdeba9c5cd008b93ab9f1427",
             outcomes={
                 TestDataset(
                     current=pd.DataFrame({"col": [1, 2, 3]}),
@@ -189,8 +227,9 @@ def column_drift_metric_values():
             },
         ),
         TestMetric(
-            "column_drift_metric_values",
-            ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
+            name="column_drift_metric_values",
+            metric=ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
+            fingerprint="08d3ff3a4d29c37689cb4fc2fe349a36",
             outcomes={
                 TestDataset(
                     current=pd.DataFrame({"col": [1, 2, 3]}),
@@ -221,9 +260,10 @@ def column_drift_metric_values():
 @metric
 def column_interaction_plot():
     return TestMetric(
-        "column_interaction_plot",
-        ColumnInteractionPlot("age", "education"),
-        NoopOutcome(),
+        name="column_interaction_plot",
+        metric=ColumnInteractionPlot("age", "education"),
+        fingerprint="d7438613c6fec94732ca923559da6ee4",
+        outcomes=NoopOutcome(),
         dataset_names=["adult"],
     )
 
@@ -254,9 +294,10 @@ def embeddings_dataset():
 @metric
 def embeddings_drift_metric():
     return TestMetric(
-        "embeddings_drift_metric",
-        EmbeddingsDriftMetric("small_subset"),
-        NoopOutcome(),
+        name="embeddings_drift_metric",
+        metric=EmbeddingsDriftMetric("small_subset"),
+        fingerprint="f74a5a7a1aa8203bb86b1885899d3388",
+        outcomes=NoopOutcome(),
         datasets=[embeddings_dataset()],
         marks=[slow],
     )
@@ -272,9 +313,10 @@ def text_domain_classifier_drift_metric():
     current_data = pd.DataFrame({"text": current.data})
 
     return TestMetric(
-        "text_domain_classifier_drift_metric",
-        TextDomainClassifierDriftMetric(text_column_name="text"),
-        AssertResultFields(
+        name="text_domain_classifier_drift_metric",
+        metric=TextDomainClassifierDriftMetric(text_column_name="text"),
+        fingerprint="1281bc0b31336d868630b5714351ce28",
+        outcomes=AssertResultFields(
             {
                 "text_column_name": "text",
                 "domain_classifier_roc_auc": approx(0.91, abs=0.02),

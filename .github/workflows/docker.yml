@@ -10,7 +10,7 @@ on:
 
 jobs:
   build_and_pub_docker:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ ubuntu-22.04 ]
     steps:
       - name: Login to docker.io
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin

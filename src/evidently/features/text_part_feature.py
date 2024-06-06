@@ -28,6 +28,9 @@ class BeginsWith(GeneratedFeature):
         self.prefix = prefix
         super().__init__()
 
+    def _feature_column_name(self) -> str:
+        return f"{self.column_name}.{self.prefix}.{self.case_sensitive}"
+
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         data = data[self.column_name]
         substr = self.prefix
@@ -35,12 +38,12 @@ class BeginsWith(GeneratedFeature):
             data = data.str.casefold()
             substr = substr.casefold()
         calculated = data.str.startswith(substr)
-        return pd.DataFrame(dict([(self.column_name, calculated)]))
+        return pd.DataFrame(dict([(self._feature_column_name(), calculated)]))
 
     def feature_name(self) -> ColumnName:
         return additional_feature(
             self,
-            self.column_name,
+            self._feature_column_name(),
             self.display_name or f"Text Begins with [{self.prefix}] for {self.column_name}",
         )
 
@@ -64,6 +67,9 @@ class EndsWith(GeneratedFeature):
         self.suffix = suffix
         super().__init__()
 
+    def _feature_column_name(self) -> str:
+        return f"{self.column_name}.{self.suffix}.{self.case_sensitive}"
+
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         data = data[self.column_name]
         substr = self.suffix
@@ -75,7 +81,7 @@ class EndsWith(GeneratedFeature):
             dict(
                 [
                     (
-                        self.column_name,
+                        self._feature_column_name(),
                         calculated,
                     )
                 ]
@@ -85,6 +91,6 @@ class EndsWith(GeneratedFeature):
     def feature_name(self) -> ColumnName:
         return additional_feature(
             self,
-            self.column_name,
+            self._feature_column_name(),
             self.display_name or f"Text Ends with [{self.suffix}] for {self.column_name}",
         )

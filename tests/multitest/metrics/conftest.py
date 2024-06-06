@@ -20,11 +20,20 @@ from tests.multitest.datasets import dataset_fixtures
 OutcomeKeyType = Union[str, DatasetTags]
 OutcomeKey = Tuple[OutcomeKeyType, ...]
 
+SUGGEST_FINGERPRINT = False
+_code_cache: Dict[str, List[str]] = {}
 
-@dataclasses.dataclass
+if hasattr(dataclasses, "KW_ONLY"):
+    dec = dataclasses.dataclass(kw_only=True)
+else:
+    dec = dataclasses.dataclass
+
+
+@dec
 class TestMetric:
     name: str
     metric: Metric
+    fingerprint: str
     outcomes: Union[TestOutcome, Dict[Union[str, OutcomeKey, TestDataset], TestOutcome]]
 
     include_tags: List[DatasetTags] = dataclasses.field(default_factory=list)
@@ -40,6 +49,37 @@ class TestMetric:
     marks: List[Mark] = dataclasses.field(default_factory=list)
     # additional_check: Optional[Callable[[Report], None]] = None
     # """Additional callable to call on report"""
+
+    if SUGGEST_FINGERPRINT:
+
+        def __post_init__(self):
+            import inspect
+
+            fingerprint = self.metric.get_fingerprint()
+            if self.fingerprint is None or self.fingerprint != fingerprint:
+                stack = inspect.stack()
+                init_call = stack[2]
+                if init_call.filename not in _code_cache:
+                    with open(init_call.filename, "r", encoding="utf8") as f:
+                        _code_cache[init_call.filename] = list(f.readlines())
+
+                lines = _code_cache[init_call.filename]
+                if self.fingerprint is None:
+                    lineno = init_call.lineno - 1
+                    line = lines[lineno]
+                    if "TestMetric(" not in line:
+                        raise Exception(f"Cannot find TestMetric init in line {line}")
+                    lines[lineno] = line.replace("TestMetric(", f'TestMetric(\nfingerprint="{fingerprint}",')
+                if self.fingerprint is not None and self.fingerprint != fingerprint:
+                    template = f'fingerprint="{self.fingerprint}"'
+                    for i, line in list(enumerate(lines)):
+                        if template in line:
+                            lines[i] = line.replace(template, f'fingerprint="{fingerprint}"')
+                            break
+                    else:
+                        raise Exception(f"Cound not find line with {template}")
+                with open(init_call.filename, "w", encoding="utf8") as f:
+                    f.write("".join(lines))
 
     def get_outcome(self, dataset: TestDataset) -> TestOutcome:
         if isinstance(self.outcomes, TestOutcome):

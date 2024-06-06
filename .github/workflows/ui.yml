@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   changed_files:
-    runs-on: ubuntu-latest # windows-latest || macos-latest
+    runs-on: ubuntu-22.04 # windows-latest || macos-latest
     name: 👀 List Changed UI Files
     outputs:
       ui_any_modified: ${{ steps.changed-files.outputs.ui_any_modified == 'true' }}
@@ -57,32 +57,17 @@ jobs:
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
   ui-build:
-    name: UI type-check and build with node v${{ matrix.node-version }}
-    runs-on: ubuntu-20.04
+    name: UI type-check and build
+    runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
-    strategy:
-      matrix:
-        node-version: [20]
 
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
-          cache-dependency-path: ui/pnpm-lock.yaml
-
-      - name: 📥 Install node dependencies
-        working-directory: ui
-        run: pnpm i --frozen-lockfile --ignore-scripts
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share-actions/ui-node-pnpm-install
 
       - name: 🔬 Type check
         working-directory: ui
@@ -99,13 +84,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: vite-bundle-visualizer-${{ matrix.node-version }}
+          name: vite-bundle-visualizer
           path: ui/service/vite-bundle-report
           retention-days: 30
 
   ui-test:
     name: Playwright tests for Service
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
 
@@ -128,20 +113,8 @@ jobs:
       - name: Pull test data
         run: dvc pull
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: ui/pnpm-lock.yaml
-
-      - name: 📥 Install node dependencies
-        working-directory: ui
-        run: pnpm i --frozen-lockfile --ignore-scripts
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share-actions/ui-node-pnpm-install
 
       - name: Install Playwright Browsers
         working-directory: ui

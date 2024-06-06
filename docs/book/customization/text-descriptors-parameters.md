@@ -10,6 +10,10 @@ description: How to work with Metrics and Tests that use text descriptors.
 Text descriptors are various characteristics of the text datasets computed by Evidently. You can use them across different Metrics, Tests, and Presets and treat Descriptors as if they exist as an extra tabular feature that describes the text dataset.   
 
 # Code example
+
+Using descriptors to evaluate LLM outputs:
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_evaluate_llm_with_text_descriptors.ipynb" %}
+
 Using descriptors with tabular Metrics and Tests:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_apply_table_metrics_and_tests_to_text_descriptors.ipynb" %}
 
@@ -18,16 +22,7 @@ Using descriptors with text-specific Metrics and Tests:
 
 # Available descriptors
 
-| Descriptor | Description |  
-|---|---|
-| `TextLength()` | (Default). Calculates the length of text in symbols.  |  
-| `SentenceCount()` | Calculates the number of sentences.  | 
-| `WordCount()` | Calculates the number of words.  |  
-| `Sentiment()` | Evaluates the text sentiment, on a scale from -1 (negative) to 1 (positive). |  
-| `OOV()` | Default). Calculates the share of out-of-vocabulary words. |  
-| `NonLetterCharacterPercentage()` | Default). Calculates the share of non-letter characters. |  
-| `TriggerWordsPresence(words_list=['dress', 'gown'])` | Checks for the presence of any of the specified words, as determined by the user. (Boolean).  |  
-| `RegExp(reg_exp=r'.*\?.*', display_name="Questions")`| Checks for match with a defined regular expression. (Boolean).  |  
+See the list of available descriptors in the [All Metrics](../reference/all-metrics.md) page.
 
 **Note**: you must import specific `nltk` components to use all available descriptors:
 
@@ -37,6 +32,17 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 nltk.download('vader_lexicon')
 ```
+
+By default, we recommend using the `TextEvals` Preset that simplifies creating a Report with a `ColumnSummaryMetric()` for each descriptor:
+
+```python
+report = Report(metrics=[
+    TextEvals(column_name="question", descriptors=[Sentiment(), OOV()]),
+])
+```
+
+You can also reference descriptors in other Evidently Metrics and Tests. In this case, you must explicitly specify the Metric, the Descriptor and the column to apply it to.
+
 
 # Descriptors in text-specific metrics
 
@@ -77,8 +83,8 @@ To customize the text-related Metrics or use non-default descriptors (e.g., `Tri
 report = Report(metrics=[
     TextDescriptorsDriftMetric("Review_Text", descriptors={
         "Review Text Length" : TextLength(),
-        "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown']),
-        "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
+        "Reviews about Dress" : IncludesWords(words_list=['dress', 'gown']),
+        "Review about Blouses" : IncludesWords(words_list=['blouse', 'shirt'])
     }),
     TextDescriptorsCorrelationMetric(column_name="Title", descriptors={
         "Title OOV" : OOV(),
@@ -96,15 +102,15 @@ text_overview_report = Report(metrics=[
         "Review Text OOV" : OOV(),
         "Review Text Non Letter %" : NonLetterCharacterPercentage(),
         "Review Text Length" : TextLength(),
-        "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown']),
-        "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
+        "Reviews about Dress" : IncludesWords(words_list=['dress', 'gown']),
+        "Review about Blouses" : IncludesWords(words_list=['blouse', 'shirt'])
     })
 ])
 ```
 
 ## "Lemmatize" parameter
 
-The `TriggerWordsPresence()` Descriptor has `lemmatize` parameter. The default is `True`. When you specify the Trigger Words, it will also search for the variant and inflected forms of this word.
+The `IncludesWords()` Descriptor has `lemmatize` parameter. The default is `True`. When you specify the Trigger Words, it will also search for the variant and inflected forms of this word.
 
 You can override the default and set it as `False.` In this case, it will only search for exact matches.
 
@@ -196,4 +202,3 @@ table_column_metrics_report = Report(metrics=[
 table_column_metrics_report.run(reference_data=reviews_ref, current_data=reviews_cur, column_mapping=column_mapping)
 table_column_metrics_report
 ```
-

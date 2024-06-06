@@ -22,7 +22,7 @@ def _listed_words_present(
     wl = set(words_list)
     result = False
     if in_str is None or (isinstance(in_str, float) and np.isnan(in_str)):
-        result = False
+        return False
     words = re.sub("[^A-Za-z0-9 ]+", "", in_str).split()
     for word_ in words:
         word = word_.lower()
@@ -110,7 +110,7 @@ class IncludesWords(WordsPresence):
         super().__init__(column_name, words_list, "includes_" + mode, lemmatize, display_name)
 
     def _feature_column_name(self):
-        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatize)
+        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatize) + "_" + str(self.mode)
 
     def _feature_display_name(self):
         return (
@@ -131,7 +131,7 @@ class ExcludesWords(WordsPresence):
         super().__init__(column_name, words_list, "excludes_" + mode, lemmatize, display_name)
 
     def _feature_column_name(self):
-        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatize)
+        return self.column_name + "_" + "_".join(self.words_list) + "_" + str(self.lemmatize) + "_" + str(self.mode)
 
     def _feature_display_name(self):
         return (
