@@ -225,9 +225,6 @@ def get_value_fingerprint(value: Any) -> Hashable:
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    def get_object_hash(self):
-        return get_object_hash(self)
-
     def get_fingerprint(self) -> str:
         return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
 
@@ -470,7 +467,7 @@ def series_validator(value):
     return value.get_path()
 
 
-def get_object_hash(obj: Union[BaseModel, dict]):
+def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
     from evidently.utils import NumpyEncoder
 
     if isinstance(obj, BaseModel):
