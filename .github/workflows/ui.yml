@@ -69,6 +69,9 @@ jobs:
       - name: 📥 Install ui dependencies
         uses: ./.github/share-actions/ui-node-pnpm-install
 
+      - name: 👌 Get types for UI
+        uses: ./.github/share-actions/ui-types-from-backend
+
       - name: 🔬 Type check
         working-directory: ui
         run: pnpm type-check
@@ -100,7 +103,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.11"
           architecture: "x64"
           cache: "pip"
 

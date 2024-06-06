@@ -5,6 +5,7 @@ from typing import Callable
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Union
 
 from litestar import Response
 from litestar import Router
@@ -248,7 +249,7 @@ def list_project_dashboard_panels(
 # We need this endpoint to export
 # some additional models to open api schema
 @get("/models/additional")
-def additional_models() -> List[DashboardInfoModel | DashboardPanelPlot | DashboardPanelCounter]:
+def additional_models() -> List[Union[DashboardInfoModel, DashboardPanelPlot, DashboardPanelCounter]]:
     return []
 
 
