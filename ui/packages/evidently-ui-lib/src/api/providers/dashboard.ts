@@ -6,6 +6,8 @@ import type { BackendPaths, DashboardInfoModel } from '~/api/types'
 import type { ErrorResponse, JSONStrExtended, StrictID } from '~/api/types/utils'
 import type { DashboardProvider } from '~/api/types/providers/dashboard'
 
+import { AdditionalGraphInfo, WidgetInfo } from '~/api'
+
 export const getDashboardProvider: (baseUrl?: string) => DashboardProvider = (baseUrl) => {
   const client = createClient<BackendPaths>({ baseUrl })
 
@@ -60,7 +62,7 @@ export const getDashboardProvider: (baseUrl?: string) => DashboardProvider = (ba
         throw json(error satisfies ErrorResponse, { status: response.status })
       }
 
-      return JSONParseExtended<any>(data satisfies JSONStrExtended)
+      return JSONParseExtended<AdditionalGraphInfo | WidgetInfo>(data satisfies JSONStrExtended)
     }
   }
 }

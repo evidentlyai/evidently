@@ -1,4 +1,4 @@
-import { DashboardAPI } from './index'
+import { AdditionalGraphInfo, DashboardAPI, WidgetInfo } from './index'
 
 import { DashboardProvider } from './types/providers/dashboard'
 
@@ -9,14 +9,14 @@ export const createRemoteDashboardAPI = (dashboardProvider: DashboardProvider) =
         project: { id: projectId },
         snapshot: { id: dashboardId },
         graph: { id: graphId }
-      })
+      }) as Promise<AdditionalGraphInfo>
     },
     getAdditionalWidgetData(projectId, dashboardId, widgetId) {
       return dashboardProvider.getDashboardGraph({
         project: { id: projectId },
         snapshot: { id: dashboardId },
         graph: { id: widgetId }
-      })
+      }) as Promise<WidgetInfo>
     },
     getDashboard(projectId, dashboardId) {
       return dashboardProvider.getSnapshotDashboard({
