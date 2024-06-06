@@ -1,6 +1,7 @@
 from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
+from .hf_descriptor import HuggingFaceToxicityModel
 from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage
 from .oov_words_percentage_descriptor import OOV
 from .openai_descriptor import OpenAIPrompting
@@ -22,6 +23,7 @@ __all__ = [
     "CustomColumnEval",
     "CustomPairColumnEval",
     "HuggingFaceModel",
+    "HuggingFaceToxicityModel",
     "OpenAIPrompting",
     "NonLetterCharacterPercentage",
     "OOV",
