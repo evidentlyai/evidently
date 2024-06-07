@@ -28,9 +28,7 @@ export const ProjectTemplate = ({
               size="small"
               style={{ marginLeft: 10 }}
               onClick={() => {
-                if (project.id) {
-                  navigator.clipboard.writeText(project.id)
-                }
+                navigator.clipboard.writeText(project.id)
               }}
             >
               <ContentCopyIcon fontSize="small" />
