@@ -7,7 +7,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ui/packages/evidently-ui-lib/src/api/types/endpoints.d.ts
-        key: ui-types-${{ runner.os }}-${{ hashFiles('./src/evidently/**', './.github/**') }}
+        key: ui-types-${{ runner.os }}-${{ hashFiles('./.github/**', './src/evidently/**', '!src/evidently/ui/assets/**', '!src/evidently/nbextension/**') }}
 
     - uses: actions/setup-python@v5
       if: steps.cache-ui-types.outputs.cache-hit != 'true'
