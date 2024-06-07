@@ -45,7 +45,6 @@ from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.base_test import ValueSource
 from evidently.tests.utils import approx
 from evidently.tests.utils import plot_correlations
 from evidently.tests.utils import plot_value_counts_tables
@@ -203,7 +202,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
             value = reference.stats[method].target_prediction_correlation
 
             if value is not None:
-                return TestValueCondition(eq=approx(value, absolute=0.25), source=ValueSource.REFERENCE)
+                return TestValueCondition(eq=approx(value, absolute=0.25))
 
         return TestValueCondition(gt=0)
 
@@ -228,7 +227,7 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
             value = reference.stats[get_corr_method(self.method)].abs_max_features_correlation
 
             if value is not None:
-                return TestValueCondition(eq=approx(value, relative=0.1), source=ValueSource.REFERENCE)
+                return TestValueCondition(eq=approx(value, relative=0.1))
 
         return TestValueCondition(lt=0.9)
 
@@ -267,7 +266,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
             value = reference.stats[method].abs_max_target_features_correlation
 
             if value is not None:
-                return TestValueCondition(eq=approx(value, relative=0.1), source=ValueSource.REFERENCE)
+                return TestValueCondition(eq=approx(value, relative=0.1))
 
         return TestValueCondition(lt=0.9)
 
@@ -1443,7 +1442,7 @@ class TestColumnQuantile(BaseCheckValueTest):
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            return TestValueCondition(eq=approx(reference.value, 0.1), source=ValueSource.REFERENCE)
+            return TestValueCondition(eq=approx(reference.value, 0.1))
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
@@ -1567,7 +1566,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
         reference = self.metric.get_result().reference
         reference_value = self.get_condition_from_reference(reference)
         if reference is not None:
-            return TestValueCondition(eq=approx(reference_value, 0.1), source=ValueSource.REFERENCE)
+            return TestValueCondition(eq=approx(reference_value, 0.1))
 
         return TestValueCondition(gt=0)
 
@@ -1587,7 +1586,7 @@ class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
     def get_description(self, value: Numeric) -> str:
         metric_result = self.metric.get_result()
         return (
-            f"The share of category '{metric_result.category}' in the column **{self.column_name.display_name}** is {value:.3g} "
+            f"The share of category '{str(metric_result.category)}' in the column **{self.column_name.display_name}** is {value:.3g} "
             f"({metric_result.current.category_num} out of {metric_result.current.all_num}). "
             f"The test threshold is {self.get_condition()}."
         )
@@ -1655,7 +1654,7 @@ class TestCategoryRenderer(TestRenderer):
             df.sort_values("current value counts", ascending=False, inplace=True)
         for col, n in replace:
             df[col] = self._get_number_and_percents(df[col].fillna(0), n)
-
+        df["value"] = df["value"].astype(str)
         info.details = [
             DetailsInfo(
                 id=name,
