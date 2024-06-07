@@ -34,8 +34,10 @@ jobs:
         with:
           files_yaml: |
             ui:
+              - .github/**
               - ui/**
             evidently_python:
+              - .github/**
               - workspace-for-visual-testing.dvc
               - src/evidently/**
               - requirements.dev.txt
