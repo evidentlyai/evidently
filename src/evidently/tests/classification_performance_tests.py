@@ -29,7 +29,6 @@ from evidently.tests.base_test import CheckValueParameters
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.base_test import ValueSource
 from evidently.tests.utils import approx
 from evidently.tests.utils import plot_boxes
 from evidently.tests.utils import plot_conf_mtrx
@@ -92,16 +91,12 @@ class SimpleClassificationTest(BaseCheckValueTest):
         ref_metrics = self.metric.get_result().reference
 
         if ref_metrics is not None:
-            return TestValueCondition(
-                eq=approx(self.get_value(ref_metrics), relative=0.2), source=ValueSource.REFERENCE
-            )
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
 
         if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
 
-        return TestValueCondition(
-            **{self.condition_arg: self.get_value(self.dummy_metric.get_result().dummy)}, source=ValueSource.DUMMY
-        )
+        return TestValueCondition(**{self.condition_arg: self.get_value(self.dummy_metric.get_result().dummy)})
 
     @abc.abstractmethod
     def get_value(self, result: DatasetClassificationQuality):
