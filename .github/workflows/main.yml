@@ -38,6 +38,7 @@ jobs:
         with:
           files_yaml: |
             evidently_python:
+              - .github/**
               - src/evidently/**
               - '!src/evidently/ui/assets/**'
               - '!src/evidently/nbextension/**'
@@ -95,8 +96,7 @@ jobs:
           key: cache-bikes-dataset
       - name: Download test data
         if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run:
-          curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
 
   test-minimal:
     name: Test on minimal requirements
@@ -123,8 +123,7 @@ jobs:
           enableCrossOsArchive: true
       - name: Download test data
         if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run:
-          curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
       - name: Update pip
         run: python -m pip install --upgrade pip
       - name: Install minimal dependencies
@@ -175,8 +174,7 @@ jobs:
           enableCrossOsArchive: true
       - name: Download test data
         if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run:
-          curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
       - name: Install package
         run: pip install -e .[dev,spark,fsspec]
       - name: Run Tests
