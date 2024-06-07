@@ -1,5 +1,8 @@
 import { Layout, PlotData } from 'plotly.js-cartesian-dist-min'
 
+// old types
+// It was written by hand :)
+
 export class Result<T> {
   constructor(result?: T, error?: string) {
     this.result = result
