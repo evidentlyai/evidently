@@ -3,17 +3,9 @@ import createClient from 'openapi-fetch'
 
 import type { ProjectsProvider } from '~/api/types/providers/projects'
 import type { BackendPaths } from '~/api/types'
-import { ErrorResponse, StrictID } from '~/api/types/utils'
+import type { ErrorResponse } from '~/api/types/utils'
 
-const ensureID: <Entity extends { id?: string | null | undefined }>(
-  e: Entity
-) => StrictID<Entity> = (e) => {
-  if (e.id) {
-    return { ...e, id: e.id }
-  }
-
-  throw 'id is undefinded'
-}
+import { ensureID } from '~/api/utils'
 
 export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (baseUrl) => {
   const client = createClient<BackendPaths>({ baseUrl })
@@ -23,10 +15,7 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
       const { data, error, response } = await client.GET('/api/projects')
 
       if (error) {
-        throw json(error satisfies ErrorResponse, {
-          // @ts-ignore
-          status: response.status
-        })
+        throw json(error satisfies ErrorResponse, { status: response.status })
       }
 
       return data.map(ensureID)

@@ -3,7 +3,7 @@ import createClient from 'openapi-fetch'
 
 import { JSONParseExtended } from '~/api/JsonParser'
 import type { BackendPaths, DashboardInfoModel } from '~/api/types'
-import type { ErrorResponse, JSONStrExtended, StrictID } from '~/api/types/utils'
+import type { ErrorResponse, JSONStrExtended } from '~/api/types/utils'
 import type { DashboardProvider } from '~/api/types/providers/dashboard'
 
 import { AdditionalGraphInfo, WidgetInfo } from '~/api'
@@ -28,7 +28,7 @@ export const getDashboardProvider: (baseUrl?: string) => DashboardProvider = (ba
         throw json(error satisfies ErrorResponse, { status: response.status })
       }
 
-      return JSONParseExtended<StrictID<DashboardInfoModel>>(data satisfies JSONStrExtended)
+      return JSONParseExtended<DashboardInfoModel>(data satisfies JSONStrExtended)
     },
     async getSnapshotDashboard({ project, snapshot }) {
       const { data, error, response } = await client.GET(
@@ -45,7 +45,7 @@ export const getDashboardProvider: (baseUrl?: string) => DashboardProvider = (ba
         throw json(error satisfies ErrorResponse, { status: response.status })
       }
 
-      return JSONParseExtended<StrictID<DashboardInfoModel>>(data satisfies JSONStrExtended)
+      return JSONParseExtended<DashboardInfoModel>(data satisfies JSONStrExtended)
     },
     async getDashboardGraph({ project, snapshot, graph }) {
       const { data, error, response } = await client.GET(
