@@ -4,6 +4,7 @@
 import dataclasses
 import uuid
 from dataclasses import dataclass
+from dataclasses import field
 from enum import Enum
 from typing import Any
 from typing import Iterable
@@ -85,14 +86,18 @@ class BaseWidgetInfo:
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None
     params: Any = None
-    insights: Iterable[Insight] = ()
-    additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = ()
-    alerts: Iterable[Alert] = ()
-    tabs: Iterable["TabInfo"] = ()
-    widgets: Iterable["BaseWidgetInfo"] = ()
+    insights: Iterable[Insight] = field(default_factory=lambda: [])
+    additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = field(
+        default_factory=lambda: []
+    )
+    alerts: Iterable[Alert] = field(default_factory=lambda: [])
+    tabs: Iterable["TabInfo"] = field(default_factory=lambda: [])
+    widgets: Iterable["BaseWidgetInfo"] = field(default_factory=lambda: [])
     pageSize: int = 5
 
-    def get_additional_graphs(self) -> List[Union[AdditionalGraphInfo, PlotlyGraphInfo, "BaseWidgetInfo"]]:
+    def get_additional_graphs(
+        self,
+    ) -> List[Union[AdditionalGraphInfo, PlotlyGraphInfo, "BaseWidgetInfo"]]:
         return list(self.additionalGraphs) + [
             graph for widget in self.widgets for graph in widget.get_additional_graphs()
         ]

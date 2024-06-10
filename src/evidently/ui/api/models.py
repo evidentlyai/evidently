@@ -1,7 +1,7 @@
 import dataclasses
 import datetime
 import uuid
-from typing import Any
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -10,6 +10,7 @@ from typing import TypeVar
 from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
@@ -70,7 +71,12 @@ class TestSuiteModel(BaseModel):
 
     @classmethod
     def from_report(cls, report: TestSuite):
-        return cls(id=report.id, timestamp=report.timestamp, metadata=report.metadata, tags=report.tags)
+        return cls(
+            id=report.id,
+            timestamp=report.timestamp,
+            metadata=report.metadata,
+            tags=report.tags,
+        )
 
     @classmethod
     def from_snapshot(cls, snapshot: SnapshotMetadata):
@@ -82,9 +88,10 @@ class TestSuiteModel(BaseModel):
         )
 
 
-class DashboardInfoModel(BaseModel):
+@dataclass
+class DashboardInfoModel:
     name: str
-    widgets: List[Any]
+    widgets: List[BaseWidgetInfo]
     min_timestamp: Optional[datetime.datetime] = None
     max_timestamp: Optional[datetime.datetime] = None
 
