@@ -118,7 +118,12 @@ class DashboardInfoModel:
 
         info = project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
 
-        return cls(**dataclasses.asdict(info), **time_range)
+        return cls(
+            name=info.name,
+            widgets=info.widgets,
+            min_timestamp=time_range["min_timestamp"],
+            max_timestamp=time_range["max_timestamp"],
+        )
 
 
 class OrgModel(BaseModel):
