@@ -1,6 +1,7 @@
 import datetime
 import json
 import uuid
+from dataclasses import asdict
 from typing import Callable
 from typing import List
 from typing import Optional
@@ -229,7 +230,7 @@ def get_snapshot_data(
         test_presets=snapshot.metadata.get(TEST_PRESETS, []),
         test_generators=snapshot.metadata.get(TEST_GENERATORS, []),
     )
-    return json.dumps(info.dict(), cls=NumpyEncoder)
+    return json.dumps(asdict(info), cls=NumpyEncoder)
 
 
 @get("/{project_id:uuid}/dashboard/panels", sync_to_thread=True)
@@ -283,7 +284,7 @@ def project_dashboard(
         timestamp_end=timestamp_end_,
     )
     log_event("project_dashboard")
-    return json.dumps(info.dict(), cls=NumpyEncoder)
+    return json.dumps(asdict(info), cls=NumpyEncoder)
 
 
 @post("/", sync_to_thread=True)
