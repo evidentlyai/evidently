@@ -1,7 +1,7 @@
 from typing import List
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.base_metric import additional_feature
