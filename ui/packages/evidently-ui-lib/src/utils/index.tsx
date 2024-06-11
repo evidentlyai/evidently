@@ -1,6 +1,6 @@
 import { LoaderFunctionArgs, ActionFunction } from 'react-router-dom'
 
-interface DataManipulation<LoaderData> {
+export interface ILoaderAction<LoaderData> {
   loader: (args: LoaderFunctionArgs) => Promise<LoaderData>
   action: ActionFunction
 }
@@ -9,7 +9,7 @@ export type GetLoaderAction<Provider, LoaderData> = ({
   api
 }: {
   api: Provider
-}) => Partial<DataManipulation<LoaderData>>
+}) => Partial<ILoaderAction<LoaderData>>
 
 export const expectJsonRequest = (request: Request) => {
   if (request.headers.get('Content-type') !== 'application/json') {
