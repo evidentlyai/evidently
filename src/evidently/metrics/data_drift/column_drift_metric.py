@@ -247,7 +247,7 @@ def get_one_column_drift(
     return metrics
 
 
-class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics], UsesRawDataMixin):
+class ColumnDriftMetric(UsesRawDataMixin, ColumnMetric[ColumnDataDriftMetrics]):
     """Calculate drift metric for a column"""
 
     stattest: Optional[PossibleStatTestType]

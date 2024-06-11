@@ -64,7 +64,7 @@ class ColumnInteractionPlotResults(MetricResult):
     prefix: Optional[str] = None
 
 
-class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults], UsesRawDataMixin):
+class ColumnInteractionPlot(UsesRawDataMixin, Metric[ColumnInteractionPlotResults]):
     x_column: str
     y_column: str
 

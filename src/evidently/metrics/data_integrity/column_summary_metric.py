@@ -323,7 +323,7 @@ class ColumnSummaryResult(ColumnMetricResult):
     plot_data: DataQualityPlot
 
 
-class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult], UsesRawDataMixin):
+class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
     _generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
     def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None):

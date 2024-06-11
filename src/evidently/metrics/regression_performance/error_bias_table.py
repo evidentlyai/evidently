@@ -68,7 +68,7 @@ class RegressionErrorBiasTableResults(MetricResult):
     columns: Optional[List[str]] = None
 
 
-class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults], UsesRawDataMixin):
+class RegressionErrorBiasTable(UsesRawDataMixin, Metric[RegressionErrorBiasTableResults]):
     # by default, we get 5% values for the error bias calculations
     TOP_ERROR_DEFAULT: ClassVar[float] = 0.05
     TOP_ERROR_MIN: ClassVar[float] = 0

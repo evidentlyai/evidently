@@ -52,7 +52,7 @@ class DataDriftTableResults(MetricResult):
     reference_fi: Optional[Dict[str, float]] = None
 
 
-class DataDriftTable(WithDriftOptions[DataDriftTableResults], UsesRawDataMixin):
+class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
     columns: Optional[List[str]]
     feature_importance: Optional[bool]
     _feature_importance_metric: Optional[FeatureImportanceMetric]

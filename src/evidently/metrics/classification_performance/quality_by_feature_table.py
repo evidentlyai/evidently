@@ -48,7 +48,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
     columns: List[str]
 
 
-class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults], UsesRawDataMixin):
+class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[ClassificationQualityByFeatureTableResults]):
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
     _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]

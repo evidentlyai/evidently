@@ -41,7 +41,7 @@ class RegressionErrorNormalityResults(MetricResult):
     reference_theoretical: Optional[pd.DataFrame]
 
 
-class RegressionErrorNormality(Metric[RegressionErrorNormalityResults], UsesRawDataMixin):
+class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormalityResults]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

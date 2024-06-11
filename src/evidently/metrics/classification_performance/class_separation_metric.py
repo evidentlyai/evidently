@@ -71,7 +71,7 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
     return res
 
 
-class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults], UsesRawDataMixin):
+class ClassificationClassSeparationPlot(UsesRawDataMixin, Metric[ClassificationClassSeparationPlotResults]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

@@ -22,7 +22,7 @@ from evidently.utils.visualizations import plot_line_in_time
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
-class RegressionErrorPlot(Metric[ColumnScatterResult], UsesRawDataMixin):
+class RegressionErrorPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

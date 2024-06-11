@@ -54,7 +54,7 @@ class RegressionTopErrorMetricResults(MetricResult):
     reference_raw, reference_agg = raw_agg_properties("reference", TopData, AggTopData, True)
 
 
-class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults], UsesRawDataMixin):
+class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetricResults]):
     def calculate(self, data: InputData) -> RegressionTopErrorMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

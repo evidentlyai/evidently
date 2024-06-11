@@ -50,7 +50,7 @@ class TextDescriptorsDriftMetricResults(MetricResult):
     dataset_columns: DatasetColumns
 
 
-class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults], UsesRawDataMixin):
+class TextDescriptorsDriftMetric(UsesRawDataMixin, Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
     stattest: Optional[PossibleStatTestType] = None
     stattest_threshold: Optional[float] = None

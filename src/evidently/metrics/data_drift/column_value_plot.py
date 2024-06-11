@@ -47,7 +47,7 @@ class ColumnValuePlotResults(MetricResult):
     prefix: Optional[str] = None
 
 
-class ColumnValuePlot(Metric[ColumnValuePlotResults], UsesRawDataMixin):
+class ColumnValuePlot(UsesRawDataMixin, Metric[ColumnValuePlotResults]):
     column_name: str
 
     def __init__(self, column_name: str, options: AnyOptions = None):

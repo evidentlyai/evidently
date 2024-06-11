@@ -50,7 +50,7 @@ class TargetByFeaturesTableResults(MetricResult):
     task: str
 
 
-class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults], UsesRawDataMixin):
+class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResults]):
     columns: Optional[List[str]]
     _text_features_gen: Optional[
         Dict[

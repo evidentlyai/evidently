@@ -236,7 +236,7 @@ def test_options_fingerprint_specified_type():
         def get_options_fingerprint(self) -> FingerprintPart:
             return get_value_fingerprint(self.options.get(MyOption).field)
 
-    class MockMetricWithOption(Metric[MetricResult], UsesMyOptionMixin):
+    class MockMetricWithOption(UsesMyOptionMixin, Metric[MetricResult]):
         def calculate(self, data: InputData):
             return MetricResult()
 

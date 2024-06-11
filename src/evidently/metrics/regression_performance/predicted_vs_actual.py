@@ -49,7 +49,7 @@ class RegressionPredictedVsActualScatterResults(MetricResult):
     reference_raw, reference_agg = raw_agg_properties("reference", PredActualScatter, AggPredActualScatter, True)
 
 
-class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatterResults], UsesRawDataMixin):
+class RegressionPredictedVsActualScatter(UsesRawDataMixin, Metric[RegressionPredictedVsActualScatterResults]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 
