@@ -19,10 +19,7 @@ export const deleteProjectAction = z.object({
   projectId: z.string().uuid()
 })
 
-export const getLoaderAction: GetLoaderAction<
-  Pick<ProjectsProvider, 'create' | 'delete' | 'update' | 'list'>,
-  LoaderData
-> = ({ api }) => ({
+export const getLoaderAction: GetLoaderAction<ProjectsProvider, LoaderData> = ({ api }) => ({
   loader: () => api.list(),
   action: async ({ request }) => {
     expectJsonRequest(request)

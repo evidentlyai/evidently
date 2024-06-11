@@ -6,10 +6,9 @@ import { ReportModel, TestSuiteModel } from '~/api/types'
 
 export type ReportsLoaderData = ReportModel[]
 
-export const injectReportsAPI: GetLoaderAction<
-  Pick<ProjectsProvider, 'listReports' | 'reloadSnapshots'>,
-  ReportsLoaderData
-> = ({ api }) => ({
+export const injectReportsAPI: GetLoaderAction<ProjectsProvider, ReportsLoaderData> = ({
+  api
+}) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
 
@@ -28,10 +27,9 @@ export const injectReportsAPI: GetLoaderAction<
 
 export type TestSuitesLoaderData = TestSuiteModel[]
 
-export const injectTestSuitesAPI: GetLoaderAction<
-  Pick<ProjectsProvider, 'listTestSuites' | 'reloadSnapshots'>,
-  TestSuitesLoaderData
-> = ({ api }) => ({
+export const injectTestSuitesAPI: GetLoaderAction<ProjectsProvider, TestSuitesLoaderData> = ({
+  api
+}) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
 

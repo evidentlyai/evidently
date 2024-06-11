@@ -5,10 +5,7 @@ import { DashboardInfoModel } from '~/api/types'
 
 export type LoaderData = DashboardInfoModel
 
-export const getLoaderAction: GetLoaderAction<
-  Pick<DashboardProvider, 'getSnapshotDashboard'>,
-  LoaderData
-> = ({ api }) => ({
+export const getLoaderAction: GetLoaderAction<DashboardProvider, LoaderData> = ({ api }) => ({
   loader: ({ params }) => {
     const { projectId, snapshotId } = params
 

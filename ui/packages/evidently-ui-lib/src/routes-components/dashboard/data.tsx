@@ -8,10 +8,7 @@ import { FILTER_QUERY_PARAMS } from '~/components/DashboardDateFilter'
 import { DashboardInfoModel } from '~/api/types'
 import { DashboardProvider } from '~/api/types/providers/dashboard'
 
-export const getLoaderAction: GetLoaderAction<
-  Pick<DashboardProvider, 'getProjectDashboard'>,
-  LoaderData
-> = ({ api }) => ({
+export const getLoaderAction: GetLoaderAction<DashboardProvider, LoaderData> = ({ api }) => ({
   loader: ({ params, request }) => {
     invariant(params.projectId, 'missing projectId')
 

@@ -6,9 +6,7 @@ import { GetLoaderAction } from '~/api/utils'
 
 export type LoaderData = StrictID<ProjectModel>
 
-export const getLoaderAction: GetLoaderAction<Pick<ProjectsProvider, 'get'>, LoaderData> = ({
-  api
-}) => ({
+export const getLoaderAction: GetLoaderAction<ProjectsProvider, LoaderData> = ({ api }) => ({
   loader: ({ params }) => {
     const { projectId } = params
     invariant(projectId, 'missing projectId')
