@@ -223,8 +223,6 @@ class WithResultFieldPathMetaclass(FrozenBaseMeta):
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
     _context: Optional["Context"] = None
 
-    # TODO: if we want metric-specific options
-
     options: Options
 
     fields: ClassVar[FieldsDescriptor] = FieldsDescriptor()

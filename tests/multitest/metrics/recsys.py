@@ -29,7 +29,7 @@ def rec_cases_table():
     return TestMetric(
         name="rec_cases_table",
         metric=RecCasesTable(),
-        fingerprint="234c05012bb41475e9bfaf7c8ff01266",
+        fingerprint="b12df34b6f19df9fcc5e6afafa22cf72",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -40,7 +40,7 @@ def hit_rate_k_metric():
     return TestMetric(
         name="hit_rate_k_metric",
         metric=HitRateKMetric(k=3),
-        fingerprint="f32f93bb6017764e9edab3210dd5ed40",
+        fingerprint="db4ba352ec4ee25ce6e17064ffc88db3",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -51,7 +51,7 @@ def mrr_k_metric():
     return TestMetric(
         name="mrr_k_metric",
         metric=MRRKMetric(k=3),
-        fingerprint="30777887cbfe1f4fbe957d6826e53f88",
+        fingerprint="15101d7e1bc4c297ea73110eb00a5849",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -62,7 +62,7 @@ def score_distribution():
     return TestMetric(
         name="score_distribution",
         metric=ScoreDistribution(k=3),
-        fingerprint="73cdbc96f84034610ab15da41eb64ba7",
+        fingerprint="2494b8495a3eeab169b922e6ea8cb7aa",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -73,7 +73,7 @@ def f_beta_top_k():
     return TestMetric(
         name="f_beta_top_k",
         metric=FBetaTopKMetric(3),
-        fingerprint="c653392cd09d48a0f6279c7b9ae006e6",
+        fingerprint="bd6bb194dd86ecb67069817dcee845ee",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -84,7 +84,7 @@ def precision_recall_calc():
     return TestMetric(
         name="precision_recall_calc",
         metric=PrecisionRecallCalculation(3),
-        fingerprint="e85f92f2ef10fbbe7c201ef20da9ac62",
+        fingerprint="92213c8d5452e770e015d3487bd5dfa8",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -95,7 +95,7 @@ def precision_top_k():
     return TestMetric(
         name="precision_top_k",
         metric=PrecisionTopKMetric(3),
-        fingerprint="78ed2114805b22800a74b1f5a0f74a9d",
+        fingerprint="8a0240c04f778a84da2656a7e784c36e",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -106,7 +106,7 @@ def recall_top_k():
     return TestMetric(
         name="recall_top_k",
         metric=RecallTopKMetric(3),
-        fingerprint="8f04c9b73e28d1afe0f61fb90f74dd34",
+        fingerprint="c92e94241c1d58b49c2702edd682249a",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -117,7 +117,7 @@ def map_k():
     return TestMetric(
         name="map_k",
         metric=MAPKMetric(3),
-        fingerprint="0b308d0a0565058820a1f6b3c77f7527",
+        fingerprint="9c57cf03761e3c0610345d3534ba8781",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -128,7 +128,7 @@ def mar_k():
     return TestMetric(
         name="mar_k",
         metric=MARKMetric(3),
-        fingerprint="3193ffd5a10a6dacf60a8b85206d1c22",
+        fingerprint="5008d095662d6afdc234a1089ac29c5c",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -139,7 +139,7 @@ def ndcg():
     return TestMetric(
         name="ndcg",
         metric=NDCGKMetric(3),
-        fingerprint="6ed8a484a7983f171c68b34cd2f881ff",
+        fingerprint="b23a1cc4f7ac59b81485fb6433afc54f",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -150,7 +150,7 @@ def novelty():
     return TestMetric(
         name="novelty",
         metric=NoveltyMetric(k=3),
-        fingerprint="d8a4050e28087b83b47367a256e93596",
+        fingerprint="0d8c3ff282f94cceb6184d4498b3d58f",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -161,7 +161,7 @@ def pairwise_distance():
     return TestMetric(
         name="pairwise_distance",
         metric=PairwiseDistance(k=3, item_features=["feature_1", "feature_2"]),
-        fingerprint="b626e2dd647e6025a30cefeaaf0e2369",
+        fingerprint="44070af355ca7e2cd18c1365226905e5",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -172,7 +172,7 @@ def serendipity():
     return TestMetric(
         name="serendipity",
         metric=SerendipityMetric(k=3, item_features=["feature_1", "feature_2"]),
-        fingerprint="aa7a21afe21808c8fc0fa0d0e8c74cbb",
+        fingerprint="2bfda8355c729f8ae0637b1d0f4d8246",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -183,7 +183,7 @@ def personalization():
     return TestMetric(
         name="personalization",
         metric=PersonalizationMetric(k=3),
-        fingerprint="7238e23ed6b2fec63e9dbfdd9c1b3ffc",
+        fingerprint="692fa2b63855dde3054c193bdf461f16",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -194,7 +194,7 @@ def popularity_bias():
     return TestMetric(
         name="popularity_bias",
         metric=PopularityBias(k=3),
-        fingerprint="9aa0f47daca6f8fa8f70a0cb4f7e6d8c",
+        fingerprint="bf50156f95be7f38dccb2e975945bacb",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -205,7 +205,7 @@ def train_stats():
     return TestMetric(
         name="train_stats",
         metric=TrainStats(),
-        fingerprint="baa0bab492bfa496febe7679e2f2add2",
+        fingerprint="44febf74f2dbbb1ddc9c9f9c8c220fd6",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -216,7 +216,7 @@ def user_bias():
     return TestMetric(
         name="user_bias",
         metric=UserBiasMetric(column_name="feature_1"),
-        fingerprint="1677725eda5bd97f16d9ec09bd2ffe90",
+        fingerprint="4f8880eebd359faf2c74c89fdd5a0242",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -227,7 +227,7 @@ def item_bias():
     return TestMetric(
         name="item_bias",
         metric=ItemBiasMetric(k=3, column_name="feature_1"),
-        fingerprint="482066fdc33e22c3718461fa7aba4706",
+        fingerprint="0e3c204c5bb31fc109e45efe53ae03f7",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
@@ -238,7 +238,7 @@ def diversity_bias():
     return TestMetric(
         name="diversity",
         metric=DiversityMetric(k=3, item_features=["feature_1", "feature_2"]),
-        fingerprint="79ed7eb531e5c6e168653463e5c1fb29",
+        fingerprint="bb2ec1d0e2be57375a903bb3f49a46ab",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.RECSYS],
     )
