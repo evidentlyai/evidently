@@ -1,6 +1,6 @@
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
-import { projectProvider } from 'api/RemoteApi'
+import { projectProvider } from 'api'
 
 import TestSuiteRoute from './testSuiteId'
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'

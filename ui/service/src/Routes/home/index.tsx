@@ -1,7 +1,7 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { getLoaderAction } from 'evidently-ui-lib/routes-components/home/data'
-import { versionProvider } from 'api/RemoteApi'
+import { versionProvider } from 'api'
 import logoSrc from 'assets/logo.png'
 
 const { loader } = getLoaderAction({ api: versionProvider })
