@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { ProjectModel } from '~/api/types'
 import { ProjectsProvider } from '~/api/types/providers/projects'
 import { StrictID } from '~/api/types/utils'
-import { GetLoaderAction, expectJsonRequest } from '~/utils'
+import { expectJsonRequest, GetLoaderAction } from '~/api/utils'
 
 export type LoaderData = StrictID<ProjectModel>[]
 

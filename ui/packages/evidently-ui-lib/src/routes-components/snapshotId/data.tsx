@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant'
-import type { GetLoaderAction } from '~/utils'
+import type { GetLoaderAction } from '~/api/utils'
 import { DashboardProvider } from '~/api/types/providers/dashboard'
 import { DashboardInfoModel } from '~/api/types'
 

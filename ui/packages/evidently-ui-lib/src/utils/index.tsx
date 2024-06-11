@@ -1,22 +1,3 @@
-import { LoaderFunctionArgs, ActionFunction } from 'react-router-dom'
-
-export interface ILoaderAction<LoaderData> {
-  loader: (args: LoaderFunctionArgs) => Promise<LoaderData>
-  action: ActionFunction
-}
-
-export type GetLoaderAction<Provider, LoaderData> = ({
-  api
-}: {
-  api: Provider
-}) => Partial<ILoaderAction<LoaderData>>
-
-export const expectJsonRequest = (request: Request) => {
-  if (request.headers.get('Content-type') !== 'application/json') {
-    throw new Response('Unsupported Media Type', { status: 415 })
-  }
-}
-
 export function formatDate(date: any): string {
   if (typeof date !== typeof new Date()) {
     console.log(`not a date ${typeof date}: ${date}`)

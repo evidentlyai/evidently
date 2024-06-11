@@ -1,6 +1,6 @@
 import { ActionFunctionArgs } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { GetLoaderAction } from '~/utils'
+import { GetLoaderAction } from '~/api/utils'
 import { ProjectsProvider } from '~/api/types/providers/projects'
 import { ReportModel, TestSuiteModel } from '~/api/types'
 

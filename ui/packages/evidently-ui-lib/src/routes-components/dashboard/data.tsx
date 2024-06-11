@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import invariant from 'tiny-invariant'
-import { GetLoaderAction } from '~/utils'
+import { GetLoaderAction } from '~/api/utils'
 
 export type LoaderData = DashboardInfoModel
 
