@@ -69,5 +69,5 @@ class TextOverviewPreset(MetricPreset):
         if len(self.columns) > 1:
             for idx, col in enumerate(self.columns[:-1]):
                 for col2 in self.columns[idx + 1 :]:
-                    result.append(ColumnSummaryMetric(SemanticSimilarity(columns=[col, col2]).as_column()))
+                    result.append(ColumnSummaryMetric(SemanticSimilarity().on([col, col2])))
         return result
