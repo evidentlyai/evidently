@@ -11,7 +11,6 @@ from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import FrozenSet
-from typing import Hashable
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -152,11 +151,15 @@ def get_classpath(cls: Type) -> str:
 
 TPM = TypeVar("TPM", bound="PolymorphicModel")
 
+FingerprintPart = Union[None, int, str, float, bool, bytes, Tuple["FingerprintPart", ...]]
+
 
 class PolymorphicModel(BaseModel):
     class Config(BaseModel.Config):
         type_alias: ClassVar[Optional[str]] = None
         is_base_type: ClassVar[bool] = False
+
+    __config__: ClassVar[Config]
 
     @classmethod
     def __get_type__(cls):
@@ -202,7 +205,7 @@ class PolymorphicModel(BaseModel):
         return super().validate(value)  # type: ignore[misc]
 
 
-def get_value_fingerprint(value: Any) -> Hashable:
+def get_value_fingerprint(value: Any) -> FingerprintPart:
     if isinstance(value, EvidentlyBaseModel):
         return value.get_fingerprint()
     if isinstance(value, BaseModel):
@@ -228,14 +231,14 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def get_fingerprint(self) -> str:
         return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
 
-    def get_fingerprint_parts(self) -> Tuple[Hashable, ...]:
+    def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
             self.get_field_fingerprint(name)
             for name, field in self.__fields__.items()
             if field.required or getattr(self, name) != field.get_default()
         )
 
-    def get_field_fingerprint(self, field: str) -> Hashable:
+    def get_field_fingerprint(self, field: str) -> FingerprintPart:
         value = getattr(self, field)
         return get_value_fingerprint(value)
 

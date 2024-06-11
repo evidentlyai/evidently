@@ -15,6 +15,7 @@ from plotly.subplots import make_subplots
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
@@ -24,7 +25,6 @@ from evidently.features.text_length_feature import TextLength
 from evidently.metric_results import StatsByFeature
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -50,10 +50,7 @@ class TargetByFeaturesTableResults(MetricResult):
     task: str
 
 
-class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
-    class Config:
-        used_options_fields = [RenderOptions.raw_data]
-
+class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults], UsesRawDataMixin):
     columns: Optional[List[str]]
     _text_features_gen: Optional[
         Dict[

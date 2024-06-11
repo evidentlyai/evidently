@@ -11,6 +11,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.utils import get_data_for_cat_cat_plot
 from evidently.calculations.utils import get_data_for_num_num_plot
 from evidently.calculations.utils import prepare_box_data
@@ -22,7 +23,6 @@ from evidently.core import IncludeTags
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ContourData
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -64,10 +64,7 @@ class ColumnInteractionPlotResults(MetricResult):
     prefix: Optional[str] = None
 
 
-class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
-    class Config:
-        used_options_fields = [RenderOptions.raw_data]
-
+class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults], UsesRawDataMixin):
     x_column: str
     y_column: str
 

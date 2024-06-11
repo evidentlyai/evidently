@@ -7,6 +7,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
@@ -20,7 +21,6 @@ from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.options.data_drift import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -50,10 +50,7 @@ class TextDescriptorsDriftMetricResults(MetricResult):
     dataset_columns: DatasetColumns
 
 
-class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
-    class Config:
-        used_options_fields = [RenderOptions.raw_data]
-
+class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults], UsesRawDataMixin):
     column_name: str
     stattest: Optional[PossibleStatTestType] = None
     stattest_threshold: Optional[float] = None

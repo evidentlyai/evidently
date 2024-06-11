@@ -10,6 +10,7 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
 from evidently.base_metric import DataDefinition
 from evidently.base_metric import InputData
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import ColumnType
 from evidently.calculations.data_drift import DistributionIncluded
@@ -22,7 +23,6 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_results import HistogramData
 from evidently.metric_results import ScatterAggField
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.options.data_drift import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -247,11 +247,8 @@ def get_one_column_drift(
     return metrics
 
 
-class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
+class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics], UsesRawDataMixin):
     """Calculate drift metric for a column"""
-
-    class Config:
-        used_options_fields = [RenderOptions.raw_data]
 
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]

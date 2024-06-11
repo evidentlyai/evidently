@@ -7,11 +7,11 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import UsesRawDataMixin
 from evidently.metric_results import ColumnAggScatterResult
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.agg_data import RenderOptions
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -22,10 +22,7 @@ from evidently.utils.visualizations import plot_line_in_time
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
-class RegressionErrorPlot(Metric[ColumnScatterResult]):
-    class Config:
-        used_options_fields = [RenderOptions.raw_data]
-
+class RegressionErrorPlot(Metric[ColumnScatterResult], UsesRawDataMixin):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 
