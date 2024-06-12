@@ -2,6 +2,11 @@
 // TODO: add docs
 import type { components, paths } from '~/api/types/endpoints'
 
+// TODO: fix this `WidgetInfo` import
+import { WidgetInfo } from '~/api'
+
+import { TYPE_SATISFIED, Expect } from '~/api/types/utils'
+
 export type BackendPaths = paths
 ///////////////////////////////
 ///  TYPES
@@ -12,8 +17,62 @@ export type ProjectModel = Schemas['Project']
 export type ReportModel = Schemas['ReportModel']
 export type TestSuiteModel = Schemas['TestSuiteModel']
 
-// TODO: fix this
-import { WidgetInfo } from '~/api'
 export type DashboardInfoModel = Schemas['DashboardInfoModel'] & { widgets: WidgetInfo[] }
 export type VersionModel = Schemas['Version']
 export type MetadataModel = ReportModel['metadata']
+
+///////////////////////////////
+///  EXTENDED TYPES FOR UI
+///////////////////////////////
+
+// TODO: add more DashboardPanel types
+export type DashboardPanel =
+  | DashboardPanelPlot
+  | DashboardPanelCounter
+  | DashboardPanelDistribution
+  | DashboardPanelTestSuite
+  | DashboardPanelTestSuiteCounter
+
+export type DashboardPanelPlot = Omit<Schemas['DashboardPanelPlot'], 'type'> & {
+  type: 'evidently.ui.dashboards.reports.DashboardPanelPlot'
+}
+
+export type DashboardPanelCounter = Omit<Schemas['DashboardPanelCounter'], 'type'> & {
+  type: 'evidently.ui.dashboards.reports.DashboardPanelCounter'
+}
+
+export type DashboardPanelDistribution = Omit<Schemas['DashboardPanelDistribution'], 'type'> & {
+  type: 'evidently.ui.dashboards.reports.DashboardPanelDistribution'
+}
+
+export type DashboardPanelTestSuite = Omit<
+  Schemas['DashboardPanelTestSuite'],
+  'type' | 'filter'
+> & {
+  type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuite'
+  filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
+    // this should always be true
+    include_test_suites: true
+  }
+}
+
+export type DashboardPanelTestSuiteCounter = Omit<
+  Schemas['DashboardPanelTestSuiteCounter'],
+  'type' | 'filter'
+> & {
+  type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuiteCounter'
+  filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
+    // this should always be true
+    include_test_suites: true
+  }
+}
+
+export type __EXTENDED_DASHBOARD_PANELS_TESTS_PASSED =
+  | Expect<TYPE_SATISFIED<DashboardPanel, Schemas['DashboardPanel']>>
+  | Expect<TYPE_SATISFIED<DashboardPanelPlot, Schemas['DashboardPanelPlot']>>
+  | Expect<TYPE_SATISFIED<DashboardPanelCounter, Schemas['DashboardPanelCounter']>>
+  | Expect<TYPE_SATISFIED<DashboardPanelDistribution, Schemas['DashboardPanelDistribution']>>
+  | Expect<TYPE_SATISFIED<DashboardPanelTestSuite, Schemas['DashboardPanelTestSuite']>>
+  | Expect<
+      TYPE_SATISFIED<DashboardPanelTestSuiteCounter, Schemas['DashboardPanelTestSuiteCounter']>
+    >

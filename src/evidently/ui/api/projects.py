@@ -32,7 +32,10 @@ from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.reports import DashboardPanelCounter
+from evidently.ui.dashboards.reports import DashboardPanelDistribution
 from evidently.ui.dashboards.reports import DashboardPanelPlot
+from evidently.ui.dashboards.test_suites import DashboardPanelTestSuite
+from evidently.ui.dashboards.test_suites import DashboardPanelTestSuiteCounter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
@@ -256,6 +259,9 @@ def additional_models() -> (
             DashboardInfoModel,
             DashboardPanelPlot,
             DashboardPanelCounter,
+            DashboardPanelDistribution,
+            DashboardPanelTestSuite,
+            DashboardPanelTestSuiteCounter,
         ]
     ]
 ):
