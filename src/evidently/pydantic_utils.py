@@ -233,8 +233,8 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
 
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
-            self.get_field_fingerprint(name)
-            for name, field in self.__fields__.items()
+            (name, self.get_field_fingerprint(name))
+            for name, field in sorted(self.__fields__.items())
             if field.required or getattr(self, name) != field.get_default()
         )
 

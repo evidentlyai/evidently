@@ -20,7 +20,7 @@ def regression_error_plot():
     return TestMetric(
         name="regression_error_plot",
         metric=RegressionErrorPlot(),
-        fingerprint="8c8bb19e517359561148725ac8688c1c",
+        fingerprint="29be3a731577fecd1c0dd976906735b7",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -31,7 +31,7 @@ def regression_abs_percentage_error_plot():
     return TestMetric(
         name="regression_abs_percentage_error_plot",
         metric=RegressionAbsPercentageErrorPlot(),
-        fingerprint="f2115d320f6b9c40c1c0ad23393dda07",
+        fingerprint="cf08325cf9a37966d8eff5a253b58dd0",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -42,7 +42,7 @@ def regression_performance_metrics():
     return TestMetric(
         name="regression_performance_metrics",
         metric=RegressionPerformanceMetrics(),
-        fingerprint="72db75a7b25260cab3fca04bf74efdec",
+        fingerprint="65373a5ec0a79c3ed055731dbd59b849",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -53,7 +53,7 @@ def regression_quality_metric():
     return TestMetric(
         name="regression_quality_metric",
         metric=RegressionQualityMetric(),
-        fingerprint="4dcce3fed9d6c5bc925787a08dc945d9",
+        fingerprint="83de83d3607f15a79fff37b214301959",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -64,7 +64,7 @@ def regression_top_error_metric():
     return TestMetric(
         name="regression_top_error_metric",
         metric=RegressionTopErrorMetric(),
-        fingerprint="da0fbe768227d0a2804709573f8972a9",
+        fingerprint="4bba47983f251bd7fd183147d39ac9f9",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -75,7 +75,7 @@ def regression_dummy_metric():
     return TestMetric(
         name="regression_dummy_metric",
         metric=RegressionDummyMetric(),
-        fingerprint="65f71b0f273da54c3431cef43982299b",
+        fingerprint="8868cdc279f77879f2f8d0d4fa7a7f72",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -86,7 +86,7 @@ def regression_predicted_vs_actual_plot():
     return TestMetric(
         name="regression_predicted_vs_actual_plot",
         metric=RegressionPredictedVsActualPlot(),
-        fingerprint="7decda864d2eceb32fbb103e072ebaf6",
+        fingerprint="84919c416a2d031586406f6cb259409d",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -97,7 +97,7 @@ def regression_error_bias_table():
     return TestMetric(
         name="regression_error_bias_table",
         metric=RegressionErrorBiasTable(),
-        fingerprint="814faec5614e6d85a963f73d4a696a50",
+        fingerprint="050a13de08cb888ac1bc7f22ca5ac2d9",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -108,7 +108,7 @@ def regression_error_normality():
     return TestMetric(
         name="regression_error_normality",
         metric=RegressionErrorNormality(),
-        fingerprint="c30863cfaf33d1dcab6b0980a10d7da5",
+        fingerprint="7324d39037d0f7ba1f977c090e27f076",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -119,7 +119,7 @@ def regression_error_distribution():
     return TestMetric(
         name="regression_error_distribution",
         metric=RegressionErrorDistribution(),
-        fingerprint="a0267e8c5e642f90c124b9512c4b0645",
+        fingerprint="9b7e89835990fcbabb266eac2bc2928f",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION],
     )
@@ -130,7 +130,7 @@ def regression_predicted_vs_actual_scatter():
     return TestMetric(
         name="regression_predicted_vs_actual_scatter",
         metric=RegressionPredictedVsActualScatter(),
-        fingerprint="069ef7b9d91218a620392a167be74316",
+        fingerprint="b1a0065df4d04b2984e0ae388b304ace",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.REGRESSION, DatasetTags.HAS_PREDICTION, DatasetTags.HAS_TARGET],
     )

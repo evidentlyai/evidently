@@ -37,7 +37,7 @@ def classification_class_separation_plot():
     return TestMetric(
         name="classification_class_separation_plot",
         metric=ClassificationClassSeparationPlot(),
-        fingerprint="aed72bfea9c5b2f86eee3f4a2f27b7cb",
+        fingerprint="a238692f61349ce9193b72c393bd0669",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )
@@ -48,7 +48,7 @@ def classification_p_r_table():
     return TestMetric(
         name="classification_p_r_table",
         metric=ClassificationPRTable(),
-        fingerprint="0cf20297e253caea335301af0e87c114",
+        fingerprint="9262b3e3a9764b1c45a3a8e6de4c82f0",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )
@@ -60,7 +60,7 @@ def classification_p_r_table_values():
     return TestMetric(
         name="classification_p_r_table_values",
         metric=m,
-        fingerprint="0cf20297e253caea335301af0e87c114",
+        fingerprint="9262b3e3a9764b1c45a3a8e6de4c82f0",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -82,7 +82,7 @@ def classification_p_r_curve():
     return TestMetric(
         name="classification_p_r_curve",
         metric=ClassificationPRCurve(),
-        fingerprint="a7b2e4b0f6f0ee7382279a5d3ac4f68c",
+        fingerprint="f768817940edb126f1bc6ec7e5c77a8a",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )
@@ -93,7 +93,7 @@ def classification_lift_table():
     return TestMetric(
         name="classification_lift_table",
         metric=ClassificationLiftTable(),
-        fingerprint="4e07cf0ee4019bab4ed53fce1e4fd628",
+        fingerprint="7998350645d85ef9a28039f6f4edb2d1",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )
@@ -104,7 +104,7 @@ def classification_lift_curve():
     return TestMetric(
         name="classification_lift_curve",
         metric=ClassificationLiftCurve(),
-        fingerprint="9c7494b50aa5f358ac4254f93d2bf8a9",
+        fingerprint="57fc202600628307b5c1d4ee01163982",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )
@@ -116,7 +116,7 @@ def classification_p_r_curve_values():
     return TestMetric(
         name="classification_p_r_curve_values",
         metric=m,
-        fingerprint="a7b2e4b0f6f0ee7382279a5d3ac4f68c",
+        fingerprint="f768817940edb126f1bc6ec7e5c77a8a",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -138,7 +138,7 @@ def classification_quality_by_class():
     return TestMetric(
         name="classification_quality_by_class",
         metric=ClassificationQualityByClass(),
-        fingerprint="a47df6aa4d1dff818738f45362fa153a",
+        fingerprint="1a93c8f01b4e0ea01d78ef5b09ba7522",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION],
     )
@@ -149,7 +149,7 @@ def classification_class_balance():
     return TestMetric(
         name="classification_class_balance",
         metric=ClassificationClassBalance(),
-        fingerprint="9a7db4ca44ba7007a42bcbe2a9c247a6",
+        fingerprint="cab9c98aee4aa4a678ab28d8c5907331",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION],
     )
@@ -162,7 +162,7 @@ def classification_class_balance_values():
     return TestMetric(
         name="classification_class_balance_values",
         metric=metric,
-        fingerprint="9a7db4ca44ba7007a42bcbe2a9c247a6",
+        fingerprint="cab9c98aee4aa4a678ab28d8c5907331",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -210,7 +210,7 @@ def classification_confusion_matrix():
     return TestMetric(
         name="classification_confusion_matrix",
         metric=ClassificationConfusionMatrix(),
-        fingerprint="813bdc14f18fb10550bd522516ba385a",
+        fingerprint="7b2be6b2f70536034d41bbf6753b80f5",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION],
     )
@@ -223,7 +223,7 @@ def classification_confusion_matrix_values():
     return TestMetric(
         name="classification_confusion_matrix_values",
         metric=metric,
-        fingerprint="813bdc14f18fb10550bd522516ba385a",
+        fingerprint="7b2be6b2f70536034d41bbf6753b80f5",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -282,7 +282,7 @@ def classification_roc_curve():
     return TestMetric(
         name="classification_roc_curve",
         metric=ClassificationRocCurve(),
-        fingerprint="a2d2ae72a445a85ad099944aa39bddce",
+        fingerprint="be3125d0b6a253770b6d612306166c4d",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )
@@ -293,7 +293,7 @@ def classification_roc_curve_values():
     return TestMetric(
         name="classification_roc_curve_values",
         metric=ClassificationRocCurve(),
-        fingerprint="a2d2ae72a445a85ad099944aa39bddce",
+        fingerprint="be3125d0b6a253770b6d612306166c4d",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -315,7 +315,7 @@ def classification_quality_metric():
     return TestMetric(
         name="classification_quality_metric",
         metric=ClassificationQualityMetric(),
-        fingerprint="bfcaadd5a5a7ccf7a486d8053c4beeb3",
+        fingerprint="aa8f28863b76b4886a0c28cdac4d7ba6",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION],
     )
@@ -341,7 +341,7 @@ def classification_quality_values():
     return TestMetric(
         name="classification_quality_values",
         metric=metric,
-        fingerprint="bfcaadd5a5a7ccf7a486d8053c4beeb3",
+        fingerprint="aa8f28863b76b4886a0c28cdac4d7ba6",
         outcomes={
             TestDataset(current=current, column_mapping=ColumnMapping()): AssertExpectedResult(
                 ClassificationQualityMetricResult(
@@ -382,7 +382,7 @@ def classification_quality_by_feature_table():
     return TestMetric(
         name="classification_quality_by_feature_table",
         metric=ClassificationQualityByFeatureTable(),
-        fingerprint="6cf5f0a11a3bbd26a5eec036fefe3861",
+        fingerprint="ffc2075e84a940eaab0f9ce643a76686",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION],
     )
@@ -393,7 +393,7 @@ def classification_prob_distribution():
     return TestMetric(
         name="classification_prob_distribution",
         metric=ClassificationProbDistribution(),
-        fingerprint="26b3fa4d82926c4313bf4c5c7c071127",
+        fingerprint="9eb345021d523c50009760785863235e",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION],
     )
@@ -404,7 +404,7 @@ def classification_prob_distribution_values():
     return TestMetric(
         name="classification_prob_distribution_values",
         metric=ClassificationProbDistribution(),
-        fingerprint="26b3fa4d82926c4313bf4c5c7c071127",
+        fingerprint="9eb345021d523c50009760785863235e",
         outcomes={
             TestDataset(
                 current=pd.DataFrame(
@@ -446,7 +446,7 @@ def classification_dummy_metric():
     return TestMetric(
         name="classification_dummy_metric",
         metric=ClassificationDummyMetric(),
-        fingerprint="675c4939981c1fbfc5ff778dcae9604e",
+        fingerprint="31a1ebd2ca7e5047d8ea65b3f451ece7",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION],
     )
