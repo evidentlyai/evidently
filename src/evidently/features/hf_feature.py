@@ -78,22 +78,28 @@ def _openai_detector(data: pd.Series, score_threshold: float) -> pd.Series:
     return pd.Series([_get_label(x) for x in pipe(data.fillna("").tolist())], index=data.index)
 
 
-def _map_max(labels: List[str], scores: List[float]) -> str:
-    return max(zip(labels, scores), key=lambda x: x[1])[0]
+def _map_labels(labels: List[str], scores: List[float], threshold: float) -> str:
+    if len(labels) == 1:
+        if scores[0] > threshold:
+            return labels[0]
+        else:
+            return "not " + labels[0]
+    label = max(zip(labels, scores), key=lambda x: x[1])
+    return label[0] if label[1] > threshold else "unknown"
 
 
-def _lmnli_fever(data: pd.Series, labels: List[str]) -> pd.Series:
+def _lmnli_fever(data: pd.Series, labels: List[str], threshold: Optional[float]) -> pd.Series:
     from transformers import pipeline
 
-    if len(labels) < 2:
-        raise ValueError(f"Expected at least 2 labels. Got {len(labels)}")
+    threshold = threshold if threshold is not None else 0.5
 
     classifier = pipeline(
         "zero-shot-classification",
         model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli",
     )
     output = classifier(data.fillna("").tolist(), labels, multi_label=False)
-    return pd.Series([_map_max(o["labels"], o["scores"]) for o in output], index=data.index)
+
+    return pd.Series([_map_labels(o["labels"], o["scores"], threshold) for o in output], index=data.index)
 
 
 def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Series) -> pd.Series:
@@ -117,7 +123,7 @@ _models: Dict[str, Tuple[ColumnType, List[str], Callable[..., pd.Series]]] = {
     "openai-community/roberta-base-openai-detector": (ColumnType.Categorical, ["score_threshold"], _openai_detector),
     "MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli": (
         ColumnType.Categorical,
-        ["labels"],
+        ["labels", "threshold"],
         _lmnli_fever,
     ),
     "DaNLP/da-electra-hatespeech-detection": (
