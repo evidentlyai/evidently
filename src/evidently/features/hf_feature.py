@@ -78,15 +78,22 @@ def _openai_detector(data: pd.Series, score_threshold: float) -> pd.Series:
     return pd.Series([_get_label(x) for x in pipe(data.fillna("").tolist())], index=data.index)
 
 
+def _map_max(labels: List[str], scores: List[float]) -> str:
+    return max(zip(labels, scores), key=lambda x: x[1])[0]
+
+
 def _lmnli_fever(data: pd.Series, labels: List[str]) -> pd.Series:
     from transformers import pipeline
+
+    if len(labels) < 2:
+        raise ValueError(f"Expected at least 2 labels. Got {len(labels)}")
 
     classifier = pipeline(
         "zero-shot-classification",
         model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli",
     )
     output = classifier(data.fillna("").tolist(), labels, multi_label=False)
-    return pd.Series(output, index=data.index)
+    return pd.Series([_map_max(o["labels"], o["scores"]) for o in output], index=data.index)
 
 
 def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Series) -> pd.Series:
