@@ -36,7 +36,7 @@ export interface PercentWidgetParams {
   details?: string
 }
 
-export interface BigGraphWidgetParams {
+export interface AdditionalGraphInfo {
   data: Partial<PlotData>[]
   layout: Partial<Layout>
 }
@@ -44,7 +44,7 @@ export interface BigGraphWidgetParams {
 export interface TabGraph {
   id: string
   title: string
-  graph: BigGraphWidgetParams
+  graph: AdditionalGraphInfo
 }
 
 export interface MultiTabGraphWidgetParams {
@@ -153,7 +153,7 @@ export interface RichDataParams {
   description: string
   metrics: Metric[]
   metricsValuesHeaders: string[]
-  graph?: BigGraphWidgetParams
+  graph?: AdditionalGraphInfo
   details?: BigTableRowDetails
 }
 
@@ -198,7 +198,7 @@ export interface WidgetInfo {
   details?: string
   params:
     | PercentWidgetParams
-    | BigGraphWidgetParams
+    | AdditionalGraphInfo
     | TableWidgetParams
     | CounterWidgetParams
     | WidgetGroupParams
@@ -212,5 +212,3 @@ export interface WidgetInfo {
   alerts?: MetricAlertParams[]
   insights?: InsightsParams[]
 }
-
-export type AdditionalGraphInfo = BigGraphWidgetParams

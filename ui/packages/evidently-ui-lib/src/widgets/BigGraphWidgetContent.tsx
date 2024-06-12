@@ -1,9 +1,9 @@
 import React from 'react'
 
-import { BigGraphWidgetParams } from '~/api'
+import { AdditionalGraphInfo } from '~/api'
 import Plot from '~/components/Plot'
 
-interface BigGraphWidgetProps extends BigGraphWidgetParams {
+interface BigGraphWidgetProps extends AdditionalGraphInfo {
   widgetSize: number
 }
 
@@ -14,7 +14,7 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
         data={props.data}
         layout={{
           ...props.layout,
-          title: undefined,
+          title: undefined
           // width: (props.size.width ? props.size.width - 20 : undefined)
         }}
         config={{ responsive: true }}
