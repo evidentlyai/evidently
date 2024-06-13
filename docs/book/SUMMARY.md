@@ -58,6 +58,8 @@
   * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)
   * [Feature importance in data drift](customization/feature-importance.md)
   * [Text descriptors parameters](customization/text-descriptors-parameters.md)
+  * [Text evals with HuggingFace](customization/huggingface_descriptor.md)
+  * [Text evals with LLM-as-judge](customization/llm_as_a_judge.md)
   * [Customize JSON output](customization/json-dict-output.md)
   * [Show raw data in Reports](customization/report-data-aggregation.md)
   * [Add text comments to Reports](customization/text-comments.md)
