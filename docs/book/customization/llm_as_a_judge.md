@@ -14,6 +14,10 @@ Evidently currently supports scoring data using Open AI LLMs. Use the `OpenAIPro
 
 # Code example
 
+You can refer to an end-to-end example with different Descriptors:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_evaluate_llm_with_text_descriptors.ipynb" %}
+
 To import the Descriptor:
 
 ```python
