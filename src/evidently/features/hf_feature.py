@@ -1,4 +1,3 @@
-import uuid
 from functools import partial
 from typing import Callable
 from typing import Dict
@@ -8,69 +7,12 @@ from typing import Tuple
 
 import pandas as pd
 
-from evidently.base_metric import ColumnName
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import DataFeature
-from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class HFFeature(GeneratedFeature):
-    feature_id: str
-    column_name: str
-    path: str
-    config_name: str
-    model_params: dict
-    compute_params: dict
-    result_scores_field: str
-
-    def __init__(
-        self,
-        column_name: str,
-        path: str,
-        config_name: str,
-        model_params: dict,
-        compute_params: dict,
-        result_scores_field: str,
-        display_name: Optional[str] = None,
-    ):
-        self.feature_id = str(uuid.uuid4())
-        self.result_scores_field = result_scores_field
-        self.path = path
-        self.config_name = config_name
-        self.model_params = model_params
-        self.compute_params = compute_params
-        self.column_name = column_name
-        self.display_name = display_name
-        super().__init__()
-
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        import evaluate
-
-        column_data = data[self.column_name].values.tolist()
-        model = evaluate.load(
-            self.path,
-            self.config_name,
-            **self.model_params,
-        )
-        scores = model.compute(predictions=column_data, **self.compute_params)
-        return pd.DataFrame(dict([(self._feature_column_name(), scores[self.result_scores_field])]), index=data.index)
-
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
-            self._feature_column_name(),
-            self.display_name or f"Hugging Face % for {self.column_name}",
-        )
-
-    def _feature_column_name(self) -> str:
-        if self.display_name:
-            return self.display_name.replace(" ", "_").lower()
-        return self.column_name + "_" + self.feature_id
-
-
-class GeneralHuggingFaceFeature(DataFeature):
+class HuggingFaceFeature(DataFeature):
     column_name: str
     model: str
     params: dict
@@ -136,15 +78,28 @@ def _openai_detector(data: pd.Series, score_threshold: float) -> pd.Series:
     return pd.Series([_get_label(x) for x in pipe(data.fillna("").tolist())], index=data.index)
 
 
-def _lmnli_fever(data: pd.Series, labels: List[str]) -> pd.Series:
+def _map_labels(labels: List[str], scores: List[float], threshold: float) -> str:
+    if len(labels) == 1:
+        if scores[0] > threshold:
+            return labels[0]
+        else:
+            return "not " + labels[0]
+    label = max(zip(labels, scores), key=lambda x: x[1])
+    return label[0] if label[1] > threshold else "unknown"
+
+
+def _lmnli_fever(data: pd.Series, labels: List[str], threshold: Optional[float]) -> pd.Series:
     from transformers import pipeline
+
+    threshold = threshold if threshold is not None else 0.5
 
     classifier = pipeline(
         "zero-shot-classification",
         model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli",
     )
     output = classifier(data.fillna("").tolist(), labels, multi_label=False)
-    return pd.Series(output, index=data.index)
+
+    return pd.Series([_map_labels(o["labels"], o["scores"], threshold) for o in output], index=data.index)
 
 
 def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Series) -> pd.Series:
@@ -152,7 +107,10 @@ def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Se
 
     column_data = data.values.tolist()
     model = evaluate.load("toxicity", model_name, module_type="measurement")
-    scores = model.compute(predictions=column_data, toxic_label=toxic_label)
+    if toxic_label is None:
+        scores = model.compute(predictions=column_data)
+    else:
+        scores = model.compute(predictions=column_data, toxic_label=toxic_label)
     return pd.Series(scores["toxicity"], index=data.index)
 
 
@@ -165,7 +123,7 @@ _models: Dict[str, Tuple[ColumnType, List[str], Callable[..., pd.Series]]] = {
     "openai-community/roberta-base-openai-detector": (ColumnType.Categorical, ["score_threshold"], _openai_detector),
     "MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli": (
         ColumnType.Categorical,
-        ["labels"],
+        ["labels", "threshold"],
         _lmnli_fever,
     ),
     "DaNLP/da-electra-hatespeech-detection": (

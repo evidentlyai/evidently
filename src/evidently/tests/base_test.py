@@ -13,7 +13,6 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import Field
 from evidently.base_metric import BaseResult
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -182,14 +181,6 @@ class Test(WithTestAndMetricDependencies):
         return groups
 
 
-class ValueSource(Enum):
-    USER = "user"
-    CURRENT = "current"
-    REFERENCE = "reference"
-    DUMMY = "dummy"
-    OTHER = "other"
-
-
 class TestValueCondition(ExcludeNoneMixin):
     """
     Class for processing a value conditions - should it be less, greater than, equals and so on.
@@ -210,7 +201,6 @@ class TestValueCondition(ExcludeNoneMixin):
     lte: Optional[NumericApprox] = None
     not_eq: Optional[Numeric] = None
     not_in: Optional[List[Union[Numeric, str, bool]]] = None
-    source: Optional[ValueSource] = Field(None, exclude=True)  # todo: temporary to not fix tests
 
     def has_condition(self) -> bool:
         """
