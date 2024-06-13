@@ -15,6 +15,10 @@ Evidently supports scoring text data using HuggingFace models. Use the general `
 
 # Code examples
 
+You can refer to an end-to-end example with different Descriptors:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_evaluate_llm_with_text_descriptors.ipynb" %}
+
 To import the Descriptor:
 
 ```python
