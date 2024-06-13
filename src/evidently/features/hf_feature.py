@@ -78,7 +78,9 @@ def _openai_detector(data: pd.Series, score_threshold: float) -> pd.Series:
     return pd.Series([_get_label(x) for x in pipe(data.fillna("").tolist())], index=data.index)
 
 
-def _map_labels(labels: List[str], scores: List[float], threshold: float) -> str:
+def _map_labels(labels: List[str], scores: List[float], threshold: float) -> Optional[str]:
+    if len(labels) == 0:
+        return None
     if len(labels) == 1:
         if scores[0] > threshold:
             return labels[0]
@@ -114,6 +116,22 @@ def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Se
     return pd.Series(scores["toxicity"], index=data.index)
 
 
+def _dfp(data: pd.Series, threshold: Optional[float]) -> pd.Series:
+    from transformers import pipeline
+
+    model = pipeline("token-classification", "lakshyakh93/deberta_finetuned_pii")
+    output = model(data.tolist())
+    converted_output = [
+        _map_labels(
+            [x["entity"] for x in entities],
+            [x["score"] for x in entities],
+            threshold,
+        )
+        for entities in output
+    ]
+    return pd.Series(converted_output, index=data.index)
+
+
 def _model_type(model: str) -> ColumnType:
     return _models.get(model, (ColumnType.Unknown, None, None))[0]
 
@@ -135,5 +153,10 @@ _models: Dict[str, Tuple[ColumnType, List[str], Callable[..., pd.Series]]] = {
         ColumnType.Numerical,
         [],
         partial(_toxicity, "facebook/roberta-hate-speech-dynabench-r4-target", "hate"),
+    ),
+    "lakshyakh93/deberta_finetuned_pii": (
+        ColumnType.Categorical,
+        ["threshold"],
+        _dfp,
     ),
 }
