@@ -117,7 +117,7 @@ Here is a preview with `assistant_logs.head()`:
 To be able to save and share results and get a live monitoring dashboard, create a Project in Evidently Cloud. Here's how to set it up:
 
 * **Sign up**. If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup) and your Organization.
-* **Add a Team**. Click on the **Teams** in the left menu. Create a Team, copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Add a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 * **Connect to Evidently Cloud**. Pass your API key to connect. 
 
