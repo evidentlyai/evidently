@@ -105,6 +105,9 @@ class DataDefinition(EnumValueMixin):
             if _check_filter(column, utility_columns, filter_def, features_only)
         ]
 
+    def get_column_names(self, filter_def: ColumnType = None, features_only: bool = False) -> List[str]:
+        return [x.column_name for x in self.get_columns(filter_def, features_only)]
+
     def get_target_column(self) -> Optional[ColumnDefinition]:
         return self.target
 
@@ -504,16 +507,10 @@ def create_column_mapping(data_definition: DataDefinition) -> ColumnMapping:
         prediction=prediction,
         datetime=get_column_name_or_none(data_definition.get_datetime_column()),
         id=get_column_name_or_none(data_definition.get_id_column()),
-        numerical_features=[
-            x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Numerical
-        ],
-        categorical_features=[
-            x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Categorical
-        ],
-        datetime_features=[
-            x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Datetime
-        ],
-        text_features=[x.column_name for x in data_definition.get_columns() if x.column_type == ColumnType.Text],
+        numerical_features=data_definition.get_column_names(ColumnType.Numerical, features_only=True),
+        categorical_features=data_definition.get_column_names(ColumnType.Categorical, features_only=True),
+        datetime_features=data_definition.get_column_names(ColumnType.Datetime, features_only=True),
+        text_features=data_definition.get_column_names(ColumnType.Text, features_only=True),
         target_names=data_definition.classification_labels,
         task=data_definition.task,
         embeddings=data_definition.embeddings,

@@ -150,20 +150,20 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
                     ref_text_df.columns = list(features.keys())
                     ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
 
-        table_columns = columns + [target_name]
+        table_columns = set(columns + [target_name])
         if isinstance(prediction_name, str):
-            table_columns += [prediction_name]
+            table_columns.add(prediction_name)
         if isinstance(prediction_name, list):
-            table_columns += prediction_name
+            table_columns = table_columns.union(set(prediction_name))
         reference = None
         if ref_df is not None:
             reference = StatsByFeature(
-                plot_data=ref_df[table_columns],
+                plot_data=ref_df[list(table_columns)],
                 predictions=ref_predictions,
             )
         return ClassificationQualityByFeatureTableResults(
             current=StatsByFeature(
-                plot_data=curr_df[table_columns],
+                plot_data=curr_df[list(table_columns)],
                 predictions=curr_predictions,
             ),
             reference=reference,
@@ -247,7 +247,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
 
             # Probas plots
             if curr_predictions.prediction_probas is not None:
-                ref_columns = columns + ["prediction_labels", target_name]
+                ref_columns = list(set(columns + ["prediction_labels", target_name]))
                 current_data = pd.concat(
                     [current_data[ref_columns], curr_predictions.prediction_probas],
                     axis=1,
