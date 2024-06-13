@@ -279,7 +279,7 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 | Descriptor | Parameters |
 | - | - |
 | **TextLength()** <ul><li> Measures the length of the text.</li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **OOV()** <ul><li>Calculates the percentage of out-of-vocabulary words based on imported NLTK vocabulary.</li><li> Return a score on a scale: 0 to 100. </li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
+| **OOV()** <ul><li>Calculates the percentage of out-of-vocabulary words based on imported NLTK vocabulary.</li><li> Return a score on a scale: 0 to 100. </li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words: Tuple = ()`</li></ul> |
 | **NonLetterCharacterPercentage()** <ul><li>Calculates the percentage of non-letter characters. </li><li> Return a score on a scale: 0 to 100. </li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
 | **SentenceCount()** <ul><li> Counts the number of sentences in the text. </li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **WordCount()** <ul><li> Counts the number of words in the text.</li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
