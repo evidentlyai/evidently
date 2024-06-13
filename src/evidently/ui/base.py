@@ -52,6 +52,11 @@ from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
 
 
+class BlobMetadata(BaseModel):
+    id: BlobID
+    size: int
+
+
 class SnapshotMetadata(BaseModel):
     id: UUID4
     name: Optional[str] = None
@@ -59,7 +64,7 @@ class SnapshotMetadata(BaseModel):
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
     is_report: bool
-    blob_id: BlobID
+    blob: "BlobMetadata"
 
     _project: "Project" = PrivateAttr(None)
     _dashboard_info: "DashboardInfo" = PrivateAttr(None)
@@ -81,7 +86,7 @@ class SnapshotMetadata(BaseModel):
         return self
 
     @classmethod
-    def from_snapshot(cls, snapshot: Snapshot, blob_id: BlobID) -> "SnapshotMetadata":
+    def from_snapshot(cls, snapshot: Snapshot, blob: "BlobMetadata") -> "SnapshotMetadata":
         return SnapshotMetadata(
             id=snapshot.id,
             name=snapshot.name,
@@ -89,7 +94,7 @@ class SnapshotMetadata(BaseModel):
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             is_report=snapshot.is_report,
-            blob_id=blob_id,
+            blob=blob,
         )
 
     @property
@@ -250,7 +255,7 @@ class MetadataStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
+    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
         raise NotImplementedError
 
     @abstractmethod
@@ -286,16 +291,19 @@ class BlobStorage(ABC):
     def open_blob(self, id: BlobID):
         raise NotImplementedError
 
-    def put_blob(self, path: str, obj):
+    def put_blob(self, blob_id: str, obj):
         raise NotImplementedError
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         raise NotImplementedError
 
-    def put_snapshot(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
+    def put_snapshot(self, project_id: ProjectID, snapshot: Snapshot) -> BlobMetadata:
         id = self.get_snapshot_blob_id(project_id, snapshot)
         self.put_blob(id, json.dumps(snapshot.dict(), cls=NumpyEncoder))
-        return id
+        return self.get_blob_metadata(id)
+
+    def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
+        raise NotImplementedError
 
 
 class DataStorage(ABC):
@@ -733,7 +741,7 @@ class ProjectManager:
     ) -> Snapshot:
         if isinstance(snapshot, SnapshotID):
             snapshot = self.get_snapshot_metadata(user_id, project_id, snapshot)
-        with self.blob.open_blob(snapshot.blob_id) as f:
+        with self.blob.open_blob(snapshot.blob.id) as f:
             return parse_obj_as(Snapshot, json.load(f))
 
     def get_snapshot_metadata(
