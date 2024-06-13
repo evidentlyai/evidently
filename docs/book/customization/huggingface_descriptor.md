@@ -48,6 +48,8 @@ report = Report(metrics=[
 ])
 ```
 
+You can do the same for Test Suites. 
+
 # Sample models
 
 Here are some example models you can call using the  HuggingFaceModel() descriptor.
