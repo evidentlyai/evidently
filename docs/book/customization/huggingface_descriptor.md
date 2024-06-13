@@ -2,9 +2,6 @@
 description: How to use models available on HuggingFace as text Descriptors.
 ---
 
-
-How to use models available on HuggingFace as text Descriptors.
-
 **Pre-requisites**:
 * You know how to generate Reports or Test Suites for text data using Descriptors.
 * You know how to pass custom parameters for Reports or Test Suites.
