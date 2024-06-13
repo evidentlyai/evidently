@@ -704,8 +704,8 @@ class ProjectManager:
             user.id, EntityType.Project, project_id, Permission.PROJECT_SNAPSHOT_ADD
         ):
             raise ProjectNotFound()  # todo: better exception
-        blob_id = self.blob.put_snapshot(project_id, snapshot)
-        self.metadata.add_snapshot(project_id, snapshot, blob_id)
+        blob = self.blob.put_snapshot(project_id, snapshot)
+        self.metadata.add_snapshot(project_id, snapshot, blob)
         self.data.extract_points(project_id, snapshot)
 
     def delete_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID):
