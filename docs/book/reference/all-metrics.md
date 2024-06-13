@@ -258,7 +258,7 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 # Text Evals 
 
-Text Evals only apply to text columns. To compute a Descriptor for a chosen text column, use a `TextEvals` Preset. 
+Text Evals only apply to text columns. To compute a Descriptor for a single text column, use a `TextEvals` Preset. 
 
 You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) for the descriptor, or pick a Test (e.g., `TestColumnValueMin`) to run validations. 
 
@@ -266,31 +266,33 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 
 | Descriptor | Parameters |
 | - | - |
-| **RegExp()** <br><br> Matches text against any specified regular expression. Returns True/False for every input.<br><br> Example use: `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **BeginsWith()** <br><br> Checks if the text begins with a specified combination. Returns True/False for every input.<br><br> Example use: `BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **EndsWith()** <br><br> Checks if the text ends with a specified combination. Returns True/False for every input. <br><br> Example use: `EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **Contains()** <br><br> Checks if the text contains any or all specified items. Returns True/False for every input. <br><br> Example use: `Contains(items=["medical leave"]`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **DoesNotContain()** <br><br> Checks if the text does not contain any or all specified items. Returns True/False for every input. <br><br> Example use: `DoesNotContain(items=["as a large language model"]` | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
-| **IncludesWords()** <br><br> Checks if the text includes any (default) or all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input.  <br><br> Example use: `IncludesWords(words_list=['booking', 'hotel', `flight`]` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
-| **ExcludesWords()** <br><br> Checks if the text excludes all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input. <br><br> Example use: `ExcludesWords(words_list=['buy', 'sell', `bet`]`| **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **RegExp()** <br><br> Matches text against any specified regular expression. Returns True/False for every input.<br><br> Example use:<br> `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **BeginsWith()** <br><br> Checks if the text begins with a specified combination. Returns True/False for every input.<br><br> Example use:<br> `BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **EndsWith()** <br><br> Checks if the text ends with a specified combination. Returns True/False for every input. <br><br> Example use:<br> `EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **Contains()** <br><br> Checks if the text contains any or all specified items. Returns True/False for every input. <br><br> Example use:<br> `Contains(items=["medical leave"]`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **DoesNotContain()** <br><br> Checks if the text does not contain any or all specified items. Returns True/False for every input. <br><br> Example use:<br> `DoesNotContain(items=["as a large language model"]` | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`case_sensitive = True` (available: `False`)</li></ul> |
+| **IncludesWords()** <br><br> Checks if the text includes any (default) or all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input.  <br><br> Example use:<br> `IncludesWords(words_list=['booking', 'hotel', 'flight']` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
+| **ExcludesWords()** <br><br> Checks if the text excludes all specified words. By default, considers inflected and variant forms of the same word. Returns True/False for every input. <br><br> Example use:<br> `ExcludesWords(words_list=['buy', 'sell', 'bet']`| **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` (available: `'any'`)</li><li>`lemmatize = True` (available: `False`)</li></ul> |
 
 ## Descriptors: Text stats
 
 | Descriptor | Parameters |
 | - | - |
-| **TextLength()** <br><br> Measures the length of the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **OOV()** <br><br> Calculates the percentage of out-of-vocabulary words. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
-| **NonLetterCharacterPercentage()** <br><br> Calculates the percentage of non-letter characters. (Scale: 0 to 100) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
-| **SentenceCount()** <br><br> Counts the number of sentences in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **WordCount()** <br><br> Counts the number of words in the text. (Scale: Absolute number) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **TextLength()** <ul><li> Measures the length of the text.</li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **OOV()** <ul><li>Calculates the percentage of out-of-vocabulary words based on imported NLTK vocabulary.</li><li> Return a score on a scale: 0 to 100. </li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words = ()`</li></ul> |
+| **NonLetterCharacterPercentage()** <ul><li>Calculates the percentage of non-letter characters. </li><li> Return a score on a scale: 0 to 100. </li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
+| **SentenceCount()** <ul><li> Counts the number of sentences in the text. </li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **WordCount()** <ul><li> Counts the number of words in the text.</li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Descriptors: Model-based
 
 | Descriptor | Parameters |
 | - | - |
-| **Sentiment()** <br><br> Analyzes the sentiment of the text. (Scale: -1 to 1) | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
-| **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [example](https://docs.evidentlyai.com/get-started/tutorial-llm) in the tutorial.|
-| **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model (requires API key).| See [example](https://docs.evidentlyai.com/get-started/tutorial-llm) in the tutorial.|
+| **Sentiment()** <ul><li>Analyzes the sentiment of the text. </li><li> Return a score on a scale: -1 (negative) to 1 positive). </li></ul>| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **HuggingFaceToxicityModel()** <ul><li> Detects hate speech using [HuggingFace Model](https://huggingface.co/facebook/roberta-hate-speech-dynabench-r4-target). </li><li> Returns predicted probability for the “hate” label. </li><li> Scale: 0 to 1. </li></ul> | **Optional**: <ul><li>`toxic_label="hate"` (default)</li><li> `display_name`</li></ul> |
+| **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
+| **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model as LLM-as-a-judge.| See [docs](../customization/llm_as_a_judge.md) for examples.|
+| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between two columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0 to 0.5: unrealted or different, 1: identical). </li></ul> Example use:<br>`ColumnSummaryMetric(column_name=SemanticSimilarity().on(["response", "new_response"]))`. | **Required:** <ul><li>two column names</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Text-Specific Metrics
 
@@ -298,7 +300,7 @@ The following metrics only apply to text columns.
 
 | Metric | Parameters |
 |---|---|
-| **TextDescriptorsDistribution()** <br><br> Column-level.<br><br>Calculates and visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
+| **TextDescriptorsDistribution()** <br><br> Column-level.<br><br>Visualizes distributions for auto-generated text descriptors (text length, the share of out-of-vocabulary words, etc.) | **Required:**<ul><li>`column_name` </li></ul> |
 | **TextDescriptorsCorrelationMetric()** <br><br> Column-level.<br><br>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.| **Required:**<ul><li>`column_name` </li></ul> |
 | **TextDescriptorsDriftMetric()** <br><br> Column-level. <br><br>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. | **Required:**<ul><li>`column_name`</li></ul><br> **Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
 
