@@ -9,9 +9,9 @@ description: How to use models available on HuggingFace as text Descriptors.
 
 You can use an external machine learning model to score text data. This method lets you evaluate texts based on any criteria from the source model, e.g. classify it into a set number of labels.
 
-The model must return a numerical score or a category for each text in a column. You will then be able to view scores, analyze their distribution or run conditional tests through the usual Descriptor interface.
+The model you use must return a numerical score or a category for each text in a column. You will then be able to view scores, analyze their distribution or run conditional tests through the usual Descriptor interface.
 
-Evidently supports scoring text data using HuggingFace models. Use the general `HuggingFaceModel()` descriptor to select models on your own or simplified interfaces for specific models like `HuggingFaceToxicityModel()`.
+Evidently supports scoring text data using HuggingFace models. Use the general `HuggingFaceModel()` descriptor to select models on your own or simplified interfaces for pre-selected models like `HuggingFaceToxicityModel()`.
 
 # Code examples
 
