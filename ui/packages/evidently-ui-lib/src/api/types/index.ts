@@ -3,9 +3,10 @@
 import type { components, paths } from '~/api/types/endpoints'
 
 // TODO: fix this `WidgetInfo` import
+// use Schemas['BaseWidgetInfo'] instead
 import { WidgetInfo } from '~/api'
 
-import { TYPE_SATISFIED, Expect } from '~/api/types/utils'
+import { TYPE_SATISFIED, Expect, StrictID } from '~/api/types/utils'
 
 export type BackendPaths = paths
 ///////////////////////////////
@@ -33,39 +34,43 @@ export type DashboardPanel =
   | DashboardPanelTestSuite
   | DashboardPanelTestSuiteCounter
 
-export type DashboardPanelPlot = Omit<Schemas['DashboardPanelPlot'], 'type'> & {
-  type: 'evidently.ui.dashboards.reports.DashboardPanelPlot'
-}
-
-export type DashboardPanelCounter = Omit<Schemas['DashboardPanelCounter'], 'type'> & {
-  type: 'evidently.ui.dashboards.reports.DashboardPanelCounter'
-}
-
-export type DashboardPanelDistribution = Omit<Schemas['DashboardPanelDistribution'], 'type'> & {
-  type: 'evidently.ui.dashboards.reports.DashboardPanelDistribution'
-}
-
-export type DashboardPanelTestSuite = Omit<
-  Schemas['DashboardPanelTestSuite'],
-  'type' | 'filter'
-> & {
-  type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuite'
-  filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
-    // this should always be true
-    include_test_suites: true
+export type DashboardPanelPlot = StrictID<
+  Omit<Schemas['DashboardPanelPlot'], 'type'> & {
+    type: 'evidently.ui.dashboards.reports.DashboardPanelPlot'
   }
-}
+>
 
-export type DashboardPanelTestSuiteCounter = Omit<
-  Schemas['DashboardPanelTestSuiteCounter'],
-  'type' | 'filter'
-> & {
-  type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuiteCounter'
-  filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
-    // this should always be true
-    include_test_suites: true
+export type DashboardPanelCounter = StrictID<
+  Omit<Schemas['DashboardPanelCounter'], 'type'> & {
+    type: 'evidently.ui.dashboards.reports.DashboardPanelCounter'
   }
-}
+>
+
+export type DashboardPanelDistribution = StrictID<
+  Omit<Schemas['DashboardPanelDistribution'], 'type'> & {
+    type: 'evidently.ui.dashboards.reports.DashboardPanelDistribution'
+  }
+>
+
+export type DashboardPanelTestSuite = StrictID<
+  Omit<Schemas['DashboardPanelTestSuite'], 'type' | 'filter'> & {
+    type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuite'
+    filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
+      // this should always be true
+      include_test_suites: true
+    }
+  }
+>
+
+export type DashboardPanelTestSuiteCounter = StrictID<
+  Omit<Schemas['DashboardPanelTestSuiteCounter'], 'type' | 'filter'> & {
+    type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuiteCounter'
+    filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
+      // this should always be true
+      include_test_suites: true
+    }
+  }
+>
 
 export type __EXTENDED_DASHBOARD_PANELS_TESTS_PASSED =
   | Expect<TYPE_SATISFIED<DashboardPanel, Schemas['DashboardPanel']>>
