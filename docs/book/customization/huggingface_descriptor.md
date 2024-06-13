@@ -13,7 +13,7 @@ The model you use must return a numerical score or a category for each text in a
 
 Evidently supports scoring text data using HuggingFace models. Use the general `HuggingFaceModel()` descriptor to select models on your own or simplified interfaces for pre-selected models like `HuggingFaceToxicityModel()`.
 
-# Code examples
+# Code example
 
 You can refer to an end-to-end example with different Descriptors:
 
