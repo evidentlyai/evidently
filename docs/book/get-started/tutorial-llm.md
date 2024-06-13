@@ -175,7 +175,7 @@ We call these generated statistics `descriptors`. They can be numerical or categ
 # 5. Export results
 
 {% hint style="info" %}
-**This step is optional**. You can proceed with exporting or sending data.
+**This is optional**. You can proceed without exporting or sending data elsewhere.
 {% endhint %}
 
 You can export and save evaluation results beyond viewing them in Python. Here are some options.
