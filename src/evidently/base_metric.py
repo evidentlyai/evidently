@@ -16,6 +16,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+import typing_inspect
 
 from evidently._pydantic_compat import ModelMetaclass
 from evidently._pydantic_compat import PrivateAttr
@@ -217,7 +218,7 @@ class FieldsDescriptor:
 
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
     def result_type(cls) -> Type[MetricResult]:
-        return cls.__orig_bases__[0].__args__[0]  # type: ignore[attr-defined]
+        return typing_inspect.get_args(next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b)))[0]
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
