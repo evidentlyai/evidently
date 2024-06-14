@@ -119,6 +119,9 @@ def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Se
 def _dfp(data: pd.Series, threshold: Optional[float]) -> pd.Series:
     from transformers import pipeline
 
+    if threshold is None:
+        threshold = 0.5
+
     model = pipeline("token-classification", "lakshyakh93/deberta_finetuned_pii")
     output = model(data.tolist())
     converted_output = [
