@@ -284,6 +284,9 @@ class MetadataStorage(ABC):
     def reload_snapshots(self, project_id: ProjectID):
         raise NotImplementedError
 
+    def add_dataset(self, dataset):
+        raise NotImplementedError
+
 
 class BlobStorage(ABC):
     @abstractmethod
