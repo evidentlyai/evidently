@@ -48,7 +48,7 @@ def test_panel_value_methic_hash_filter():
 
     metric1 = MyMetric(arg="1")
     metric2 = MyMetric(arg="2")
-    pv = PanelValue(field_path="value", metric_hash=metric1.get_object_hash())
+    pv = PanelValue(field_path="value", metric_fingerprint=metric1.get_fingerprint())
 
     assert pv.metric_matched(metric1)
     assert not pv.metric_matched(metric2)

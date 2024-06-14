@@ -11,6 +11,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.utils import get_data_for_cat_cat_plot
 from evidently.calculations.utils import get_data_for_num_num_plot
 from evidently.calculations.utils import prepare_box_data
@@ -63,7 +64,7 @@ class ColumnInteractionPlotResults(MetricResult):
     prefix: Optional[str] = None
 
 
-class ColumnInteractionPlot(Metric[ColumnInteractionPlotResults]):
+class ColumnInteractionPlot(UsesRawDataMixin, Metric[ColumnInteractionPlotResults]):
     x_column: str
     y_column: str
 

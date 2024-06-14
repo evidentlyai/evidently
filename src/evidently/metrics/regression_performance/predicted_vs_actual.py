@@ -7,6 +7,7 @@ import numpy as np
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.core import IncludeTags
 from evidently.metric_results import ContourData
 from evidently.metric_results import raw_agg_properties
@@ -48,7 +49,7 @@ class RegressionPredictedVsActualScatterResults(MetricResult):
     reference_raw, reference_agg = raw_agg_properties("reference", PredActualScatter, AggPredActualScatter, True)
 
 
-class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatterResults]):
+class RegressionPredictedVsActualScatter(UsesRawDataMixin, Metric[RegressionPredictedVsActualScatterResults]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

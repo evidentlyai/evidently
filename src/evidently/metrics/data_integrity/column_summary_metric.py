@@ -14,6 +14,7 @@ from evidently.base_metric import ColumnMetricResult
 from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.data_quality import MAX_CATEGORIES
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
@@ -322,7 +323,7 @@ class ColumnSummaryResult(ColumnMetricResult):
     plot_data: DataQualityPlot
 
 
-class ColumnSummaryMetric(ColumnMetric[ColumnSummaryResult]):
+class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
     _generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
     def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None):

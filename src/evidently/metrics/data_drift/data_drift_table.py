@@ -6,6 +6,7 @@ import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
@@ -51,7 +52,7 @@ class DataDriftTableResults(MetricResult):
     reference_fi: Optional[Dict[str, float]] = None
 
 
-class DataDriftTable(WithDriftOptions[DataDriftTableResults]):
+class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
     columns: Optional[List[str]]
     feature_importance: Optional[bool]
     _feature_importance_metric: Optional[FeatureImportanceMetric]

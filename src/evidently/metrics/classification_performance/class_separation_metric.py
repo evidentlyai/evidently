@@ -7,6 +7,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.core import IncludeTags
 from evidently.metric_results import ColumnAggScatter
@@ -70,7 +71,7 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
     return res
 
 
-class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
+class ClassificationClassSeparationPlot(UsesRawDataMixin, Metric[ClassificationClassSeparationPlotResults]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

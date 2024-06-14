@@ -10,6 +10,7 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
 from evidently.base_metric import DataDefinition
 from evidently.base_metric import InputData
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import ColumnType
 from evidently.calculations.data_drift import DistributionIncluded
@@ -246,7 +247,7 @@ def get_one_column_drift(
     return metrics
 
 
-class ColumnDriftMetric(ColumnMetric[ColumnDataDriftMetrics]):
+class ColumnDriftMetric(UsesRawDataMixin, ColumnMetric[ColumnDataDriftMetrics]):
     """Calculate drift metric for a column"""
 
     stattest: Optional[PossibleStatTestType]

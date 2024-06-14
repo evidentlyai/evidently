@@ -16,6 +16,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+import typing_inspect
 
 from evidently._pydantic_compat import ModelMetaclass
 from evidently._pydantic_compat import PrivateAttr
@@ -28,9 +29,11 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import FieldPath
+from evidently.pydantic_utils import FingerprintPart
 from evidently.pydantic_utils import FrozenBaseMeta
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
+from evidently.pydantic_utils import get_value_fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
@@ -215,13 +218,12 @@ class FieldsDescriptor:
 
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
     def result_type(cls) -> Type[MetricResult]:
-        return cls.__orig_bases__[0].__args__[0]  # type: ignore[attr-defined]
+        return typing_inspect.get_args(next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b)))[0]
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
     _context: Optional["Context"] = None
 
-    # TODO: if we want metric-specific options
     options: Options
 
     fields: ClassVar[FieldsDescriptor] = FieldsDescriptor()
@@ -290,6 +292,21 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
         if self._context is not None:
             options = self._context.options.override(options)
         return options
+
+    def get_field_fingerprint(self, field: str) -> FingerprintPart:
+        if field == "options":
+            return self.get_options_fingerprint()
+        return super().get_field_fingerprint(field)
+
+    def get_options_fingerprint(self) -> FingerprintPart:
+        return None
+
+
+class UsesRawDataMixin:
+    options: Options
+
+    def get_options_fingerprint(self) -> FingerprintPart:
+        return get_value_fingerprint(self.options.render_options.raw_data)
 
 
 class ColumnMetricResult(MetricResult):

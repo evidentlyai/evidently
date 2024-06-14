@@ -10,6 +10,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.core import IncludeTags
 from evidently.metric_results import ContourData
 from evidently.metric_results import raw_agg_properties
@@ -53,7 +54,7 @@ class RegressionTopErrorMetricResults(MetricResult):
     reference_raw, reference_agg = raw_agg_properties("reference", TopData, AggTopData, True)
 
 
-class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
+class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetricResults]):
     def calculate(self, data: InputData) -> RegressionTopErrorMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

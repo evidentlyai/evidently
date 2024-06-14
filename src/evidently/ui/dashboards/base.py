@@ -1,6 +1,7 @@
 import datetime
 import traceback
 import uuid
+import warnings
 from functools import wraps
 from typing import TYPE_CHECKING
 from typing import Any
@@ -51,9 +52,31 @@ class ReportFilter(BaseModel):
 class PanelValue(BaseModel):
     field_path: Union[str, FieldPath]
     metric_id: Optional[str] = None
-    metric_hash: Optional[str] = None
+    metric_fingerprint: Optional[str] = None
     metric_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
     legend: Optional[str] = None
+
+    def __init__(
+        self,
+        *,
+        field_path: Union[str, FieldPath],
+        metric_id: Optional[str] = None,
+        metric_fingerprint: Optional[str] = None,
+        metric_args: Dict[str, Union[EvidentlyBaseModel, Any]] = None,
+        legend: Optional[str] = None,
+        metric_hash: Optional[str] = None,
+    ):
+        # this __init__ is needed to support old-style metric_hash arg
+        if metric_hash is not None:
+            warnings.warn("metric_hash arg is deperecated, please use metric_fingerprint")
+            metric_fingerprint = metric_hash
+        super().__init__(
+            field_path=field_path,
+            metric_id=metric_id,
+            metric_fingerprint=metric_fingerprint,
+            metric_args=metric_args or {},
+            legend=legend,
+        )
 
     @property
     def field_path_str(self):
@@ -68,8 +91,8 @@ class PanelValue(BaseModel):
         return value
 
     def metric_matched(self, metric: Metric) -> bool:
-        if self.metric_hash is not None:
-            return metric.get_object_hash() == self.metric_hash
+        if self.metric_fingerprint is not None:
+            return metric.get_fingerprint() == self.metric_fingerprint
         if self.metric_id is not None and self.metric_id != metric.get_id():
             return False
         for field, value in self.metric_args.items():
