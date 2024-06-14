@@ -10,6 +10,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
 from evidently.core import IncludeTags
+from evidently.metric_results import Distribution
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -25,18 +26,40 @@ from evidently.renderers.html_widgets import widget_tabs
 class ValueListStat(MetricResult):
     class Config:
         field_tags = {
-            "values_in_list": {IncludeTags.Extra},
-            "values_not_in_list": {IncludeTags.Extra},
+            "values_in_list_dist": {IncludeTags.Extra},
+            "values_not_in_list_dist": {IncludeTags.Extra},
             "rows_count": {IncludeTags.Extra},
         }
+
+    def __init__(self, **data: Any):
+        if "values_in_list" in data:
+            values_in_list: List[Tuple[Any, int]] = data.pop("values_in_list")
+            data["values_in_list_dist"] = Distribution(
+                x=[v[0] for v in values_in_list], y=[v[1] for v in values_in_list]
+            )
+        if "values_not_in_list" in data:
+            values_not_in_list: List[Tuple[Any, int]] = data.pop("values_not_in_list")
+            data["values_not_in_list_dist"] = Distribution(
+                x=[v[0] for v in values_not_in_list], y=[v[1] for v in values_not_in_list]
+            )
+
+        super().__init__(**data)
 
     number_in_list: int
     number_not_in_list: int
     share_in_list: float
     share_not_in_list: float
-    values_in_list: List[Tuple[Any, int]]
-    values_not_in_list: List[Tuple[Any, int]]
     rows_count: int
+    values_in_list_dist: Distribution
+    values_not_in_list_dist: Distribution
+
+    @property
+    def values_in_list(self) -> List[Tuple[Any, int]]:
+        return [(x, y) for x, y in zip(self.values_in_list_dist.x, self.values_in_list_dist.y)]
+
+    @property
+    def values_not_in_list(self) -> List[Tuple[Any, int]]:
+        return [(x, y) for x, y in zip(self.values_not_in_list_dist.x, self.values_not_in_list_dist.y)]
 
 
 class ColumnValueListMetricResult(MetricResult):
