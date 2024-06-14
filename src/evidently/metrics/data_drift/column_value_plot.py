@@ -10,6 +10,7 @@ from plotly import graph_objs as go
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.core import IncludeTags
 from evidently.metric_results import ColumnAggScatter
 from evidently.metric_results import ColumnScatter
@@ -46,7 +47,7 @@ class ColumnValuePlotResults(MetricResult):
     prefix: Optional[str] = None
 
 
-class ColumnValuePlot(Metric[ColumnValuePlotResults]):
+class ColumnValuePlot(UsesRawDataMixin, Metric[ColumnValuePlotResults]):
     column_name: str
 
     def __init__(self, column_name: str, options: AnyOptions = None):

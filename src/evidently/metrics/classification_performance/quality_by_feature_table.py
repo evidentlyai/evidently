@@ -12,6 +12,7 @@ from plotly.subplots import make_subplots
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
@@ -47,7 +48,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
     columns: List[str]
 
 
-class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults]):
+class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[ClassificationQualityByFeatureTableResults]):
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
     _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]

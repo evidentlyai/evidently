@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import Optional
 from typing import Union
 
 import pytest
@@ -8,6 +9,7 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.core import get_all_fields_tags
+from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
 
@@ -288,3 +290,44 @@ def test_get_field_tags_no_overwrite():
     get_all_fields_tags(B)
     get_all_fields_tags(C)
     assert A.fields.get_field_tags("f") == {IncludeTags.Current}
+
+
+def test_fingerprint_add_new_default_field():
+    class A(EvidentlyBaseModel):
+        field1: str
+
+    f1 = A(field1="123").get_fingerprint()
+
+    class A(EvidentlyBaseModel):
+        field1: str
+        field2: str = "321"
+
+    f2 = A(field1="123").get_fingerprint()
+
+    assert f2 == f1
+    assert A(field1="123", field2="123").get_fingerprint() != f1
+
+
+def test_fingerprint_reorder_fields():
+    class A(EvidentlyBaseModel):
+        field1: str
+        field2: str
+
+    f1 = A(field1="123", field2="321").get_fingerprint()
+
+    class A(EvidentlyBaseModel):
+        field2: str
+        field1: str
+
+    f2 = A(field1="123", field2="321").get_fingerprint()
+
+    assert f2 == f1
+    assert A(field1="123", field2="123").get_fingerprint() != f1
+
+
+def test_fingerprint_default_collision():
+    class A(EvidentlyBaseModel):
+        field1: Optional[str] = None
+        field2: Optional[str] = None
+
+    assert A(field1="a").get_fingerprint() != A(field2="a").get_fingerprint()
