@@ -117,7 +117,7 @@ Here is a preview with `assistant_logs.head()`:
 To be able to save and share results and get a live monitoring dashboard, create a Project in Evidently Cloud. Here's how to set it up:
 
 * **Sign up**. If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup) and your Organization.
-* **Add a Team**. Click on the **Teams** in the left menu. Create a Team, copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Add a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 * **Connect to Evidently Cloud**. Pass your API key to connect. 
 
@@ -175,7 +175,7 @@ We call these generated statistics `descriptors`. They can be numerical or categ
 # 5. Export results
 
 {% hint style="info" %}
-**This step is optional**. You can proceed with exporting or sending data.
+**This is optional**. You can proceed without exporting or sending data elsewhere.
 {% endhint %}
 
 You can export and save evaluation results beyond viewing them in Python. Here are some options.
@@ -258,7 +258,7 @@ Here is an example result for `IncludesWords(words_list=['salary'])` descriptor.
 
 You can also use any pre-trained machine learning model to score your texts. Evidently has:
 * In-built model-based descriptors like `Sentiment`.
-* Wrappers to call external Python functions or models published on HuggingFace (`HuggingFaceModel` descriptor).
+* Wrappers to call external Python functions or models published on HuggingFace (`HuggingFaceModel`).
 
 Let's evaluate the responses for Sentiment (in-built model, scores from - 1 to 1) and Toxicity (using [external HuggingFace classifier model](https://huggingface.co/spaces/evaluate-measurement/toxicity) that returns the score between 0 to 1 for the "toxic" class). 
 
@@ -278,6 +278,11 @@ text_evals_report
 This code downloads the Hugging Face model to score your data locally. Example result with the distribution of toxicity scores:
 
 ![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png)
+
+{% hint style="info" %}
+**Choosing other models**. You can choose other models, e.g. to score texts by topic or emotion. See [docs](../customization/llm_as_a_judge.md)  
+{% endhint %}
+
 
 ## LLM as a judge
 
@@ -328,6 +333,10 @@ text_evals_report = Report(metrics=[
 text_evals_report.run(reference_data=None, current_data=assistant_logs[:10], column_mapping=column_mapping)
 text_evals_report
 ```
+
+{% hint style="info" %}
+**How to create your own judge**. You can create your own prompts, and optionally pass the context for scoring alongside the response. See [docs](../customization/huggingface_descriptor.md).  
+{% endhint %}
 
 ## Metadata columns
 
