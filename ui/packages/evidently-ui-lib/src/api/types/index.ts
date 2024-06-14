@@ -18,7 +18,10 @@ export type ProjectModel = Schemas['Project']
 export type ReportModel = Schemas['ReportModel']
 export type TestSuiteModel = Schemas['TestSuiteModel']
 
-export type DashboardInfoModel = Schemas['DashboardInfoModel'] & { widgets: WidgetInfo[] }
+// TODO: fix this `WidgetInfo`
+export type DashboardInfoModel = Omit<Schemas['DashboardInfoModel'], 'widgets'> & {
+  widgets: WidgetInfo[]
+}
 export type VersionModel = Schemas['Version']
 export type MetadataModel = ReportModel['metadata']
 
