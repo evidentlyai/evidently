@@ -38,7 +38,6 @@ class MetricModel(BaseModel):
 class ReportModel(BaseModel):
     id: uuid.UUID
     timestamp: datetime.datetime
-    metrics: List[MetricModel]
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
 
@@ -47,7 +46,6 @@ class ReportModel(BaseModel):
         return cls(
             id=report.id,
             timestamp=report.timestamp,
-            metrics=[MetricModel.from_metric(m) for m in report._first_level_metrics],
             metadata=report.metadata,
             tags=report.tags,
         )
@@ -57,7 +55,6 @@ class ReportModel(BaseModel):
         return cls(
             id=snapshot.id,
             timestamp=snapshot.timestamp,
-            metrics=[],
             metadata=snapshot.metadata,
             tags=snapshot.tags,
         )
