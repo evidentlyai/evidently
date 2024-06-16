@@ -14,7 +14,7 @@ EVIDENTLY_APPLICATION_NAME = "Evidently UI"
 async def version() -> Version:
     return Version(
         application=EVIDENTLY_APPLICATION_NAME,
-        version="",
+        version=evidently.__version__,
         commit=get_git_revision_short_hash(os.path.dirname(evidently.__file__)) or "-",
     )
 
