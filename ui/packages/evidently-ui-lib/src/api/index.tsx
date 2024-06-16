@@ -86,7 +86,7 @@ export interface AlertStats {
 
 export interface MetricAlertParams {
   value: string | number
-  state?: 'info' | 'success' | 'warning' | 'error'
+  state: 'info' | 'success' | 'warning' | 'error'
   text: string
   longText: string
 }
