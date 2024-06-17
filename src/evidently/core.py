@@ -85,7 +85,7 @@ def dataframe_validator(value):
 #     return pd.Index(value)
 
 
-@pydantic_type_validator(np.float_)
+@pydantic_type_validator(getattr(np, "float_", np.float64))
 def np_inf_valudator(value):
     return np.float(value)
 
