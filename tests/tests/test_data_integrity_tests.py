@@ -439,6 +439,9 @@ def test_data_integrity_test_columns_type() -> None:
     assert suite.json()
 
 
+numpy_bool_type_name = np.bool_.__name__
+
+
 def test_data_integrity_test_columns_type_to_json() -> None:
     current_dataset = pd.DataFrame({"numerical_feature": [1, 2, 3], "my_target": [True, False, True]})
     suite = TestSuite(tests=[TestColumnsType()])
@@ -456,7 +459,11 @@ def test_data_integrity_test_columns_type_to_json() -> None:
         "parameters": {
             "columns": [
                 {"actual_type": "int64", "column_name": "numerical_feature", "expected_type": "int64"},
-                {"actual_type": "bool_", "column_name": "my_target", "expected_type": "bool_"},
+                {
+                    "actual_type": numpy_bool_type_name,
+                    "column_name": "my_target",
+                    "expected_type": numpy_bool_type_name,
+                },
             ]
         },
         "status": "SUCCESS",
