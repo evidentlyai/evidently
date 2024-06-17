@@ -37,8 +37,8 @@ from tests.conftest import smart_assert_equal
             ),
         ),
         (
-            pd.DataFrame({"col": [1, 2, np.NAN, 3, -3.2]}),
-            pd.DataFrame({"col": [-1.5, 2, np.NAN, 3, 20]}),
+            pd.DataFrame({"col": [1, 2, np.nan, 3, -3.2]}),
+            pd.DataFrame({"col": [-1.5, 2, np.nan, 3, 20]}),
             ColumnValueRangeMetric(column_name="col"),
             ColumnValueRangeMetricResult(
                 column_name="col",
@@ -147,7 +147,7 @@ def test_data_quality_values_in_range_metric_success(
         ),
         (
             pd.DataFrame({"feature": [1, 2, 3, 4, 5, 6]}),
-            pd.DataFrame({"feature": [np.NAN, pd.NaT, pd.NA, np.NAN, pd.NaT, pd.NA]}),
+            pd.DataFrame({"feature": [np.nan, pd.NaT, pd.NA, np.nan, pd.NaT, pd.NA]}),
             ColumnValueRangeMetric(column_name="feature", right=0, left=10),
         ),
     ),
