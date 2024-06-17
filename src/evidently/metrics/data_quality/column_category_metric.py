@@ -36,7 +36,7 @@ class CountOfValues(MetricResult):
 
 class ColumnCategoryMetricResult(MetricResult):
     class Config:
-        pd_exclude_fields = {"counts_of_values"}
+        pd_exclude_fields = {"counts"}
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
