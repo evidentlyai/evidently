@@ -10,7 +10,6 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
 from evidently.core import IncludeTags
-from evidently.metric_results import Distribution
 from evidently.metric_results import DistributionIncluded
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -35,12 +34,12 @@ class ValueListStat(MetricResult):
     def __init__(self, **data: Any):
         if "values_in_list" in data:
             values_in_list: List[Tuple[Any, int]] = data.pop("values_in_list")
-            data["values_in_list_dist"] = Distribution(
+            data["values_in_list_dist"] = DistributionIncluded(
                 x=[v[0] for v in values_in_list], y=[v[1] for v in values_in_list]
             )
         if "values_not_in_list" in data:
             values_not_in_list: List[Tuple[Any, int]] = data.pop("values_not_in_list")
-            data["values_not_in_list_dist"] = Distribution(
+            data["values_not_in_list_dist"] = DistributionIncluded(
                 x=[v[0] for v in values_not_in_list], y=[v[1] for v in values_not_in_list]
             )
 
