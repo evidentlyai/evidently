@@ -36,7 +36,7 @@ from evidently.report import Report
             ),
         ),
         (
-            pd.DataFrame({"category_feature": [np.NaN, np.NaN, np.NaN]}),
+            pd.DataFrame({"category_feature": [np.nan, np.nan, np.nan]}),
             None,
             ColumnValueListMetric(column_name="category_feature", values=["test"]),
             ColumnValueListMetricResult(
@@ -55,7 +55,7 @@ from evidently.report import Report
             ),
         ),
         (
-            pd.DataFrame({"category_feature": [1, np.NaN, 1, 2]}),
+            pd.DataFrame({"category_feature": [1, np.nan, 1, 2]}),
             None,
             ColumnValueListMetric(column_name="category_feature", values=[1, 2, 3]),
             ColumnValueListMetricResult(
@@ -182,7 +182,7 @@ def test_data_quality_value_list_metric_success(
         ),
         (
             pd.DataFrame({"feature": [1, 2, 3]}),
-            pd.DataFrame({"feature": [np.NaN]}),
+            pd.DataFrame({"feature": [np.nan]}),
             ColumnValueListMetric(column_name="feature", values=[]),
             "Values list should not be empty.",
         ),
