@@ -11,6 +11,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.data_quality import get_rows_count
 from evidently.core import IncludeTags
 from evidently.metric_results import Distribution
+from evidently.metric_results import DistributionIncluded
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -50,8 +51,8 @@ class ValueListStat(MetricResult):
     share_in_list: float
     share_not_in_list: float
     rows_count: int
-    values_in_list_dist: Distribution
-    values_not_in_list_dist: Distribution
+    values_in_list_dist: DistributionIncluded
+    values_not_in_list_dist: DistributionIncluded
 
     @property
     def values_in_list(self) -> List[Tuple[Any, int]]:
