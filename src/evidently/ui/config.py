@@ -77,8 +77,6 @@ class ConfigContext(ComponentContext):
 
 
 class Config(BaseModel):
-    security: SecurityComponent
-    service: ServiceComponent
     additional_components: Dict[str, Component] = {}
 
     _components: List[Component] = PrivateAttr(default_factory=list)
@@ -97,6 +95,11 @@ class Config(BaseModel):
         self._ctx = ctx
         yield ctx
         del self._ctx
+
+
+class AppConfig(Config):
+    security: SecurityComponent
+    service: ServiceComponent
 
 
 TConfig = TypeVar("TConfig", bound=Config)
@@ -125,6 +128,15 @@ def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
 
     # todo: we will get validation error if not all components configured, but we can wrap it more nicely
     return config_type(additional_components=components, **named_components)
+
+
+def load_config_from_file(cls: Type[TConfig], path: str, envvar_prefix: str = "EVIDENTLY") -> TConfig:
+    dc = dynaconf.Dynaconf(
+        envvar_prefix=envvar_prefix,
+    )
+    dc.configure(settings_module=path)
+    config = load_config(cls, dc)
+    return config
 
 
 settings = dynaconf.Dynaconf(

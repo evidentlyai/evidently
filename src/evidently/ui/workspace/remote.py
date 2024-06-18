@@ -183,7 +183,7 @@ class NoopBlobStorage(BlobStorage):
         pass
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
-        pass
+        return ""
 
     def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
         return BlobMetadata(id=blob_id, size=0)

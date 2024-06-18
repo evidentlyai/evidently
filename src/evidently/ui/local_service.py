@@ -12,7 +12,7 @@ from evidently.ui.components.security import SecurityComponent
 from evidently.ui.components.storage import LocalStorageComponent
 from evidently.ui.components.storage import StorageComponent
 from evidently.ui.components.telemetry import TelemetryComponent
-from evidently.ui.config import Config
+from evidently.ui.config import AppConfig
 from evidently.ui.errors import EvidentlyServiceError
 
 
@@ -36,7 +36,7 @@ class LocalServiceComponent(ServiceComponent):
         builder.kwargs["debug"] = self.debug
 
 
-class LocalConfig(Config):
+class LocalConfig(AppConfig):
     security: SecurityComponent = NoSecurityComponent()
     service: ServiceComponent = LocalServiceComponent()
     storage: StorageComponent = LocalStorageComponent()
