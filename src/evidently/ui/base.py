@@ -112,6 +112,7 @@ class SnapshotMetadata(BaseModel):
 
 
 class EntityType(Enum):
+    Dataset = "dataset"
     Project = "project"
     Team = "team"
     Org = "org"
@@ -392,6 +393,9 @@ class Permission(Enum):
     PROJECT_SNAPSHOT_ADD = "project_snapshot_add"
     PROJECT_SNAPSHOT_DELETE = "project_snapshot_delete"
 
+    DATASET_READ = "datasets_read"
+    DATASET_WRITE = "datasets_write"
+
 
 class Role(BaseModel):
     id: RoleID
@@ -417,6 +421,8 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
+        Permission.DATASET_READ,
+        Permission.DATASET_WRITE,
     },
     (DefaultRole.EDITOR, EntityType.Team): {
         Permission.TEAM_READ,
@@ -425,16 +431,35 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
+        Permission.DATASET_READ,
+        Permission.DATASET_WRITE,
     },
     (DefaultRole.EDITOR, EntityType.Project): {
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
     },
-    (DefaultRole.VIEWER, EntityType.Org): {Permission.ORG_READ},
-    (DefaultRole.VIEWER, EntityType.Team): {Permission.TEAM_READ, Permission.PROJECT_READ},
-    (DefaultRole.VIEWER, EntityType.Project): {Permission.PROJECT_READ},
+    (DefaultRole.EDITOR, EntityType.Dataset): {
+        Permission.DATASET_READ,
+        Permission.DATASET_WRITE,
+    },
+    (DefaultRole.VIEWER, EntityType.Org): {
+        Permission.ORG_READ,
+    },
+    (DefaultRole.VIEWER, EntityType.Team): {
+        Permission.TEAM_READ,
+        Permission.PROJECT_READ,
+        Permission.DATASET_READ,
+    },
+    (DefaultRole.VIEWER, EntityType.Project): {
+        Permission.PROJECT_READ,
+        Permission.DATASET_READ,
+    },
+    (DefaultRole.VIEWER, EntityType.Dataset): {
+        Permission.DATASET_READ,
+    },
 }
+
 
 ENTITY_READ_PERMISSION = {
     EntityType.Org: Permission.ORG_READ,
