@@ -20,7 +20,7 @@ from tests.multitest.datasets import dataset_fixtures
 OutcomeKeyType = Union[str, DatasetTags]
 OutcomeKey = Tuple[OutcomeKeyType, ...]
 
-SUGGEST_FINGERPRINT = False
+REFRESH_FINGERPRINT_VALUES = False
 _code_cache: Dict[str, List[str]] = {}
 
 if hasattr(dataclasses, "KW_ONLY"):
@@ -50,7 +50,7 @@ class TestMetric:
     # additional_check: Optional[Callable[[Report], None]] = None
     # """Additional callable to call on report"""
 
-    if SUGGEST_FINGERPRINT:
+    if REFRESH_FINGERPRINT_VALUES:
 
         def __post_init__(self):
             import inspect

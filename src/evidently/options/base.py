@@ -34,7 +34,10 @@ class Options(BaseModel):
 
     def get(self, option_type: Type[TypeParam]) -> TypeParam:
         if option_type in _option_cls_mapping:
-            return getattr(self, _option_cls_mapping[option_type])
+            res = getattr(self, _option_cls_mapping[option_type])
+            if res is None:
+                return option_type()
+            return res
         if option_type in self.custom:
             return self.custom[option_type]  # type: ignore[return-value]
         return option_type()

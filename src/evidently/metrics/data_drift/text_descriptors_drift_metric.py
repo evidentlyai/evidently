@@ -7,6 +7,7 @@ import pandas as pd
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
@@ -49,7 +50,7 @@ class TextDescriptorsDriftMetricResults(MetricResult):
     dataset_columns: DatasetColumns
 
 
-class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
+class TextDescriptorsDriftMetric(UsesRawDataMixin, Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
     stattest: Optional[PossibleStatTestType] = None
     stattest_threshold: Optional[float] = None

@@ -181,12 +181,12 @@ class Report(ReportBase):
         for metric in self._first_level_metrics:
             renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
             metric_id = metric.get_id()
-            metric_hash = metric.get_object_hash()
+            metric_fingerprint = metric.get_fingerprint()
             if group is not None and metric_id != group:
                 continue
             df = renderer.render_pandas(metric)
             df["metric_id"] = metric_id
-            df["metric_hash"] = metric_hash
+            df["metric_fingerprint"] = metric_fingerprint
             metrics[metric_id].append(df)
 
         result = {cls: pd.concat(val) for cls, val in metrics.items()}

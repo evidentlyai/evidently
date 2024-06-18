@@ -19,7 +19,7 @@ def custom_callable_metric():
     return TestMetric(
         name="custom_callable_metric",
         metric=CustomValueMetric(func=custom_func, title="aaa"),
-        fingerprint="6c82feee80f03c1ee1568ce250785b0f",
+        fingerprint="bf2e25a384e9d1ad621d73862c661a95",
         outcomes=AssertResultFields({"value": 0.3}),
         datasets=[
             TestDataset("custom_callable_metric_data", current=current_data, reference=reference_data, tags=[]),

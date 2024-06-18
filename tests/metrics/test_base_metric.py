@@ -8,12 +8,17 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import MetricResult
 from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics.base_metric import generate_column_metrics
+from evidently.options.base import Options
+from evidently.options.option import Option
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pydantic_utils import FingerprintPart
+from evidently.pydantic_utils import get_value_fingerprint
 from evidently.report import Report
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -205,3 +210,37 @@ def test_additional_features_multi_metrics(metrics, result):
     report._inner_suite.raise_for_error()
     assert metrics[0].get_result() == result[0]
     assert metrics[1].get_result() == result[1]
+
+
+def test_options_fingerprint_not_specified():
+    class MyOption(Option):
+        field: str
+
+    class MockMetric(Metric[MetricResult]):
+        def calculate(self, data: InputData):
+            return MetricResult()
+
+    m1 = MockMetric(options=[MyOption(field="a")])
+    m2 = MockMetric(options=[MyOption(field="b")])
+
+    assert m1.get_fingerprint() == m2.get_fingerprint()
+
+
+def test_options_fingerprint_specified_type():
+    class MyOption(Option):
+        field: str
+
+    class UsesMyOptionMixin:
+        options: Options
+
+        def get_options_fingerprint(self) -> FingerprintPart:
+            return get_value_fingerprint(self.options.get(MyOption).field)
+
+    class MockMetricWithOption(UsesMyOptionMixin, Metric[MetricResult]):
+        def calculate(self, data: InputData):
+            return MetricResult()
+
+    m3 = MockMetricWithOption(options=[MyOption(field="a")])
+    m4 = MockMetricWithOption(options=[MyOption(field="b")])
+
+    assert m3.get_fingerprint() != m4.get_fingerprint()

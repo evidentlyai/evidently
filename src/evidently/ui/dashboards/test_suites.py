@@ -1,6 +1,7 @@
 import datetime
 import typing
 import uuid
+import warnings
 from collections import Counter
 from typing import Any
 from typing import Dict
@@ -38,12 +39,25 @@ if typing.TYPE_CHECKING:
 
 class TestFilter(BaseModel):
     test_id: Optional[str] = None
-    test_hash: Optional[str] = None
+    test_fingerprint: Optional[str] = None
     test_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
 
+    def __init__(
+        self,
+        *,
+        test_id: Optional[str] = None,
+        test_fingerprint: Optional[str] = None,
+        test_args: Dict[str, Union[EvidentlyBaseModel, Any]] = None,
+        test_hash: Optional[str] = None,
+    ):
+        if test_hash is not None:
+            warnings.warn("test_hash is deprecated, please use test_fingerprint")
+            test_fingerprint = test_hash
+        super().__init__(test_id=test_id, test_fingerprint=test_fingerprint, test_args=test_args or {})
+
     def test_matched(self, test: Test) -> bool:
-        if self.test_hash is not None:
-            return test.get_object_hash() == self.test_hash
+        if self.test_fingerprint is not None:
+            return test.get_fingerprint() == self.test_fingerprint
         if self.test_id is not None and self.test_id != test.get_id():
             return False
         for field, value in self.test_args.items():

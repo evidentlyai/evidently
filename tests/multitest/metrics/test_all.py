@@ -1,18 +1,20 @@
-import json
 import re
+from collections import defaultdict
+from typing import Dict
+from typing import Set
 
 import pandas as pd
 import pytest
 
 from evidently.base_metric import Metric
 from evidently.report import Report
-from evidently.utils import NumpyEncoder
 from tests.conftest import slow
 from tests.conftest import smart_assert_equal
 from tests.multitest.conftest import Error
 from tests.multitest.conftest import TestOutcome
 from tests.multitest.conftest import find_all_subclasses
 from tests.multitest.datasets import TestDataset
+from tests.multitest.metrics.conftest import REFRESH_FINGERPRINT_VALUES
 from tests.multitest.metrics.conftest import TestMetric
 from tests.multitest.metrics.conftest import generate_dataset_outcome
 from tests.multitest.metrics.conftest import load_test_metrics
@@ -29,8 +31,10 @@ def _check_dataframe(report: Report):
 )
 def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome, raw_data, tmp_path):
     msg = (
-        f"wrong fingerprint, try enabling suggestion mode in conftest. "
-        f"payload: {json.dumps(tmetric.metric.dict(), cls=NumpyEncoder).encode('utf8')}"
+        "wrong fingerprint.\n"
+        "If you certain that new value is correct, you can refresh fingerprint tests by setting "
+        "REFRESH_FINGERPRINT_VALUES = True in conftest.py and running tests once. Dont forget to turn it off after."
+        "WARNING! Changing fingerprints is not backward-compatible, all users will have to do migrations"
     )
     assert tmetric.metric.get_fingerprint() == tmetric.fingerprint, msg
     report = Report(metrics=[tmetric.metric], options={"render": {"raw_data": raw_data}})
@@ -101,3 +105,23 @@ def {snake_case}():
 
     no_datasets_str = "\n".join(mc.__name__ for mc in no_datasets)
     assert len(no_datasets) == 0, f"No datasets configured for metrics {no_datasets_str}"
+
+
+def test_all_fingerprints_differ():
+    metric_to_fingerprints: Dict[Metric, Set[str]] = defaultdict(set)
+    fingerprint_to_metrics: Dict[str, Set[Metric]] = defaultdict(set)
+
+    for tmetric in metric_fixtures:
+        f = tmetric.metric.get_fingerprint()
+        metric_to_fingerprints[tmetric.metric].add(f)
+        fingerprint_to_metrics[f].add(tmetric.metric)
+
+    for metric, fingerprints in metric_to_fingerprints.items():
+        assert len(fingerprints) == 1, f"Metric {metric} has different fingerprints: {fingerprints}"
+
+    for fingerprint, metrics in fingerprint_to_metrics.items():
+        assert len(metrics) == 1, f"Metrics {metrics} has the same fingerprint {fingerprint}"
+
+
+def test_refresh_mode_off():
+    assert not REFRESH_FINGERPRINT_VALUES, "you forgot to turn off refresh mode"

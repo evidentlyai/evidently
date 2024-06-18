@@ -6,6 +6,7 @@ import numpy as np
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import UsesRawDataMixin
 from evidently.metric_results import ColumnAggScatterResult
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
@@ -20,7 +21,7 @@ from evidently.utils.visualizations import plot_pred_actual_time
 from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
-class RegressionPredictedVsActualPlot(Metric[ColumnScatterResult]):
+class RegressionPredictedVsActualPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

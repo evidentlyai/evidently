@@ -13,6 +13,7 @@ from scipy.stats import probplot
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import UsesRawDataMixin
 from evidently.core import IncludeTags
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -40,7 +41,7 @@ class RegressionErrorNormalityResults(MetricResult):
     reference_theoretical: Optional[pd.DataFrame]
 
 
-class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
+class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormalityResults]):
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 
