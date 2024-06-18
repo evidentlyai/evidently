@@ -17,7 +17,7 @@ export const ensureID: <Entity extends OptionalID>(e: Entity) => StrictID<Entity
     return { ...e, id: e.id }
   }
 
-  throw `"id" is missing on object: ${JSON.stringify(e)}`
+  throw `"id" is missing in object: ${JSON.stringify(e)}`
 }
 
 export const expectJsonRequest = (request: Request) => {
