@@ -17,7 +17,6 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently import ColumnMapping
 from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
@@ -286,23 +285,6 @@ class MetadataStorage(ABC):
     def reload_snapshots(self, project_id: ProjectID):
         raise NotImplementedError
 
-    def add_dataset_metadata(self, user_id: UserID, team_id: TeamID, org_id: OrgID, dataset) -> Tuple:
-        raise NotImplementedError
-
-    def update_dataset_metadata(
-        self, dataset_id: uuid.UUID, name: str, description: str, column_mapping: ColumnMapping
-    ):
-        raise NotImplementedError
-
-    def delete_dataset_metadata(self, dataset_id: uuid.UUID):
-        raise NotImplementedError
-
-    def get_dataset_metadata(self, dataset_id: uuid.UUID):
-        raise NotImplementedError
-
-    def list_datasets_metadata(self, user_id: UserID, org_id: OrgID, limit: int):
-        raise NotImplementedError
-
 
 class BlobStorage(ABC):
     @abstractmethod
@@ -432,7 +414,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.TEAM_CREATE_PROJECT,
-        Permission.TEAM_CREATE_PROJECT,
+        Permission.TEAM_CREATE_DATASET,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
