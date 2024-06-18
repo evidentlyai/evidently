@@ -386,6 +386,7 @@ class Permission(Enum):
     TEAM_WRITE = "team_write"
     TEAM_CREATE_PROJECT = "team_create_project"
     TEAM_DELETE = "team_delete"
+    TEAM_CREATE_DATASET = "team_create_dataset"
 
     PROJECT_READ = "project_read"
     PROJECT_WRITE = "project_write"
@@ -394,7 +395,8 @@ class Permission(Enum):
     PROJECT_SNAPSHOT_DELETE = "project_snapshot_delete"
 
     DATASET_READ = "datasets_read"
-    DATASET_WRITE = "datasets_write"
+    DATASET_UPDATE = "datasets_update"
+    DATASET_DELETE = "datasets_delete"
 
 
 class Role(BaseModel):
@@ -422,17 +424,21 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
         Permission.DATASET_READ,
-        Permission.DATASET_WRITE,
+        Permission.TEAM_CREATE_DATASET,
+        Permission.DATASET_UPDATE,
+        Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Team): {
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.TEAM_CREATE_PROJECT,
+        Permission.TEAM_CREATE_PROJECT,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
         Permission.DATASET_READ,
-        Permission.DATASET_WRITE,
+        Permission.DATASET_UPDATE,
+        Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Project): {
         Permission.PROJECT_READ,
@@ -441,7 +447,8 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
     },
     (DefaultRole.EDITOR, EntityType.Dataset): {
         Permission.DATASET_READ,
-        Permission.DATASET_WRITE,
+        Permission.DATASET_UPDATE,
+        Permission.DATASET_DELETE,
     },
     (DefaultRole.VIEWER, EntityType.Org): {
         Permission.ORG_READ,
@@ -453,7 +460,6 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
     },
     (DefaultRole.VIEWER, EntityType.Project): {
         Permission.PROJECT_READ,
-        Permission.DATASET_READ,
     },
     (DefaultRole.VIEWER, EntityType.Dataset): {
         Permission.DATASET_READ,
