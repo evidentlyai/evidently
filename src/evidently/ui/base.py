@@ -377,7 +377,7 @@ class Permission(Enum):
     PROJECT_SNAPSHOT_DELETE = "project_snapshot_delete"
 
     DATASET_READ = "datasets_read"
-    DATASET_UPDATE = "datasets_update"
+    DATASET_WRITE = "datasets_write"
     DATASET_DELETE = "datasets_delete"
 
 
@@ -407,7 +407,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_SNAPSHOT_ADD,
         Permission.DATASET_READ,
         Permission.TEAM_CREATE_DATASET,
-        Permission.DATASET_UPDATE,
+        Permission.DATASET_WRITE,
         Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Team): {
@@ -419,7 +419,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
         Permission.DATASET_READ,
-        Permission.DATASET_UPDATE,
+        Permission.DATASET_WRITE,
         Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Project): {
@@ -429,7 +429,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
     },
     (DefaultRole.EDITOR, EntityType.Dataset): {
         Permission.DATASET_READ,
-        Permission.DATASET_UPDATE,
+        Permission.DATASET_WRITE,
         Permission.DATASET_DELETE,
     },
     (DefaultRole.VIEWER, EntityType.Org): {
