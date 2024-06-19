@@ -61,7 +61,7 @@ class GeneratedFeature(EvidentlyBaseModel):
             hash(params)
         except TypeError:
             logging.warning(f"unhashable params for {type(self)}. Fallback to unique.")
-            return None
+            return (self.feature_id,)
         return params
 
 

@@ -1,5 +1,6 @@
 import abc
 import logging
+from typing import Dict
 from typing import Generic
 from typing import Optional
 from typing import TypeVar
@@ -12,6 +13,8 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.metric_implementation import MetricImplementation
+from evidently.features.generated_features import GeneratedFeature
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import create_data_definition
 
 
@@ -97,6 +100,32 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
 
             return _Wrapper(self, metric)
         return impl
+
+    def form_datasets(
+        self,
+        data: Optional[PythonInputData],
+        features: Optional[Dict[tuple, GeneratedFeature]],
+        data_definition: DataDefinition,
+    ):
+        if data is None:
+            return None, None
+        if features is not None:
+            rename = {x.feature_name().name: x.feature_name().display_name for x in features.values()}
+        else:
+            rename = {}
+        current = data.current_data
+        if data.current_additional_features is not None:
+            current = data.current_data.join(data.current_additional_features)
+
+        current = current.rename(columns=rename)
+        reference = data.reference_data
+        if data.reference_data is not None and data.reference_additional_features is not None:
+            reference = data.reference_data.join(data.reference_additional_features)
+
+        if reference is not None:
+            reference = reference.rename(columns=rename)
+
+        return reference, current
 
 
 class PythonMetricImplementation(Generic[TMetric], MetricImplementation):
