@@ -27,7 +27,7 @@ class HuggingFaceToxicityModel(FeatureDescriptor):
         model_str = "" if self.model is None else f"({self.model})"
         return HuggingFaceToxicityFeature(
             column_name=column_name,
-            display_name=f"Hugging Face Toxicity {model_str} for {column_name}",
+            display_name=self.display_name or f"Hugging Face Toxicity {model_str} for {column_name}",
             model=self.model,
             toxic_label=self.toxic_label,
         )

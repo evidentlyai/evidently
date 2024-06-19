@@ -110,7 +110,7 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
         if data is None:
             return None, None
         if features is not None:
-            rename = {x.feature_name().name: x.display_name for x in features.values()}
+            rename = {x.feature_name().name: x.feature_name().display_name for x in features.values()}
         else:
             rename = {}
         current = data.current_data
