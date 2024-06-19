@@ -194,7 +194,7 @@ def test_column_missing_values_metric_value_error(
         (
             pd.DataFrame(
                 {
-                    "col": [1, np.NAN, 3, None, 5, "a", "b", "c", 1, 1234567890, "a", "a", "d", "e", "f"],
+                    "col": [1, np.nan, 3, None, 5, "a", "b", "c", 1, 1234567890, "a", "a", "d", "e", "f"],
                 }
             ),
             None,

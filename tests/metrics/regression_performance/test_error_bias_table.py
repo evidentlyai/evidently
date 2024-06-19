@@ -81,7 +81,7 @@ def test_regression_error_bias_table_value_errors(
             },
         ),
         (
-            pd.DataFrame({"target": [1, np.NaN, 3], "prediction": [1, 2, 3], "feature": [np.NaN, "a", np.NaN]}),
+            pd.DataFrame({"target": [1, np.nan, 3], "prediction": [1, 2, 3], "feature": [np.nan, "a", np.nan]}),
             pd.DataFrame(
                 {
                     "target": [10, 20, 3.5],

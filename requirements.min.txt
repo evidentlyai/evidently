@@ -21,7 +21,7 @@ pyarrow==14.0.1
 pyspark==3.4.0
 fsspec[full]==2024.2.0
 certifi==2023.07.22
-urllib3==1.26.18
+urllib3==1.26.19
 ujson==5.4.0
 
 openai==1.16.2

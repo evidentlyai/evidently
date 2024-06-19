@@ -18,16 +18,16 @@ from evidently.report import Report
                 {
                     "category_feature": ["a", "b", "c"],
                     "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
+                    "target": [None, np.nan, 1],
+                    "prediction": [1, np.nan, 1],
                 }
             ),
             pd.DataFrame(
                 {
                     "category_feature": ["1", "2", "3"],
                     "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
+                    "target": [None, np.nan, 1],
+                    "prediction": [1, np.nan, 1],
                 }
             ),
             ColumnMapping(),
@@ -37,8 +37,8 @@ from evidently.report import Report
                 {
                     "category_feature": ["a", "b", "c"],
                     "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
+                    "target": [None, np.nan, 1],
+                    "prediction": [1, np.nan, 1],
                 }
             ),
             pd.DataFrame(
@@ -113,8 +113,8 @@ def test_dataset_drift_metric_value_error() -> None:
         {
             "category_feature": ["1", "2", "3"],
             "numerical_feature": [3, 2, 1],
-            "target": [None, np.NAN, 1],
-            "prediction": [1, np.NAN, 1],
+            "target": [None, np.nan, 1],
+            "prediction": [1, np.nan, 1],
         }
     )
     data_mapping = ColumnMapping()
@@ -164,7 +164,7 @@ def test_dataset_drift_metric_json_output() -> None:
     current_dataset = pd.DataFrame(
         {
             "category_feature": ["a", "b", None],
-            "target": [1, np.NAN, 3],
+            "target": [1, np.nan, 3],
             "prediction": [1, 0, 1],
         }
     )

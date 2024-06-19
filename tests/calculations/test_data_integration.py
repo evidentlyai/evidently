@@ -13,7 +13,7 @@ from evidently.calculations.data_integration import get_number_of_almost_duplica
         (pd.DataFrame(), 0),
         (pd.DataFrame({"feature": []}), 0),
         (pd.DataFrame({"feature": [1, 2, 3]}), 0),
-        (pd.DataFrame({"feature1": [1, None, pd.NA], "feature2": [np.NaN, None, pd.NaT]}), 5),
+        (pd.DataFrame({"feature1": [1, None, pd.NA], "feature2": [np.nan, None, pd.NaT]}), 5),
     ),
 )
 def test_get_number_of_all_pandas_missed_values(dataset: pd.DataFrame, expected_missed: int) -> None:
@@ -51,7 +51,7 @@ def test_get_number_of_all_pandas_missed_values(dataset: pd.DataFrame, expected_
             pd.DataFrame(
                 {
                     "feature1": ["a", "a", "a"],
-                    "feature2": ["b", 1, np.NaN],
+                    "feature2": ["b", 1, np.nan],
                     "feature3": ["a", "a", "a"],
                 },
                 dtype="category",

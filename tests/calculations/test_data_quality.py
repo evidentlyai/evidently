@@ -16,7 +16,7 @@ from evidently.metric_results import Distribution
         (pd.DataFrame({"test": [1, 2, 3]}), 3),
         (pd.DataFrame({"test": [1, 2, None]}), 3),
         (pd.DataFrame({"test": [None, None, None]}), 3),
-        (pd.DataFrame({"test": [np.NAN, pd.NA, 2, 0, pd.NaT], "target": [1, 0, 1, 0, 1]}), 5),
+        (pd.DataFrame({"test": [np.nan, pd.NA, 2, 0, pd.NaT], "target": [1, 0, 1, 0, 1]}), 5),
     ),
 )
 def test_get_rows_count(dataset: pd.DataFrame, expected_rows: int) -> None:
