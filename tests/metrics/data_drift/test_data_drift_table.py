@@ -18,16 +18,16 @@ from evidently.report import Report
                 {
                     "category_feature": ["1", "2", "3"],
                     "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
+                    "target": [None, np.nan, 1],
+                    "prediction": [1, np.nan, 1],
                 }
             ),
             pd.DataFrame(
                 {
                     "category_feature": ["1", "2", "3"],
                     "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
+                    "target": [None, np.nan, 1],
+                    "prediction": [1, np.nan, 1],
                 }
             ),
             ColumnMapping(),
@@ -37,8 +37,8 @@ from evidently.report import Report
                 {
                     "category_feature": ["1", "2", "3"],
                     "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
+                    "target": [None, np.nan, 1],
+                    "prediction": [1, np.nan, 1],
                 }
             ),
             pd.DataFrame(
@@ -113,8 +113,8 @@ def test_data_drift_metrics_value_error() -> None:
         {
             "category_feature": ["1", "2", "3"],
             "numerical_feature": [3, 2, 1],
-            "target": [None, np.NAN, 1],
-            "prediction": [1, np.NAN, 1],
+            "target": [None, np.nan, 1],
+            "prediction": [1, np.nan, 1],
         }
     )
     data_mapping = ColumnMapping()
@@ -196,9 +196,9 @@ def test_data_drift_metrics_with_options() -> None:
 def test_data_drift_metrics_json_output() -> None:
     current_dataset = pd.DataFrame(
         {
-            "category_feature": ["a", "b", "a", np.NAN],
-            "target": [np.NAN, np.NAN, 3, 4],
-            "prediction": [1, 0, np.NAN, 5],
+            "category_feature": ["a", "b", "a", np.nan],
+            "target": [np.nan, np.nan, 3, 4],
+            "prediction": [1, 0, np.nan, 5],
         }
     )
     reference_dataset = pd.DataFrame(

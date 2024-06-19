@@ -78,10 +78,10 @@ def test_dataset_correlation_metric_success() -> None:
         (
             pd.DataFrame(
                 {
-                    "my_target": [1, np.NaN, 3] * 1000,
-                    "my_prediction": [1, 2, np.NaN] * 1000,
+                    "my_target": [1, np.nan, 3] * 1000,
+                    "my_prediction": [1, 2, np.nan] * 1000,
                     "feature_1": [1, 2, 3] * 1000,
-                    "feature_2": ["a", np.NaN, "a"] * 1000,
+                    "feature_2": ["a", np.nan, "a"] * 1000,
                 }
             ),
             pd.DataFrame(

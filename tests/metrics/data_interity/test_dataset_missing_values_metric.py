@@ -51,7 +51,7 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
             "numerical_feature_1": [3, -9999, 0],
             "numerical_feature_2": [0, None, -np.inf],
             "prediction": [1, pd.NaT, 1],
-            "target": [None, np.NAN, 1],
+            "target": [None, np.nan, 1],
         }
     )
     data_mapping = ColumnMapping()

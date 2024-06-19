@@ -12,7 +12,7 @@ def test_regression_performance_metrics() -> None:
             "category_feature": ["1", "2", "3"],
             "numerical_feature": [3, 2, 1],
             "target": [1, 2, 3],
-            "prediction": [1, np.NAN, 1],
+            "prediction": [1, np.nan, 1],
         }
     )
     data_mapping = ColumnMapping()

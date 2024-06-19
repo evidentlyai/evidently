@@ -38,7 +38,7 @@ def null_valudator(value):
     raise ValueError("not a None")
 
 
-MissingValue = Union[np.float_, NoneKey, Any]  # type: ignore[valid-type]
+MissingValue = Union[np.double, NoneKey, Any]  # type: ignore[valid-type]
 
 
 class DatasetMissingValues(MetricResult):

@@ -421,10 +421,10 @@ def classification_prob_distribution_values():
             TestDataset(
                 current=pd.DataFrame(
                     data={
-                        "my_target": ["a", np.NaN, "a", "b", "b", "c"],
+                        "my_target": ["a", np.nan, "a", "b", "b", "c"],
                         "a": [0.8, 0.7, 0.3, 0.1, 0.2, 0.2],
-                        "b": [0.1, 0.2, 0.7, np.NaN, 0.8, 0.3],
-                        "c": [0.1, 0.1, 0.1, 0.1, 0.1, np.NaN],
+                        "b": [0.1, 0.2, 0.7, np.nan, 0.8, 0.3],
+                        "c": [0.1, 0.1, 0.1, 0.1, 0.1, np.nan],
                     },
                 ),
                 reference=pd.DataFrame(
