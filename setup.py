@@ -5,6 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 import os
 from os.path import join as pjoin
+from pathlib import Path
 
 from setuptools import setup
 
@@ -47,7 +48,7 @@ cmdclass["jsdeps"] = combine_commands(
 setup_args = dict(
     cmdclass=cmdclass,
     author_email="emeli.dral@gmail.com",
-    long_description=open("README.md").read(),
+    long_description=(Path(__file__).parent / "README.md").read_text("utf8"),
     long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
@@ -64,13 +65,13 @@ setup_args = dict(
         "litestar>=2.8.3",
         "typing-inspect>=0.9.0",
         "uvicorn[standard]>=0.22.0",
-        "watchdog>=3",
+        "watchdog>=3.0.0",
         "typer>=0.3",
         "rich>=13",
         "iterative-telemetry>=0.0.5",
         "dynaconf>=3.2.4",
         "certifi>=2023.07.22",
-        "urllib3>=1.26.18",
+        "urllib3>=1.26.19",
         "fsspec>=2024.2.0",
         "ujson>=5.4.0",
     ],
