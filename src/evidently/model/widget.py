@@ -86,7 +86,7 @@ class BaseWidgetInfo:
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None
     params: Any = None
-    insights: Iterable[Insight] = field(default_factory=lambda: [])
+    insights: Iterable[Insight] = field(default_factory=list)
     additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = field(
         default_factory=lambda: []
     )
