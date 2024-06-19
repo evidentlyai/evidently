@@ -54,7 +54,7 @@ from evidently.utils.dashboard import TemplateParams
 
 class BlobMetadata(BaseModel):
     id: BlobID
-    size: int
+    size: Optional[int]
 
 
 class SnapshotMetadata(BaseModel):
