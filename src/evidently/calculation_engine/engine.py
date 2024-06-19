@@ -16,6 +16,8 @@ from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.metric_implementation import MetricImplementation
+from evidently.features.generated_features import GeneratedFeature
+from evidently.utils.data_preprocessing import DataDefinition
 
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)
 TInputData = TypeVar("TInputData")
@@ -89,6 +91,14 @@ class Engine(Generic[TMetricImplementation, TInputData]):
                     metric_to_calculations[metric] = metrics_by_parameters[parameters][0]
 
         return [(metric, self.get_metric_implementation(metric_to_calculations[metric])) for metric in self.metrics]
+
+    def form_datasets(
+        self,
+        data: Optional[TInputData],
+        features: Optional[Dict[tuple, GeneratedFeature]],
+        data_definition: DataDefinition,
+    ):
+        raise NotImplementedError()
 
 
 def _aggregate_metrics(agg, item):

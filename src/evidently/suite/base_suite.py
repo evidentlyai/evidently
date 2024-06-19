@@ -122,6 +122,9 @@ class Context:
             )
         return self.data_definition
 
+    def get_datasets(self):
+        return self.engine.form_datasets(self.data, self.features, self.data_definition)
+
 
 class ContextPayload(BaseModel):
     metrics: List[Metric]
@@ -525,4 +528,5 @@ class ReportBase(Display):
         return self._get_snapshot()
 
     def datasets(self):
-        return self._inner_suite.context.data.get_datasets()
+        datasets = self._inner_suite.context.get_datasets()
+        return datasets
