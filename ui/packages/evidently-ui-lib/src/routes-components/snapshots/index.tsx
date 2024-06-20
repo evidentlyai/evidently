@@ -138,65 +138,72 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
     return <Outlet />
   }
 
+  const FilterComponent = (
+    <Box sx={{ padding: 2 }}>
+      <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
+        <Grid item xs={12} md={4}>
+          <Autocomplete
+            multiple
+            limitTags={2}
+            value={selectedTags}
+            onChange={(_, newSelectedTags) => setTags(newSelectedTags)}
+            options={ALL_TAGS}
+            renderInput={(params) => (
+              <TextField {...params} variant="standard" label="Filter by Tags" />
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} md={7}>
+          <Box display={'flex'} alignItems={'flex-end'} gap={2}>
+            <TextField
+              fullWidth
+              value={metadataQuery}
+              onChange={(event) => setMetadataQuery(event.target.value)}
+              variant="standard"
+              label="Search in Metadata"
+            />
+            <Box minWidth={220} display={'flex'} justifyContent={'center'}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isCollapsedJson}
+                    onChange={(event) => setIsCollapsedJson(event.target.checked)}
+                  ></Switch>
+                }
+                label="Hide Metadata"
+              />
+            </Box>
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                sx={{ minWidth: 160 }}
+                variant="outlined"
+                onClick={() => submit(null, { method: 'post' })}
+                color="primary"
+                disabled={isNavigation}
+              >
+                refresh {type}
+              </Button>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  )
+
   if (snapshots.length === 0) {
     return (
-      <Typography my={3} variant="h4" align="center">
-        You don't have any {type} yet.
-      </Typography>
+      <>
+        {FilterComponent}
+        <Typography my={3} variant="h4" align="center">
+          You don't have any {type} yet.
+        </Typography>
+      </>
     )
   }
 
   return (
     <>
-      <Box sx={{ padding: 2 }}>
-        <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
-          <Grid item xs={12} md={4}>
-            <Autocomplete
-              multiple
-              limitTags={2}
-              value={selectedTags}
-              onChange={(_, newSelectedTags) => setTags(newSelectedTags)}
-              options={ALL_TAGS}
-              renderInput={(params) => (
-                <TextField {...params} variant="standard" label="Filter by Tags" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} md={7}>
-            <Box display={'flex'} alignItems={'flex-end'} gap={2}>
-              <TextField
-                fullWidth
-                value={metadataQuery}
-                onChange={(event) => setMetadataQuery(event.target.value)}
-                variant="standard"
-                label="Search in Metadata"
-              />
-              <Box minWidth={220} display={'flex'} justifyContent={'center'}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={isCollapsedJson}
-                      onChange={(event) => setIsCollapsedJson(event.target.checked)}
-                    ></Switch>
-                  }
-                  label="Hide Metadata"
-                />
-              </Box>
-              <Box display="flex" justifyContent="flex-end">
-                <Button
-                  sx={{ minWidth: 160 }}
-                  variant="outlined"
-                  onClick={() => submit(null, { method: 'post' })}
-                  color="primary"
-                  disabled={isNavigation}
-                >
-                  refresh {type}
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
+      {FilterComponent}
       <Table>
         <TableHead>
           <TableRow>
