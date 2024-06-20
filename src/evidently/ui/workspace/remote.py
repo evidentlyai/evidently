@@ -18,6 +18,7 @@ from requests import Session
 from evidently._pydantic_compat import parse_obj_as
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
+from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
@@ -146,7 +147,7 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
     def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         return self._request("/api/projects", "GET", response_model=List[Project])
 
-    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
+    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
         return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())
 
     def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
@@ -182,7 +183,10 @@ class NoopBlobStorage(BlobStorage):
         pass
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
-        pass
+        return ""
+
+    def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
+        return BlobMetadata(id=blob_id, size=0)
 
 
 class NoopDataStorage(DataStorage):
