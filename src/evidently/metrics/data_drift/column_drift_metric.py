@@ -56,7 +56,6 @@ def get_one_column_drift(
 
     target = data_definition.get_target_column()
     stattest = None
-    threshold = None
     if column.is_main_dataset():
         if target and column.name == target.column_name and column_type == ColumnType.Numerical:
             stattest = options.num_target_stattest_func
@@ -64,10 +63,10 @@ def get_one_column_drift(
         elif target and column.name == target.column_name and column_type == ColumnType.Categorical:
             stattest = options.cat_target_stattest_func
 
-        if not stattest:
-            stattest = options.get_feature_stattest_func(column.name, column_type.value)
+    if not stattest:
+        stattest = options.get_feature_stattest_func(column.name, column_type.value)
 
-        threshold = options.get_threshold(column.name, column_type.value)
+    threshold = options.get_threshold(column.name, column_type.value)
     current_column = current_feature_data
     reference_column = reference_feature_data
 
