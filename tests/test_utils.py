@@ -35,7 +35,7 @@ from evidently.utils.numpy_encoder import NumpyEncoder
             "[42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]",
         ),
         (
-            [_type(0.5) for _type in (np.float_, np.float16, np.float32, np.float64)],
+            [_type(0.5) for _type in (np.double, np.float16, np.float32, np.float64)],
             "[0.5, 0.5, 0.5, 0.5]",
         ),
         (np.array([np.bool_(1), np.bool_(0)]), "[true, false]"),

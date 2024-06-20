@@ -51,7 +51,7 @@ from tests.conftest import smart_assert_equal
         ),
         (
             pd.DataFrame({"target": [1, 8, 3], "prediction": [6, 7, 8]}),
-            pd.DataFrame({"target": [1, 2, 3, 4, 5], "prediction": [np.NaN, 2, 3, 4, 5]}),
+            pd.DataFrame({"target": [1, 2, 3, 4, 5], "prediction": [np.nan, 2, 3, 4, 5]}),
             ColumnMapping(),
             DatasetSummaryMetric(),
             DatasetSummaryMetricResult(

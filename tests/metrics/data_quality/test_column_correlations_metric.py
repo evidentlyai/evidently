@@ -30,7 +30,7 @@ from evidently.report import Report
         ),
         (
             pd.DataFrame(
-                {"feature1": ["n", "d", "p", "n"], "feature2": [0, 2, 2, 432], "feature3": ["f", "f", np.NaN, 432]}
+                {"feature1": ["n", "d", "p", "n"], "feature2": [0, 2, 2, 432], "feature3": ["f", "f", np.nan, 432]}
             ),
             None,
             ColumnMapping(categorical_features=["feature1", "feature2", "feature3"]),

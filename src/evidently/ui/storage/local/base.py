@@ -20,6 +20,7 @@ from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
+from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
@@ -84,6 +85,9 @@ class FSLocation:
     def invalidate_cache(self, path):
         self.fs.invalidate_cache(posixpath.join(self.path, path))
 
+    def size(self, path):
+        return self.fs.size(posixpath.join(self.path, path))
+
 
 class FSSpecBlobStorage(BlobStorage):
     base_path: str
@@ -104,15 +108,18 @@ class FSSpecBlobStorage(BlobStorage):
         return posixpath.join(str(project_id), SNAPSHOTS, str(snapshot.id)) + ".json"
 
     @contextlib.contextmanager
-    def open_blob(self, path: str):
-        with self.location.open(path) as f:
+    def open_blob(self, blob_id: str):
+        with self.location.open(blob_id) as f:
             yield f
 
-    def put_blob(self, path: str, obj) -> str:
-        self.location.makedirs(posixpath.dirname(path))
-        with self.location.open(path, "w") as f:
+    def put_blob(self, blob_id: BlobID, obj) -> BlobID:
+        self.location.makedirs(posixpath.dirname(blob_id))
+        with self.location.open(blob_id, "w") as f:
             f.write(obj)
-        return path
+        return blob_id
+
+    def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
+        return BlobMetadata(id=blob_id, size=self.location.size(blob_id))
 
 
 def load_project(location: FSLocation, path: str) -> Optional[Project]:
@@ -169,7 +176,9 @@ class LocalState:
             snapshot_path = posixpath.join(str(project.id), SNAPSHOTS, str(snapshot_id) + ".json")
             with self.location.open(snapshot_path) as f:
                 suite = parse_obj_as(Snapshot, json.load(f))
-            snapshot = SnapshotMetadata.from_snapshot(suite, snapshot_path).bind(project)
+            snapshot = SnapshotMetadata.from_snapshot(
+                suite, BlobMetadata(id=snapshot_path, size=self.location.size(snapshot_path))
+            ).bind(project)
             self.snapshots[project.id][snapshot_id] = snapshot
             self.snapshot_data[project.id][snapshot_id] = suite
         except ValidationError as e:
@@ -220,11 +229,11 @@ class JsonFileMetadataStorage(MetadataStorage):
         projects.sort(key=lambda x: x.created_at or default_date, reverse=True)
         return projects
 
-    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob_id: str):
+    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: BlobMetadata):
         project = self.get_project(project_id)
         if project is None:
             raise ProjectNotFound()
-        self.state.snapshots[project_id][snapshot.id] = SnapshotMetadata.from_snapshot(snapshot, blob_id).bind(project)
+        self.state.snapshots[project_id][snapshot.id] = SnapshotMetadata.from_snapshot(snapshot, blob).bind(project)
         self.state.snapshot_data[project_id][snapshot.id] = snapshot
 
     def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
