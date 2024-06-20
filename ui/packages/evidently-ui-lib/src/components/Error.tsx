@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react'
 import { Alert, AlertTitle, Snackbar, Typography } from '@mui/material'
-import { isRouteErrorResponse, useActionData, useRouteError } from 'react-router-dom'
+import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
 import { ErrorData } from '~/api/types/utils'
+import type { Fetcher } from 'react-router-dom'
+
+type ActionData = ErrorData | undefined
 
 export const GenericErrorBoundary = () => {
   const error = useRouteError()
@@ -30,14 +33,17 @@ export const GenericErrorBoundary = () => {
 }
 
 export const ActionErrorSnackbar = () => {
-  const actionData = useActionData() as ErrorData
+  const actionData = useActionData() as ActionData
+  const fetchers = useFetchers() as Fetcher<ActionData>[]
   const [open, setOpen] = React.useState(false)
 
+  const error = actionData?.error || fetchers.find((f) => Boolean(f.data?.error))?.data?.error
+
   useEffect(() => {
-    if (actionData?.error) {
+    if (error) {
       setOpen(true)
     }
-  }, [actionData?.error])
+  }, [error])
 
   return (
     <Snackbar
@@ -53,12 +59,9 @@ export const ActionErrorSnackbar = () => {
     >
       <Alert severity="error">
         <AlertTitle>Something went wrong</AlertTitle>
-        {actionData?.error && (
+        {error && (
           <Typography fontWeight={'bold'}>
-            {[
-              `Status: ${actionData.error.status_code}`,
-              typeof actionData.error?.detail === 'string' && actionData.error.detail
-            ]
+            {[`Status: ${error.status_code}`, typeof error?.detail === 'string' && error.detail]
               .filter(Boolean)
               .join(', ')}
           </Typography>
