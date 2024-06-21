@@ -39,6 +39,7 @@ class FeatureDefinition(BaseModel):
     feature_name: str
     display_name: Optional[str]
     feature_type: ColumnType
+    feature_class: str
 
 
 class PredictionColumns(BaseModel):
