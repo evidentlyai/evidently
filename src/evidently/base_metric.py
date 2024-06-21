@@ -35,6 +35,7 @@ from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.pydantic_utils import get_value_fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.data_preprocessing import FeatureDefinition
 
 if TYPE_CHECKING:
     from evidently.features.generated_features import GeneratedFeature
@@ -285,6 +286,12 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
                 continue
             if issubclass(type(value), ColumnName) and value.feature_class is not None:
                 required_features.append(value.feature_class)
+                feature_name = value.feature_class.feature_name()
+                data_definition.descriptors[feature_name.name] = FeatureDefinition(
+                    feature_name=feature_name.name,
+                    display_name=value.feature_class.display_name,
+                    feature_type=feature_name.feature_class.feature_type,
+                )
         return required_features
 
     def get_options(self):

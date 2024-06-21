@@ -35,6 +35,12 @@ class ColumnDefinition(BaseModel):
         super().__init__(column_name=column_name, column_type=column_type)
 
 
+class FeatureDefinition(BaseModel):
+    feature_name: str
+    display_name: Optional[str]
+    feature_type: ColumnType
+
+
 class PredictionColumns(BaseModel):
     predicted_values: Optional[ColumnDefinition] = None
     prediction_probas: Optional[List[ColumnDefinition]] = None
@@ -66,6 +72,7 @@ def _check_filter(
 
 class DataDefinition(EnumValueMixin):
     columns: Dict[str, ColumnDefinition]
+    descriptors: Dict[str, FeatureDefinition] = {}
     target: Optional[ColumnDefinition]
     prediction_columns: Optional[PredictionColumns]
     id_column: Optional[ColumnDefinition]
@@ -476,6 +483,7 @@ def create_data_definition(
     classification_labels = mapping.target_names or labels
     return DataDefinition(
         columns={col.column_name: col for col in all_columns if col is not None},
+        descriptors={},
         id_column=id_column,
         user_id=user_id,
         item_id=item_id,
