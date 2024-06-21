@@ -225,16 +225,16 @@ export const DashboardParams = ({
                 />
               </Box>
             </Grid>
+            <Grid item xs={12}>
+              <Collapse unmountOnExit in={!isCorrectTimeInterval}>
+                <Alert severity="error">
+                  <AlertTitle>Error</AlertTitle>
+                  {isIncorrectTimeIntervalMessage}
+                </Alert>
+              </Collapse>
+            </Grid>
           </>
         )}
-        <Grid item xs={12}>
-          <Collapse unmountOnExit in={!isCorrectTimeInterval}>
-            <Alert severity="error">
-              <AlertTitle>Error</AlertTitle>
-              {isIncorrectTimeIntervalMessage}
-            </Alert>
-          </Collapse>
-        </Grid>
       </Grid>
     </LocalizationProvider>
   )
