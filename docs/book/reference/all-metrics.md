@@ -1,16 +1,14 @@
 ---
-description: List of all the metrics and metric presets available in Evidently.
+description: List of Metrics, Descriptors and Metric Presets available in Evidently.
 ---
 
 <details>
 
 <summary>How to use this page</summary>
 
-This is a reference page. It shows all the available Metrics and Metric Presets. 
+This is a reference page. It shows all the available Metrics, Descriptors and Presets. 
   
 You can use the menu on the right to navigate the sections. We organize the Metrics by logical groups. Note that these groups do **not** match the Presets with a similar name. For example, there are more Data Quality Metrics than included in the `DataQualityPreset`. 
-  
-You can use this reference page to discover Metrics to include in your custom Reports.
 
 # How to read the tables
 
@@ -23,7 +21,7 @@ You can use this reference page to discover Metrics to include in your custom Re
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All metrics" example notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, check the "All metrics" notebook in [examples](../examples/examples.md). If you notice an error, please send us a pull request with an update! 
 {% endhint %}
 
 # Metric Presets
