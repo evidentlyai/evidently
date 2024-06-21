@@ -32,7 +32,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Data Quality Preset</summary>
 
-`DataQualityPreset` captures column and dataset summaries. Input features are required. Prediction and target are optional.
+`DataQualityPreset` captures column and dataset summaries. Input columns are required. Prediction and target are optional.
 
 **Composition**:
 * `DatasetSummaryMetric()`
@@ -49,7 +49,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Data Drift Preset</summary>
 
-`DataDriftPreset` evaluates the data distribution drift in all individual columns, and share of drifting columns in the dataset. Input features are required. 
+`DataDriftPreset` evaluates the data distribution drift in all individual columns, and share of drifting columns in the dataset. Input columns are required. 
 
 **Composition**:
 * `DataDriftTable()` for all or specified `columns`
@@ -267,7 +267,7 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 | **RegExp()** <ul><li> Matches text against any specified regular expression. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **BeginsWith()** <ul><li> Checks if the text begins with a specified combination. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` or `False`</li></ul> |
 | **EndsWith()** <ul><li> Checks if the text ends with a specified combination. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` or `False`</li></ul> |
-| **Contains()** <ul><li> Checks if the text contains any or all specified items (e.g. strings, competitor names, etc.) </li><li> Returns True/False for every input. </li></ul> Example use:<br> `Contains(items=["medical leave"]`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` or `False`</li></ul> |
+| **Contains()** <ul><li> Checks if the text contains any or all specified items (e.g. strings, competitor names, etc.) </li><li> Returns True/False for every input. </li></ul> Example use:<br> `Contains(items=["medical leave"])`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` or `False`</li></ul> |
 | **DoesNotContain()** <ul><li>Checks if the text does not contain any or all specified items. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `DoesNotContain(items=["as a large language model"]` | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` or 'any'</li><li>`case_sensitive = True` or `False`</li></ul> |
 | **IncludesWords()** <ul><li> Checks if the text includes any (default) or all specified words. </li><li> Considers only vocabulary words. </li><li> By default, considers inflected and variant forms of the same word. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `IncludesWords(words_list=['booking', 'hotel', 'flight']` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` or `'all'`)</li><li>`lemmatize = True` or `False`</li></ul> |
 | **ExcludesWords()** <ul><li>Checks if the text excludes all specified words.</li><li> Considers only vocabulary words. </li><li>By default, considers inflected and variant forms of the same word. </li><li>Returns True/False for every input. </li></ul> Example use:<br> `ExcludesWords(words_list=['buy', 'sell', 'bet']`| **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` or `'any'`</li><li>`lemmatize = True` or `False`</li></ul> |
