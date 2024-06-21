@@ -264,7 +264,7 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 
 | Descriptor | Parameters |
 | - | - |
-| **RegExp()** <ul><li> Matches text against any specified regular expression. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **RegExp()** <ul><li> Matches text against any specified regular expression. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `RegExp(reg_exp=r"^I")` | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **BeginsWith()** <ul><li> Checks if the text begins with a specified combination. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` or `False`</li></ul> |
 | **EndsWith()** <ul><li> Checks if the text ends with a specified combination. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` or `False`</li></ul> |
 | **Contains()** <ul><li> Checks if the text contains any or all specified items (e.g. competitor names, etc.) </li><li> Returns True/False for every input. </li></ul> Example use:<br> `Contains(items=["medical leave"])`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` or `False`</li></ul> |
