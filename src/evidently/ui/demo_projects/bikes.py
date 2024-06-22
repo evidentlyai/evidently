@@ -89,6 +89,8 @@ TAGS = [
 def create_report(i: int, data):
     current, reference, column_mapping = data
 
+    # for deterministic tags generation
+    random.seed(i + 123)
     data_drift_report = Report(
         metrics=[
             metrics.RegressionQualityMetric(),
@@ -104,9 +106,11 @@ def create_report(i: int, data):
             metrics.ColumnSummaryMetric(column_name="prediction"),
         ],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
-        tags=list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
-        if random.uniform(0, 1) < 0.3
-        else [],
+        tags=(
+            list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
+            if random.uniform(0, 1) < 0.3
+            else []
+        ),
     )
     data_drift_report.set_batch_size("daily")
 
@@ -120,12 +124,17 @@ def create_report(i: int, data):
 
 def create_test_suite(i: int, data):
     current, reference, column_mapping = data
+
+    # for deterministic tags generation
+    random.seed(i + 321)
     data_drift_test_suite = TestSuite(
         tests=[DataDriftTestPreset()],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
-        tags=list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
-        if random.uniform(0, 1) < 0.3
-        else [],
+        tags=(
+            list(random.choice(TAGS, random.randint(1, len(TAGS) + 1), replace=False))
+            if random.uniform(0, 1) < 0.3
+            else []
+        ),
     )
 
     data_drift_test_suite.run(
