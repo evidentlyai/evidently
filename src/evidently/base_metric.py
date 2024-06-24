@@ -287,11 +287,12 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
             if isinstance(value, ColumnName) and value.feature_class is not None:
                 required_features.append(value.feature_class)
                 feature_name = value.feature_class.feature_name()
+                feature_class = feature_name.feature_class
                 data_definition.descriptors[feature_name.name] = FeatureDefinition(
                     feature_name=feature_name.name,
                     display_name=feature_name.display_name,
-                    feature_type=feature_name.feature_class.feature_type,
-                    feature_class=feature_name.feature_class.__class__.__name__,
+                    feature_type=feature_class.feature_type,  # type: ignore[union-attr]
+                    feature_class=feature_class.__class__.__name__,
                 )
         return required_features
 
