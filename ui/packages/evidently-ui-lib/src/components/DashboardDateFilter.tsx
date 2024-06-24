@@ -103,12 +103,6 @@ export const DashboardDateFilter = ({ dataRanges }: DashboardDateFilterProps) =>
                       params.delete(FILTER_QUERY_PARAMS.FROM)
                       params.delete(FILTER_QUERY_PARAMS.TO)
 
-                      params.append(
-                        FILTER_QUERY_PARAMS.FROM,
-                        formatDate(dataRanges.minDate.toDate())
-                      )
-                      params.append(FILTER_QUERY_PARAMS.TO, formatDate(dataRanges.maxDate.toDate()))
-
                       return params
                     },
                     { preventScrollReset: true, replace: true }
