@@ -110,7 +110,7 @@ export const DashboardParams = ({
                   onChange={(event) => setIsDashboardHideDates(event.target.checked)}
                 ></Switch>
               }
-              label="Hide dates"
+              label="Show in order"
             />
           </Box>
         </Grid>
