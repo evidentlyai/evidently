@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { Alert, AlertTitle, Snackbar, Typography } from '@mui/material'
+import { Alert, AlertTitle, IconButton, Snackbar, Typography } from '@mui/material'
 import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
 import { ErrorData } from '~/api/types/utils'
 import type { Fetcher } from 'react-router-dom'
+import { Close as CloseIcon } from '@mui/icons-material'
 
 type ActionData = ErrorData | undefined
 
@@ -48,7 +49,11 @@ export const ActionErrorSnackbar = () => {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={5000}
+      action={
+        <IconButton size="small" aria-label="close" color="inherit" onClick={() => setOpen(false)}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      }
       onClose={(_, reason) => {
         if (reason === 'clickaway') {
           return
