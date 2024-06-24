@@ -18,19 +18,21 @@ export const DashboardComponentTemplate = ({ Dashboard }: Props) => {
 
   const isShowDateFilter = data.min_timestamp !== null && data.max_timestamp !== null
   const dataRanges = { minDate: dayjs(data.min_timestamp), maxDate: dayjs(data.max_timestamp) }
-
-  const [isMonitoringByTime, setIsMonitoringByTime] = useLocalStorage('is-monitoring-by-time', true)
+  const [isDashboardHideDates, setIsDashboardHideDates] = useLocalStorage(
+    'dashboard-hide-dates',
+    false
+  )
 
   return (
     <>
       <DashboardParams
         dataRanges={dataRanges}
         isShowDateFilter={isShowDateFilter}
-        isMonitoringByTime={isMonitoringByTime}
-        setIsMonitoringByTime={setIsMonitoringByTime}
+        isDashboardHideDates={isDashboardHideDates}
+        setIsDashboardHideDates={setIsDashboardHideDates}
       />
 
-      <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical: !isMonitoringByTime }}>
+      <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical: isDashboardHideDates }}>
         <Dashboard data={data} />
       </DashboardViewParamsContext.Provider>
     </>

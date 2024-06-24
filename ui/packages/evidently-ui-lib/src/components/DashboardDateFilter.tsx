@@ -38,8 +38,8 @@ interface DataRangesProps {
 
 interface DashboardDateFilterProps {
   isShowDateFilter: boolean
-  isMonitoringByTime: boolean
-  setIsMonitoringByTime: React.Dispatch<React.SetStateAction<boolean>>
+  isDashboardHideDates: boolean
+  setIsDashboardHideDates: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const getDashboardQueryParams = (searchParams: URLSearchParams) => {
@@ -66,8 +66,8 @@ export const useIsCorrectTimeInterval = ({ dataRanges }: DataRangesProps) => {
 
 export const DashboardParams = ({
   dataRanges,
-  isMonitoringByTime,
-  setIsMonitoringByTime,
+  isDashboardHideDates,
+  setIsDashboardHideDates,
   isShowDateFilter
 }: DashboardDateFilterProps & DataRangesProps) => {
   const { isCorrectTimeInterval, date_from, date_to, setSearchParams } = useIsCorrectTimeInterval({
@@ -106,11 +106,11 @@ export const DashboardParams = ({
             <FormControlLabel
               control={
                 <Switch
-                  checked={isMonitoringByTime}
-                  onChange={(event) => setIsMonitoringByTime(event.target.checked)}
+                  checked={isDashboardHideDates}
+                  onChange={(event) => setIsDashboardHideDates(event.target.checked)}
                 ></Switch>
               }
-              label="Monitoring by time"
+              label="Hide dates"
             />
           </Box>
         </Grid>
