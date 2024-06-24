@@ -54,10 +54,10 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
             raise ValueError("PandasEngine works only with pd.DataFrame input data")
         return create_data_definition(reference_data, current_data, column_mapping, categorical_features_cardinality)
 
-    def generate_additional_features(self, data: PythonInputData):
+    def generate_additional_features(self, data: PythonInputData) -> Dict[tuple, GeneratedFeature]:
         curr_additional_data = None
         ref_additional_data = None
-        features = {}
+        features: Dict[tuple, GeneratedFeature] = {}
         for metric, calculation in self.get_metric_execution_iterator():
             try:
                 required_features = metric.required_features(data.data_definition)

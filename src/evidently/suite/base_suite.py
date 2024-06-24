@@ -47,6 +47,7 @@ from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.data_preprocessing import FeatureDefinition
 
 USE_UJSON = False
 
@@ -91,6 +92,10 @@ def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Uni
             yield field_name, field
 
 
+class RunMetadata(BaseModel):
+    descriptors: Dict[str, FeatureDefinition] = {}
+
+
 @dataclasses.dataclass
 class Context:
     """Pipeline execution context tracks pipeline execution and lifecycle"""
@@ -106,6 +111,7 @@ class Context:
     features: Optional[Dict[tuple, GeneratedFeature]] = None
     options: Options = Options()
     data_definition: Optional["DataDefinition"] = None
+    run_metadata: RunMetadata = RunMetadata()
 
     def get_data_definition(
         self,
@@ -125,6 +131,20 @@ class Context:
     def get_datasets(self):
         return self.engine.form_datasets(self.data, self.features, self.data_definition)
 
+    def set_features(self, features: Optional[Dict[tuple, GeneratedFeature]]):
+        if features is None:
+            return
+        self.features = features
+        for feature in features.values():
+            feature_name = feature.feature_name()
+            feature_class = feature_name.feature_class
+            self.run_metadata.descriptors[feature_name.name] = FeatureDefinition(
+                feature_name=feature_name.name,
+                display_name=feature_name.display_name,
+                feature_type=feature_class.feature_type,  # type: ignore[union-attr]
+                feature_class=feature_class.__class__.__name__,
+            )
+
 
 class ContextPayload(BaseModel):
     metrics: List[Metric]
@@ -133,6 +153,7 @@ class ContextPayload(BaseModel):
     test_results: List[TestResult]
     options: Options = Options()
     data_definition: Optional[DataDefinition]
+    run_metadata: RunMetadata = RunMetadata()
 
     @classmethod
     def from_context(cls, context: Context):
@@ -143,6 +164,7 @@ class ContextPayload(BaseModel):
             test_results=list(context.test_results.values()),
             options=context.options,
             data_definition=context.data_definition,
+            run_metadata=context.run_metadata,
         )
 
     def to_context(self) -> Context:

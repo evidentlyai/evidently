@@ -73,7 +73,6 @@ def _check_filter(
 
 class DataDefinition(EnumValueMixin):
     columns: Dict[str, ColumnDefinition]
-    descriptors: Dict[str, FeatureDefinition] = {}
     target: Optional[ColumnDefinition]
     prediction_columns: Optional[PredictionColumns]
     id_column: Optional[ColumnDefinition]
@@ -484,7 +483,6 @@ def create_data_definition(
     classification_labels = mapping.target_names or labels
     return DataDefinition(
         columns={col.column_name: col for col in all_columns if col is not None},
-        descriptors={},
         id_column=id_column,
         user_id=user_id,
         item_id=item_id,
