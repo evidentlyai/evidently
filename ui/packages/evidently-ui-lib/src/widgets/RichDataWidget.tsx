@@ -19,11 +19,13 @@ import { RichDataParams } from '~/api'
 
 import Plot from '~/components/Plot'
 import { BigTableDetails } from './BigTableWidget/BigTableDetails'
+import { useDashboardViewParams } from '~/contexts/DashboardViewParams'
 
 const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: number }> = (
   props
 ) => {
   const [details, setDetails] = useState<boolean>(false)
+  const viewParams = useDashboardViewParams()
   return (
     <React.Fragment>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
@@ -62,6 +64,10 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
               layout={{
                 ...props.graph.layout,
                 title: undefined,
+                xaxis: {
+                  ...props.graph.layout?.xaxis,
+                  type: viewParams?.isXaxisAsCategorical ? 'category' : undefined
+                }
               }}
               config={{ responsive: true }}
               style={{

@@ -155,7 +155,9 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
             return self.build(data_storage, project_id, timestamp_start, timestamp_end)
         except Exception as e:
             traceback.print_exc()
-            return counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
+            c = counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
+            c.id = str(self.id)
+            return c
 
 
 class DashboardTab(BaseModel):

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Alert, AlertTitle, IconButton, Snackbar, Typography } from '@mui/material'
+import { Alert, AlertTitle, IconButton, Snackbar, Typography, Box } from '@mui/material'
 import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
 import { ErrorData } from '~/api/types/utils'
 import type { Fetcher } from 'react-router-dom'
@@ -49,11 +49,6 @@ export const ActionErrorSnackbar = () => {
   return (
     <Snackbar
       open={open}
-      action={
-        <IconButton size="small" aria-label="close" color="inherit" onClick={() => setOpen(false)}>
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      }
       onClose={(_, reason) => {
         if (reason === 'clickaway') {
           return
@@ -63,14 +58,28 @@ export const ActionErrorSnackbar = () => {
       }}
     >
       <Alert severity="error">
-        <AlertTitle>Something went wrong</AlertTitle>
-        {error && (
-          <Typography fontWeight={'bold'}>
-            {[`Status: ${error.status_code}`, typeof error?.detail === 'string' && error.detail]
-              .filter(Boolean)
-              .join(', ')}
-          </Typography>
-        )}
+        <Box display={'flex'} justifyContent={'space-between'} alignItems={'flex-start'} gap={2}>
+          <Box>
+            <AlertTitle>Something went wrong</AlertTitle>
+            {error && (
+              <Typography fontWeight={'bold'}>
+                {[`Status: ${error.status_code}`, typeof error?.detail === 'string' && error.detail]
+                  .filter(Boolean)
+                  .join(', ')}
+              </Typography>
+            )}
+          </Box>
+          <Box>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setOpen(false)}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
       </Alert>
     </Snackbar>
   )
