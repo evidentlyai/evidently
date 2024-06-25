@@ -1,4 +1,4 @@
-import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import { ActionsErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectReportsAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { projectProvider } from '~/api'
@@ -19,7 +19,12 @@ export default {
       'evidently-ui-lib/routes-components/snapshots'
     )
 
-    const Component = () => <SnapshotsListTemplate type="reports" />
+    const Component = () => (
+      <>
+        <ActionsErrorSnackbar />
+        <SnapshotsListTemplate type="reports" />
+      </>
+    )
 
     return { ...rest, Component }
   },

@@ -5,7 +5,7 @@ import { ErrorData } from '~/api/types/utils'
 import type { Fetcher } from 'react-router-dom'
 import { Close as CloseIcon } from '@mui/icons-material'
 
-type ActionData = ErrorData | undefined
+type ActionErrorData = ErrorData | undefined | null
 
 export const GenericErrorBoundary = () => {
   const error = useRouteError()
@@ -28,23 +28,24 @@ export const GenericErrorBoundary = () => {
           {typeof error.data === 'string' && <Typography>{error.data}</Typography>}
         </>
       )}
+
       {typeof error === 'string' && <Typography fontWeight={'bold'}>{error}</Typography>}
     </Alert>
   )
 }
 
-export const ActionErrorSnackbar = () => {
-  const actionData = useActionData() as ActionData
-  const fetchers = useFetchers() as Fetcher<ActionData>[]
+const ErrorAlertSnackBar = ({ data }: { data: ActionErrorData }) => {
   const [open, setOpen] = React.useState(false)
 
-  const error = actionData?.error || fetchers.find((f) => Boolean(f.data?.error))?.data?.error
-
   useEffect(() => {
-    if (error) {
+    if (data?.error) {
       setOpen(true)
     }
-  }, [error])
+  }, [data?.error])
+
+  if (!data?.error) {
+    return null
+  }
 
   return (
     <Snackbar
@@ -61,9 +62,12 @@ export const ActionErrorSnackbar = () => {
         <Box display={'flex'} justifyContent={'space-between'} alignItems={'flex-start'} gap={2}>
           <Box>
             <AlertTitle>Something went wrong</AlertTitle>
-            {error && (
+            {data?.error && (
               <Typography fontWeight={'bold'}>
-                {[`Status: ${error.status_code}`, typeof error?.detail === 'string' && error.detail]
+                {[
+                  `Status: ${data.error.status_code}`,
+                  typeof data.error?.detail === 'string' && data.error.detail
+                ]
                   .filter(Boolean)
                   .join(', ')}
               </Typography>
@@ -74,7 +78,9 @@ export const ActionErrorSnackbar = () => {
               size="small"
               aria-label="close"
               color="inherit"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false)
+              }}
             >
               <CloseIcon />
             </IconButton>
@@ -83,4 +89,16 @@ export const ActionErrorSnackbar = () => {
       </Alert>
     </Snackbar>
   )
+}
+
+export const ActionsErrorSnackbar = () => {
+  const data = useActionData() as ActionErrorData
+  return <ErrorAlertSnackBar data={data} />
+}
+
+export const FetchersErrorSnackbar = () => {
+  const fetchers = useFetchers() as Fetcher<ActionErrorData>[]
+  const data = fetchers.find((f) => Boolean(f.data?.error))?.data
+
+  return <ErrorAlertSnackBar data={data} />
 }

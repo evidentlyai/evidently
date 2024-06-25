@@ -64,12 +64,12 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
       return ensureID(data)
     },
     async reloadSnapshots({ project }) {
-      const { error, response } = await client.GET('/api/projects/{project_id}/reload', {
+      const { error } = await client.GET('/api/projects/{project_id}/reload', {
         params: { path: { project_id: project.id } }
       })
 
       if (error) {
-        throw json(error satisfies ErrorResponse, { status: response.status })
+        return { error }
       }
 
       return null

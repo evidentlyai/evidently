@@ -2,7 +2,6 @@ import { Outlet, ScrollRestoration, useLoaderData } from 'react-router-dom'
 import { NavigationProgress, BreadCrumbs, ServiceHeader, crumbFunction } from '~/components'
 import type { LoaderData } from './data'
 import { Box } from '@mui/material'
-import { ActionErrorSnackbar } from '~/components/Error'
 
 export const HomeComponentTemplate = ({
   logoSrc,
@@ -15,7 +14,6 @@ export const HomeComponentTemplate = ({
 
   return (
     <>
-      <ActionErrorSnackbar />
       <ServiceHeader authComponent={authComponent} version={version} logoSrc={logoSrc} />
       <NavigationProgress />
       <ScrollRestoration />

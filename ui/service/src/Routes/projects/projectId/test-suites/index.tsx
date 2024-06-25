@@ -3,7 +3,7 @@ import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshot
 import { projectProvider } from '~/api'
 
 import TestSuiteRoute from './testSuiteId'
-import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import { ActionsErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 
 const { loader, action } = injectTestSuitesAPI({ api: projectProvider })
 
@@ -15,7 +15,12 @@ export default {
       'evidently-ui-lib/routes-components/snapshots'
     )
 
-    const Component = () => <SnapshotsListTemplate type="test suites" />
+    const Component = () => (
+      <>
+        <ActionsErrorSnackbar />
+        <SnapshotsListTemplate type="test suites" />
+      </>
+    )
 
     return { ...rest, Component }
   },
