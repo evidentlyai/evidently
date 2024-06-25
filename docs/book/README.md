@@ -19,7 +19,7 @@ Evidently helps evaluate and track quality of ML-based systems, from experimenta
 
 Evidently is both a library of 100+ ready-made evaluations, and a framework to easily implement yours: from Python functions to LLM judges. 
 
-Evidently has a modular architecture, and you can start with ad hoc checks without complex installations. There are 3 interconnected interfaces: for any metric, you can get a `Report` with a pre-built visualization, run a conditional check with `TestSuite` to get a pass/fail outcome, and plot the evaluation results over time on a `Dashboard`.
+Evidently has a modular architecture, and you can start with ad hoc checks without complex installations. There are 3 interfaces: you can get a visual `Report` to see a summary of evaluation metrics, run conditional checks with a `TestSuite` to get a pass/fail outcome, or plot the evaluation results over time on a Monitoring `Dashboard`.
 
 ## Reports
 

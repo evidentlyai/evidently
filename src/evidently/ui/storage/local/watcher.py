@@ -1,7 +1,9 @@
 import os.path
 import re
 import uuid
+from pathlib import Path
 
+from watchdog.events import EVENT_TYPE_CREATED
 from watchdog.events import EVENT_TYPE_DELETED
 from watchdog.events import EVENT_TYPE_MODIFIED
 from watchdog.events import EVENT_TYPE_MOVED
@@ -30,28 +32,65 @@ class WorkspaceDirHandler(FileSystemEventHandler):
             self.on_snapshot_event(event)
 
     def is_project_event(self, event: FileSystemEvent):
-        return re.fullmatch(os.path.join(self.path, uuid4hex, METADATA_PATH), event.src_path, re.I)
+        path = Path(event.src_path)
+        f_name = path.name
+        if f_name != METADATA_PATH:
+            return False
+        if not re.fullmatch(uuid4hex, path.parent.name):
+            return False
+        if not path.parent.parent.samefile(self.path):
+            return False
+        return True
 
     def is_snapshot_event(self, event: FileSystemEvent):
-        return re.fullmatch(os.path.join(self.path, uuid4hex, SNAPSHOTS, uuid4hex + r"\.json"), event.src_path, re.I)
+        path = Path(event.src_path)
+        f_name = path.name
+        if not re.fullmatch(uuid4hex + r"\.json", f_name):
+            return False
+        if path.parent.name != SNAPSHOTS:
+            return False
+        if not re.fullmatch(uuid4hex, path.parent.parent.name):
+            return False
+        if not path.parent.parent.parent.samefile(self.path):
+            return False
+        return True
 
     def parse_project_id(self, path):
-        m = re.match(os.path.join(self.path, f"({uuid4hex})"), path)
-        if m:
-            return m.group(1)
-        return None
+        path = Path(path)
+        f_name = path.name
+        if f_name != METADATA_PATH:
+            return None
+        if not re.fullmatch(uuid4hex, path.parent.name):
+            return None
+        return path.parent.name
 
     def parse_project_and_snapshot_id(self, path):
-        m = re.match(os.path.join(self.path, f"({uuid4hex})", SNAPSHOTS, f"({uuid4hex})"), path)
-        if m:
-            return m.group(1), m.group(2)
-        return None, None
+        path = Path(path)
+        f_name = path.name
+        if not re.fullmatch(uuid4hex + r"\.json", f_name):
+            return None, None
+        snapshot_id = f_name[:-5]
+        if path.parent.name != SNAPSHOTS:
+            return None, None
+        if not re.fullmatch(uuid4hex, path.parent.parent.name):
+            return None, None
+        if not path.parent.parent.parent.samefile(self.path):
+            return None, None
+        return path.parent.parent.name, snapshot_id
 
     def on_project_event(self, event: FileSystemEvent):
         project_id = self.parse_project_id(event.src_path)
         if project_id is None:
             return
-        if event.event_type == EVENT_TYPE_MODIFIED:
+        if event.event_type in (EVENT_TYPE_CREATED, EVENT_TYPE_MOVED):
+            project = load_project(self.state.location, project_id)
+            if project is None:
+                return
+            self.state.projects[project.id] = project.bind(self.state.project_manager, NO_USER.id)
+            if project.id not in self.state.snapshots:
+                self.state.snapshots[project.id] = {}
+                self.state.snapshot_data[project.id] = {}
+        if event.event_type in (EVENT_TYPE_MODIFIED,):
             project = load_project(self.state.location, project_id)
             if project is None:
                 return
@@ -71,7 +110,9 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         project = self.state.projects.get(pid)
         if project is None:
             return
-        if (event.event_type in (EVENT_TYPE_MODIFIED, EVENT_TYPE_MOVED)) and os.path.exists(event.src_path):
+        if (event.event_type in (EVENT_TYPE_MODIFIED, EVENT_TYPE_CREATED, EVENT_TYPE_MOVED)) and os.path.exists(
+            event.src_path
+        ):
             self.state.reload_snapshot(project, sid)
         if (
             event.event_type == EVENT_TYPE_DELETED
