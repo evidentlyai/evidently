@@ -13,7 +13,7 @@ class TaskType:
     RECOMMENDER_SYSTEMS: str = "recsys"
 
 
-class RecomType(Enum):
+class RecomType(str, Enum):
     SCORE = "score"
     RANK = "rank"
 
