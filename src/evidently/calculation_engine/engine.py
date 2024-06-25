@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from evidently.suite.base_suite import Context
 
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)
-TInputData = TypeVar("TInputData")
+TInputData = TypeVar("TInputData", bound=GenericInputData)
 
 
 class Engine(Generic[TMetricImplementation, TInputData]):
