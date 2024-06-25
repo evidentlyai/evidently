@@ -1,16 +1,14 @@
 ---
-description: List of all the metrics and metric presets available in Evidently.
+description: List of Metrics, Descriptors and Metric Presets available in Evidently.
 ---
 
 <details>
 
 <summary>How to use this page</summary>
 
-This is a reference page. It shows all the available Metrics and Metric Presets. 
+This is a reference page. It shows all the available Metrics, Descriptors and Presets. 
   
 You can use the menu on the right to navigate the sections. We organize the Metrics by logical groups. Note that these groups do **not** match the Presets with a similar name. For example, there are more Data Quality Metrics than included in the `DataQualityPreset`. 
-  
-You can use this reference page to discover Metrics to include in your custom Reports.
 
 # How to read the tables
 
@@ -23,7 +21,7 @@ You can use this reference page to discover Metrics to include in your custom Re
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All metrics" example notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, check the "All metrics" notebook in [examples](../examples/examples.md). If you notice an error, please send us a pull request with an update! 
 {% endhint %}
 
 # Metric Presets
@@ -34,7 +32,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Data Quality Preset</summary>
 
-`DataQualityPreset` captures column and dataset summaries. Input features are required. Prediction and target are optional.
+`DataQualityPreset` captures column and dataset summaries. Input columns are required. Prediction and target are optional.
 
 **Composition**:
 * `DatasetSummaryMetric()`
@@ -51,7 +49,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 <summary>Data Drift Preset</summary>
 
-`DataDriftPreset` evaluates the data distribution drift in all individual columns, and share of drifting columns in the dataset. Input features are required. 
+`DataDriftPreset` evaluates the data distribution drift in all individual columns, and share of drifting columns in the dataset. Input columns are required. 
 
 **Composition**:
 * `DataDriftTable()` for all or specified `columns`
@@ -154,7 +152,7 @@ How to set [data drift parameters](../customization/options-for-statistical-test
   
 <summary>Text Overview Preset</summary>
 
-`TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns (inputs and/or outputs) are required.
+`TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns are required.
 
 **Comoposition**:
 * `ColumnSummaryMetric()` for text descriptors for all columns. Descriptors included:
@@ -163,7 +161,7 @@ How to set [data drift parameters](../customization/options-for-statistical-test
   * `OOV()`
   * `TextLength()`
   * `NonLetterCharacterPercentage()` 
-* `SemanticSimilarity()` between each pair of text columns - if more than one text column is provided.
+* `SemanticSimilarity()` between each pair of text columns, if there more than one. 
 
 **Required parameters**:
 * `column_name` or `columns` list
@@ -260,19 +258,19 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 Text Evals only apply to text columns. To compute a Descriptor for a single text column, use a `TextEvals` Preset. 
 
-You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) for the descriptor, or pick a Test (e.g., `TestColumnValueMin`) to run validations. 
+You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) to visualize the descriptor, or pick a [Test](all-tests.md) (e.g., `TestColumnValueMin`) to run validations. 
 
 ## Descriptors: Patterns
 
 | Descriptor | Parameters |
 | - | - |
-| **RegExp()** <ul><li> Matches text against any specified regular expression. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `RegExp(reg_exp=r"^I")`. | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **RegExp()** <ul><li> Matches text against any specified regular expression. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `RegExp(reg_exp=r"^I")` | **Required:**<br>`reg_exp`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **BeginsWith()** <ul><li> Checks if the text begins with a specified combination. </li><li> Returns True/False for every input.</li></ul> Example use:<br> `BeginsWith(prefix="How")`| **Required:**<br>`prefix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` or `False`</li></ul> |
 | **EndsWith()** <ul><li> Checks if the text ends with a specified combination. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `EndsWith(suffix="Thank you.")`| **Required:**<br>`suffix`<br><br>**Optional:**<ul><li>`display_name`</li><li>`case_sensitive = True` or `False`</li></ul> |
-| **Contains()** <ul><li> Checks if the text contains any or all specified items (e.g. strings, competitor names, etc.) </li><li> Returns True/False for every input. </li></ul> Example use:<br> `Contains(items=["medical leave"]`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` or `False`</li></ul> |
+| **Contains()** <ul><li> Checks if the text contains any or all specified items (e.g. competitor names, etc.) </li><li> Returns True/False for every input. </li></ul> Example use:<br> `Contains(items=["medical leave"])`| **Required:**<br>`items`: List[str]<br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` (available: `'all'`)</li><li>`case_sensitive = True` or `False`</li></ul> |
 | **DoesNotContain()** <ul><li>Checks if the text does not contain any or all specified items. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `DoesNotContain(items=["as a large language model"]` | **Required:**<br>`items`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` or 'any'</li><li>`case_sensitive = True` or `False`</li></ul> |
-| **IncludesWords()** <ul><li> Checks if the text includes any (default) or all specified words. </li><li> Considers only vocabulary words. </li><li> By default, considers inflected and variant forms of the same word. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `IncludesWords(words_list=['booking', 'hotel', 'flight']` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` or `'all'`)</li><li>`lemmatize = True` or `False`</li></ul> |
-| **ExcludesWords()** <ul><li>Checks if the text excludes all specified words.</li><li> Considers only vocabulary words. </li><li>By default, considers inflected and variant forms of the same word. </li><li>Returns True/False for every input. </li></ul> Example use:<br> `ExcludesWords(words_list=['buy', 'sell', 'bet']`| **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` or `'any'`</li><li>`lemmatize = True` or `False`</li></ul> |
+| **IncludesWords()** <ul><li> Checks if the text includes **any** (default) or **all** specified words. </li><li> Considers only vocabulary words (from NLTK vocabulary). </li><li> By default, considers inflected and variant forms of the same word. </li><li> Returns True/False for every input. </li></ul> Example use:<br> `IncludesWords(words_list=['booking', 'hotel', 'flight']` | **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'any'` or `'all'`)</li><li>`lemmatize = True` or `False`</li></ul> |
+| **ExcludesWords()** <ul><li>Checks if the text excludes all specified words.</li><li> Considers only vocabulary words (from NLTK vocabulary). </li><li>By default, considers inflected and variant forms of the same word. </li><li>Returns True/False for every input. </li></ul> Example use:<br> `ExcludesWords(words_list=['buy', 'sell', 'bet']`| **Required:**<br>`words_list`: List[str] <br><br>**Optional:**<ul><li>`display_name`</li><li>`mode = 'all'` or `'any'`</li><li>`lemmatize = True` or `False`</li></ul> |
 
 ## Descriptors: Text stats
 
@@ -292,7 +290,7 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 | **HuggingFaceToxicityModel()** <ul><li> Detects hate speech using [HuggingFace Model](https://huggingface.co/facebook/roberta-hate-speech-dynabench-r4-target). </li><li> Returns predicted probability for the “hate” label. </li><li> Scale: 0 to 1. </li></ul> | **Optional**: <ul><li>`toxic_label="hate"` (default)</li><li> `display_name`</li></ul> |
 | **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
 | **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model as LLM-as-a-judge.| See [docs](../customization/llm_as_a_judge.md) for examples.|
-| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between two columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0 to 0.5: unrealted or different, 1: identical). </li></ul> Example use:<br>`ColumnSummaryMetric(column_name=SemanticSimilarity().on(["response", "new_response"]))`. | **Required:** <ul><li>two column names</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
+| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0: different, 0.5: unrelated, 1: identical). </li></ul> Example use:<br>`ColumnSummaryMetric(column_name=SemanticSimilarity().on(["response", "new_response"]))`. | **Required:** <ul><li>two column names</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Text-Specific Metrics
 
@@ -308,7 +306,7 @@ The following metrics only apply to text columns.
 
 **Defaults for Data Drift**. By default, all data drift metrics use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a drift detection method based on feature type and volume. You always need a reference dataset.
 
-To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md) or [embeddings drift parameters](../customization/embeddings-drift-parameters.md). You can choose from 20+ drift detection methods. You can optionally pass feature importances.
+To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md) or [embeddings drift parameters](../customization/embeddings-drift-parameters.md). You can choose from 20+ drift detection methods and optionally pass [feature importances](../customization/feature-importance.md).
 
 | Metric | Parameters |
 | - | - |
