@@ -23,6 +23,9 @@ fsspec[full]==2024.2.0
 certifi==2023.07.22
 urllib3==1.26.19
 ujson==5.4.0
+opentelemetry-sdk==1.25.0
+opentelemetry-exporter-otlp-proto-grpc==1.25.0
+opentelemetry-exporter-otlp-proto-http==1.25.0
 
 openai==1.16.2
 evaluate==0.4.1

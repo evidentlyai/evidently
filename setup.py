@@ -93,6 +93,9 @@ setup_args = dict(
             "httpx==0.24.1",
             "ruff==0.3.7",
             "pre-commit==3.5.0",
+            "opentelemetry-sdk==1.25.0",
+            "opentelemetry-exporter-otlp-proto-grpc==1.25.0",
+            "opentelemetry-exporter-otlp-proto-http==1.25.0",
         ],
         "llm": [
             "openai>=1.16.2",
