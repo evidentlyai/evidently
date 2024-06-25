@@ -147,7 +147,7 @@ NDCG (Normalized Discounted Cumulative Gain) at K reflects the ranking quality, 
 * **Compute the discounted cumulative gain (DCG)** at K by the user. DCG at K measures the quality of the ranking (= total relevance) for a list of top-K items. We add a logarithmic discount to account for diminishing returns from each following item being lower on the list. To get the resulting DCG, you can compute a weighted sum of the relevance scores for all items from the top of the list to K with an applied discount.
 
 $$
-\text{DCG@K} = \sum_{k=1}^{K} \frac{rel_i}{\log_2(i + 1)}
+\text{DCG@K} = \sum_{i=1}^{K} \frac{rel_i}{\log_2(i + 1)}
 $$
 
 Where *Rel(i)* is the relevance score of the item at rank *i*. 
