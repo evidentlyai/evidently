@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Alert, AlertTitle, IconButton, Snackbar, Typography, Box } from '@mui/material'
 import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
-import { ErrorData } from '~/api/types/utils'
+import type { ErrorData, ErrorResponse } from '~/api/types/utils'
 import type { Fetcher } from 'react-router-dom'
 import { Close as CloseIcon } from '@mui/icons-material'
 
@@ -36,16 +36,15 @@ export const GenericErrorBoundary = () => {
 
 const ErrorAlertSnackBar = ({ data }: { data: ActionErrorData }) => {
   const [open, setOpen] = React.useState(false)
+  const error = React.useRef<ErrorResponse | null>(null)
 
   useEffect(() => {
     if (data?.error) {
+      error.current = data.error
+
       setOpen(true)
     }
-  }, [data?.error])
-
-  if (!data?.error) {
-    return null
-  }
+  }, [data])
 
   return (
     <Snackbar
@@ -62,11 +61,12 @@ const ErrorAlertSnackBar = ({ data }: { data: ActionErrorData }) => {
         <Box display={'flex'} justifyContent={'space-between'} alignItems={'flex-start'} gap={2}>
           <Box>
             <AlertTitle>Something went wrong</AlertTitle>
-            {data?.error && (
+            {error.current && (
               <Typography fontWeight={'bold'}>
                 {[
-                  `Status: ${data.error.status_code}`,
-                  typeof data.error?.detail === 'string' && data.error.detail
+                  typeof error.current.status_code === 'number' &&
+                    `Status: ${error.current.status_code}`,
+                  typeof error.current.detail === 'string' && error.current.detail
                 ]
                   .filter(Boolean)
                   .join(', ')}
