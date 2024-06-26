@@ -12,7 +12,7 @@ export const theme = createTheme({
     primary: { main: colors.grey[900], light: colors.grey[200] },
     // we use `secondary` color for interactive elements
     secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] },
-    background: { default: 'white', paper: 'white' }
+    background: { default: '#fff', paper: '#fff' }
   },
   components: {
     MuiLink: {
@@ -39,7 +39,7 @@ export const theme = createTheme({
           '&:hover': {
             color: mainRed,
             borderColor: mainRed,
-            background: 'white'
+            background: '#fff'
           }
         },
         text: {
