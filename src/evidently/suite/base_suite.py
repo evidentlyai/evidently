@@ -477,10 +477,9 @@ class ReportBase(Display):
     metadata: Dict[str, MetadataValueType] = {}
     tags: List[str] = []
 
-    def __init__(self, options: AnyOptions = None, timestamp: Optional[datetime] = None, name: str = None):
+    def __init__(self, options: AnyOptions = None, name: str = None):
         self.name = name
         self.options = Options.from_any_options(options)
-        self.timestamp = timestamp or datetime.now()
 
     def _get_json_content(
         self,
