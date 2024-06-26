@@ -1,0 +1,17 @@
+name: Get bikes dataset cached
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v4
+      id: cache-bikes-dataset
+      env:
+        cache-name: cache-bikes-dataset
+      with:
+        path: Bike-Sharing-Dataset.zip
+        key: cache-bikes-dataset
+        enableCrossOsArchive: true
+
+    - name: Download test data
+      if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
+      run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+      shell: bash
