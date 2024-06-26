@@ -44,6 +44,7 @@ class TestSuite(ReportBase):
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
     _tests: List[Test]
+    _timestamp: Optional[datetime]
 
     def __init__(
         self,
@@ -55,9 +56,13 @@ class TestSuite(ReportBase):
         tags: List[str] = None,
         name: str = None,
     ):
-        super().__init__(options, timestamp, name)
+        super().__init__(options, name)
         if id is not None:
             warnings.warn("id argument is deprecated and has no effect", DeprecationWarning)
+        self._timestamp = None
+        if timestamp is not None:
+            warnings.warn("timestamp argument is deprecated, use timestamp in run() method", DeprecationWarning)
+            self._timestamp = timestamp
         self._inner_suite = Suite(self.options)
         self._test_presets = []
         self._test_generators = []
@@ -102,10 +107,15 @@ class TestSuite(ReportBase):
         column_mapping: Optional[ColumnMapping] = None,
         engine: Optional[Type[Engine]] = None,
         additional_data: Dict[str, Any] = None,
+        timestamp: Optional[datetime] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
         self.id = uuid.uuid4()
+        if self._timestamp is not None:
+            self.timestamp = self._timestamp
+        else:
+            self.timestamp = timestamp or datetime.now()
         self._inner_suite.reset()
         self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
         self._add_tests()
@@ -264,12 +274,12 @@ class TestSuite(ReportBase):
         ctx = snapshot.suite.to_context()
         suite = TestSuite(
             tests=None,
-            timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
             name=snapshot.name,
         )
         suite.id = snapshot.id
+        suite.timestamp = snapshot.timestamp
         suite._inner_suite.context = ctx
         return suite

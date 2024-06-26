@@ -1,8 +1,8 @@
 import dataclasses
-import datetime
 import uuid
 import warnings
 from collections import defaultdict
+from datetime import datetime
 from typing import Any
 from typing import Dict
 from typing import List
@@ -40,13 +40,14 @@ METRIC_PRESETS = "metric_presets"
 class Report(ReportBase):
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
+    _timestamp: Optional[datetime]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
     def __init__(
         self,
         metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
         options: AnyOptions = None,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: Optional[datetime] = None,
         id: uuid.UUID = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
@@ -56,13 +57,17 @@ class Report(ReportBase):
         dataset_id: str = None,
         name: str = None,
     ):
-        super().__init__(options, timestamp, name)
+        super().__init__(options, name)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
         if id is not None:
             warnings.warn("id argument is deprecated and has no effect", DeprecationWarning)
+        self._timestamp = None
+        if timestamp is not None:
+            warnings.warn("timestamp argument is deprecated, use timestamp in run() method", DeprecationWarning)
+            self._timestamp = timestamp
         self.metadata = metadata or {}
         self.tags = tags or []
         if model_id is not None:
@@ -82,6 +87,7 @@ class Report(ReportBase):
         column_mapping: Optional[ColumnMapping] = None,
         engine: Optional[Type[Engine]] = None,
         additional_data: Dict[str, Any] = None,
+        timestamp: Optional[datetime] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -89,6 +95,10 @@ class Report(ReportBase):
         if current_data is None:
             raise ValueError("Current dataset should be present")
         self.id = uuid.uuid4()
+        if self._timestamp is not None:
+            self.timestamp = self._timestamp
+        else:
+            self.timestamp = timestamp or datetime.now()
         self._inner_suite.reset()
         self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
 
@@ -261,13 +271,13 @@ class Report(ReportBase):
         metrics = [ctx.metrics[i] for i in snapshot.metrics_ids]
         report = Report(
             metrics=metrics,
-            timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
             name=snapshot.name,
         )
         report.id = snapshot.id
+        report.timestamp = snapshot.timestamp
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
         return report
