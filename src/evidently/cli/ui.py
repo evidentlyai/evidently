@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from typer import BadParameter
@@ -26,7 +27,6 @@ def ui(
     host: str = Option("0.0.0.0", help="Service host"),
     port: int = Option(8000, help="Service port"),
     workspace: str = Option("workspace", help="Path to workspace"),
-    use_deterministic_uuid: bool = Option(False, help="use deterministic uuid generation or not"),
     demo_projects: str = Option(
         "",
         "--demo-projects",
@@ -35,7 +35,7 @@ def ui(
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
     """Start Evidently UI service"""
-    if use_deterministic_uuid:
+    if os.environ.get("EXPERIMENTAL_DETERMINISTIC_UUID"):
         setup_deterministic_generation_uuid4()
 
     from evidently.ui.app import run_local
