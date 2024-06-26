@@ -86,7 +86,7 @@ TAGS = [
     "no_missing_values",
 ]
 
-SNAPSHOT_TAGS_ITER = cycle(
+SNAPSHOT_TAGS_ITER: cycle[List[str]] = cycle(
     [
         [TAGS[0], TAGS[1], TAGS[2]],
         [TAGS[1]],
