@@ -1,5 +1,6 @@
 import dataclasses
 import uuid
+import warnings
 from collections import Counter
 from datetime import datetime
 from typing import Any
@@ -55,8 +56,9 @@ class TestSuite(ReportBase):
         name: str = None,
     ):
         super().__init__(options, timestamp, name)
+        if id is not None:
+            warnings.warn("id argument is deprecated and has no effect", DeprecationWarning)
         self._inner_suite = Suite(self.options)
-        self.id = id or uuid.uuid4()
         self._test_presets = []
         self._test_generators = []
         self._tests = []
@@ -103,7 +105,7 @@ class TestSuite(ReportBase):
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
-
+        self.id = uuid.uuid4()
         self._inner_suite.reset()
         self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
         self._add_tests()
@@ -263,11 +265,11 @@ class TestSuite(ReportBase):
         suite = TestSuite(
             tests=None,
             timestamp=snapshot.timestamp,
-            id=snapshot.id,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
             name=snapshot.name,
         )
+        suite.id = snapshot.id
         suite._inner_suite.context = ctx
         return suite
