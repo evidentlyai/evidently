@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from itertools import cycle
+from typing import List
 
 import pandas as pd
 import requests
@@ -85,7 +86,7 @@ TAGS = [
     "no_missing_values",
 ]
 
-SNAPSHOT_TAGS = cycle(
+SNAPSHOT_TAGS_ITER = cycle(
     [
         [TAGS[0], TAGS[1], TAGS[2]],
         [TAGS[1]],
@@ -98,6 +99,10 @@ SNAPSHOT_TAGS = cycle(
         [],
     ]
 )
+
+
+def next_snapshot_tags() -> List[str]:
+    return next(SNAPSHOT_TAGS_ITER)
 
 
 def create_report(i: int, data):
@@ -118,7 +123,7 @@ def create_report(i: int, data):
             metrics.ColumnSummaryMetric(column_name="prediction"),
         ],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
-        tags=next(SNAPSHOT_TAGS),
+        tags=next_snapshot_tags(),
     )
     data_drift_report.set_batch_size("daily")
 
@@ -136,7 +141,7 @@ def create_test_suite(i: int, data):
     data_drift_test_suite = TestSuite(
         tests=[DataDriftTestPreset()],
         timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
-        tags=next(SNAPSHOT_TAGS),
+        tags=next_snapshot_tags(),
     )
 
     data_drift_test_suite.run(
