@@ -1,5 +1,11 @@
-import { Alert, AlertTitle, Typography } from '@mui/material'
-import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Alert, AlertTitle, IconButton, Snackbar, Typography, Box } from '@mui/material'
+import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
+import type { ErrorData, ErrorResponse } from '~/api/types/utils'
+import type { Fetcher } from 'react-router-dom'
+import { Close as CloseIcon } from '@mui/icons-material'
+
+type ActionErrorData = ErrorData | undefined | null
 
 export const GenericErrorBoundary = () => {
   const error = useRouteError()
@@ -22,7 +28,77 @@ export const GenericErrorBoundary = () => {
           {typeof error.data === 'string' && <Typography>{error.data}</Typography>}
         </>
       )}
+
       {typeof error === 'string' && <Typography fontWeight={'bold'}>{error}</Typography>}
     </Alert>
   )
+}
+
+const ErrorAlertSnackBar = ({ data }: { data: ActionErrorData }) => {
+  const [open, setOpen] = React.useState(false)
+  const error = React.useRef<ErrorResponse | null>(null)
+
+  useEffect(() => {
+    if (data?.error) {
+      error.current = data.error
+
+      setOpen(true)
+    }
+  }, [data])
+
+  return (
+    <Snackbar
+      open={open}
+      onClose={(_, reason) => {
+        if (reason === 'clickaway') {
+          return
+        }
+
+        setOpen(false)
+      }}
+    >
+      <Alert severity="error">
+        <Box display={'flex'} justifyContent={'space-between'} alignItems={'flex-start'} gap={2}>
+          <Box>
+            <AlertTitle>Something went wrong</AlertTitle>
+            {error.current && (
+              <Typography fontWeight={'bold'}>
+                {[
+                  typeof error.current.status_code === 'number' &&
+                    `Status: ${error.current.status_code}`,
+                  typeof error.current.detail === 'string' && error.current.detail
+                ]
+                  .filter(Boolean)
+                  .join(', ')}
+              </Typography>
+            )}
+          </Box>
+          <Box>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => {
+                setOpen(false)
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      </Alert>
+    </Snackbar>
+  )
+}
+
+export const ActionsErrorSnackbar = () => {
+  const data = useActionData() as ActionErrorData
+  return <ErrorAlertSnackBar data={data} />
+}
+
+export const FetchersErrorSnackbar = () => {
+  const fetchers = useFetchers() as Fetcher<ActionErrorData>[]
+  const data = fetchers.find((f) => Boolean(f.data?.error))?.data
+
+  return <ErrorAlertSnackBar data={data} />
 }

@@ -276,3 +276,5 @@ export class JsonParser {
       : result
   }
 }
+
+export const JSONParseExtended = <T extends Object>(str: string) => new JsonParser().parse(str) as T

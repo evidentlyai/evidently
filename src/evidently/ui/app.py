@@ -26,7 +26,7 @@ def run(config: AppConfig):
     uvicorn.run(app, host=config.service.host, port=config.service.port)
 
 
-def run_local(
+def get_config(
     host: str = "0.0.0.0",
     port: int = 8000,
     workspace: str = "workspace",
@@ -42,7 +42,24 @@ def run_local(
     secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)
     if secret is not None:
         config.security = TokenSecurityComponent(token=SecretStr(secret))
+
+    return config
+
+
+def run_local(
+    host: str = "0.0.0.0",
+    port: int = 8000,
+    workspace: str = "workspace",
+    secret: str = None,
+    conf_path: str = None,
+):
+    config = get_config(host=host, port=port, workspace=workspace, secret=secret, conf_path=conf_path)
     run(config)
+
+
+def litestar_app():
+    config = get_config()
+    return create_app(config)
 
 
 def main():

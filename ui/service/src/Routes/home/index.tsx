@@ -1,10 +1,10 @@
-import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import { FetchersErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import { injectAPI } from 'evidently-ui-lib/routes-components/home/data'
-import { api } from 'api/RemoteApi'
-import logoSrc from 'assets/logo.png'
+import { getLoaderAction } from 'evidently-ui-lib/routes-components/home/data'
+import { versionProvider } from '~/api'
+import logoSrc from '~/assets/logo.png'
 
-const { loader } = injectAPI({ api })
+const { loader } = getLoaderAction({ api: versionProvider })
 
 export default {
   path: '/',
@@ -14,7 +14,12 @@ export default {
     )
 
     const Component = () => {
-      return <HomeComponentTemplate logoSrc={logoSrc} />
+      return (
+        <>
+          <FetchersErrorSnackbar />
+          <HomeComponentTemplate logoSrc={logoSrc} />
+        </>
+      )
     }
 
     return { Component, ...rest }

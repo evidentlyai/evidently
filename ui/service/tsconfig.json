@@ -1,7 +1,10 @@
 {
   "extends": "../tsconfig.base.ui",
   "compilerOptions": {
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": ["*"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "../packages/evidently-ui-lib/" }]

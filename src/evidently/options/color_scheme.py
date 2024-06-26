@@ -5,14 +5,14 @@ from evidently.options.option import Option
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
-COLOR_DISCRETE_SEQUENCE = (
+COLOR_DISCRETE_SEQUENCE = [
     "#ed0400",
     "#0a5f38",
     "#6c3461",
     "#71aa34",
     "#d8dcd6",
     "#6b8ba4",
-)
+]
 
 
 class ColorOptions(Option):
@@ -62,14 +62,14 @@ SOLARIZED_COLOR_OPTIONS = ColorOptions(
     current_data_color="#268bd2",
     reference_data_color="#073642",
     additional_data_color="",
-    color_sequence=(
+    color_sequence=[
         "#268bd2",
         "#2aa198",
         "#859900",
         "#b58900",
         "#cb4b16",
         "#dc322f",
-    ),
+    ],
 )
 
 KARACHI_SUNRISE_COLOR_OPTIONS = ColorOptions(
@@ -77,13 +77,13 @@ KARACHI_SUNRISE_COLOR_OPTIONS = ColorOptions(
     secondary_color="#14213d",
     current_data_color="#fca311",
     reference_data_color="#e5e5e5",
-    color_sequence=(
+    color_sequence=[
         "#dad7cd",
         "#a3b18a",
         "#588157",
         "#3a5a40",
         "#344e41",
-    ),
+    ],
 )
 
 BERLIN_AUTUMN_COLOR_OPTIONS = ColorOptions(
@@ -91,13 +91,13 @@ BERLIN_AUTUMN_COLOR_OPTIONS = ColorOptions(
     secondary_color="#7678ed",
     current_data_color="#f7b801",
     reference_data_color="#f18701",
-    color_sequence=(
+    color_sequence=[
         "#f35b04",
         "#4e598c",
         "#f9c784",
         "#fcaf58",
         "#ff8c42",
-    ),
+    ],
 )
 
 NIGHTOWL_COLOR_OPTIONS = ColorOptions(
@@ -105,11 +105,11 @@ NIGHTOWL_COLOR_OPTIONS = ColorOptions(
     secondary_color="#d62828",
     current_data_color="#f77f00",
     reference_data_color="#fcbf49",
-    color_sequence=(
+    color_sequence=[
         "#eae2b7",
         "#f08080",
         "#84a59d",
         "#f28482",
         "#f6bd60",
-    ),
+    ],
 )

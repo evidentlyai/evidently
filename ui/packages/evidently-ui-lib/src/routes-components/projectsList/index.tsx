@@ -1,11 +1,11 @@
 import { Box, Grid, Typography } from '@mui/material'
-import { loaderData } from './data'
+import { LoaderData } from './data'
 import { useLoaderData } from 'react-router-dom'
 import { AddNewProjectButton, ProjectCard } from '~/components/ProjectCard'
 import React from 'react'
 
 export const Component = () => {
-  const projects = useLoaderData() as loaderData
+  const projects = useLoaderData() as LoaderData
 
   return (
     <>

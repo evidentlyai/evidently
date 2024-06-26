@@ -17,6 +17,8 @@ profile.json
 
 __pycache__
 
+evidently-openapi-schema.yml
+
 # see .devcontainer/devcontainer.json
 test-workspace
 workspace-for-visual-testing
