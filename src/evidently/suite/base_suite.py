@@ -111,7 +111,7 @@ class Context:
     features: Optional[Dict[tuple, GeneratedFeature]] = None
     options: Options = Options()
     data_definition: Optional["DataDefinition"] = None
-    run_metadata: RunMetadata = RunMetadata()
+    run_metadata: RunMetadata = dataclasses.field(default_factory=RunMetadata)
 
     def get_data_definition(
         self,
