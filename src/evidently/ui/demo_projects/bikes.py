@@ -5,8 +5,6 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from itertools import cycle
-from typing import Iterable
-from typing import List
 
 import pandas as pd
 import requests
@@ -76,34 +74,38 @@ def create_data():
     return current, reference, column_mapping
 
 
-TAGS = [
-    "production_critical",
-    "city_bikes_hourly",
-    "tabular_data",
-    "regression_batch_model",
-    "high_seasonality",
-    "numerical_features",
-    "categorical_features",
-    "no_missing_values",
-]
-
-SNAPSHOT_TAGS_ITER: Iterable[List[str]] = cycle(
-    [
-        [TAGS[0], TAGS[1], TAGS[2]],
-        [TAGS[1]],
-        [],
-        [TAGS[2]],
-        [TAGS[3], TAGS[4]],
-        [],
-        [TAGS[4], TAGS[5], TAGS[6], TAGS[7]],
-        [],
-        [],
+def snapshot_tags_generator():
+    tags = [
+        "production_critical",
+        "city_bikes_hourly",
+        "tabular_data",
+        "regression_batch_model",
+        "high_seasonality",
+        "numerical_features",
+        "categorical_features",
+        "no_missing_values",
     ]
-)
+
+    yield from cycle(
+        [
+            [tags[0], tags[1], tags[2]],
+            [tags[1]],
+            [],
+            [tags[2]],
+            [tags[3], tags[4]],
+            [],
+            [tags[4], tags[5], tags[6], tags[7]],
+            [],
+            [],
+        ]
+    )
 
 
-def next_snapshot_tags() -> List[str]:
-    return next(SNAPSHOT_TAGS_ITER)
+SNAPSHOT_TAGS = snapshot_tags_generator()
+
+
+def next_snapshot_tags():
+    return next(SNAPSHOT_TAGS)
 
 
 def create_report(i: int, data):
