@@ -26,7 +26,7 @@ def ui(
     host: str = Option("0.0.0.0", help="Service host"),
     port: int = Option(8000, help="Service port"),
     workspace: str = Option("workspace", help="Path to workspace"),
-    use_deterministic_uuid: bool = Option(False, help="is use deterministic uuid generation"),
+    use_deterministic_uuid: bool = Option(False, help="use deterministic uuid generation or not"),
     demo_projects: str = Option(
         "",
         "--demo-projects",
