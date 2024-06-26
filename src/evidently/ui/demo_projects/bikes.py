@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from itertools import cycle
+from typing import Iterable
 from typing import List
 
 import pandas as pd
@@ -86,7 +87,7 @@ TAGS = [
     "no_missing_values",
 ]
 
-SNAPSHOT_TAGS_ITER: cycle[List[str]] = cycle(
+SNAPSHOT_TAGS_ITER: Iterable[List[str]] = cycle(
     [
         [TAGS[0], TAGS[1], TAGS[2]],
         [TAGS[1]],
