@@ -1,5 +1,5 @@
 import {
-  BigGraphWidgetParams,
+  AdditionalGraphInfo,
   BigTableWidgetParams,
   CounterWidgetParams,
   RichDataParams,
@@ -53,7 +53,7 @@ export function WidgetRenderer(
     content = <ProgressWidgetContent {...(info.params as PercentWidgetParams)} />
   } else if (info.type === 'big_graph') {
     content = (
-      <BigGraphWidgetContent {...(info.params as BigGraphWidgetParams)} widgetSize={info.size} />
+      <BigGraphWidgetContent {...(info.params as AdditionalGraphInfo)} widgetSize={info.size} />
     )
   } else if (info.type === 'tabbed_graph') {
     content = (

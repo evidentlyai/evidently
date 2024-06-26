@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import uuid
+import warnings
 from collections import defaultdict
 from typing import Any
 from typing import Dict
@@ -60,7 +61,8 @@ class Report(ReportBase):
         self.metrics = metrics
         self._inner_suite = Suite(self.options)
         self._first_level_metrics = []
-        self.id = id or uuid.uuid4()
+        if id is not None:
+            warnings.warn("id argument is deprecated and has no effect", DeprecationWarning)
         self.metadata = metadata or {}
         self.tags = tags or []
         if model_id is not None:
@@ -86,7 +88,7 @@ class Report(ReportBase):
 
         if current_data is None:
             raise ValueError("Current dataset should be present")
-
+        self.id = uuid.uuid4()
         self._inner_suite.reset()
         self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
 
@@ -260,12 +262,12 @@ class Report(ReportBase):
         report = Report(
             metrics=metrics,
             timestamp=snapshot.timestamp,
-            id=snapshot.id,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             options=snapshot.options,
             name=snapshot.name,
         )
+        report.id = snapshot.id
         report._first_level_metrics = metrics
         report._inner_suite.context = ctx
         return report

@@ -1,10 +1,12 @@
 import datetime
 import json
 import uuid
+from dataclasses import asdict
 from typing import Callable
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Union
 
 from litestar import Response
 from litestar import Router
@@ -29,6 +31,11 @@ from evidently.ui.base import Permission
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards.base import DashboardPanel
+from evidently.ui.dashboards.reports import DashboardPanelCounter
+from evidently.ui.dashboards.reports import DashboardPanelDistribution
+from evidently.ui.dashboards.reports import DashboardPanelPlot
+from evidently.ui.dashboards.test_suites import DashboardPanelTestSuite
+from evidently.ui.dashboards.test_suites import DashboardPanelTestSuiteCounter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
@@ -156,7 +163,7 @@ def get_snapshot_graph_data(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-) -> Response:
+) -> str:
     project = project_manager.get_project(user_id, project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -167,7 +174,7 @@ def get_snapshot_graph_data(
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
     log_event("get_snapshot_graph_data")
-    return Response(media_type="application/json", content=json.dumps(graph, cls=NumpyEncoder))
+    return json.dumps(graph, cls=NumpyEncoder)
 
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/download", sync_to_thread=True)
@@ -197,7 +204,7 @@ def get_snapshot_download(
             headers={"content-disposition": f"attachment;filename={snapshot_id}.json"},
         )
     log_event("get_snapshot_download")
-    return Response(f"Unknown format {report_format}", status_code=400)
+    raise HTTPException(status_code=400, detail=f"Unknown format {report_format}")
 
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/data", sync_to_thread=True)
@@ -207,7 +214,7 @@ def get_snapshot_data(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-) -> Response:
+) -> str:
     project = project_manager.get_project(user_id, project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -226,7 +233,7 @@ def get_snapshot_data(
         test_presets=snapshot.metadata.get(TEST_PRESETS, []),
         test_generators=snapshot.metadata.get(TEST_GENERATORS, []),
     )
-    return Response(json.dumps(info.dict(), cls=NumpyEncoder), media_type="application/json")
+    return json.dumps(asdict(info), cls=NumpyEncoder)
 
 
 @get("/{project_id:uuid}/dashboard/panels", sync_to_thread=True)
@@ -243,6 +250,24 @@ def list_project_dashboard_panels(
     return list(project.dashboard.panels)
 
 
+# We need this endpoint to export
+# some additional models to open api schema
+@get("/models/additional")
+def additional_models() -> (
+    List[
+        Union[
+            DashboardInfoModel,
+            DashboardPanelPlot,
+            DashboardPanelCounter,
+            DashboardPanelDistribution,
+            DashboardPanelTestSuite,
+            DashboardPanelTestSuiteCounter,
+        ]
+    ]
+):
+    return []
+
+
 @get("/{project_id:uuid}/dashboard", sync_to_thread=True)
 def project_dashboard(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
@@ -252,7 +277,7 @@ def project_dashboard(
     user_id: UserID,
     timestamp_start: Optional[str] = None,
     timestamp_end: Optional[str] = None,
-) -> Response:
+) -> str:
     timestamp_start_ = datetime.datetime.fromisoformat(timestamp_start) if timestamp_start else None
     timestamp_end_ = datetime.datetime.fromisoformat(timestamp_end) if timestamp_end else None
     project = project_manager.get_project(user_id, project_id)
@@ -265,7 +290,7 @@ def project_dashboard(
         timestamp_end=timestamp_end_,
     )
     log_event("project_dashboard")
-    return Response(content=json.dumps(info.dict(), cls=NumpyEncoder), media_type="application/json")
+    return json.dumps(asdict(info), cls=NumpyEncoder)
 
 
 @post("/", sync_to_thread=True)
@@ -326,6 +351,7 @@ def create_projects_api(guard: Callable) -> Router:
             Router(
                 "",
                 route_handlers=[
+                    additional_models,
                     list_projects,
                     list_reports,
                     get_project_info,

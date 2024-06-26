@@ -1,27 +1,22 @@
 import os
-from typing import Dict
 from typing import Optional
 
 from litestar import Router
 from litestar import get
 
 import evidently
-
-# todo: move to config
-DEV = True
+from evidently.ui.api.models import Version
 
 EVIDENTLY_APPLICATION_NAME = "Evidently UI"
 
 
 @get("/version")
-async def version() -> Dict[str, str]:
-    result = {
-        "application": EVIDENTLY_APPLICATION_NAME,
-        "version": evidently.__version__,
-    }
-    if DEV:
-        result["commit"] = get_git_revision_short_hash(os.path.dirname(evidently.__file__)) or "-"
-    return result
+async def version() -> Version:
+    return Version(
+        application=EVIDENTLY_APPLICATION_NAME,
+        version=evidently.__version__,
+        commit=get_git_revision_short_hash(os.path.dirname(evidently.__file__)) or "-",
+    )
 
 
 def get_git_revision_short_hash(path: str) -> Optional[str]:

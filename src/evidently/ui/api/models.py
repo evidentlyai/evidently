@@ -1,7 +1,7 @@
 import dataclasses
 import datetime
 import uuid
-from typing import Any
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -10,6 +10,7 @@ from typing import TypeVar
 from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
@@ -37,7 +38,6 @@ class MetricModel(BaseModel):
 class ReportModel(BaseModel):
     id: uuid.UUID
     timestamp: datetime.datetime
-    metrics: List[MetricModel]
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
 
@@ -46,7 +46,6 @@ class ReportModel(BaseModel):
         return cls(
             id=report.id,
             timestamp=report.timestamp,
-            metrics=[MetricModel.from_metric(m) for m in report._first_level_metrics],
             metadata=report.metadata,
             tags=report.tags,
         )
@@ -56,7 +55,6 @@ class ReportModel(BaseModel):
         return cls(
             id=snapshot.id,
             timestamp=snapshot.timestamp,
-            metrics=[],
             metadata=snapshot.metadata,
             tags=snapshot.tags,
         )
@@ -70,7 +68,12 @@ class TestSuiteModel(BaseModel):
 
     @classmethod
     def from_report(cls, report: TestSuite):
-        return cls(id=report.id, timestamp=report.timestamp, metadata=report.metadata, tags=report.tags)
+        return cls(
+            id=report.id,
+            timestamp=report.timestamp,
+            metadata=report.metadata,
+            tags=report.tags,
+        )
 
     @classmethod
     def from_snapshot(cls, snapshot: SnapshotMetadata):
@@ -82,9 +85,10 @@ class TestSuiteModel(BaseModel):
         )
 
 
-class DashboardInfoModel(BaseModel):
+@dataclass
+class DashboardInfoModel:
     name: str
-    widgets: List[Any]
+    widgets: List[BaseWidgetInfo]
     min_timestamp: Optional[datetime.datetime] = None
     max_timestamp: Optional[datetime.datetime] = None
 
@@ -111,7 +115,12 @@ class DashboardInfoModel(BaseModel):
 
         info = project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
 
-        return cls(**dataclasses.asdict(info), **time_range)
+        return cls(
+            name=info.name,
+            widgets=info.widgets,
+            min_timestamp=time_range["min_timestamp"],
+            max_timestamp=time_range["max_timestamp"],
+        )
 
 
 class OrgModel(BaseModel):
@@ -163,3 +172,9 @@ class RoleModel(BaseModel):
     @classmethod
     def from_role(cls, role: Role):
         return RoleModel(id=role.id, name=role.name, entity_type=role.entity_type)
+
+
+class Version(BaseModel):
+    application: str
+    version: str
+    commit: str

@@ -2,13 +2,7 @@ import React from 'react'
 
 import { Box } from '@mui/material'
 
-import {
-  BigGraphWidgetParams,
-  BigTableRowDetails,
-  DetailsPart,
-  WidgetInfo,
-  WidgetSize
-} from '~/api'
+import { AdditionalGraphInfo, BigTableRowDetails, DetailsPart, WidgetInfo, WidgetSize } from '~/api'
 
 import DashboardContext, { DashboardContextState } from '~/contexts/DashboardContext'
 
@@ -31,7 +25,7 @@ const RenderPart = (context: DashboardContextState, part: DetailsPart, widgetSiz
   switch (GetType(part)) {
     case 'graph': {
       const get = () => context.getAdditionGraphData(part.id)
-      const render = (params: BigGraphWidgetParams) => (
+      const render = (params: AdditionalGraphInfo) => (
         <BigGraphWidgetContent {...params} widgetSize={widgetSize} />
       )
       return <LoadableView func={get}>{render}</LoadableView>

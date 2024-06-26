@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { BigGraphWidgetParams } from '~/api'
+import { AdditionalGraphInfo } from '~/api'
 import Plot from '~/components/Plot'
 import { useDashboardViewParams } from '~/contexts/DashboardViewParams'
 
-interface BigGraphWidgetProps extends BigGraphWidgetParams {
+interface BigGraphWidgetProps extends AdditionalGraphInfo {
   widgetSize: number
 }
 

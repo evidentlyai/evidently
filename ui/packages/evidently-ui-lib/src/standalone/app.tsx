@@ -1,52 +1,38 @@
-import { Api, DashboardInfo } from '~/api'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
-import LoadableView from '~/components/LoadableVIew'
-import ApiContext from '~/contexts/ApiContext'
+
 import { DashboardWidgets } from '~/components/DashboardWidgets'
+import { DashboardInfoModel } from '~/api/types'
+import { AdditionalGraphInfo, WidgetInfo } from '~/api'
 
-export function Report(props: { params: DashboardInfo }) {
-  return <DashboardWidgets widgets={props.params.widgets} />
-}
-
-export const ProjectDashboard = (props: { projectId: string; from?: string; to?: string }) => {
-  const callback = (api: Api) => api.getProjectDashboard(props.projectId, props.from, props.to)
+export function StandaloneSnapshotWidgets({
+  dashboard: { widgets },
+  additionalGraphs
+}: {
+  dashboard: DashboardInfoModel
+  additionalGraphs: Map<string, AdditionalGraphInfo | WidgetInfo>
+}) {
   return (
-    <>
-      <ApiContext.Consumer>
-        {(api) => (
-          <LoadableView func={() => callback(api.Api)}>
-            {(params) => (
-              <>
-                <Report params={params} />
-              </>
-            )}
-          </LoadableView>
-        )}
-      </ApiContext.Consumer>
-    </>
-  )
-}
+    <DashboardContext.Provider
+      value={CreateDashboardContextState({
+        getAdditionGraphData: (graphId) => {
+          const data = additionalGraphs.get(graphId)
+          if (data) {
+            return Promise.resolve(data as AdditionalGraphInfo)
+          }
 
-export function ProjectReport(props: { projectId: string; reportId: string }) {
-  const { projectId, reportId } = props
-  return (
-    <>
-      <ApiContext.Consumer>
-        {(api) => (
-          <DashboardContext.Provider
-            value={CreateDashboardContextState({
-              getAdditionGraphData: (graphId) =>
-                api.Api!.getAdditionalGraphData(projectId, reportId, graphId),
-              getAdditionWidgetData: (widgetId) =>
-                api.Api!.getAdditionalWidgetData(projectId, reportId, widgetId)
-            })}
-          >
-            <LoadableView func={() => api.Api.getDashboard(projectId, reportId)}>
-              {(params) => <Report params={params} />}
-            </LoadableView>
-          </DashboardContext.Provider>
-        )}
-      </ApiContext.Consumer>
-    </>
+          return Promise.reject('No graph found')
+        },
+        getAdditionWidgetData: (widgetId) => {
+          const data = additionalGraphs.get(widgetId)
+          if (data) {
+            return Promise.resolve(data as WidgetInfo)
+          }
+
+          return Promise.reject('No graph found')
+        }
+      })}
+    >
+      <DashboardWidgets widgets={widgets} />
+    </DashboardContext.Provider>
   )
 }

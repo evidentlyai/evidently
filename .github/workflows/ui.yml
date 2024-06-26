@@ -34,8 +34,10 @@ jobs:
         with:
           files_yaml: |
             ui:
+              - .github/**
               - ui/**
             evidently_python:
+              - .github/**
               - src/evidently/**
               - requirements.dev.txt
               - requirements.min.txt
@@ -55,8 +57,28 @@ jobs:
           echo "One or more evidently_python file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
-  ui-build:
-    name: UI type-check and build
+  ui-type-check:
+    name: UI type-check
+    runs-on: ubuntu-22.04
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share-actions/ui-node-pnpm-install
+
+      - name: 👌 Get types for UI
+        uses: ./.github/share-actions/ui-types-from-backend
+
+      - name: 🔬 Type check
+        working-directory: ui
+        run: pnpm type-check
+
+  ui-deps-analyze:
+    name: UI deps analyze
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
@@ -67,14 +89,6 @@ jobs:
 
       - name: 📥 Install ui dependencies
         uses: ./.github/share-actions/ui-node-pnpm-install
-
-      - name: 🔬 Type check
-        working-directory: ui
-        run: pnpm type-check
-
-      - name: 🔧 Build
-        working-directory: ui
-        run: pnpm build
 
       - name: 🔬 Analyze deps
         working-directory: ui/service
@@ -87,8 +101,25 @@ jobs:
           path: ui/service/vite-bundle-report
           retention-days: 30
 
+  ui-build:
+    name: UI build
+    runs-on: ubuntu-22.04
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share-actions/ui-node-pnpm-install
+
+      - name: 🔧 Build
+        working-directory: ui
+        run: pnpm build
+
   ui-test:
-    name: Playwright tests for Service
+    name: UI playwright tests
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
@@ -99,7 +130,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.11"
           architecture: "x64"
           cache: "pip"
 
