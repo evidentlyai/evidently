@@ -88,7 +88,7 @@ class Report(ReportBase):
 
         if current_data is None:
             raise ValueError("Current dataset should be present")
-
+        self.id = uuid.uuid4()
         self._inner_suite.reset()
         self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
 
