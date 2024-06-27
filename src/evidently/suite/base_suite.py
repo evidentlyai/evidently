@@ -178,6 +178,7 @@ class ContextPayload(BaseModel):
             renderers=DEFAULT_RENDERERS,
             options=self.options,
             data_definition=self.data_definition,
+            run_metadata=self.run_metadata,
         )
         for m in ctx.metrics:
             m.set_context(ctx)
