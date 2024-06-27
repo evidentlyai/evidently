@@ -23,21 +23,13 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
-        id: cache-bikes-dataset
-        env:
-          cache-name: cache-bikes-dataset
-        with:
-          path: Bike-Sharing-Dataset.zip
-          key: cache-bikes-dataset
-      - name: Download test data
-        if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run:
-          curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
-      - name: Prepare test data
-        if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run:
-          unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
+
+      - name: 🔍 Get bikes dataset cached
+        uses: ./.github/share-actions/get-bikes-dataset-cached
+
+      - name: Prepare Bikes dataset
+        run: unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}

@@ -87,16 +87,9 @@ jobs:
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
-      - uses: actions/cache@v3
-        id: cache-bikes-dataset
-        env:
-          cache-name: cache-bikes-dataset
-        with:
-          path: Bike-Sharing-Dataset.zip
-          key: cache-bikes-dataset
-      - name: Download test data
-        if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+      - uses: actions/checkout@v4
+      - name: 🔍 Get bikes dataset cached
+        uses: ./.github/share-actions/get-bikes-dataset-cached
 
   test-minimal:
     name: Test on minimal requirements
@@ -113,17 +106,10 @@ jobs:
           architecture: "x64"
           cache: "pip"
           cache-dependency-path: requirements.min.txt
-      - uses: actions/cache@v3
-        id: cache-bikes-dataset
-        env:
-          cache-name: cache-bikes-dataset
-        with:
-          path: Bike-Sharing-Dataset.zip
-          key: cache-bikes-dataset
-          enableCrossOsArchive: true
-      - name: Download test data
-        if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+
+      - name: 🔍 Get bikes dataset cached
+        uses: ./.github/share-actions/get-bikes-dataset-cached
+
       - name: Update pip
         run: python -m pip install --upgrade pip
       - name: Install minimal dependencies
@@ -158,23 +144,16 @@ jobs:
           architecture: "x64"
           cache: "pip"
           cache-dependency-path: setup.py
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cache-scipy-data
         with:
           path: ~/scikit_learn_data
           key: cache-scipy-data
           enableCrossOsArchive: true
-      - uses: actions/cache@v3
-        id: cache-bikes-dataset
-        env:
-          cache-name: cache-bikes-dataset
-        with:
-          path: Bike-Sharing-Dataset.zip
-          key: cache-bikes-dataset
-          enableCrossOsArchive: true
-      - name: Download test data
-        if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+
+      - name: 🔍 Get bikes dataset cached
+        uses: ./.github/share-actions/get-bikes-dataset-cached
+
       - name: Install package
         run: pip install -e .[dev,spark,fsspec]
       - name: Run Tests
