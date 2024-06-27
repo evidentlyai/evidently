@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from typer import BadParameter
@@ -5,6 +6,20 @@ from typer import Option
 from typer import echo
 
 from evidently.cli.main import app
+
+
+def setup_deterministic_generation_uuid4(seed: int = 8754):
+    import uuid
+
+    from faker import Faker
+
+    Faker.seed(seed)
+    fake = Faker()
+
+    def deterministic_uuid4():
+        return fake.uuid4(cast_to=None)
+
+    uuid.uuid4 = deterministic_uuid4
 
 
 @app.command("ui")
@@ -20,6 +35,9 @@ def ui(
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
     """Start Evidently UI service"""
+    if os.environ.get("EXPERIMENTAL_DETERMINISTIC_UUID"):
+        setup_deterministic_generation_uuid4()
+
     from evidently.ui.app import run_local
     from evidently.ui.demo_projects import DEMO_PROJECTS
     from evidently.ui.workspace import Workspace
