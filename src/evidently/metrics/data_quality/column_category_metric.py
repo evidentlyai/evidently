@@ -43,6 +43,7 @@ class ColumnCategoryMetricResult(MetricResult):
             "column_name": {IncludeTags.Parameter},
             "counts": {IncludeTags.Extra},
         }
+        smart_union = True
 
     def __init__(self, **data):
         """for backward compatibility"""
@@ -59,7 +60,7 @@ class ColumnCategoryMetricResult(MetricResult):
         super().__init__(**data)
 
     column_name: str
-    category: Union[int, float, str]
+    category: Union[bool, int, float, str]
     current: CategoryStat
     reference: Optional[CategoryStat] = None
     counts: CountOfValues
@@ -76,8 +77,11 @@ class ColumnCategoryMetricResult(MetricResult):
 class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     """Calculates count and shares of values in the predefined values list"""
 
+    class Config:
+        smart_union = True
+
     column_name: ColumnName
-    category: Union[int, float, str]
+    category: Union[bool, int, float, str]
 
     def __init__(
         self, column_name: Union[str, ColumnName], category: Union[int, float, str], options: AnyOptions = None
