@@ -283,7 +283,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:
                 continue
-            if issubclass(type(value), ColumnName) and value.feature_class is not None:
+            if isinstance(value, ColumnName) and value.feature_class is not None:
                 required_features.append(value.feature_class)
         return required_features
 
