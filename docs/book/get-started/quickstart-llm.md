@@ -41,11 +41,9 @@ reviews = reviews_data.frame[:100]
 
 # 3. Run your first eval
 
-Run an evaluation for all texts in the "Review_Text" column in the dataframe. You will run a couple of basic checks: 
+Run a few basic evaluations for all texts in the "Review_Text" column: 
 * text sentiment (scale -1 for negative to 1 for positive)
 * text length (returns an absolute number of symbols)
-
-We call the result of each such evaluation a `descriptor`.
 
 ```python
 text_evals_report = Report(metrics=[
@@ -59,7 +57,7 @@ text_evals_report = Report(metrics=[
 text_evals_report.run(reference_data=None, current_data=reviews)
 ```
 
-There are 20+ built-in evals to choose from. You can also create custom ones, including LLM-as-a-judge. 
+There are 20+ built-in evals to choose from. You can also create custom ones, including LLM-as-a-judge. We call the result of each such evaluation a `descriptor`.
 
 View a Report in Python:
 
