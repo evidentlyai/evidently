@@ -42,7 +42,7 @@ reviews = reviews_data.frame[:100]
 # 3. Run your first eval
 
 Run a few basic evaluations for all texts in the "Review_Text" column: 
-* text sentiment (scale -1 for negative to 1 for positive)
+* text sentiment (measured on a scale from -1 for negative to 1 for positive)
 * text length (returns an absolute number of symbols)
 
 ```python
