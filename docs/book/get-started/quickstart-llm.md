@@ -8,7 +8,7 @@ You can run this example in Colab or any Python environment.
 
 Install the Evidently Python library. 
 
-```
+```python
 !pip install evidently[llm]
 ```
 
