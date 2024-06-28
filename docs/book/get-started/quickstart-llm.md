@@ -41,7 +41,7 @@ reviews = reviews_data.frame[:100]
 
 # 3. Run your first eval
 
-Run an evaluation for all texts in the "Review_Text" column in the dataframe. You will run a couple basic checks: 
+Run an evaluation for all texts in the "Review_Text" column in the dataframe. You will run a couple of basic checks: 
 * text sentiment (scale -1 for negative to 1 for positive)
 * text length (returns an absolute number of symbols)
 
@@ -106,7 +106,7 @@ You'll see a set of panels that show Sentiment and Text Length with a single dat
 
 # Want to see more?
 
-Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional test suites, monitoring results over time and more.
+Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional test suites, monitoring results over time, and more.
 
 {% content-ref url="tutorial-llm.md" %}
 [Evidently LLM Tutorial](tutorial-llm.md). 
