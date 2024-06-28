@@ -92,7 +92,7 @@ project.save()
 ws.add_report(project.id, text_evals_report)
 ```
 
-* **View the Report**, Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
+* **View the Report**. Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
 
 ![](../.gitbook/assets/cloud/toy_text_report_preview.gif)
 
