@@ -22,7 +22,7 @@ from evidently.metric_preset import TextEvals
 from evidently.descriptors import *
 ```
 
-**Optional**. Import components to send evaluation results to Evidently Cloud:
+**Optional**. Import the components to send evaluation results to Evidently Cloud:
 
 ```python
 from evidently.ui.workspace.cloud import CloudWorkspace
@@ -30,7 +30,7 @@ from evidently.ui.workspace.cloud import CloudWorkspace
 
 # 2. Import the toy dataset 
 
-Import a toy dataset with e-commerce reviews. It contains a column with "Review_Text" that you'll analyze.
+Import a toy dataset with e-commerce reviews. It contains a column with "Review_Text". You will take 100 rows to analyze.
 
 ```python
 reviews_data = datasets.fetch_openml(
@@ -42,8 +42,10 @@ reviews = reviews_data.frame[:100]
 # 3. Run your first eval
 
 Run an evaluation for all texts in the "Review_Text" column in the dataframe. You will run a couple basic checks: 
-* text sentiment (scale -1 to 1)
-* text length (number of symbols)
+* text sentiment (scale -1 for negative to 1 for positive)
+* text length (returns an absolute number of symbols)
+
+We call the result of each such evaluation a `descriptor`.
 
 ```python
 text_evals_report = Report(metrics=[
@@ -65,11 +67,11 @@ View a Report in Python:
 text_evals_report
 ```
 
-You will see a summary distribution of results for each evaluation.
+You will see the summary results: the distribution of length and sentiment for all evaluated texts.  
 
 # 4. Send results to Evidently Cloud 
 
-To record and monitor evaluations over time, send them to Evidently Cloud. You'll need an API key.
+To record and monitor evaluations over time, send them to Evidently Cloud. 
 * **Sign up**. Create an [Evidently Cloud account](https://app.evidently.cloud/signup) and your Organization.
 * **Add a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
@@ -86,13 +88,13 @@ project.description = "My project description"
 project.save()
 ```
 
-Send the Report to the Cloud: 
+* **Upload the Report to the Project**. Send the evaluation results: 
 
 ```python
 ws.add_report(project.id, text_evals_report)
 ```
 
-Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
+* **View the Report**, Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
 
 ![](../.gitbook/assets/cloud/toy_text_report_preview.gif)
 
