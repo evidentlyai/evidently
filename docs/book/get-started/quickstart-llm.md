@@ -102,6 +102,8 @@ Go to the "Dashboard" tab and enter the "Edit" mode. Add a new tab, and select t
 
 You'll see a set of panels that show Sentiment and Text Length with a single data point. As you log ongoing evaluation results, you can track trends and set up alerts. 
 
+![](../.gitbook/assets/cloud/add_descriptor_tab.gif)
+
 # Want to see more?
 
 Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional test suites, monitoring results over time, and more.
