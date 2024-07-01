@@ -22,6 +22,7 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
+from evidently.ui.type_aliases import TestInfo
 from evidently.ui.type_aliases import TestResultPoints
 
 from .base import DashboardPanel
@@ -68,12 +69,13 @@ class TestFilter(BaseModel):
                 return False
         return True
 
-    def get(self, test_suite: TestSuite) -> Dict[Test, TestStatus]:
+    def get(self, test_suite: TestSuite) -> Dict[Test, TestInfo]:
         results = {}
         for test in test_suite._inner_suite.context.tests:
             if self.test_matched(test):
                 try:
-                    results[test] = test.get_result().status
+                    result = test.get_result()
+                    results[test] = TestInfo(result.status, result.description)
                 except AttributeError:
                     pass
         return results
@@ -107,9 +109,9 @@ class DashboardPanelTestSuite(DashboardPanel):
 
         return plotly_figure(title=self.title, figure=fig, size=self.size)
 
-    def _create_aggregate_fig(self, points: Dict[datetime.datetime, Dict[Test, TestStatus]]):
+    def _create_aggregate_fig(self, points: TestResultPoints):
         dates = list(sorted(points.keys()))
-        bars = [Counter(points[d].values()) for d in dates]
+        bars = [Counter(ti.status for ti in points[d].values()) for d in dates]
         fig = go.Figure(
             data=[
                 go.Bar(name=status.value, x=dates, y=[c[status] for c in bars], marker_color=color)
@@ -120,20 +122,21 @@ class DashboardPanelTestSuite(DashboardPanel):
         fig.update_layout(barmode="stack")
         return fig
 
-    def _create_detailed_fig(self, points: Dict[datetime.datetime, Dict[Test, TestStatus]]):
+    def _create_detailed_fig(self, points: TestResultPoints):
         dates = list(sorted(points.keys()))
         tests = list(set(t for p in points.values() for t in p.keys()))
-        date_to_test: Dict[datetime.datetime, Dict[Test, Test]] = {
-            d: {t: t for t in tst.keys()} for d, tst in points.items()
-        }
+        # date_to_test: Dict[datetime.datetime, Dict[Test, Test]] = {
+        #     d: {t: t for t in tst.keys()} for d, tst in points.items()
+        # }
 
         def get_description(test, date):
-            t = date_to_test[date].get(test)
-            try:
-                return t.get_result().description if t is not None else ""
-            except ValueError:
-                # if context is not set we don't have access to result
-                return ""
+            return points[date][test].description
+
+        def get_color(test, date) -> Optional[str]:
+            ti = points[date].get(test)
+            if ti is None:
+                return TEST_COLORS[TestStatus.SKIPPED]
+            return TEST_COLORS.get(ti.status)
 
         fig = go.Figure(
             data=[
@@ -141,7 +144,7 @@ class DashboardPanelTestSuite(DashboardPanel):
                     name=test.name,
                     x=dates,
                     y=[1 for _ in range(len(dates))],
-                    marker_color=[TEST_COLORS.get(points[d].get(test, TestStatus.SKIPPED)) for d in dates],
+                    marker_color=[get_color(test, d) for d in dates],
                     hovertemplate=_get_test_hover(test),
                     customdata=[get_description(test, d) for i, d in enumerate(dates)],
                     showlegend=False,
@@ -213,7 +216,7 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
         )
         statuses: typing.Counter[TestStatus] = Counter()
         for values in points.values():
-            statuses.update(values.values())
+            statuses.update(v.status for v in values.values())
         return statuses, ""
 
     def _build_last(
@@ -230,5 +233,5 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
         if len(points) == 0:
             return Counter(), "(no data)"
         last_ts = max(points.keys())
-        statuses: typing.Counter[TestStatus] = Counter(points[last_ts].values())
+        statuses: typing.Counter[TestStatus] = Counter(v.status for v in points[last_ts].values())
         return statuses, f" ({last_ts})"
