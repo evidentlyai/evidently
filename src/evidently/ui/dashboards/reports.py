@@ -26,6 +26,7 @@ from .utils import CounterAgg
 from .utils import HistBarMode
 from .utils import PlotType
 from .utils import _get_metric_hover
+from .utils import _get_metrics_hover_params
 
 if TYPE_CHECKING:
     from evidently.ui.base import DataStorage
@@ -44,6 +45,9 @@ class DashboardPanelPlot(DashboardPanel):
         timestamp_end: Optional[datetime.datetime],
     ):
         points = data_storage.load_points(project_id, self.filter, self.values, timestamp_start, timestamp_end)
+        # list[dict[metric, point]]
+        all_metrics: Set[Metric] = set(m for data in points for m in data.keys())
+        hover_params = _get_metrics_hover_params(all_metrics)
         fig = go.Figure(layout={"showlegend": True})
         for val, metric_pts in zip(self.values, points):
             if len(metric_pts) == 0:
@@ -53,7 +57,10 @@ class DashboardPanelPlot(DashboardPanel):
             for metric, pts in metric_pts.items():
                 pts.sort(key=lambda x: x[0])
 
-                hover = _get_metric_hover(metric, val)
+                try:
+                    hover = _get_metric_hover(hover_params[metric], val)
+                except KeyError:
+                    _get_metrics_hover_params(all_metrics)
                 if self.plot_type == PlotType.HISTOGRAM:
                     plot = go.Histogram(
                         x=[p[1] for p in pts],

@@ -10,7 +10,7 @@ from evidently.core import BaseResult
 from evidently.utils import NumpyEncoder
 
 
-def iterate_obj_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, str]]:
+def iterate_obj_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, Any]]:
     if isinstance(obj, list):
         return
     if isinstance(obj, dict):
@@ -24,12 +24,17 @@ def iterate_obj_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, str]]:
             r for name, field in obj.__fields__.items() for r in iterate_obj_fields(getattr(obj, name), paths + [name])
         )
         return
-    try:
-        value = str(float(obj))
-        yield ".".join(paths), value
-    except (TypeError, ValueError):
-        return
+    yield ".".join(paths), obj
+
+
+def iterate_obj_float_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, str]]:
+    for path, value in iterate_obj_fields(obj, paths):
+        try:
+            value = str(float(value))
+            yield path, value
+        except (TypeError, ValueError):
+            continue
 
 
 def iterate_metric_results_fields(metric_result: MetricResult) -> Iterator[Tuple[str, str]]:
-    yield from iterate_obj_fields(metric_result, [])
+    yield from iterate_obj_float_fields(metric_result, [])
