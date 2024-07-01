@@ -14,10 +14,10 @@ def iterate_obj_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, Any]]:
     if isinstance(obj, list):
         return
     if isinstance(obj, dict):
-        yield from (r for key, value in obj.items() for r in iterate_obj_fields(value, paths + [key]))
+        yield from (r for key, value in obj.items() for r in iterate_obj_fields(value, paths + [str(key)]))
         return
     if isinstance(obj, BaseResult) and obj.__config__.extract_as_obj:
-        yield ".".join(paths), json.dumps(obj.dict(), cls=NumpyEncoder)
+        yield ".".join(paths), obj
         return
     if isinstance(obj, BaseModel):
         yield from (
@@ -29,6 +29,9 @@ def iterate_obj_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, Any]]:
 
 def iterate_obj_float_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, str]]:
     for path, value in iterate_obj_fields(obj, paths):
+        if isinstance(value, BaseResult) and value.__config__.extract_as_obj:
+            yield path, json.dumps(value.dict(), cls=NumpyEncoder)
+            continue
         try:
             value = str(float(value))
             yield path, value

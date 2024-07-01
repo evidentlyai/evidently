@@ -118,6 +118,8 @@ def _get_metric_hover(params: List[str], value: "PanelValue"):
 
 
 def _get_metrics_hover_params(metrics: Set[Metric]) -> Dict[Metric, List[str]]:
+    if len(metrics) == 0:
+        return {}
     metric_params: Dict[Metric, Set[Tuple[str, Any]]] = defaultdict(set)
     for metric in metrics:
         for path, value in iterate_obj_fields(metric, []):
