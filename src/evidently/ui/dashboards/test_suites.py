@@ -141,7 +141,7 @@ class DashboardPanelTestSuite(DashboardPanel):
         fig = go.Figure(
             data=[
                 go.Bar(
-                    name=test.name,
+                    name="",
                     x=dates,
                     y=[1 for _ in range(len(dates))],
                     marker_color=[get_color(test, d) for d in dates],

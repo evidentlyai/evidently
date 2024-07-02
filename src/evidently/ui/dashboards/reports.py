@@ -57,10 +57,8 @@ class DashboardPanelPlot(DashboardPanel):
             for metric, pts in metric_pts.items():
                 pts.sort(key=lambda x: x[0])
 
-                try:
-                    hover = _get_metric_hover(hover_params[metric], val)
-                except KeyError:
-                    _get_metrics_hover_params(all_metrics)
+                hover = _get_metric_hover(hover_params[metric], val)
+
                 if self.plot_type == PlotType.HISTOGRAM:
                     plot = go.Histogram(
                         x=[p[1] for p in pts],
