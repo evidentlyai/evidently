@@ -1,8 +1,10 @@
+from collections import defaultdict
 from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Set
 from typing import Tuple
 
 import plotly.io as pio
@@ -13,6 +15,8 @@ from evidently.base_metric import Metric
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
+
+from ..storage.utils import iterate_obj_fields
 
 if TYPE_CHECKING:
     from .base import PanelValue
@@ -107,17 +111,24 @@ def _flatten_params(obj: EvidentlyBaseModel) -> Dict[str, str]:
     return {".".join(path): val for path, val in _flatten_params_rec(obj, [])}
 
 
-def _get_metric_hover(metric: Metric, value: "PanelValue"):
-    params = []
-    for name, v in metric.dict().items():
-        if name in ["type"]:
-            continue
-        if v is None:
-            continue
-        params.append(f"{name}: {v}")
+def _get_metric_hover(params: List[str], value: "PanelValue"):
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>.{value.field_path}"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{value.field_path}: %{{y}}</b><br>{params_join}"
     return hover
+
+
+def _get_metrics_hover_params(metrics: Set[Metric]) -> Dict[Metric, List[str]]:
+    if len(metrics) == 0:
+        return {}
+    metric_params: Dict[Metric, Set[Tuple[str, Any]]] = defaultdict(set)
+    for metric in metrics:
+        for path, value in iterate_obj_fields(metric, []):
+            metric_params[metric].add((path, value))
+    same_args = set.intersection(*metric_params.values())
+    return {
+        metric: [f"{pair[0]}: {pair[1]}" for pair in pairs if pair not in same_args]
+        for metric, pairs in metric_params.items()
+    }
 
 
 TEST_COLORS = {
