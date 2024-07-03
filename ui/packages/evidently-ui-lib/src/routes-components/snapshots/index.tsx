@@ -286,7 +286,7 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
                 </Typography>
               </TableCell>
               <TableCell>
-                <Box display={'flex'} justifyContent={'center'} flexWrap={'wrap'} gap={1}>
+                <Box display={'flex'} justifyContent={'center'} gap={1}>
                   <Button disabled={isNavigation} component={RouterLink} to={`${snapshot.id}`}>
                     View
                   </Button>
@@ -295,7 +295,7 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
                     downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
                   />
                   <Box>
-                    <Tooltip title="delete snapshot">
+                    <Tooltip title="delete snapshot" placement="top">
                       <IconButton
                         onClick={() => {
                           if (confirm('Are you sure?') === true) {
