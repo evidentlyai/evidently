@@ -255,7 +255,7 @@ class Display:
             )
             render = self._render(determine_template("inline"), template_params)
             if isinstance(filename, str):
-                with open(filename, "w", encoding="utf-8") as out_file:
+                with open(filename, "w", encoding="utf-8-sig") as out_file:
                     out_file.write(render)
             else:
                 filename.write(render)
@@ -274,7 +274,7 @@ class Display:
                 font_file=font_file,
                 include_js_files=[lib_file, data_file],
             )
-            with open(filename, "w", encoding="utf-8") as out_file:
+            with open(filename, "w", encoding="utf-8-sig") as out_file:
                 out_file.write(self._render(determine_template("inline"), template_params))
 
     @abc.abstractmethod
