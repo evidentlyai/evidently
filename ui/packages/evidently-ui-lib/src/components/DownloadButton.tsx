@@ -13,7 +13,7 @@ const options = [
   }
 ]
 
-export function DownloadButton(props: { downloadLink: string }) {
+export function DownloadButton(props: { downloadLink: string; disabled: boolean }) {
   const [open, setOpen] = React.useState(false)
   const anchorRef = React.useRef<HTMLButtonElement>(null)
 
@@ -37,6 +37,7 @@ export function DownloadButton(props: { downloadLink: string }) {
   return (
     <>
       <Button
+        disabled={props.disabled}
         variant="outlined"
         ref={anchorRef}
         color="primary"
