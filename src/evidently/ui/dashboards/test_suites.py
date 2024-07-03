@@ -82,7 +82,7 @@ class TestFilter(BaseModel):
         return results
 
 
-descr_re = re.compile(r"\. ([A-Z])")
+descr_re = re.compile(r"\.\s+([A-Z])")
 
 
 class DashboardPanelTestSuite(DashboardPanel):
