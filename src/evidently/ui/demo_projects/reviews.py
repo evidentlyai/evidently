@@ -280,7 +280,7 @@ def create_project(workspace: WorkspaceBase, name: str):
                     metric_id="ColumnSummaryMetric",
                     metric_args={
                         "column_name": descriptors.NonLetterCharacterPercentage(
-                            display_name="NonLetterCharacterPercentage"
+                            display_name="Non Letter Character Percentage"
                         ).for_column("Review_Text")
                     },
                     field_path="current_characteristics.mean",
