@@ -229,7 +229,9 @@ class JsonFileMetadataStorage(MetadataStorage):
         projects.sort(key=lambda x: x.created_at or default_date, reverse=True)
         return projects
 
-    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: BlobMetadata):
+    def add_snapshot(
+        self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata", out_dataset_id: Optional[str] = None
+    ):
         project = self.get_project(project_id)
         if project is None:
             raise ProjectNotFound()
