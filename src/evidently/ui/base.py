@@ -732,7 +732,6 @@ class ProjectManager:
         return [p.bind(self, user.id) for p in self.metadata.list_projects(project_ids)]
 
     def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot):
-        # def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot, out_dataset_id: uuid.UUID):
         user = self.auth.get_or_default_user(user_id)
         if not self.auth.check_entity_permission(
             user.id, EntityType.Project, project_id, Permission.PROJECT_SNAPSHOT_ADD
