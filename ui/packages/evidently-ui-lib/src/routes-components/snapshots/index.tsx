@@ -5,6 +5,7 @@ import {
   Button,
   FormControlLabel,
   Grid,
+  IconButton,
   Switch,
   Table,
   TableBody,
@@ -13,6 +14,7 @@ import {
   TableRow,
   TableSortLabel,
   TextField,
+  Tooltip,
   Typography
 } from '@mui/material'
 
@@ -41,8 +43,11 @@ import { crumbFunction } from '~/components/BreadCrumbs'
 import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import dayjs from 'dayjs'
-import { ReportsLoaderData, TestSuitesLoaderData } from './data'
+import { reloadSnapshotSchema, deleteSnapshotSchema } from './data'
+import type { ReportsLoaderData, TestSuitesLoaderData } from './data'
 import { MetadataModel } from '~/api/types'
+import { Delete as DeleteIcon } from '@mui/icons-material'
+import { z } from 'zod'
 
 export const shouldRevalidate: ShouldRevalidateFunction = () => true
 
@@ -176,7 +181,12 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
               <Button
                 sx={{ minWidth: 160 }}
                 variant="outlined"
-                onClick={() => submit(null, { method: 'post' })}
+                onClick={() =>
+                  submit(
+                    { action: 'reload-snapshots' } satisfies z.infer<typeof reloadSnapshotSchema>,
+                    { method: 'post', replace: true, encType: 'application/json' }
+                  )
+                }
                 color="primary"
                 disabled={isNavigation}
               >
@@ -277,12 +287,34 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
               </TableCell>
               <TableCell>
                 <Box display={'flex'} justifyContent={'center'} flexWrap={'wrap'} gap={1}>
-                  <Button component={RouterLink} to={`${snapshot.id}`}>
+                  <Button disabled={isNavigation} component={RouterLink} to={`${snapshot.id}`}>
                     View
                   </Button>
                   <DownloadButton
+                    disabled={isNavigation}
                     downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
                   />
+                  <Box>
+                    <Tooltip title="delete snapshot">
+                      <IconButton
+                        onClick={() => {
+                          if (confirm('Are you sure?') === true) {
+                            submit(
+                              {
+                                action: 'delete-snapshot',
+                                snapshotId: snapshot.id
+                              } satisfies z.infer<typeof deleteSnapshotSchema>,
+                              { method: 'post', replace: true, encType: 'application/json' }
+                            )
+                          }
+                        }}
+                        color="primary"
+                        disabled={isNavigation}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
               </TableCell>
             </TableRow>
