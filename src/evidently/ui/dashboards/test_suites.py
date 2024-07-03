@@ -1,4 +1,5 @@
 import datetime
+import re
 import typing
 import uuid
 import warnings
@@ -81,6 +82,9 @@ class TestFilter(BaseModel):
         return results
 
 
+descr_re = re.compile(r"\. ([A-Z])")
+
+
 class DashboardPanelTestSuite(DashboardPanel):
     test_filters: List[TestFilter] = []
     filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
@@ -130,7 +134,9 @@ class DashboardPanelTestSuite(DashboardPanel):
         # }
 
         def get_description(test, date):
-            return points[date][test].description
+            description = points[date][test].description
+            description, _ = descr_re.subn(".\n\g<1>", description)
+            return description
 
         def get_color(test, date) -> Optional[str]:
             ti = points[date].get(test)
