@@ -19,7 +19,6 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
-from evidently.tests.base_test import TestStatus
 from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
@@ -41,6 +40,7 @@ from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
+from evidently.ui.type_aliases import TestInfo
 from evidently.ui.type_aliases import TestResultPoints
 from evidently.utils import NumpyEncoder
 
@@ -294,7 +294,7 @@ class InMemoryDataStorage(DataStorage):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
-        points: Dict[datetime.datetime, Dict[Test, TestStatus]] = defaultdict(dict)
+        points: Dict[datetime.datetime, Dict[Test, TestInfo]] = defaultdict(dict)
         for report in (s.as_test_suite() for s in self.state.snapshot_data[project_id].values() if not s.is_report):
             if not filter.filter(report):
                 continue
