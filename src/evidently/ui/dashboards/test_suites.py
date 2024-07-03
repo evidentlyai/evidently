@@ -135,7 +135,7 @@ class DashboardPanelTestSuite(DashboardPanel):
 
         def get_description(test, date):
             description = points[date][test].description
-            description, _ = descr_re.subn(".\n\g<1>", description)
+            description, _ = descr_re.subn(r".<br>\g<1>", description)
             return description
 
         def get_color(test, date) -> Optional[str]:
