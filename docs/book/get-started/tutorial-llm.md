@@ -6,6 +6,8 @@ Evaluating output quality is a crucial element of building production-grade LLM 
 
 Simple "vibe checks" of individual outputs don't scale well. This tutorial shows how you can automate LLM evaluations from experiments to production.
 
+You will learn both about different evaluation methods, and the workflow you can run for your experiments, regression testing and monitoring.
+
 {% hint style="success" %}
 **Want a very simple example first?** This ["Hello World"](quickstart-llm.md) will take a couple minutes.
 {% endhint %}
@@ -643,6 +645,15 @@ project.save()
 
 ![](../.gitbook/assets/cloud/llm_tests-min.gif) NEW IMAGE TO BE ADDED
 
+Using the Test Suite interface is useful when you can define specific conditions based on your initial analysis. You can use it for:
+* Regression testing. Run Test Suite every time you modify something in the prompt or app parameters, and compare new responses against reference.
+* Continous testing. Run Test Suites over your production logs to make sure model output quality and user behavior stays within expectations.
+
+You can also set up alerting to get a notification if your Tests contain failures. 
+
+{% hint style="success" %}
+**What is regression testing?**. Check a separate tutorial that introduces the [regression testing workflow](https://www.evidentlyai.com/blog/llm-testing-tutorial).
+{% endhint %}
 
 # What's next?
 
