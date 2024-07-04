@@ -2,11 +2,11 @@
 description: Evaluate and test your LLM use case in 15 minutes. 
 ---
 
-Evaluating output quality is a crucial element of building production-grade LLM applications. During development, you must compare different prompts and models and catch issues as you tweak them. Once your app is live, you must monitor its performance on actual data to ensure it's safe and accurate.
+Evaluating quality of LLM outputs is a necessary part of building production-grade LLM application. You first need evaluation during development - to compare different prompts and detect regressions as you make changes. Once your app is live, you must run online evaluations to ensure the outputs are safe and accurate and understand user behavior.
 
-Simple "vibe checks" of individual outputs don't scale well. This tutorial shows how you can automate LLM evaluations from experiments to production.
+Manually review of individual outputs doesn't scale. This tutorial shows how you can automate LLM evaluations from experiments to production.
 
-You will learn both about different evaluation methods, and the workflow you can run for your experiments, regression testing and monitoring.
+You will learn both about different evaluation methods, and the workflow to run your evaluations and track results.
 
 {% hint style="success" %}
 **Want a very simple example first?** This ["Hello World"](quickstart-llm.md) will take a couple minutes.
@@ -14,8 +14,8 @@ You will learn both about different evaluation methods, and the workflow you can
 
 In this tutorial, you will:
 * Prepeare a toy chatbot dataset
-* Run evaluations with different methods, from text patterns to LLM-as-a-judge
-* Generate visual Reports to explore the results
+* Evaluate responses using different methods, from text patterns to LLM-as-a-judge
+* Generate visual Reports to explore the evaluation results
 * Build a custom Test Suite to run conditional checks
 * Get a monitoring Dashboard to track results over time
 
@@ -31,8 +31,6 @@ You can run this tutorial locally, with the option to use Evidently Cloud for mo
 
 Let's get started!
 
-Video version: {% embed url="https://youtu.be/qwn0UqXJptY" %}
-
 To complete the tutorial, use the provided code snippets or run a sample notebook.
 
 Jupyter notebook:
@@ -40,6 +38,7 @@ Jupyter notebook:
 
 Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_evaluation_tutorial.pynb).
 
+You can also follow the video version: {% embed url="https://youtu.be/qwn0UqXJptY" %}
 
 # 1. Installation and imports
 
@@ -90,7 +89,7 @@ from evidently.renderers.html_widgets import WidgetSize
 
 # 2. Prepare a dataset
 
-We'll use an example dialogue dataset that imitates a company Q&A system in which employees ask questions about HR topics, using employee portal, etc. You can download the [example CSV file](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/chat_df.csv) directly, or import it using `requests`:
+We'll use a dialogue dataset that imitates a company Q&A system where employees ask questions about HR, finance, etc. You can download the [example CSV file](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/chat_df.csv) from source, or import it using `requests`:
 
 ```python
 response = requests.get("https://raw.githubusercontent.com/evidentlyai/evidently/main/examples/how_to_questions/chat_df.csv")
@@ -105,7 +104,7 @@ assistant_logs.index = assistant_logs.start_time
 assistant_logs.index.rename('index', inplace=True)
 ```
 
-Here is a preview with `assistant_logs.head()`:
+To get a preview:
 
 ```python
 pd.set_option('display.max_colwidth', None)
@@ -115,7 +114,7 @@ assistant_logs.head(3)
 ![](../.gitbook/assets/cloud/llm_data_preview-min.png)
 
 {% hint style="success" %}
-**How do I pass my own data?** You can import a pandas DataFrame with flexible structure. You can include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
+**How do I pass my own data?** You can import a pandas DataFrame with flexible structure. Include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
 {% endhint %}
 
 # 3. Create a Project 
@@ -125,7 +124,7 @@ assistant_logs.head(3)
 
 To be able to save and share results and get a live monitoring dashboard, create a Project in Evidently Cloud. Here's how to set it up:
 
-* **Sign up**. If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup) and name your Organization.
+* **Sign up**. If you do not have one yet, create a free [Evidently Cloud account](https://app.evidently.cloud/signup) and name your Organization.
 * **Add a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 * **Connect to Evidently Cloud**. Pass your API key to connect. 
@@ -144,14 +143,14 @@ project.save()
 
 You will now learn how to apply different methods to evaluate your text data. 
 * **Text statistics**. Evaluate simple properties like text length.
-* **Text patterns**. Detect specific words or patterns in your data.
+* **Text patterns**. Detect specific words or regular patterns.
 * **Model-based evals**. Use ready-made ML models to score data (e.g., by sentiment).
-* **LLM-as-a-judge**. Prompt LLMs to categorize or score texts.
-* **Similarity metrics**. Use distance metrics to compare pairs of texts.
+* **LLM-as-a-judge**. Prompt LLMs to categorize or score texts by custom criteria.
+* **Similarity metrics**. Measure semantic similarity between pairs of text.
 
-You will generate visual Reports in your Python environment to explore the results. For demonstration, we show different types of checks one by one. In practice, you can combine different evaluations together. 
+To view the evaluation results, you will generate visual Reports in your Python environment. You will later explore other formats like Test Suite.
 
-This section explains different evaluation methods. If you wish, you can skip any of them and head straight to Step 6 to see the monitoring example.
+This section introduces different LLM evaluation methods one by one. Each section is self-contained, so you can freely skip any of them and head to Step 6 to see the end-to-end monitoring example.
 
 ## Text statistics 
 
@@ -229,7 +228,7 @@ Evidently has a lot of built-in descriptors. For example, try other simple stati
 
 You can use regular expressions to identify text patterns. For example, you check if the responses mentions competitors, named company products, include emails or specific topical words. Such descriptors return a binary score ("True" or "False") for pattern match.  
 
-Let's check if responses contain words related to the topic of compensation (such as `salary', 'benefits' or 'payroll'). You can pass this word list to the `IncludesWords` descriptor. This will automatically check for inflected and variant words. 
+Let's check if responses contain words related to the topic of compensation (such as `salary', 'benefits' or 'payroll'). You can pass this word list to the `IncludesWords` descriptor. 
 
 Add an optional display name for this eval:
 
@@ -251,7 +250,7 @@ text_evals_report.run(reference_data=None,
 text_evals_report
 ```
 
-Here is an example result. You can see that 10 responses indeed related to the topic of compensation. "Details" show occurrences in time.
+Here is an example result. You can see that 10 responses out of 100 indeed related to the topic of compensation as defined by this word list. "Details" show occurrences in time.
 
 ![](../.gitbook/assets/cloud/llm_mentions_salary-min.png) NEW IMAGE TO BE ADDED
 
@@ -291,7 +290,7 @@ You might then want to look at specific responses with sentiment below zero. Thi
 
 Let's first see how you can use external models from HuggingFace. You will use two options:
 * **Pre-selected models**. Some of the models like **Toxicity** are pre-selected. You can simply pass the `HuggingFaceToxicityModel()` descriptor. This [model](https://huggingface.co/spaces/evaluate-measurement/toxicity) will return the predicted toxicity score between 0 to 1.
-* **Custom models**. You can also call other named models, and specify the output (e.g., label or score) to use. In this case, you must parametrize the general `HuggingFaceModel` descriptor. Let's use it to call the `SamLowe/roberta-base-go_emotions` [model](https://huggingface.co/SamLowe/roberta-base-go_emotions) that classifies text into 28 emotions. We'll pick the "neutral" label. This means that the descriptor will then return the predicted score from 0 to 1 on whether responses convey neutral emotion.
+* **Custom models**. You can also call other named models, and specify the output (e.g., label or score) to use. In this case, you must parametrize the general `HuggingFaceModel` descriptor. Let's use it to call the `SamLowe/roberta-base-go_emotions` [model](https://huggingface.co/SamLowe/roberta-base-go_emotions) that classifies text into 28 emotions. We'll pick the "neutral" label. This means that the descriptor will return the predicted score from 0 to 1 on whether responses convey neutral emotion.
 
 ```python
 text_evals_report = Report(metrics=[
@@ -413,13 +412,16 @@ You will see a distribution of upvotes and downvotes.
 
 ## Semantic Similarity
 
-You can also evaluate how close two texts are in meaning using an embedding model. This is a pairwise descriptor that requires you to define two columns. You can use it many evaluations: for example, to compare new generated answers against reference examples. In our case, we can use it to compare the semantic similarity between Response and Question columns. This may help detect if chatbot answers are not related to the question the user asks.
+You can also evaluate how close two texts are in meaning using an embedding model. This is a pairwise descriptor that requires you to define two columns. You can use it many scenarios: for example, to compare new generated answers against reference examples that serve as a benchmark. 
 
-This descriptor converts all texts into embeddings using an embedding model, and returns a score from 0 to 1. (0 means that texts are opposite in meaning, 0.5: text are unrelated, 1: texts are similar). 
+In our case, we can use it to compare the semantic similarity between Response and Question columns. This may help detect if chatbot answers are not related to the question the user asks.
 
-Our dataset also includes user upvotes and downvotes in a categorical `feedback` column. You can easily add summaries for any numerical or categorical column in the Report.
+This descriptor converts all texts into embeddings using an embedding model, measures Cosine Similarity between them and returns a score from 0 to 1:
+* 0 means that texts are opposite in meaning;
+* 0.5 means that text are unrelated;
+* 1 means that texts are similar. 
 
-To add a summary on the “feedback” column, use `ColumnSummaryMetric()`:
+To compute the Semantic Similarity between responses and questions:
 
 ```python
 text_evals_report = Report(metrics=[
@@ -449,13 +451,13 @@ In our examples, the semantic similarity always stays above 0.81, which means th
 
 You can export the evaluation results beyond viewing the visual Reports in Python. Here are some options.
 
-**Publish a DataFrame**. You can add the individual computed scores (like semantic similarity) directly to your original dataset. This allows you to further analyze your data.
+**Publish a DataFrame**. You can add the individual computed scores (like semantic similarity) directly to your original dataset. This allows you to further analyze your data, like finding the examples with the lowest scores.
 
 ```python
 text_evals_report.datasets()[1]
 ```
 
-**Python dictionary**. Get summary scores as a dictionary:
+**Python dictionary**. Get summary scores as a dictionary. You can use it to export specific values and use them further in your pipeline for any conditional actions:
 ```python
 text_evals_report.as_dict()
 ```
@@ -475,12 +477,12 @@ You can also send the results to Evidently Cloud for monitoring!
 # 6. Monitor results over time
 
 You will learn how to monitor the results of your evaluations using Evidently Cloud. You can use this to:
-* Track evaluation results. You can record the results of different experiments that you try (for example, as you experiment with different prompts).
-* Run batch monitoring. You can run evaluations in batches over your production data: for example, run daily evaluations to score your data using LLM-as-a-judge.
+* **Track experiment results**. You can record the results of different experiments over time. For example, you can keep track of the evaluation scores for different prompts or models on the same evaluation dataset to see how you progress.
+* **Run batch evaluations for live data**. You can run evaluations in batches over your real production data. For example, you can take a sample or all conversations on an houly or daily basis, and score them using your prefered method.
 
-In this flow, you run the evaluations in your environment, and send the results to get a cloud monitoring dashboard.
+In this flow, you will first run the evaluations in your Python environment, and send the results to get a cloud monitoring dashboard.
 
-**Define the evaluations**. First, let's design a combined Report. This will define the content of each your evaluation. Say, you want to compute summaries for all existing metadata column, and evaluate Text Length, Sentiment and the share of Compensation Mentions in the chatbot responses:
+**Define the evaluations**. First, let's design a combined Report. This will define what you will evaluate. Say, you want to compute summaries for all metadata columns, and evaluate Text Length, Sentiment and the share of Compensation Mentions in the chatbot responses:
 
 ```python
 text_evals_report = Report(metrics=[
@@ -499,6 +501,7 @@ text_evals_report = Report(metrics=[
     ColumnSummaryMetric(column_name="environment"),
 ])
 ```
+You can use more complex checks like LLM-as-a-judge in the same way.
 
 **Run the Report**. Let's run the Report for the first 50 rows:
 
@@ -508,29 +511,31 @@ text_evals_report.run(reference_data=None,
                       column_mapping=column_mapping)
 ```
 
-**Upload the results**. To send the evaluation results to Evidently Cloud to the Project you created at the first step:
+**Upload the results**. Send the Report to Evidently Cloud to the Project you created earlier:
 
 ```python
 ws.add_report(project.id, text_evals_report)
 ```
 
-**View the Report**. You can now view the Report you uploaded in Evidently Cloud. Go to the Project, open the Reports section, and view the Report you just calculated.
+**View the Report**. You access the Report in Evidently Cloud just like you did in Python before. Go to the Project, open the Reports section, and view the Report:
 
 ![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW GIF TO BE ADDED
 
-**Get a Monitoring Dashboard**. Now, let's add a dashboard where you can track the results dynamically. You can design individual monitoring panel to add, but it is easier to start with pre-built Tab. 
-* Go to Project Dashboard
-* Enter the edit mode clicking on the "Edit" button in the top right corner
-* Choose "Add Tab"
+**Get a Monitoring Dashboard**. Now, let's add a dashboard where you can track the results over time. You can choose monitoring panels one by one, but it is easier to start with pre-built Tabs. 
+* Go to Project Dashboard.
+* Enter the edit mode clicking on the "Edit" button in the top right corner.
+* Choose "Add Tab",
 * Add a "Descriptors" Tab and then "Columns" Tab.
 
 This way, you will get a ready-made dashboard that will allow you to see the evaluation results over time. 
 
 ![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW GIF TO BE ADDED
 
-However, we only have a single datapoint from a single Report. Let's imitate a few consecutive runs to evaluate batches of data as they come. 
+However, we only have a single datapoint from a single Report, so the dashboard is not very informative. Let's imitate a few consecutive runs to evaluate batches of data as they come. 
 
-**Imitate ongoing monitoring**. You will now run and send several Reports, each time running the evaluation for the next 50 rows in the dataset. For simplicity, let' simply run this code one by one. In practice, you can run the Report on a new dataset after each experimental iteration you come up with, or after new batch of data comes. 
+**Imitate ongoing monitoring**. You will now run and send several Reports, each time running the evaluation for the next 50 rows in the dataset. For illustration, we repeat the same code in a spaghetti manner. In practice, you would compute each Report after a new experimental iteration, or after you get a new batch of data to evaluate. 
+
+Run 2:
 
 ```python
 text_evals_report.run(reference_data=None,
@@ -539,6 +544,12 @@ text_evals_report.run(reference_data=None,
 ws.add_report(project.id, text_evals_report)
 ```
 
+<details>
+
+<summary>And a few more times!</summary>
+
+Run 3:
+
 ```python
 text_evals_report.run(reference_data=None,
                       current_data=assistant_logs[100:150],
@@ -546,6 +557,7 @@ text_evals_report.run(reference_data=None,
 ws.add_report(project.id, text_evals_report)
 ```
 
+Run 4:
 
 ```python
 text_evals_report.run(reference_data=None,
@@ -554,6 +566,8 @@ text_evals_report.run(reference_data=None,
 ws.add_report(project.id, text_evals_report)
 ```
 
+Run 5:
+
 ```python
 text_evals_report.run(reference_data=None,
                       current_data=assistant_logs[200:250],
@@ -561,9 +575,11 @@ text_evals_report.run(reference_data=None,
 ws.add_report(project.id, text_evals_report)
 ```
 
-Let's take a look at the dashboard now! Use the "Show in Order" toggle to see all Reports ignoring the time gaps between when you sent them.
+</details>
 
-In the "Desriptors" tab, you will now see how the distributions of scores change over time. For example, you can notice a dip in Sentiment in the last evaluation run.
+Let's take a look at the dashboard now! Use the "Show in Order" toggle above the dashboard to ignore the time gaps between evaluations.
+
+In the "Desriptors" tab, you will see how the distributions of scores over the five evaluation runs. For example, you can notice a dip in Sentiment in the last evaluation run.
 
 ![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
 
@@ -571,15 +587,15 @@ In the "Columns" tab, you can see all the associated metadata. For example, how 
 
 ![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
 
-You can also add your own custom combination of panels, and add alerting conditions for specific values.
+You can also add alerting conditions for specific values.
 
 {% hint style="success" %}
-**Monitoring Panel types**. You can plot different statistics and distributions of individual metrics and descriptors over time. See [available Panels](https://docs.evidentlyai.com/user-guide/monitoring/design_dashboard).
+**Monitoring Panel types**. You can plot selected statistics and metrics as bar, line chart, etc. See more on [available Panels](https://docs.evidentlyai.com/user-guide/monitoring/design_dashboard).
 {% endhint %}
 
 # 7. Run conditional tests
 
-Up to now, you've used Reports to summarize evaluation results. However, sometimes you want to set specific expectations for your text qualities and only review results when something goes wrong. For example, you might not want to look at the distribution of text length, but rather check that all the texts are within the expected range. 
+Up to now, you used Reports to summarize evaluation results. However, you might often want to set specific conditions on the metric values and only review results when something goes wrong. For example, you might want to check that all the texts are within the expected range. 
 
 You can use Evidently `Test Suites` for this purpose. They have a similar API to `Reports`, but instead of listing `metrics`, you list `tests` and pass conditions using parameters like `gt` (greater than), `lt` (less than), `eq` (equal), etc.
 
@@ -600,13 +616,13 @@ This test sets the following conditions:
 * The maximum response length should be 2000 symbols. (This could be a hard limitation due to chat window size).
 * The mean response length should be above 500 symbols. (You might expect this as a known pattern and want to detect if texts get shorter on average).
 
-You can use any other descriptors, like test for average Semantic Similarity, share of responses that are labeled not Concise, etc.
+You can use any other descriptors with different Tests in the same manner: for examples, test for average Semantic Similarity, share of responses that are labeled "Concise", etc.
 
 {% hint style="success" %}
-**Setting Test conditions**. You can flexibly encode conditions using in-built Tests and parameters. You can also automatically generate conditions from a reference dataset (e.g. expect +/- 10% of the reference values). [Read more about Tests](https://docs.evidentlyai.com/user-guide/tests-and-reports/custom-test-suite).
+**Setting Test conditions**. Read more on how to set test conditions. You can also automatically generate conditions from a reference dataset (e.g. expect +/- 10% of the reference values). [Read more about Tests](https://docs.evidentlyai.com/user-guide/tests-and-reports/custom-test-suite).
 {% endhint %}
 
-**Compute multiple Test Suites**. Let write a cycle to imitate that you compute 5 Test Suites, each time taking 50 rows. You also add a timestamp with hourly difference:
+**Compute multiple Test Suites**. Let write a cycle to imitate that you compute 5 Test Suites sequentially, each time taking 50 rows. You also add a timestamp with hourly difference:
 
 ```python
 for i in range(5):
@@ -623,7 +639,7 @@ Note that we do this loop for demonstration to have multiple runs on the dashboa
 
 **Add a test monitoring panel**. Let's add a simple Panel to show Test results over time. This time, you will see how to use the Python API to manage dashboards as code. This is an option: you can always add panels from the UI as well.
 
-First, connect to the Project to load the updated configuration of panels back to Python. You need this if you just added the Panels in the UI. If you skip this step, the new Test panels will override the Tabs you already have.
+First, connect to the Project to load the updated dashboard configuration back to Python. You need this if you just added the Panels in the UI. If you skip this step, the new Test panels will override the Tabs you already have.
 
 You can copy the Project ID from above the dashboard:
 
