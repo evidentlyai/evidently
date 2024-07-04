@@ -31,6 +31,16 @@ You can run this tutorial locally, with the option to use Evidently Cloud for mo
 
 Let's get started!
 
+Video version: {% embed url="https://youtu.be/qwn0UqXJptY" %}
+
+To complete the tutorial, use the provided code snippets or run a sample notebook.
+
+Jupyter notebook:
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_evaluation_tutorial.ipynb" %}
+
+Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_evaluation_tutorial.pynb).
+
+
 # 1. Installation and imports
 
 Install Evidently in your Python environment:
