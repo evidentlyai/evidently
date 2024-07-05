@@ -19,7 +19,7 @@ The evaluation functionality relies on the open-source Evidently `Reports` and `
 
 # Deployment Options
 
-* **Evidently Cloud (Recommended)**: This is the easiest way to start, with UI service and snapshots hosted by Evidently. Evidently Cloud includes support, a scalable backend, and premium features such as built-in alerting, user management, and visual dashboard design.
+* **Evidently Cloud (Recommended)**: This is the easiest way to start, with UI service and snapshots hosted by Evidently. Evidently Cloud includes support, a scalable backend, and premium features such as built-in alerting, user management, and visual dashboard design. [Sign up](https://www.evidentlyai.com/register) to start free.
 * **Self-hosted ML Monitoring**: Best for proof of concept, small-scale deployments, or teams with advanced infrastructure knowledge. In this case, you must host the open-source UI dashboard service and manage the data storage on your own. 
 * **Private Enterprise Deployment**: For a scalable self-hosted version of Evidently Platform with support, contact us for a [demo of Evidently Enterprise](https://www.evidentlyai.com/get-demo). The platform be hosted in your private cloud or on-premises.
 
