@@ -191,11 +191,11 @@ text_evals_report
 
 This calculates the number of symbols in each text and shows a summary. You can see the distribution of text length across all responses and descriptive statistics like the mean or minimal text length.
 
-![](../.gitbook/assets/cloud/llm_report_preview-min.gif) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_text_length-min.png)
 
 Click on "details" to see how the mean text length changes over time. The index comes from the `datetime` column you mapped earlier. This helps you notice any temporal patterns, such as if texts are longer or shorter during specific periods.
 
-![](../.gitbook/assets/cloud/llm_report_preview-min.gif) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_text_length_plot-min.png) 
 
 **Get a side-by-side comparison**. You can also generate statistics for two datasets at once. For example, compare the outputs of two different prompts or data from today against yesterday.
 
@@ -218,7 +218,7 @@ text_evals_report
 
 You will now see the summary results for both datasets:
 
-![](../.gitbook/assets/cloud/llm_report_preview-min.gif) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_side_by_side-min.png) 
 
 Each evaluation that computes a score for every text in the dataset is called a `descriptor`. Descriptors can be numerical (like the `TextLength()` you just used) or categorical.
 
@@ -256,7 +256,7 @@ text_evals_report
 
 Here is an example result. You can see that 10 responses out of 100 relate to the topic of compensation as defined by this word list. "Details" show occurrences in time.
 
-![](../.gitbook/assets/cloud/llm_mentions_salary-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_mentions_compensation-min.png) 
 
 Such pattern evals are fast and cheap to compute at scale. Try other descriptors like `Contains(items=[])` (for non-vocabulary words like competitor names or longer expressions), `BeginsWith(prefix="")` (for specific starting sequence), custom `RegEx(reg_exp=r"")`, etc.
 
@@ -284,11 +284,11 @@ text_evals_report
 
 You will see the distribution of response sentiment. Most are positive or neutral, but there are a few chats with a negative sentiment. 
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_sentiment-min.png) 
 
 In "details", you can look at specific times when the average sentiment of responses dipped:
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_sentiment_2-min.png) 
 
 To review specific responses with sentiment below zero, you can access the dataset with scores. We'll show this in the following tutorial section.
 
@@ -319,7 +319,7 @@ In each case, the descriptor first downloads the model from HuggingFace to your 
 
 **How to interpret the results?** It's typical to use a predicted score above 0.5 as a "positive" label. The toxicity score is near 0 for all responses - nothing to worry about! For neutrality, most responses have predicted scores above the 0.5 threshold, but a few are below. You can review them individually.
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_neutrality-min.png) 
 
 {% hint style="info" %}
 **Choosing other models**. You can choose other models, e.g. to score texts by topic. See [docs](../customization/llm_as_a_judge.md)  
@@ -388,7 +388,7 @@ report.run(reference_data= None,
 
 All our responses are concise - great!
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_conciseness.png) 
 
 {% hint style="info" %}
 **How to create your own judge**. You can create custom prompts, and optionally pass the context or reference answer alongside the response. See [docs](../customization/huggingface_descriptor.md).  
@@ -443,7 +443,7 @@ text_evals_report
 
 In our examples, the semantic similarity always stays above 0.81, which means that answers generally relate to the question.
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_semantic_similarity-min.png) 
 
 # 5. Export results
 
@@ -525,13 +525,13 @@ ws.add_report(project.id, text_evals_report)
 
 **View the Report**. Go to the Project and open the Reports section using the menu on the left.
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW GIF TO BE ADDED
+![](../.gitbook/assets/cloud/view_report-min.gif)
 
 A single Report gives us all the information right there. But as you run more checks, you want to track how values change over time. Let's imitate a few consecutive runs to evaluate more batches of data. 
 
 **Imitate ongoing monitoring**. Run and send several Reports, each time taking the next 50 rows of data. For illustration, we repeat the runs. In practice, you would compute each Report after each new experiment or after you get a new batch of production data to evaluate. 
 
-Run 2:
+Run the Report for the next 50 rows of data:
 
 ```python
 text_evals_report.run(reference_data=None,
@@ -584,14 +584,14 @@ Now you will have 5 Reports in the Project. Let's get a dashboard!
 
 You will instantly get a dashboard with evaluation results over time.
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW GIF TO BE ADDED
+![](../.gitbook/assets/cloud/create_tabs-min.gif)
 
 In the "Desriptors" tab, you will see how the distributions of the text evaluation results. For example, you can notice a dip in mean Sentiment in the fourth evaluation run. 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_sentiment_over_time-min.png) 
 
 In the "Columns" tab, you can see all the metadata summaries over time. For example, you can notice that all responses in the last run were generated with gpt-3.5.
 
-![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
+![](../.gitbook/assets/cloud/llm_tutorial_modelID_distribution-min.png)
 
 You can also add alerting conditions for specific values.
 
@@ -603,7 +603,11 @@ You can also add alerting conditions for specific values.
 
 So far, you've used Reports to summarize evaluation outcomes. However, you often want to set specific conditions for the metric values. For example, check if all texts fall within the expected length range and review results only if something goes wrong.
 
-This is where you can use `TestSuites`. They work similarly to `Reports`, but instead of listing `metrics`, you define `tests` and set conditions using parameters like `gt` (greater than), `lt` (less than), `eq` (equal), etc.
+This is where you can use an alternative interface called `TestSuites`. It will look like this: 
+
+![](../.gitbook/assets/cloud/llm_tutorial_test_results-min.png) 
+
+Test Suites work similarly to `Reports`, but instead of listing `metrics`, you define `tests` and set conditions using parameters like `gt` (greater than), `lt` (less than), `eq` (equal), etc.
 
 **Define a Test Suite**. Let’s create a simple example:
 
@@ -671,13 +675,11 @@ project.save()
 
 **View the test results in time**. Go to the Evidently Cloud dashboard to see the history of all tests. You can notice that a single test failed in the last run. If you hover on the specific test, you can see that we failed the mean text length condition.
 
-![](../.gitbook/assets/cloud/llm_test_suite_panel-min.png) NEW IMAGE TO BE ADDED
-
 **View the individual Test Suite**. To debug, open the latest Test Suite. In "Details," you will see the distribution of text length and the current mean value, which is just slightly below the set threshold.   
 
-![](../.gitbook/assets/cloud/llm_tests-min.gif) NEW GIF TO BE ADDED
+![](../.gitbook/assets/cloud/view_test_suites-min.gif) 
 
-You can use this Test Suite interface for:
+When can you use these Test Suites? Here are two ideas:
 * **Regression testing**. Run Test Suites whenever you change prompt or app parameters to compare new responses with references or against set criteria.
 * **Continous testing**. Run Test Suites periodically over production logs to check that the output quality stays within expectations.
 
