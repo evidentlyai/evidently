@@ -317,7 +317,7 @@ text_evals_report
 
 In each case, the descriptor first downloads the model from HuggingFace to your environment and then uses it to score the data. It takes a few moments to load the model.
 
-How to interpret the results? It's typical to use a predicted score above 0.5 as a "positive" label. The toxicity score is near 0 for all responses - nothing to worry about! For neutrality, most responses have predicted scores above the 0.5 threshold, but a few are below. You can review them individually.
+**How to interpret the results?** It's typical to use a predicted score above 0.5 as a "positive" label. The toxicity score is near 0 for all responses - nothing to worry about! For neutrality, most responses have predicted scores above the 0.5 threshold, but a few are below. You can review them individually.
 
 ![](../.gitbook/assets/cloud/llm_toxicity_hf-min.png) NEW IMAGE TO BE ADDED
 
