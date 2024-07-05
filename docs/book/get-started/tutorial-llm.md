@@ -21,7 +21,7 @@ In this tutorial, you will:
     * LLM-as-a-judge
     * Metadata analysis
 * Generate visual Reports to explore evaluation results
-* Get a monitoring Dashboard to track results over time
+* Get a monitoring Dashboard to track metrics over time
 * Build a custom Test Suite to run conditional checks
 
 You can run this tutorial locally, with the option to use Evidently Cloud for monitoring. You will work with a Q&A chatbot example, but the methods will apply to other use cases, such as RAGs and agents.
