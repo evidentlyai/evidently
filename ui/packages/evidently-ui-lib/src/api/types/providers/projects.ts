@@ -5,4 +5,5 @@ export type ProjectsProvider = CreateCRUD<ProjectModel> & {
   reloadSnapshots: (args: { project: ID }) => Promise<ErrorData | null>
   listReports: (args: { project: ID }) => Promise<StrictID<ReportModel>[]>
   listTestSuites: (args: { project: ID }) => Promise<StrictID<TestSuiteModel>[]>
+  deleteSnapshot: (args: { project: ID; snapshot: ID }) => Promise<ErrorData | null>
 }

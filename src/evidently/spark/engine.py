@@ -1,4 +1,5 @@
 import abc
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -16,6 +17,7 @@ from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 from evidently.core import ColumnType
+from evidently.features.generated_features import GeneratedFeature
 from evidently.spark.base import SparkDataFrame
 from evidently.spark.base import SparkSeries
 from evidently.spark.base import create_data_definition_spark
@@ -127,7 +129,7 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData]):
     ):
         return create_data_definition_spark(current_data, reference_data, column_mapping)
 
-    def generate_additional_features(self, data: SparkInputData):
+    def generate_additional_features(self, data: SparkInputData) -> Optional[Dict[tuple, GeneratedFeature]]:
         pass
 
 

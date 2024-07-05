@@ -35,6 +35,13 @@ class ColumnDefinition(BaseModel):
         super().__init__(column_name=column_name, column_type=column_type)
 
 
+class FeatureDefinition(BaseModel):
+    feature_name: str
+    display_name: Optional[str]
+    feature_type: ColumnType
+    feature_class: str
+
+
 class PredictionColumns(BaseModel):
     predicted_values: Optional[ColumnDefinition] = None
     prediction_probas: Optional[List[ColumnDefinition]] = None

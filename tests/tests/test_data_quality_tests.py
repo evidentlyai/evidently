@@ -6,6 +6,7 @@ from pytest import approx as pytest_approx
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
+from evidently.tests import TestCategoryCount
 from evidently.tests import TestColumnQuantile
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
@@ -884,3 +885,17 @@ def test_data_quality_test_target_features_correlation_json_render() -> None:
         },
         "status": "SUCCESS",
     }
+
+
+def test_category_count_binary_column():
+    df = pd.DataFrame({"a": [True, False]})
+    test = TestCategoryCount(column_name="a", category=False, lte=0)
+    data_quality = TestSuite(
+        tests=[
+            test,
+        ]
+    )
+
+    data_quality.run(reference_data=None, current_data=df)
+
+    assert "False" in test.get_description(0)

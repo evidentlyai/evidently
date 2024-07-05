@@ -434,7 +434,7 @@ project.dashboard.add_panel(
 
 **Aggregated by Status**. To show the total number of failed Tests (status filter), with daily level aggregation.
 
-```
+```python
 project.dashboard.add_panel(
     DashboardPanelTestSuite(
         title="All tests: aggregated",
@@ -452,7 +452,7 @@ project.dashboard.add_panel(
 
 **Filtered by Test ID**. To show all results for a specified list of Tests (on constant columns, missing values, empty rows) with daily-level aggregation.
 
-```
+```python
 project.dashboard.add_panel(
         DashboardPanelTestSuite(
             title="Data quality tests",

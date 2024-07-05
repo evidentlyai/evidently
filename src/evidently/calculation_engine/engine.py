@@ -1,6 +1,7 @@
 import abc
 import functools
 import logging
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -19,8 +20,11 @@ from evidently.calculation_engine.metric_implementation import MetricImplementat
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
+if TYPE_CHECKING:
+    from evidently.suite.base_suite import Context
+
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)
-TInputData = TypeVar("TInputData")
+TInputData = TypeVar("TInputData", bound=GenericInputData)
 
 
 class Engine(Generic[TMetricImplementation, TInputData]):
@@ -34,10 +38,10 @@ class Engine(Generic[TMetricImplementation, TInputData]):
     def set_tests(self, tests):
         self.tests = tests
 
-    def execute_metrics(self, context, data: GenericInputData):
+    def execute_metrics(self, context: "Context", data: GenericInputData):
         calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
         converted_data = self.convert_input_data(data)
-        context.features = self.generate_additional_features(converted_data)
+        context.set_features(self.generate_additional_features(converted_data))
         context.data = converted_data
         for metric, calculation in self.get_metric_execution_iterator():
             if calculation not in calculations:
@@ -65,7 +69,7 @@ class Engine(Generic[TMetricImplementation, TInputData]):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def generate_additional_features(self, data: TInputData):
+    def generate_additional_features(self, data: TInputData) -> Optional[Dict[tuple, GeneratedFeature]]:
         raise NotImplementedError
 
     def get_metric_implementation(self, metric):

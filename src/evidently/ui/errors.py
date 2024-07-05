@@ -36,6 +36,10 @@ class RoleNotFound(EntityNotFound):
     entity_name = "Role"
 
 
+class SnapshotNotFound(EntityNotFound):
+    entity_name = "Snapshot"
+
+
 class NotEnoughPermissions(EvidentlyServiceError):
     def to_response(self) -> Response:
         return Response(

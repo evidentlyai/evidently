@@ -53,7 +53,11 @@ export const getDashboardProvider: (baseUrl?: string) => DashboardProvider = (ba
         {
           parseAs: 'text',
           params: {
-            path: { project_id: project.id, snapshot_id: snapshot.id, graph_id: graph.id }
+            path: {
+              project_id: project.id,
+              snapshot_id: snapshot.id,
+              graph_id: encodeURIComponent(graph.id)
+            }
           }
         }
       )
