@@ -153,9 +153,9 @@ You will now learn how to apply different methods to evaluate your text data.
 * **LLM-as-a-judge**. Prompt LLMs to categorize or score texts by custom criteria.
 * **Similarity metrics**. Measure semantic similarity between pairs of text.
 
-To view the evaluation results, you will generate visual Reports in your Python environment. Later, you'll explore other formats like Test Suite.
+Each example is self-contained, so you can skip any of them or head directly to Step 6 to see the monitoring flow.
 
-This section introduces different LLM evaluation methods. Each example is self-contained, so you can skip any and head to Step 6 for the end-to-end example.
+To view the evaluation results, you will first generate visual Reports in your Python environment. In the following sections of the tutorial, you'll explore other formats like conditional Test Suites and live monitoring Dashboards.
 
 ## Text statistics 
 
