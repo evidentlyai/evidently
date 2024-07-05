@@ -153,15 +153,9 @@ You will now learn how to apply different methods to evaluate your text data.
 * **LLM-as-a-judge**. Prompt LLMs to categorize or score texts by custom criteria.
 * **Similarity metrics**. Measure semantic similarity between pairs of text.
 
-Each example is self-contained, so you can skip any of them or head directly to Step 6 to see the monitoring flow.
-
 To view the evaluation results, you will first generate visual Reports in your Python environment. In the following sections of the tutorial, you'll explore other formats like conditional Test Suites and live monitoring Dashboards.
 
-## Text statistics 
-
-Let's run a simple evaluation to understand the basic flow.
-
-**Create column mapping**. This optional step helps correctly parse the data schema. For example, pointing to a "datetime" column will add a time index to the plots.
+**Create column mapping**. Map the data schema to make sure it is parsed correctly. Pointing to a "datetime" column will also add a time index to the plots.
 
 ```python
 column_mapping = ColumnMapping(
@@ -171,6 +165,16 @@ column_mapping = ColumnMapping(
     categorical_features=['organization', 'model_ID', 'region', 'environment', 'feedback'],
 )
 ```
+
+Now, let's run evaluations! 
+
+{% hint style="info" %}
+**You can skip steps**. Each example below is self-contained, so you can skip any of them or head directly to Step 6 to see the monitoring flow.
+{% endhint %}
+
+## Text statistics 
+
+Let's run a simple evaluation to understand the basic flow.
 
 **Evaluate text length**. Generate a Report to evaluate the length of texts in the "response" column. Run this check for the first 100 rows in the `assistant_logs` dataframe:
 
@@ -222,10 +226,10 @@ You will now see the summary results for both datasets:
 
 Each evaluation that computes a score for every text in the dataset is called a `descriptor`. Descriptors can be numerical (like the `TextLength()` you just used) or categorical.
 
-Evidently has many built-in descriptors. For example, try other simple statistics like SentenceCount() or WordCount(). We'll show more complex examples below.
+Evidently has many built-in descriptors. For example, try other simple statistics like `SentenceCount()` or `WordCount()`. We'll show more complex examples below.
 
 {% hint style="success" %}
-**List of all descriptors** See available descriptors in the "Descriptors" section of [All Metrics](https://docs.evidentlyai.com/reference/all-metrics) table. 
+**List of all descriptors** See all available descriptors in the "Descriptors" section of [All Metrics](https://docs.evidentlyai.com/reference/all-metrics) table. 
 {% endhint %}
 
 ## Text patterns
@@ -258,7 +262,10 @@ Here is an example result. You can see that 10 responses out of 100 relate to th
 
 ![](../.gitbook/assets/cloud/llm_tutorial_mentions_compensation-min.png) 
 
-Such pattern evals are fast and cheap to compute at scale. Try other descriptors like `Contains(items=[])` (for non-vocabulary words like competitor names or longer expressions), `BeginsWith(prefix="")` (for specific starting sequence), custom `RegEx(reg_exp=r"")`, etc.
+Such pattern evals are fast and cheap to compute at scale. You can try other descriptors like:
+* `Contains(items=[])` for non-vocabulary words like competitor names or longer expressions,
+* `BeginsWith(prefix="")` for specific starting sequence,
+*  Custom `RegEx(reg_exp=r"")`, etc.
 
 ## Model-based scoring
 
@@ -290,7 +297,7 @@ In "details", you can look at specific times when the average sentiment of respo
 
 ![](../.gitbook/assets/cloud/llm_tutorial_sentiment_2-min.png) 
 
-To review specific responses with sentiment below zero, you can access the dataset with scores. We'll show this in the following tutorial section.
+To review specific responses with sentiment below zero, you can also export the dataset with scores. We'll show this later on.
 
 Let's first see how to use external models from HuggingFace. There are two options:
 * **Pre-selected models**, like **Toxicity**. Pass the `HuggingFaceToxicityModel()` descriptor. This [model](https://huggingface.co/spaces/evaluate-measurement/toxicity) returns a predicted toxicity score between 0 to 1.
@@ -327,15 +334,13 @@ In each case, the descriptor first downloads the model from HuggingFace to your 
 
 ## LLM as a judge
 
+For more complex or nuanced checks, you can use LLMs as a judge. This requires creating an evaluation prompt asking LLMs to assess the text by specific criteria, such as tone or conciseness.
+
 {% hint style="info" %}
 **This step is optional**. You'll need an OpenAI API key and will incur costs by running the evaluation. Skip if you don't want to use external LLMs. 
 {% endhint %}
 
-For more complex or nuanced checks, you can use LLMs as a judge. This requires creating an evaluation prompt asking LLMs to assess the text by specific criteria, such as tone or conciseness.
-
-{% hint style="info" %}
-**Recommended: pass the key as an environment variable**. [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for best practices. 
-{% endhint %}
+**Pass the OpenAI key**. It is recommended to pass the key as an environment variable. [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for best practices. 
 
 ```python
 ## import os
@@ -396,7 +401,7 @@ All our responses are concise - great!
 
 ## Metadata summary
 
-Our dataset includes user upvotes and downvotes in a categorical `feedback` column. You can easily add summaries for any numerical or categorical column to the Report.
+Our dataset also includes user upvotes and downvotes in a categorical `feedback` column. You can easily add summaries for any numerical or categorical column to the Report.
 
 To add a summary on the “feedback” column, use `ColumnSummaryMetric()`:
 
@@ -421,7 +426,7 @@ You can evaluate how closely two texts are in meaning using an embedding model. 
 This descriptor converts all texts into embeddings, measures Cosine Similarity between them, and returns a score from 0 to 1:
 * 0 means that texts are opposite in meaning;
 * 0.5 means that texts are unrelated;
-* 1 means that texts are similar.
+* 1 means that texts are semantically close.
 
 To compute the Semantic Similarity:
 
@@ -527,9 +532,9 @@ ws.add_report(project.id, text_evals_report)
 
 ![](../.gitbook/assets/cloud/view_report-min.gif)
 
-A single Report gives us all the information right there. But as you run more checks, you want to track how values change over time. Let's imitate a few consecutive runs to evaluate more batches of data. 
+A single Report gives us all the information right there. But as you run more checks, you will want to see how values change over time. Let's imitate a few consecutive runs to evaluate more batches of data. 
 
-**Imitate ongoing monitoring**. Run and send several Reports, each time taking the next 50 rows of data. For illustration, we repeat the runs. In practice, you would compute each Report after each new experiment or after you get a new batch of production data to evaluate. 
+**Imitate ongoing evaluations**. Run and send several Reports, each time taking the next 50 rows of data. For illustration, we repeat the runs. In practice, you would compute each Report after new experiments or as you get a new batch of production data to evaluate. 
 
 Run the Report for the next 50 rows of data:
 
@@ -587,6 +592,7 @@ You will instantly get a dashboard with evaluation results over time.
 ![](../.gitbook/assets/cloud/create_tabs-min.gif)
 
 In the "Desriptors" tab, you will see how the distributions of the text evaluation results. For example, you can notice a dip in mean Sentiment in the fourth evaluation run. 
+
 ![](../.gitbook/assets/cloud/llm_tutorial_sentiment_over_time-min.png) 
 
 In the "Columns" tab, you can see all the metadata summaries over time. For example, you can notice that all responses in the last run were generated with gpt-3.5.
@@ -626,10 +632,8 @@ This test checks the following conditions:
 * Maximum response length does not exceed 2000 symbols (e.g., due to chat window constraints).
 * Mean response length is above 500 symbols (e.g., this is a known pattern).
 
-You can use other descriptors and tests. For example, use `TestCategoryShare` to check if the share of responses labeled "Concise" by the LLM judge is above a certain threshold.
-
 {% hint style="success" %}
-**How to test set test conditions**. [Read more about Tests](https://docs.evidentlyai.com/user-guide/tests-and-reports/custom-test-suite). You can also automatically generate conditions from a reference dataset (e.g. expect +/- 10% of the reference values). 
+**How to test set test conditions**. [Read more about Tests](https://docs.evidentlyai.com/user-guide/tests-and-reports/custom-test-suite). You can use other descriptors and tests. For example, use `TestCategoryShare` to check if the share of responses labeled "Concise" by the LLM judge is above a certain threshold. You can also automatically generate conditions from a reference dataset (e.g. expect +/- 10% of the reference values). 
 {% endhint %}
 
 **Compute multiple Test Suites**. Let's simulate running 5 Test Suites sequentially, each on 50 rows of data, with timestamps spaced hourly:
