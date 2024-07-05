@@ -14,10 +14,15 @@ You will learn both about different evaluation methods, and the workflow to run 
 
 In this tutorial, you will:
 * Prepeare a toy chatbot dataset
-* Evaluate responses using different methods, from text patterns to LLM-as-a-judge
+* Evaluate responses using different methods:
+    * Text statistics
+    * Text patterns
+    * Model-based evaluations
+    * LLM-as-a-judge
+    * Metadata analysis
 * Generate visual Reports to explore the evaluation results
-* Build a custom Test Suite to run conditional checks
 * Get a monitoring Dashboard to track results over time
+* Build a custom Test Suite to run conditional checks
 
 You can run this tutorial locally, with the option to use Evidently Cloud for monitoring dashboards. We'll use a Q&A chatbot as an example, but these methods apply to other use cases like RAGs and agents.
 
