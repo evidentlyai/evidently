@@ -41,7 +41,7 @@ To complete the tutorial, use the provided code snippets or run a sample noteboo
 Jupyter notebook:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_evaluation_tutorial.ipynb" %}
 
-Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_evaluation_tutorial.pynb).
+Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_evaluation_tutorial.ipynb).
 
 You can also follow the video version: {% embed url="https://youtu.be/qwn0UqXJptY" %}
 
@@ -153,9 +153,11 @@ You will now learn how to apply different methods to evaluate your text data.
 * **LLM-as-a-judge**. Prompt LLMs to categorize or score texts by custom criteria.
 * **Similarity metrics**. Measure semantic similarity between pairs of text.
 
-To view the evaluation results, you will first generate visual Reports in your Python environment. In the following sections of the tutorial, you'll explore other formats like conditional Test Suites and live monitoring Dashboards.
+To view the evaluation results, you will generate visual Reports in your Python environment. In the following sections of the tutorial, you'll also explore other formats like conditional Test Suites and live monitoring Dashboards.
 
-**Create column mapping**. Map the data schema to make sure it is parsed correctly. Pointing to a "datetime" column will also add a time index to the plots.
+It is recommended to map the data schema to make sure it is parsed correctly.
+
+**Create column mapping**. Identify the type of columns in your data. Pointing to a "datetime" column will also add a time index to the plots.
 
 ```python
 column_mapping = ColumnMapping(
