@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Set
 from typing import Tuple
 
@@ -117,12 +118,19 @@ def _get_metric_hover(params: List[str], value: "PanelValue"):
     return hover
 
 
+def _hover_params_early_stop(obj: Any, paths: List[str]) -> Optional[List[Tuple[str, Any]]]:
+    if not isinstance(obj, ColumnName):
+        return None
+    column_name_str = obj.display_name or obj.name
+    return [(".".join(paths), column_name_str)]
+
+
 def _get_metrics_hover_params(metrics: Set[Metric]) -> Dict[Metric, List[str]]:
     if len(metrics) == 0:
         return {}
     metric_params: Dict[Metric, Set[Tuple[str, Any]]] = defaultdict(set)
     for metric in metrics:
-        for path, value in iterate_obj_fields(metric, []):
+        for path, value in iterate_obj_fields(metric, [], early_stop=_hover_params_early_stop):
             metric_params[metric].add((path, value))
     same_args = set.intersection(*metric_params.values())
     return {
