@@ -150,7 +150,7 @@ def _create_tracer_provider(
                 token = cloud.jwt_token
                 session.headers.update({"Authorization": f"Bearer {token}"})
                 r.request.headers["Authorization"] = session.headers["Authorization"]
-                return session.send(r.request, verify=False)
+                return session.send(r.request)
 
         session.hooks["response"].append(refresh_token)
 
