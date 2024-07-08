@@ -44,7 +44,6 @@ cmdclass["jsdeps"] = combine_commands(
     install_npm(os.path.join(HERE, "ui"), build_cmd="build"),
     ensure_targets(jstargets),
 )
-
 setup_args = dict(
     cmdclass=cmdclass,
     author_email="emeli.dral@gmail.com",
@@ -93,7 +92,9 @@ setup_args = dict(
             "httpx==0.24.1",
             "ruff==0.3.7",
             "pre-commit==3.5.0",
+            "opentelemetry-api==1.25.0",
             "opentelemetry-sdk==1.25.0",
+            "opentelemetry-proto==1.25.0",
             "opentelemetry-exporter-otlp-proto-grpc==1.25.0",
             "opentelemetry-exporter-otlp-proto-http==1.25.0",
         ],
@@ -108,6 +109,7 @@ setup_args = dict(
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )
+
 
 if __name__ == "__main__":
     setup(**setup_args)
