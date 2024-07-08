@@ -22,6 +22,7 @@ SnapshotID = uuid.UUID
 STR_UUID = Union[str, uuid.UUID]
 PanelID = uuid.UUID
 TabID = uuid.UUID
+DatasetID = uuid.UUID
 ZERO_UUID = uuid.UUID(int=0)
 
 

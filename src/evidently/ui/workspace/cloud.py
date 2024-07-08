@@ -1,8 +1,12 @@
+from typing import BinaryIO
 from typing import Dict
 from typing import List
 from typing import NamedTuple
 from typing import Optional
+from typing import Union
+from uuid import UUID
 
+import pandas as pd
 from requests import HTTPError
 
 from evidently.ui.api.models import OrgModel
@@ -11,7 +15,9 @@ from evidently.ui.base import Org
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import Team
 from evidently.ui.storage.common import NoopAuthManager
+from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
+from evidently.ui.type_aliases import DatasetID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.workspace.remote import NoopBlobStorage
@@ -61,8 +67,17 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         body: Optional[dict] = None,
         cookies=None,
         headers: Dict[str, str] = None,
+        form_data: bool = False,
     ):
-        r = super()._prepare_request(path, method, query_params, body, cookies, headers)
+        r = super()._prepare_request(
+            path=path,
+            method=method,
+            query_params=query_params,
+            body=body,
+            cookies=cookies,
+            headers=headers,
+            form_data=form_data,
+        )
         if path == "/api/users/login":
             return r
         r.cookies[self.token_cookie_name] = self.jwt_token
@@ -77,16 +92,18 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         response_model=None,
         cookies=None,
         headers: Dict[str, str] = None,
+        form_data: bool = False,
     ):
         try:
             res = super()._request(
-                path,
-                method,
-                query_params,
-                body,
-                response_model,
+                path=path,
+                method=method,
+                query_params=query_params,
+                body=body,
+                response_model=response_model,
                 cookies=cookies,
                 headers=headers,
+                form_data=form_data,
             )
             self._logged_in = True
             return res
@@ -103,6 +120,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
                     response_model,
                     cookies=cookies,
                     headers=headers,
+                    form_data=form_data,
                 )
             raise
 
@@ -119,6 +137,23 @@ class CloudMetadataStorage(RemoteMetadataStorage):
             query_params={"name": team.name, "org_id": org_id},
             response_model=TeamModel,
         )
+
+    def add_dataset(
+        self, file: BinaryIO, name: str, org_id: OrgID, team_id: TeamID, description: Optional[str]
+    ) -> DatasetID:
+        response = self._request(
+            "/api/datasets/",
+            "POST",
+            body={"name": name, "description": description, "file": file},
+            query_params={"org_id": org_id, "team_id": team_id},
+            form_data=True,
+        )
+        return DatasetID(response.json()["dataset_id"])
+
+    def load_dataset(self, dataset_id: DatasetID) -> List[List]:
+        response = self._request(f"/api/datasets/{dataset_id}", "GET")
+        json = response.json()
+        return json["items"]
 
 
 class CloudWorkspace(WorkspaceView):
@@ -163,6 +198,33 @@ class CloudWorkspace(WorkspaceView):
     def create_team(self, name: str, org_id: OrgID) -> Team:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         return self.project_manager.metadata.create_team(Team(name=name), org_id).to_team()
+
+    def add_dataset(
+        self,
+        data_or_path: Union[str, pd.DataFrame],
+        name: str,
+        org_id: STR_UUID,
+        team_id: STR_UUID,
+        description: Optional[str] = None,
+    ) -> DatasetID:
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        if isinstance(org_id, str):
+            org_id = UUID(org_id)
+        if isinstance(team_id, str):
+            team_id = UUID(team_id)
+        if isinstance(data_or_path, str):
+            file = open(data_or_path, "rb")
+        else:
+            raise NotImplementedError
+        try:
+            return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description)
+        finally:
+            file.close()
+
+    def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        rows = self.project_manager.metadata.load_dataset(dataset_id)
+        return pd.DataFrame(rows)
 
 
 class CloudAuthManager(NoopAuthManager):
