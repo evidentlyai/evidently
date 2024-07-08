@@ -63,19 +63,6 @@ def trace_event(track_args: Optional[List[str]] = None, ignore_args: Optional[Li
     return wrapper
 
 
-class _EvidentlyPartialClient:
-    def __init__(self, base_url: str, token: Optional[str]):
-        pass
-
-    def jwt_token(self) -> str:
-        if not self._jwt_token_valid():
-            self._update_jwt_token()
-        return self._jwt_token
-
-    def get_or_create_dataset(self, name: str) -> Optional[uuid.UUID]:
-        pass
-
-
 def _create_tracer_provider(
     address: Optional[str] = None,
     exporter_type: Optional[str] = None,
@@ -146,11 +133,14 @@ def _create_tracer_provider(
 
     exporter = None
     if _exporter_type == "grpc":
-        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+        from opentelemetry.exporter.otlp.proto.grpc import trace_exporter as grpc_exporter
 
-        exporter = OTLPSpanExporter(_address, headers=[] if _api_key is None else [("authorization", _api_key)])
+        exporter = grpc_exporter.OTLPSpanExporter(
+            _address,
+            headers=[] if _api_key is None else [("authorization", _api_key)],
+        )
     elif _exporter_type == "http":
-        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        from opentelemetry.exporter.otlp.proto.http import trace_exporter as http_exporter
 
         session = requests.Session()
 
@@ -164,11 +154,13 @@ def _create_tracer_provider(
 
         session.hooks["response"].append(refresh_token)
 
-        exporter = OTLPSpanExporter(
+        exporter = http_exporter.OTLPSpanExporter(
             urllib.parse.urljoin(_address, "/v1/traces"),
             headers=dict([] if _api_key is None else [("authorization", _api_key)]),
             session=session,
         )
+    else:
+        raise ValueError("Unexpected value of exporter type")
     tracer_provider.add_span_processor(BatchSpanProcessor(exporter))
     _tracer = tracer_provider.get_tracer("evidently")
     return tracer_provider
