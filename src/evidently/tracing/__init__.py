@@ -12,6 +12,7 @@ from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import SpanExporter
 
 from evidently.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.ui.workspace.cloud import CloudMetadataStorage
@@ -131,7 +132,7 @@ def _create_tracer_provider(
         )
     )
 
-    exporter = None
+    exporter: SpanExporter
     if _exporter_type == "grpc":
         from opentelemetry.exporter.otlp.proto.grpc import trace_exporter as grpc_exporter
 
