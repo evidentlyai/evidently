@@ -171,9 +171,10 @@ class DashboardPanelDistribution(DashboardPanel):
             names.update(data.keys())
             values.append(data)
 
-        name_to_date_value: Dict[str, List[Any]] = {name: [] for name in names}
+        names_sorted = list(sorted(names))
+        name_to_date_value: Dict[str, List[Any]] = {name: [] for name in names_sorted}
         for timestamp, data in zip(timestamps, values):
-            for name in names:
+            for name in names_sorted:
                 name_to_date_value[name].append(data.get(name))
         hovertemplate = "<b>{name}: %{{y}}</b><br><b>Timestamp: %{{x}}</b>"
         fig = go.Figure(
@@ -184,7 +185,7 @@ class DashboardPanelDistribution(DashboardPanel):
                     y=name_to_date_value.get(name),
                     hovertemplate=hovertemplate.format(name=name),
                 )
-                for name in names
+                for name in names_sorted
             ]
         )
         # Change the bar mode
