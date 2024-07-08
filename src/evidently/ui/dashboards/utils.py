@@ -7,6 +7,8 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import TypeVar
+from typing import Union
 
 import plotly.io as pio
 
@@ -125,17 +127,19 @@ def _hover_params_early_stop(obj: Any, paths: List[str]) -> Optional[List[Tuple[
     return [(".".join(paths), column_name_str)]
 
 
-def _get_metrics_hover_params(metrics: Set[Metric]) -> Dict[Metric, List[str]]:
-    if len(metrics) == 0:
+TMT = TypeVar("TMT", bound=Union[Metric, Test])
+
+
+def _get_hover_params(items: Set[TMT]) -> Dict[TMT, List[str]]:
+    if len(items) == 0:
         return {}
-    metric_params: Dict[Metric, Set[Tuple[str, Any]]] = defaultdict(set)
-    for metric in metrics:
-        for path, value in iterate_obj_fields(metric, [], early_stop=_hover_params_early_stop):
-            metric_params[metric].add((path, value))
-    same_args = set.intersection(*metric_params.values())
+    params: Dict[TMT, Set[Tuple[str, Any]]] = defaultdict(set)
+    for item in items:
+        for path, value in iterate_obj_fields(item, [], early_stop=_hover_params_early_stop):
+            params[item].add((path, value))
+    same_args = set.intersection(*params.values())
     return {
-        metric: [f"{pair[0]}: {pair[1]}" for pair in pairs if pair not in same_args]
-        for metric, pairs in metric_params.items()
+        metric: [f"{pair[0]}: {pair[1]}" for pair in pairs if pair not in same_args] for metric, pairs in params.items()
     }
 
 
@@ -150,8 +154,7 @@ TEST_COLORS = {
 tests_colors_order = {ts: i for i, ts in enumerate(TEST_COLORS)}
 
 
-def _get_test_hover(test: Test):
-    params = [f"{k}: {v}" for k, v in _flatten_params(test).items()]
+def _get_test_hover(test_name: str, params: List[str]):
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test.name}</b><br>{params_join}<br>%{{customdata}}<br>"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test_name}</b><br>{params_join}<br>%{{customdata}}<br>"
     return hover
