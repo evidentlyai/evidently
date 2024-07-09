@@ -4,6 +4,7 @@
 <a href="https://pepy.tech/project/evidently" target="_blank">
     <img src="https://pepy.tech/badge/evidently" alt="PyPi Downloads">
 </a>
+
 </p>
 
 <p align="center"><b>An open-source framework to evaluate, test and monitor ML and LLM-powered systems.</b></p>
