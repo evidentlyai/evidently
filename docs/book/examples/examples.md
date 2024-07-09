@@ -6,10 +6,12 @@ description: Sample notebooks and tutorials
 
 This is the best place to start. 
 
-Title| Code example | Guide 
--- | -- | --
-Quickstart for Reports and Test Suites| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/getting_started_tutorial.ipynb)<br> [Colab](https://colab.research.google.com/drive/1j0Wh4LM0mgMuDY7LQciLaUV4G1khB-zb)| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial)
-Quickstart for ML Monitoring| [Python script](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/get_started_monitoring.py) | [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
+Title| Guide 
+-- | --
+Evaluation Tutorial: Tabular Data| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial)
+Evaluation Tutorial: LLMs| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-llm)
+Set up Cloud ML monitoring | [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-cloud)
+Self-hosting ML monitoring| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
 
 # Sample notebooks
 
@@ -21,6 +23,7 @@ Evidently Test Presets| [Jupyter notebook](https://github.com/evidentlyai/eviden
 Evidently Tests| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_tests.ipynb) <br> [Colab](https://colab.research.google.com/drive/1p9bgJZDcr_NS5IKVNvlxzswn6er9-abl) | <ul><li>All individual Tests (50+) that one can use to create a custom Test Suite. Tabular data examples.</li><li>How to set test conditions and parameters.</li></ul>
 Evidently Metric Presets| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metric_presets.ipynb) <br> [Colab](https://colab.research.google.com/drive/1-0-itoET4dQHo8dcoC0fKZ5VhugliLxj) | All pre-built Reports: <ul><li>Data Drift</li><li>Target Drift</li><li>Data Quality</li><li>Regression</li><li>Classification</li></ul>     
 Evidently Metrics| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metrics.ipynb) <br> [Colab](https://colab.research.google.com/drive/1c7HQz920Q-BPazDOujL4PgckuKIzFebn) | <ul><li>All individual metrics (30+) that one can use to create a custom Report.</li><li>How to set simple metric parameters.</li></ul>
+Evidently LLM Metrics| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_evaluate_llm_with_text_descriptors.ipynb) | <ul><li>Evaluations for Text Data and LLMs</li></ul>
 
 For more examples showing specific features, including text data support, head to the "How to" examples.
 
