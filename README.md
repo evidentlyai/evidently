@@ -1,9 +1,8 @@
 <h1 align="center">Evidently</h1>
 
 <p align="center">
-<a href="https://pepy.tech/project/evidently" target="_blank">
-    <img src="https://pepy.tech/badge/evidently" alt="PyPi Downloads">
-</a>
+<a href="https://pepy.tech/project/evidently" target="_blank"><img src="https://pepy.tech/badge/evidently" alt="PyPi Downloads"></a>
+<a href="https://opensource.org/licenses/Apache-2.0" target="_blank"><img src="https://img.shields.io/badge/License-Apache_2.0-yellowgreen.svg" alt="License"></a>
 
 </p>
 
