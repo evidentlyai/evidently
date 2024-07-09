@@ -169,7 +169,7 @@ data_drift_report.json()
 You can choose other Presets and individual Metrics, including LLM evaluations for text data.
 
 ### Option 3: ML monitoring dashboard
-> This will launch a demo project in the Evidently UI. Head to docs for a complete [Self-hosting ML Monitoring Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring) or [Cloud ML Monitoring Tutorial](https://docs.evidentlyai.com/get-started/tutorial-cloud).
+> This launches a demo project in the Evidently UI. Check complete tutorials for [Self-hosting](https://docs.evidentlyai.com/get-started/tutorial-monitoring) or [Evidently Cloud](https://docs.evidentlyai.com/get-started/tutorial-cloud).
 
 Recommended step: create a virtual environment and activate it.
 ```
