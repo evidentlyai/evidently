@@ -69,7 +69,7 @@ You can choose:
 * Self-host the open-source version. [Live demo](https://demo.evidentlyai.com).
 * Sign up for [Evidently Cloud](https://www.evidentlyai.com/register) (Recommended).
 
-Evidently Cloud offers a a generous free tier and extra features like user management, alerting, and no-code evals.
+Evidently Cloud offers a generous free tier and extra features like user management, alerting, and no-code evals.
 
 | Dashboard |
 |--|
