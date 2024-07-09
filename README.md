@@ -63,7 +63,7 @@ Evidently is very modular. You can start with one-off evaluations using `Reports
  
 ## 3. Monitoring Dashboard
 
-**Monitoring UI** service helps visualize metrics and test results over time. 
+**Monitoring UI** service helps visualize metrics and test results over time. [Live demo](https://demo.evidentlyai.com). 
 
 You can self-host the open-source dashboard or use [Evidently Cloud](https://www.evidentlyai.com/register). It starts with a generous free tier and offers extra features like user management, built-in alerting, and a no-code interface.
 
@@ -182,7 +182,9 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
 # 🚦 What can you evaluate?
 
-Evidently has 100+ built-in evals. You can also add custom ones. Each metric has an optional visualization: you can use it in Reports, Tests, or plot on a Dashboard. Here are examples of things you can check:
+Evidently has 100+ built-in evals. You can also add custom ones. Each metric has an optional visualization: you can use it in `Reports`, `Test Suites`, or plot on a `Dashboard`. 
+
+Here are examples of things you can check:
 
 |                           |                          |
 |:-------------------------:|:------------------------:|
