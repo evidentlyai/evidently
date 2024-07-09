@@ -2,7 +2,8 @@
 
 <p align="center">
 <a href="https://pepy.tech/project/evidently" target="_blank"><img src="https://pepy.tech/badge/evidently" alt="PyPi Downloads"></a>
-<a href="https://github.com/evidentlyai/evidently/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/badge/License-Apache_2.0-yellowgreen.svg" alt="License"></a>
+<a href="https://github.com/evidentlyai/evidently/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/evidentlyai/evidently" alt="License"></a>
+<a href="https://pypi.org/project/evidently/" target="_blank"><img src="https://img.shields.io/pypi/v/evidently" alt="PyPi"></a>
 
 </p>
 
@@ -28,9 +29,17 @@
 
 # :bar_chart: What is Evidently?
 
-Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test, and monitor ML models from validation to production. It works with tabular, text data and embeddings.
+Evidently is an open-source Python library for ML and LLM evaluation and observability. It helps evaluate, test, and monitor AI-powered systems and data pipelines from experimentation to production. 
 
-Evidently has a modular approach with 3 components on top of the shared `metrics` functionality.
+🔡 Works with tabular, text data, and embeddings. 
+📚 100+ built-in metrics from data drift detection to LLM judges.
+🛠️ Interface to add custom metrics and tests. 
+🚦 Both offline evals and live monitoring.
+💻 Open architecture: easily export data and integrate. 
+
+Evidently is very modular: you can start with one-off evaluations in Python without complex installs or set it up as a service to get a real-time monitoring dashboard.
+
+
 
 ## 1. Tests: batch model checks
 
