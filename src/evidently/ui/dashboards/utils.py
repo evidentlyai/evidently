@@ -133,15 +133,15 @@ TMT = TypeVar("TMT", bound=Union[Metric, Test])
 def _get_hover_params(items: Set[TMT]) -> Dict[TMT, List[str]]:
     if len(items) == 0:
         return {}
-    params: Dict[str, Dict[TMT, Set[Tuple[str, Any]]]] = defaultdict(lambda: defaultdict(set))
+    params: Dict[str, Dict[TMT, Set[str]]] = defaultdict(lambda: defaultdict(set))
     for item in items:
         for path, value in iterate_obj_fields(item, [], early_stop=_hover_params_early_stop):
-            params[item.get_id()][item].add((path, value))
+            params[item.get_id()][item].add(f"{path}: {value}")
     same_args: Dict[str, Set[str]] = {k: set.intersection(*v.values()) for k, v in params.items()}
     return {
-        item: [f"{pair[0]}: {pair[1]}" for pair in pairs if pair not in same_args[item_id]]
+        item: [row for row in rows if row not in same_args[item_id]]
         for item_id, p in params.items()
-        for item, pairs in p.items()
+        for item, rows in p.items()
     }
 
 
