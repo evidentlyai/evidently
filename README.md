@@ -52,7 +52,7 @@ Evidently is very modular. You can start with one-off evaluations using `Reports
 
 ## 2. Test Suites
 
-**Test Suites** verify set conditions on metric values and return a pass or fail result. 
+**Test Suites** check for defined conditions on metric values and return a pass or fail result. 
 * Best for regression testing, CI/CD checks, or data validation pipelines.
 * Zero setup option: auto-generate test conditions from the reference dataset.
 * Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.
