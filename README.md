@@ -179,7 +179,7 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 |                           |                          |
 |:-------------------------:|:------------------------:|
 | **🔡 Text descriptors**   | **📝 LLM outputs**       |
-| Length, sentiment, toxicity, language, special symbols, regular expression matches, etc. | Semantic similarity, retrieval relevance, summarization quality, etc. with model- and LLM-based checks. |
+| Length, sentiment, toxicity, language, special symbols, regular expression matches, etc. | Semantic similarity, retrieval relevance, summarization quality, etc. with model- and LLM-based evals. |
 | **🛢 Data quality**       | **📊 Data distribution drift** |
 | Missing values, duplicates, min-max ranges, new categorical values, correlations, etc. | 20+ statistical tests and distance metrics to compare shifts in data distribution. |
 | **🎯 Classification**     | **📈 Regression**        |
