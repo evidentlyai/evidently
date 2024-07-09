@@ -174,8 +174,9 @@ evidently ui --demo-projects all
 
 Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
-# What can you evaluate?
+# 🚦 What can you evaluate?
 
+Evidently has 100+ built-in metrics and tests, and a custom Python interface. Each metric has an optional visual render, and can be used in Reports, conditional Tests, or plotted on a Dashboard.
 |                           |                          |
 |:-------------------------:|:------------------------:|
 | **🔡 Text descriptors**   | **📝 LLM outputs**       |
