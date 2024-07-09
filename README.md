@@ -183,9 +183,9 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 | **🛢 Data quality**       | **📊 Data distribution drift** |
 | Missing values, duplicates, min-max ranges, new categorical values, correlations, etc. | 20+ statistical tests and distance metrics to compare shifts in data distribution. |
 | **🎯 Classification**     | **📈 Regression**        |
-| Accuracy, precision, recall, ROC AUC, confusion matrix, bias, etc. | MAE, ME, RMSE, error distribution, error normality, bias, etc. |
+| Accuracy, precision, recall, ROC AUC, confusion matrix, bias, etc. | MAE, ME, RMSE, error distribution, error normality, error bias, etc. |
 | **🗂 Ranking (inc. RAG)** | **🛒 Recommendations**   |
-| Recall, precision, NDCG, MAP, MRR, Hit Rate, etc. | Serendipity, novelty, diversity, popularity bias, etc. |
+| NDCG, MAP, MRR, Hit Rate, etc. | Serendipity, novelty, diversity, popularity bias, etc. |
 
 
 # :computer: Contributions
