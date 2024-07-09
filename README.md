@@ -10,7 +10,6 @@
 ![Evidently](/docs/images/gh_header.png)
 
 </p>
-
 <p align="center">
   <a href="https://docs.evidentlyai.com">Documentation</a>
   |
