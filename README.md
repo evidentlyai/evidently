@@ -30,14 +30,17 @@
 Evidently is an open-source Python library for ML and LLM evaluation and observability. It helps evaluate, test, and monitor AI-powered systems and data pipelines from experimentation to production. 
 
 * 🔡 Works with tabular, text data, and embeddings.
+* ✨ Support predictive and generative systems, from classification models to RAG.
 * 📚 100+ built-in metrics from data drift detection to LLM judges.
 * 🛠️ Python interface for custom metrics and tests. 
 * 🚦 Both offline evals and live monitoring.
 * 💻 Open architecture: easily export data and integrate with existing tools. 
 
-Evidently is very modular: you can start with one-off evaluations in Python without complex installs or set it up as a service to get a real-time monitoring dashboard.
+Evidently is very modular. You can start with one-off evaluations using `Reports` or `Test Suites` in Python or set it up as a service to get a real-time monitoring `Dashboard`.
 
 # Reports
+
+<br> **Reports** compute various data, ML and LLM quality metrics. <ul><li> Out-of-the-box interactive visuals. </li><li> Best for exploratory analysis and debugging.  </li><li> Start with Preset evaluations or customize. </li><li> View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI. </li></ul>
 
 | **Reports** |
 | -- |
