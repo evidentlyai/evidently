@@ -63,9 +63,11 @@ Evidently is very modular. You can start with one-off evaluations using `Reports
  
 ## 3. Monitoring Dashboard
 
-**Monitoring UI** service helps visualize metrics and test results over time. [Live demo](https://demo.evidentlyai.com). 
+**Monitoring UI** service helps visualize metrics and test results over time. 
 
-You can self-host the open-source dashboard or use [Evidently Cloud](https://www.evidentlyai.com/register). It starts with a generous free tier and offers extra features like user management, built-in alerting, and a no-code interface.
+You can choose:
+* [Advanced] Self-hosting option. [Live demo](https://demo.evidentlyai.com).
+* [Evidently Cloud](https://www.evidentlyai.com/register). It starts with a generous free tier and offers extra features like user management, alerting, and no-code evaluations.
 
 | Dashboard |
 |--|
