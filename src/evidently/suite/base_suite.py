@@ -1,6 +1,7 @@
 import abc
 import copy
 import dataclasses
+import io
 import json
 import logging
 import uuid
@@ -257,8 +258,12 @@ class Display:
             if isinstance(filename, str):
                 with open(filename, "w", encoding="utf-8") as out_file:
                     out_file.write(render)
-            else:
+            elif isinstance(filename, io.BytesIO):
+                filename.write(render.encode(encoding="utf-8"))
+            elif isinstance(filename, io.StringIO):
                 filename.write(render)
+            else:
+                raise ValueError("filename should be a string or file-like object")
         else:
             if not isinstance(filename, str):
                 raise ValueError("Only singlefile save mode supports streams")
