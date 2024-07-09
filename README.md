@@ -97,7 +97,7 @@ iris_data = datasets.load_iris(as_frame='auto')
 iris_frame = iris_data.frame
 ```
 
-Split the `DataFrame` into reference and current data. Run the **Data Stability** Test Suite that will automatically generate conditions on column value ranges, share of missing values, etc. from the reference. Display the output in Jupyter notebook:
+Split the `DataFrame` into reference and current data. Run the **Data Stability** Test Suite that will automatically generate checks on column value ranges, missing values, etc. from the reference. Display the output in Jupyter notebook:
 
 ```python
 data_stability= TestSuite(tests=[
