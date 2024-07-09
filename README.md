@@ -1,3 +1,5 @@
+![Evidently](/docs/images/gh_header.png)
+
 <h1 align="center">Evidently</h1>
 
 <p align="center">
