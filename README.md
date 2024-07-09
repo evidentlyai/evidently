@@ -66,8 +66,10 @@ Evidently is very modular. You can start with one-off evaluations using `Reports
 **Monitoring UI** service helps visualize metrics and test results over time. 
 
 You can choose:
-* [Advanced] Self-hosting option. [Live demo](https://demo.evidentlyai.com).
-* [Evidently Cloud](https://www.evidentlyai.com/register). It starts with a generous free tier and offers extra features like user management, alerting, and no-code evaluations.
+* Self-hosting the open-source version. [Live demo](https://demo.evidentlyai.com).
+* Sign up for [Evidently Cloud](https://www.evidentlyai.com/register) (Recommended).
+
+Evidently Clod a generous free tier and offers extra features like user management, alerting, and no-code evaluations.
 
 | Dashboard |
 |--|
