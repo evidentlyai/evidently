@@ -1,24 +1,22 @@
 <h1 align="center">Evidently</h1>
 
-<p align="center"><b>An open-source framework to evaluate, test and monitor ML models in production.</b></p>
+<p align="center"><b>An open-source framework to evaluate, test and monitor ML and LLM-powered systems.</b></p>
 
 <p align="center">
-  <a href="https://docs.evidentlyai.com">Docs</a>
+  <a href="https://docs.evidentlyai.com">Documentation</a>
   |
-  <a href="https://discord.gg/xZjKRaNp8b">Discord</a>
-  |
-  <a href="https://www.evidentlyai.com/user-newsletter">User Newsletter</a>
+  <a href="https://discord.gg/xZjKRaNp8b">Discord Community</a>
   |
   <a href="https://evidentlyai.com/blog">Blog</a>
   |
   <a href="https://twitter.com/EvidentlyAI">Twitter</a>
   |
-  <a href="https://www.evidentlyai.com/product/cloud">Evidently Cloud</a>
+  <a href="https://www.evidentlyai.com/register">Evidently Cloud</a>
 </p>
 
 # :new: New release
 
-**Evidently 0.4.0**. Self-host an ML Monitoring interface -> [QuickStart](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
+**Evidently 0.4.25**. LLM evaluation -> [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-llm)
 
 # :bar_chart: What is Evidently?
 
