@@ -176,20 +176,7 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
 # 🚦 What can you evaluate?
 
-Evidently has 100+ built-in metrics and tests, and a custom Python interface. Each metric has an optional visual render, and can be used in Reports, conditional Tests, or plotted on a Dashboard.
-
-|                           |                          |
-|:-------------------------:|:------------------------:|
-| **🔡 Text descriptors**   | Length, sentiment, toxicity, language, special symbols, regular expression matches, etc. |
-| **📝 LLM outputs**        | Semantic similarity, retrieval relevance, summarization quality, etc. with model- and LLM-based checks. |
-| **🛢 Data quality**       | Missing values, duplicates, empty rows or columns, min-max ranges, new categorical values, correlation changes, etc. |
-| **📊 Data distribution drift** | 20+ statistical tests and distance metrics to compare prediction and data drift for numerical, categorical, text data or embeddings. |
-| **🎯 Classification**     | Accuracy, precision, recall, ROC AUC, confusion matrix, class separation quality, classification bias, etc. |
-| **📈 Regression**         | MAE, ME, RMSE, error distribution, error normality, error bias, etc. |
-| **🗂 Ranking (inc. RAG)** | Recall, precision, NDCG, MAP, MRR, Hit Rate, etc. |
-| **🛒 Recommendations**    | Serendipity, novelty, diversity, popularity bias, coverage, etc. |
-
-
+Evidently has 100+ built-in metrics and tests, and a custom Python interface. Each metric has an optional visual render, and can be used in Reports, conditional Tests, or plotted on a Dashboard. Here are examples of things you can check:
 
 |                           |                          |
 |:-------------------------:|:------------------------:|
