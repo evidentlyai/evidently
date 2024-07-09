@@ -38,16 +38,32 @@ Evidently is an open-source Python library for ML and LLM evaluation and observa
 
 Evidently is very modular. You can start with one-off evaluations using `Reports` or `Test Suites` in Python or set it up as a service to get a real-time monitoring `Dashboard`.
 
-# Reports
+## 1. Reports
 
 **Reports** compute various data, ML and LLM quality metrics. You can start with Presets or customize.
 * Out-of-the-box interactive visuals.
 * Best for exploratory analysis and debugging.
-* View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.
+* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.
   
  ![Report example](docs/book/.gitbook/assets/main/reports-min.png)
 
-# Test Suites
+## 2. Test Suites
+
+**Test Suites** verify set conditions on metric values and return a pass or fail result. 
+* Best for regression testing, CI/CD checks, or data validation pipelines.
+* Zero setup option: auto-generate test conditions from the reference dataset.
+* Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.
+* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.  
+
+![Test example](docs/book/.gitbook/assets/main/tests.gif)
+ 
+## 3. Monitoring Dashboard
+
+**Monitoring UI** service helps visualize metrics and test results over time. 
+
+You can self-host the open-source dashboard or use [Evidently Cloud](https://www.evidentlyai.com/register). It starts with a generous free tier and offers extra features like user management, built-in alerting, and a no-code interface.
+
+![Dashboard example](docs/book/.gitbook/assets/main/dashboard.gif)
 
 | **Test Suites** |
 |  -- |
