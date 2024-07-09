@@ -81,7 +81,7 @@ conda install -c conda-forge evidently
 # :arrow_forward: Getting started
 
 ### Option 1: Test Suites
-> This is a simple Hello World. Check the Tutorials for more: [Tabular Checks](https://docs.evidentlyai.com/get-started/tutorial) or [LLM evaluation](https://docs.evidentlyai.com/get-started/tutorial-llm).
+> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/get-started/tutorial) or [LLM evaluation](https://docs.evidentlyai.com/get-started/tutorial-llm).
 
 Import the **Test Suite**, evaluation Preset and toy tabular dataset. 
 
@@ -97,7 +97,7 @@ iris_data = datasets.load_iris(as_frame='auto')
 iris_frame = iris_data.frame
 ```
 
-Split the `DataFrame` into reference and current data. Run the **Data Stability** Test Suite that will automatically generate checks on column value ranges, missing values, etc. from the reference. Display the output in Jupyter notebook:
+Split the `DataFrame` into reference and current. Run the **Data Stability** Test Suite that will automatically generate checks on column value ranges, missing values, etc. from the reference. Get the output in Jupyter notebook:
 
 ```python
 data_stability= TestSuite(tests=[
