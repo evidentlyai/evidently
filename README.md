@@ -135,7 +135,7 @@ iris_data = datasets.load_iris(as_frame='auto')
 iris_frame = iris_data.frame
 ```
 
-To generate the **Data Drift** Report that will compare the distribution of columns between `current` and `reference`, run:
+Run the **Data Drift** Report that will compare column distributions between `current` and `reference`:
 ```python
 data_drift_report = Report(metrics=[
     DataDriftPreset(),
