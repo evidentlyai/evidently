@@ -10,8 +10,8 @@ Title| Guide
 -- | --
 Evaluation Tutorial: Tabular Data| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial)
 Evaluation Tutorial: LLMs| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-llm)
-Set up Cloud ML monitoring | [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-cloud)
-Self-hosting ML monitoring| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
+Set up Cloud ML monitoring Dashboard| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-cloud)
+Self-host ML monitoring Dashboard| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
 
 # Sample notebooks
 
