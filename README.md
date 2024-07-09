@@ -37,6 +37,16 @@ Evidently is an open-source Python library for ML and LLM evaluation and observa
 
 Evidently is very modular: you can start with one-off evaluations in Python without complex installs or set it up as a service to get a real-time monitoring dashboard.
 
+| **Reports** |
+| -- |
+| ![Report example](docs/book/.gitbook/assets/main/reports-min.png)  |
+| **Reports** compute various data, ML and LLM quality metrics. <ul><li> Out-of-the-box interactive visuals. </li><li> Best for exploratory analysis and debugging.  </li><li> Start with Preset evaluations or customize. </li><li> View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI. </li></ul> | 
+
+| **Test Suites** |
+|  -- |
+| ![Test example](docs/book/.gitbook/assets/main/tests.gif) |
+|  **Test Suites** verify set conditions on metric values and return a pass or fail result. <ul><li> Best for regression testing, CI/CD checks, or data validation pipelines.  </li><li> Zero setup option: auto-generate test conditions from the reference dataset.  </li><li> Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.  </li><li> View results in Python, export as JSON, Python dictionary, HTML, data frame, or view in monitoring UI. </li></ul> | 
+
 |  |  |
 | -- | -- |
 | **Reports** <br> Compute various data, ML and LLM quality metrics. <ul><li> Out-of-the-box interactive visuals. </li><li> Best for exploratory analysis and debugging.  </li><li> Start with Preset evaluations or customize. </li><li> View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI. </li></ul>| <br> ![Report example](docs/book/.gitbook/assets/main/reports-min.png)|
