@@ -65,22 +65,6 @@ You can self-host the open-source dashboard or use [Evidently Cloud](https://www
 
 ![Dashboard example](docs/book/.gitbook/assets/main/dashboard.gif)
 
-| **Test Suites** |
-|  -- |
-| ![Test example](docs/book/.gitbook/assets/main/tests.gif) |
-| <br> **Test Suites** verify set conditions on metric values and return a pass or fail result. <ul><li> Best for regression testing, CI/CD checks, or data validation pipelines.  </li><li> Zero setup option: auto-generate test conditions from the reference dataset.  </li><li> Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.  </li><li> View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI. </li></ul> | 
-
-|  |  |
-| -- | -- |
-| **Reports** <br> Compute various data, ML and LLM quality metrics. <ul><li> Out-of-the-box interactive visuals. </li><li> Best for exploratory analysis and debugging.  </li><li> Start with Preset evaluations or customize. </li><li> View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI. </li></ul>| <br> ![Report example](docs/book/.gitbook/assets/main/reports-min.png)|
-| **Test Suites** <br>Verify set conditions on metric values and return a pass or fail result. <ul><li> Best for regression testing, CI/CD checks, or data validation pipelines.  </li><li> Zero setup option: auto-generate test conditions from the reference dataset.  </li><li> Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.  </li><li> View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI. </li></ul> | <br> ![Test example](docs/book/.gitbook/assets/main/tests.gif)<br>|
-| **Monitoring Dashboard** <br> User interface to visualize metrics and test results over time. <br><br> You can self-host the open-source dashboard or use [Evidently Cloud](https://www.evidentlyai.com/register). It starts with a generous free tier and offers extra features like user management, built-in alerting, and a no-code interface. | <br> ![Dashboard example](docs/book/.gitbook/assets/main/dashboard.gif)<br>|
-
-| **Reports** |
-| -- |
-| ![Report example](docs/book/.gitbook/assets/main/reports-min.png)  |
-| <br> **Reports** compute various data, ML and LLM quality metrics. <ul><li> Out-of-the-box interactive visuals. </li><li> Best for exploratory analysis and debugging.  </li><li> Start with Preset evaluations or customize. </li><li> View results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI. </li></ul> | 
-
 # :woman_technologist: Install Evidently
 
 Evidently is available as a PyPI package. To install it using pip package manager, run:
@@ -189,6 +173,18 @@ evidently ui --demo-projects all
 ```
 
 Access Evidently UI service in your browser. Go to the **localhost:8000**.
+
+# What can you evaluate?
+
+|                           |                          |                          |
+|:-------------------------:|:------------------------:|:------------------------:|
+| **🔡 Text descriptors**   | **📝 LLM outputs**       | **⚖️ LLM-as-a-judge**   |
+| Length, sentiment, toxicity, language, special symbols, regular expression matches, etc. | Semantic similarity, retrieval relevance, summarization quality, etc. with model- and LLM-based checks. | Using external LLMs to score text outputs with custom and template evaluation prompts. |
+| **🛢 Data quality**       | **📊 Data distribution drift** | **🎯 Classification**  |
+| Missing values, duplicates, empty rows or columns, min-max ranges, new categorical values, correlation changes, etc. | 20+ statistical tests and distance metrics to compare prediction and data drift for numerical, categorical, text data or embeddings. | Accuracy, precision, recall, ROC AUC, confusion matrix, class separation quality, classification bias, etc. |
+| **📈 Regression**         | **🗂 Ranking (inc. RAG)** | **🛒 Recommendations**  |
+| MAE, ME, RMSE, error distribution, error normality, error bias, etc. | Recall, precision, NDCG, MAP, MRR, Hit Rate, etc. | Serendipity, novelty, diversity, popularity bias, coverage, etc. |
+
 
 # :computer: Contributions
 We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
