@@ -38,7 +38,7 @@ Evidently is an open-source Python library for ML and LLM evaluation and observa
 * 🚦 Both offline evals and live monitoring.
 * 💻 Open architecture: easily export data and integrate with existing tools. 
 
-Evidently is very modular. You can start with one-off evaluations using `Reports` or `Test Suites` in Python or set it up as a service to get a real-time monitoring `Dashboard`.
+Evidently is very modular. You can start with one-off evaluations using `Reports` or `Test Suites` in Python or get a real-time monitoring `Dashboard` service.
 
 ## 1. Reports
 
