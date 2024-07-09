@@ -176,14 +176,16 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
 # What can you evaluate?
 
-| <div style="width:290px"></div> |   <div style="width:290px"></div>                       |          <div style="width:290px"></div>                |
-|:-------------------------:|:------------------------:|:------------------------:|
-| **🔡 Text descriptors**   | **📝 LLM outputs**       | **⚖️ LLM-as-a-judge**   |
-| Length, sentiment, toxicity, language, special symbols, regular expression matches, etc. | Semantic similarity, retrieval relevance, summarization quality, etc. with model- and LLM-based checks. | Using external LLMs to score text outputs with custom and template evaluation prompts. |
-| **🛢 Data quality**       | **📊 Data distribution drift** | **🎯 Classification**  |
-| Missing values, duplicates, empty rows or columns, min-max ranges, new categorical values, correlation changes, etc. | 20+ statistical tests and distance metrics to compare prediction and data drift for numerical, categorical, text data or embeddings. | Accuracy, precision, recall, ROC AUC, confusion matrix, class separation quality, classification bias, etc. |
-| **📈 Regression**         | **🗂 Ranking (inc. RAG)** | **🛒 Recommendations**  |
-| MAE, ME, RMSE, error distribution, error normality, error bias, etc. | Recall, precision, NDCG, MAP, MRR, Hit Rate, etc. | Serendipity, novelty, diversity, popularity bias, coverage, etc. |
+|                           |                          |
+|:-------------------------:|:------------------------:|
+| **🔡 Text descriptors**   | **📝 LLM outputs**       |
+| Length, sentiment, toxicity, language, special symbols, regular expression matches, etc. | Semantic similarity, retrieval relevance, summarization quality, etc. with model- and LLM-based checks. |
+| **🛢 Data quality**       | **📊 Data distribution drift** |
+| Missing values, duplicates, empty rows or columns, min-max ranges, new categorical values, correlation changes, etc. | 20+ statistical tests and distance metrics to compare prediction and data drift for numerical, categorical, text data or embeddings. |
+| **🎯 Classification**     | **📈 Regression**        |
+| Accuracy, precision, recall, ROC AUC, confusion matrix, class separation quality, classification bias, etc. | MAE, ME, RMSE, error distribution, error normality, error bias, etc. |
+| **🗂 Ranking (inc. RAG)** | **🛒 Recommendations**   |
+| Recall, precision, NDCG, MAP, MRR, Hit Rate, etc. | Serendipity, novelty, diversity, popularity bias, coverage, etc. |
 
 
 # :computer: Contributions
