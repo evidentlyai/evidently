@@ -2,12 +2,12 @@
 
 <p align="center"><b>An open-source framework to evaluate, test and monitor ML and LLM-powered systems.</b></p>
 
-![Evidently](/docs/images/gh_header.png)
-
 <p align="center">
 <a href="https://pepy.tech/project/evidently" target="_blank"><img src="https://pepy.tech/badge/evidently" alt="PyPi Downloads"></a>
 <a href="https://github.com/evidentlyai/evidently/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/evidentlyai/evidently" alt="License"></a>
 <a href="https://pypi.org/project/evidently/" target="_blank"><img src="https://img.shields.io/pypi/v/evidently" alt="PyPi"></a>
+
+![Evidently](/docs/images/gh_header.png)
 
 </p>
 
