@@ -155,7 +155,7 @@ To get the output as JSON:
 data_drift_report.json()
 ```
 
-You can choose other Presets, individual Metrics, including LLM evaluations, and set conditions.
+You can choose other Presets and individual Metrics, including LLM evaluations for text data.
 
 ### Option 3: ML monitoring dashboard
 > This will launch a demo project in the Evidently UI. Head to docs for a complete [Self-hosting ML Monitoring Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring) or [Cloud ML Monitoring Tutorial](https://docs.evidentlyai.com/get-started/tutorial-cloud).
