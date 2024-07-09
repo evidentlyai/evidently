@@ -1,6 +1,8 @@
-![Evidently](/docs/images/gh_header.png)
-
 <h1 align="center">Evidently</h1>
+
+<p align="center"><b>An open-source framework to evaluate, test and monitor ML and LLM-powered systems.</b></p>
+
+![Evidently](/docs/images/gh_header.png)
 
 <p align="center">
 <a href="https://pepy.tech/project/evidently" target="_blank"><img src="https://pepy.tech/badge/evidently" alt="PyPi Downloads"></a>
@@ -8,8 +10,6 @@
 <a href="https://pypi.org/project/evidently/" target="_blank"><img src="https://img.shields.io/pypi/v/evidently" alt="PyPi"></a>
 
 </p>
-
-<p align="center"><b>An open-source framework to evaluate, test and monitor ML and LLM-powered systems.</b></p>
 
 <p align="center">
   <a href="https://docs.evidentlyai.com">Documentation</a>
