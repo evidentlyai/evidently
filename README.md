@@ -81,7 +81,7 @@ conda install -c conda-forge evidently
 # :arrow_forward: Getting started
 
 ### Option 1: Test Suites
-> This is a simple Hello World example. Head to docs for a complete [Reports and Test Suite Tutorial](https://docs.evidentlyai.com/get-started/tutorial). For LLMs, check [LLM evaluation Tutorial](https://docs.evidentlyai.com/get-started/tutorial-llm).
+> This is a simple Hello World. Check the Tutorials for more: [Tabular Checks](https://docs.evidentlyai.com/get-started/tutorial) or [LLM evaluation](https://docs.evidentlyai.com/get-started/tutorial-llm).
 
 Import the **Test Suite**, evaluation Preset and toy tabular dataset. 
 
