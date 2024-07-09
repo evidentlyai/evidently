@@ -26,6 +26,8 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
 ) => {
   const [details, setDetails] = useState<boolean>(false)
   const viewParams = useDashboardViewParams()
+  const isHistogram = props.graph?.data.some(({ type }) => type === 'histogram')
+
   return (
     <React.Fragment>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
@@ -66,7 +68,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
                 title: undefined,
                 xaxis: {
                   ...props.graph.layout?.xaxis,
-                  type: viewParams?.isXaxisAsCategorical ? 'category' : undefined
+                  type: viewParams?.isXaxisAsCategorical && !isHistogram ? 'category' : undefined
                 }
               }}
               config={{ responsive: true }}
