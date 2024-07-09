@@ -176,7 +176,7 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
 # What can you evaluate?
 
-|                           |                          |                          |
+| <div style="width:290px"></div> |   <div style="width:290px"></div>                       |          <div style="width:290px"></div>                |
 |:-------------------------:|:------------------------:|:------------------------:|
 | **🔡 Text descriptors**   | **📝 LLM outputs**       | **⚖️ LLM-as-a-judge**   |
 | Length, sentiment, toxicity, language, special symbols, regular expression matches, etc. | Semantic similarity, retrieval relevance, summarization quality, etc. with model- and LLM-based checks. | Using external LLMs to score text outputs with custom and template evaluation prompts. |
