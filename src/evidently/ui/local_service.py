@@ -74,11 +74,6 @@ def create_logging() -> dict:
                 "class": "logging.StreamHandler",
                 "stream": "ext://sys.stdout",
             },
-            "queue_listener": {
-                "class": "litestar.logging.standard.QueueListenerHandler",
-                "handlers": ["cfg://handlers.default"],
-                "level": "DEBUG",
-            },
         },
         "loggers": {
             "litestar": {"handlers": ["default"]},
