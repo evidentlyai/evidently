@@ -74,6 +74,17 @@ export const getProjectsProvider: (baseUrl?: string) => ProjectsProvider = (base
 
       return null
     },
+    async deleteSnapshot({ project, snapshot }) {
+      const { error } = await client.DELETE('/api/projects/{project_id}/{snapshot_id}', {
+        params: { path: { project_id: project.id, snapshot_id: snapshot.id } }
+      })
+
+      if (error) {
+        return { error }
+      }
+
+      return null
+    },
     async listReports({ project }) {
       const { data, error, response } = await client.GET('/api/projects/{project_id}/reports', {
         params: { path: { project_id: project.id } }

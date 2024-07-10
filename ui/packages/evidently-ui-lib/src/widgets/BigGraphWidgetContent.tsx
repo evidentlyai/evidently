@@ -10,6 +10,7 @@ interface BigGraphWidgetProps extends AdditionalGraphInfo {
 
 const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (props) => {
   const viewParams = useDashboardViewParams()
+  const isHistogram = props.data.some(({ type }) => type === 'histogram')
 
   return (
     <div>
@@ -20,7 +21,7 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
           title: undefined,
           xaxis: {
             ...props.layout?.xaxis,
-            type: viewParams?.isXaxisAsCategorical ? 'category' : undefined
+            type: viewParams?.isXaxisAsCategorical && !isHistogram ? 'category' : undefined
           }
         }}
         config={{ responsive: true }}

@@ -1,9 +1,14 @@
+from collections import defaultdict
 from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Set
 from typing import Tuple
+from typing import TypeVar
+from typing import Union
 
 import plotly.io as pio
 
@@ -13,6 +18,8 @@ from evidently.base_metric import Metric
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
+
+from ..storage.utils import iterate_obj_fields
 
 if TYPE_CHECKING:
     from .base import PanelValue
@@ -107,17 +114,35 @@ def _flatten_params(obj: EvidentlyBaseModel) -> Dict[str, str]:
     return {".".join(path): val for path, val in _flatten_params_rec(obj, [])}
 
 
-def _get_metric_hover(metric: Metric, value: "PanelValue"):
-    params = []
-    for name, v in metric.dict().items():
-        if name in ["type"]:
-            continue
-        if v is None:
-            continue
-        params.append(f"{name}: {v}")
+def _get_metric_hover(params: List[str], value: "PanelValue"):
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>Value: %{{y}}</b><br>{params_join}<br>.{value.field_path}"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{value.field_path}: %{{y}}</b><br>{params_join}"
     return hover
+
+
+def _hover_params_early_stop(obj: Any, paths: List[str]) -> Optional[List[Tuple[str, Any]]]:
+    if not isinstance(obj, ColumnName):
+        return None
+    column_name_str = obj.display_name or obj.name
+    return [(".".join(paths), column_name_str)]
+
+
+TMT = TypeVar("TMT", bound=Union[Metric, Test])
+
+
+def _get_hover_params(items: Set[TMT]) -> Dict[TMT, List[str]]:
+    if len(items) == 0:
+        return {}
+    params: Dict[str, Dict[TMT, Set[str]]] = defaultdict(lambda: defaultdict(set))
+    for item in items:
+        for path, value in iterate_obj_fields(item, [], early_stop=_hover_params_early_stop):
+            params[item.get_id()][item].add(f"{path}: {value}")
+    same_args: Dict[str, Set[str]] = {k: set.intersection(*v.values()) for k, v in params.items()}
+    return {
+        item: [row for row in rows if row not in same_args[item_id]]
+        for item_id, p in params.items()
+        for item, rows in p.items()
+    }
 
 
 TEST_COLORS = {
@@ -131,8 +156,7 @@ TEST_COLORS = {
 tests_colors_order = {ts: i for i, ts in enumerate(TEST_COLORS)}
 
 
-def _get_test_hover(test: Test):
-    params = [f"{k}: {v}" for k, v in _flatten_params(test).items()]
+def _get_test_hover(test_name: str, params: List[str]):
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test.name}</b><br>{params_join}<br>%{{customdata}}<br>"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test_name}</b><br>{params_join}<br>%{{customdata}}<br>"
     return hover

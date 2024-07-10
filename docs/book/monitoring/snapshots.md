@@ -84,25 +84,13 @@ ws.add_snapshot(project.id, snapshot.load("data_drift_snapshot.json"))
 
 Each `snapshot` is associated with a single timestamp. By default, Evidently will assign the `datetime.now()` using the Report/Test Suite computation time based on the user time zone.
 
-You can also add your own timestamp: 
+You can also add your own timestamp. Pass it to the run method when you compute the snapshot: 
 
 ```python
-data_drift_report = Report(
-	metrics=[
-	DatasetSummaryMetric().
-	],
-	timestamp=datetime.now(),
-)
-```
-
-Evidently won't automatically use DateTime columns from your data. You can manually specify the snapshot timestamp to match the last value of the DateTime column in your dataset:
-
-```python
-data_drift_report = Report(
-	metrics=[
-	DatasetSummaryMetric().
-	],
-	timestamp=dataset.iloc[-1:].index,
+drift_checks.run(
+    reference_data=reference_batch,
+    current_data=batch1,
+    timestamp=datetime.now()
 )
 ```
 

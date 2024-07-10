@@ -2,6 +2,7 @@ import datetime
 import uuid
 from typing import Dict
 from typing import List
+from typing import NamedTuple
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
@@ -21,9 +22,16 @@ SnapshotID = uuid.UUID
 STR_UUID = Union[str, uuid.UUID]
 PanelID = uuid.UUID
 TabID = uuid.UUID
+DatasetID = uuid.UUID
 ZERO_UUID = uuid.UUID(int=0)
 
-TestResultPoints = Dict[datetime.datetime, Dict[Test, TestStatus]]
+
+class TestInfo(NamedTuple):
+    status: TestStatus
+    description: str
+
+
+TestResultPoints = Dict[datetime.datetime, Dict[Test, TestInfo]]
 PointType = TypeVar("PointType")
 DataPointsAsType = List[Dict[Metric, List[Tuple[datetime.datetime, PointType]]]]
 DataPoints = DataPointsAsType[float]

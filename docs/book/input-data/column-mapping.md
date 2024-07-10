@@ -41,7 +41,7 @@ Data structure requirements depend on the type of analysis. Here are example req
 
 Notebook example on specifying column mapping:
 
-{% embed url="https://github.com/elenasamuylova/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
 
 Once you create a column mapping object, you can pass it to the Report or Test Suite. For example:
 
