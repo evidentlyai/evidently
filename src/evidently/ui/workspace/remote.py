@@ -10,6 +10,7 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Type
+from typing import Union
 from urllib.error import HTTPError
 
 from requests import Request
@@ -57,20 +58,26 @@ class RemoteBase:
         body: Optional[dict] = None,
         cookies=None,
         headers: Dict[str, str] = None,
+        form_data: bool = False,
     ):
         # todo: better encoding
         cookies = cookies or {}
         headers = headers or {}
-        data = None
+        data: Optional[Union[Dict, bytes]] = None
+        files = None
         if body is not None:
-            headers["Content-Type"] = "application/json"
-
-            data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
+            if form_data:
+                data = body
+                files = {k: body.pop(k) for k in list(body.keys()) if isinstance(body[k], io.IOBase)}
+            else:
+                headers["Content-Type"] = "application/json"
+                data = json.dumps(body, allow_nan=True, cls=NumpyEncoder).encode("utf8")
         return Request(
             method,
             urllib.parse.urljoin(self.get_url(), path),
             params=query_params,
             data=data,
+            files=files,
             headers=headers,
             cookies=cookies,
         )
@@ -84,8 +91,9 @@ class RemoteBase:
         response_model=None,
         cookies=None,
         headers: Dict[str, str] = None,
+        form_data: bool = False,
     ):
-        request = self._prepare_request(path, method, query_params, body, cookies, headers)
+        request = self._prepare_request(path, method, query_params, body, cookies, headers, form_data=form_data)
         s = Session()
         response = s.send(request.prepare())
 
@@ -117,8 +125,17 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
         body: Optional[dict] = None,
         cookies=None,
         headers: Dict[str, str] = None,
+        form_data: bool = False,
     ):
-        r = super()._prepare_request(path, method, query_params, body, cookies, headers)
+        r = super()._prepare_request(
+            path=path,
+            method=method,
+            query_params=query_params,
+            body=body,
+            cookies=cookies,
+            headers=headers,
+            form_data=form_data,
+        )
         if self.secret is not None:
             r.headers[SECRET_HEADER_NAME] = self.secret
         return r
