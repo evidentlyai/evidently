@@ -1,7 +1,9 @@
 import json
 from typing import Any
+from typing import Callable
 from typing import Iterator
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 from evidently._pydantic_compat import BaseModel
@@ -10,18 +12,27 @@ from evidently.core import BaseResult
 from evidently.utils import NumpyEncoder
 
 
-def iterate_obj_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, Any]]:
+def iterate_obj_fields(
+    obj: Any, paths: List[str], early_stop: Optional[Callable[[Any, List[str]], Optional[List[Tuple[str, Any]]]]] = None
+) -> Iterator[Tuple[str, Any]]:
+    if early_stop is not None:
+        es = early_stop(obj, paths)
+        if es is not None:
+            yield from es
+            return
     if isinstance(obj, list):
         return
     if isinstance(obj, dict):
-        yield from (r for key, value in obj.items() for r in iterate_obj_fields(value, paths + [str(key)]))
+        yield from (r for key, value in obj.items() for r in iterate_obj_fields(value, paths + [str(key)], early_stop))
         return
     if isinstance(obj, BaseResult) and obj.__config__.extract_as_obj:
         yield ".".join(paths), obj
         return
     if isinstance(obj, BaseModel):
         yield from (
-            r for name, field in obj.__fields__.items() for r in iterate_obj_fields(getattr(obj, name), paths + [name])
+            r
+            for name, field in obj.__fields__.items()
+            for r in iterate_obj_fields(getattr(obj, name), paths + [name], early_stop)
         )
         return
     yield ".".join(paths), obj

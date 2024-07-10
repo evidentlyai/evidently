@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import TypeVar
+from typing import Union
 
 import plotly.io as pio
 
@@ -117,17 +120,28 @@ def _get_metric_hover(params: List[str], value: "PanelValue"):
     return hover
 
 
-def _get_metrics_hover_params(metrics: Set[Metric]) -> Dict[Metric, List[str]]:
-    if len(metrics) == 0:
+def _hover_params_early_stop(obj: Any, paths: List[str]) -> Optional[List[Tuple[str, Any]]]:
+    if not isinstance(obj, ColumnName):
+        return None
+    column_name_str = obj.display_name or obj.name
+    return [(".".join(paths), column_name_str)]
+
+
+TMT = TypeVar("TMT", bound=Union[Metric, Test])
+
+
+def _get_hover_params(items: Set[TMT]) -> Dict[TMT, List[str]]:
+    if len(items) == 0:
         return {}
-    metric_params: Dict[Metric, Set[Tuple[str, Any]]] = defaultdict(set)
-    for metric in metrics:
-        for path, value in iterate_obj_fields(metric, []):
-            metric_params[metric].add((path, value))
-    same_args = set.intersection(*metric_params.values())
+    params: Dict[str, Dict[TMT, Set[str]]] = defaultdict(lambda: defaultdict(set))
+    for item in items:
+        for path, value in iterate_obj_fields(item, [], early_stop=_hover_params_early_stop):
+            params[item.get_id()][item].add(f"{path}: {value}")
+    same_args: Dict[str, Set[str]] = {k: set.intersection(*v.values()) for k, v in params.items()}
     return {
-        metric: [f"{pair[0]}: {pair[1]}" for pair in pairs if pair not in same_args]
-        for metric, pairs in metric_params.items()
+        item: [row for row in rows if row not in same_args[item_id]]
+        for item_id, p in params.items()
+        for item, rows in p.items()
     }
 
 
@@ -142,8 +156,7 @@ TEST_COLORS = {
 tests_colors_order = {ts: i for i, ts in enumerate(TEST_COLORS)}
 
 
-def _get_test_hover(test: Test):
-    params = [f"{k}: {v}" for k, v in _flatten_params(test).items()]
+def _get_test_hover(test_name: str, params: List[str]):
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test.name}</b><br>{params_join}<br>%{{customdata}}<br>"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test_name}</b><br>{params_join}<br>%{{customdata}}<br>"
     return hover

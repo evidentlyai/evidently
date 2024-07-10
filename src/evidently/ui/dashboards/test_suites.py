@@ -32,6 +32,7 @@ from .base import assign_panel_id
 from .utils import TEST_COLORS
 from .utils import CounterAgg
 from .utils import TestSuitePanelType
+from .utils import _get_hover_params
 from .utils import _get_test_hover
 from .utils import getattr_nested
 
@@ -128,10 +129,9 @@ class DashboardPanelTestSuite(DashboardPanel):
 
     def _create_detailed_fig(self, points: TestResultPoints):
         dates = list(sorted(points.keys()))
-        tests = list(set(t for p in points.values() for t in p.keys()))
-        # date_to_test: Dict[datetime.datetime, Dict[Test, Test]] = {
-        #     d: {t: t for t in tst.keys()} for d, tst in points.items()
-        # }
+        all_tests = set(t for p in points.values() for t in p.keys())
+        tests = list(all_tests)
+        hover_params = _get_hover_params(all_tests)
 
         def get_description(test, date):
             description = points[date][test].description
@@ -151,7 +151,7 @@ class DashboardPanelTestSuite(DashboardPanel):
                     x=dates,
                     y=[1 for _ in range(len(dates))],
                     marker_color=[get_color(test, d) for d in dates],
-                    hovertemplate=_get_test_hover(test),
+                    hovertemplate=_get_test_hover(test.name, hover_params[test]),
                     customdata=[get_description(test, d) for i, d in enumerate(dates)],
                     showlegend=False,
                 )
