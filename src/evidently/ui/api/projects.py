@@ -252,6 +252,31 @@ def get_snapshot_data(
     return json.dumps(asdict(info), cls=NumpyEncoder)
 
 
+@get("/{project_id:uuid}/{snapshot_id:uuid}/metadata", sync_to_thread=True)
+def get_snapshot_metadata(
+    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    log_event: Callable,
+    user_id: UserID,
+) -> SnapshotMetadata:
+    project = project_manager.get_project(user_id, project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    snapshot_meta = project.get_snapshot_metadata(snapshot_id)
+    if snapshot_meta is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
+    log_event(
+        "get_snapshot_metadata",
+        snapshot_type="report" if snapshot_meta.is_report else "test_suite",
+        metric_presets=snapshot_meta.metadata.get(METRIC_PRESETS, []),
+        metric_generators=snapshot_meta.metadata.get(METRIC_GENERATORS, []),
+        test_presets=snapshot_meta.metadata.get(TEST_PRESETS, []),
+        test_generators=snapshot_meta.metadata.get(TEST_GENERATORS, []),
+    )
+    return snapshot_meta
+
+
 @get("/{project_id:uuid}/dashboard/panels", sync_to_thread=True)
 def list_project_dashboard_panels(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],

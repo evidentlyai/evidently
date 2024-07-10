@@ -12,6 +12,7 @@ from typing import Optional
 from typing import Set
 from typing import Type
 from typing import TypeVar
+from typing import Union
 from typing import overload
 from urllib.error import HTTPError
 
@@ -36,7 +37,6 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.errors import ProjectNotFound
-from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import ZERO_UUID
@@ -89,7 +89,7 @@ class RemoteBase:
         method: str,
         query_params: Optional[dict] = None,
         body: Optional[dict] = None,
-        response_model: Literal[T] = None,
+        response_model: Type[T] = ...,
         cookies=None,
         headers: Dict[str, str] = None,
     ) -> T:
@@ -114,10 +114,10 @@ class RemoteBase:
         method: str,
         query_params: Optional[dict] = None,
         body: Optional[dict] = None,
-        response_model=None,
+        response_model: Optional[Type[T]] = None,
         cookies=None,
         headers: Dict[str, str] = None,
-    ):
+    ) -> Union[Response, T]:
         request = self._prepare_request(path, method, query_params, body, cookies, headers)
         s = Session()
         response = s.send(request.prepare())
@@ -189,10 +189,7 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
         return self._request(f"/api/projects/{project_id}/{snapshot_id}", "DELETE")
 
     def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
-        return [
-            p.bind(self, NO_USER.id)
-            for p in self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[Project])
-        ]
+        return self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[Project])
 
     def list_snapshots(
         self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
@@ -208,7 +205,12 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
         ]
 
     def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
-        raise NotImplementedError
+        project = self.get_project(project_id)
+        if project is None:
+            raise ProjectNotFound()
+        return self._request(f"/api/projects/{project_id}/snapshots", "GET", response_model=SnapshotMetadata).bind(
+            project
+        )
 
     def update_project(self, project: Project) -> Project:
         return self._request(f"/api/projects/{project.id}/info", "POST", body=project.dict(), response_model=Project)
