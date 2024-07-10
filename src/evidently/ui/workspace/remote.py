@@ -208,9 +208,9 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
         project = self.get_project(project_id)
         if project is None:
             raise ProjectNotFound()
-        return self._request(f"/api/projects/{project_id}/snapshots", "GET", response_model=SnapshotMetadata).bind(
-            project
-        )
+        return self._request(
+            f"/api/projects/{project_id}/{snapshot_id}/metadata", "GET", response_model=SnapshotMetadata
+        ).bind(project)
 
     def update_project(self, project: Project) -> Project:
         return self._request(f"/api/projects/{project.id}/info", "POST", body=project.dict(), response_model=Project)

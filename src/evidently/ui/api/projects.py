@@ -404,6 +404,7 @@ def create_projects_api(guard: Callable) -> Router:
                     list_project_dashboard_panels,
                     project_dashboard,
                     list_snapshots,
+                    get_snapshot_metadata,
                 ],
             ),
             Router(
