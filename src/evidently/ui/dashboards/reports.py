@@ -25,8 +25,8 @@ from .base import assign_panel_id
 from .utils import CounterAgg
 from .utils import HistBarMode
 from .utils import PlotType
+from .utils import _get_hover_params
 from .utils import _get_metric_hover
-from .utils import _get_metrics_hover_params
 
 if TYPE_CHECKING:
     from evidently.ui.base import DataStorage
@@ -47,7 +47,7 @@ class DashboardPanelPlot(DashboardPanel):
         points = data_storage.load_points(project_id, self.filter, self.values, timestamp_start, timestamp_end)
         # list[dict[metric, point]]
         all_metrics: Set[Metric] = set(m for data in points for m in data.keys())
-        hover_params = _get_metrics_hover_params(all_metrics)
+        hover_params = _get_hover_params(all_metrics)
         fig = go.Figure(layout={"showlegend": True})
         for val, metric_pts in zip(self.values, points):
             if len(metric_pts) == 0:
@@ -171,9 +171,10 @@ class DashboardPanelDistribution(DashboardPanel):
             names.update(data.keys())
             values.append(data)
 
-        name_to_date_value: Dict[str, List[Any]] = {name: [] for name in names}
+        names_sorted = list(sorted(names))
+        name_to_date_value: Dict[str, List[Any]] = {name: [] for name in names_sorted}
         for timestamp, data in zip(timestamps, values):
-            for name in names:
+            for name in names_sorted:
                 name_to_date_value[name].append(data.get(name))
         hovertemplate = "<b>{name}: %{{y}}</b><br><b>Timestamp: %{{x}}</b>"
         fig = go.Figure(
@@ -184,7 +185,7 @@ class DashboardPanelDistribution(DashboardPanel):
                     y=name_to_date_value.get(name),
                     hovertemplate=hovertemplate.format(name=name),
                 )
-                for name in names
+                for name in names_sorted
             ]
         )
         # Change the bar mode

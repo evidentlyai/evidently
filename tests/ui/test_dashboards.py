@@ -4,6 +4,7 @@ from typing import Dict
 import pytest
 
 from evidently._pydantic_compat import parse_obj_as
+from evidently.base_metric import ColumnName
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -11,7 +12,7 @@ from evidently.base_metric import TResult
 from evidently.descriptors import OOV
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.ui.dashboards import PanelValue
-from evidently.ui.dashboards.utils import _get_metrics_hover_params
+from evidently.ui.dashboards.utils import _get_hover_params
 from evidently.ui.dashboards.utils import getattr_nested
 
 
@@ -71,9 +72,9 @@ def test_metric_hover_template():
     m2 = MyMetric(arg="1", n=Nested(f="2"))
     m3 = MyMetric(arg="2", n=Nested(f="1"))
 
-    assert _get_metrics_hover_params({m1}) == {m1: []}
-    assert _get_metrics_hover_params({m1, m2}) == {m1: ["n.f: 1"], m2: ["n.f: 2"]}
-    triple = _get_metrics_hover_params({m1, m2, m3})
+    assert _get_hover_params({m1}) == {m1: []}
+    assert _get_hover_params({m1, m2}) == {m1: ["n.f: 1"], m2: ["n.f: 2"]}
+    triple = _get_hover_params({m1, m2, m3})
     assert {m: set(lines) for m, lines in triple.items()} == {
         m1: {
             "n.f: 1",
@@ -88,3 +89,16 @@ def test_metric_hover_template():
             "arg: 2",
         },
     }
+
+
+def test_metric_hover_template_column_name():
+    class MyMetric(Metric[A]):
+        column_name: ColumnName
+
+        def calculate(self, data: InputData) -> TResult:
+            return A(f="")
+
+    m1 = MyMetric(column_name=ColumnName.from_any("col1"))
+    m2 = MyMetric(column_name=ColumnName.from_any("col2"))
+
+    assert _get_hover_params({m1, m2}) == {m1: ["column_name: col1"], m2: ["column_name: col2"]}

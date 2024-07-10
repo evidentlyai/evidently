@@ -59,7 +59,7 @@ text_evals_report.run(reference_data=None, current_data=reviews)
 
 There are 20+ built-in evals to choose from. You can also create custom ones, including LLM-as-a-judge. We call the result of each such evaluation a `descriptor`. 
 
-View a Report in Python:
+View the Report in Python:
 
 ```
 text_evals_report
