@@ -156,7 +156,7 @@ def _create_tracer_provider(
         session.hooks["response"].append(refresh_token)
 
         exporter = http_exporter.OTLPSpanExporter(
-            urllib.parse.urljoin(_address, "/v1/traces"),
+            urllib.parse.urljoin(_address, "/api/v1/traces"),
             headers=dict([] if _api_key is None else [("authorization", _api_key)]),
             session=session,
         )
