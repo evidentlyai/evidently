@@ -7,12 +7,16 @@ import uuid
 from json import JSONDecodeError
 from typing import Dict
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Set
 from typing import Type
+from typing import TypeVar
+from typing import overload
 from urllib.error import HTTPError
 
 from requests import Request
+from requests import Response
 from requests import Session
 
 from evidently._pydantic_compat import parse_obj_as
@@ -31,6 +35,7 @@ from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.errors import EvidentlyServiceError
+from evidently.ui.errors import ProjectNotFound
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
@@ -43,6 +48,8 @@ from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.workspace.view import WorkspaceView
 from evidently.utils import NumpyEncoder
+
+T = TypeVar("T")
 
 
 class RemoteBase:
@@ -74,6 +81,32 @@ class RemoteBase:
             headers=headers,
             cookies=cookies,
         )
+
+    @overload
+    def _request(
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        response_model: Literal[T] = None,
+        cookies=None,
+        headers: Dict[str, str] = None,
+    ) -> T:
+        pass
+
+    @overload
+    def _request(
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        response_model: Literal[None] = None,
+        cookies=None,
+        headers: Dict[str, str] = None,
+    ) -> Response:
+        pass
 
     def _request(
         self,
@@ -164,7 +197,15 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
     def list_snapshots(
         self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
     ) -> List[SnapshotMetadata]:
-        raise NotImplementedError
+        project = self.get_project(project_id)
+        if project is None:
+            raise ProjectNotFound()
+        return [
+            sm.bind(project)
+            for sm in self._request(
+                f"/api/projects/{project_id}/snapshots", "GET", response_model=List[SnapshotMetadata]
+            )
+        ]
 
     def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
         raise NotImplementedError

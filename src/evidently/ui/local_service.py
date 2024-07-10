@@ -1,5 +1,9 @@
+import logging
+import time
+
 from litestar import Request
 from litestar import Response
+from litestar.logging import LoggingConfig
 
 from evidently.ui.api.projects import create_projects_api
 from evidently.ui.api.service import service_api
@@ -13,6 +17,7 @@ from evidently.ui.components.storage import LocalStorageComponent
 from evidently.ui.components.storage import StorageComponent
 from evidently.ui.components.telemetry import TelemetryComponent
 from evidently.ui.config import AppConfig
+from evidently.ui.config import ConfigContext
 from evidently.ui.errors import EvidentlyServiceError
 
 
@@ -32,8 +37,56 @@ class LocalServiceComponent(ServiceComponent):
 
     def apply(self, ctx: ComponentContext, builder: AppBuilder):
         super().apply(ctx, builder)
+        assert isinstance(ctx, ConfigContext)
         builder.exception_handlers[EvidentlyServiceError] = evidently_service_exception_handler
         builder.kwargs["debug"] = self.debug
+        if self.debug:
+            log_config = create_logging()
+            builder.kwargs["logging_config"] = LoggingConfig(**log_config)
+
+
+def create_logging() -> dict:
+    logging.Formatter.converter = time.gmtime
+    return {
+        "version": 1,
+        "log_exceptions": "always",
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                "()": "logging.Formatter",
+                "format": "%(asctime)s %(levelname)-8s %(name)-15s %(message)s",
+                "datefmt": "%Y-%m-%dT%H:%M:%SZ",
+            },
+            "access": {
+                "()": "logging.Formatter",
+                "format": "%(asctime)s %(levelname)-8s %(name)-15s %(message)s",
+                "datefmt": "%Y-%m-%dT%H:%M:%SZ",
+            },
+        },
+        "handlers": {
+            "default": {
+                "formatter": "default",
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+            },
+            "access": {
+                "formatter": "access",
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+            },
+            "queue_listener": {
+                "class": "litestar.logging.standard.QueueListenerHandler",
+                "handlers": ["cfg://handlers.default"],
+                "level": "DEBUG",
+            },
+        },
+        "loggers": {
+            "litestar": {"handlers": ["default"]},
+            "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
+            "uvicorn.error": {"level": "INFO"},
+            "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
+        },
+    }
 
 
 class LocalConfig(AppConfig):
