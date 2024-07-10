@@ -213,6 +213,7 @@ class CloudWorkspace(WorkspaceView):
         team_id: STR_UUID,
         description: Optional[str] = None,
     ) -> DatasetID:
+        file: Union[NamedBytesIO, BinaryIO]
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         if isinstance(org_id, str):
             org_id = UUID(org_id)
