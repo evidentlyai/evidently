@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import BinaryIO
 from typing import Dict
 from typing import List
@@ -150,10 +151,15 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         )
         return DatasetID(response.json()["dataset_id"])
 
-    def load_dataset(self, dataset_id: DatasetID) -> List[List]:
-        response = self._request(f"/api/datasets/{dataset_id}", "GET")
-        json = response.json()
-        return json["items"]
+    def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
+        response = self._request(f"/api/datasets/{dataset_id}/download", "GET")
+        return pd.read_parquet(BytesIO(response.content))
+
+
+class NamedBytesIO(BytesIO):
+    def __init__(self, initial_bytes: bytes, name: str):
+        super().__init__(initial_bytes=initial_bytes)
+        self.name = name
 
 
 class CloudWorkspace(WorkspaceView):
@@ -215,7 +221,9 @@ class CloudWorkspace(WorkspaceView):
         if isinstance(data_or_path, str):
             file = open(data_or_path, "rb")
         else:
-            raise NotImplementedError
+            file = NamedBytesIO(b"", "data.parquet")
+            data_or_path.to_parquet(file)
+            file.seek(0)
         try:
             return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description)
         finally:
@@ -223,8 +231,7 @@ class CloudWorkspace(WorkspaceView):
 
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        rows = self.project_manager.metadata.load_dataset(dataset_id)
-        return pd.DataFrame(rows)
+        return self.project_manager.metadata.load_dataset(dataset_id)
 
 
 class CloudAuthManager(NoopAuthManager):
