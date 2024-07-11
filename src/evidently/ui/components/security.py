@@ -79,9 +79,9 @@ class SimpleSecurity(SecurityComponent):
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         return {
             "user_id": Provide(get_user_id),
-            "security": Provide(self.get_security),
-            "security_config": Provide(lambda: self),
-            "auth_manager": Provide(lambda: NoopAuthManager()),
+            "security": Provide(self.get_security, sync_to_thread=False),
+            "security_config": Provide(lambda: self, sync_to_thread=False),
+            "auth_manager": Provide(lambda: NoopAuthManager(), sync_to_thread=False),
         }
 
 

@@ -30,6 +30,7 @@ from evidently.ui.base import EntityType
 from evidently.ui.base import Permission
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
+from evidently.ui.base import SnapshotMetadata
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.reports import DashboardPanelCounter
 from evidently.ui.dashboards.reports import DashboardPanelDistribution
@@ -57,6 +58,21 @@ def list_reports(
     reports = [ReportModel.from_snapshot(s) for s in project.list_snapshots(include_test_suites=False) if s.is_report]
     log_event("list_reports", reports_count=len(reports))
     return reports
+
+
+@get("/{project_id:uuid}/snapshots", sync_to_thread=True)
+def list_snapshots(
+    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    log_event: Callable,
+    user_id: UserID,
+) -> List[SnapshotMetadata]:
+    project = project_manager.get_project(user_id, project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="project not found")
+    snapshots = project_manager.list_snapshots(user_id, project_id)
+    log_event("list_snapshots", reports_count=len(snapshots))
+    return snapshots
 
 
 @get("/", sync_to_thread=True)
@@ -236,6 +252,31 @@ def get_snapshot_data(
     return json.dumps(asdict(info), cls=NumpyEncoder)
 
 
+@get("/{project_id:uuid}/{snapshot_id:uuid}/metadata", sync_to_thread=True)
+def get_snapshot_metadata(
+    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    log_event: Callable,
+    user_id: UserID,
+) -> SnapshotMetadata:
+    project = project_manager.get_project(user_id, project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    snapshot_meta = project.get_snapshot_metadata(snapshot_id)
+    if snapshot_meta is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
+    log_event(
+        "get_snapshot_metadata",
+        snapshot_type="report" if snapshot_meta.is_report else "test_suite",
+        metric_presets=snapshot_meta.metadata.get(METRIC_PRESETS, []),
+        metric_generators=snapshot_meta.metadata.get(METRIC_GENERATORS, []),
+        test_presets=snapshot_meta.metadata.get(TEST_PRESETS, []),
+        test_generators=snapshot_meta.metadata.get(TEST_GENERATORS, []),
+    )
+    return snapshot_meta
+
+
 @get("/{project_id:uuid}/dashboard/panels", sync_to_thread=True)
 def list_project_dashboard_panels(
     project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
@@ -253,7 +294,7 @@ def list_project_dashboard_panels(
 # We need this endpoint to export
 # some additional models to open api schema
 @get("/models/additional")
-def additional_models() -> (
+async def additional_models() -> (
     List[
         Union[
             DashboardInfoModel,
@@ -362,6 +403,8 @@ def create_projects_api(guard: Callable) -> Router:
                     get_snapshot_download,
                     list_project_dashboard_panels,
                     project_dashboard,
+                    list_snapshots,
+                    get_snapshot_metadata,
                 ],
             ),
             Router(

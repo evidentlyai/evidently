@@ -111,7 +111,10 @@ class Report(ReportBase):
                 column_mapping,
                 self.options.data_definition_options.categorical_features_cardinality,
             )
-
+        if METRIC_GENERATORS in self.metadata:
+            del self.metadata[METRIC_GENERATORS]
+        if METRIC_PRESETS in self.metadata:
+            del self.metadata[METRIC_PRESETS]
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
         for item in self.metrics:
