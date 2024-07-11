@@ -98,6 +98,7 @@ class RemoteBase:
         response_model: Type[T] = ...,
         cookies=None,
         headers: Dict[str, str] = None,
+        form_data: bool = False,
     ) -> T:
         pass
 
@@ -111,6 +112,7 @@ class RemoteBase:
         response_model: Literal[None] = None,
         cookies=None,
         headers: Dict[str, str] = None,
+        form_data: bool = False,
     ) -> Response:
         pass
 

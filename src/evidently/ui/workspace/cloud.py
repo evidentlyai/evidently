@@ -2,13 +2,17 @@ from io import BytesIO
 from typing import BinaryIO
 from typing import Dict
 from typing import List
+from typing import Literal
 from typing import NamedTuple
 from typing import Optional
+from typing import Type
 from typing import Union
+from typing import overload
 from uuid import UUID
 
 import pandas as pd
 from requests import HTTPError
+from requests import Response
 
 from evidently.ui.api.models import OrgModel
 from evidently.ui.api.models import TeamModel
@@ -24,6 +28,7 @@ from evidently.ui.type_aliases import TeamID
 from evidently.ui.workspace.remote import NoopBlobStorage
 from evidently.ui.workspace.remote import NoopDataStorage
 from evidently.ui.workspace.remote import RemoteMetadataStorage
+from evidently.ui.workspace.remote import T
 from evidently.ui.workspace.view import WorkspaceView
 
 TOKEN_HEADER_NAME = "X-Evidently-Token"
@@ -84,17 +89,45 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         r.cookies[self.token_cookie_name] = self.jwt_token
         return r
 
+    @overload
     def _request(
         self,
         path: str,
         method: str,
         query_params: Optional[dict] = None,
         body: Optional[dict] = None,
-        response_model=None,
+        response_model: Type[T] = ...,
         cookies=None,
         headers: Dict[str, str] = None,
         form_data: bool = False,
-    ):
+    ) -> T:
+        pass
+
+    @overload
+    def _request(
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        response_model: Literal[None] = None,
+        cookies=None,
+        headers: Dict[str, str] = None,
+        form_data: bool = False,
+    ) -> Response:
+        pass
+
+    def _request(
+        self,
+        path: str,
+        method: str,
+        query_params: Optional[dict] = None,
+        body: Optional[dict] = None,
+        response_model: Optional[Type[T]] = None,
+        cookies=None,
+        headers: Dict[str, str] = None,
+        form_data: bool = False,
+    ) -> Union[Response, T]:
         try:
             res = super()._request(
                 path=path,
@@ -142,7 +175,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
     def add_dataset(
         self, file: BinaryIO, name: str, org_id: OrgID, team_id: TeamID, description: Optional[str]
     ) -> DatasetID:
-        response = self._request(
+        response: Response = self._request(
             "/api/datasets/",
             "POST",
             body={"name": name, "description": description, "file": file},
@@ -152,7 +185,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         return DatasetID(response.json()["dataset_id"])
 
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
-        response = self._request(f"/api/datasets/{dataset_id}/download", "GET")
+        response: Response = self._request(f"/api/datasets/{dataset_id}/download", "GET")
         return pd.read_parquet(BytesIO(response.content))
 
 
