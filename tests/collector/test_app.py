@@ -18,7 +18,7 @@ from tests.ui.conftest import _dumps
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(sys.version_info < (3, 10))
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="loop not available on python < 3.10")
 async def test_create_collector(
     collector_test_client: TestClient, collector_service_config: CollectorServiceConfig, mock_collector_config
 ):
