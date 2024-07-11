@@ -63,7 +63,7 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     report._inner_suite.raise_for_error()
     assert report.show()
     assert report.json()
-    _check_dataframe(report)
+    _check_dataframe(report, tmetric.metric)
 
     outcome.check(report)
 
