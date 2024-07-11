@@ -13,6 +13,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.export import SpanExporter
+from requests import Response
 
 from evidently.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.ui.workspace.cloud import CloudMetadataStorage
@@ -107,14 +108,15 @@ def _create_tracer_provider(
         )
 
     cloud = CloudMetadataStorage(_address, _api_key, ACCESS_TOKEN_COOKIE.key)
-    datasets = cloud._request("/api/datasets", "GET").json()["datasets"]
+    datasets_response: Response = cloud._request("/api/datasets", "GET")
+    datasets = datasets_response.json()["datasets"]
     _export_id = None
     for dataset in datasets:
         if dataset["name"] == _export_name:
             _export_id = dataset["id"]
             break
     if _export_id is None:
-        resp = cloud._request(
+        resp: Response = cloud._request(
             "/api/datasets/tracing",
             "POST",
             query_params={"team_id": _team_id},
