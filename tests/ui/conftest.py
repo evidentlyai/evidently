@@ -33,7 +33,7 @@ class TestsSetupComponent(Component):
 
     def get_route_handlers(self, ctx: ComponentContext):
         @get("/tests_setup")
-        def tests_setup(project_manager: ProjectManager, security: SecurityService) -> None:
+        async def tests_setup(project_manager: ProjectManager, security: SecurityService) -> None:
             self.app.state["pm"] = project_manager
             self.app.state["security"] = security
 

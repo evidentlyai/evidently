@@ -62,6 +62,11 @@ def create_logging() -> dict:
                 "format": "%(asctime)s %(levelname)-8s %(name)-15s %(message)s",
                 "datefmt": "%Y-%m-%dT%H:%M:%SZ",
             },
+            "standard": {
+                "()": "logging.Formatter",
+                "format": "%(asctime)s %(levelname)-8s %(name)-15s %(message)s",
+                "datefmt": "%Y-%m-%dT%H:%M:%SZ",
+            },
         },
         "handlers": {
             "default": {

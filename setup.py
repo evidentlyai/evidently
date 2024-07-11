@@ -97,6 +97,7 @@ setup_args = dict(
             "httpx==0.24.1",
             "ruff==0.3.7",
             "pre-commit==3.5.0",
+            "pytest-asyncio==0.23.7",
         ],
         "llm": [
             "openai>=1.16.2",

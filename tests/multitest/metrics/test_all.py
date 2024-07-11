@@ -21,7 +21,10 @@ from tests.multitest.metrics.conftest import load_test_metrics
 from tests.multitest.metrics.conftest import metric_fixtures
 
 
-def _check_dataframe(report: Report):
+def _check_dataframe(report: Report, metric: Metric):
+    if not metric.__class__.result_type().__config__.pd_include:
+        # skipping not supported
+        return
     df = report.as_dataframe()
     assert isinstance(df, pd.DataFrame)
 
