@@ -56,10 +56,6 @@ export const injectReportsAPI: GetLoaderAction<ProjectsProvider, ReportsLoaderDa
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
 
-    if (params.snapshotId) {
-      return Promise.resolve([])
-    }
-
     return api.listReports({ project: { id: params.projectId } })
   },
   action: getAction(api)
@@ -72,10 +68,6 @@ export const injectTestSuitesAPI: GetLoaderAction<ProjectsProvider, TestSuitesLo
 }) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
-
-    if (params.snapshotId) {
-      return Promise.resolve([])
-    }
 
     return api.listTestSuites({ project: { id: params.projectId } })
   },

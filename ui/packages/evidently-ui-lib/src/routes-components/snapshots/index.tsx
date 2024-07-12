@@ -22,12 +22,9 @@ import {
   Link as RouterLink,
   useLoaderData,
   useParams,
-  Outlet,
-  useMatches,
   useSearchParams,
   useSubmit,
-  useNavigation,
-  ShouldRevalidateFunction
+  useNavigation
 } from 'react-router-dom'
 
 import { useLocalStorage } from '@uidotdev/usehooks'
@@ -39,7 +36,6 @@ import './override-react18-json-view.css'
 import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
-import { crumbFunction } from '~/components/BreadCrumbs'
 import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import dayjs from 'dayjs'
@@ -49,16 +45,7 @@ import { MetadataModel } from '~/api/types'
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import { z } from 'zod'
 
-export const shouldRevalidate: ShouldRevalidateFunction = () => true
-
 type LoaderData = ReportsLoaderData | TestSuitesLoaderData
-
-export const handle: { crumb: crumbFunction<LoaderData> } = {
-  crumb: (_, { pathname }) => ({
-    to: pathname,
-    linkText: pathname.split('/').reverse()[0] === 'reports' ? 'Reports' : 'Test Suites'
-  })
-}
 
 const metadataToOneString: (metadata: MetadataModel) => string = (metadata: MetadataModel) =>
   Object.values(metadata)
@@ -78,7 +65,6 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
 export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites' }) => {
   const { projectId } = useParams()
   const snapshots = useLoaderData() as LoaderData
-  const matches = useMatches()
   const submit = useSubmit()
   const navigation = useNavigation()
   const isNavigation = navigation.state !== 'idle'
@@ -91,9 +77,6 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
   useUpdateQueryStringValueWithoutNavigation('metadata-query', String(metadataQuery))
-
-  // @ts-ignore
-  const hideSnapshotsList = matches.find(({ handle }) => handle?.hide?.snapshotList === true)
 
   const ALL_TAGS = useMemo(
     () => Array.from(new Set(snapshots.flatMap(({ tags }) => tags))),
@@ -137,10 +120,6 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
           }),
     [filteredSnapshotsByMetadata, sortByTimestamp]
   )
-
-  if (hideSnapshotsList) {
-    return <Outlet />
-  }
 
   const FilterComponent = (
     <Box sx={{ padding: 2 }}>

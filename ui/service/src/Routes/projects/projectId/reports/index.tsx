@@ -1,35 +1,21 @@
-import { ActionsErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
-import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import { injectReportsAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
-import { projectProvider } from '~/api'
-
-const { loader, action } = injectReportsAPI({ api: projectProvider })
+import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import { Outlet, RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
 ////////////////////
 // children routes
 ////////////////////
 
 import ReportRoute from './reportId'
+import ReportsListRoute from './reportsList'
+
+import type { crumbFunction } from 'evidently-ui-lib/components/BreadCrumbs'
+const crumb: crumbFunction<null> = (_, { pathname }) => ({ to: pathname, linkText: 'Reports' })
 
 export default {
   id: 'reports',
   path: 'reports',
-  lazy: async () => {
-    const { SnapshotsListTemplate, ...rest } = await import(
-      'evidently-ui-lib/routes-components/snapshots'
-    )
-
-    const Component = () => (
-      <>
-        <ActionsErrorSnackbar />
-        <SnapshotsListTemplate type="reports" />
-      </>
-    )
-
-    return { ...rest, Component }
-  },
-  loader,
-  action,
+  handle: { crumb },
+  Component: () => <Outlet />,
   ErrorBoundary: GenericErrorBoundary,
-  children: [ReportRoute]
+  children: [/* index */ ReportsListRoute, ReportRoute]
 } satisfies RouteObject
