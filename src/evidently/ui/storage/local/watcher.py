@@ -119,5 +119,7 @@ class WorkspaceDirHandler(FileSystemEventHandler):
             or event.event_type == EVENT_TYPE_MOVED
             and not os.path.exists(event.src_path)
         ):
-            del self.state.snapshots[pid][sid]
-            del self.state.snapshot_data[pid][sid]
+            if pid in self.state.snapshots and sid in self.state.snapshots[pid]:
+                del self.state.snapshots[pid][sid]
+            if pid in self.state.snapshot_data and sid in self.state.snapshot_data[pid]:
+                del self.state.snapshot_data[pid][sid]

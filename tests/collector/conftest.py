@@ -32,7 +32,7 @@ def collector_test_client(tmp_path):
     state = {}
 
     @get("/_init_tests")
-    def test_init(service: CollectorServiceConfig, service_workspace: str) -> None:
+    async def test_init(service: CollectorServiceConfig, service_workspace: str) -> None:
         state["config"] = service
         state["workspace"] = service_workspace
 

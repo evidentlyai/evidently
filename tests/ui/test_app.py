@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import time
 import uuid
 from copy import deepcopy
 from typing import List
@@ -172,6 +173,7 @@ def test_delete_snapshot(test_client: TestClient, project_manager: ProjectManage
     project = project_manager.add_project(mock_project, ZERO_UUID, ZERO_UUID)
     project_manager.add_snapshot(ZERO_UUID, project.id, mock_snapshot)
     assert len(project_manager.list_snapshots(ZERO_UUID, project.id)) == 1
+    time.sleep(0.1)  # try to avoid WinError 32 error (file used by another process)
     r = test_client.delete(f"/api/projects/{project.id}/{mock_snapshot.id}")
     r.raise_for_status()
 

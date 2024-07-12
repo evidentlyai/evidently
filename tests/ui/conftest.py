@@ -16,6 +16,7 @@ from evidently.ui.components.base import Component
 from evidently.ui.components.base import ComponentContext
 from evidently.ui.components.storage import LocalStorageComponent
 from evidently.ui.local_service import LocalConfig
+from evidently.ui.local_service import LocalServiceComponent
 from evidently.ui.security.service import SecurityService
 from evidently.utils import NumpyEncoder
 
@@ -32,7 +33,7 @@ class TestsSetupComponent(Component):
 
     def get_route_handlers(self, ctx: ComponentContext):
         @get("/tests_setup")
-        def tests_setup(project_manager: ProjectManager, security: SecurityService) -> None:
+        async def tests_setup(project_manager: ProjectManager, security: SecurityService) -> None:
             self.app.state["pm"] = project_manager
             self.app.state["security"] = security
 
@@ -78,7 +79,9 @@ def _dumps(obj: BaseModel):
 @pytest.fixture
 def test_client(tmp_path):
     config = LocalConfig(
-        storage=LocalStorageComponent(path=str(tmp_path)), additional_components={"_setup_tests": TestsSetupComponent()}
+        storage=LocalStorageComponent(path=str(tmp_path)),
+        service=LocalServiceComponent(debug=True),
+        additional_components={"_setup_tests": TestsSetupComponent()},
     )
     return TestClient(create_app(config=config))
 
