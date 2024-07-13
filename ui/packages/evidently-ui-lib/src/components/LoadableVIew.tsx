@@ -21,7 +21,7 @@ interface LoadableViewState<T> {
   result?: T
 }
 
-const LoadableView = <T,>({ func, children }: LoadableViewProps<T>) => {
+const LoadableView = <T,>({ func, children }: LoadableViewProps<T>): JSX.Element => {
   const [state, setState] = useState<LoadableViewState<T>>(() => ({
     status: LoadState.Uninitialized,
     func
@@ -40,15 +40,19 @@ const LoadableView = <T,>({ func, children }: LoadableViewProps<T>) => {
       .catch(() => setState((prev) => ({ ...prev, status: LoadState.Failed })))
   }
 
-  return state.status === LoadState.Loaded ? (
-    children && children(state.result!)
-  ) : state.status === LoadState.Failed ? (
-    <Typography align="center">Failed</Typography>
-  ) : state.status === LoadState.Loading ? (
-    <Box textAlign="center">
-      <CircularProgress />
-    </Box>
-  ) : null
+  return (
+    <>
+      {state.status === LoadState.Loaded ? (
+        children && children(state.result!)
+      ) : state.status === LoadState.Failed ? (
+        <Typography align="center">Failed</Typography>
+      ) : state.status === LoadState.Loading ? (
+        <Box textAlign="center">
+          <CircularProgress />
+        </Box>
+      ) : null}
+    </>
+  )
 }
 
 export default LoadableView
