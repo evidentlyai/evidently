@@ -8,11 +8,8 @@ import { Grid } from '@mui/material'
 import { DashboardProvider } from '~/api/types/providers/dashboard'
 import { AdditionalGraphInfo, WidgetInfo } from '~/api'
 
-export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Boolean> } = {
-  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
-  hide: {
-    snapshotList: true
-  }
+export const handle: { crumb: crumbFunction<LoaderData> } = {
+  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) })
 }
 
 export const SnapshotTemplate = ({ api }: { api: DashboardProvider }) => {

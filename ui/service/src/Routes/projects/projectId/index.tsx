@@ -18,5 +18,5 @@ export default {
   lazy: () => import('evidently-ui-lib/routes-components/projectId'),
   loader,
   ErrorBoundary: GenericErrorBoundary,
-  children: [DashboardRoute, ReportsRoute, TestSuitesRoute]
+  children: [/* index */ DashboardRoute, ReportsRoute, TestSuitesRoute]
 } satisfies RouteObject

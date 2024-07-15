@@ -1,31 +1,21 @@
-import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
-import { projectProvider } from '~/api'
+import { Outlet, RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+
+////////////////////
+// children routes
+////////////////////
 
 import TestSuiteRoute from './testSuiteId'
-import { ActionsErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import TestSuitesList from './testSuitesList'
 
-const { loader, action } = injectTestSuitesAPI({ api: projectProvider })
+import type { crumbFunction } from 'evidently-ui-lib/components/BreadCrumbs'
+const crumb: crumbFunction<null> = (_, { pathname }) => ({ to: pathname, linkText: 'Test Suites' })
 
 export default {
   id: 'test_suites',
   path: 'test-suites',
-  lazy: async () => {
-    const { SnapshotsListTemplate, ...rest } = await import(
-      'evidently-ui-lib/routes-components/snapshots'
-    )
-
-    const Component = () => (
-      <>
-        <ActionsErrorSnackbar />
-        <SnapshotsListTemplate type="test suites" />
-      </>
-    )
-
-    return { ...rest, Component }
-  },
-  loader,
-  action,
+  handle: { crumb },
+  Component: () => <Outlet />,
   ErrorBoundary: GenericErrorBoundary,
-  children: [TestSuiteRoute]
+  children: [/* index */ TestSuitesList, TestSuiteRoute]
 } satisfies RouteObject
