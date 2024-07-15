@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { Box, CircularProgress } from '@mui/material'
+import { Box, CircularProgress, Typography } from '@mui/material'
 
 interface LoadableViewProps<T> {
-  children?: (params: T) => React.ReactNode
+  children?: (params: T) => JSX.Element
   func: () => Promise<T>
 }
 
@@ -17,40 +17,41 @@ enum LoadState {
 
 interface LoadableViewState<T> {
   status: LoadState
-  func?: () => Promise<T>
+  func: () => Promise<T>
   result?: T
 }
 
-const LoadableView = <T,>(props: LoadableViewProps<T>) => {
+const LoadableView = <T,>({ func, children }: LoadableViewProps<T>): JSX.Element => {
   const [state, setState] = useState<LoadableViewState<T>>(() => ({
-    status: LoadState.Uninitialized
+    status: LoadState.Uninitialized,
+    func
   }))
-  useEffect(() => {
-    setState({ status: LoadState.Initialized, func: props.func })
-  }, [props.func])
+
+  if (state.status === LoadState.Uninitialized) {
+    setState((prevState) => ({ ...prevState, status: LoadState.Initialized }))
+  }
+
   if (state.status === LoadState.Initialized) {
     setState((prevState) => ({ ...prevState, status: LoadState.Loading }))
-    state.func!().then((res) =>
-      setState((s) => {
-        return { status: LoadState.Loaded, func: s.func, result: res }
-      })
-    )
+
+    state
+      .func()
+      .then((result) => setState((prev) => ({ ...prev, status: LoadState.Loaded, result })))
+      .catch(() => setState((prev) => ({ ...prev, status: LoadState.Failed })))
   }
 
   return (
-    <React.Fragment>
+    <>
       {state.status === LoadState.Loaded ? (
-        props.children ? (
-          props.children(state.result!)
-        ) : (
-          <div />
-        )
-      ) : (
+        children && children(state.result!)
+      ) : state.status === LoadState.Failed ? (
+        <Typography align="center">Failed</Typography>
+      ) : state.status === LoadState.Loading ? (
         <Box textAlign="center">
           <CircularProgress />
         </Box>
-      )}
-    </React.Fragment>
+      ) : null}
+    </>
   )
 }
 
