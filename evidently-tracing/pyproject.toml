@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "evidently-tracing"
+version = "0.1.0"
+description = "Evidently Tracing tools"
+authors = ["Emeli Dral <emeli.dral@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{include = "evidently"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+opentelemetry-api = ">=1.25.0"
+opentelemetry-sdk = ">=1.25.0"
+opentelemetry-proto = ">=1.25.0"
+opentelemetry-exporter-otlp-proto-grpc = ">=1.25.0"
+opentelemetry-exporter-otlp-proto-http = ">=1.25.0"
+requests = ">=2.32.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

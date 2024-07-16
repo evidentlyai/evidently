@@ -13,10 +13,8 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.export import SpanExporter
-from requests import Response
 
-from evidently.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
-from evidently.ui.workspace.cloud import CloudMetadataStorage
+from .client import EvidentlyCloudClient
 
 _TRACE_COLLECTOR_ADDRESS = os.getenv("EVIDENTLY_TRACE_COLLECTOR", "https://app.evidently.cloud")
 _TRACE_COLLECTOR_TYPE = os.getenv("EVIDENTLY_TRACE_COLLECTOR_TYPE", "http")
@@ -107,8 +105,8 @@ def _create_tracer_provider(
             "You need provide valid team ID with team_id argument" "or EVIDENTLY_TRACE_COLLECTOR_TEAM_ID env variable"
         )
 
-    cloud = CloudMetadataStorage(_address, _api_key, ACCESS_TOKEN_COOKIE.key)
-    datasets_response: Response = cloud._request("/api/datasets", "GET")
+    cloud = EvidentlyCloudClient(_address, _api_key)
+    datasets_response: requests.Response = cloud.request("/api/datasets", "GET")
     datasets = datasets_response.json()["datasets"]
     _export_id = None
     for dataset in datasets:
@@ -116,7 +114,7 @@ def _create_tracer_provider(
             _export_id = dataset["id"]
             break
     if _export_id is None:
-        resp: Response = cloud._request(
+        resp: requests.Response = cloud.request(
             "/api/datasets/tracing",
             "POST",
             query_params={"team_id": _team_id},
@@ -145,22 +143,9 @@ def _create_tracer_provider(
     elif _exporter_type == "http":
         from opentelemetry.exporter.otlp.proto.http import trace_exporter as http_exporter
 
-        session = requests.Session()
-
-        def refresh_token(r, *args, **kwargs):
-            if r.status_code == 401:
-                cloud._jwt_token = None
-                token = cloud.jwt_token
-                session.headers.update({"Authorization": f"Bearer {token}"})
-                r.request.headers["Authorization"] = session.headers["Authorization"]
-                return session.send(r.request)
-
-        session.hooks["response"].append(refresh_token)
-
         exporter = http_exporter.OTLPSpanExporter(
             urllib.parse.urljoin(_address, "/api/v1/traces"),
-            headers=dict([] if _api_key is None else [("authorization", _api_key)]),
-            session=session,
+            session=cloud.session(),
         )
     else:
         raise ValueError("Unexpected value of exporter type")
