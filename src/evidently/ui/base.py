@@ -256,9 +256,7 @@ class MetadataStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def add_snapshot(
-        self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata", out_dataset_id: Optional[str] = None
-    ):
+    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
         raise NotImplementedError
 
     @abstractmethod

@@ -40,6 +40,7 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
+from evidently.ui.type_aliases import DatasetID
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import SaveMode
 from evidently.utils.dashboard import SaveModeMap
@@ -443,6 +444,10 @@ class Suite:
 MetadataValueType = Union[str, Dict[str, str], List[str]]
 
 
+class SnapshotLinks(BaseModel):
+    datasets: Dict[str, DatasetID] = {}
+
+
 class Snapshot(BaseModel):
     id: UUID4
     name: Optional[str] = None
@@ -453,6 +458,7 @@ class Snapshot(BaseModel):
     metrics_ids: List[int] = []
     test_ids: List[int] = []
     options: Options
+    links: SnapshotLinks = SnapshotLinks()
 
     def save(self, filename):
         with open(filename, "w") as f:
