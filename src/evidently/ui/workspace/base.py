@@ -53,12 +53,14 @@ class WorkspaceBase(abc.ABC):
         snapshot = test_suite.to_snapshot()
         if include_data:
             reference, current = test_suite.datasets()
-            snapshot.links.datasets[SnapshotDatasetType.OUTPUT_CURRENT.value] = self.add_dataset(
-                current, f"snapshot_{snapshot.id}_output_current", project_id
-            )
-            snapshot.links.datasets[SnapshotDatasetType.OUTPUT_REFERENCE.value] = self.add_dataset(
-                reference, f"snapshot_{snapshot.id}_output_reference", project_id
-            )
+            if current is not None:
+                snapshot.links.datasets.output.current = self.add_dataset(
+                    current, f"snapshot_{snapshot.id}_output_current", project_id
+                )
+            if reference is not None:
+                snapshot.links.datasets.output.reference = self.add_dataset(
+                    reference, f"snapshot_{snapshot.id}_output_reference", project_id
+                )
         self.add_snapshot(project_id, snapshot)
 
     @abc.abstractmethod

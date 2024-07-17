@@ -450,8 +450,30 @@ class Suite:
 MetadataValueType = Union[str, Dict[str, str], List[str]]
 
 
+class DatasetLinks(BaseModel):
+    reference: Optional[DatasetID] = None
+    current: Optional[DatasetID] = None
+    additional: Dict[str, DatasetID] = {}
+
+    def __iter__(self) -> Iterator[Tuple[str, DatasetID]]:
+        if self.reference is not None:
+            yield "reference", self.reference
+        if self.current is not None:
+            yield "current", self.current
+        yield from self.additional.items()
+
+
+class DatasetInputOutputLinks(BaseModel):
+    input: DatasetLinks = DatasetLinks()
+    output: DatasetLinks = DatasetLinks()
+
+    def __iter__(self) -> Iterator[Tuple[str, str, DatasetID]]:
+        yield from (("input", subtype, dataset_id) for subtype, dataset_id in self.input)
+        yield from (("output", subtype, dataset_id) for subtype, dataset_id in self.output)
+
+
 class SnapshotLinks(BaseModel):
-    datasets: Dict[str, DatasetID] = {}
+    datasets: DatasetInputOutputLinks = DatasetInputOutputLinks()
 
 
 class Snapshot(BaseModel):
