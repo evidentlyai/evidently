@@ -4,12 +4,10 @@ import {
   Box,
   Collapse,
   FormControl,
-  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
   Select,
-  Switch,
   Typography
 } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
@@ -33,13 +31,12 @@ export const FILTER_QUERY_PARAMS: Record<QueryAliases, QueryLiterals> = {
 }
 
 interface DataRangesProps {
-  dataRanges: { minDate: Dayjs; maxDate: Dayjs }
+  dataRanges: { minDate?: Dayjs; maxDate?: Dayjs }
 }
 
 interface DashboardDateFilterProps {
   isShowDateFilter: boolean
-  isDashboardHideDates: boolean
-  setIsDashboardHideDates: React.Dispatch<React.SetStateAction<boolean>>
+  slot?: JSX.Element
 }
 
 export const getDashboardQueryParams = (searchParams: URLSearchParams) => {
@@ -53,21 +50,21 @@ export const useIsCorrectTimeInterval = ({ dataRanges }: DataRangesProps) => {
 
   const { date_from: dateFrom, date_to: dateTo } = getDashboardQueryParams(searchParams)
 
-  const date_from = dayjs(dateFrom || dataRanges.minDate)
-  const date_to = dayjs(dateTo || dataRanges.maxDate)
+  const date_from = dateFrom ? dayjs(dateFrom) : dataRanges.minDate
+  const date_to = dayjs(dateTo || dataRanges.maxDate || dayjs())
 
-  const isCorrectTimeInterval =
-    date_from.isValid() &&
-    date_to.isValid() &&
-    (date_from.isSame(date_to) || date_from.isBefore(date_to))
+  const isCorrectTimeInterval = !date_from
+    ? true
+    : date_from.isValid() &&
+      date_to.isValid() &&
+      (date_from.isSame(date_to) || date_from.isBefore(date_to))
 
   return { isCorrectTimeInterval, date_from, date_to, setSearchParams }
 }
 
-export const DashboardParams = ({
+export const DateTimeRangeByQueryParams = ({
+  slot,
   dataRanges,
-  isDashboardHideDates,
-  setIsDashboardHideDates,
   isShowDateFilter
 }: DashboardDateFilterProps & DataRangesProps) => {
   const { isCorrectTimeInterval, date_from, date_to, setSearchParams } = useIsCorrectTimeInterval({
@@ -101,19 +98,8 @@ export const DashboardParams = ({
         justifyContent="flex-end"
         alignItems={'flex-end'}
       >
-        <Grid item>
-          <Box minWidth={180} display={'flex'} justifyContent={'center'}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isDashboardHideDates}
-                  onChange={(event) => setIsDashboardHideDates(event.target.checked)}
-                ></Switch>
-              }
-              label="Show in order"
-            />
-          </Box>
-        </Grid>
+        {slot && <Grid item>{slot}</Grid>}
+
         {isShowDateFilter && (
           <>
             <Grid item xs={12} md={2}>
@@ -140,7 +126,7 @@ export const DashboardParams = ({
                     }
 
                     const [value, duration] = [Number(valueStr), durationStr]
-                    const lastDate = dataRanges.maxDate.subtract(
+                    const substractedDate = (dataRanges.maxDate || dayjs()).subtract(
                       value,
                       duration as dayjs.ManipulateType
                     )
@@ -153,14 +139,17 @@ export const DashboardParams = ({
                         params.append(
                           FILTER_QUERY_PARAMS.FROM,
                           formatDate(
-                            lastDate.isBefore(dataRanges.minDate)
+                            !dataRanges.minDate
+                              ? substractedDate.toDate()
+                              : substractedDate.isBefore(dataRanges.minDate)
                               ? dataRanges.minDate.toDate()
-                              : lastDate.toDate()
+                              : substractedDate.toDate()
                           )
                         )
+
                         params.append(
                           FILTER_QUERY_PARAMS.TO,
-                          formatDate(dataRanges.maxDate.toDate())
+                          formatDate((dataRanges.maxDate || dayjs()).toDate())
                         )
 
                         return params
@@ -190,11 +179,7 @@ export const DashboardParams = ({
                 <DateTimePicker
                   minDate={dataRanges.minDate}
                   maxDate={dataRanges.maxDate && date_to}
-                  slotProps={{
-                    textField: {
-                      variant: 'standard'
-                    }
-                  }}
+                  slotProps={{ textField: { variant: 'standard' } }}
                   label="From"
                   value={date_from}
                   onChange={getOnChangeDate(FILTER_QUERY_PARAMS.FROM)}
@@ -205,11 +190,7 @@ export const DashboardParams = ({
                 <DateTimePicker
                   minDate={dataRanges.minDate && date_from}
                   maxDate={dataRanges.maxDate}
-                  slotProps={{
-                    textField: {
-                      variant: 'standard'
-                    }
-                  }}
+                  slotProps={{ textField: { variant: 'standard' } }}
                   label="To"
                   value={date_to}
                   onChange={getOnChangeDate(FILTER_QUERY_PARAMS.TO)}

@@ -1,9 +1,10 @@
 import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { DashboardParams } from '~/components/DashboardDateFilter'
+import { DateTimeRangeByQueryParams } from '~/components/DashboardDateFilter'
 import { LoaderData } from './data'
 import { DashboardViewParamsContext } from '~/contexts/DashboardViewParams'
 import { useLocalStorage } from '~/hooks'
+import { Box, FormControlLabel, Switch } from '@mui/material'
 import dayjs from 'dayjs'
 
 interface Props {
@@ -25,11 +26,22 @@ export const DashboardComponentTemplate = ({ Dashboard }: Props) => {
 
   return (
     <>
-      <DashboardParams
+      <DateTimeRangeByQueryParams
         dataRanges={dataRanges}
         isShowDateFilter={isShowDateFilter}
-        isDashboardHideDates={isDashboardHideDates}
-        setIsDashboardHideDates={setIsDashboardHideDates}
+        slot={
+          <Box minWidth={180} display={'flex'} justifyContent={'center'}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isDashboardHideDates}
+                  onChange={(event) => setIsDashboardHideDates(event.target.checked)}
+                ></Switch>
+              }
+              label="Show in order"
+            />
+          </Box>
+        }
       />
 
       <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical: isDashboardHideDates }}>
