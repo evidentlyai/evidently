@@ -5,6 +5,7 @@ import json
 import logging
 import uuid
 from datetime import datetime
+from enum import Enum
 from typing import IO
 from typing import Dict
 from typing import Iterator
@@ -27,6 +28,7 @@ from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.engine import EngineDatasets
 from evidently.core import IncludeOptions
 from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
@@ -129,7 +131,11 @@ class Context:
             )
         return self.data_definition
 
-    def get_datasets(self):
+    def get_datasets(self) -> EngineDatasets:
+        if self.engine is None:
+            raise ValueError("Cannot get datasets when engine is not set")
+        if self.data_definition is None:
+            raise ValueError("Cannot get datasets when suite is not executed")
         return self.engine.form_datasets(self.data, self.features, self.data_definition)
 
     def set_features(self, features: Optional[Dict[tuple, GeneratedFeature]]):
@@ -493,6 +499,17 @@ class Snapshot(BaseModel):
         return [self.suite.tests[i] for i in self.test_ids]
 
 
+class SnapshotDatasetType(Enum, str):
+    INPUT_CURRENT = "input_current"
+    INPUT_REFERENCE = "input_reference"
+
+    OUTPUT_CURRENT = "output_current"
+    OUTPUT_REFERENCE = "output_reference"
+
+    DESCRIPTORS_CURRENT = "descriptors_current"
+    DESCRIPTORS_REFERENCE = "desciptors_reference"
+
+
 T = TypeVar("T", bound="ReportBase")
 
 
@@ -555,6 +572,5 @@ class ReportBase(Display):
             raise ValueError("Cannot create snapshot because of calculation error") from e
         return self._get_snapshot()
 
-    def datasets(self):
-        datasets = self._inner_suite.context.get_datasets()
-        return datasets
+    def datasets(self) -> EngineDatasets:
+        return self._inner_suite.context.get_datasets()

@@ -21,6 +21,7 @@ from evidently.ui.base import Role
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import RoleID
 from evidently.ui.type_aliases import TeamID
@@ -138,13 +139,14 @@ class OrgModel(BaseModel):
 class TeamModel(BaseModel):
     id: TeamID
     name: str
+    org_id: OrgID
 
     @classmethod
     def from_team(cls, team: Team):
-        return TeamModel(id=team.id, name=team.name)
+        return TeamModel(id=team.id, name=team.name, org_id=team.org_id or ZERO_UUID)
 
     def to_team(self) -> Team:
-        return Team(id=self.id, name=self.name)
+        return Team(id=self.id, name=self.name, org_id=self.org_id)
 
 
 UT = TypeVar("UT", bound="UserModel")

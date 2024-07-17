@@ -132,6 +132,7 @@ class Team(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Team
     id: TeamID = Field(default_factory=uuid.uuid4)
     name: str
+    org_id: Optional[OrgID]
 
 
 UT = TypeVar("UT", bound="User")

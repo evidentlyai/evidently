@@ -34,6 +34,7 @@ class NoUser(User):
 class NoTeam(Team):
     id: TeamID = ZERO_UUID
     name = ""
+    org_id: OrgID = ZERO_UUID
 
 
 class NoOrg(Org):
