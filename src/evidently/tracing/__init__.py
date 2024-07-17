@@ -13,7 +13,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.export import SpanExporter
-from requests import Response
+from opentelemetry.trace import StatusCode
 
 from evidently.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.ui.workspace.cloud import CloudMetadataStorage
@@ -28,14 +28,21 @@ _TRACE_COLLECTOR_TEAM_ID = os.getenv("EVIDENTLY_TRACE_COLLECTOR_TEAM_ID", "")
 _tracer: Optional[trace.Tracer] = None
 
 
-def trace_event(track_args: Optional[List[str]] = None, ignore_args: Optional[List[str]] = None):
+def trace_event(
+    span_name: Optional[str] = None,
+    track_args: Optional[List[str]] = None,
+    ignore_args: Optional[List[str]] = None,
+    track_output: Optional[bool] = True,
+):
     """
     Trace given function call.
 
     Args:
+        span_name: the name of the span to track as.
         track_args: list of arguments to capture, if set to None - capture all arguments (default),
                     if set to [] do not capture any arguments
         ignore_args: list of arguments to ignore, if set to None - do not ignore any arguments.
+        track_output: track the output of the function call
     """
 
     def wrapper(f: Callable[..., Any]) -> Callable[..., Any]:
@@ -48,7 +55,7 @@ def trace_event(track_args: Optional[List[str]] = None, ignore_args: Optional[Li
 
             sign = inspect.signature(f)
             bind = sign.bind(*args, **kwargs)
-            with _tracer.start_as_current_span(f"{f.__name__}") as span:
+            with _tracer.start_as_current_span(f"{span_name or f.__name__}") as span:
                 final_args = track_args
                 if track_args is None:
                     final_args = list(sign.parameters.keys())
@@ -56,8 +63,15 @@ def trace_event(track_args: Optional[List[str]] = None, ignore_args: Optional[Li
                     final_args = [item for item in final_args if item not in ignore_args]
                 for tracked in final_args:
                     span.set_attribute(tracked, bind.arguments[tracked])
-                result = f(*args, **kwargs)
-                span.set_attribute("result", result)
+                try:
+                    result = f(*args, **kwargs)
+                    if result is not None and track_output:
+                        span.set_attribute("result", str(result))
+                    span.set_status(StatusCode.OK)
+                except Exception as e:
+                    span.set_attribute("exception", str(e))
+                    span.set_status(StatusCode.ERROR)
+                    raise
             return result
 
         return func
@@ -108,7 +122,7 @@ def _create_tracer_provider(
         )
 
     cloud = CloudMetadataStorage(_address, _api_key, ACCESS_TOKEN_COOKIE.key)
-    datasets_response: Response = cloud._request("/api/datasets", "GET")
+    datasets_response: requests.Response = cloud._request("/api/datasets", "GET")
     datasets = datasets_response.json()["datasets"]
     _export_id = None
     for dataset in datasets:
@@ -116,7 +130,7 @@ def _create_tracer_provider(
             _export_id = dataset["id"]
             break
     if _export_id is None:
-        resp: Response = cloud._request(
+        resp: requests.Response = cloud._request(
             "/api/datasets/tracing",
             "POST",
             query_params={"team_id": _team_id},
