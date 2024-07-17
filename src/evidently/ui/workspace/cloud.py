@@ -14,6 +14,8 @@ import pandas as pd
 from requests import HTTPError
 from requests import Response
 
+from evidently.report import Report
+from evidently.test_suite import TestSuite
 from evidently.ui.api.models import OrgModel
 from evidently.ui.api.models import TeamModel
 from evidently.ui.base import Org
@@ -266,6 +268,12 @@ class CloudWorkspace(WorkspaceView):
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         return self.project_manager.metadata.load_dataset(dataset_id)
+
+    def add_report_with_data(self, project_id: STR_UUID, report: Report):
+        self.add_report(project_id, report)
+
+    def add_test_suite_with_data(self, project_id: STR_UUID, test_suite: TestSuite):
+        self.add_test_suite(project_id, test_suite)
 
 
 class CloudAuthManager(NoopAuthManager):
