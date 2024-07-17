@@ -64,8 +64,8 @@ class DatasetLink(BaseModel):
 
 
 class ReportDatasetLinks(BaseModel):
-    output: Optional[DatasetLink]
-    input: Optional[DatasetLink]
+    output: Optional[DatasetLink] = Field(default=DatasetLink())
+    input: Optional[DatasetLink] = Field(default=DatasetLink())
 
 
 class SnapshotMetadata(BaseModel):
