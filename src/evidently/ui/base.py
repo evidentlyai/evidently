@@ -39,6 +39,7 @@ from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import DatasetID
 from evidently.ui.type_aliases import EntityID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import PointType
@@ -57,6 +58,16 @@ class BlobMetadata(BaseModel):
     size: Optional[int]
 
 
+class DatasetLink(BaseModel):
+    current_id: Optional[DatasetID]
+    reference_id: Optional[DatasetID]
+
+
+class ReportDatasetLinks(BaseModel):
+    output: Optional[DatasetLink]
+    input: Optional[DatasetLink]
+
+
 class SnapshotMetadata(BaseModel):
     id: UUID4
     name: Optional[str] = None
@@ -65,6 +76,7 @@ class SnapshotMetadata(BaseModel):
     tags: List[str]
     is_report: bool
     blob: "BlobMetadata"
+    datasets: Optional[ReportDatasetLinks]
 
     _project: "Project" = PrivateAttr(None)
     _dashboard_info: "DashboardInfo" = PrivateAttr(None)
