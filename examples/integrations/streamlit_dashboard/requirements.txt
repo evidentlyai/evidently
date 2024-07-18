@@ -9,7 +9,6 @@ pyarrow==11.0.0
 python-box==5.4.1
 requests==2.28.2
 streamlit==1.19.0
-pandas==1.5.3
 pyyaml==5.1
 scikit-learn==1.2.1
 scipy==1.10.1
