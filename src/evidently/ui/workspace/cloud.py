@@ -279,7 +279,7 @@ class CloudWorkspace(WorkspaceView):
         if project.team_id is None:
             raise TeamNotFound()
         teams = self.project_manager.metadata._request(
-            "GET", "/api/teams/info", query_params={"teams_ids": [project.team_id]}, response_model=Dict[TeamID, Team]
+            "/api/teams/info", "GET", query_params={"team_ids": [project.team_id]}, response_model=Dict[TeamID, Team]
         )
         team = teams[project.team_id]
         if team.org_id is None:
