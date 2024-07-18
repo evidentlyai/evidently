@@ -7,7 +7,6 @@ import pandas as pd
 
 from evidently.report import Report
 from evidently.suite.base_suite import Snapshot
-from evidently.suite.base_suite import SnapshotDatasetType
 from evidently.test_suite import TestSuite
 from evidently.ui.base import Project
 from evidently.ui.type_aliases import STR_UUID
@@ -41,10 +40,10 @@ class WorkspaceBase(abc.ABC):
         snapshot = report.to_snapshot()
         if include_data:
             reference, current = report.datasets()
-            snapshot.links.datasets[SnapshotDatasetType.OUTPUT_CURRENT.value] = self.add_dataset(
+            snapshot.links.datasets.output.current = self.add_dataset(
                 current, f"snapshot_{snapshot.id}_output_current", project_id
             )
-            snapshot.links.datasets[SnapshotDatasetType.OUTPUT_REFERENCE.value] = self.add_dataset(
+            snapshot.links.datasets.output.reference = self.add_dataset(
                 reference, f"snapshot_{snapshot.id}_output_reference", project_id
             )
         self.add_snapshot(project_id, snapshot)

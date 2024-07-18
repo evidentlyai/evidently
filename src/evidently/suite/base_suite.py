@@ -5,7 +5,6 @@ import json
 import logging
 import uuid
 from datetime import datetime
-from enum import Enum
 from typing import IO
 from typing import Dict
 from typing import Iterator
@@ -519,17 +518,6 @@ class Snapshot(BaseModel):
 
     def first_level_tests(self) -> List[Test]:
         return [self.suite.tests[i] for i in self.test_ids]
-
-
-class SnapshotDatasetType(Enum, str):
-    INPUT_CURRENT = "input_current"
-    INPUT_REFERENCE = "input_reference"
-
-    OUTPUT_CURRENT = "output_current"
-    OUTPUT_REFERENCE = "output_reference"
-
-    DESCRIPTORS_CURRENT = "descriptors_current"
-    DESCRIPTORS_REFERENCE = "desciptors_reference"
 
 
 T = TypeVar("T", bound="ReportBase")
