@@ -8,6 +8,7 @@ from enum import Enum
 from typing import Any
 from typing import ClassVar
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import NamedTuple
 from typing import Optional
@@ -58,14 +59,30 @@ class BlobMetadata(BaseModel):
     size: Optional[int]
 
 
-class DatasetLink(BaseModel):
-    current_id: Optional[DatasetID]
-    reference_id: Optional[DatasetID]
+class DatasetLinks(BaseModel):
+    reference: Optional[DatasetID] = None
+    current: Optional[DatasetID] = None
+    additional: Dict[str, DatasetID] = {}
+
+    def __iter__(self) -> Iterator[Tuple[str, DatasetID]]:
+        if self.reference is not None:
+            yield "reference", self.reference
+        if self.current is not None:
+            yield "current", self.current
+        yield from self.additional.items()
 
 
-class ReportDatasetLinks(BaseModel):
-    output: Optional[DatasetLink] = Field(default=DatasetLink())
-    input: Optional[DatasetLink] = Field(default=DatasetLink())
+class DatasetInputOutputLinks(BaseModel):
+    input: DatasetLinks = DatasetLinks()
+    output: DatasetLinks = DatasetLinks()
+
+    def __iter__(self) -> Iterator[Tuple[str, str, DatasetID]]:
+        yield from (("input", subtype, dataset_id) for subtype, dataset_id in self.input)
+        yield from (("output", subtype, dataset_id) for subtype, dataset_id in self.output)
+
+
+class SnapshotLinks(BaseModel):
+    datasets: DatasetInputOutputLinks = DatasetInputOutputLinks()
 
 
 class SnapshotMetadata(BaseModel):
@@ -76,7 +93,7 @@ class SnapshotMetadata(BaseModel):
     tags: List[str]
     is_report: bool
     blob: "BlobMetadata"
-    datasets: Optional[ReportDatasetLinks]
+    links: SnapshotLinks = SnapshotLinks()
 
     _project: "Project" = PrivateAttr(None)
     _dashboard_info: "DashboardInfo" = PrivateAttr(None)
