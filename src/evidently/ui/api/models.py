@@ -18,6 +18,7 @@ from evidently.ui.base import EntityType
 from evidently.ui.base import Org
 from evidently.ui.base import Project
 from evidently.ui.base import Role
+from evidently.ui.base import SnapshotLinks
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -41,6 +42,7 @@ class ReportModel(BaseModel):
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
+    links: SnapshotLinks = SnapshotLinks()
 
     @classmethod
     def from_report(cls, report: Report):
@@ -58,6 +60,7 @@ class ReportModel(BaseModel):
             timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
+            links=snapshot.links,
         )
 
 
@@ -66,6 +69,7 @@ class TestSuiteModel(BaseModel):
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
+    links: SnapshotLinks = SnapshotLinks()
 
     @classmethod
     def from_report(cls, report: TestSuite):
@@ -83,6 +87,7 @@ class TestSuiteModel(BaseModel):
             timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
+            links=snapshot.links,
         )
 
 
