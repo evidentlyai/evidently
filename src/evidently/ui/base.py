@@ -93,7 +93,7 @@ class SnapshotMetadata(BaseModel):
     tags: List[str]
     is_report: bool
     blob: "BlobMetadata"
-    links: SnapshotLinks = SnapshotLinks()
+    links: SnapshotLinks = SnapshotLinks()  # links to datasets and
 
     _project: "Project" = PrivateAttr(None)
     _dashboard_info: "DashboardInfo" = PrivateAttr(None)
