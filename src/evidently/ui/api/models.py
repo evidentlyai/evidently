@@ -13,12 +13,12 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
+from evidently.suite.base_suite import SnapshotLinks
 from evidently.test_suite import TestSuite
 from evidently.ui.base import EntityType
 from evidently.ui.base import Org
 from evidently.ui.base import Project
 from evidently.ui.base import Role
-from evidently.ui.base import SnapshotLinks
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
