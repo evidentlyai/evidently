@@ -52,19 +52,19 @@ Evidently is very modular. You can start with one-off evaluations using `Reports
 
 ## 2. Test Suites
 
-**Test Suites** check for defined conditions on metric values and return a pass or fail result. 
+**Test Suites** check for defined conditions on metric values and return a pass or fail result.
 * Best for regression testing, CI/CD checks, or data validation pipelines.
 * Zero setup option: auto-generate test conditions from the reference dataset.
 * Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.
-* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.  
+* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.
 
 | Test Suite |
 |--|
 |![Test example](docs/book/.gitbook/assets/main/tests.gif)|
- 
+
 ## 3. Monitoring Dashboard
 
-**Monitoring UI** service helps visualize metrics and test results over time. 
+**Monitoring UI** service helps visualize metrics and test results over time.
 
 You can choose:
 * Self-host the open-source version. [Live demo](https://demo.evidentlyai.com).
@@ -94,7 +94,7 @@ conda install -c conda-forge evidently
 ### Option 1: Test Suites
 > This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/get-started/tutorial) or [LLM evaluation](https://docs.evidentlyai.com/get-started/tutorial-llm).
 
-Import the **Test Suite**, evaluation Preset and toy tabular dataset. 
+Import the **Test Suite**, evaluation Preset and toy tabular dataset.
 
 ```python
 import pandas as pd
@@ -129,10 +129,10 @@ To get the output as JSON:
 data_stability.json()
 ```
 You can choose other Presets, individual Tests and set conditions.
- 
+
 ### Option 2: Reports
 
-Import the **Report**, evaluation Preset and toy tabular dataset. 
+Import the **Report**, evaluation Preset and toy tabular dataset.
 
 ```python
 import pandas as pd
@@ -187,7 +187,7 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
 # 🚦 What can you evaluate?
 
-Evidently has 100+ built-in evals. You can also add custom ones. Each metric has an optional visualization: you can use it in `Reports`, `Test Suites`, or plot on a `Dashboard`. 
+Evidently has 100+ built-in evals. You can also add custom ones. Each metric has an optional visualization: you can use it in `Reports`, `Test Suites`, or plot on a `Dashboard`.
 
 Here are examples of things you can check:
 
