@@ -239,9 +239,10 @@ export type DateFilterState = {
 export interface DateFilterProps {
   dates: DateFilterState
   setDates: React.Dispatch<React.SetStateAction<DateFilterState>>
+  required?: boolean
 }
 
-export const DateFilter = ({ dates, setDates }: DateFilterProps) => {
+export const DateFilter = ({ dates, setDates, required = false }: DateFilterProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
       <Grid
@@ -295,7 +296,12 @@ export const DateFilter = ({ dates, setDates }: DateFilterProps) => {
               <DateTimePicker
                 minDate={undefined}
                 maxDate={dates?.dateTo}
-                slotProps={{ textField: { variant: 'standard' } }}
+                slotProps={{
+                  textField: {
+                    variant: 'standard',
+                    error: required ? !Boolean(dates.dateFrom) : undefined
+                  }
+                }}
                 label="From"
                 value={dates?.dateFrom}
                 onChange={(value) => setDates((prev) => ({ ...prev, dateFrom: value }))}
@@ -306,7 +312,12 @@ export const DateFilter = ({ dates, setDates }: DateFilterProps) => {
               <DateTimePicker
                 minDate={dates?.dateFrom}
                 maxDate={undefined}
-                slotProps={{ textField: { variant: 'standard' } }}
+                slotProps={{
+                  textField: {
+                    variant: 'standard',
+                    error: required ? !Boolean(dates.dateTo) : undefined
+                  }
+                }}
                 label="To"
                 value={dates?.dateTo}
                 onChange={(value) => setDates((prev) => ({ ...prev, dateTo: value }))}
