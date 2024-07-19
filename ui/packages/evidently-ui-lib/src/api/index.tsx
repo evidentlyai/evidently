@@ -190,12 +190,14 @@ export interface TestSuiteWidgetParams {
   testGroupTypes: TestGroupTypeData[]
 }
 
-export interface WidgetInfo {
+import type { components } from '~/api/types/endpoints'
+
+export type WidgetInfo = Omit<
+  components['schemas']['BaseWidgetInfo'],
+  'id' | 'size' | 'params' | 'alertsPosition' | 'alertStats' | 'alerts' | 'insights'
+> & {
   id: string
-  type: string
-  title: string
   size: WidgetSize
-  details?: string
   params:
     | PercentWidgetParams
     | AdditionalGraphInfo
