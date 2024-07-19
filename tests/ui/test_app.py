@@ -217,6 +217,7 @@ def test_get_snapshot_data(test_client: TestClient, project_manager: ProjectMana
     r = test_client.get(f"/api/projects/{project.id}/{mock_snapshot.id}/data")
     r.raise_for_status()
     data = r.json()
+    fp = MockMetric().get_fingerprint()
     assert data == {
         "max_timestamp": None,
         "min_timestamp": None,
@@ -239,6 +240,7 @@ def test_get_snapshot_data(test_client: TestClient, project_manager: ProjectMana
                         "title": "",
                         "type": "counter",
                         "widgets": [],
+                        "source_fingerprint": None,
                     }
                 ],
                 "alertStats": None,
@@ -254,6 +256,7 @@ def test_get_snapshot_data(test_client: TestClient, project_manager: ProjectMana
                 "title": "",
                 "type": "counter",
                 "widgets": [],
+                "source_fingerprint": fp,
             }
         ],
     }
@@ -287,6 +290,7 @@ def test_get_projects_graphs_data(
         "title": "",
         "type": "counter",
         "widgets": [],
+        "source_fingerprint": None,
     }
 
 
@@ -365,6 +369,7 @@ def test_get_project_dashboard(test_client: TestClient, project_manager: Project
                 "title": "",
                 "type": "counter",
                 "widgets": [],
+                "source_fingerprint": None,
             }
         ],
     }
