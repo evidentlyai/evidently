@@ -60,7 +60,13 @@ def save_lib_files(filename: str, mode: SaveMode):
     return font_file, lib_file
 
 
-def save_data_file(filename: str, mode: SaveMode, dashboard_id, dashboard_info: DashboardInfo, additional_graphs: Dict):
+def save_data_file(
+    filename: str,
+    mode: SaveMode,
+    dashboard_id,
+    dashboard_info: DashboardInfo,
+    additional_graphs: Dict,
+):
     if mode == SaveMode.SINGLE_FILE:
         return None
     parent_dir = os.path.dirname(filename)
@@ -84,54 +90,9 @@ def dashboard_info_to_json(dashboard_info: DashboardInfo):
     return json.dumps(asdict_result, cls=NumpyEncoder)
 
 
-def inline_template(params: TemplateParams):
-    return f"""
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
-<style>
-.reset-this-parent {{
-  all: initial;
-}}
-.reset-this-parent h5 {{
-  all: initial;
-  font: initial;
-}}
-
-svg {{
-  height: intrinsic !important;
-}}
-</style>
-<script>
-    var {params.dashboard_id} = {dashboard_info_to_json(params.dashboard_info)};
-    var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs, cls=NumpyEncoder)};
-</script>
-<script>
-function domReady(fn) {{
-  // If we're early to the party
-  document.addEventListener("DOMContentLoaded", fn);
-  // If late; I mean on time.
-  if (document.readyState === "interactive" || document.readyState === "complete" ) {{
-    fn();
-  }}
-}}
-
-domReady(function () {{
-    requirejs(["evidently"], function(ev) {{
-        drawDashboard({params.dashboard_id},
-        new Map(Object.entries(additional_graphs_{params.dashboard_id})),
-        "root_{params.dashboard_id}");
-    }},
-    function(err) {{
-        $("#root_{params.dashboard_id}").innerHTML = "Failed to load";
-    }})
-}});
-</script>
-<div class="reset-this-parent" id="root_{params.dashboard_id}">Loading...</div>
-
-"""
-
-
 def file_html_template(params: TemplateParams):
     lib_block = f"""<script>{__load_js()}</script>""" if params.embed_lib else "<!-- no embedded lib -->"
+
     data_block = (
         f"""<script>
     var {params.dashboard_id} = {dashboard_info_to_json(params.dashboard_info)};
@@ -140,57 +101,67 @@ def file_html_template(params: TemplateParams):
         if params.embed_data
         else "<!-- no embedded data -->"
     )
+
     js_files_block = "\n".join([f'<script src="{file}"></script>' for file in params.include_js_files])
+
+    style = f"""
+        <style>
+        /* fallback */
+        @font-face {{
+        font-family: 'Material Icons';
+        font-style: normal;
+        font-weight: 400;
+        src: {f"url(data:font/ttf;base64,{__load_font()}) format('woff2');" if params.embed_font else
+            f"url({params.font_file});"}
+        }}
+
+        .center-align {{
+        text-align: center;
+        }}
+
+        .material-icons {{
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        }}
+        </style>
+    """
+
     return f"""
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-/* fallback */
-@font-face {{
-  font-family: 'Material Icons';
-  font-style: normal;
-  font-weight: 400;
-  src: {f"url(data:font/ttf;base64,{__load_font()}) format('woff2');" if params.embed_font else
-    f"url({params.font_file});"}
-}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {style}
+        {data_block}
+    </head>
+    <body>
+    <div id="root_{params.dashboard_id}">
+        <h1 class="center-align">Loading...</h1>
+    </div>
+    <script>var global = globalThis</script>
+    {lib_block}
+    {js_files_block}
+    <script>
+    window.drawDashboard({params.dashboard_id},
+        new Map(Object.entries(additional_graphs_{params.dashboard_id})),
+        "root_{params.dashboard_id}"
+    );
+    </script>
 
-.center-align {{
-  text-align: center;
-}}
-
-.material-icons {{
-  font-family: 'Material Icons';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}}
-</style>
-{data_block}
-</head>
-<body>
-<div id="root_{params.dashboard_id}">
-    <h1 class="center-align">Loading...</h1>
-</div>
-<script>var global = globalThis</script>
-{lib_block}
-{js_files_block}
-<script>
-window.drawDashboard({params.dashboard_id},
-    new Map(Object.entries(additional_graphs_{params.dashboard_id})),
-    "root_{params.dashboard_id}"
-);
-</script>
-</body>
+    </body>
+    </html>
 """
 
 
