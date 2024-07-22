@@ -197,7 +197,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
                 "name": name,
                 "description": description,
                 "file": file,
-                column_mapping: dataclasses.asdict(column_mapping) if column_mapping is not None else None,
+                "column_mapping": dataclasses.asdict(column_mapping) if column_mapping is not None else None,
             },
             query_params={"org_id": org_id, "team_id": team_id},
             form_data=True,
