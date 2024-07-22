@@ -5,6 +5,7 @@ from typing import Union
 
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
@@ -73,6 +74,7 @@ class WorkspaceView(WorkspaceBase):
         name: str,
         project_id: STR_UUID,
         description: Optional[str] = None,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> DatasetID:
         raise NotImplementedError("Adding datasets is not supported yet")
 

@@ -584,3 +584,8 @@ class ReportBase(Display):
 
     def datasets(self) -> EngineDatasets:
         return self._inner_suite.context.get_datasets()
+
+    def get_column_mapping(self):
+        if self._inner_suite.context.state != States.Calculated:
+            raise ValueError("Cannot get column mapping because report did not run")
+        return self._inner_suite.context.data.column_mapping

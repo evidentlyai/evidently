@@ -1,3 +1,4 @@
+import dataclasses
 from io import BytesIO
 from typing import BinaryIO
 from typing import Dict
@@ -15,6 +16,7 @@ import pandas as pd
 from requests import HTTPError
 from requests import Response
 
+from evidently import ColumnMapping
 from evidently.pydantic_utils import get_classpath
 from evidently.report import Report
 from evidently.test_suite import TestSuite
@@ -180,12 +182,23 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         )
 
     def add_dataset(
-        self, file: BinaryIO, name: str, org_id: OrgID, team_id: TeamID, description: Optional[str]
+        self,
+        file: BinaryIO,
+        name: str,
+        org_id: OrgID,
+        team_id: TeamID,
+        description: Optional[str],
+        column_mapping: Optional[ColumnMapping],
     ) -> DatasetID:
         response: Response = self._request(
             "/api/datasets/",
             "POST",
-            body={"name": name, "description": description, "file": file},
+            body={
+                "name": name,
+                "description": description,
+                "file": file,
+                column_mapping: dataclasses.asdict(column_mapping) if column_mapping is not None else None,
+            },
             query_params={"org_id": org_id, "team_id": team_id},
             form_data=True,
         )
@@ -251,6 +264,7 @@ class CloudWorkspace(WorkspaceView):
         name: str,
         project_id: STR_UUID,
         description: Optional[str] = None,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> DatasetID:
         file: Union[NamedBytesIO, BinaryIO]
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
@@ -264,7 +278,7 @@ class CloudWorkspace(WorkspaceView):
         else:
             raise NotImplementedError(f"Add datasets is not implemented for {get_classpath(data_or_path.__class__)}")
         try:
-            return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description)
+            return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description, column_mapping)
         finally:
             file.close()
 

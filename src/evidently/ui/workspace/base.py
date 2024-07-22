@@ -5,6 +5,7 @@ from typing import Union
 
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
@@ -42,12 +43,15 @@ class WorkspaceBase(abc.ABC):
         if include_data:
             prefix = "report" if snapshot.is_report else "testsuite"
             reference, current = report.datasets()
-            snapshot.links.datasets.output.current = self.add_dataset(
-                current, f"{prefix}-output-current-{snapshot.id}", project_id
-            )
-            snapshot.links.datasets.output.reference = self.add_dataset(
-                reference, f"{prefix}-output-reference-{snapshot.id}", project_id
-            )
+            column_mapping = report.get_column_mapping()
+            if current is not None:
+                snapshot.links.datasets.output.current = self.add_dataset(
+                    current, f"{prefix}-output-current-{snapshot.id}", project_id, column_mapping=column_mapping
+                )
+            if reference is not None:
+                snapshot.links.datasets.output.reference = self.add_dataset(
+                    reference, f"{prefix}-output-reference-{snapshot.id}", project_id, column_mapping=column_mapping
+                )
         self.add_snapshot(project_id, snapshot)
 
     def add_report(self, project_id: STR_UUID, report: Report, include_data: bool = False):
@@ -77,5 +81,6 @@ class WorkspaceBase(abc.ABC):
         name: str,
         project_id: STR_UUID,
         description: Optional[str] = None,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> DatasetID:
         raise NotImplementedError
