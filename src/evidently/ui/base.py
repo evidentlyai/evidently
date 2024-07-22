@@ -24,7 +24,6 @@ from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
 from evidently.model.dashboard import DashboardInfo
-from evidently.renderers.notebook_utils import determine_template
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
@@ -52,6 +51,7 @@ from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.type_aliases import UserID
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
+from evidently.utils.dashboard import inline_iframe_html_template
 
 
 class BlobMetadata(BaseModel):
@@ -237,12 +237,16 @@ class Project(Entity):
         return self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)
 
     def build_dashboard_info(
-        self, timestamp_start: Optional[datetime.datetime], timestamp_end: Optional[datetime.datetime]
+        self,
+        timestamp_start: Optional[datetime.datetime],
+        timestamp_end: Optional[datetime.datetime],
     ) -> DashboardInfo:
         return self.dashboard.build(self.project_manager.data, self.id, timestamp_start, timestamp_end)
 
     def show_dashboard(
-        self, timestamp_start: Optional[datetime.datetime] = None, timestamp_end: Optional[datetime.datetime] = None
+        self,
+        timestamp_start: Optional[datetime.datetime] = None,
+        timestamp_end: Optional[datetime.datetime] = None,
     ):
         dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
         template_params = TemplateParams(
@@ -254,7 +258,7 @@ class Project(Entity):
         try:
             from IPython.display import HTML
 
-            return HTML(determine_template("inline")(params=template_params))
+            return HTML(inline_iframe_html_template(params=template_params))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
@@ -286,7 +290,11 @@ class MetadataStorage(ABC):
 
     @abstractmethod
     def add_snapshot(
-        self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata", out_dataset_id: Optional[str] = None
+        self,
+        project_id: ProjectID,
+        snapshot: Snapshot,
+        blob: "BlobMetadata",
+        out_dataset_id: Optional[str] = None,
     ):
         raise NotImplementedError
 
@@ -300,7 +308,10 @@ class MetadataStorage(ABC):
 
     @abstractmethod
     def list_snapshots(
-        self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
+        self,
+        project_id: ProjectID,
+        include_reports: bool = True,
+        include_test_suites: bool = True,
     ) -> List[SnapshotMetadata]:
         raise NotImplementedError
 
@@ -514,7 +525,10 @@ class AuthManager(ABC):
     allow_default_user: bool = True
 
     def refresh_default_roles(self):
-        for (default_role, entity_type), permissions in DEFAULT_ROLE_PERMISSIONS.items():
+        for (
+            default_role,
+            entity_type,
+        ), permissions in DEFAULT_ROLE_PERMISSIONS.items():
             role = self.get_default_role(default_role, entity_type)
             if role.permissions != permissions:
                 role.permissions = permissions
@@ -532,7 +546,11 @@ class AuthManager(ABC):
 
     @abstractmethod
     def check_entity_permission(
-        self, user_id: UserID, entity_type: EntityType, entity_id: EntityID, permission: Permission
+        self,
+        user_id: UserID,
+        entity_type: EntityType,
+        entity_id: EntityID,
+        permission: Permission,
     ) -> bool:
         raise NotImplementedError
 
@@ -636,7 +654,12 @@ class AuthManager(ABC):
         raise NotImplementedError
 
     def revoke_entity_role(
-        self, manager: UserID, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role
+        self,
+        manager: UserID,
+        entity_type: EntityType,
+        entity_id: EntityID,
+        user_id: UserID,
+        role: Role,
     ):
         if not self.check_entity_permission(manager, entity_type, entity_id, Permission.REVOKE_ROLE):
             raise NotEnoughPermissions()
@@ -692,7 +715,13 @@ class AuthManager(ABC):
 
 
 class ProjectManager:
-    def __init__(self, metadata: MetadataStorage, blob: BlobStorage, data: DataStorage, auth: AuthManager):
+    def __init__(
+        self,
+        metadata: MetadataStorage,
+        blob: BlobStorage,
+        data: DataStorage,
+        auth: AuthManager,
+    ):
         self.metadata: MetadataStorage = metadata
         self.blob: BlobStorage = blob
         self.data: DataStorage = data
@@ -709,7 +738,10 @@ class ProjectManager:
 
         project = self.add_project(
             Project(
-                name=name, description=description, dashboard=DashboardConfig(name=name, panels=[]), team_id=team_id
+                name=name,
+                description=description,
+                dashboard=DashboardConfig(name=name, panels=[]),
+                team_id=team_id,
             ),
             user_id,
             team_id,
@@ -782,14 +814,22 @@ class ProjectManager:
         self.metadata.delete_snapshot(project_id, snapshot_id)
 
     def search_project(
-        self, user_id: UserID, project_name: str, team_id: Optional[TeamID], org_id: Optional[OrgID]
+        self,
+        user_id: UserID,
+        project_name: str,
+        team_id: Optional[TeamID],
+        org_id: Optional[OrgID],
     ) -> List[Project]:
         user = self.auth.get_or_default_user(user_id)
         project_ids = self.auth.get_available_project_ids(user.id, team_id, org_id)
         return [p.bind(self, user.id) for p in self.metadata.search_project(project_name, project_ids)]
 
     def list_snapshots(
-        self, user_id: UserID, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        include_reports: bool = True,
+        include_test_suites: bool = True,
     ) -> List[SnapshotMetadata]:
         if not self.auth.check_entity_permission(user_id, EntityType.Project, project_id, Permission.PROJECT_READ):
             raise NotEnoughPermissions()
@@ -799,7 +839,10 @@ class ProjectManager:
         return snapshots
 
     def load_snapshot(
-        self, user_id: UserID, project_id: ProjectID, snapshot: Union[SnapshotID, SnapshotMetadata]
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        snapshot: Union[SnapshotID, SnapshotMetadata],
     ) -> Snapshot:
         if isinstance(snapshot, SnapshotID):
             snapshot = self.get_snapshot_metadata(user_id, project_id, snapshot)

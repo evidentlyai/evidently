@@ -35,7 +35,6 @@ from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
 from evidently.renderers.base_renderer import TestRenderer
-from evidently.renderers.notebook_utils import determine_template
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
@@ -44,6 +43,8 @@ from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import SaveMode
 from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
+from evidently.utils.dashboard import file_html_template
+from evidently.utils.dashboard import inline_iframe_html_template
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
 from evidently.utils.data_preprocessing import DataDefinition
@@ -124,7 +125,10 @@ class Context:
             if self.engine is None:
                 raise ValueError("Cannot create data definition when engine is not set")
             self.data_definition = self.engine.get_data_definition(
-                current_data, reference_data, column_mapping, categorical_features_cardinality
+                current_data,
+                reference_data,
+                column_mapping,
+                categorical_features_cardinality,
             )
         return self.data_definition
 
@@ -207,7 +211,7 @@ class Display:
             dashboard_info=dashboard_info,
             additional_graphs=graphs,
         )
-        return self._render(determine_template("auto"), template_params)
+        return self._render(inline_iframe_html_template, template_params)
 
     def show(self, mode="auto"):
         """
@@ -227,7 +231,7 @@ class Display:
         try:
             from IPython.display import HTML
 
-            return HTML(self._render(determine_template(mode), template_params))
+            return HTML(self._render(inline_iframe_html_template, template_params))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
@@ -238,9 +242,13 @@ class Display:
             dashboard_info=dashboard_info,
             additional_graphs=graphs,
         )
-        return self._render(determine_template("inline"), template_params)
+        return self._render(file_html_template, template_params)
 
-    def save_html(self, filename: Union[str, IO], mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
+    def save_html(
+        self,
+        filename: Union[str, IO],
+        mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE,
+    ):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         if isinstance(mode, str):
             _mode = SaveModeMap.get(mode)
@@ -253,7 +261,7 @@ class Display:
                 dashboard_info=dashboard_info,
                 additional_graphs=graphs,
             )
-            render = self._render(determine_template("inline"), template_params)
+            render = self._render(file_html_template, template_params)
             if isinstance(filename, str):
                 with open(filename, "w", encoding="utf-8") as out_file:
                     out_file.write(render)
@@ -275,7 +283,7 @@ class Display:
                 include_js_files=[lib_file, data_file],
             )
             with open(filename, "w", encoding="utf-8") as out_file:
-                out_file.write(self._render(determine_template("inline"), template_params))
+                out_file.write(self._render(file_html_template, template_params))
 
     @abc.abstractmethod
     def as_dict(
@@ -296,7 +304,14 @@ class Display:
     ) -> dict:
         """Return all data for json representation"""
         result = {"version": evidently.__version__}
-        result.update(self.as_dict(include_render=include_render, include=include, exclude=exclude, **kwargs))
+        result.update(
+            self.as_dict(
+                include_render=include_render,
+                include=include,
+                exclude=exclude,
+                **kwargs,
+            )
+        )
         return result
 
     def json(
@@ -307,7 +322,12 @@ class Display:
         **kwargs,
     ) -> str:
         return json.dumps(
-            self._get_json_content(include_render=include_render, include=include, exclude=exclude, **kwargs),
+            self._get_json_content(
+                include_render=include_render,
+                include=include,
+                exclude=exclude,
+                **kwargs,
+            ),
             cls=NumpyEncoder,
             allow_nan=True,
         )
