@@ -1,4 +1,5 @@
 import dataclasses
+import json
 from io import BytesIO
 from typing import BinaryIO
 from typing import Dict
@@ -190,6 +191,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         description: Optional[str],
         column_mapping: Optional[ColumnMapping],
     ) -> DatasetID:
+        cm_payload = json.dumps(dataclasses.asdict(column_mapping)) if column_mapping is not None else None
         response: Response = self._request(
             "/api/datasets/",
             "POST",
@@ -197,7 +199,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
                 "name": name,
                 "description": description,
                 "file": file,
-                "column_mapping": dataclasses.asdict(column_mapping) if column_mapping is not None else None,
+                "column_mapping": cm_payload,
             },
             query_params={"org_id": org_id, "team_id": team_id},
             form_data=True,
