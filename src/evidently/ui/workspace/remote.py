@@ -198,9 +198,7 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
     def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         return self._request("/api/projects", "GET", response_model=List[Project])
 
-    def add_snapshot(
-        self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata", out_dataset_id: Optional[str] = None
-    ):
+    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
         return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())
 
     def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):

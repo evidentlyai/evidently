@@ -8,7 +8,6 @@ from enum import Enum
 from typing import Any
 from typing import ClassVar
 from typing import Dict
-from typing import Iterator
 from typing import List
 from typing import NamedTuple
 from typing import Optional
@@ -27,6 +26,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
+from evidently.suite.base_suite import SnapshotLinks
 from evidently.ui.dashboards.base import DashboardConfig
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
@@ -39,7 +39,6 @@ from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPoints
 from evidently.ui.type_aliases import DataPointsAsType
-from evidently.ui.type_aliases import DatasetID
 from evidently.ui.type_aliases import EntityID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import PointType
@@ -59,32 +58,6 @@ class BlobMetadata(BaseModel):
     size: Optional[int]
 
 
-class DatasetLinks(BaseModel):
-    reference: Optional[DatasetID] = None
-    current: Optional[DatasetID] = None
-    additional: Dict[str, DatasetID] = {}
-
-    def __iter__(self) -> Iterator[Tuple[str, DatasetID]]:
-        if self.reference is not None:
-            yield "reference", self.reference
-        if self.current is not None:
-            yield "current", self.current
-        yield from self.additional.items()
-
-
-class DatasetInputOutputLinks(BaseModel):
-    input: DatasetLinks = DatasetLinks()
-    output: DatasetLinks = DatasetLinks()
-
-    def __iter__(self) -> Iterator[Tuple[str, str, DatasetID]]:
-        yield from (("input", subtype, dataset_id) for subtype, dataset_id in self.input)
-        yield from (("output", subtype, dataset_id) for subtype, dataset_id in self.output)
-
-
-class SnapshotLinks(BaseModel):
-    datasets: DatasetInputOutputLinks = DatasetInputOutputLinks()
-
-
 class SnapshotMetadata(BaseModel):
     id: UUID4
     name: Optional[str] = None
@@ -93,7 +66,7 @@ class SnapshotMetadata(BaseModel):
     tags: List[str]
     is_report: bool
     blob: "BlobMetadata"
-    links: SnapshotLinks = SnapshotLinks()  # links to datasets and
+    links: SnapshotLinks = SnapshotLinks()  # links to datasets and stuff
 
     _project: "Project" = PrivateAttr(None)
     _dashboard_info: "DashboardInfo" = PrivateAttr(None)
@@ -161,6 +134,7 @@ class Team(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Team
     id: TeamID = Field(default_factory=uuid.uuid4)
     name: str
+    org_id: Optional[OrgID]
 
 
 UT = TypeVar("UT", bound="User")
@@ -289,13 +263,7 @@ class MetadataStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def add_snapshot(
-        self,
-        project_id: ProjectID,
-        snapshot: Snapshot,
-        blob: "BlobMetadata",
-        out_dataset_id: Optional[str] = None,
-    ):
+    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
         raise NotImplementedError
 
     @abstractmethod

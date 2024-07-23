@@ -104,7 +104,7 @@ class SparkInputData(InputData):
         return _column
 
 
-class SparkEngine(Engine["SparkMetricImplementation", SparkInputData]):
+class SparkEngine(Engine["SparkMetricImplementation", SparkInputData, SparkDataFrame]):
     def convert_input_data(self, data: GenericInputData) -> SparkInputData:
         if not isinstance(data.current_data, SparkDataFrame) or (
             data.reference_data is not None and not isinstance(data.reference_data, SparkDataFrame)

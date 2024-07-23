@@ -1,3 +1,5 @@
+import dataclasses
+import json
 from io import BytesIO
 from typing import BinaryIO
 from typing import Dict
@@ -5,6 +7,7 @@ from typing import List
 from typing import Literal
 from typing import NamedTuple
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import overload
@@ -14,11 +17,18 @@ import pandas as pd
 from requests import HTTPError
 from requests import Response
 
+from evidently import ColumnMapping
+from evidently.pydantic_utils import get_classpath
+from evidently.report import Report
+from evidently.test_suite import TestSuite
 from evidently.ui.api.models import OrgModel
 from evidently.ui.api.models import TeamModel
 from evidently.ui.base import Org
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import Team
+from evidently.ui.errors import OrgNotFound
+from evidently.ui.errors import ProjectNotFound
+from evidently.ui.errors import TeamNotFound
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
@@ -173,12 +183,24 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         )
 
     def add_dataset(
-        self, file: BinaryIO, name: str, org_id: OrgID, team_id: TeamID, description: Optional[str]
+        self,
+        file: BinaryIO,
+        name: str,
+        org_id: OrgID,
+        team_id: TeamID,
+        description: Optional[str],
+        column_mapping: Optional[ColumnMapping],
     ) -> DatasetID:
+        cm_payload = json.dumps(dataclasses.asdict(column_mapping)) if column_mapping is not None else None
         response: Response = self._request(
             "/api/datasets/",
             "POST",
-            body={"name": name, "description": description, "file": file},
+            body={
+                "name": name,
+                "description": description,
+                "file": file,
+                "column_mapping": cm_payload,
+            },
             query_params={"org_id": org_id, "team_id": team_id},
             form_data=True,
         )
@@ -236,38 +258,61 @@ class CloudWorkspace(WorkspaceView):
 
     def create_team(self, name: str, org_id: OrgID) -> Team:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_team(Team(name=name), org_id).to_team()
+        return self.project_manager.metadata.create_team(Team(name=name, org_id=org_id), org_id).to_team()
 
     def add_dataset(
         self,
         data_or_path: Union[str, pd.DataFrame],
         name: str,
-        org_id: STR_UUID,
-        team_id: STR_UUID,
+        project_id: STR_UUID,
         description: Optional[str] = None,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> DatasetID:
         file: Union[NamedBytesIO, BinaryIO]
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        if isinstance(org_id, str):
-            org_id = UUID(org_id)
-        if isinstance(team_id, str):
-            team_id = UUID(team_id)
+        org_id, team_id = self._get_org_id_team_id(project_id)
         if isinstance(data_or_path, str):
             file = open(data_or_path, "rb")
-        else:
+        elif isinstance(data_or_path, pd.DataFrame):
             file = NamedBytesIO(b"", "data.parquet")
             data_or_path.to_parquet(file)
             file.seek(0)
+        else:
+            raise NotImplementedError(f"Add datasets is not implemented for {get_classpath(data_or_path.__class__)}")
         try:
-            return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description)
+            return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description, column_mapping)
         finally:
             file.close()
+
+    def _get_org_id_team_id(self, project_id: STR_UUID) -> Tuple[OrgID, TeamID]:
+        """Temporary method until we can attach datasets to projects"""
+        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        if isinstance(project_id, str):
+            project_id = UUID(project_id)
+        project = self.get_project(project_id)
+        if project is None:
+            raise ProjectNotFound()
+        if project.team_id is None:
+            raise TeamNotFound()
+        teams = self.project_manager.metadata._request(
+            "/api/teams/info", "GET", query_params={"team_ids": [project.team_id]}, response_model=Dict[TeamID, Team]
+        )
+        team = teams[project.team_id]
+        if team.org_id is None:
+            raise OrgNotFound()
+        return team.org_id, team.id
 
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         return self.project_manager.metadata.load_dataset(dataset_id)
 
+    def add_report_with_data(self, project_id: STR_UUID, report: Report):
+        self.add_report(project_id, report)
+
+    def add_test_suite_with_data(self, project_id: STR_UUID, test_suite: TestSuite):
+        self.add_test_suite(project_id, test_suite)
+
 
 class CloudAuthManager(NoopAuthManager):
     def get_team(self, team_id: TeamID) -> Optional[Team]:
-        return Team(id=team_id, name="")
+        return Team(id=team_id, name="", org_id=ZERO_UUID)

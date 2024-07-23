@@ -25,9 +25,12 @@ if TYPE_CHECKING:
 
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)
 TInputData = TypeVar("TInputData", bound=GenericInputData)
+TEngineDataType = TypeVar("TEngineDataType")
+
+EngineDatasets = Tuple[Optional[TEngineDataType], Optional[TEngineDataType]]
 
 
-class Engine(Generic[TMetricImplementation, TInputData]):
+class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
     def __init__(self):
         self.metrics = []
         self.tests = []
@@ -101,8 +104,8 @@ class Engine(Generic[TMetricImplementation, TInputData]):
         data: Optional[TInputData],
         features: Optional[Dict[tuple, GeneratedFeature]],
         data_definition: DataDefinition,
-    ):
-        raise NotImplementedError()
+    ) -> EngineDatasets:
+        raise NotImplementedError
 
 
 def _aggregate_metrics(agg, item):

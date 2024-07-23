@@ -27,6 +27,7 @@ from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.engine import EngineDatasets
 from evidently.core import IncludeOptions
 from evidently.features.generated_features import GeneratedFeature
 from evidently.options.base import AnyOptions
@@ -39,6 +40,7 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
+from evidently.ui.type_aliases import DatasetID
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import SaveMode
 from evidently.utils.dashboard import SaveModeMap
@@ -132,7 +134,11 @@ class Context:
             )
         return self.data_definition
 
-    def get_datasets(self):
+    def get_datasets(self) -> EngineDatasets:
+        if self.engine is None:
+            raise ValueError("Cannot get datasets when engine is not set")
+        if self.data_definition is None:
+            raise ValueError("Cannot get datasets when suite is not executed")
         return self.engine.form_datasets(self.data, self.features, self.data_definition)
 
     def set_features(self, features: Optional[Dict[tuple, GeneratedFeature]]):
@@ -463,6 +469,32 @@ class Suite:
 MetadataValueType = Union[str, Dict[str, str], List[str]]
 
 
+class DatasetLinks(BaseModel):
+    reference: Optional[DatasetID] = None
+    current: Optional[DatasetID] = None
+    additional: Dict[str, DatasetID] = {}
+
+    def __iter__(self) -> Iterator[Tuple[str, DatasetID]]:
+        if self.reference is not None:
+            yield "reference", self.reference
+        if self.current is not None:
+            yield "current", self.current
+        yield from self.additional.items()
+
+
+class DatasetInputOutputLinks(BaseModel):
+    input: DatasetLinks = DatasetLinks()
+    output: DatasetLinks = DatasetLinks()
+
+    def __iter__(self) -> Iterator[Tuple[str, str, DatasetID]]:
+        yield from (("input", subtype, dataset_id) for subtype, dataset_id in self.input)
+        yield from (("output", subtype, dataset_id) for subtype, dataset_id in self.output)
+
+
+class SnapshotLinks(BaseModel):
+    datasets: DatasetInputOutputLinks = DatasetInputOutputLinks()
+
+
 class Snapshot(BaseModel):
     id: UUID4
     name: Optional[str] = None
@@ -473,6 +505,7 @@ class Snapshot(BaseModel):
     metrics_ids: List[int] = []
     test_ids: List[int] = []
     options: Options
+    links: SnapshotLinks = SnapshotLinks()
 
     def save(self, filename):
         with open(filename, "w") as f:
@@ -569,6 +602,10 @@ class ReportBase(Display):
             raise ValueError("Cannot create snapshot because of calculation error") from e
         return self._get_snapshot()
 
-    def datasets(self):
-        datasets = self._inner_suite.context.get_datasets()
-        return datasets
+    def datasets(self) -> EngineDatasets:
+        return self._inner_suite.context.get_datasets()
+
+    def get_column_mapping(self):
+        if self._inner_suite.context.state != States.Calculated:
+            raise ValueError("Cannot get column mapping because report did not run")
+        return self._inner_suite.context.data.column_mapping
