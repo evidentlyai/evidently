@@ -48,6 +48,7 @@ import type { ReportsLoaderData, TestSuitesLoaderData } from './data'
 import { MetadataModel } from '~/api/types'
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import { z } from 'zod'
+import invariant from 'tiny-invariant'
 
 export const shouldRevalidate: ShouldRevalidateFunction = () => true
 
@@ -75,13 +76,23 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
     })
     .join(' ')
 
-export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites' }) => {
+export const SnapshotsListTemplate = ({
+  type,
+  slots
+}: {
+  type: 'reports' | 'test suites'
+  slots?: {
+    additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
+  }
+}) => {
   const { projectId } = useParams()
   const snapshots = useLoaderData() as LoaderData
   const matches = useMatches()
   const submit = useSubmit()
   const navigation = useNavigation()
   const isNavigation = navigation.state !== 'idle'
+
+  invariant(projectId, 'missing projectId')
 
   const [searchParams] = useSearchParams()
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
@@ -315,6 +326,12 @@ export const SnapshotsListTemplate = ({ type }: { type: 'reports' | 'test suites
                       </IconButton>
                     </Tooltip>
                   </Box>
+                  {slots?.additionalSnapshotActions && (
+                    <slots.additionalSnapshotActions
+                      snapshotId={snapshot.id}
+                      projectId={projectId}
+                    />
+                  )}
                 </Box>
               </TableCell>
             </TableRow>
