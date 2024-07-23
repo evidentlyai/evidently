@@ -18,6 +18,7 @@ from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import set_source_fingerprint
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import TestRenderer
@@ -222,6 +223,7 @@ class TestSuite(ReportBase):
             renderer.color_options = color_options
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             html = renderer.render_html(test)
+            set_source_fingerprint((di.info for di in html.details), test)
             replace_test_widget_ids(html, generator)
             test_results.append(html)
 

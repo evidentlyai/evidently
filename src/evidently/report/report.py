@@ -21,6 +21,8 @@ from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import set_source_fingerprint
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DetailsInfo
@@ -214,18 +216,19 @@ class Report(ReportBase):
         return result[group]
 
     def _build_dashboard_info(self):
-        metrics_results = []
+        metrics_results: List[BaseWidgetInfo] = []
         additional_graphs = []
 
         color_options = self.options.color_options
 
         id_generator = WidgetIdGenerator("")
-        for test in self._first_level_metrics:
-            id_generator.base_id = test.get_id()
-            renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
+        for metric in self._first_level_metrics:
+            id_generator.base_id = metric.get_id()
+            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
             # set the color scheme from the report for each render
             renderer.color_options = color_options
-            html_info = renderer.render_html(test)
+            html_info = renderer.render_html(metric)
+            set_source_fingerprint(html_info, metric)
             replace_widgets_ids(html_info, id_generator)
 
             for info_item in html_info:
@@ -240,7 +243,7 @@ class Report(ReportBase):
 
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
-            DashboardInfo("Report", widgets=[result for result in metrics_results]),
+            DashboardInfo("Report", widgets=metrics_results),
             {
                 f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
                 for item in additional_graphs
