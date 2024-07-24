@@ -29,4 +29,4 @@ def test_data_quality_preset():
 
     data_quality_suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset)
     assert not data_quality_suite
-    assert len(data_quality_suite.as_dict()["tests"]) == 12
+    assert len(data_quality_suite.as_dict()["tests"]) == 11
