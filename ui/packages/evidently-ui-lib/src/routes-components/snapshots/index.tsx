@@ -305,6 +305,12 @@ export const SnapshotsListTemplate = ({
                     disabled={isNavigation}
                     downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
                   />
+                  {slots?.additionalSnapshotActions && (
+                    <slots.additionalSnapshotActions
+                      snapshotId={snapshot.id}
+                      projectId={projectId}
+                    />
+                  )}
                   <Box>
                     <Tooltip title="delete snapshot" placement="top">
                       <IconButton
@@ -326,12 +332,6 @@ export const SnapshotsListTemplate = ({
                       </IconButton>
                     </Tooltip>
                   </Box>
-                  {slots?.additionalSnapshotActions && (
-                    <slots.additionalSnapshotActions
-                      snapshotId={snapshot.id}
-                      projectId={projectId}
-                    />
-                  )}
                 </Box>
               </TableCell>
             </TableRow>
