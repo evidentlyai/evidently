@@ -102,7 +102,6 @@ Preset name: `DataQualityTestPreset()`
 * `TestNumberOfConstantColumns()`
 * `TestNumberOfDuplicatedColumns()`
 * `TestNumberOfDuplicatedRows()`
-* `TestHighlyCorrelatedColumns()`
 
 **Optional parameters**: 
 * `columns`
