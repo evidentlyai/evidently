@@ -259,7 +259,7 @@ export const SnapshotsListTemplate = ({
                 Timestamp
               </TableSortLabel>
             </TableCell>
-            <TableCell>Actions</TableCell>
+            <TableCell align="center">Actions</TableCell>
           </TableRow>
           <TableRow></TableRow>
         </TableHead>
