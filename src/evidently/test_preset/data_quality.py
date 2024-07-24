@@ -6,7 +6,6 @@ from typing import Optional
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsMostCommonValueShare
 from evidently.tests import TestAllColumnsShareOfMissingValues
-from evidently.tests import TestHighlyCorrelatedColumns
 from evidently.tests import TestNumberOfConstantColumns
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestNumberOfDuplicatedRows
@@ -42,5 +41,4 @@ class DataQualityTestPreset(TestPreset):
             TestNumberOfConstantColumns(),
             TestNumberOfDuplicatedColumns(),
             TestNumberOfDuplicatedRows(),
-            TestHighlyCorrelatedColumns(),
         ]
