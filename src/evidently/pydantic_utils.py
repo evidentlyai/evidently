@@ -151,6 +151,7 @@ def get_classpath(cls: Type) -> str:
 
 TPM = TypeVar("TPM", bound="PolymorphicModel")
 
+Fingerprint = str
 FingerprintPart = Union[None, int, str, float, bool, bytes, Tuple["FingerprintPart", ...]]
 
 
@@ -228,7 +229,7 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    def get_fingerprint(self) -> str:
+    def get_fingerprint(self) -> Fingerprint:
         return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
 
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:

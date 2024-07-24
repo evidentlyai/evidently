@@ -12,6 +12,9 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import Fingerprint
+
 
 @dataclass()
 class TriggeredAlertStats:
@@ -94,6 +97,7 @@ class BaseWidgetInfo:
     tabs: Iterable["TabInfo"] = field(default_factory=list)
     widgets: Iterable["BaseWidgetInfo"] = field(default_factory=list)
     pageSize: int = 5
+    source_fingerprint: Optional[Fingerprint] = None
 
     def get_additional_graphs(
         self,
@@ -101,6 +105,15 @@ class BaseWidgetInfo:
         return list(self.additionalGraphs) + [
             graph for widget in self.widgets for graph in widget.get_additional_graphs()
         ]
+
+
+def set_source_fingerprint(
+    widgets: Union[BaseWidgetInfo, Iterable[BaseWidgetInfo]], source: Union[EvidentlyBaseModel, Fingerprint]
+):
+    fingerprint = source if isinstance(source, Fingerprint) else source.get_fingerprint()
+    widgets = [widgets] if isinstance(widgets, BaseWidgetInfo) else widgets
+    for w in widgets:
+        w.source_fingerprint = fingerprint
 
 
 @dataclass

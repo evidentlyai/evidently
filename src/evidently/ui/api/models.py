@@ -13,6 +13,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
+from evidently.suite.base_suite import SnapshotLinks
 from evidently.test_suite import TestSuite
 from evidently.ui.base import EntityType
 from evidently.ui.base import Org
@@ -21,6 +22,7 @@ from evidently.ui.base import Role
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
+from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import RoleID
 from evidently.ui.type_aliases import TeamID
@@ -40,6 +42,7 @@ class ReportModel(BaseModel):
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
+    links: SnapshotLinks = SnapshotLinks()
 
     @classmethod
     def from_report(cls, report: Report):
@@ -57,6 +60,7 @@ class ReportModel(BaseModel):
             timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
+            links=snapshot.links,
         )
 
 
@@ -65,6 +69,7 @@ class TestSuiteModel(BaseModel):
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
+    links: SnapshotLinks = SnapshotLinks()
 
     @classmethod
     def from_report(cls, report: TestSuite):
@@ -82,6 +87,7 @@ class TestSuiteModel(BaseModel):
             timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
+            links=snapshot.links,
         )
 
 
@@ -138,13 +144,14 @@ class OrgModel(BaseModel):
 class TeamModel(BaseModel):
     id: TeamID
     name: str
+    org_id: OrgID
 
     @classmethod
     def from_team(cls, team: Team):
-        return TeamModel(id=team.id, name=team.name)
+        return TeamModel(id=team.id, name=team.name, org_id=team.org_id or ZERO_UUID)
 
     def to_team(self) -> Team:
-        return Team(id=self.id, name=self.name)
+        return Team(id=self.id, name=self.name, org_id=self.org_id)
 
 
 UT = TypeVar("UT", bound="UserModel")

@@ -3,6 +3,7 @@ import logging
 from typing import Dict
 from typing import Generic
 from typing import Optional
+from typing import Tuple
 from typing import TypeVar
 
 import pandas as pd
@@ -25,7 +26,7 @@ class PythonInputData(InputData):
 TMetric = TypeVar("TMetric", bound=Metric)
 
 
-class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
+class PythonEngine(Engine["PythonMetricImplementation", PythonInputData, pd.DataFrame]):
     def convert_input_data(self, data: GenericInputData) -> PythonInputData:
         if not isinstance(data.current_data, pd.DataFrame) or (
             data.reference_data is not None and not isinstance(data.reference_data, pd.DataFrame)
@@ -106,7 +107,7 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData]):
         data: Optional[PythonInputData],
         features: Optional[Dict[tuple, GeneratedFeature]],
         data_definition: DataDefinition,
-    ):
+    ) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
         if data is None:
             return None, None
         if features is not None:
