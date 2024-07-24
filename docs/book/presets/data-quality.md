@@ -140,6 +140,11 @@ For two datasets, it lists the top-5 pairs of variables **where correlation chan
 
 #### 3.2. Correlation heatmaps
 
+{% hint style="info" %}
+**This widget has been removed from Preset in versions above 0.4.31**. You can add it to your Report as `DatasetCorrelationsMetric()`.
+{% endhint %}
+
+
 This section includes four heatmaps. 
 
 For categorical features, Evidently calculates the [Cramer's v](https://en.wikipedia.org/wiki/Cramér%27s_V) correlation matrix.

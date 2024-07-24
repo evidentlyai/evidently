@@ -38,7 +38,6 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 * `DatasetSummaryMetric()`
 * `ColumnSummaryMetric()` for `all` or specified `сolumns`
 * `DatasetMissingValuesMetric()`
-* `DatasetCorrelationsMetric()`
 
 **Optional parameters**:
 * `columns`
