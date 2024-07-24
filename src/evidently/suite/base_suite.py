@@ -19,6 +19,7 @@ import ujson
 
 import evidently
 from evidently import ColumnMapping
+from evidently import ColumnType
 from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
@@ -42,6 +43,7 @@ from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.ui.type_aliases import DatasetID
 from evidently.utils import NumpyEncoder
+from evidently.utils import data_preprocessing
 from evidently.utils.dashboard import SaveMode
 from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
@@ -605,7 +607,34 @@ class ReportBase(Display):
     def datasets(self) -> EngineDatasets:
         return self._inner_suite.context.get_datasets()
 
-    def get_column_mapping(self):
+    def inject_feature_types_in_column_mapping(self, column_mapping: ColumnMapping) -> Tuple[ColumnMapping, bool]:
+        features_metadata = self._inner_suite.context.run_metadata.descriptors
+        if not features_metadata:
+            return column_mapping, False
+
+        feature_numerical = [
+            feature.display_name
+            for feature in features_metadata.values()
+            if feature.feature_type == ColumnType.Numerical
+        ]
+        feature_categorical = [
+            feature.display_name
+            for feature in features_metadata.values()
+            if feature.feature_type == ColumnType.Categorical
+        ]
+        feature_test = [
+            feature.display_name for feature in features_metadata.values() if feature.feature_type == ColumnType.Text
+        ]
+
+        column_mapping.categorical_features.extend(feature_categorical)
+        column_mapping.numerical_features.extend(feature_numerical)
+        column_mapping.text_features.extend(feature_test)
+        return column_mapping, True
+
+    def get_column_mapping(self) -> ColumnMapping:
         if self._inner_suite.context.state != States.Calculated:
             raise ValueError("Cannot get column mapping because report did not run")
-        return self._inner_suite.context.data.column_mapping
+        data_definition = self._inner_suite.context.data_definition
+        column_mapping = data_preprocessing.create_column_mapping(data_definition)
+        column_mapping_with_descriptor, _ = self.inject_feature_types_in_column_mapping(column_mapping)
+        return column_mapping_with_descriptor
