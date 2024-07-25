@@ -613,22 +613,33 @@ class ReportBase(Display):
             return column_mapping, False
 
         feature_numerical = [
-            feature.display_name
+            feature.display_name or ""
             for feature in features_metadata.values()
             if feature.feature_type == ColumnType.Numerical
         ]
         feature_categorical = [
-            feature.display_name
+            feature.display_name or ""
             for feature in features_metadata.values()
             if feature.feature_type == ColumnType.Categorical
         ]
         feature_test = [
-            feature.display_name for feature in features_metadata.values() if feature.feature_type == ColumnType.Text
+            feature.display_name or ""
+            for feature in features_metadata.values()
+            if feature.feature_type == ColumnType.Text
         ]
 
-        column_mapping.categorical_features.extend(feature_categorical)
-        column_mapping.numerical_features.extend(feature_numerical)
-        column_mapping.text_features.extend(feature_test)
+        if column_mapping.categorical_features:
+            column_mapping.categorical_features = []
+        else:
+            column_mapping.categorical_features = feature_categorical
+        if column_mapping.numerical_features:
+            column_mapping.numerical_features.extend(feature_numerical)
+        else:
+            column_mapping.numerical_features = feature_numerical
+        if column_mapping.text_features:
+            column_mapping.text_features.extend(feature_test)
+        else:
+            column_mapping.text_features = feature_test
         return column_mapping, True
 
     def get_column_mapping(self) -> ColumnMapping:
