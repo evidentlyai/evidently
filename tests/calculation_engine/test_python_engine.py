@@ -6,7 +6,6 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import metric_implementation
 from evidently.calculation_engine.python_engine import PythonEngine
-from evidently.calculation_engine.python_engine import PythonInputData
 from evidently.calculation_engine.python_engine import PythonMetricImplementation
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.suite.base_suite import Context
@@ -37,7 +36,7 @@ class SimpleMetric(Metric[int]):
 
 @metric_implementation(SimpleMetric)
 class PythonSimpleMetric(PythonMetricImplementation[SimpleMetric]):
-    def calculate(self, context, data: PythonInputData):
+    def calculate(self, context, data: InputData):
         return self.metric.value + 10
 
 

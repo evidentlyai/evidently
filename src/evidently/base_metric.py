@@ -106,7 +106,7 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
 
 def additional_feature(feature: "GeneratedFeature", feature_name: str, display_name: str) -> ColumnName:
     return ColumnName(
-        name=feature.__class__.__name__ + "." + feature_name,
+        name=f"{feature.__class__.__name__}.{feature.feature_id}.{feature_name}",
         display_name=display_name,
         dataset=DatasetType.ADDITIONAL,
         feature_class=feature,

@@ -78,6 +78,7 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
 
         for feature, result in features.items():
             feature_current = result.current
+            # TODO: column name should match name generated in additional_feature function. make it less implicit
             feature_current.rename(
                 columns={
                     col: f"{feature.__class__.__name__}.{feature.feature_id}.{col}" for col in feature_current.columns
