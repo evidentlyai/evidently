@@ -19,7 +19,6 @@ import ujson
 
 import evidently
 from evidently import ColumnMapping
-from evidently import ColumnType
 from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
@@ -41,6 +40,7 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
+from evidently.ui.datasets import inject_feature_types_in_column_mapping
 from evidently.ui.type_aliases import DatasetID
 from evidently.utils import NumpyEncoder
 from evidently.utils import data_preprocessing
@@ -607,45 +607,14 @@ class ReportBase(Display):
     def datasets(self) -> EngineDatasets:
         return self._inner_suite.context.get_datasets()
 
-    def inject_feature_types_in_column_mapping(self, column_mapping: ColumnMapping) -> Tuple[ColumnMapping, bool]:
-        features_metadata = self._inner_suite.context.run_metadata.descriptors
-        if not features_metadata:
-            return column_mapping, False
-
-        feature_numerical = [
-            feature.display_name or ""
-            for feature in features_metadata.values()
-            if feature.feature_type == ColumnType.Numerical
-        ]
-        feature_categorical = [
-            feature.display_name or ""
-            for feature in features_metadata.values()
-            if feature.feature_type == ColumnType.Categorical
-        ]
-        feature_test = [
-            feature.display_name or ""
-            for feature in features_metadata.values()
-            if feature.feature_type == ColumnType.Text
-        ]
-
-        if column_mapping.categorical_features:
-            column_mapping.categorical_features = []
-        else:
-            column_mapping.categorical_features = feature_categorical
-        if column_mapping.numerical_features:
-            column_mapping.numerical_features.extend(feature_numerical)
-        else:
-            column_mapping.numerical_features = feature_numerical
-        if column_mapping.text_features:
-            column_mapping.text_features.extend(feature_test)
-        else:
-            column_mapping.text_features = feature_test
-        return column_mapping, True
-
     def get_column_mapping(self) -> ColumnMapping:
         if self._inner_suite.context.state != States.Calculated or not self._inner_suite.context.data_definition:
             raise ValueError("Cannot get column mapping because report did not run")
         data_definition = self._inner_suite.context.data_definition
         column_mapping = data_preprocessing.create_column_mapping(data_definition)
-        column_mapping_with_descriptor, _ = self.inject_feature_types_in_column_mapping(column_mapping)
+        features_metadata = self._inner_suite.context.run_metadata.descriptors
+        column_mapping_with_descriptor = inject_feature_types_in_column_mapping(column_mapping, features_metadata)
         return column_mapping_with_descriptor
+
+    def has_descriptors(self) -> bool:
+        return bool(self._inner_suite.context.run_metadata.descriptors)
