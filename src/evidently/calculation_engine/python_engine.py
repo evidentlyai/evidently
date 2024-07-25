@@ -1,7 +1,7 @@
 import abc
-import logging
 from typing import Dict
 from typing import Generic
+from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import TypeVar
@@ -13,26 +13,23 @@ from evidently.base_metric import GenericInputData
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.engine import TInputData
 from evidently.calculation_engine.metric_implementation import MetricImplementation
-from evidently.features.generated_features import GeneratedFeature
+from evidently.features.generated_features import FeatureResult
+from evidently.features.generated_features import GeneratedFeatures
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import create_data_definition
-
-
-class PythonInputData(InputData):
-    pass
-
 
 TMetric = TypeVar("TMetric", bound=Metric)
 
 
-class PythonEngine(Engine["PythonMetricImplementation", PythonInputData, pd.DataFrame]):
-    def convert_input_data(self, data: GenericInputData) -> PythonInputData:
+class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]):
+    def convert_input_data(self, data: GenericInputData[pd.DataFrame]) -> InputData:
         if not isinstance(data.current_data, pd.DataFrame) or (
             data.reference_data is not None and not isinstance(data.reference_data, pd.DataFrame)
         ):
             raise ValueError("PandasEngine works only with pd.DataFrame input data")
-        return PythonInputData(
+        return InputData(
             data.reference_data,
             data.current_data,
             current_additional_features=None,
@@ -55,48 +52,71 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData, pd.Data
             raise ValueError("PandasEngine works only with pd.DataFrame input data")
         return create_data_definition(reference_data, current_data, column_mapping, categorical_features_cardinality)
 
-    def generate_additional_features(self, data: PythonInputData) -> Dict[tuple, GeneratedFeature]:
-        curr_additional_data = None
-        ref_additional_data = None
-        features: Dict[tuple, GeneratedFeature] = {}
-        for metric, calculation in self.get_metric_execution_iterator():
-            try:
-                required_features = metric.required_features(data.data_definition)
-            except Exception as e:
-                logging.error(f"failed to get features for {type(metric)}: {e}", exc_info=e)
-                continue
-            for feature in required_features:
-                params = feature.get_parameters()
-                if params is not None:
-                    _id = (type(feature), params)
-                    if _id in features:
-                        continue
-                    features[_id] = feature
-                feature_data = feature.generate_feature(data.current_data, data.data_definition)
-                feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
-                if curr_additional_data is None:
-                    curr_additional_data = feature_data
-                else:
-                    curr_additional_data = curr_additional_data.join(feature_data)
-                if data.reference_data is None:
-                    continue
-                ref_feature_data = feature.generate_feature(data.reference_data, data.data_definition)
-                ref_feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns]
+    def calculate_additional_features(
+        self, data: TInputData, features: List[GeneratedFeatures]
+    ) -> Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]]:
+        result: Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]] = {}
+        for feature in features:
+            current = feature.generate_feature(data.current_data, data.data_definition)
+            # feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
+            reference = (
+                feature.generate_feature(data.reference_data, data.data_definition)
+                if data.reference_data is not None
+                else None
+            )
 
-                if ref_additional_data is None:
-                    ref_additional_data = ref_feature_data
-                else:
-                    ref_additional_data = ref_additional_data.join(ref_feature_data)
-        data.current_additional_features = curr_additional_data
-        data.reference_additional_features = ref_additional_data
-        return features
+            # ref_feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns]
+
+            result[feature] = FeatureResult(current, reference)
+        return result
+
+    def merge_additional_features(
+        self, features: Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]]
+    ) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
+        currents: List[pd.DataFrame] = []
+        references: List[pd.DataFrame] = []
+
+        for feature, result in features.items():
+            feature_current = result.current
+            feature_current.rename(
+                columns={
+                    col: f"{feature.__class__.__name__}.{feature.feature_id}.{col}" for col in feature_current.columns
+                },
+                inplace=True,
+            )
+            currents.append(feature_current)
+            if result.reference is not None:
+                feature_reference = result.reference
+                feature_reference.rename(
+                    columns={
+                        col: f"{feature.__class__.__name__}.{feature.feature_id}.{col}"
+                        for col in feature_reference.columns
+                    },
+                    inplace=True,
+                )
+                references.append(feature_reference)
+
+        if len(currents) == 0:
+            current = None
+        elif len(currents) == 1:
+            current = currents[0]
+        else:
+            cur, *currents = currents
+            current = cur.join(currents)
+
+        if len(references) == 0:
+            return current, None
+        if len(references) == 1:
+            return current, references[0]
+        ref, *references = references
+        return current, ref.join(references)
 
     def get_metric_implementation(self, metric):
         impl = super().get_metric_implementation(metric)
         if impl is None and isinstance(metric, Metric):
 
             class _Wrapper(PythonMetricImplementation):
-                def calculate(self, context, data: PythonInputData):
+                def calculate(self, context, data: InputData):
                     return self.metric.calculate(data)
 
             return _Wrapper(self, metric)
@@ -104,18 +124,14 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData, pd.Data
 
     def form_datasets(
         self,
-        data: Optional[PythonInputData],
-        features: Optional[Dict[tuple, GeneratedFeature]],
+        data: Optional[InputData],
+        features: List[GeneratedFeatures],
         data_definition: DataDefinition,
     ) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
         if data is None:
             return None, None
-        if features is not None:
-            rename = {
-                column.name: column.display_name for feature in features.values() for column in feature.list_columns()
-            }
-        else:
-            rename = {}
+        rename = {column.name: column.display_name for feature in features for column in feature.list_columns()}
+
         current = data.current_data
         if data.current_additional_features is not None:
             current = data.current_data.join(data.current_additional_features)
@@ -137,7 +153,7 @@ class PythonMetricImplementation(Generic[TMetric], MetricImplementation):
         self.metric = metric
 
     @abc.abstractmethod
-    def calculate(self, context, data: PythonInputData):
+    def calculate(self, context, data: InputData):
         raise NotImplementedError
 
     @classmethod

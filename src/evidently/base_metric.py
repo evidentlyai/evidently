@@ -38,6 +38,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
     from evidently.features.generated_features import GeneratedFeature
+    from evidently.features.generated_features import GeneratedFeatures
     from evidently.suite.base_suite import Context
 
 
@@ -117,28 +118,24 @@ class ColumnNotFound(BaseException):
         self.column_name = column_name
 
 
-@dataclass
-class GenericInputData:
-    reference_data: Optional[object]
-    current_data: object
-    column_mapping: ColumnMapping
-    data_definition: DataDefinition
-    additional_data: Dict[str, Any]
-
-    def get_datasets(self) -> Tuple[Optional[object], object]:
-        raise NotImplementedError()
+TEngineDataType = TypeVar("TEngineDataType")
 
 
 @dataclass
-class InputData(GenericInputData):
-    reference_data: Optional[pd.DataFrame]
-    current_data: pd.DataFrame
-    reference_additional_features: Optional[pd.DataFrame]
-    current_additional_features: Optional[pd.DataFrame]
+class GenericInputData(Generic[TEngineDataType]):
+    reference_data: Optional[TEngineDataType]
+    current_data: TEngineDataType
     column_mapping: ColumnMapping
     data_definition: DataDefinition
     additional_data: Dict[str, Any]
+    reference_additional_features: Optional[TEngineDataType] = None
+    current_additional_features: Optional[TEngineDataType] = None
 
+    def get_datasets(self) -> Tuple[Optional[TEngineDataType], TEngineDataType]:
+        raise NotImplementedError
+
+
+class InputData(GenericInputData[pd.DataFrame]):
     @staticmethod
     def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
         if column.dataset == DatasetType.MAIN:
@@ -278,7 +275,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
             return None
         return params
 
-    def required_features(self, data_definition: DataDefinition) -> List["GeneratedFeature"]:
+    def required_features(self, data_definition: DataDefinition) -> List["GeneratedFeatures"]:
         required_features = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:

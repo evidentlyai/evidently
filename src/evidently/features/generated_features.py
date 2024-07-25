@@ -1,20 +1,26 @@
 import abc
+import dataclasses
 import logging
-import typing
 import uuid
+from typing import Generic
 from typing import List
 from typing import Optional
 
 import pandas as pd
 
 from evidently._pydantic_compat import Field
+from evidently.base_metric import ColumnName
+from evidently.base_metric import TEngineDataType
 from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
 
-if typing.TYPE_CHECKING:
-    from evidently.base_metric import ColumnName
+
+@dataclasses.dataclass
+class FeatureResult(Generic[TEngineDataType]):
+    current: TEngineDataType
+    reference: Optional[TEngineDataType]
 
 
 class GeneratedFeatures(EvidentlyBaseModel):
