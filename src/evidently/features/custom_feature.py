@@ -16,7 +16,7 @@ class CustomFeature(GeneratedFeature):
         result = self.func(data, data_definition)
         return pd.DataFrame(dict([(str(self.feature_id), result)]))
 
-    def feature_name(self) -> "ColumnName":
+    def as_column(self) -> "ColumnName":
         return additional_feature(self, str(self.feature_id), self.display_name)
 
 
@@ -29,7 +29,7 @@ class CustomSingleColumnFeature(GeneratedFeature):
         result = self.func(data[self.column_name])
         return pd.DataFrame(dict([(str(self.feature_id), result)]), index=data.index)
 
-    def feature_name(self) -> "ColumnName":
+    def as_column(self) -> "ColumnName":
         return additional_feature(self, str(self.feature_id), self.display_name)
 
 
@@ -43,5 +43,5 @@ class CustomPairColumnFeature(GeneratedFeature):
         result = self.func(data[self.first_column], data[self.second_column])
         return pd.DataFrame(dict([(str(self.feature_id), result)]))
 
-    def feature_name(self) -> "ColumnName":
+    def as_column(self) -> "ColumnName":
         return additional_feature(self, str(self.feature_id), self.display_name)

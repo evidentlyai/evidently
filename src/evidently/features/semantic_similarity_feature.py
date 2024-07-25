@@ -40,7 +40,7 @@ class SemanticSimilarityFeature(GeneratedFeature):
             )
         )
 
-    def feature_name(self) -> "ColumnName":
+    def as_column(self) -> "ColumnName":
         return additional_feature(
             self,
             "|".join(self.columns),

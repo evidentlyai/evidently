@@ -88,7 +88,7 @@ class WordsPresence(GeneratedFeature):
     def get_parameters(self):
         return self.column_name, tuple(self.words_list), self.lemmatize
 
-    def feature_name(self):
+    def as_column(self):
         return additional_feature(self, self._feature_column_name(), self.display_name or self._feature_display_name())
 
     def _feature_column_name(self):

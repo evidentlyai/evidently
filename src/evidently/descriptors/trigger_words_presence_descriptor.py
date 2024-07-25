@@ -16,11 +16,3 @@ class TriggerWordsPresence(FeatureDescriptor):
             self.lemmatize,
             self.display_name,
         )
-
-    def for_column(self, column_name: str):
-        return trigger_words_presence_feature.TriggerWordsPresent(
-            column_name,
-            self.words_list,
-            self.lemmatize,
-            self.display_name,
-        ).feature_name()

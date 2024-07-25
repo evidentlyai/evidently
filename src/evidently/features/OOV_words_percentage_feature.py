@@ -57,7 +57,7 @@ class OOVWordsPercentage(GeneratedFeature):
             )
         )
 
-    def feature_name(self):
+    def as_column(self):
         return additional_feature(self, self.column_name, self.display_name or f"OOV Words % for {self.column_name}")
 
     def get_parameters(self) -> Optional[tuple]:

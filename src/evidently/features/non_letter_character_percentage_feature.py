@@ -30,7 +30,7 @@ class NonLetterCharacterPercentage(GeneratedFeature):
 
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(non_letter_share))]))
 
-    def feature_name(self) -> ColumnName:
+    def as_column(self) -> ColumnName:
         return additional_feature(
             self,
             self.column_name,

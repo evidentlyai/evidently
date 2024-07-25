@@ -46,7 +46,7 @@ class Contains(GeneratedFeature):
             raise ValueError("mode must be either 'any' or 'all'")
         return pd.DataFrame(dict([(self._feature_column_name(), calculated)]))
 
-    def feature_name(self) -> ColumnName:
+    def as_column(self) -> ColumnName:
         return additional_feature(
             self,
             self._feature_column_name(),
@@ -104,7 +104,7 @@ class DoesNotContain(GeneratedFeature):
             )
         )
 
-    def feature_name(self) -> ColumnName:
+    def as_column(self) -> ColumnName:
         return additional_feature(
             self,
             self._feature_column_name(),

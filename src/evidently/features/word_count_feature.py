@@ -26,5 +26,5 @@ class WordCount(GeneratedFeature):
 
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(word_count_f))]))
 
-    def feature_name(self) -> ColumnName:
+    def as_column(self) -> ColumnName:
         return additional_feature(self, self.column_name, self.display_name or f"Word Count for {self.column_name}")

@@ -40,7 +40,7 @@ class BeginsWith(GeneratedFeature):
         calculated = data.str.startswith(substr)
         return pd.DataFrame(dict([(self._feature_column_name(), calculated)]))
 
-    def feature_name(self) -> ColumnName:
+    def as_column(self) -> ColumnName:
         return additional_feature(
             self,
             self._feature_column_name(),
@@ -88,7 +88,7 @@ class EndsWith(GeneratedFeature):
             )
         )
 
-    def feature_name(self) -> ColumnName:
+    def as_column(self) -> ColumnName:
         return additional_feature(
             self,
             self._feature_column_name(),

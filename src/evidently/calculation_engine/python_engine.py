@@ -111,7 +111,9 @@ class PythonEngine(Engine["PythonMetricImplementation", PythonInputData, pd.Data
         if data is None:
             return None, None
         if features is not None:
-            rename = {x.feature_name().name: x.feature_name().display_name for x in features.values()}
+            rename = {
+                column.name: column.display_name for feature in features.values() for column in feature.list_columns()
+            }
         else:
             rename = {}
         current = data.current_data

@@ -146,14 +146,14 @@ class Context:
             return
         self.features = features
         for feature in features.values():
-            feature_name = feature.feature_name()
-            feature_class = feature_name.feature_class
-            self.run_metadata.descriptors[feature_name.name] = FeatureDefinition(
-                feature_name=feature_name.name,
-                display_name=feature_name.display_name,
-                feature_type=feature_class.feature_type,  # type: ignore[union-attr]
-                feature_class=feature_class.__class__.__name__,
-            )
+            for feature_column in feature.list_columns():
+                feature_class = feature_column.feature_class
+                self.run_metadata.descriptors[feature_column.name] = FeatureDefinition(
+                    feature_name=feature_column.name,
+                    display_name=feature_column.display_name,
+                    feature_type=feature_class.feature_type,  # type: ignore[union-attr]
+                    feature_class=feature_class.__class__.__name__,
+                )
 
 
 class ContextPayload(BaseModel):

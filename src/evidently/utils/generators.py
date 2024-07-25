@@ -32,7 +32,7 @@ class BaseGenerator(Generic[TObject]):
     ...        return [
     ...            TestColumnQuantile(column_name=name, quantile=quantile)
     ...            for quantile in (0.5, 0.9, 0.99)
-    ...            for name in data_definition.get_columns(ColumnType.Numerical, features_only=True)
+    ...            for name in data_definition.list_columns(ColumnType.Numerical, features_only=True)
     ...        ]
 
     Do not forget set correct test type for `generate` return value

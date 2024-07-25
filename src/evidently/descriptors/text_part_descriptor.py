@@ -15,14 +15,6 @@ class BeginsWith(FeatureDescriptor):
             self.display_name,
         )
 
-    def for_column(self, column_name: str):
-        return text_part_feature.BeginsWith(
-            column_name,
-            self.prefix,
-            self.case_sensitive,
-            self.display_name,
-        ).feature_name()
-
 
 class EndsWith(FeatureDescriptor):
     suffix: str
@@ -35,11 +27,3 @@ class EndsWith(FeatureDescriptor):
             self.case_sensitive,
             self.display_name,
         )
-
-    def for_column(self, column_name: str):
-        return text_part_feature.EndsWith(
-            column_name,
-            self.suffix,
-            self.case_sensitive,
-            self.display_name,
-        ).feature_name()

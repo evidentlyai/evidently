@@ -19,15 +19,6 @@ class Contains(FeatureDescriptor):
             self.display_name,
         )
 
-    def for_column(self, column_name: str):
-        return text_contains_feature.Contains(
-            column_name,
-            self.items,
-            self.case_sensitive,
-            self.mode,
-            self.display_name,
-        ).feature_name()
-
 
 class DoesNotContain(FeatureDescriptor):
     items: List[str]
@@ -42,12 +33,3 @@ class DoesNotContain(FeatureDescriptor):
             self.mode,
             self.display_name,
         )
-
-    def for_column(self, column_name: str):
-        return text_contains_feature.DoesNotContain(
-            column_name,
-            self.items,
-            self.case_sensitive,
-            self.mode,
-            self.display_name,
-        ).feature_name()

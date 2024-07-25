@@ -104,7 +104,7 @@ class OpenAIFeature(GeneratedFeature):
 
         return pd.DataFrame(dict([(self._feature_column_name(), result)]), index=data.index)
 
-    def feature_name(self) -> ColumnName:
+    def as_column(self) -> ColumnName:
         return additional_feature(
             self,
             self._feature_column_name(),
