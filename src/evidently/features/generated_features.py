@@ -73,7 +73,7 @@ class GeneratedFeatures(EvidentlyBaseModel):
                 + ", ".join(c.name for c in columns)
             )
 
-    @deprecation.deprecated(details="feature_name() is deprecated, please use as_column()")
+    @deprecation.deprecated(deprecated_in="0.4.32", details="feature_name() is deprecated, please use as_column()")
     def feature_name(self, subcolumn: Optional[str] = None):
         return self.as_column(subcolumn)
 

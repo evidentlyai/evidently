@@ -73,6 +73,7 @@ setup_args = dict(
         "urllib3>=1.26.19",
         "fsspec>=2024.2.0",
         "ujson>=5.4.0",
+        "deprecation>=2.1.0",
         "opentelemetry-api>=1.25.0",
         "opentelemetry-sdk>=1.25.0",
         "opentelemetry-proto>=1.25.0",
