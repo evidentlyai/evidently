@@ -40,8 +40,10 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
+from evidently.ui.datasets import inject_feature_types_in_column_mapping
 from evidently.ui.type_aliases import DatasetID
 from evidently.utils import NumpyEncoder
+from evidently.utils import data_preprocessing
 from evidently.utils.dashboard import SaveMode
 from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
@@ -605,7 +607,14 @@ class ReportBase(Display):
     def datasets(self) -> EngineDatasets:
         return self._inner_suite.context.get_datasets()
 
-    def get_column_mapping(self):
-        if self._inner_suite.context.state != States.Calculated:
+    def get_column_mapping(self) -> ColumnMapping:
+        if self._inner_suite.context.state != States.Calculated or not self._inner_suite.context.data_definition:
             raise ValueError("Cannot get column mapping because report did not run")
-        return self._inner_suite.context.data.column_mapping
+        data_definition = self._inner_suite.context.data_definition
+        column_mapping = data_preprocessing.create_column_mapping(data_definition)
+        features_metadata = self._inner_suite.context.run_metadata.descriptors
+        column_mapping_with_descriptor = inject_feature_types_in_column_mapping(column_mapping, features_metadata)
+        return column_mapping_with_descriptor
+
+    def has_descriptors(self) -> bool:
+        return bool(self._inner_suite.context.run_metadata.descriptors)
