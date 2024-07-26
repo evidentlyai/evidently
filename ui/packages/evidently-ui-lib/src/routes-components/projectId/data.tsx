@@ -14,6 +14,6 @@ export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ 
     return api
       .GET('/api/projects/{project_id}/info', { params: { path: { project_id: projectId } } })
       .then(responseParser())
-      .then((d) => ensureID(d))
+      .then(ensureID)
   }
 })
