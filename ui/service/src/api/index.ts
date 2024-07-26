@@ -1,7 +1,4 @@
-import { getDashboardProvider } from 'evidently-ui-lib/api/providers/dashboard'
-import { getProjectsProvider } from 'evidently-ui-lib/api/providers/projects'
-import { getVersionProvider } from 'evidently-ui-lib/api/providers/version'
+import { BackendPaths } from 'evidently-ui-lib/api/types'
+import { createClient } from 'evidently-ui-lib/shared-dependencies/openapi-fetch'
 
-export const dashboardProvider = getDashboardProvider('/')
-export const projectProvider = getProjectsProvider('/')
-export const versionProvider = getVersionProvider('/')
+export const clientAPI = createClient<BackendPaths>({ baseUrl: '/' })
