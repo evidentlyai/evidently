@@ -21,7 +21,7 @@ jobs:
         env:
           PYTHONPATH: ./src
         run: |-
-          VERSION_TO_RELEASE=v$(python -c "from evidently import __version__; print(__version__)" || cat ../src/evidently/_version.py | grep "version_info = " | grep -Po "\d+" |  tr '\n' . | cut -c 1-5)
+          VERSION_TO_RELEASE=v$(python "./src/evidently/_version.py")
           if [ "${{ github.ref_name }}" != "$VERSION_TO_RELEASE" ]; then
             echo "Release triggered for tag ${{ github.ref_name }} but version.py contains $VERSION_TO_RELEASE"
             exit 1
