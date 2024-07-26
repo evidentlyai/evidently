@@ -37,7 +37,6 @@ from evidently.pydantic_utils import get_value_fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
-    from evidently.features.generated_features import GeneratedFeature
     from evidently.features.generated_features import GeneratedFeatures
     from evidently.suite.base_suite import Context
 
@@ -77,10 +76,10 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: str
     dataset: DatasetType
-    _feature_class: Optional["GeneratedFeature"] = PrivateAttr(None)
+    _feature_class: Optional["GeneratedFeatures"] = PrivateAttr(None)
 
     def __init__(
-        self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional["GeneratedFeature"] = None
+        self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional["GeneratedFeatures"] = None
     ):
         self._feature_class = feature_class
         super().__init__(name=name, display_name=display_name, dataset=dataset)
@@ -100,17 +99,15 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
         return column_name if not isinstance(column_name, str) else ColumnName.main_dataset(column_name)
 
     @property
-    def feature_class(self) -> Optional["GeneratedFeature"]:
+    def feature_class(self) -> Optional["GeneratedFeatures"]:
         return self._feature_class
 
-
-def additional_feature(feature: "GeneratedFeature", feature_name: str, display_name: str) -> ColumnName:
-    return ColumnName(
-        name=f"{feature.__class__.__name__}.{feature.feature_id}.{feature_name}",
-        display_name=display_name,
-        dataset=DatasetType.ADDITIONAL,
-        feature_class=feature,
-    )
+    def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
+        return tuple(
+            (name, self.get_field_fingerprint(name))
+            for name, field in sorted(self.__fields__.items())
+            if field.required or getattr(self, name) != field.get_default() and field.name != "display_name"
+        )
 
 
 class ColumnNotFound(BaseException):

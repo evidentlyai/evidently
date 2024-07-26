@@ -57,15 +57,12 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
     ) -> Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]]:
         result: Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]] = {}
         for feature in features:
-            current = feature.generate_feature(data.current_data, data.data_definition)
-            # feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
+            current = feature.generate_features_renamed(data.current_data, data.data_definition)
             reference = (
-                feature.generate_feature(data.reference_data, data.data_definition)
+                feature.generate_features_renamed(data.reference_data, data.data_definition)
                 if data.reference_data is not None
                 else None
             )
-
-            # ref_feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns]
 
             result[feature] = FeatureResult(current, reference)
         return result
@@ -77,25 +74,9 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
         references: List[pd.DataFrame] = []
 
         for feature, result in features.items():
-            feature_current = result.current
-            # TODO: column name should match name generated in additional_feature function. make it less implicit
-            feature_current.rename(
-                columns={
-                    col: f"{feature.__class__.__name__}.{feature.feature_id}.{col}" for col in feature_current.columns
-                },
-                inplace=True,
-            )
-            currents.append(feature_current)
+            currents.append(result.current)
             if result.reference is not None:
-                feature_reference = result.reference
-                feature_reference.rename(
-                    columns={
-                        col: f"{feature.__class__.__name__}.{feature.feature_id}.{col}"
-                        for col in feature_reference.columns
-                    },
-                    inplace=True,
-                )
-                references.append(feature_reference)
+                references.append(result.reference)
 
         if len(currents) == 0:
             current = None
