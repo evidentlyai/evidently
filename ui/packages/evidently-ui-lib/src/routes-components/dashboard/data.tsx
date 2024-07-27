@@ -32,7 +32,8 @@ export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ 
         params: {
           path: { project_id: params.projectId },
           query: { timestamp_start, timestamp_end }
-        }
+        },
+        parseAs: 'text'
       })
       .then(responseParser())
       .then(JSONParseExtended<DashboardInfoModel>)

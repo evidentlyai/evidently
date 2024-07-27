@@ -15,7 +15,8 @@ export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ 
 
     return api
       .GET('/api/projects/{project_id}/{snapshot_id}/data', {
-        params: { path: { project_id: projectId, snapshot_id: snapshotId } }
+        params: { path: { project_id: projectId, snapshot_id: snapshotId } },
+        parseAs: 'text'
       })
       .then(responseParser())
       .then(JSONParseExtended<DashboardInfoModel>)
