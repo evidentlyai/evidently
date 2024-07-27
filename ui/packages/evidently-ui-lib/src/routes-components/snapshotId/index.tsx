@@ -49,8 +49,8 @@ export const SnapshotTemplate = ({ api }: { api: API_CLIENT_TYPE }) => {
                     snapshot_id: snapshotId,
                     graph_id: encodeURIComponent(widgetId)
                   }
-                }
-                // parseAs: 'text'
+                },
+                parseAs: 'text'
               })
               .then(responseParser())
               .then(JSONParseExtended<WidgetInfo>)
