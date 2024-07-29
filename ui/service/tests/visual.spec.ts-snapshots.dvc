@@ -1,6 +1,6 @@
 outs:
-- md5: d38a01f2a4ce46c20555d9ad78865448.dir
-  size: 3978579
+- md5: 6dcf2de05a7892a7cc645199e8e58007.dir
+  size: 3978142
   nfiles: 8
   hash: md5
   path: visual.spec.ts-snapshots
