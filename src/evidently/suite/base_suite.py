@@ -608,7 +608,10 @@ class ReportBase(Display):
         return self._inner_suite.context.get_datasets()
 
     def get_column_mapping(self) -> ColumnMapping:
-        if self._inner_suite.context.state != States.Calculated or not self._inner_suite.context.data_definition:
+        if (
+            self._inner_suite.context.state not in [States.Calculated, States.Tested]
+            or not self._inner_suite.context.data_definition
+        ):
             raise ValueError("Cannot get column mapping because report did not run")
         data_definition = self._inner_suite.context.data_definition
         column_mapping = data_preprocessing.create_column_mapping(data_definition)
