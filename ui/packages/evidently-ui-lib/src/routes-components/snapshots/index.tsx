@@ -83,6 +83,7 @@ export const SnapshotsListTemplate = ({
   type: 'reports' | 'test suites'
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
+    ViewButton?: (args: { snapshotId: string; projectId: string }) => JSX.Element
   }
 }) => {
   const { projectId } = useParams()
@@ -298,9 +299,13 @@ export const SnapshotsListTemplate = ({
               </TableCell>
               <TableCell>
                 <Box display={'flex'} justifyContent={'center'} gap={1}>
-                  <Button disabled={isNavigation} component={RouterLink} to={`${snapshot.id}`}>
-                    View
-                  </Button>
+                  {slots?.ViewButton ? (
+                    <slots.ViewButton snapshotId={snapshot.id} projectId={projectId} />
+                  ) : (
+                    <Button disabled={isNavigation} component={RouterLink} to={`${snapshot.id}`}>
+                      View
+                    </Button>
+                  )}
                   <DownloadButton
                     disabled={isNavigation}
                     downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
