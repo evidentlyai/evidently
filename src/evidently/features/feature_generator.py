@@ -3,12 +3,12 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Type
 
 from evidently import ColumnMapping
 from evidently.base_metric import GenericInputData
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.engine import EngineDatasets
 from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import AnyOptions
@@ -65,8 +65,11 @@ class FeatureGenerator(Runnable):
         result = context_engine.calculate_additional_features(converted_data, self.features)
         self._inner_suite.context.features = result
 
-    def get_features(self) -> Tuple[Any, Optional[Any]]:
+    def get_features(self, feature: Optional[GeneratedFeatures] = None) -> EngineDatasets[Any]:
         context = self._inner_suite.context
         if context.engine is None or context.features is None:
             raise ValueError("Call FeatureGenerator.run first")
+        if feature is not None:
+            result = context.features[feature]
+            return EngineDatasets(result.current, result.reference)
         return context.engine.merge_additional_features(context.features)

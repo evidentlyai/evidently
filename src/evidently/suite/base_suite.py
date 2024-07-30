@@ -622,7 +622,7 @@ class ReportBase(Display, Runnable):
             raise ValueError("Cannot create snapshot because of calculation error") from e
         return self._get_snapshot()
 
-    def datasets(self) -> EngineDatasets:
+    def datasets(self) -> EngineDatasets[Any]:
         return self._inner_suite.context.get_datasets()
 
     def get_column_mapping(self):

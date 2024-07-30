@@ -1,4 +1,5 @@
 import abc
+import dataclasses
 import functools
 import logging
 from typing import TYPE_CHECKING
@@ -30,7 +31,17 @@ TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementat
 TInputData = TypeVar("TInputData", bound=GenericInputData)
 
 
-EngineDatasets = Tuple[Optional[TEngineDataType], Optional[TEngineDataType]]
+# EngineDatasets = Tuple[Optional[TEngineDataType], Optional[TEngineDataType]]
+
+
+@dataclasses.dataclass
+class EngineDatasets(Generic[TEngineDataType]):
+    current: Optional[TEngineDataType]
+    reference: Optional[TEngineDataType]
+
+    def __iter__(self):
+        yield self.current
+        yield self.reference
 
 
 class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
@@ -87,7 +98,7 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
     @abc.abstractmethod
     def merge_additional_features(
         self, features: Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]
-    ) -> Tuple[Optional[TEngineDataType], Optional[TEngineDataType]]:
+    ) -> EngineDatasets[TEngineDataType]:
         raise NotImplementedError
 
     def inject_additional_features(self, data: TInputData, features: Dict[GeneratedFeatures, FeatureResult]):
@@ -139,7 +150,7 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
         data: Optional[TInputData],
         features: List[GeneratedFeatures],
         data_definition: DataDefinition,
-    ) -> EngineDatasets:
+    ) -> EngineDatasets[TEngineDataType]:
         raise NotImplementedError
 
 

@@ -42,7 +42,7 @@ class WorkspaceBase(abc.ABC):
         snapshot = report.to_snapshot()
         if include_data:
             prefix = "report" if snapshot.is_report else "testsuite"
-            reference, current = report.datasets()
+            current, reference = report.datasets()
             column_mapping = report.get_column_mapping()
             if current is not None:
                 snapshot.links.datasets.output.current = self.add_dataset(

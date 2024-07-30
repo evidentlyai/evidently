@@ -15,6 +15,7 @@ from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import TEngineDataType
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.engine import EngineDatasets
 from evidently.calculation_engine.engine import TInputData
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 from evidently.core import ColumnType
@@ -132,10 +133,10 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData, SparkDataF
 
     def merge_additional_features(
         self, features: Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]
-    ) -> Tuple[Optional[TEngineDataType], Optional[TEngineDataType]]:
+    ) -> EngineDatasets[SparkDataFrame]:
         if len(features) > 0:
             raise NotImplementedError("SparkEngine does not support generated features yet")
-        return None, None
+        return EngineDatasets(current=None, reference=None)
 
 
 TMetric = TypeVar("TMetric", bound=Metric)

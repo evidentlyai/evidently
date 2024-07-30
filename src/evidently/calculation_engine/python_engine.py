@@ -3,7 +3,6 @@ from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import TypeVar
 
 import pandas as pd
@@ -13,6 +12,7 @@ from evidently.base_metric import GenericInputData
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.engine import EngineDatasets
 from evidently.calculation_engine.engine import TInputData
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 from evidently.features.generated_features import FeatureResult
@@ -69,7 +69,7 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
 
     def merge_additional_features(
         self, features: Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]]
-    ) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
+    ) -> EngineDatasets[pd.DataFrame]:
         currents: List[pd.DataFrame] = []
         references: List[pd.DataFrame] = []
 
@@ -87,11 +87,11 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
             current = cur.join(currents)
 
         if len(references) == 0:
-            return current, None
+            return EngineDatasets(current=current, reference=None)
         if len(references) == 1:
-            return current, references[0]
+            return EngineDatasets(current=current, reference=references[0])
         ref, *references = references
-        return current, ref.join(references)
+        return EngineDatasets(current=current, reference=ref.join(references))
 
     def get_metric_implementation(self, metric):
         impl = super().get_metric_implementation(metric)
@@ -109,9 +109,9 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
         data: Optional[InputData],
         features: List[GeneratedFeatures],
         data_definition: DataDefinition,
-    ) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
+    ) -> EngineDatasets[pd.DataFrame]:
         if data is None:
-            return None, None
+            return EngineDatasets(current=None, reference=None)
         rename = {column.name: column.display_name for feature in features for column in feature.list_columns()}
 
         current = data.current_data
@@ -126,7 +126,7 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
         if reference is not None:
             reference = reference.rename(columns=rename)
 
-        return reference, current
+        return EngineDatasets(reference=reference, current=current)
 
 
 class PythonMetricImplementation(Generic[TMetric], MetricImplementation):
