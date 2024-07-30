@@ -5,8 +5,9 @@ import DashboardContext, { CreateDashboardContextState } from '~/contexts/Dashbo
 import { crumbFunction } from '~/components/BreadCrumbs'
 import { LoaderData } from './data'
 import { Grid } from '@mui/material'
-import { DashboardProvider } from '~/api/types/providers/dashboard'
 import { AdditionalGraphInfo, WidgetInfo } from '~/api'
+import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import { JSONParseExtended } from '~/api/JsonParser'
 
 export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Boolean> } = {
   crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
@@ -15,7 +16,7 @@ export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Bo
   }
 }
 
-export const SnapshotTemplate = ({ api }: { api: DashboardProvider }) => {
+export const SnapshotTemplate = ({ api }: { api: API_CLIENT_TYPE }) => {
   const { projectId, snapshotId } = useParams()
   invariant(projectId, 'missing projectId')
   invariant(snapshotId, 'missing snapshotId')
@@ -26,17 +27,33 @@ export const SnapshotTemplate = ({ api }: { api: DashboardProvider }) => {
       <DashboardContext.Provider
         value={CreateDashboardContextState({
           getAdditionGraphData: (graphId) =>
-            api.getDashboardGraph({
-              project: { id: projectId },
-              snapshot: { id: snapshotId },
-              graph: { id: graphId }
-            }) as Promise<AdditionalGraphInfo>,
+            api
+              .GET('/api/projects/{project_id}/{snapshot_id}/graphs_data/{graph_id}', {
+                params: {
+                  path: {
+                    project_id: projectId,
+                    snapshot_id: snapshotId,
+                    graph_id: encodeURIComponent(graphId)
+                  }
+                },
+                parseAs: 'text'
+              })
+              .then(responseParser())
+              .then(JSONParseExtended<AdditionalGraphInfo>),
           getAdditionWidgetData: (widgetId) =>
-            api.getDashboardGraph({
-              project: { id: projectId },
-              snapshot: { id: snapshotId },
-              graph: { id: widgetId }
-            }) as Promise<WidgetInfo>
+            api
+              .GET('/api/projects/{project_id}/{snapshot_id}/graphs_data/{graph_id}', {
+                params: {
+                  path: {
+                    project_id: projectId,
+                    snapshot_id: snapshotId,
+                    graph_id: encodeURIComponent(widgetId)
+                  }
+                },
+                parseAs: 'text'
+              })
+              .then(responseParser())
+              .then(JSONParseExtended<WidgetInfo>)
         })}
       >
         <Grid container spacing={3} direction="row" alignItems="stretch">

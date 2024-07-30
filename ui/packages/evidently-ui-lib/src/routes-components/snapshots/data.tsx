@@ -1,10 +1,10 @@
 import { ActionFunctionArgs } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { expectJsonRequest, GetLoaderAction } from '~/api/utils'
-import { ProjectsProvider } from '~/api/types/providers/projects'
 import { ReportModel, TestSuiteModel } from '~/api/types'
 import { z } from 'zod'
 import { ErrorData } from '~/api/types/utils'
+import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
 
 export type ReportsLoaderData = ReportModel[]
 
@@ -23,7 +23,7 @@ export const deleteSnapshotSchema = z.object({
 })
 
 const getAction =
-  (api: ProjectsProvider) =>
+  (api: API_CLIENT_TYPE) =>
   async ({ request, params }: ActionFunctionArgs) => {
     invariant(params.projectId, 'missing projectId')
     expectJsonRequest(request)
@@ -33,16 +33,23 @@ const getAction =
     const reloadParse = reloadSnapshotSchema.safeParse(data)
 
     if (reloadParse.success) {
-      return api.reloadSnapshots({ project: { id: params.projectId } })
+      return api
+        .GET('/api/projects/{project_id}/reload', {
+          params: { path: { project_id: params.projectId } }
+        })
+        .then(responseParser({ notThrowExc: true }))
     }
 
     const deleteParse = deleteSnapshotSchema.safeParse(data)
 
     if (deleteParse.success) {
-      return api.deleteSnapshot({
-        project: { id: params.projectId },
-        snapshot: { id: deleteParse.data.snapshotId }
-      })
+      return api
+        .DELETE('/api/projects/{project_id}/{snapshot_id}', {
+          params: {
+            path: { project_id: params.projectId, snapshot_id: deleteParse.data.snapshotId }
+          }
+        })
+        .then(responseParser({ notThrowExc: true }))
     }
 
     return {
@@ -50,9 +57,7 @@ const getAction =
     } satisfies ErrorData
   }
 
-export const injectReportsAPI: GetLoaderAction<ProjectsProvider, ReportsLoaderData> = ({
-  api
-}) => ({
+export const injectReportsAPI: GetLoaderAction<API_CLIENT_TYPE, ReportsLoaderData> = ({ api }) => ({
   loader: ({ params }) => {
     invariant(params.projectId, 'missing projectId')
 
@@ -60,14 +65,18 @@ export const injectReportsAPI: GetLoaderAction<ProjectsProvider, ReportsLoaderDa
       return Promise.resolve([])
     }
 
-    return api.listReports({ project: { id: params.projectId } })
+    return api
+      .GET('/api/projects/{project_id}/reports', {
+        params: { path: { project_id: params.projectId } }
+      })
+      .then(responseParser())
   },
   action: getAction(api)
 })
 
 export type TestSuitesLoaderData = TestSuiteModel[]
 
-export const injectTestSuitesAPI: GetLoaderAction<ProjectsProvider, TestSuitesLoaderData> = ({
+export const injectTestSuitesAPI: GetLoaderAction<API_CLIENT_TYPE, TestSuitesLoaderData> = ({
   api
 }) => ({
   loader: ({ params }) => {
@@ -77,7 +86,11 @@ export const injectTestSuitesAPI: GetLoaderAction<ProjectsProvider, TestSuitesLo
       return Promise.resolve([])
     }
 
-    return api.listTestSuites({ project: { id: params.projectId } })
+    return api
+      .GET('/api/projects/{project_id}/test_suites', {
+        params: { path: { project_id: params.projectId } }
+      })
+      .then(responseParser())
   },
   action: getAction(api)
 })
