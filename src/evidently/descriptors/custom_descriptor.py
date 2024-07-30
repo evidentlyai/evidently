@@ -1,3 +1,4 @@
+import uuid
 from typing import Callable
 from typing import Union
 
@@ -15,7 +16,7 @@ class CustomColumnEval(FeatureDescriptor):
     func: Callable[[pd.Series], pd.Series]
     display_name: str
     feature_type: Union[str, ColumnType]
-    name: str
+    name: str = ""
 
     def feature(self, column_name: str) -> GeneratedFeature:
         return CustomSingleColumnFeature(
@@ -23,7 +24,7 @@ class CustomColumnEval(FeatureDescriptor):
             column_name=column_name,
             display_name=self.display_name,
             feature_type=ColumnType(self.feature_type),
-            name=self.name,
+            name=self.name or getattr(self.func, "__name__", str(uuid.uuid4())),
         )
 
 
