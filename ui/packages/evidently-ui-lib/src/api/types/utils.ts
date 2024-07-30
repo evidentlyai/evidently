@@ -9,17 +9,6 @@ export type ErrorResponse = { status_code: number | false; detail: string }
 
 export type ErrorData = { error: ErrorResponse }
 
-export type CreateCRUD<Entity extends OptionalID> = {
-  // loaders
-  list(): Promise<StrictID<Entity>[]>
-  get(args: ID): Promise<StrictID<Entity>>
-
-  // actions
-  delete(id: ID): Promise<ErrorData | null>
-  update({ body }: { body: StrictID<Entity> }): Promise<StrictID<Entity> | ErrorData | null>
-  create({ body }: { body: Entity }): Promise<StrictID<Entity> | ErrorData | null>
-}
-
 ///////////////////////////////
 // TYPES TEST
 // see details here:

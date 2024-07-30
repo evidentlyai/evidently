@@ -1,11 +1,11 @@
 import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
-import { projectProvider } from '~/api'
+import { clientAPI } from '~/api'
 
 import TestSuiteRoute from './testSuiteId'
 import { ActionsErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 
-const { loader, action } = injectTestSuitesAPI({ api: projectProvider })
+const { loader, action } = injectTestSuitesAPI({ api: clientAPI })
 
 export default {
   id: 'test_suites',
