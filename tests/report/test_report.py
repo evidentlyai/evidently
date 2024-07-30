@@ -60,3 +60,12 @@ def test_json(report: Report):
 
     include_series = json.loads(report.json(include={"MockMetric": {"value", "series"}}))["metrics"]
     assert include_series == [{"metric": "MockMetric", "result": {"value": "a", "series": [0]}}]
+
+
+def test_multirun_json(report: Report):
+    report.run(reference_data=pd.DataFrame(), current_data=pd.DataFrame())
+    default = json.loads(report.json())["metrics"]
+    assert default == [{"metric": "MockMetric", "result": {"value": "a"}}]
+
+    include_series = json.loads(report.json(include={"MockMetric": {"value", "series"}}))["metrics"]
+    assert include_series == [{"metric": "MockMetric", "result": {"value": "a", "series": [0]}}]
