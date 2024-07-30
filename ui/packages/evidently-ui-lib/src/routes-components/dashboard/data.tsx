@@ -6,9 +6,11 @@ export type LoaderData = DashboardInfoModel
 
 import { FILTER_QUERY_PARAMS } from '~/components/DashboardDateFilter'
 import { DashboardInfoModel } from '~/api/types'
-import { DashboardProvider } from '~/api/types/providers/dashboard'
 
-export const getLoaderAction: GetLoaderAction<DashboardProvider, LoaderData> = ({ api }) => ({
+import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import { JSONParseExtended } from '~/api/JsonParser'
+
+export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ api }) => ({
   loader: ({ params, request }) => {
     invariant(params.projectId, 'missing projectId')
 
@@ -25,12 +27,15 @@ export const getLoaderAction: GetLoaderAction<DashboardProvider, LoaderData> = (
       timestamp_end = null
     }
 
-    return api.getProjectDashboard({
-      project: { id: params.projectId },
-      options: {
-        timestamp_start,
-        timestamp_end
-      }
-    })
+    return api
+      .GET('/api/projects/{project_id}/dashboard', {
+        params: {
+          path: { project_id: params.projectId },
+          query: { timestamp_start, timestamp_end }
+        },
+        parseAs: 'text'
+      })
+      .then(responseParser())
+      .then(JSONParseExtended<DashboardInfoModel>)
   }
 })
