@@ -15,6 +15,7 @@ class CustomColumnEval(FeatureDescriptor):
     func: Callable[[pd.Series], pd.Series]
     display_name: str
     feature_type: Union[str, ColumnType]
+    name: str
 
     def feature(self, column_name: str) -> GeneratedFeature:
         return CustomSingleColumnFeature(
@@ -22,6 +23,7 @@ class CustomColumnEval(FeatureDescriptor):
             column_name=column_name,
             display_name=self.display_name,
             feature_type=ColumnType(self.feature_type),
+            name=self.name,
         )
 
 

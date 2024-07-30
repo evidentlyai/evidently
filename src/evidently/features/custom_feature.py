@@ -1,11 +1,13 @@
 import uuid
 from typing import Callable
+from typing import Tuple
 
 import pandas as pd
 
 from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
 from evidently.features.generated_features import GeneratedFeature
+from evidently.pydantic_utils import FingerprintPart
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -34,6 +36,13 @@ class CustomSingleColumnFeature(GeneratedFeature):
 
     def _as_column(self) -> "ColumnName":
         return self._create_column(self.name)
+
+    def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
+        return tuple(
+            (name, self.get_field_fingerprint(name))
+            for name, field in sorted(self.__fields__.items())
+            if (field.required or getattr(self, name) != field.get_default()) and field.name != "func"
+        )
 
 
 class CustomPairColumnFeature(GeneratedFeature):
