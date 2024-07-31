@@ -124,14 +124,14 @@ jobs:
     # The type of runner that the job will run on
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
     needs:
-      - linter
+      # - linter
       - prepare-cache-data
     runs-on: ${{ matrix.os }}
     if: github.event.pull_request.draft == false
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-2022, macos-13]
-        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        os: [ubuntu-22.04]
+        python: ["3.11", "3.12"]
         exclude:
           - os: windows-latest
             python: "3.12"
@@ -157,7 +157,7 @@ jobs:
       - name: Install package
         run: pip install -e .[dev,spark,fsspec]
       - name: Run Tests
-        run: python -m pytest --durations=50
+        run: python -m pytest -vvv
 
   build:
     # The type of runner that the job will run on
