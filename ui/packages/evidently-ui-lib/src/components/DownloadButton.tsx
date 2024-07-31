@@ -1,6 +1,15 @@
 import React from 'react'
 
-import { Button, ClickAwayListener, Paper, Grow, Popper, MenuItem, MenuList } from '@mui/material'
+import {
+  Button,
+  ClickAwayListener,
+  Paper,
+  Grow,
+  Popper,
+  MenuItem,
+  MenuList,
+  ButtonOwnProps
+} from '@mui/material'
 
 const options = [
   {
@@ -13,7 +22,11 @@ const options = [
   }
 ]
 
-export function DownloadButton(props: { downloadLink: string; disabled: boolean }) {
+export function DownloadButton(props: {
+  downloadLink: string
+  disabled: boolean
+  variant?: ButtonOwnProps['variant']
+}) {
   const [open, setOpen] = React.useState(false)
   const anchorRef = React.useRef<HTMLButtonElement>(null)
 
@@ -38,7 +51,7 @@ export function DownloadButton(props: { downloadLink: string; disabled: boolean 
     <>
       <Button
         disabled={props.disabled}
-        variant="outlined"
+        variant={props.variant}
         ref={anchorRef}
         color="primary"
         aria-controls={open ? 'split-button-menu' : undefined}
