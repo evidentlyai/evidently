@@ -101,6 +101,7 @@ class Report(ReportBase):
             self.timestamp = self._timestamp
         else:
             self.timestamp = timestamp or datetime.now()
+        self._first_level_metrics = []
         self._inner_suite.reset()
         self._inner_suite.set_engine(PythonEngine() if engine is None else engine())
 
