@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import {
   Box,
   Button,
+  ButtonOwnProps,
   FormControlLabel,
   Grid,
   IconButton,
@@ -84,6 +85,7 @@ export const SnapshotsListTemplate = ({
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
     ViewButton?: (args: { snapshotId: string; projectId: string }) => JSX.Element
+    donwloadButtonVariant?: ButtonOwnProps['variant']
   }
 }) => {
   const { projectId } = useParams()
@@ -306,10 +308,13 @@ export const SnapshotsListTemplate = ({
                       View
                     </Button>
                   )}
+
                   <DownloadButton
+                    variant={slots?.donwloadButtonVariant || 'outlined'}
                     disabled={isNavigation}
                     downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
                   />
+
                   {slots?.additionalSnapshotActions && (
                     <slots.additionalSnapshotActions
                       snapshotId={snapshot.id}
