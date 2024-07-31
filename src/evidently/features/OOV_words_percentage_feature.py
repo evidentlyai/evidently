@@ -1,4 +1,6 @@
 import re
+from typing import Any
+from typing import ClassVar
 from typing import Optional
 from typing import Set
 from typing import Tuple
@@ -8,13 +10,12 @@ import pandas as pd
 from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
 
-from evidently.base_metric import additional_feature
-from evidently.features.generated_features import GeneratedFeature
+from evidently.features.generated_features import ApplyColumnGeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class OOVWordsPercentage(GeneratedFeature):
-    column_name: str
+class OOVWordsPercentage(ApplyColumnGeneratedFeature):
+    display_name_template: ClassVar = "OOV Words % for {column_name}"
     ignore_words: Tuple = ()
     _lem: WordNetLemmatizer
     _eng_words: Set
@@ -25,6 +26,18 @@ class OOVWordsPercentage(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
+    def apply(self, value: Any):
+        if value is None or (isinstance(value, float) and np.isnan(value)):
+            return 0
+        oov_num = 0
+        words_ = re.sub("[^A-Za-z0-9 ]+", "", value).split()  # leave only letters, digits and spaces, split by spaces
+        if len(words_) == 0:
+            return 0
+        for word in words_:
+            if word.lower() not in self.ignore_words and self._lem.lemmatize(word.lower()) not in self._eng_words:
+                oov_num += 1
+        return 100 * oov_num / len(words_)
+
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         if not hasattr(self, "_lem"):
             import nltk
@@ -34,31 +47,4 @@ class OOVWordsPercentage(GeneratedFeature):
             self._lem = WordNetLemmatizer()
             self._eng_words = set(words.words())
 
-        def oov_share(s, ignore_words=()):
-            if s is None or (isinstance(s, float) and np.isnan(s)):
-                return 0
-            oov_num = 0
-            words_ = re.sub("[^A-Za-z0-9 ]+", "", s).split()  # leave only letters, digits and spaces, split by spaces
-            if len(words_) == 0:
-                return 0
-            for word in words_:
-                if word.lower() not in ignore_words and self._lem.lemmatize(word.lower()) not in self._eng_words:
-                    oov_num += 1
-            return 100 * oov_num / len(words_)
-
-        return pd.DataFrame(
-            dict(
-                [
-                    (
-                        self.column_name,
-                        data[self.column_name].apply(lambda x: oov_share(x, ignore_words=self.ignore_words)),
-                    )
-                ]
-            )
-        )
-
-    def feature_name(self):
-        return additional_feature(self, self.column_name, self.display_name or f"OOV Words % for {self.column_name}")
-
-    def get_parameters(self) -> Optional[tuple]:
-        return self.column_name, self.ignore_words
+        return super().generate_feature(data, data_definition)

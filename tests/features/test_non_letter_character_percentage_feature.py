@@ -14,4 +14,4 @@ def test_non_letter_character_percentage():
     )
 
     assert result.equals(pd.DataFrame(dict(column_1=[100 * 3 / 6, 0, 100])))
-    assert feature_generator.feature_name().display_name == "cl"
+    assert feature_generator.as_column().display_name == "cl"

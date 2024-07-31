@@ -106,13 +106,13 @@ class TextDescriptorsDriftMetric(UsesRawDataMixin, Metric[TextDescriptorsDriftMe
         else:
             agg_data = True
         curr_text_df = pd.concat(
-            [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+            [data.get_current_column(x._as_column()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
 
         ref_text_df = pd.concat(
-            [data.get_reference_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+            [data.get_reference_column(x._as_column()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         ref_text_df.columns = list(self.generated_text_features.keys())

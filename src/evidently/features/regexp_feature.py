@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from evidently.base_metric import additional_feature
+from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
@@ -21,14 +21,13 @@ class RegExp(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         result = data[self.column_name].astype(str).str.fullmatch(self.reg_exp).astype(int)
-        return pd.DataFrame(dict([(self.column_name + "_" + self.reg_exp, result)]))
+        return pd.DataFrame({self._feature_name(): result})
 
-    def feature_name(self):
-        return additional_feature(
-            self,
-            self.column_name + "_" + self.reg_exp,
-            self.display_name or f"RegExp '{self.reg_exp}' Match for column {self.column_name}",
+    def _feature_name(self):
+        return self.column_name + "_" + self.reg_exp
+
+    def _as_column(self) -> "ColumnName":
+        return self._create_column(
+            self._feature_name(),
+            default_display_name=f"RegExp '{self.reg_exp}' Match for column {self.column_name}",
         )
-
-    def get_parameters(self):
-        return self.column_name, self.reg_exp

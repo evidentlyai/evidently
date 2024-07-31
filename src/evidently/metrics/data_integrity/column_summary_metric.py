@@ -511,13 +511,13 @@ class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
         number_of_rows = len(text_feature)
         missing = text_feature.isna().sum()
         if dataset == "current":
-            text_length = data.get_current_column(generated_text_features["text_length"].feature_name())
-            oov = data.get_current_column(generated_text_features["oov"].feature_name())
-            non_letter_char = data.get_current_column(generated_text_features["non_letter_char"].feature_name())
+            text_length = data.get_current_column(generated_text_features["text_length"]._as_column())
+            oov = data.get_current_column(generated_text_features["oov"]._as_column())
+            non_letter_char = data.get_current_column(generated_text_features["non_letter_char"]._as_column())
         else:
-            text_length = data.get_reference_column(generated_text_features["text_length"].feature_name())
-            oov = data.get_reference_column(generated_text_features["oov"].feature_name())
-            non_letter_char = data.get_reference_column(generated_text_features["non_letter_char"].feature_name())
+            text_length = data.get_reference_column(generated_text_features["text_length"]._as_column())
+            oov = data.get_reference_column(generated_text_features["oov"]._as_column())
+            non_letter_char = data.get_reference_column(generated_text_features["non_letter_char"]._as_column())
 
         return TextCharacteristics(
             number_of_rows=number_of_rows,

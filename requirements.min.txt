@@ -23,6 +23,7 @@ fsspec[full]==2024.2.0
 certifi==2024.7.4
 urllib3==1.26.19
 ujson==5.4.0
+deprecation==2.1.0
 opentelemetry-api==1.25.0
 opentelemetry-proto==1.25.0
 opentelemetry-sdk==1.25.0

@@ -4,7 +4,6 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import ColumnName
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
@@ -44,13 +43,12 @@ class Contains(GeneratedFeature):
             calculated = data[self.column_name].apply(lambda x: all(self.comparison(i, x) for i in self.items))
         else:
             raise ValueError("mode must be either 'any' or 'all'")
-        return pd.DataFrame(dict([(self._feature_column_name(), calculated)]))
+        return pd.DataFrame({self._feature_column_name(): calculated})
 
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
+    def _as_column(self) -> ColumnName:
+        return self._create_column(
             self._feature_column_name(),
-            self.display_name or f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
+            default_display_name=f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
         )
 
     def comparison(self, item: str, string: str):
@@ -93,22 +91,12 @@ class DoesNotContain(GeneratedFeature):
             calculated = ~data[self.column_name].apply(lambda x: all(self.comparison(i, x) for i in self.items))
         else:
             raise ValueError("mode must be either 'any' or 'all'")
-        return pd.DataFrame(
-            dict(
-                [
-                    (
-                        self._feature_column_name(),
-                        calculated,
-                    )
-                ]
-            )
-        )
+        return pd.DataFrame({self._feature_column_name(): calculated})
 
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
+    def _as_column(self) -> ColumnName:
+        return self._create_column(
             self._feature_column_name(),
-            self.display_name or f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
+            default_display_name=f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
         )
 
     def comparison(self, item: str, string: str):

@@ -252,7 +252,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         if self._text_features_gen is not None:
             for col in list(self._text_features_gen.keys()):
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self._text_features_gen[col].values())],
+                    [data.get_current_column(x._as_column()) for x in list(self._text_features_gen[col].values())],
                     axis=1,
                 )
                 curr_text_df.columns = list(self._text_features_gen[col].keys())
@@ -268,7 +268,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                 if ref_df is not None:
                     ref_text_df = pd.concat(
                         [
-                            data.get_reference_column(x.feature_name())
+                            data.get_reference_column(x._as_column())
                             for x in list(self._text_features_gen[col].values())
                         ],
                         axis=1,

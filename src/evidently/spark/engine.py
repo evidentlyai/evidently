@@ -12,26 +12,21 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
 from evidently.base_metric import DatasetType
 from evidently.base_metric import GenericInputData
-from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.base_metric import TEngineDataType
 from evidently.calculation_engine.engine import Engine
+from evidently.calculation_engine.engine import EngineDatasets
+from evidently.calculation_engine.engine import TInputData
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 from evidently.core import ColumnType
-from evidently.features.generated_features import GeneratedFeature
+from evidently.features.generated_features import FeatureResult
+from evidently.features.generated_features import GeneratedFeatures
 from evidently.spark.base import SparkDataFrame
 from evidently.spark.base import SparkSeries
 from evidently.spark.base import create_data_definition_spark
-from evidently.utils.data_preprocessing import DataDefinition
 
 
-class SparkInputData(InputData):
-    reference_data: Optional[SparkDataFrame]
-    current_data: SparkDataFrame
-    reference_additional_features: Optional[SparkDataFrame]
-    current_additional_features: Optional[SparkDataFrame]
-    column_mapping: ColumnMapping
-    data_definition: DataDefinition
-
+class SparkInputData(GenericInputData[SparkDataFrame]):
     @staticmethod
     def _get_by_column_name(
         dataset: SparkDataFrame,
@@ -129,8 +124,19 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData, SparkDataF
     ):
         return create_data_definition_spark(current_data, reference_data, column_mapping)
 
-    def generate_additional_features(self, data: SparkInputData) -> Optional[Dict[tuple, GeneratedFeature]]:
-        pass
+    def calculate_additional_features(
+        self, data: TInputData, features: List[GeneratedFeatures]
+    ) -> Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]:
+        if len(features) > 0:
+            raise NotImplementedError("SparkEngine does not support generated features yet")
+        return {}
+
+    def merge_additional_features(
+        self, features: Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]
+    ) -> EngineDatasets[SparkDataFrame]:
+        if len(features) > 0:
+            raise NotImplementedError("SparkEngine does not support generated features yet")
+        return EngineDatasets(current=None, reference=None)
 
 
 TMetric = TypeVar("TMetric", bound=Metric)

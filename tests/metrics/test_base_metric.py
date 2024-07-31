@@ -9,7 +9,6 @@ from evidently.base_metric import DatasetType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
@@ -81,7 +80,7 @@ class SimpleMetricWithFeatures(Metric[int]):
 
     def calculate(self, data: InputData) -> int:
         if data.data_definition.get_column(self.column_name).column_type == ColumnType.Categorical:
-            return data.get_current_column(self._feature.feature_name()).sum()
+            return data.get_current_column(self._feature._as_column()).sum()
         return data.get_current_column(self.column_name).sum()
 
     def required_features(self, data_definition: DataDefinition):
@@ -96,7 +95,7 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
     _features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
-        return {k: data.get_current_column(v.feature_name()).sum() for k, v in self._features.items()}
+        return {k: data.get_current_column(v._as_column()).sum() for k, v in self._features.items()}
 
     def required_features(self, data_definition: DataDefinition):
         self._features = {
@@ -117,12 +116,8 @@ class SimpleGeneratedFeature(GeneratedFeature):
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name] * 2)]))
 
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
-            self.column_name,
-            self.display_name if self.display_name else "SGF: {self.column_name}",
-        )
+    def _as_column(self) -> ColumnName:
+        return self._create_column(subcolumn=self.column_name, default_display_name="SGF: {self.column_name}")
 
 
 class LengthFeature(GeneratedFeature):
@@ -137,15 +132,15 @@ class LengthFeature(GeneratedFeature):
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(len))]))
 
-    def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name, f"Length of {self.column_name}")
+    def _as_column(self) -> ColumnName:
+        return self._create_column(self.column_name, default_display_name=f"Length of {self.column_name}")
 
 
 @pytest.mark.parametrize(
     "metric,result",
     [
         (SimpleMetric(ColumnName("col1", "col1", DatasetType.MAIN, None)), 6),
-        (SimpleMetric(SimpleGeneratedFeature("col1").feature_name()), 12),
+        (SimpleMetric(SimpleGeneratedFeature("col1")._as_column()), 12),
         (SimpleMetricWithFeatures("col1"), 6),
         (SimpleMetricWithFeatures("col2"), 9),
         (MetricWithAllTextFeatures(), {"col3": 9, "col4": 12}),
@@ -180,8 +175,8 @@ def test_additional_features(metric, result):
     [
         (
             [
-                SimpleMetric(SimpleGeneratedFeature("col1", "d1").feature_name()),
-                SimpleMetric2(SimpleGeneratedFeature("col1", "d2").feature_name()),
+                SimpleMetric(SimpleGeneratedFeature("col1", "d1")._as_column()),
+                SimpleMetric2(SimpleGeneratedFeature("col1", "d2")._as_column()),
             ],
             (12, 13),
         ),

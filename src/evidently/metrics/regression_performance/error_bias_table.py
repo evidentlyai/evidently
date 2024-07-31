@@ -177,13 +177,13 @@ class RegressionErrorBiasTable(UsesRawDataMixin, Metric[RegressionErrorBiasTable
                 columns.remove(column)
                 num_feature_names += list(features.keys())
                 columns += list(features.keys())
-                curr_text_df = pd.concat([data.get_current_column(x.feature_name()) for x in features.values()], axis=1)
+                curr_text_df = pd.concat([data.get_current_column(x._as_column()) for x in features.values()], axis=1)
                 curr_text_df.columns = list(features.keys())
                 curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
-                        [data.get_reference_column(x.feature_name()) for x in features.values()],
+                        [data.get_reference_column(x._as_column()) for x in features.values()],
                         axis=1,
                     )
                     ref_text_df.columns = list(features.keys())

@@ -1,4 +1,5 @@
 import abc
+import dataclasses
 import functools
 import logging
 from typing import TYPE_CHECKING
@@ -16,8 +17,11 @@ from evidently.base_metric import ErrorResult
 from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.base_metric import TEngineDataType
 from evidently.calculation_engine.metric_implementation import MetricImplementation
-from evidently.features.generated_features import GeneratedFeature
+from evidently.features.generated_features import FeatureResult
+from evidently.features.generated_features import GeneratedFeatures
+from evidently.pydantic_utils import Fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 
 if TYPE_CHECKING:
@@ -25,9 +29,19 @@ if TYPE_CHECKING:
 
 TMetricImplementation = TypeVar("TMetricImplementation", bound=MetricImplementation)
 TInputData = TypeVar("TInputData", bound=GenericInputData)
-TEngineDataType = TypeVar("TEngineDataType")
 
-EngineDatasets = Tuple[Optional[TEngineDataType], Optional[TEngineDataType]]
+
+# EngineDatasets = Tuple[Optional[TEngineDataType], Optional[TEngineDataType]]
+
+
+@dataclasses.dataclass
+class EngineDatasets(Generic[TEngineDataType]):
+    current: Optional[TEngineDataType]
+    reference: Optional[TEngineDataType]
+
+    def __iter__(self):
+        yield self.current
+        yield self.reference
 
 
 class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
@@ -44,7 +58,11 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
     def execute_metrics(self, context: "Context", data: GenericInputData):
         calculations: Dict[Metric, Union[ErrorResult, MetricResult]] = {}
         converted_data = self.convert_input_data(data)
-        context.set_features(self.generate_additional_features(converted_data))
+
+        features_list = self.get_additional_features(converted_data.data_definition)
+        features = self.calculate_additional_features(converted_data, features_list)
+        context.set_features(features)
+        self.inject_additional_features(converted_data, features)
         context.data = converted_data
         for metric, calculation in self.get_metric_execution_iterator():
             if calculation not in calculations:
@@ -59,21 +77,49 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
 
     @abc.abstractmethod
     def convert_input_data(self, data: GenericInputData) -> TInputData:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_data_definition(
         self,
-        current_data,
-        reference_data,
+        current_data: TEngineDataType,
+        reference_data: TEngineDataType,
         column_mapping: ColumnMapping,
         categorical_features_cardinality: Optional[int] = None,
     ):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def generate_additional_features(self, data: TInputData) -> Optional[Dict[tuple, GeneratedFeature]]:
+    def calculate_additional_features(
+        self, data: TInputData, features: List[GeneratedFeatures]
+    ) -> Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]:
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def merge_additional_features(
+        self, features: Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]
+    ) -> EngineDatasets[TEngineDataType]:
+        raise NotImplementedError
+
+    def inject_additional_features(self, data: TInputData, features: Dict[GeneratedFeatures, FeatureResult]):
+        current, reference = self.merge_additional_features(features)
+        data.current_additional_features = current
+        data.reference_additional_features = reference
+
+    def get_additional_features(self, data_definition: DataDefinition) -> List[GeneratedFeatures]:
+        features: Dict[Fingerprint, GeneratedFeatures] = {}
+        for metric, calculation in self.get_metric_execution_iterator():
+            try:
+                required_features: List[GeneratedFeatures] = metric.required_features(data_definition)
+            except Exception as e:
+                logging.error(f"failed to get features for {type(metric)}: {e}", exc_info=e)
+                continue
+            for feature in required_features:
+                fp = feature.get_fingerprint()
+                if fp in feature:
+                    continue
+                features[fp] = feature
+        return list(features.values())
 
     def get_metric_implementation(self, metric):
         """
@@ -102,9 +148,9 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
     def form_datasets(
         self,
         data: Optional[TInputData],
-        features: Optional[Dict[tuple, GeneratedFeature]],
+        features: List[GeneratedFeatures],
         data_definition: DataDefinition,
-    ) -> EngineDatasets:
+    ) -> EngineDatasets[TEngineDataType]:
         raise NotImplementedError
 
 

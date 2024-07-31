@@ -160,7 +160,7 @@ class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResult
                 columns += list(self._text_features_gen[col].keys())
                 columns.remove(col)
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.feature_name()) for x in list(self._text_features_gen[col].values())],
+                    [data.get_current_column(x._as_column()) for x in list(self._text_features_gen[col].values())],
                     axis=1,
                 )
                 curr_text_df.columns = list(self._text_features_gen[col].keys())
@@ -175,7 +175,7 @@ class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResult
                 if ref_df is not None:
                     ref_text_df = pd.concat(
                         [
-                            data.get_reference_column(x.feature_name())
+                            data.get_reference_column(x._as_column())
                             for x in list(self._text_features_gen[col].values())
                         ],
                         axis=1,

@@ -89,14 +89,14 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
                 raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
         curr_text_df = pd.concat(
-            [data.get_current_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+            [data.get_current_column(x._as_column()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
         curr_text_df.columns = list(self.generated_text_features.keys())
         ref_df = None
         if data.reference_data is not None:
             ref_text_df = pd.concat(
-                [data.get_reference_column(x.feature_name()) for x in list(self.generated_text_features.values())],
+                [data.get_reference_column(x._as_column()) for x in list(self.generated_text_features.values())],
                 axis=1,
             )
             ref_text_df.columns = list(self.generated_text_features.keys())
@@ -116,14 +116,14 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         for name, feature in self.generated_text_features.items():
             correlations = calculate_numerical_correlation(
                 name,
-                data.get_current_column(feature.feature_name()),
+                data.get_current_column(feature._as_column()),
                 data.current_data[[feature.column_name for feature in num_features]],
             )
             curr_result[name] = {value.kind: value for value in correlations}
             if ref_df is not None and ref_result is not None:
                 correlations = calculate_numerical_correlation(
                     name,
-                    data.get_reference_column(feature.feature_name()),
+                    data.get_reference_column(feature._as_column()),
                     data.current_data[[feature.column_name for feature in num_features]],
                 )
                 ref_result[name] = {value.kind: value for value in correlations}

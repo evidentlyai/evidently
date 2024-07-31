@@ -44,7 +44,7 @@ class WorkspaceBase(abc.ABC):
         snapshot = report.to_snapshot()
         if include_data:
             run_from = "ws"
-            reference, current = report.datasets()
+            current, reference = report.datasets()
             column_mapping = report.get_column_mapping()
             if current is not None:
                 dataset_name_current = get_dataset_name_output_current(snapshot.is_report, snapshot.id, run_from)

@@ -7,7 +7,6 @@ from typing import Union
 import pandas as pd
 
 from evidently.base_metric import ColumnName
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
@@ -102,14 +101,10 @@ class OpenAIFeature(GeneratedFeature):
                 except ValueError:
                     result.append(None)
 
-        return pd.DataFrame(dict([(self._feature_column_name(), result)]), index=data.index)
+        return pd.DataFrame({self._feature_column_name(): result}, index=data.index)
 
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
-            self._feature_column_name(),
-            self.display_name or f"OpenAI for {self.column_name}",
-        )
+    def _as_column(self) -> ColumnName:
+        return self._create_column(self._feature_column_name(), default_display_name=f"OpenAI for {self.column_name}")
 
     def _feature_column_name(self) -> str:
         if self.display_name:

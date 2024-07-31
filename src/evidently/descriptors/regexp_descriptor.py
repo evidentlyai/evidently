@@ -8,6 +8,3 @@ class RegExp(FeatureDescriptor):
 
     def feature(self, column_name: str) -> GeneratedFeature:
         return regexp_feature.RegExp(column_name, self.reg_exp, self.display_name)
-
-    def for_column(self, column_name: str):
-        return regexp_feature.RegExp(column_name, self.reg_exp, self.display_name).feature_name()

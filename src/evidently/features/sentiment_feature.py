@@ -1,35 +1,35 @@
+from typing import Any
+from typing import ClassVar
 from typing import Optional
 
 import numpy as np
-import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-from evidently.base_metric import ColumnName
-from evidently.base_metric import additional_feature
-from evidently.features.generated_features import GeneratedFeature
-from evidently.utils.data_preprocessing import DataDefinition
+from evidently._pydantic_compat import PrivateAttr
+from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
-class Sentiment(GeneratedFeature):
+class Sentiment(ApplyColumnGeneratedFeature):
+    display_name_template: ClassVar = "Sentiment for {column_name}"
     column_name: str
+
+    _sid: Optional[SentimentIntensityAnalyzer] = PrivateAttr(None)
 
     def __init__(self, column_name: str, display_name: Optional[str] = None):
         self.column_name = column_name
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        import nltk
+    @property
+    def sid(self):
+        if self._sid is None:
+            import nltk
 
-        nltk.download("vader_lexicon", quiet=True)
-        sid = SentimentIntensityAnalyzer()
+            nltk.download("vader_lexicon", quiet=True)
+            self._sid = SentimentIntensityAnalyzer()
+        return self._sid
 
-        def sentiment_f(s, sid=sid):
-            if s is None or (isinstance(s, float) and np.isnan(s)):
-                return 0
-            return sid.polarity_scores(s)["compound"]
-
-        return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(sentiment_f))]))
-
-    def feature_name(self) -> ColumnName:
-        return additional_feature(self, self.column_name, self.display_name or f"Sentiment for {self.column_name}")
+    def apply(self, value: Any):
+        if value is None or (isinstance(value, float) and np.isnan(value)):
+            return 0
+        return self.sid.polarity_scores(value)["compound"]

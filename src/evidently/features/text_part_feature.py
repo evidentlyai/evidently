@@ -3,7 +3,6 @@ from typing import Optional
 import pandas as pd
 
 from evidently.base_metric import ColumnName
-from evidently.base_metric import additional_feature
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
@@ -38,13 +37,12 @@ class BeginsWith(GeneratedFeature):
             data = data.str.casefold()
             substr = substr.casefold()
         calculated = data.str.startswith(substr)
-        return pd.DataFrame(dict([(self._feature_column_name(), calculated)]))
+        return pd.DataFrame({self._feature_column_name(): calculated})
 
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
+    def _as_column(self) -> ColumnName:
+        return self._create_column(
             self._feature_column_name(),
-            self.display_name or f"Text Begins with [{self.prefix}] for {self.column_name}",
+            default_display_name=f"Text Begins with [{self.prefix}] for {self.column_name}",
         )
 
 
@@ -77,20 +75,10 @@ class EndsWith(GeneratedFeature):
             data = data.str.casefold()
             substr = substr.casefold()
         calculated = data.str.endswith(substr)
-        return pd.DataFrame(
-            dict(
-                [
-                    (
-                        self._feature_column_name(),
-                        calculated,
-                    )
-                ]
-            )
-        )
+        return pd.DataFrame({self._feature_column_name(): calculated})
 
-    def feature_name(self) -> ColumnName:
-        return additional_feature(
-            self,
+    def _as_column(self) -> ColumnName:
+        return self._create_column(
             self._feature_column_name(),
-            self.display_name or f"Text Ends with [{self.suffix}] for {self.column_name}",
+            default_display_name=f"Text Ends with [{self.suffix}] for {self.column_name}",
         )

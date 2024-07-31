@@ -1,15 +1,14 @@
 import re
+from typing import Any
 from typing import List
 from typing import Optional
 
 import numpy as np
-import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
-from evidently.base_metric import additional_feature
+from evidently._pydantic_compat import PrivateAttr
 from evidently.core import ColumnType
-from evidently.features.generated_features import GeneratedFeature
-from evidently.utils.data_preprocessing import DataDefinition
+from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 def _listed_words_present(
@@ -40,12 +39,12 @@ def _listed_words_present(
     return result
 
 
-class WordsPresence(GeneratedFeature):
+class WordsPresence(ApplyColumnGeneratedFeature):
     column_name: str
     words_list: List[str]
     mode: str
     lemmatize: bool = True
-    _lem: Optional[WordNetLemmatizer] = None
+    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
 
     def __init__(
         self,
@@ -65,37 +64,17 @@ class WordsPresence(GeneratedFeature):
         self.display_name = display_name
         super().__init__()
 
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    @property
+    def lem(self):
         if self._lem is None:
             import nltk
 
             nltk.download("wordnet", quiet=True)
             self._lem = WordNetLemmatizer()
+        return self._lem
 
-        return pd.DataFrame(
-            dict(
-                [
-                    (
-                        self._feature_column_name(),
-                        data[self.column_name].apply(
-                            lambda x: _listed_words_present(x, self.mode, self._lem, self.words_list, self.lemmatize)
-                        ),
-                    )
-                ]
-            )
-        )
-
-    def get_parameters(self):
-        return self.column_name, tuple(self.words_list), self.lemmatize
-
-    def feature_name(self):
-        return additional_feature(self, self._feature_column_name(), self.display_name or self._feature_display_name())
-
-    def _feature_column_name(self):
-        raise NotImplementedError()
-
-    def _feature_display_name(self):
-        raise NotImplementedError()
+    def apply(self, value: Any):
+        return _listed_words_present(value, self.mode, self.lem, self.words_list, self.lemmatize)
 
 
 class IncludesWords(WordsPresence):
