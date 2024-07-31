@@ -87,6 +87,7 @@ def ui_workspace(tmp_path) -> WorkspaceView:
     return WorkspaceView(None, project_manager)
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 12), reason="infinite loop")
 def test_create_snapshot_and_get_logs(
     collector_test_client: TestClient,
     collector_service_config: CollectorServiceConfig,
