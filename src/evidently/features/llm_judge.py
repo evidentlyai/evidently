@@ -64,6 +64,8 @@ class LLMPromtTemplate(EvidentlyBaseModel):
     output_column: str = "result"
     output_reasoning_column: str = "reasoning"
 
+    pre_messages: Tuple[LLMMessage] = Field(default_factory=tuple)
+
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[Tuple[str, str]]:
         promt_template = self._promt_template()
         for _, column_values in data[list(input_columns)].rename(columns=input_columns).iterrows():
@@ -122,8 +124,6 @@ class LLMJudge(GeneratedFeatures):
     input_columns: Optional[Dict[str, str]] = None
     template: LLMPromtTemplate
 
-    pre_messages: Tuple[LLMMessage] = Field(default_factory=tuple)
-
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
 
     @property
@@ -143,7 +143,7 @@ class LLMJudge(GeneratedFeatures):
         result: List[Dict[str, str]] = []
 
         for message in self.template.iterate_messages(data, self.get_input_columns()):
-            messages: List[LLMMessage] = [*self.pre_messages, message]
+            messages: List[LLMMessage] = [*self.template.pre_messages, message]
             response = self.llm_wrapper.complete(messages)
             result.append(self.template.parse_response(response))
         return pd.DataFrame(result)

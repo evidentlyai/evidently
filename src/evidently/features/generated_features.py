@@ -155,7 +155,7 @@ class GeneralDescriptor(EvidentlyBaseModel):
     display_name: Optional[str] = None
 
     @abc.abstractmethod
-    def feature(self) -> GeneratedFeature:
+    def feature(self) -> GeneratedFeatures:
         raise NotImplementedError()
 
     def as_column(self) -> "ColumnName":
@@ -188,5 +188,5 @@ class FeatureDescriptor(EvidentlyBaseModel):
         return self.for_column(column_name)
 
     @abc.abstractmethod
-    def feature(self, column_name: str) -> GeneratedFeature:
+    def feature(self, column_name: str) -> GeneratedFeatures:
         raise NotImplementedError
