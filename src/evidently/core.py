@@ -12,6 +12,7 @@ from typing import get_args
 
 import numpy as np
 import pandas as pd
+from typing_inspect import is_literal_type
 
 from evidently._pydantic_compat import SHAPE_DICT
 from evidently._pydantic_compat import SHAPE_LIST
@@ -237,6 +238,8 @@ def _get_actual_type(cls: Type[T]) -> Type[T]:
         return cls
     if cls is Any:
         return type
+    if is_literal_type(cls):
+        return _get_actual_type(type(get_args(cls)[0]))
     return _get_actual_type(get_args(cls)[0])
 
 
