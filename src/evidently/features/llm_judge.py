@@ -58,26 +58,18 @@ class LLMPromtTemplate(EvidentlyBaseModel):
 
     placeholders: Dict[str, str] = {}
     categories: Optional[Dict[str, str]] = None
-    input_column: Optional[str] = None
-    input_columns: Optional[Dict[str, str]] = None
 
     include_reasoning: bool = False
     return_json: bool = True
     output_column: str = "result"
     output_reasoning_column: str = "reasoning"
 
-    def _iterate_messages(self, data: pd.DataFrame) -> Iterator[Tuple[str, str]]:
-        if self.input_column is None:
-            assert self.input_columns is not None  # todo: validate earlier
-            input_columns = self.input_columns
-        else:
-            assert self.input_column is not None
-            input_columns = {self.input_column: "input"}
-        pre_promt = self._pre_promt()
+    def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[Tuple[str, str]]:
+        promt_template = self._promt_template()
         for _, column_values in data[list(input_columns)].rename(columns=input_columns).iterrows():
-            yield "user", pre_promt.format(**dict(column_values))
+            yield "user", promt_template.format(**dict(column_values))
 
-    def _pre_promt(self) -> str:
+    def _promt_template(self) -> str:
         values = {
             "__task__": self._task(),
             "__instructions__": self._instructions(),
@@ -104,12 +96,31 @@ class LLMPromtTemplate(EvidentlyBaseModel):
                 output_format = output_format + f' and key "{self.output_reasoning_column}" for reasoning'
         return output_format
 
+    def parse_response(self, response: str) -> Dict[str, str]:
+        if self.return_json:
+            return json.loads(response)
+        assert self.categories is not None  # todo: should it be optional?
+        result = next(category for category in self.categories if category in response)
+        if self.include_reasoning:
+            return {self.output_column: result, self.output_reasoning_column: response}
+        return {self.output_column: result}
 
-class LLMJudge(GeneratedFeatures, LLMPromtTemplate):
+    def list_output_columns(self) -> List[str]:
+        result = [self.output_column]
+        if self.include_reasoning:
+            result.append(self.output_reasoning_column)
+        return result
+
+
+class LLMJudge(GeneratedFeatures):
     """Generic LLM judge generated features"""
 
     provider: str
     model: str
+
+    input_column: Optional[str] = None
+    input_columns: Optional[Dict[str, str]] = None
+    template: LLMPromtTemplate
 
     pre_messages: Tuple[LLMMessage] = Field(default_factory=tuple)
 
@@ -121,28 +132,24 @@ class LLMJudge(GeneratedFeatures, LLMPromtTemplate):
             self._llm_wrapper = get_llm_wrapper(self.provider, self.model)
         return self._llm_wrapper
 
+    def get_input_columns(self):
+        if self.input_column is None:
+            assert self.input_columns is not None  # todo: validate earlier
+            return self.input_columns
+
+        return {self.input_column: "input"}
+
     def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         result: List[Dict[str, str]] = []
-        for message in self._iterate_messages(data):
+
+        for message in self.template.iterate_messages(data, self.get_input_columns()):
             messages: List[LLMMessage] = [*self.pre_messages, message]
             response = self.llm_wrapper.complete(messages)
-            result.append(self._parse_response(response))
+            result.append(self.template.parse_response(response))
         return pd.DataFrame(result)
 
     def list_columns(self) -> List["ColumnName"]:
-        result = [self._create_column(self.output_column)]
-        if self.include_reasoning:
-            result.append(self._create_column(self.output_reasoning_column))
-        return result
-
-    def _parse_response(self, response: str) -> Dict[str, str]:
-        if self.return_json:
-            return json.loads(response)
-        assert self.categories is not None  # todo: should it be optional?
-        result = next(category for category in self.categories if category in response)
-        if self.include_reasoning:
-            return {self.output_column: result, self.output_reasoning_column: response}
-        return {self.output_column: result}
+        return [self._create_column(c) for c in self.template.list_output_columns()]
 
 
 @llm_provider("openai", None)
@@ -151,7 +158,7 @@ class OpenAIWrapper(LLMWrapper):
         import openai
 
         self.model = model
-        openai_api_key = os.environ.get("OPEN_AI_API_KEY")
+        openai_api_key = os.environ.get("OPEN_AI_API_KEY")  # todo: better creds
         self.client = openai.OpenAI(api_key=openai_api_key)
 
     def complete(self, messages: List[LLMMessage]) -> str:
