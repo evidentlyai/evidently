@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "tsc": "tsc",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "biome lint ./src"
   },
   "exports": {
     "./routes-components/*/data": {
@@ -53,11 +53,6 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/react-plotly.js": "^2.6.1",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.45.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
     "typescript": "^5.0.2"
   }
 }

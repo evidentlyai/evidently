@@ -1,7 +1,7 @@
-import React from 'react'
+import type React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import { TextWidgetParams } from '~/api'
+import type { TextWidgetParams } from '~/api'
 
 const TextWidgetContent: React.FunctionComponent<TextWidgetParams> = (props) => {
   return (

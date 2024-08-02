@@ -1,8 +1,8 @@
-import React from 'react'
+import type React from 'react'
 
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 
-import { TableWidgetParams } from '~/api'
+import type { TableWidgetParams } from '~/api'
 
 const TableWidgetContent: React.FunctionComponent<TableWidgetParams> = (props) => (
   <TableContainer>
@@ -10,8 +10,8 @@ const TableWidgetContent: React.FunctionComponent<TableWidgetParams> = (props) =
       <TableHead>
         <TableRow>
           <TableCell key={-1}>{props.header[0]}</TableCell>
-          {props.header.slice(1).map((val, idx) => (
-            <TableCell key={idx} align="right">
+          {props.header.slice(1).map((val) => (
+            <TableCell key={val} align="right">
               {val}
             </TableCell>
           ))}
@@ -23,8 +23,8 @@ const TableWidgetContent: React.FunctionComponent<TableWidgetParams> = (props) =
             <TableCell key={-1} component="th" scope="row">
               {row[0]}
             </TableCell>
-            {row.slice(1).map((val, idx) => (
-              <TableCell key={idx} align="right">
+            {row.slice(1).map((val) => (
+              <TableCell key={val} align="right">
                 {val}
               </TableCell>
             ))}

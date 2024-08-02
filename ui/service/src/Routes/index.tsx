@@ -1,7 +1,7 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 
 import {
-  RouteObject,
+  type RouteObject,
   createBrowserRouter
 } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 

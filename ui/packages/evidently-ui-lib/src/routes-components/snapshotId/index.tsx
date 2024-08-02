@@ -2,14 +2,14 @@ import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { DashboardContentWidgets } from '~/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
-import { crumbFunction } from '~/components/BreadCrumbs'
-import { LoaderData } from './data'
+import type { crumbFunction } from '~/components/BreadCrumbs'
+import type { LoaderData } from './data'
 import { Grid } from '@mui/material'
-import { AdditionalGraphInfo, WidgetInfo } from '~/api'
-import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
+import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
 import { JSONParseExtended } from '~/api/JsonParser'
 
-export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, Boolean> } = {
+export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, boolean> } = {
   crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
   hide: {
     snapshotList: true

@@ -53,7 +53,7 @@ export class JsonParser {
       this.check('i')
       this.check('t')
       this.check('y')
-      return -Infinity
+      return Number.NEGATIVE_INFINITY
     }
     while (this.ch >= '0' && this.ch <= '9') {
       string += this.ch
@@ -97,7 +97,7 @@ export class JsonParser {
           if (this.ch === 'u') {
             uffff = 0
             for (i = 0; i < 4; i++) {
-              hex = parseInt(this.next(), 16)
+              hex = Number.parseInt(this.next(), 16)
               if (!isFinite(hex)) {
                 break
               }
@@ -149,7 +149,7 @@ export class JsonParser {
         this.check('N')
         this.check('a')
         this.check('N')
-        return NaN
+        return Number.NaN
       case 'I':
         this.check('I')
         this.check('n')
@@ -159,7 +159,7 @@ export class JsonParser {
         this.check('i')
         this.check('t')
         this.check('y')
-        return Infinity
+        return Number.POSITIVE_INFINITY
     }
     this.error("Unexpected '" + this.ch + "'")
   }

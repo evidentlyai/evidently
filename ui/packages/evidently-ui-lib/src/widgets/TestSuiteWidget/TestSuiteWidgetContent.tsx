@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TestSuiteWidgetParams, TestDataInfo, TestGroupData, TestGroupTypeData } from '~/api'
+import type { TestSuiteWidgetParams, TestDataInfo, TestGroupData, TestGroupTypeData } from '~/api'
 import TestInfo, { StateToSeverity } from './TestData'
 import { Box, Button, Collapse, Grid, Select } from '@mui/material'
 import { Alert, AlertTitle } from '@mui/material'
@@ -73,6 +73,7 @@ type GroupedSectionProps = {
 const GroupedSection: React.FC<GroupedSectionProps> = ({ type, groupsInfo, tests }) => {
   function getGroupFn(type: string): [TestGroupData[], (test: TestDataInfo) => string] {
     if (type === 'status') {
+      // biome-ignore lint: <explanation>
       return [groupsInfo.find((t) => t.id === type)!.values, (test) => test.state]
     }
 
@@ -81,7 +82,7 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({ type, groupsInfo, tests
       throw 'unexpected type'
     }
     const groups =
-      group.values.find((v) => v.id == 'no group') !== undefined
+      group.values.find((v) => v.id === 'no group') !== undefined
         ? group.values
         : [
             ...group.values,
@@ -117,7 +118,7 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({ type, groupsInfo, tests
           )
           .sort((a, b) => (a[0].sortIndex ?? 0) - (b[0].sortIndex ?? 0))
           .map(([key, value], idx) => (
-            <Grid item xs={12} key={`test_${idx}`}>
+            <Grid item xs={12} key={idx}>
               <TestGroup groupInfo={key} tests={value} />
             </Grid>
           ))}
@@ -186,8 +187,8 @@ const TestSuiteWidgetContent: React.FC<TestSuiteWidgetParams> = ({ tests, testGr
         <Grid item xs={12}>
           <Grid container spacing={2}>
             {grouping.group_type === 'none' ? (
-              tests.map((test, idx) => (
-                <Grid item key={`test_${idx}`} xs={12}>
+              tests.map((test) => (
+                <Grid item key={test.title + test.description} xs={12}>
                   <TestInfo {...test} />
                 </Grid>
               ))

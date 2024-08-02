@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react'
-import { WidgetInfo } from '~/api'
+import React, { type ReactNode } from 'react'
+import type { WidgetInfo } from '~/api'
 
 import { Grid, Card, CardContent, Typography } from '@mui/material'
 
@@ -114,8 +114,8 @@ const Widget = (
                       ) : (
                         <div />
                       )}
-                      {alerts.map((alert) => (
-                        <Grid item>
+                      {alerts.map((alert, idx) => (
+                        <Grid key={idx} item>
                           <AlertBlock data={alert} />
                         </Grid>
                       ))}
@@ -150,8 +150,8 @@ const Widget = (
                         ) : (
                           <div />
                         )}
-                        {alerts.map((alert) => (
-                          <Grid item xs>
+                        {alerts.map((alert, idx) => (
+                          <Grid key={idx} item xs>
                             <AlertBlock data={alert} />
                           </Grid>
                         ))}
@@ -167,8 +167,8 @@ const Widget = (
             </React.Fragment>
           )}
           {isInsightsExists ? (
-            insights!.map((insight) => (
-              <Grid item xs sm md>
+            insights?.map((insight, idx) => (
+              <Grid key={idx} item xs sm md>
                 <InsightBlock data={insight} />
               </Grid>
             ))

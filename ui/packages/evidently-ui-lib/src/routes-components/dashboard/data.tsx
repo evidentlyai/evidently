@@ -1,13 +1,13 @@
 import dayjs from 'dayjs'
 import invariant from 'tiny-invariant'
-import { GetLoaderAction } from '~/api/utils'
+import type { GetLoaderAction } from '~/api/utils'
 
 export type LoaderData = DashboardInfoModel
 
 import { FILTER_QUERY_PARAMS } from '~/components/DashboardDateFilter'
-import { DashboardInfoModel } from '~/api/types'
+import type { DashboardInfoModel } from '~/api/types'
 
-import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
 import { JSONParseExtended } from '~/api/JsonParser'
 
 export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ api }) => ({

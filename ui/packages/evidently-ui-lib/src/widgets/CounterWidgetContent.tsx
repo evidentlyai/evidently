@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Grid, Typography } from '@mui/material'
-import { CounterInfo } from '~/api'
+import type { CounterInfo } from '~/api'
 
 interface CounterWidgetProps {
   counters: CounterInfo[]
@@ -23,8 +23,8 @@ const CounterWidgetContent: React.FunctionComponent<CounterWidgetProps> = (props
       <CounterItem {...props.counters[0]} />
     ) : (
       <Grid container spacing={1} direction="row" alignItems="center">
-        {props.counters.map((counter, idx) => (
-          <Grid item xs key={idx} component={Box} height={'100%'}>
+        {props.counters.map((counter) => (
+          <Grid item xs key={counter.label + counter.value} component={Box} height={'100%'}>
             <Box>
               <CounterItem {...counter} />
             </Box>

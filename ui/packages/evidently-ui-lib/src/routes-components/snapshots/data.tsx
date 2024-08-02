@@ -1,10 +1,10 @@
-import { ActionFunctionArgs } from 'react-router-dom'
+import type { ActionFunctionArgs } from 'react-router-dom'
 import invariant from 'tiny-invariant'
-import { expectJsonRequest, GetLoaderAction } from '~/api/utils'
-import { ReportModel, TestSuiteModel } from '~/api/types'
+import { expectJsonRequest, type GetLoaderAction } from '~/api/utils'
+import type { ReportModel, TestSuiteModel } from '~/api/types'
 import { z } from 'zod'
-import { ErrorData } from '~/api/types/utils'
-import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import type { ErrorData } from '~/api/types/utils'
+import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
 
 export type ReportsLoaderData = ReportModel[]
 

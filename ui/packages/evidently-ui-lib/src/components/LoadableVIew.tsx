@@ -8,11 +8,11 @@ interface LoadableViewProps<T> {
 }
 
 enum LoadState {
-  Uninitialized,
-  Initialized,
-  Loading,
-  Loaded,
-  Failed
+  Uninitialized = 0,
+  Initialized = 1,
+  Loading = 2,
+  Loaded = 3,
+  Failed = 4
 }
 
 interface LoadableViewState<T> {
@@ -43,7 +43,7 @@ const LoadableView = <T,>({ func, children }: LoadableViewProps<T>): JSX.Element
   return (
     <>
       {state.status === LoadState.Loaded ? (
-        children && children(state.result!)
+        children && state.result && children(state.result)
       ) : state.status === LoadState.Failed ? (
         <Typography align="center">Failed</Typography>
       ) : state.status === LoadState.Loading ? (

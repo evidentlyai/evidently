@@ -1,7 +1,7 @@
 import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { DashboardParams } from '~/components/DashboardDateFilter'
-import { LoaderData } from './data'
+import type { LoaderData } from './data'
 import { DashboardViewParamsContext } from '~/contexts/DashboardViewParams'
 import { useLocalStorage } from '~/hooks'
 import dayjs from 'dayjs'

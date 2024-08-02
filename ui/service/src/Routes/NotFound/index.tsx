@@ -1,5 +1,5 @@
 import { Box, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import type { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
 export default {
   path: '*',

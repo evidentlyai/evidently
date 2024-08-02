@@ -1,4 +1,4 @@
-import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import type { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { clientAPI } from '~/api'
 

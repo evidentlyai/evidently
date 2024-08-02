@@ -1,8 +1,8 @@
-import React from 'react'
+import type React from 'react'
 
 import { Box, LinearProgress, Typography } from '@mui/material'
 
-import { PercentWidgetParams } from '~/api'
+import type { PercentWidgetParams } from '~/api'
 
 const ProgressWidgetContent: React.FunctionComponent<PercentWidgetParams> = (props) => (
   <div>

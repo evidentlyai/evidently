@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import {
   Box,
   Button,
-  ButtonOwnProps,
+  type ButtonOwnProps,
   FormControlLabel,
   Grid,
   IconButton,
@@ -28,7 +28,7 @@ import {
   useSearchParams,
   useSubmit,
   useNavigation,
-  ShouldRevalidateFunction
+  type ShouldRevalidateFunction
 } from 'react-router-dom'
 
 import { useLocalStorage } from '@uidotdev/usehooks'
@@ -40,15 +40,15 @@ import './override-react18-json-view.css'
 import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
-import { crumbFunction } from '~/components/BreadCrumbs'
+import type { crumbFunction } from '~/components/BreadCrumbs'
 import { Autocomplete } from '@mui/material'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import dayjs from 'dayjs'
-import { reloadSnapshotSchema, deleteSnapshotSchema } from './data'
+import type { reloadSnapshotSchema, deleteSnapshotSchema } from './data'
 import type { ReportsLoaderData, TestSuitesLoaderData } from './data'
-import { MetadataModel } from '~/api/types'
+import type { MetadataModel } from '~/api/types'
 import { Delete as DeleteIcon } from '@mui/icons-material'
-import { z } from 'zod'
+import type { z } from 'zod'
 import invariant from 'tiny-invariant'
 
 export const shouldRevalidate: ShouldRevalidateFunction = () => true
@@ -186,7 +186,7 @@ export const SnapshotsListTemplate = ({
                   <Switch
                     checked={isCollapsedJson}
                     onChange={(event) => setIsCollapsedJson(event.target.checked)}
-                  ></Switch>
+                  />
                 }
                 label="Hide Metadata"
               />
@@ -264,7 +264,7 @@ export const SnapshotsListTemplate = ({
             </TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
-          <TableRow></TableRow>
+          <TableRow />
         </TableHead>
         <TableBody>
           {resultSnapshots.map((snapshot) => (

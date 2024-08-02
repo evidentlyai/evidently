@@ -1,5 +1,5 @@
 import { ActionsErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
-import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import type { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectReportsAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { clientAPI } from '~/api'
 

@@ -1,18 +1,18 @@
 import {
-  AdditionalGraphInfo,
-  BigTableWidgetParams,
-  CounterWidgetParams,
-  RichDataParams,
-  MultiTabGraphWidgetParams,
-  MultiTabWidgetParams,
-  PercentWidgetParams,
-  TableWidgetParams,
-  WidgetGroupParams,
-  WidgetListParams,
-  WidgetInfo,
+  type AdditionalGraphInfo,
+  type BigTableWidgetParams,
+  type CounterWidgetParams,
+  type RichDataParams,
+  type MultiTabGraphWidgetParams,
+  type MultiTabWidgetParams,
+  type PercentWidgetParams,
+  type TableWidgetParams,
+  type WidgetGroupParams,
+  type WidgetListParams,
+  type WidgetInfo,
   WidgetSize,
-  TextWidgetParams,
-  TestSuiteWidgetParams
+  type TextWidgetParams,
+  type TestSuiteWidgetParams
 } from '~/api'
 
 import Widget from './Widget'
@@ -33,11 +33,16 @@ import TestSuiteWidgetContent from './TestSuiteWidget/TestSuiteWidgetContent'
 function sizeTransform(size: WidgetSize): 1 | 3 | 6 | 12 {
   if (size === WidgetSize.Small) {
     return 3
-  } else if (size === WidgetSize.Medium) {
+  }
+
+  if (size === WidgetSize.Medium) {
     return 6
-  } else if (size === WidgetSize.Big) {
+  }
+
+  if (size === WidgetSize.Big) {
     return 12
   }
+
   return 12
 }
 

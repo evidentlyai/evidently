@@ -1,11 +1,12 @@
-import createClient from 'openapi-fetch'
+import type createClient from 'openapi-fetch'
 import { json } from 'react-router-dom'
 import type { ErrorData, ErrorResponse } from '~/api/types/utils'
 
-import { BackendPaths } from '~/api/types'
+import type { BackendPaths } from '~/api/types'
 
 export type API_CLIENT_TYPE = ReturnType<typeof createClient<BackendPaths>>
 
+// biome-ignore lint: <explanation>
 type ClientGenericResponse<D = any> =
   | {
       data: D
@@ -26,7 +27,8 @@ type DetermineReturnType<T extends ResponseParserArgs> = T extends {
   ? typeof returnErrorIfResponseNotOk
   : T extends { notThrowExc: false }
   ? typeof throwErrorIfResponseNotOk
-  : T extends {}
+  : // biome-ignore lint: <explanation>
+  T extends {}
   ? typeof throwErrorIfResponseNotOk
   : never
 
