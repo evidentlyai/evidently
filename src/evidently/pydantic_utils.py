@@ -183,7 +183,8 @@ class PolymorphicModel(BaseModel):
         typename = cls.__get_type__()
         type_field = cls.__fields__["type"]
         type_field.default = typename
-        type_field.type_ = Literal[typename]
+        type_field.type_ = type_field.outer_type_ = Literal[typename]
+        type_field.field_info.default = typename
         register_loaded_alias(get_base_class(cls), cls, typename)
 
     @classmethod
