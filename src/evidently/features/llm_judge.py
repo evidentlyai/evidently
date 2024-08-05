@@ -94,7 +94,11 @@ class LLMPromtTemplate(EvidentlyBaseModel):
         return self.task
 
     def _instructions(self):
-        categories = "\n".join(f"{cat}: if {condition}" for cat, condition in self.categories.items())
+        categories = (
+            "\n".join(f"{cat}: if {condition}" for cat, condition in self.categories.items())
+            if self.categories is not None
+            else ""
+        )
         return self.instructions_template.format(categories=categories)
 
     def _output_format(self):
