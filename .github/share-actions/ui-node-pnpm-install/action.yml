@@ -1,6 +1,6 @@
 name: UI install
 inputs:
-  args: # id of input
+  args:
     description: ""
     required: false
     default: ""
