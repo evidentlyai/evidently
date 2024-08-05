@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from abc import ABC
 from abc import abstractmethod
 from typing import Callable
@@ -8,6 +9,7 @@ from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import pandas as pd
 
@@ -19,6 +21,10 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
 
 LLMMessage = Tuple[str, str]
+
+
+class LLMResponseParseError(ValueError):
+    pass
 
 
 class LLMWrapper(ABC):
@@ -51,6 +57,9 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel) -> LLMWrapper:
     raise ValueError(f"LLM wrapper for provider {provider} model {model} not found")
 
 
+_score_re = re.compile("(.*\s)\s*(\d+\.?\d*)")
+
+
 class LLMPromtTemplate(EvidentlyBaseModel):
     template: str = """{__task__}\n\n{{input}}\n\n{__instructions__}\n\n{__output_format__}"""
     task: str
@@ -58,6 +67,7 @@ class LLMPromtTemplate(EvidentlyBaseModel):
 
     placeholders: Dict[str, str] = {}
     categories: Optional[Dict[str, str]] = None
+    score_range: Optional[Tuple[float, float]] = None
 
     include_reasoning: bool = False
     return_json: bool = True
@@ -88,23 +98,46 @@ class LLMPromtTemplate(EvidentlyBaseModel):
         return self.instructions_template.format(categories=categories)
 
     def _output_format(self):
-        output_format = "Return category only" if not self.include_reasoning else "Return category and reasoning"
+        output_type = "category" if self.score_range is None else "score"
+        score_range = "" if self.score_range is None else f" between {self.score_range[0]} and {self.score_range[1]}"
+        output_format = (
+            f"Return {output_type}{score_range} only"
+            if not self.include_reasoning
+            else f"Return {output_type}{score_range} and reasoning"
+        )
         if self.return_json:
             output_format = (
                 output_format
-                + f' formatted as json string without formatting with key "{self.output_column}" for category'
+                + f' formatted as json string without formatting with key "{self.output_column}" for {output_type}'
             )
             if self.include_reasoning:
                 output_format = output_format + f' and key "{self.output_reasoning_column}" for reasoning'
         return output_format
 
-    def parse_response(self, response: str) -> Dict[str, str]:
+    def parse_response(self, response: str) -> Dict[str, Union[str, float]]:
         if self.return_json:
             return json.loads(response)
+        if self.score_range is not None:
+            if self.include_reasoning:
+                match = _score_re.match(response)
+                if match is None:
+                    raise LLMResponseParseError(f"Response '{response}' did not match pattern '<reasoning> <score>'")
+                reasoning, score = match.groups()
+                try:
+                    return {self.output_column: float(score), self.output_reasoning_column: reasoning}
+                except ValueError as e:
+                    raise LLMResponseParseError(f"Could not parse score '{score}' as float") from e
+            return {self.output_column: float(response)}
         assert self.categories is not None  # todo: should it be optional?
-        result = next(category for category in self.categories if category in response)
+        try:
+            result = next(category for category in self.categories if category in response)
+        except StopIteration as e:
+            raise LLMResponseParseError("Response did not contain any categories") from e
+
         if self.include_reasoning:
             return {self.output_column: result, self.output_reasoning_column: response}
+        if response != result:
+            raise LLMResponseParseError(f"Could not parse category '{response}'")
         return {self.output_column: result}
 
     def list_output_columns(self) -> List[str]:
