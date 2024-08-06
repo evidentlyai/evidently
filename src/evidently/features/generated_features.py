@@ -128,8 +128,6 @@ class FeatureTypeFieldMixin(BaseModel):
     feature_type: ColumnType
 
     def get_type(self, subcolumn: Optional[str] = None):
-        if subcolumn is not None:
-            raise ValueError(f"{self.__class__.__name__} do not have subcolumns")
         return self.feature_type
 
 
