@@ -6,7 +6,7 @@
     "dev": "vite",
     "type-check": "tsc --build",
     "build": "vite build",
-    "lint": "biome lint ./src",
+    "lint": "biome lint",
     "preview": "vite preview",
     "test": "playwright test"
   },
