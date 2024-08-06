@@ -10,6 +10,7 @@ from typing import Optional
 import deprecation
 import pandas as pd
 
+from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
@@ -27,10 +28,13 @@ class FeatureResult(Generic[TEngineDataType]):
 
 class GeneratedFeatures(EvidentlyBaseModel):
     display_name: Optional[str] = None
-    feature_type: ColumnType = ColumnType.Numerical
     """
     Class for computation of additional features.
     """
+
+    @abc.abstractmethod
+    def get_type(self, subcolumn: Optional[str] = None) -> ColumnType:
+        raise NotImplementedError
 
     @abc.abstractmethod
     def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
@@ -92,6 +96,8 @@ class GeneratedFeatures(EvidentlyBaseModel):
 
 
 class GeneratedFeature(GeneratedFeatures):
+    __feature_type__: ClassVar[ColumnType]
+
     @abc.abstractmethod
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         """
@@ -113,6 +119,18 @@ class GeneratedFeature(GeneratedFeatures):
     @abc.abstractmethod
     def _as_column(self) -> "ColumnName":
         raise NotImplementedError
+
+    def get_type(self, subcolumn: Optional[str] = None):
+        return self.__feature_type__
+
+
+class FeatureTypeFieldMixin(BaseModel):
+    feature_type: ColumnType
+
+    def get_type(self, subcolumn: Optional[str] = None):
+        if subcolumn is not None:
+            raise ValueError(f"{self.__class__.__name__} do not have subcolumns")
+        return self.feature_type
 
 
 class ApplyColumnGeneratedFeature(GeneratedFeature):

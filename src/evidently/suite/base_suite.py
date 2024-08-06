@@ -154,12 +154,11 @@ class Context:
         self.features = features
         for feature in features.keys():
             for feature_column in feature.list_columns():
-                feature_class = feature_column.feature_class
                 self.run_metadata.descriptors[feature_column.name] = FeatureDefinition(
                     feature_name=feature_column.name,
                     display_name=feature_column.display_name,
-                    feature_type=feature_class.feature_type,  # type: ignore[union-attr]
-                    feature_class=feature_class.__class__.__name__,
+                    feature_type=feature.get_type(feature_column.name),  # type: ignore[union-attr]
+                    feature_class=feature.__class__.__name__,
                 )
 
 

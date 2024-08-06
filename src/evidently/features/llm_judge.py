@@ -13,6 +13,7 @@ from typing import Union
 
 import pandas as pd
 
+from evidently import ColumnType
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently.base_metric import ColumnName
@@ -150,6 +151,15 @@ class LLMPromtTemplate(EvidentlyBaseModel):
             result.append(self.output_reasoning_column)
         return result
 
+    def get_type(self, subcolumn: str) -> ColumnType:
+        if subcolumn == self.output_reasoning_column:
+            return ColumnType.Text
+        if subcolumn == self.output_column:
+            if self.score_range is not None:
+                return ColumnType.Numerical
+            return ColumnType.Categorical
+        raise ValueError(f"Unknown subcolumn {subcolumn}")
+
 
 class LLMJudge(GeneratedFeatures):
     """Generic LLM judge generated features"""
@@ -177,7 +187,7 @@ class LLMJudge(GeneratedFeatures):
         return {self.input_column: "input"}
 
     def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        result: List[Dict[str, str]] = []
+        result: List[Dict[str, Union[str, float]]] = []
 
         for message in self.template.iterate_messages(data, self.get_input_columns()):
             messages: List[LLMMessage] = [*self.template.pre_messages, message]
@@ -187,6 +197,14 @@ class LLMJudge(GeneratedFeatures):
 
     def list_columns(self) -> List["ColumnName"]:
         return [self._create_column(c) for c in self.template.list_output_columns()]
+
+    def get_type(self, subcolumn: Optional[str] = None) -> ColumnType:
+        if subcolumn is None:
+            if self.template.include_reasoning:
+                raise ValueError("Subcolumn should be specified")
+            return self.template.get_type(self.template.output_column)
+        subcolumn = subcolumn.split(".")[-1]
+        return self.template.get_type(subcolumn)
 
 
 @llm_provider("openai", None)

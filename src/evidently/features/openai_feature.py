@@ -8,13 +8,14 @@ import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
+from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 _legacy_models = ["gpt-3.5-turbo-instruct", "babbage-002", "davinci-002"]
 
 
-class OpenAIFeature(GeneratedFeature):
+class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
     column_name: str
     feature_id: str
     prompt: str

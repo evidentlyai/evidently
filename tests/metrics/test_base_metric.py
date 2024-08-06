@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import Optional
 
@@ -106,6 +107,7 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
 
 
 class SimpleGeneratedFeature(GeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str
 
     def __init__(self, column_name: str, display_name: str = ""):
@@ -121,6 +123,7 @@ class SimpleGeneratedFeature(GeneratedFeature):
 
 
 class LengthFeature(GeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str
     max_length: Optional[int] = None
 

@@ -163,7 +163,7 @@ class InputData(GenericInputData[pd.DataFrame]):
 
     def _determine_type(self, column: Union[str, ColumnName]) -> ColumnType:
         if isinstance(column, ColumnName) and column._feature_class is not None:
-            column_type = column._feature_class.feature_type
+            column_type = column._feature_class.get_type(column.name)
         else:
             if isinstance(column, ColumnName):
                 column_name = column.name
