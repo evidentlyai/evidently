@@ -14,7 +14,10 @@ export type crumbFunction<T> = (
 ) => Crumb
 
 type MatchWithCrumbHandle = MatchObject & {
-  handle: { crumb: crumbFunction<any> }
+  handle: {
+    // biome-ignore lint: <explanation>
+    crumb: crumbFunction<any>
+  }
 }
 
 const isCrumb = (match: MatchObject): match is MatchWithCrumbHandle =>

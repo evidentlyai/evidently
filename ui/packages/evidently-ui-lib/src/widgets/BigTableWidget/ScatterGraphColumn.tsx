@@ -1,10 +1,10 @@
-import React from 'react'
+import type React from 'react'
 
 import { Box } from '@mui/material'
 
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 
-import { BigTableDataRow, LineGraphOptions } from '~/api'
+import type { BigTableDataRow, LineGraphOptions } from '~/api'
 
 interface ScatterGraphColumnProps extends LineGraphOptions {
   data: BigTableDataRow
@@ -17,10 +17,16 @@ const _ScatterGraphColumn: React.FunctionComponent<ScatterGraphColumnProps> = (p
         data={[
           {
             id: '1',
-            data: props.data[props.xField].map((val: any, idx: number) => ({
-              x: val,
-              y: props.data[props.yField][idx]
-            }))
+            data: props.data[props.xField].map(
+              (
+                // biome-ignore lint: <explanation>
+                val: any,
+                idx: number
+              ) => ({
+                x: val,
+                y: props.data[props.yField][idx]
+              })
+            )
           }
         ]}
         margin={{ top: 3, right: 3, bottom: 3, left: 3 }}

@@ -1,9 +1,9 @@
-import React from 'react'
+import type React from 'react'
 
 import { Box, Button, Grid, Select } from '@mui/material'
 
 import { DashboardContentWidgets } from './DashboardContent'
-import { DashboardInfoModel } from '~/api/types'
+import type { DashboardInfoModel } from '~/api/types'
 
 interface SummaryViewProps {
   dashboardInfo: DashboardInfoModel

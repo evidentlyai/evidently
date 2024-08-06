@@ -1,5 +1,5 @@
 import { Grid, Typography } from '@mui/material'
-import { WidgetInfo } from '~/api'
+import type { WidgetInfo } from '~/api'
 import { DashboardContentWidgets } from '~/components/DashboardContent'
 
 export const DashboardWidgets = ({

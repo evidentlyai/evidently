@@ -1,9 +1,9 @@
-import React, { ReactNode, useState } from 'react'
+import React, { type ReactNode, useState } from 'react'
 import { Box, Popover, Typography } from '@mui/material'
-import MaterialTable, { Column, Options } from '@material-table/core'
+import MaterialTable, { type Column, type Options } from '@material-table/core'
 import WarningIcon from '@mui/icons-material/Warning'
 
-import {
+import type {
   BigTableDataRow,
   BigTableWidgetParams,
   ColumnDefinition,
@@ -120,13 +120,16 @@ const InsightAlert: React.FunctionComponent<InsightAlertProps> = (props) => {
 
 const BigTableWidgetContent: React.FunctionComponent<BigTableWidgetProps> = (props) => {
   const { columns, data } = props
-  const options = {
+
+  // biome-ignore lint: <explanation>
+  const options: Options<any> = {
     search: true,
     showTitle: false,
     pageSize: props.rowsPerPage ?? 5,
     detailPanelColumnStyle: { minWidth: 42 },
     emptyRowsWhenPaging: false
-  } as Options<any>
+  }
+
   return (
     <React.Fragment>
       <MaterialTable<BigTableDataRow>

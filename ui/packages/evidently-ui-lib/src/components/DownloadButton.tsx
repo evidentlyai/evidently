@@ -8,7 +8,7 @@ import {
   Popper,
   MenuItem,
   MenuList,
-  ButtonOwnProps
+  type ButtonOwnProps
 } from '@mui/material'
 
 const options = [
@@ -40,7 +40,7 @@ export function DownloadButton(props: {
   }
 
   const handleClose = (event: MouseEvent | TouchEvent) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+    if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return
     }
 

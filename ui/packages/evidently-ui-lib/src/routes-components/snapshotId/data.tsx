@@ -1,7 +1,7 @@
 import invariant from 'tiny-invariant'
 import type { GetLoaderAction } from '~/api/utils'
-import { DashboardInfoModel } from '~/api/types'
-import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import type { DashboardInfoModel } from '~/api/types'
+import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
 import { JSONParseExtended } from '~/api/JsonParser'
 
 export type LoaderData = DashboardInfoModel

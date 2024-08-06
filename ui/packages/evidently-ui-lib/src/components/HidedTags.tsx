@@ -6,7 +6,7 @@ import { useState } from 'react'
 interface TagsProps {
   tags: string[]
   limitTags?: number
-  onClick: (tag: string) => void | undefined
+  onClick: (tag: string) => void
 }
 
 export const HidedTags = ({ onClick, tags, limitTags = 2 }: TagsProps) => {

@@ -1,8 +1,4 @@
-export function formatDate(date: any): string {
-  if (typeof date !== typeof new Date()) {
-    console.log(`not a date ${typeof date}: ${date}`)
-    return date
-  }
+export function formatDate(date: Date): string {
   return (
     `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` +
     `-${date.getDate().toString().padStart(2, '0')}` +

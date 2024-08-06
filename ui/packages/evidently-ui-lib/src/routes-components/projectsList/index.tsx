@@ -1,5 +1,5 @@
 import { Box, Grid, Typography } from '@mui/material'
-import { LoaderData } from './data'
+import type { LoaderData } from './data'
 import { useLoaderData } from 'react-router-dom'
 import { AddNewProjectButton, ProjectCard } from '~/components/ProjectCard'
 import React from 'react'

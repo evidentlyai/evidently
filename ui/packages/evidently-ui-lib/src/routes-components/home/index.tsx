@@ -1,5 +1,5 @@
 import { Outlet, ScrollRestoration, useLoaderData } from 'react-router-dom'
-import { NavigationProgress, BreadCrumbs, ServiceHeader, crumbFunction } from '~/components'
+import { NavigationProgress, BreadCrumbs, ServiceHeader, type crumbFunction } from '~/components'
 import type { LoaderData } from './data'
 import { Box } from '@mui/material'
 

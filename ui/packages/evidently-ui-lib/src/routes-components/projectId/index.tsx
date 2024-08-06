@@ -2,8 +2,8 @@ import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/materia
 
 import { Link as RouterLink, Outlet, useMatches, useLoaderData } from 'react-router-dom'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { crumbFunction } from '~/components/BreadCrumbs'
-import { LoaderData } from './data'
+import type { crumbFunction } from '~/components/BreadCrumbs'
+import type { LoaderData } from './data'
 
 export const handle: { crumb: crumbFunction<LoaderData> } = {
   crumb: (data, { pathname }) => ({ to: pathname, linkText: data?.name || 'undefined' })

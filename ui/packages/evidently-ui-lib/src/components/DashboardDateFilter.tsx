@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs, { type Dayjs } from 'dayjs'
 import 'dayjs/locale/en-gb'
 import 'dayjs/plugin/duration'
 
@@ -43,8 +43,8 @@ interface DashboardDateFilterProps {
 }
 
 export const getDashboardQueryParams = (searchParams: URLSearchParams) => {
-  let date_from = searchParams.get(FILTER_QUERY_PARAMS.FROM)
-  let date_to = searchParams.get(FILTER_QUERY_PARAMS.TO)
+  const date_from = searchParams.get(FILTER_QUERY_PARAMS.FROM)
+  const date_to = searchParams.get(FILTER_QUERY_PARAMS.TO)
   return { date_from, date_to }
 }
 
@@ -108,7 +108,7 @@ export const DashboardParams = ({
                 <Switch
                   checked={isDashboardHideDates}
                   onChange={(event) => setIsDashboardHideDates(event.target.checked)}
-                ></Switch>
+                />
               }
               label="Show in order"
             />
@@ -299,7 +299,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
                 slotProps={{
                   textField: {
                     variant: 'standard',
-                    error: required ? !Boolean(dates.dateFrom) : undefined
+                    error: required ? !dates.dateFrom : undefined
                   }
                 }}
                 label="From"
@@ -315,7 +315,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
                 slotProps={{
                   textField: {
                     variant: 'standard',
-                    error: required ? !Boolean(dates.dateTo) : undefined
+                    error: required ? !dates.dateTo : undefined
                   }
                 }}
                 label="To"
