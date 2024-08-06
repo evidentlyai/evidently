@@ -23,5 +23,4 @@ repos:
     rev: "v0.4.0"
     hooks:
       - id: biome-lint
-        entry: cd ui && pnpm lint
         additional_dependencies: ["@biomejs/biome@1.8.3"]

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "tsc": "tsc",
-    "lint": "biome lint ./src"
+    "lint": "biome lint"
   },
   "exports": {
     "./routes-components/*/data": {
