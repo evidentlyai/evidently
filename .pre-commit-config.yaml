@@ -6,11 +6,11 @@ repos:
       - id: check-merge-conflict
       - id: check-toml
       - id: check-yaml
-        exclude: '(docs|examples)/.*'
+        exclude: "(docs|examples)/.*"
       - id: end-of-file-fixer
-        exclude: '(docs|examples)/.*'
+        exclude: "(docs|examples)/.*"
       - id: trailing-whitespace
-        exclude: '(docs|examples)/.*'
+        exclude: "(docs|examples)/.*"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.3.7"
@@ -19,7 +19,9 @@ repos:
         args: [--exit-non-zero-on-fix, --fix]
       - id: ruff-format
 
-#  - repo: https://github.com/pre-commit/mirrors-prettier
-#    rev: "v3.0.3"
-#    hooks:
-#      - id: prettier
+  - repo: https://github.com/biomejs/pre-commit
+    rev: "v0.4.0"
+    hooks:
+      - id: biome-lint
+        entry: cd ui && pnpm lint
+        additional_dependencies: ["@biomejs/biome@1.8.3"]
