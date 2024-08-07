@@ -238,11 +238,9 @@ class LLMJudge(GeneratedFeatures):
         ]
 
     def get_type(self, subcolumn: Optional[str] = None) -> ColumnType:
-        print(subcolumn)
         if subcolumn is not None:
             subcolumn = subcolumn.split(self.get_fingerprint() + ".")[-1]
 
-        print(subcolumn)
         return self.template.get_type(subcolumn)
 
 
@@ -261,3 +259,14 @@ class OpenAIWrapper(LLMWrapper):
         content = response.choices[0].message.content
         assert content is not None  # todo: better error
         return content
+
+
+@llm_provider("litellm", None)
+class LiteLLMWrapper(LLMWrapper):
+    def __init__(self, model: str):
+        self.model = model
+
+    def complete(self, messages: List[LLMMessage]) -> str:
+        from litellm import completion
+
+        return completion(model=self.model, messages=messages).choices[0].message.content
