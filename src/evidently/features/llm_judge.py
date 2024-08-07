@@ -238,8 +238,11 @@ class LLMJudge(GeneratedFeatures):
         ]
 
     def get_type(self, subcolumn: Optional[str] = None) -> ColumnType:
+        print(subcolumn)
         if subcolumn is not None:
-            subcolumn = subcolumn.split(self.get_fingerprint() + ",")[-1]
+            subcolumn = subcolumn.split(self.get_fingerprint() + ".")[-1]
+
+        print(subcolumn)
         return self.template.get_type(subcolumn)
 
 
