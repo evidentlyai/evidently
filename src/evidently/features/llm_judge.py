@@ -197,7 +197,7 @@ class LLMJudge(GeneratedFeatures):
 
     def list_columns(self) -> List["ColumnName"]:
         return [
-            self._create_column(c, default_display_name=f"{self.display_name or ''} {c}")
+            self._create_column(c, display_name=f"{self.display_name or ''} {c}")
             for c in self.template.list_output_columns()
         ]
 

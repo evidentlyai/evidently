@@ -85,11 +85,14 @@ class GeneratedFeatures(EvidentlyBaseModel):
         subcolumn = f".{subcolumn}" if subcolumn is not None else ""
         return f"{self.get_fingerprint()}{subcolumn}"
 
-    def _create_column(self, subcolumn: str, *, default_display_name: Optional[str] = None) -> ColumnName:
+    def _create_column(
+        self, subcolumn: str, *, display_name: Optional[str] = None, default_display_name: Optional[str] = None
+    ) -> ColumnName:
         name = self._create_column_name(subcolumn)
+        # todo: better display name logic
         return ColumnName(
             name=name,
-            display_name=(self.display_name or default_display_name or name),
+            display_name=(display_name or self.display_name or default_display_name or name),
             dataset=DatasetType.ADDITIONAL,
             feature_class=self,
         )
