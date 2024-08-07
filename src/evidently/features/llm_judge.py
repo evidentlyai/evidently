@@ -196,7 +196,10 @@ class LLMJudge(GeneratedFeatures):
         return pd.DataFrame(result)
 
     def list_columns(self) -> List["ColumnName"]:
-        return [self._create_column(c) for c in self.template.list_output_columns()]
+        return [
+            self._create_column(c, default_display_name=f"{self.display_name or ''} {c}")
+            for c in self.template.list_output_columns()
+        ]
 
     def get_type(self, subcolumn: Optional[str] = None) -> ColumnType:
         if subcolumn is None:
