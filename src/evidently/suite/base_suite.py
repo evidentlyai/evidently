@@ -157,7 +157,7 @@ class Context:
                 self.run_metadata.descriptors[feature_column.name] = FeatureDefinition(
                     feature_name=feature_column.name,
                     display_name=feature_column.display_name,
-                    feature_type=feature.get_type(feature_column.name),  # type: ignore[union-attr]
+                    feature_type=feature.get_type(feature_column.name),
                     feature_class=feature.__class__.__name__,
                 )
 

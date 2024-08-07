@@ -22,6 +22,7 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
 
 LLMMessage = Tuple[str, str]
+LLMResponse = Dict[str, Union[str, float]]
 
 
 class LLMResponseParseError(ValueError):
@@ -58,10 +59,36 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel) -> LLMWrapper:
     raise ValueError(f"LLM wrapper for provider {provider} model {model} not found")
 
 
+class BaseLLMPromtTemplate(EvidentlyBaseModel, ABC):
+    @abstractmethod
+    def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[LLMMessage]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_system_promts(self) -> List[LLMMessage]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def parse_response(self, response: str) -> LLMResponse:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_output_columns(self) -> List[str]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_promt_template(self) -> str:
+        raise NotImplementedError
+
+
 _score_re = re.compile("(.*\s)\s*(\d+\.?\d*)")
 
 
-class LLMPromtTemplate(EvidentlyBaseModel):
+class LLMPromtTemplate(BaseLLMPromtTemplate):
     template: str = """{__task__}\n\n{{input}}\n\n{__instructions__}\n\n{__output_format__}"""
     task: str
     instructions_template: str
@@ -75,14 +102,14 @@ class LLMPromtTemplate(EvidentlyBaseModel):
     output_column: str = "result"
     output_reasoning_column: str = "reasoning"
 
-    pre_messages: Tuple[LLMMessage] = Field(default_factory=tuple)
+    pre_messages: List[LLMMessage] = Field(default_factory=list)
 
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[Tuple[str, str]]:
-        promt_template = self._promt_template()
+        promt_template = self.get_promt_template()
         for _, column_values in data[list(input_columns)].rename(columns=input_columns).iterrows():
             yield "user", promt_template.format(**dict(column_values))
 
-    def _promt_template(self) -> str:
+    def get_promt_template(self) -> str:
         values = {
             "__task__": self._task(),
             "__instructions__": self._instructions(),
@@ -103,8 +130,12 @@ class LLMPromtTemplate(EvidentlyBaseModel):
         return self.instructions_template.format(categories=categories)
 
     def _output_format(self):
-        output_type = "category" if self.score_range is None else "score"
-        score_range = "" if self.score_range is None else f" between {self.score_range[0]} and {self.score_range[1]}"
+        if self.score_range is not None:
+            output_type = "score"
+            score_range = f" between {self.score_range[0]} and {self.score_range[1]}"
+        else:
+            output_type = "category"
+            score_range = ""
         output_format = (
             f"Return {output_type}{score_range} only"
             if not self.include_reasoning
@@ -119,7 +150,7 @@ class LLMPromtTemplate(EvidentlyBaseModel):
                 output_format = output_format + f' and key "{self.output_reasoning_column}" for reasoning'
         return output_format
 
-    def parse_response(self, response: str) -> Dict[str, Union[str, float]]:
+    def parse_response(self, response: str) -> LLMResponse:
         if self.return_json:
             return json.loads(response)
         if self.score_range is not None:
@@ -151,7 +182,9 @@ class LLMPromtTemplate(EvidentlyBaseModel):
             result.append(self.output_reasoning_column)
         return result
 
-    def get_type(self, subcolumn: str) -> ColumnType:
+    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        if subcolumn is None and self.include_reasoning:
+            raise ValueError("Please specify subcolumn")
         if subcolumn == self.output_reasoning_column:
             return ColumnType.Text
         if subcolumn == self.output_column:
@@ -159,6 +192,9 @@ class LLMPromtTemplate(EvidentlyBaseModel):
                 return ColumnType.Numerical
             return ColumnType.Categorical
         raise ValueError(f"Unknown subcolumn {subcolumn}")
+
+    def get_system_promts(self) -> List[LLMMessage]:
+        return self.pre_messages
 
 
 class LLMJudge(GeneratedFeatures):
@@ -169,7 +205,7 @@ class LLMJudge(GeneratedFeatures):
 
     input_column: Optional[str] = None
     input_columns: Optional[Dict[str, str]] = None
-    template: LLMPromtTemplate
+    template: BaseLLMPromtTemplate
 
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
 
@@ -190,7 +226,7 @@ class LLMJudge(GeneratedFeatures):
         result: List[Dict[str, Union[str, float]]] = []
 
         for message in self.template.iterate_messages(data, self.get_input_columns()):
-            messages: List[LLMMessage] = [*self.template.pre_messages, message]
+            messages: List[LLMMessage] = [*self.template.get_system_promts(), message]
             response = self.llm_wrapper.complete(messages)
             result.append(self.template.parse_response(response))
         return pd.DataFrame(result)
@@ -202,11 +238,8 @@ class LLMJudge(GeneratedFeatures):
         ]
 
     def get_type(self, subcolumn: Optional[str] = None) -> ColumnType:
-        if subcolumn is None:
-            if self.template.include_reasoning:
-                raise ValueError("Subcolumn should be specified")
-            return self.template.get_type(self.template.output_column)
-        subcolumn = subcolumn.split(".")[-1]
+        if subcolumn is not None:
+            subcolumn = subcolumn.split(self.get_fingerprint() + ",")[-1]
         return self.template.get_type(subcolumn)
 
 
