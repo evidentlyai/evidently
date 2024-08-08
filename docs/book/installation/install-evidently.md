@@ -1,11 +1,13 @@
-Looking for old Evidently Dashboards? Read the [migration guide](../support/migration.md).
+---
+description: How to install the Evidently open-source library.
+---
 
-# MAC OS and Linux
+# Evidently 
 
-`Evidently` is available as a PyPI package. To install it using the **pip package manager**, run:
+`Evidently` is available as a Python package. To install it using the **pip package manager**, run:
 
-```bash
-$ pip install evidently
+```python
+pip install evidently
 ```
 
 To install `evidently` using **conda installer**, run:
@@ -14,40 +16,18 @@ To install `evidently` using **conda installer**, run:
 conda install -c conda-forge evidently
 ```
 
-# Cloud notebooks
+# Evidently LLM
 
-## Google Colab
+To be able to run evaluations specific to LLMs that include additional dependencies, run:
 
-You can run `evidently` in Google Colab. 
-
-To install `evidently`, run the following command in the notebook cell:
-
-```
-!pip install evidently
+```python
+pip install evidently[llm]
 ```
 
-## Other cloud notebooks
+# Tracely
 
-You can run `evidently` in Kaggle Notebook, Jupyter Lab, Deepnote, Databricks or other notebook environments. Note that **only Google Colab** is currently officially supported.
-
-To install `evidently`, run the following command in the notebook cell:
-
-```
-!pip install evidently
-```
-
-# Windows
-
-`Evidently` is available as a PyPI package.
-
-To install it using the **pip package manager**, run:
-
-```bash
-$ pip install evidently
-```
-
-To install `evidently` using **conda installer**, run:
+To use tracing based on OpenTelemetry, install the sister package **tracely**:
 
 ```sh
-conda install -c conda-forge evidently
+pip install tracely
 ```
