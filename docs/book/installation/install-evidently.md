@@ -1,5 +1,5 @@
 ---
-description: How to install the Evidently open-source Python library.
+description: How to install the open-source Python library.
 ---
 
 # Evidently 
