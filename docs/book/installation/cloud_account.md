@@ -14,20 +14,18 @@ Once you log in to Evidently Cloud for the first time, create an Organization an
 
 ## 3. Create a Team 
 
-Click on the **Teams** icon on the left menu. Create a Team and give it a name, such as "Personal." 
+Click on the **Teams** icon on the left menu. Create a Team and give it a name.
 
-Teams help organize your work on different use cases. Every Project that you create exists within a given Team. 
-
-You can create multiple Teams inside the Organization and add other users to the Teams.
-
-Now, you are all set to start using Evidently Cloud! 
+{% hint style="info" %}
+**Do I always need a Team?** Yes. Every Project must exist inside a Team. Teams help organize your work on different use cases and serve as Project "folders". You can create multiple Teams inside the Organization and add other users to the Teams. If you work alone, simply create a "Personal" team. 
+{% endhint %}
 
 # Access Token
 
 You will need an access token to interact with Evidently Cloud from your Python environment.
 
-Click the **Key** icon in the left menu to go. Generate and save the token securely. ([Token page](https://app.evidently.cloud/token)).
+Click the **Key** icon in the left menu to open the ([Token page](https://app.evidently.cloud/token)). Generate and save the token securely. 
 
 This is optional; you can also work from the user interface.
 
-Now, you can create your first Project and start sending the data and running evaluations!
+Now, you are all set to start using Evidently Cloud! You can create your first Project and run an evaluation.
