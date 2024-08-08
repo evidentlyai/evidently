@@ -18,7 +18,7 @@ conda install -c conda-forge evidently
 
 # Evidently LLM
 
-To be able to run evaluations specific to LLMs that include additional dependencies, run:
+To run evaluations specific to LLMs that include additional dependencies, run:
 
 ```python
 pip install evidently[llm]
