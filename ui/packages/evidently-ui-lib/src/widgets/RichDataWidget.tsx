@@ -27,6 +27,11 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
   const [details, setDetails] = useState<boolean>(false)
   const viewParams = useDashboardViewParams()
   const isHistogram = props.graph?.data.some(({ type }) => type === 'histogram')
+  const isCastXaxisToCategory = viewParams?.isXaxisAsCategorical && !isHistogram
+
+  const xaxisOptionsOverride = isCastXaxisToCategory
+    ? ({ type: 'category', categoryorder: 'category ascending' } as const)
+    : ({} as const)
 
   return (
     <React.Fragment>
@@ -66,10 +71,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
               layout={{
                 ...props.graph.layout,
                 title: undefined,
-                xaxis: {
-                  ...props.graph.layout?.xaxis,
-                  type: viewParams?.isXaxisAsCategorical && !isHistogram ? 'category' : undefined
-                }
+                xaxis: { ...props.graph.layout?.xaxis, ...xaxisOptionsOverride }
               }}
               config={{ responsive: true }}
               style={{
