@@ -178,7 +178,7 @@ class PolymorphicModel(BaseModel):
 
     def __init_subclass__(cls):
         super().__init_subclass__()
-        if cls == PolymorphicModel:
+        if cls == PolymorphicModel or vars(cls).get("_type_as_str"):
             return
         typename = cls.__get_type__()
         type_field = cls.__fields__["type"]
