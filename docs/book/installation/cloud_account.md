@@ -10,7 +10,7 @@ If not already, [sign up for an Evidently Cloud account](https://app.evidently.c
 
 ## 2. Create an Organization
 
-Once you log in to Evidently Cloud for the first time, create an Organization and give it a name. 
+Once you log in to Evidently Cloud for the first time, create an **Organization** and give it a name. 
 
 ## 3. Create a Team 
 
