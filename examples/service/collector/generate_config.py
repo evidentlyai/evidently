@@ -5,10 +5,22 @@ from evidently.report import Report
 from evidently.metric_preset import DataQualityPreset
 
 from evidently.collector.config import CollectorConfig, IntervalTrigger, ReportConfig
+from evidently.ui.workspace import RemoteWorkspace
+
+
+def get_or_create_project_by_name(ui_api_url: str, project_name: str):
+    ui_client = RemoteWorkspace(ui_api_url)
+    projects = ui_client.search_project(project_name)
+    if len(projects) == 0:
+        project = ui_client.create_project(project_name)
+    else:
+        project = projects[0]
+    return str(project.id)
+
 
 # Project ID to upload data.
 # Can be obtained via UI after creating project
-project_id = "d7917247-177d-4aca-bab8-e2da38d547ae"
+project_id = get_or_create_project_by_name("http://localhost:8000", "My Test Project")
 
 # Address of UI service for snapshot upload.
 # Should be address of UI service accessible from collector service.
