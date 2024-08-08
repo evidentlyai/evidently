@@ -2,7 +2,7 @@
 description: How to set up Evidently Cloud account.
 ---
 
-# Evidently Cloud Account 
+# Evidently Cloud  
 
 ## 1. Create an Account
 
