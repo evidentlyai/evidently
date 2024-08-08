@@ -22,10 +22,12 @@ Click on the **Teams** icon on the left menu. Create a Team and give it a name.
 
 # Access Token
 
-You will need an access token to interact with Evidently Cloud from your Python environment.
+You will need an access token to interact with Evidently Cloud from your Python environment using the Evidently Python library.
 
 Click the **Key** icon in the left menu to open the ([Token page](https://app.evidently.cloud/token)). Generate and save the token securely. 
 
-This is optional; you can also work from the user interface.
+{% hint style="info" %}
+**Do I always need a token?** No. You only need the token if you want to send data or interact with Evidently Cloud from your Python environment. You can also run the evaluations using the no-code interface, or interact with Projects created by other Team members in the Web UI.
+{% endhint %}
 
 Now, you are all set to start using Evidently Cloud! You can create your first Project and run an evaluation.
