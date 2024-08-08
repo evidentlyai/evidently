@@ -21,16 +21,13 @@
   * [Text Overview](presets/text-overview.md)
   * [Recommender System](presets/recsys.md)
 * [Examples](examples/examples.md)
-* [Integrations](integrations/README.md)
-  * [Evidently integrations](integrations/evidently-integrations.md) 
-  * [Notebook environments](integrations/notebook-environments.md)
-  * [Evidently and Airflow](integrations/evidently-and-airflow.md)
-  * [Evidently and MLflow](integrations/evidently-and-mlflow.md)
-  * [Evidently and DVCLive](integrations/evidently-and-dvclive.md)
-  * [Evidently and Metaflow](integrations/evidently-and-metaflow.md)
+
+## Setup
+  * [Installation](installation/install-evidently.md)
+  * [Evidently Cloud](installation/cloud_account.md)
 
 ## User Guide
-* [Installation](installation/install-evidently.md)
+
 * [Input data](input-data/README.md)
   * [Data requirements](input-data/data-requirements.md)
   * [Column mapping](input-data/column-mapping.md)
@@ -92,6 +89,15 @@
   * [evidently.test_suite](api-reference/evidently.test_suite.md)
   * [evidently.tests](api-reference/evidently.tests.md)
   * [evidently.utils](api-reference/evidently.utils.md)
+
+## Integrations
+* [Integrations](integrations/README.md)
+  * [Evidently integrations](integrations/evidently-integrations.md) 
+  * [Notebook environments](integrations/notebook-environments.md)
+  * [Evidently and Airflow](integrations/evidently-and-airflow.md)
+  * [Evidently and MLflow](integrations/evidently-and-mlflow.md)
+  * [Evidently and DVCLive](integrations/evidently-and-dvclive.md)
+  * [Evidently and Metaflow](integrations/evidently-and-metaflow.md)
 
 ## SUPPORT
 
