@@ -65,7 +65,10 @@ class GeneratedFeatures(EvidentlyBaseModel):
         if len(columns) == 1 and subcolumn is None:
             return columns[0]
         if len(columns) > 1 and subcolumn is None:
-            raise ValueError(f"Please specify subcolumns for {self.__class__.__name__} feature")
+            raise ValueError(
+                f"Please specify subcolumn for {self.__class__.__name__} feature, possible values: "
+                + ", ".join(self._extract_subcolumn_name(c.name) for c in columns)
+            )
         if len(columns) == 1 and subcolumn is not None:
             raise ValueError(f"{self.__class__.__name__} feature do not have subcolumns")
         try:
@@ -84,6 +87,14 @@ class GeneratedFeatures(EvidentlyBaseModel):
     def _create_column_name(self, subcolumn: Optional[str]) -> str:
         subcolumn = f".{subcolumn}" if subcolumn is not None else ""
         return f"{self.get_fingerprint()}{subcolumn}"
+
+    def _extract_subcolumn_name(self, column_name: str) -> Optional[str]:
+        fingerprint = self.get_fingerprint()
+        if column_name == fingerprint:
+            return None
+        if fingerprint + "." in column_name:
+            return column_name.split(fingerprint + ".")[-1]
+        raise ValueError("Incorrectly formatted column name")
 
     def _create_column(
         self, subcolumn: str, *, display_name: Optional[str] = None, default_display_name: Optional[str] = None
