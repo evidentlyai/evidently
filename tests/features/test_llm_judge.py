@@ -1,13 +1,21 @@
 import json
+import re
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import pandas as pd
 import pytest
 
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
+from evidently.features.llm_judge import LLMJudge
+from evidently.features.llm_judge import LLMMessage
 from evidently.features.llm_judge import LLMResponseParseError
+from evidently.features.llm_judge import LLMWrapper
+from evidently.features.llm_judge import llm_provider
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 def _LLMPromptTemplate(
@@ -73,3 +81,29 @@ def test_parse_response(
                 template.parse_response(response)
         else:
             assert template.parse_response(response) == expected_result
+
+
+@llm_provider("mock", None)
+class MockLLMWrapper(LLMWrapper):
+    def __init__(self, model: str):
+        self.model = model
+
+    def complete(self, messages: List[LLMMessage]) -> str:
+        text = messages[-1][1]
+        cat = re.findall("___text_starts_here___\n(.*)\n___text_ends_here___", text)[0][0]
+        return json.dumps({"category": cat})
+
+
+def test_llm_judge():
+    llm_judge = LLMJudge(
+        input_column="text",
+        provider="mock",
+        model="",
+        template=BinaryClassificationPromptTemplate(target_category="A", non_target_category="B"),
+    )
+
+    data = pd.DataFrame({"text": ["A", "B"]})
+
+    dd = DataDefinition(columns={}, reference_present=False)
+    fts = llm_judge.generate_features(data, dd)
+    pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
