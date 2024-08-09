@@ -144,6 +144,7 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
                 report.run, reference_data=collector.reference, current_data=current, column_mapping=ColumnMapping()
             )  # FIXME: sync function
             report._inner_suite.raise_for_error()
+            snapshot = report.to_snapshot()
         except Exception as e:
             logger.exception(f"Error running report: {e}")
             storage.log(
@@ -155,8 +156,8 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
                 ),
             )
             return
-        storage.add_snapshot(collector.id, report.to_snapshot())
-        storage.log(collector.id, CreateSnapshotEvent(snapshot_id=str(report.id), ok=True))
+        storage.add_snapshot(collector.id, snapshot)
+        storage.log(collector.id, CreateSnapshotEvent(snapshot_id=str(snapshot.id), ok=True))
 
 
 async def send_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
