@@ -10,6 +10,7 @@ from typing import Optional
 import deprecation
 import pandas as pd
 
+from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
@@ -27,10 +28,13 @@ class FeatureResult(Generic[TEngineDataType]):
 
 class GeneratedFeatures(EvidentlyBaseModel):
     display_name: Optional[str] = None
-    feature_type: ColumnType = ColumnType.Numerical
     """
     Class for computation of additional features.
     """
+
+    @abc.abstractmethod
+    def get_type(self, subcolumn: Optional[str] = None) -> ColumnType:
+        raise NotImplementedError
 
     @abc.abstractmethod
     def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
@@ -44,7 +48,9 @@ class GeneratedFeatures(EvidentlyBaseModel):
 
     def generate_features_renamed(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         features = self.generate_features(data, data_definition)
-        return features.rename(columns={col: self._create_column_name(col) for col in features.columns})
+        return features.rename(columns={col: self._create_column_name(col) for col in features.columns}).set_index(
+            data.index
+        )
 
     @abc.abstractmethod
     def list_columns(self) -> List["ColumnName"]:
@@ -61,7 +67,10 @@ class GeneratedFeatures(EvidentlyBaseModel):
         if len(columns) == 1 and subcolumn is None:
             return columns[0]
         if len(columns) > 1 and subcolumn is None:
-            raise ValueError(f"Please specify subcolumns for {self.__class__.__name__} feature")
+            raise ValueError(
+                f"Please specify subcolumn for {self.__class__.__name__} feature, possible values: "
+                + ", ".join(self._extract_subcolumn_name(c.name) for c in columns)
+            )
         if len(columns) == 1 and subcolumn is not None:
             raise ValueError(f"{self.__class__.__name__} feature do not have subcolumns")
         try:
@@ -81,17 +90,30 @@ class GeneratedFeatures(EvidentlyBaseModel):
         subcolumn = f".{subcolumn}" if subcolumn is not None else ""
         return f"{self.get_fingerprint()}{subcolumn}"
 
-    def _create_column(self, subcolumn: str, *, default_display_name: Optional[str] = None) -> ColumnName:
+    def _extract_subcolumn_name(self, column_name: str) -> Optional[str]:
+        fingerprint = self.get_fingerprint()
+        if column_name == fingerprint:
+            return None
+        if fingerprint + "." in column_name:
+            return column_name.split(fingerprint + ".")[-1]
+        raise ValueError("Incorrectly formatted column name")
+
+    def _create_column(
+        self, subcolumn: str, *, display_name: Optional[str] = None, default_display_name: Optional[str] = None
+    ) -> ColumnName:
         name = self._create_column_name(subcolumn)
+        # todo: better display name logic
         return ColumnName(
             name=name,
-            display_name=(self.display_name or default_display_name or name),
+            display_name=(display_name or self.display_name or default_display_name or name),
             dataset=DatasetType.ADDITIONAL,
             feature_class=self,
         )
 
 
 class GeneratedFeature(GeneratedFeatures):
+    __feature_type__: ClassVar[ColumnType]
+
     @abc.abstractmethod
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         """
@@ -113,6 +135,16 @@ class GeneratedFeature(GeneratedFeatures):
     @abc.abstractmethod
     def _as_column(self) -> "ColumnName":
         raise NotImplementedError
+
+    def get_type(self, subcolumn: Optional[str] = None):
+        return self.__feature_type__
+
+
+class FeatureTypeFieldMixin(BaseModel):
+    feature_type: ColumnType
+
+    def get_type(self, subcolumn: Optional[str] = None):
+        return self.feature_type
 
 
 class ApplyColumnGeneratedFeature(GeneratedFeature):
@@ -155,7 +187,7 @@ class GeneralDescriptor(EvidentlyBaseModel):
     display_name: Optional[str] = None
 
     @abc.abstractmethod
-    def feature(self) -> GeneratedFeature:
+    def feature(self) -> GeneratedFeatures:
         raise NotImplementedError()
 
     def as_column(self) -> "ColumnName":
@@ -188,5 +220,5 @@ class FeatureDescriptor(EvidentlyBaseModel):
         return self.for_column(column_name)
 
     @abc.abstractmethod
-    def feature(self, column_name: str) -> GeneratedFeature:
+    def feature(self, column_name: str) -> GeneratedFeatures:
         raise NotImplementedError

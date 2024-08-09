@@ -5,11 +5,13 @@ from typing import Optional
 import numpy as np
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
+from evidently import ColumnType
 from evidently._pydantic_compat import PrivateAttr
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class Sentiment(ApplyColumnGeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "Sentiment for {column_name}"
     column_name: str
 
