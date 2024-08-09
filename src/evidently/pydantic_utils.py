@@ -228,6 +228,9 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
     )
 
 
+EBM = TypeVar("EBM", bound="EvidentlyBaseModel")
+
+
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def get_fingerprint(self) -> Fingerprint:
         return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
@@ -242,6 +245,11 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def get_field_fingerprint(self, field: str) -> FingerprintPart:
         value = getattr(self, field)
         return get_value_fingerprint(value)
+
+    def update(self: EBM, **kwargs) -> EBM:
+        data = self.dict()
+        data.update(kwargs)
+        return self.__class__(**data)
 
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):

@@ -9,6 +9,7 @@ from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.features.llm_judge import LLMJudge
+from evidently.features.llm_judge import Uncertainty
 
 
 class BaseLLMJudgeDescriptor(FeatureDescriptor, ABC):
@@ -53,9 +54,18 @@ class LLMJudgeDescriptor(BaseLLMJudgeDescriptor):
 
 class BinaryClassificationLLMJudgeDescriptor(BaseLLMJudgeDescriptor):
     template: ClassVar[BinaryClassificationPromptTemplate]
+    include_category: Optional[bool] = None
+    include_score: Optional[bool] = None
+    include_reasonning: Optional[bool] = None
+    uncertainty: Optional[Uncertainty] = None
 
     def get_template(self) -> BinaryClassificationPromptTemplate:
-        return self.template
+        update = {
+            k: getattr(self, k)
+            for k in ("include_category", "include_score", "include_reasonning", "uncertainty")
+            if getattr(self, k) is not None
+        }
+        return self.template.update(**update)
 
     def get_subcolumn(self) -> Optional[str]:
         column = self.template.output_column if self.template.include_category else self.template.output_score_column
