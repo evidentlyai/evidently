@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Optional
 
 import pandas as pd
@@ -9,6 +10,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class BeginsWith(GeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     case_sensitive: bool
     prefix: str
@@ -20,7 +22,6 @@ class BeginsWith(GeneratedFeature):
         case_sensitive: bool = True,
         display_name: Optional[str] = None,
     ):
-        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.display_name = display_name
         self.case_sensitive = case_sensitive
@@ -47,6 +48,7 @@ class BeginsWith(GeneratedFeature):
 
 
 class EndsWith(GeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     case_sensitive: bool
     suffix: str
@@ -58,7 +60,6 @@ class EndsWith(GeneratedFeature):
         case_sensitive: bool = True,
         display_name: Optional[str] = None,
     ):
-        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.display_name = display_name
         self.case_sensitive = case_sensitive

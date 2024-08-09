@@ -97,12 +97,12 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
         if column_type != "text":
             raise ValueError("Text column expected")
         for key, val in self.generated_text_features.items():
-            current_column = data.get_current_column(val._as_column())
+            current_column = data.get_current_column(val.as_column())
             reference_column = None
             if data.reference_data is not None:
-                reference_column = data.get_reference_column(val._as_column())
+                reference_column = data.get_reference_column(val.as_column())
             current, reference = get_distribution_for_column(
-                column_type=val.feature_type.value,
+                column_type=val.get_type().value,
                 current=current_column,
                 reference=reference_column,
             )

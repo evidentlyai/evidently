@@ -4,10 +4,12 @@ from typing import Optional
 
 import numpy as np
 
+from evidently import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class TextLength(ApplyColumnGeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "Text Length for {column_name}"
     column_name: str
 

@@ -10,11 +10,13 @@ import pandas as pd
 from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
 
+from evidently import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
 
 class OOVWordsPercentage(ApplyColumnGeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "OOV Words % for {column_name}"
     ignore_words: Tuple = ()
     _lem: WordNetLemmatizer

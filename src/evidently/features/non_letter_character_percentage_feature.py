@@ -4,10 +4,12 @@ from typing import Optional
 
 import numpy as np
 
+from evidently import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class NonLetterCharacterPercentage(ApplyColumnGeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "Non Letter Character % for {column_name}"
     column_name: str
 

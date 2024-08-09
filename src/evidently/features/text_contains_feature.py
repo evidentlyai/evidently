@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -10,6 +11,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class Contains(GeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     items: List[str]
     case_sensitive: bool
@@ -23,7 +25,6 @@ class Contains(GeneratedFeature):
         mode: str = "any",
         display_name: Optional[str] = None,
     ):
-        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.display_name = display_name
         self.case_sensitive = case_sensitive
@@ -58,6 +59,7 @@ class Contains(GeneratedFeature):
 
 
 class DoesNotContain(GeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     items: List[str]
     case_sensitive: bool
@@ -71,7 +73,6 @@ class DoesNotContain(GeneratedFeature):
         mode: str = "any",
         display_name: Optional[str] = None,
     ):
-        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.display_name = display_name
         self.case_sensitive = case_sensitive

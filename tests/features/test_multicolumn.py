@@ -1,7 +1,9 @@
 from typing import List
+from typing import Optional
 
 import pandas as pd
 
+from evidently import ColumnType
 from evidently._pydantic_compat import PrivateAttr
 from evidently.base_metric import ColumnName
 from evidently.features.feature_generator import FeatureGenerator
@@ -22,6 +24,9 @@ class MultiColumnFeature(GeneratedFeatures):
 
     def list_columns(self) -> List["ColumnName"]:
         return [self._create_column(subcolumn="+1"), self._create_column(subcolumn="+5")]
+
+    def get_type(self, subcolumn: Optional[str] = None):
+        return ColumnType.Numerical
 
 
 def test_feature_generator():

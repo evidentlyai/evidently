@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 
 import numpy as np
@@ -10,8 +11,8 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class SemanticSimilarityFeature(GeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     columns: List[str]
-    feature_type = ColumnType.Numerical
     model: str = "all-MiniLM-L6-v2"
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
