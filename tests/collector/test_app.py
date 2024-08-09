@@ -114,8 +114,13 @@ def test_create_snapshot_and_get_logs(
     )
     assert len(project.list_snapshots()) == 1
 
+    snapshot_id = str(project.list_snapshots()[0].id)
+
     r = collector_test_client.get("/new/logs")
     r.raise_for_status()
 
     data = r.json()
-    assert data == [{"error": "", "ok": True}]
+    assert data == [
+        {"error": "", "ok": True, "snapshot_id": snapshot_id, "type": "UploadSnapshot"},
+        {"error": "", "ok": True, "snapshot_id": snapshot_id, "type": "CreateSnapshot"},
+    ]
