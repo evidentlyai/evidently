@@ -81,7 +81,7 @@ class SimpleMetricWithFeatures(Metric[int]):
 
     def calculate(self, data: InputData) -> int:
         if data.data_definition.get_column(self.column_name).column_type == ColumnType.Categorical:
-            return data.get_current_column(self._feature._as_column()).sum()
+            return data.get_current_column(self._feature.as_column()).sum()
         return data.get_current_column(self.column_name).sum()
 
     def required_features(self, data_definition: DataDefinition):
@@ -96,7 +96,7 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
     _features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
-        return {k: data.get_current_column(v._as_column()).sum() for k, v in self._features.items()}
+        return {k: data.get_current_column(v.as_column()).sum() for k, v in self._features.items()}
 
     def required_features(self, data_definition: DataDefinition):
         self._features = {
@@ -143,7 +143,7 @@ class LengthFeature(GeneratedFeature):
     "metric,result",
     [
         (SimpleMetric(ColumnName("col1", "col1", DatasetType.MAIN, None)), 6),
-        (SimpleMetric(SimpleGeneratedFeature("col1")._as_column()), 12),
+        (SimpleMetric(SimpleGeneratedFeature("col1").as_column()), 12),
         (SimpleMetricWithFeatures("col1"), 6),
         (SimpleMetricWithFeatures("col2"), 9),
         (MetricWithAllTextFeatures(), {"col3": 9, "col4": 12}),
@@ -178,8 +178,8 @@ def test_additional_features(metric, result):
     [
         (
             [
-                SimpleMetric(SimpleGeneratedFeature("col1", "d1")._as_column()),
-                SimpleMetric2(SimpleGeneratedFeature("col1", "d2")._as_column()),
+                SimpleMetric(SimpleGeneratedFeature("col1", "d1").as_column()),
+                SimpleMetric2(SimpleGeneratedFeature("col1", "d2").as_column()),
             ],
             (12, 13),
         ),
