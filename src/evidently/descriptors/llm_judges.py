@@ -61,6 +61,8 @@ PII may contain person's name, person's address,and something I may forget to me
         include_reasoning=True,
         pre_messages=[("system", "You are a judge which evaluates text.")],
     )
+    provider = "openai"
+    model = "gpt-4o-mini"
 
 
 class DeclineLLMJudge(LLMJudgeDescriptor):
@@ -74,3 +76,5 @@ In these contexts, "DECLINE" signifies a respectful or formal way of saying no t
         include_reasoning=True,
         pre_messages=[("system", "You are a judge which evaluates text.")],
     )
+    provider = "openai"
+    model = "gpt-4o-mini"
