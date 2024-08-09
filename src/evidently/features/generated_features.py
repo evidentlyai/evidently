@@ -48,7 +48,9 @@ class GeneratedFeatures(EvidentlyBaseModel):
 
     def generate_features_renamed(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         features = self.generate_features(data, data_definition)
-        return features.rename(columns={col: self._create_column_name(col) for col in features.columns})
+        return features.rename(columns={col: self._create_column_name(col) for col in features.columns}).set_index(
+            data.index
+        )
 
     @abc.abstractmethod
     def list_columns(self) -> List["ColumnName"]:

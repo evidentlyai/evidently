@@ -68,7 +68,7 @@ class BinaryClassificationLLMJudgeDescriptor(BaseLLMJudgeDescriptor):
         return self.template.update(**update)
 
     def get_subcolumn(self) -> Optional[str]:
-        column = self.template.output_column if self.template.include_category else self.template.output_score_column
+        column = self.template.output_score_column if self.include_score else self.template.output_column
         return column
 
 

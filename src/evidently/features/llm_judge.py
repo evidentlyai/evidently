@@ -180,18 +180,19 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
         values = []
         columns = {}
         if self.include_category:
-            columns[self.output_column] = " or ".join(
-                {self.target_category, self.non_target_category, self._uncertainty_class()}
-            )
+            cat = f"{self.target_category} or {self.non_target_category}"
+            if self.uncertainty == Uncertainty.UNKNOWN:
+                cat += " or UNKNOWN"
+            columns[self.output_column] = f'"{cat}"'
             values.append("category")
         if self.include_score:
             columns[self.output_score_column] = "<score here>"
             values.append("score")
         if self.include_reasoning:
-            columns[self.output_reasoning_column] = "<reasoning here>"
+            columns[self.output_reasoning_column] = '"<reasoning here>"'
             values.append("reasoning")
 
-        keys = "\n".join(f'"{k}": "{v}"' for k, v in columns.items())
+        keys = "\n".join(f'"{k}": {v}' for k, v in columns.items())
         return f"Return {', '.join(values)} formatted as json without formatting as follows:\n{{{{\n{keys}\n}}}}"
 
     def parse_response(self, response: str) -> LLMResponse:
