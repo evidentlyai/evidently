@@ -26,7 +26,7 @@ class LLMJudgeDescriptor(FeatureDescriptor, ABC):
 
     def for_column(self, column_name: str) -> "ColumnName":
         template = self.get_template()
-        column = template.output_column if template.include_reasoning else None
+        column = template.output_column if template.include_category else template.output_score_column
         return self.feature(column_name).as_column(column)
 
     def get_template(self) -> BinaryClassificationPromptTemplate:
