@@ -5,6 +5,7 @@ import warnings
 from functools import wraps
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -130,6 +131,8 @@ def assign_panel_id(f):
 
 
 class DashboardPanel(EnumValueMixin, PolymorphicModel):
+    _type_as_str: ClassVar[bool] = True
+
     id: PanelID = Field(default_factory=uuid.uuid4)
     title: str
     filter: ReportFilter

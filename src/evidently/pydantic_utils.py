@@ -13,6 +13,7 @@ from typing import Dict
 from typing import FrozenSet
 from typing import Iterable
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Set
 from typing import Tuple
@@ -177,10 +178,13 @@ class PolymorphicModel(BaseModel):
 
     def __init_subclass__(cls):
         super().__init_subclass__()
-        if cls == PolymorphicModel:
+        if cls == PolymorphicModel or vars(cls).get("_type_as_str"):
             return
         typename = cls.__get_type__()
-        cls.__fields__["type"].default = typename
+        type_field = cls.__fields__["type"]
+        type_field.default = typename
+        type_field.type_ = type_field.outer_type_ = Literal[typename]
+        type_field.field_info.default = typename
         register_loaded_alias(get_base_class(cls), cls, typename)
 
     @classmethod
