@@ -6,17 +6,7 @@ You can launch this hello-world example in Jupyter notebook, Colab or other Pyth
 
 # Installation 
 
-## MAC OS and Linux, Jupyter notebook
-
 Install **Evidently** using the pip package manager:
-
-```bash
-$ pip install evidently
-```
-
-## Colab
-
-Install **Evidently**:
 
 ```python
 !pip install evidently
@@ -43,7 +33,7 @@ iris_frame = iris_data.frame
 
 # Run a Test Suite
 
-Split the data into two batches. Run a set of pre-built data quality Tests to compare them:
+Split the data into two batches. Run a set of pre-built data quality Tests to evaluate the quality of the `current_data`:
 
 ```python
 data_stability= TestSuite(tests=[
