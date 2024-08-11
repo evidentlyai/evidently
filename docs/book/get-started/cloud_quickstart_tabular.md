@@ -2,19 +2,17 @@
 description: ML Monitoring “Hello world.” From data to dashboard in a couple of minutes. 
 ---
 
-# 1. Create an account  
+# 1. Set up Evidently Cloud 
 
-If not already, [sign up for an Evidently Cloud account](https://app.evidently.cloud/signup). Create your Organization.
+Set up your Evidently Cloud workspace:
+* **Sign up**. If you do not have one yet, sign up for an [Evidently Cloud account](https://app.evidently.cloud/signup).
+* **Create an Organization**. When you log in the first time, create and name your Organization.
+* **Create a Team**. Click **Teams** in the left menu. Create a Team, then copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 
-# 2. Create a team 
+You can now go to your Python environment.
 
-Click on the **Teams** icon on the left menu. Create a Team - for example, "Personal". Copy and save the team ID. ([Team page](https://app.evidently.cloud/teams)).
-
-# 3. Get an access token
-
-Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
-
-# 4. Install the Python library
+# 2. Install the Python library
 
 Install the Evidently Python library. You can run this example in Colab or another Python environment.
 
@@ -33,7 +31,7 @@ from evidently.report import Report
 from evidently.metric_preset import DataQualityPreset
 ```
 
-# 5. Create a new Project 
+# 3. Create a new Project 
 
 Connect to Evidently Cloud using your access token.
 
@@ -49,7 +47,7 @@ project.description = "My project description"
 project.save()
 ```
 
-# 6. Collect metrics
+# 4. Import a toy dataset 
 
 Import the demo "adult" dataset as a pandas DataFrame. 
 
@@ -57,6 +55,8 @@ Import the demo "adult" dataset as a pandas DataFrame.
 adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
 adult = adult_data.frame
 ```
+
+# 5. Run an evaluation 
 
 Run a Data Quality Report and upload it to the Project.
 
@@ -72,13 +72,13 @@ ws.add_report(project.id, data_report)
 
 We call each such evaluation result a `snapshot`.
 
-# 7. View the Report
+# 6. View the Report
 
 Visit Evidently Cloud, open your Project, and navigate to the "Report" tab to see the data stats.
 
 ![](../.gitbook/assets/cloud/qs_view_reports.gif)
 
-# 8. Add a monitoring panel
+# 7. Add a monitoring panel
 
 Go to the "Dashboard" tab and enter the "Edit" mode. Add a new tab, and select the "Data quality" template.
 
