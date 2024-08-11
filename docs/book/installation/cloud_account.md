@@ -14,7 +14,7 @@ Once you log in to Evidently Cloud for the first time, create an **Organization*
 
 ## 3. Create a Team 
 
-Click on the **Teams** icon on the left menu. Create a Team and give it a name.
+Click on the **Teams** icon on the left menu. Create a Team and give it a name. ([Team page](https://app.evidently.cloud/teams)).
 
 {% hint style="info" %}
 **Do I always need a Team?** Yes. Every Project must exist inside a Team. Teams help organize your work on different use cases and serve as Project "folders". You can create multiple Teams inside the Organization and share them with other users. If you work alone, simply create a "Personal" team. 
