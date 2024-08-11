@@ -39,7 +39,7 @@ description: Get started with Evidently Cloud.
       <td>
         <strong>No-code evaluations</strong><br>
         Upload a CSV file to run evaluations directly in the Evidently Cloud.
-        <p>x
+        <p>
           <a href="cloud_quickstart_nocode.md">→ No-code Quickstart</a><br>
         </p>
       </td>
