@@ -27,8 +27,18 @@ description: Get started with Evidently Cloud.
           <a href="cloud_quickstart_llm.md">→ LLM Quickstart</a><br>
         </p>
       </td>
-      <td></td>
     </tr>
+  </tbody>
+</table>
+
+<table data-card-size="large" data-view="cards">
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td>
         <strong>Data and ML monitoring</strong><br>
@@ -44,7 +54,6 @@ description: Get started with Evidently Cloud.
           <a href="cloud_quickstart_nocode.md">→ No-code Quickstart</a><br>
         </p>
       </td>
-      <td></td>
     </tr>
   </tbody>
 </table>
