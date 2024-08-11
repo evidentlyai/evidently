@@ -23,10 +23,11 @@
   * [Recommender System](presets/recsys.md)
 * [Tutorials and Examples](examples/README.md)
   * [All Tutorials](examples/examples.md)
-  * [Tutorial - Reports and Tests](get-started/tutorial.md)
-  * [Tutorial - Data & ML Monitoring](get-started/tutorial-cloud.md)
-  * [Tutorial - LLM Evaluation](get-started/tutorial-llm.md)
-  * [Self-host ML Monitoring](get-started/tutorial-monitoring.md)
+  * [Tutorial - Tracing](examples/tutorial_tracing.md)
+  * [Tutorial - Reports and Tests](tutorial_reports_tests.md)
+  * [Tutorial - Data & ML Monitoring](examples/tutorial-cloud.md)
+  * [Tutorial - LLM Evaluation](examples/tutorial-llm.md)
+  * [Self-host ML Monitoring](examples/tutorial-monitoring.md)
 
 ## Setup
   * [Installation](installation/install-evidently.md)
