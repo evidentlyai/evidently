@@ -2,9 +2,22 @@
 description: LLM evaluation "Hello world." 
 ---
 
-You can run this example in Colab or any Python environment.
+This quickstart shows how to run evaluations over text data: for example, inputs and outputs of your LLM system. 
 
-# 1. Installation
+You will run evaluations locally in any Python environment, and send results to Evidently Cloud for analysis and monitoring.
+
+
+# 1. Set up Evidently Cloud 
+
+Set up your Evidently Cloud workspace:
+* **Sign up**. If you do not have one yet, sign up for an [Evidently Cloud account](https://app.evidently.cloud/signup).
+* **Create Organization**. When you log in the first time, create and name your Organization.
+* **Create a Team**. Click **Teams** in the left menu. Create a Team, then copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
+
+You can now go to your Python environment.
+
+# 2. Installation
 
 Install the Evidently Python library. 
 
@@ -12,36 +25,69 @@ Install the Evidently Python library.
 !pip install evidently[llm]
 ```
 
-Import the necessary components:
+Import the components to run the evals:
 
 ```python
 import pandas as pd
-from sklearn import datasets
 from evidently.report import Report
 from evidently.metric_preset import TextEvals
 from evidently.descriptors import *
 ```
 
-**Optional**. Import the components to send evaluation results to Evidently Cloud:
+Import the components to connect with Evidently Cloud:
 
 ```python
 from evidently.ui.workspace.cloud import CloudWorkspace
 ```
 
-# 2. Import the toy dataset 
+# 3. Create a Project
 
-Import a toy dataset with e-commerce reviews. It contains a column with "Review_Text". You will take 100 rows to analyze.
+**Connect to Evidently Cloud**. Pass the Evidently API token you generated earlier: 
 
 ```python
-reviews_data = datasets.fetch_openml(
-    name='Womens-E-Commerce-Clothing-Reviews', 
-    version=2, as_frame='auto')
-reviews = reviews_data.frame[:100]
+ws = CloudWorkspace(token="YOUR_API_TOKEN", url="https://app.evidently.cloud")
 ```
 
-# 3. Run your first eval
+**Create a Project**. Create a new evaluation Project inside your Team, adding your title and description:
 
-Run a few basic evaluations for all texts in the "Review_Text" column: 
+```python
+project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
+project.description = "My project description"
+project.save()
+```
+
+# 4. Import the toy dataset 
+
+To run the evals, you must prepare your data as a pandas dataframe. It can contain multiple texts and metadata columns.
+
+Let's create a toy dataframe as if we already have a set of "Questions" and "Answers".
+
+```python
+data = [
+    ["What is the chemical symbol for gold?", "The chemical symbol for gold is Au."],
+    ["What is the capital of Japan?", "The capital of Japan is Tokyo."],
+    ["Tell me a joke.", "Why don't programmers like nature? It has too many bugs!"],
+    ["What’s the freezing point of water?", "The freezing point of water is 0 degrees Celsius (32 degrees Fahrenheit)."],
+    ["Who painted the Mona Lisa?", "Leonardo da Vinci painted the Mona Lisa."],
+    ["What’s the fastest animal on land?", "The cheetah is the fastest land animal, capable of running up to 75 miles per hour."],
+    ["Can you help me with my math homework?", "I'm sorry, but I can't assist with homework. You might want to consult your teacher for help."],
+    ["How many states are there in the USA?", "There are 50 states in the USA."],
+    ["What’s the primary function of the heart?", "The primary function of the heart is to pump blood throughout the body."],
+    ["Can you tell me the latest stock market trends?", "I'm sorry, but I can't provide real-time stock market trends. You might want to check a financial news website or consult a financial advisor."]
+]
+
+# Columns
+columns = ["question", "answer"]
+
+# Creating the DataFrame
+evaluation_dataset = pd.DataFrame(data, columns=columns)
+
+```
+**Note**: To collect the inputs and outputs from the live LLM app, you can use the open-source tracely library.
+
+# 5. Run your first eval
+
+Let's run a few basic evaluations for all "Answers". You will evaluate: 
 * text sentiment (measured on a scale from -1 for negative to 1 for positive)
 * text length (returns an absolute number of symbols)
 
@@ -57,46 +103,23 @@ text_evals_report = Report(metrics=[
 text_evals_report.run(reference_data=None, current_data=reviews)
 ```
 
-There are 20+ built-in evals to choose from. You can also create custom ones, including LLM-as-a-judge. We call the result of each such evaluation a `descriptor`. 
+There are multiple evals to choose from. You can also create custom ones, including LLM-as-a-judge. We call the result of each such evaluation a `descriptor`. 
 
-View the Report in Python:
+# 6. Send results to Evidently Cloud 
 
-```
-text_evals_report
-```
-
-You will see the summary results: the distribution of length and sentiment for all evaluated texts.  
-
-# 4. Send results to Evidently Cloud 
-
-To record and monitor evaluations over time, send them to Evidently Cloud. 
-* **Sign up**. Create an [Evidently Cloud account](https://app.evidently.cloud/signup) and your Organization.
-* **Add a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
-* **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
-* **Connect to Evidently Cloud**. Pass your API key to connect from your Python environment. 
+**Upload the Report**. Include the raw data so that you can analyze the scores row by row: 
 
 ```python
-ws = CloudWorkspace(token="YOUR_API_TOKEN", url="https://app.evidently.cloud")
-```
-* **Create a Project**. Create a new Project inside your Team, adding your title and description:
-
-```python
-project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
-project.description = "My project description"
-project.save()
+ws.add_report(project.id, text_evals_report, include_data=True)
 ```
 
-* **Upload the Report to the Project**. Send the evaluation results: 
-
-```python
-ws.add_report(project.id, text_evals_report)
-```
-
-* **View the Report**. Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
+**View the Report**. Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
 
 ![](../.gitbook/assets/cloud/toy_text_report_preview.gif)
 
-# 5. Get a dashboard 
+You will see the summary results with the distribution of length and sentiment for all evaluated texts, and the evaluated dataset with the added scores.
+
+# 7. Get a dashboard 
 
 Go to the "Dashboard" tab and enter the "Edit" mode. Add a new tab, and select the "Descriptors" template.
 
