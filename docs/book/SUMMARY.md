@@ -21,7 +21,7 @@
   * [NoTargetPerformance](presets/no-target-performance.md)
   * [Text Overview](presets/text-overview.md)
   * [Recommender System](presets/recsys.md)
-* [Tutorials and Examples](examples/examples.md)
+* [Tutorials and Examples](examples/README.md)
   * [All Tutorials](examples/examples.md)
   * [Tutorial - Reports and Tests](get-started/tutorial.md)
   * [Tutorial - Data & ML Monitoring](get-started/tutorial-cloud.md)
