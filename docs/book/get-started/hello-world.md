@@ -15,7 +15,7 @@ description: Get started with Evidently OSS.
       <td>
         Run checks for text data and generative LLM outputs.
         <p>
-          <a href="get-started/oss_quickstart_llm.md">→ LLM Quickstart</a><br>
+          <a href="oss_quickstart_llm.md">→ LLM Quickstart</a><br>
         </p>
       </td>
     </tr>
@@ -24,7 +24,7 @@ description: Get started with Evidently OSS.
       <td>
         Run evaluations for tabular data (data drift, data quality) and ML models (classification, regression, ranking).
         <p>
-          <a href="get-started/oss_quickstart_tabular.md">→ Tabular Quickstart</a><br>
+          <a href="oss_quickstart_tabular.md">→ Tabular Quickstart</a><br>
         </p>
       </td>
     </tr>
