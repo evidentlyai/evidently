@@ -15,37 +15,48 @@ description: Get started with Evidently Cloud.
   <tbody>
     <tr>
       <td>
-        <strong>Tracing</strong><br>
-        Instrument your LLM application to send inputs and outputs to Evidently Cloud.<br>
-        <p>
-          <a href="cloud_quickstart_tracing.md">→ Tracing Quickstart</a>
-        </p>
+        <strong>Tracing</strong>
       </td>
       <td>
-        <strong>LLM evaluations</strong><br>
-        Evaluate and monitor the quality of LLM system inputs and outputs.<br>
-        <p>
-          <a href="cloud_quickstart_llm.md">→ LLM Quickstart</a>
-        </p>
+        Instrument your LLM application to send inputs and outputs to Evidently Cloud.
       </td>
       <td>
-        <strong>Data and ML monitoring</strong><br>
-        Evaluate and monitor data drift, data quality, or ML model performance.<br>
-        <p>
-          <a href="cloud_quickstart_tabular.md">→ Tabular Quickstart</a>
-        </p>
+        <a href="cloud_quickstart_tracing.md">→ Tracing Quickstart</a>
       </td>
     </tr>
     <tr>
       <td>
-        <strong>No-code evaluations</strong><br>
-        Upload a CSV file to run evaluations directly in the Evidently Cloud.<br>
-        <p>
-          <a href="cloud_quickstart_nocode.md">→ No-code Quickstart</a>
-        </p>
+        <strong>LLM evaluations</strong>
       </td>
-      <td></td>
-      <td></td>
+      <td>
+        Evaluate and monitor the quality of LLM system inputs and outputs.
+      </td>
+      <td>
+        <a href="cloud_quickstart_llm.md">→ LLM Quickstart</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Data and ML monitoring</strong>
+      </td>
+      <td>
+        Evaluate and monitor data drift, data quality, or ML model performance.
+      </td>
+      <td>
+        <a href="cloud_quickstart_tabular.md">→ Tabular Quickstart</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>No-code evaluations</strong>
+      </td>
+      <td>
+        Upload a CSV file to run evaluations directly in the Evidently Cloud.
+      </td>
+      <td>
+        <a href="cloud_quickstart_nocode.md">→ No-code Quickstart</a>
+      </td>
     </tr>
   </tbody>
 </table>
+
