@@ -24,7 +24,7 @@
 * [Tutorials and Examples](examples/README.md)
   * [All Tutorials](examples/examples.md)
   * [Tutorial - Tracing](examples/tutorial_tracing.md)
-  * [Tutorial - Reports and Tests](tutorial_reports_tests.md)
+  * [Tutorial - Reports and Tests](examples/tutorial_reports_tests.md)
   * [Tutorial - Data & ML Monitoring](examples/tutorial-cloud.md)
   * [Tutorial - LLM Evaluation](examples/tutorial-llm.md)
   * [Self-host ML Monitoring](examples/tutorial-monitoring.md)
