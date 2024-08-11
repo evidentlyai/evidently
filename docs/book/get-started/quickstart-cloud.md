@@ -9,6 +9,7 @@ description: Get started with Evidently Cloud.
     <tr>
       <th></th>
       <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -27,6 +28,12 @@ description: Get started with Evidently Cloud.
           <a href="cloud_quickstart_llm.md">→ LLM Quickstart</a><br>
         </p>
       </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -34,6 +41,7 @@ description: Get started with Evidently Cloud.
 <table data-card-size="large" data-view="cards">
   <thead>
     <tr>
+      <th></th>
       <th></th>
       <th></th>
     </tr>
@@ -54,6 +62,12 @@ description: Get started with Evidently Cloud.
           <a href="cloud_quickstart_nocode.md">→ No-code Quickstart</a><br>
         </p>
       </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
   </tbody>
 </table>
