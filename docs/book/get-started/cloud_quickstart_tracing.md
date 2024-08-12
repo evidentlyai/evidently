@@ -105,8 +105,8 @@ Go to the Evidently Cloud, open Datasets in the left menu ([Datasets Page](https
 
 Want to run evaluations over this data? See a Quickstart. 
 
-{% content-ref url="quickstart-llm.md" %}
-[LLM Evaluation Quickstart](quickstart-llm.md). 
+{% content-ref url="cloud_quickstart_llm.md" %}
+[LLM Evaluation Quickstart](cloud_quickstart_llm.md). 
 {% endcontent-ref %}
 
 Check out a more in-depth tutorial to learn more about tracing:
