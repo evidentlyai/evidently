@@ -161,19 +161,52 @@ report = Report(metrics=[
 ```
 You can do the same for Test Suites. 
 
-# Descriptor parameters 
+## Descriptor parameters 
 
-| Parameter               | Description                                                                                                                                                                            |
-|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `prompt: str`           | <ul><li>The text of the evaluation prompt that will be sent to the LLM.</li><li>Include at least one placeholder string.</li></ul>|
-| `prompt_replace_string: str` | <ul><li> A placeholder string within the prompt that will be replaced by the evaluated text. </li><li> The default string name is "REPLACE".</li></ul>|
-| `feature_type: str`     | <ul><li> The type of Descriptor the prompt will return. </li><li> Available: `num` (numerical) or `cat` (categorical). </li><li> This affects the statistics and default visualizations.</li></ul>|
-| `context_replace_string: str` |<ul><li> An optional placeholder string within the prompt that will be replaced by the additional context. </li><li> The default string name is "CONTEXT".</li></ul>|
-| `context: Optional[str]` | <ul><li> Additional context that will be added to the evaluation prompt, that **does not change** between evaluations. </li><li> Examples: a reference document, a set of positive and negative examples etc. </li><li> Pass this context as a string. </li><li> You cannot use `context` and `context_column` simultaneously. </li></ul>|
-| `context_column: Optional[str]` | <ul><li> Additional context that will be added to the evaluation prompt, that is **specific to each row**. </li><li> Examples: a chunk of text retrieved from reference documents for a specific query. </li><li>  Point to the column that contains the context. </li><li> You cannot use `context` and `context_column` simultaneously. </li></ul>|
-| `model: str`            | <ul><li> The name of the OpenAI model to be used for the LLM prompting, e.g., `gpt-3.5-turbo-instruct`. </li></ul> |
-| `openai_params: Optional[dict]` |  <ul><li> A dictionary with additional parameters for the OpenAI API call. </li><li> Examples: temperature, max tokens, etc. </li><li> Use parameters that OpenAI API accepts for a specific model.</li></ul> |
-| `possible_values: Optional[List[str]]` | <ul><li> A list of possible values that the LLM can return.</li><li> This helps validate the output from the LLM and ensure it matches the expected categories. </li><li> If the validation does not pass, you will get None as a response label. </li></ul>|
-| `display_name: Optional[str]` | <ul><li> A display name visible in Reports and as a column name in tabular export. </li><li>Use it to name your Descriptor.</li></ul>|
+- **`prompt: str`**
+  - The text of the evaluation prompt that will be sent to the LLM.
+  - Include at least one placeholder string.
+
+- **`prompt_replace_string: str`**
+  - A placeholder string within the prompt that will be replaced by the evaluated text.
+  - The default string name is "REPLACE".
+
+- **`feature_type: str`**
+  - The type of Descriptor the prompt will return.
+  - Available types: `num` (numerical) or `cat` (categorical).
+  - This affects the statistics and default visualizations.
+
+- **`context_replace_string: str`**
+  - An optional placeholder string within the prompt that will be replaced by the additional context.
+  - The default string name is "CONTEXT".
+
+- **`context: Optional[str]`**
+  - Additional context that will be added to the evaluation prompt, which **does not change** between evaluations.
+  - Examples: a reference document, a set of positive and negative examples, etc.
+  - Pass this context as a string.
+  - You cannot use `context` and `context_column` simultaneously.
+
+- **`context_column: Optional[str]`**
+  - Additional context that will be added to the evaluation prompt, which is **specific to each row**.
+  - Examples: a chunk of text retrieved from reference documents for a specific query.
+  - Point to the column that contains the context.
+  - You cannot use `context` and `context_column` simultaneously.
+
+- **`model: str`**
+  - The name of the OpenAI model to be used for the LLM prompting, e.g., `gpt-3.5-turbo-instruct`.
+
+- **`openai_params: Optional[dict]`**
+  - A dictionary with additional parameters for the OpenAI API call.
+  - Examples: temperature, max tokens, etc.
+  - Use parameters that OpenAI API accepts for a specific model.
+
+- **`possible_values: Optional[List[str]]`**
+  - A list of possible values that the LLM can return.
+  - This helps validate the output from the LLM and ensure it matches the expected categories.
+  - If the validation does not pass, you will get `None` as a response label.
+
+- **`display_name: Optional[str]`**
+  - A display name visible in Reports and as a column name in tabular export.
+  - Use it to name your Descriptor.
 
 </details>
