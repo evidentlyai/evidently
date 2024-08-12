@@ -7,11 +7,45 @@ Evidently is available both as an open-source Python library and Evidently Cloud
 
 # Get started
 
-Choose a Quickstart (1-2min) or a Tutorial (15 min) to start.
+<table data-card-size="large" data-view="cards">
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <strong>Evidently Cloud</strong>
+      </td>
+      <td>
+        AI evaluation and observability platform built on top of Evidently Python library. Includes advanced features, collaboration and support.
+      </td>
+      <td>
+        <a href="get-started/cloud_quickstart_llm.md">→ LLM Evals Quickstart</a>
+        <a href="get-started/cloud_quickstart_tabular.md">→ Data and ML Quickstart</a>
+        <a href="get-started/cloud_quickstart_tracing.md">→ LLM Tracing Quickstart</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Evidently Open-Source</strong>
+      </td>
+      <td>
+        An open-source Python library with 20m+ downloads. Helps evaluate, test and monitor data, ML and LLM-powered systems. 
+      </td>
+      <td>
+        <a href="get-started/oss_quickstart_llm.md">→ LLM Evals Quickstart</a>
+        <a href="get-started/oss_quickstart_tabular.md">→ Data and ML Quickstart</a>
+        <a href="examples/tutorial-monitoring.md">→ Self-hosted dashboard</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><strong></strong><strong>LLM evaluations</strong><strong></strong></td><td>Run checks for text data and generative LLM outputs.</td><td><p><a href="get-started/cloud_quickstart_llm.md">→ LLM Quickstart</a><br><a href="examples/tutorial-llm.md">→ LLM Tutorial</a></p></td></tr><tr><td><strong></strong><strong>Tabular data checks</strong><strong></strong></td><td>Run evaluations for tabular data and ML models.</td><td><p><a href="get-started/cloud_quickstart_tabular.md">→ Tabular Quickstart</a><br><a href="examples/tutorial_reports_tests.md">→ Tabular Tutorial</a></p></td></tr><tr><td><strong></strong><strong>Monitoring Dashboard</strong><strong></strong></td><td>Get a live dashboard to track evaluation results over time.</td><td><p><a href="get-started/cloud_quickstart_tabular.md">→ Monitoring Quickstart</a><br><a href="examples/tutorial-cloud.md">→ Monitoring Tutorial</a></p></td></tr></tbody></table>
-
-You can explore more code [examples](examples/examples.md). 
+You can explore more in-depth [Examples and Tutorials](examples/examples.md). 
 
 # How it works 
 
