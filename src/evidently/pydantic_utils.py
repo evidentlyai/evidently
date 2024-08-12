@@ -216,7 +216,7 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
         return get_value_fingerprint(dataclasses.asdict(value))
     if isinstance(value, Enum):
         return value.value
-    if isinstance(value, (str, int, float, bool, Callable, type(None))):
+    if isinstance(value, (str, int, float, bool, type(None))):
         return value
     if isinstance(value, dict):
         return tuple((get_value_fingerprint(k), get_value_fingerprint(v)) for k, v in sorted(value.items()))
@@ -224,6 +224,8 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
         return tuple(get_value_fingerprint(v) for v in value)
     if isinstance(value, (set, frozenset)):
         return tuple(get_value_fingerprint(v) for v in sorted(value, key=str))
+    if isinstance(value, Callable):  # type: ignore
+        return hash(value)
     raise NotImplementedError(
         f"Not implemented for value of type {value.__class__.__module__}.{value.__class__.__name__}"
     )
