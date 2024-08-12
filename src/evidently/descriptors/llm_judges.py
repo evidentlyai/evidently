@@ -62,7 +62,7 @@ class BinaryClassificationLLMJudgeDescriptor(BaseLLMJudgeDescriptor):
     def get_template(self) -> BinaryClassificationPromptTemplate:
         update = {
             k: getattr(self, k)
-            for k in ("include_category", "include_score", "include_reasonning", "uncertainty")
+            for k in ("include_category", "include_score", "include_reasoning", "uncertainty")
             if getattr(self, k) is not None
         }
         return self.template.update(**update)
