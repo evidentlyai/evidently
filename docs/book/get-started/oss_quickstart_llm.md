@@ -91,6 +91,6 @@ text_evals_report.datasets().current
 
 Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional Test Suites, monitoring results over time, and more.
 
-{% content-ref url="tutorial-llm.md" %}
-[Evidently LLM Tutorial](tutorial-llm.md). 
+{% content-ref url="../examples/tutorial-llm.md" %}
+[Evidently LLM Tutorial](../examples/tutorial-llm.md). 
 {% endcontent-ref %}
