@@ -47,7 +47,9 @@ from tracely import trace_event
 ```python
 from evidently.ui.workspace.cloud import CloudWorkspace
 from evidently.report import Report
-from evidently import metrics
+from evidently.metric_preset import TextEvals
+from evidently.descriptors import *
+
 ```
 
 # 2. Get the API keys
@@ -159,10 +161,12 @@ Go to the Evidently Cloud, navigate to the datasets in the left menu, and open t
 
 You can now view, sort, export, and work with the traced dataset. You can run evaluations on this dataset both in the Cloud and locally.
 
+![](../.gitbook/assets/cloud/tracing_tutorial_dataset.png) 
+
+
 # 6. Load the dataset 
 
-This is an optional step. If you want to access your traced dataset locally, for example, to run evaluations, you can do that by loading your dataset from Evidently Cloud.
-
+**This is an optional step**. If you want to access your traced dataset locally, for example, to run evaluations, you can do that by loading your dataset from Evidently Cloud.
 
 Connect to the Evidently Cloud workspace:
 
@@ -184,10 +188,11 @@ traced_data = ws.load_dataset(dataset_id = dataset_id)
 
 Preview the dataset with `traced_data.head()`.
 
+
 # 7. Run an evaluation 
 
 You can run evaluations on this dataset using the Evidently Python library. You can generate the Reports to view them locally or send them to Evidently Cloud.
-For example, let’s evaluate the length and sentiment of the responses.
+For example, let’s evaluate the length and sentiment of the responses, and whether they include the word "Certainly".
 
 Create an evaluation Project in Evidently Cloud. This will allow you to organize your evaluations and track results over time.
 
@@ -203,10 +208,11 @@ Define the evaluations:
 evals_report = Report(
     metrics=[
         TextEvals(
-            column_name="pseudo_assistant_result",
+            column_name="pseudo_assistant.result",
             descriptors=[
-                TextLength(),
-                Sentiment(),
+                TextLength(display_name="Response length"),
+                Sentiment(display_name="Response sentiment"),
+                IncludesWords(words_list=["certainly"], display_name="Says 'Certainly'"),
             ],
         ),
     ]
@@ -216,19 +222,22 @@ evals_report = Report(
 Run the Report on the `traced_data`:
 
 ```python
-text_evals_report.run(reference_data=None, current_data=traced_data)
+evals_report.run(reference_data=None, current_data=traced_data)
 ```
 
 Send the results to Evidently Cloud:
 
 ```python
-ws.add_report(project.id, text_evals_report, include_data=True)
+ws.add_report(project.id, evals_report, include_data=True)
 ```
 
-You can now go to the UI and explore the evaluation results. For example, you can find the longest responses or responses with a negative sentiment.
+To explore the evaluation results, go to Evidently Cloud, enter your Project and navigate to "Reports" in the left menu.
 
+You can view and brows the results. For example, find the longest responses or all responses that say "Certainly".
+
+![](../.gitbook/assets/cloud/tracing_tutorial_eval_example.png) 
  
-To view the evals locally, run `text_evals_report` for the Report and `text_evals_report.datasets().current` for the Dataset with added scores. 
+To view the evals locally, run `evals_report` for the Report and `evals_report.datasets().current` for the Dataset with added scores. 
 
 # What's next?
 
