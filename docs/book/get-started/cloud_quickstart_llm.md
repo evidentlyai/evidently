@@ -127,14 +127,14 @@ text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
 Run a few evaluations for all "Answers". You will check: 
 * text sentiment (measured on a scale from -1 for negative to 1 for positive)
 * text length (returns an absolute number of symbols)
-* whether the chatbot denied an answer (returns "OK" or "Denial" labels with an explanation). This evaluator will use LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently-provided prompt.  
+* whether the chatbot denied an answer (returns "OK" or "Denial" labels with an explanation). This evaluator will use LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
 
 ```python
 text_evals_report = Report(metrics=[
     TextEvals(column_name="answer", descriptors=[
         Sentiment(),
         TextLength(),
-        DeclineLLMJudge(),
+        DeclineLLMEval(),
         ]
     ),
 ])
