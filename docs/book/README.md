@@ -24,8 +24,8 @@ Evidently is available both as an open-source Python library and Evidently Cloud
         AI evaluation and observability platform built on top of Evidently Python library. Includes advanced features, collaboration and support.
       </td>
       <td>
-        <a href="get-started/cloud_quickstart_llm.md">→ LLM Evals Quickstart</a>
-        <a href="get-started/cloud_quickstart_tabular.md">→ Data and ML Quickstart</a>
+        <a href="get-started/cloud_quickstart_llm.md">→ LLM Evals Quickstart</a><br>
+        <a href="get-started/cloud_quickstart_tabular.md">→ Data and ML Quickstart</a><br>
         <a href="get-started/cloud_quickstart_tracing.md">→ LLM Tracing Quickstart</a>
       </td>
     </tr>
@@ -37,8 +37,8 @@ Evidently is available both as an open-source Python library and Evidently Cloud
         An open-source Python library with 20m+ downloads. Helps evaluate, test and monitor data, ML and LLM-powered systems. 
       </td>
       <td>
-        <a href="get-started/oss_quickstart_llm.md">→ LLM Evals Quickstart</a>
-        <a href="get-started/oss_quickstart_tabular.md">→ Data and ML Quickstart</a>
+        <a href="get-started/oss_quickstart_llm.md">→ LLM Evals Quickstart</a><br>
+        <a href="get-started/oss_quickstart_tabular.md">→ Data and ML Quickstart</a><br>
         <a href="examples/tutorial-monitoring.md">→ Self-hosted dashboard</a>
       </td>
     </tr>
