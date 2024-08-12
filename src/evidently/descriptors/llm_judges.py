@@ -56,7 +56,7 @@ class BinaryClassificationLLMJudgeDescriptor(BaseLLMJudgeDescriptor):
     template: ClassVar[BinaryClassificationPromptTemplate]
     include_category: Optional[bool] = None
     include_score: Optional[bool] = None
-    include_reasonning: Optional[bool] = None
+    include_reasoning: Optional[bool] = None
     uncertainty: Optional[Uncertainty] = None
 
     def get_template(self) -> BinaryClassificationPromptTemplate:
