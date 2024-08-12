@@ -2,19 +2,19 @@
 description: LLM evaluation "Hello world." 
 ---
 
-This quickstart shows how to run evaluations over text data, such as inputs and outputs of your LLM system. 
+This quickstart shows how to evaluate text data, such as inputs and outputs from your LLM system.
 
-You will run evaluations locally in your Python environment and send results to Evidently Cloud for analysis and monitoring.
+You will run evals locally in Python and send results to Evidently Cloud for analysis and monitoring.
 
 # 1. Set up Evidently Cloud 
 
 Set up your Evidently Cloud workspace:
-* **Sign up**. If you do not have one yet, sign up for an [Evidently Cloud account](https://app.evidently.cloud/signup).
-* **Create an Organization**. When you log in the first time, create and name your Organization.
-* **Create a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Sign up** for an [Evidently Cloud account](https://app.evidently.cloud/signup).
+* **Create an Organization** when you log in for the first time.
+* **Create a Team**. Click Teams in the left menu, create a Team, and save the Team ID ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 
-You can now go to your Python environment.
+Now, switch to your Python environment.
 
 # 2. Installation
 
@@ -41,13 +41,13 @@ from evidently.ui.workspace.cloud import CloudWorkspace
 
 # 3. Create a Project
 
-**Connect to Evidently Cloud**. Pass the Evidently API token you generated earlier: 
+Connect to Evidently Cloud using your API token:
 
 ```python
 ws = CloudWorkspace(token="YOUR_API_TOKEN", url="https://app.evidently.cloud")
 ```
 
-**Create a Project**. Create a new evaluation Project inside your Team, adding your title and description:
+Create a Project within your Team:
 
 ```python
 project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
@@ -57,9 +57,7 @@ project.save()
 
 # 4. Import the toy dataset 
 
-To run the evals, you must prepare your data as a pandas dataframe. It can contain multiple texts and metadata columns.
-
-Let's create a toy chatbot dataset as if we already have a set of "Questions" and "Answers".
+Prepare your data as a pandas dataframe with texts and metadata columns. Here’s a toy chatbot dataset with "Questions" and "Answers".
 
 ```python
 data = [
@@ -83,23 +81,24 @@ evaluation_dataset = pd.DataFrame(data, columns=columns)
 
 ```
 {% hint style="info" %}
-**How to collect the real data?** To collect the inputs and outputs from the live LLM app, you can use the open-source `tracely` library. Check the [Tracing Quickstart](cloud_quickstart_tracing.md). 
+**Collecting live data**: use the open-source `tracely` library to collect the inputs and outputs from your LLM app. Check the [Tracing Quickstart](cloud_quickstart_tracing.md). 
 {% endhint %}
 
 # 5. Run your first eval
 
-You can choose between two options.
-* Run the evals using only methods that work locally.
-* Run the evals using LLM-as-a-judge. This will require an OpenAI token. 
+You have two options:
+* Run evals that work locally.
+* Use LLM-as-a-judge (requires an OpenAI token).
+
 
 {% tabs %}
 
 {% tab title="Only local methods" %} 
 
-Let's run a few evaluations for all "Answers". You will check: 
-* text sentiment (measured on a scale from -1 for negative to 1 for positive)
-* text length (returns an absolute number of symbols)
-* presence of words "sorry" or "apologize" (returns a binary "True" or "False")
+**Define your evals**. You will evaluate all "Answers" for:
+* Sentiment (from -1 for negative to 1 for positive)
+* Text length (character count)
+* Presence of "sorry" or "apologize" (True/False)
 
 ```python
 text_evals_report = Report(metrics=[
@@ -118,16 +117,17 @@ text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
 
 {% tab title="LLM as a judge" %}
 
-**Pass the OpenAI key**. It is recommended to pass the key as an environment variable. [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for best practices. 
+**Set the OpenAI key** (it's best to set it as an environment variable). [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for tips. 
 
 ```python
 ## import os
 ## os.environ["OPENAI_API_KEY"] = "YOUR KEY"
 ```
-Run a few evaluations for all "Answers". You will check: 
-* text sentiment (measured on a scale from -1 for negative to 1 for positive)
-* text length (returns an absolute number of symbols)
-* whether the chatbot denied an answer (returns "OK" or "Denial" labels with an explanation). This evaluator will use LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
+
+**Define your evals**. Evaluate all "Answers" for:
+* Sentiment (from -1 for negative to 1 for positive)
+* Text length (character count)
+* Whether the chatbot denied an answer ("OK" or "Denial" labels with explanations). This uses LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
 
 ```python
 text_evals_report = Report(metrics=[
@@ -146,19 +146,19 @@ text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
 
 {% endtabs %}
 
-There are multiple evals to choose from. You can also create custom ones, including LLM-as-a-judge. We call the result of each such evaluation a `descriptor`. 
+Each evaluation is a `descriptor`. You can choose from multiple evaluations or create custom ones, including LLM-as-a-judge.
 
 # 6. Send results to Evidently Cloud 
 
-**Upload the Report**. Include the raw data so that you can analyze the scores row by row: 
+**Upload the Report** and include raw data for detailed analysis:
 
 ```python
 ws.add_report(project.id, text_evals_report, include_data=True)
 ```
 
-**View the Report**. Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
+**View the Report** on Evidently Cloud. Open your Project and go to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
 
-You will see the summary of the scores, and the dataset with added descriptors. For example, you can sort to find all answers with "Denials".
+You will see the scores summary, and the dataset with new descriptor columns. For example, you can sort to find all answers with "Denials".
 
 ![](../.gitbook/assets/cloud/qs_denials.png)
 
@@ -172,7 +172,7 @@ You'll see a set of panels that show descriptor values. Each has a single data p
 
 # What's next?
 
-Check out a more in-depth tutorial to learn key workflows. It covers building custom LLM judges, running conditional test suites, monitoring results over time, and more.
+Explore the full tutorial for advanced workflows: custom LLM judges, conditional test suites, monitoring, and more.
 
 {% content-ref url="../examples/tutorial-llm.md" %}
 [Evidently LLM Tutorial](../examples/tutorial-llm.md). 
