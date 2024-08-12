@@ -30,7 +30,7 @@ Install the Evidently library to interact with Evidently Cloud:
 !pip install evidently
 ```
 
-Intall the OpenAI library to create a toy app:
+Install the OpenAI library to create a toy app:
 
 ```python
 !pip install openai
@@ -97,4 +97,24 @@ for question in question_list:
 
 # 4. View Traces
 
-Go to the Evidently Cloud, open Datasets in the left menu, and view your Traces.
+Go to the Evidently Cloud, open Datasets in the left menu ([Datasets Page](https://app.evidently.cloud/datasets)), and view your Traces.
+
+![](../.gitbook/assets/cloud/qs_tracing_dataset.png)
+
+# What's next?
+
+Want to run evaluations over this data? See a Quickstart. 
+
+{% content-ref url="quickstart-llm.md" %}
+[LLM Evaluation Quickstart](quickstart-llm.md). 
+{% endcontent-ref %}
+
+Check out a more in-depth tutorial to learn more about tracing:
+
+{% content-ref url="../examples/tutorial-llm.md" %}
+[Evidently LLM Tutorial](../examples/tutorial_tracing.md). 
+{% endcontent-ref %}
+
+Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
+
+
