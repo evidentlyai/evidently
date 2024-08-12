@@ -9,7 +9,7 @@ Manually reviewing individual outputs doesn't scale. This tutorial shows you how
 You will learn both about the evaluation methods and the workflow to run and track them.
 
 {% hint style="success" %}
-**Want a very simple example first?** This ["Hello World"](quickstart-llm.md) will take a couple minutes.
+**Want a very simple example first?** This ["Hello World"](../get-started/quickstart-llm.md) will take a couple minutes.
 {% endhint %}
 
 In this tutorial, you will:
