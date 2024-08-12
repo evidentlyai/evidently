@@ -16,20 +16,22 @@ description: Get started with Evidently OSS.
         <strong>LLM evaluations</strong>
       </td>
       <td>
-        Run checks for text data and generative LLM outputs.<br>
+        Run checks for text data and generative LLM outputs.
+      </td>
+      <td>
         <a href="oss_quickstart_llm.md">→ LLM Quickstart</a>
       </td>
-      <td></td>
     </tr>
     <tr>
       <td>
         <strong>Tabular data checks</strong>
       </td>
       <td>
-        Run evaluations for tabular data (data drift, data quality) and ML models (classification, regression, ranking).<br>
+        Run evaluations for tabular data (data drift, data quality) and ML models (classification, regression, ranking).
+      </td>
+      <td>
         <a href="oss_quickstart_tabular.md">→ Tabular Quickstart</a>
       </td>
-      <td></td>
     </tr>
   </tbody>
 </table>
