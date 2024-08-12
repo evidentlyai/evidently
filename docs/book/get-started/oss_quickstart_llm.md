@@ -2,19 +2,19 @@
 description: Run your first LLM evaluation using Evidently open-source.
 ---
 
-This quickstart shows how to run evaluations over text data: for example, inputs and outputs of your LLM system. 
+This quickstart shows how to evaluate text data, such as inputs and outputs from your LLM system.
 
-You can run this example in Colab or any Python environment.
+You can run this in Colab or any Python environment.
 
 # 1. Installation
 
-Install the Evidently Python library. 
+Install the Evidently library. 
 
 ```python
 !pip install evidently[llm]
 ```
 
-Import the necessary components:
+Import the required modules:
 
 ```python
 import pandas as pd
@@ -25,9 +25,7 @@ from evidently.descriptors import *
 
 # 2. Create a toy dataset 
 
-To run the evals, prepare your data as a pandas dataframe. It can contain multiple texts and metadata columns. 
-
-Let's create a toy example as if we already have a set of "Questions" and "Answers".
+Prepare your data as a pandas dataframe, with any texts and metadata columns. Here’s a toy example with chatbot "Questions" and "Answers":
 
 ```python
 data = [
@@ -48,14 +46,14 @@ columns = ["question", "answer"]
 eval_dataset = pd.DataFrame(data, columns=columns)
 ```
 
-**Note**: To collect the inputs and outputs from the live LLM app, you can use the open-source **tracely** library. 
+**Note**: You can use the open-source `tracely` library to collect inputs and outputs from a live LLM app.
 
 # 3. Run your first eval
 
-Let's run a few evaluations for the "Answer" column: 
-* text sentiment (measured on a scale from -1 for negative to 1 for positive)
-* text length (returns an absolute number of symbols)
-* whether it contains words "sorry" or "apologies" (returns True or False)
+Run evaluations for the "Answer" column:
+* Sentiment (from -1 for negative to 1 for positive)
+* Text length (number of symbols))
+* Presence of "sorry" or "apologize" (True/False)
 
 ```python
 text_evals_report = Report(metrics=[
@@ -70,17 +68,15 @@ text_evals_report = Report(metrics=[
 text_evals_report.run(reference_data=None, current_data=eval_dataset)
 ```
 
-There are multiple built-in evals to choose from. You can also create custom ones, including LLM-as-a-judge. We call the result of each such evaluation a `descriptor`. 
+Each evaluation is a `descriptor`. You can choose from many built-in evaluations or create custom ones.
 
-View the Report in Python:
+View the Report in Python to see the distribution of scores:
 
 ```
 text_evals_report
 ```
 
-The Report shows the distribution of text length and text sentiment across all answers.
-
-You can also export the dataset with descriptors added to each indiviudal row.
+You can also export the dataset with added descriptors for each row.
 
 ```
 text_evals_report.datasets().current
@@ -88,16 +84,18 @@ text_evals_report.datasets().current
 
 # 4. Use LLM as a judge (Optional)
 
-This is optional. To run this eval, you need an OpenAI key.
+To run this, you'll need an OpenAI key.
 
-**Pass the OpenAI key**. It is recommended to pass the key as an environment variable. [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for best practices. 
+Set the OpenAI key (it's best to pass it as an environment variable). [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for best practices. 
 
 ```python
 ## import os
 ## os.environ["OPENAI_API_KEY"] = "YOUR KEY"
 ```
 
-Run a new Report that will also include the `DeclineLLMEval`. This evaluation checks whether the response contains a polite denial. It will return am "OK" or "Denial" label with an explanation. This evaluator will use LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
+Run a Report with the new `DeclineLLMEval`. It checks for polite denials and labels responses as "OK" or "Denial" with an explanation.
+
+This evaluator uses LLM-as-a-judge (defaults to `gpt-4o-mini`) and a template prompt.
 
 ```python
 text_evals_report = Report(metrics=[
@@ -126,7 +124,7 @@ text_evals_report.datasets().current
 
 # What's next?
 
-Check out a more in-depth tutorial to learn key workflows. It covers using custom LLM-as-a-judge, running conditional Test Suites, monitoring results over time, and more.
+Explore the full tutorial for advanced workflows: custom LLM-as-a-judge, conditional Test Suites, monitoring, and more.
 
 {% content-ref url="../examples/tutorial-llm.md" %}
 [Evidently LLM Tutorial](../examples/tutorial-llm.md). 
