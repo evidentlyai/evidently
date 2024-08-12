@@ -112,7 +112,7 @@ Want to run evaluations over this data? See a Quickstart.
 Check out a more in-depth tutorial to learn more about tracing:
 
 {% content-ref url="../examples/tutorial-llm.md" %}
-[Evidently LLM Tutorial](../examples/tutorial_tracing.md). 
+[LLM Tracing Tutorial](../examples/tutorial_tracing.md). 
 {% endcontent-ref %}
 
 Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
