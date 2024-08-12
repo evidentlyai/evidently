@@ -12,7 +12,7 @@ from evidently.features.llm_judge import LLMJudge
 from evidently.features.llm_judge import Uncertainty
 
 
-class BaseLLMJudgeDescriptor(FeatureDescriptor, ABC):
+class BaseLLMEval(FeatureDescriptor, ABC):
     name: ClassVar[str]
 
     provider: str
@@ -39,8 +39,8 @@ class BaseLLMJudgeDescriptor(FeatureDescriptor, ABC):
         raise NotImplementedError
 
 
-class LLMJudgeDescriptor(BaseLLMJudgeDescriptor):
-    name: ClassVar = "LLMJudgeDescriptor"
+class LLMEval(BaseLLMEval):
+    name: ClassVar = "LLMEval"
 
     template: BaseLLMPromptTemplate
     subcolumn: Optional[str] = None
@@ -52,17 +52,17 @@ class LLMJudgeDescriptor(BaseLLMJudgeDescriptor):
         return self.subcolumn
 
 
-class BinaryClassificationLLMJudgeDescriptor(BaseLLMJudgeDescriptor):
+class BinaryClassificationLLMEval(BaseLLMEval):
     template: ClassVar[BinaryClassificationPromptTemplate]
     include_category: Optional[bool] = None
     include_score: Optional[bool] = None
-    include_reasonning: Optional[bool] = None
+    include_reasoning: Optional[bool] = None
     uncertainty: Optional[Uncertainty] = None
 
     def get_template(self) -> BinaryClassificationPromptTemplate:
         update = {
             k: getattr(self, k)
-            for k in ("include_category", "include_score", "include_reasonning", "uncertainty")
+            for k in ("include_category", "include_score", "include_reasoning", "uncertainty")
             if getattr(self, k) is not None
         }
         return self.template.update(**update)
@@ -72,7 +72,7 @@ class BinaryClassificationLLMJudgeDescriptor(BaseLLMJudgeDescriptor):
         return column
 
 
-class NegativityLLMJudge(BinaryClassificationLLMJudgeDescriptor):
+class NegativityLLMEval(BinaryClassificationLLMEval):
     name: ClassVar = "Negativity"
     template: ClassVar = BinaryClassificationPromptTemplate(
         target_category="NEGATIVE",
@@ -86,7 +86,7 @@ class NegativityLLMJudge(BinaryClassificationLLMJudgeDescriptor):
     model = "gpt-4o-mini"
 
 
-class PIILLMJudge(BinaryClassificationLLMJudgeDescriptor):
+class PIILLMEval(BinaryClassificationLLMEval):
     name: ClassVar = "PII"
     template: ClassVar = BinaryClassificationPromptTemplate(
         criteria="""Personally identifiable information (PII) is information that, when used alone or with other relevant data, can identify an individual.
@@ -104,7 +104,7 @@ PII may contain person's name, person's address,and something I may forget to me
     model = "gpt-4o-mini"
 
 
-class DeclineLLMJudge(BinaryClassificationLLMJudgeDescriptor):
+class DeclineLLMEval(BinaryClassificationLLMEval):
     name: ClassVar = "Decline"
     template: ClassVar = BinaryClassificationPromptTemplate(
         criteria="""A "DECLINE" typically refers to a refusal or a polite rejection to do something.
