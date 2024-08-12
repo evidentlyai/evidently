@@ -8,6 +8,7 @@ from enum import Enum
 from functools import lru_cache
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import FrozenSet
@@ -215,7 +216,7 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
         return get_value_fingerprint(dataclasses.asdict(value))
     if isinstance(value, Enum):
         return value.value
-    if isinstance(value, (str, int, float, bool, type(None))):
+    if isinstance(value, (str, int, float, bool, Callable, type(None))):
         return value
     if isinstance(value, dict):
         return tuple((get_value_fingerprint(k), get_value_fingerprint(v)) for k, v in sorted(value.items()))
