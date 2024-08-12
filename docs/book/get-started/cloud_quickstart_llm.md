@@ -18,7 +18,7 @@ You can now go to your Python environment.
 
 # 2. Installation
 
-Install the Evidently Python library. 
+Install the Evidently Python library: 
 
 ```python
 !pip install evidently[llm]
@@ -158,7 +158,7 @@ ws.add_report(project.id, text_evals_report, include_data=True)
 
 **View the Report**. Go to the Evidently Cloud. Open your Project and head to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
 
-You will see the summary statistics for all scores, as well as the evaluated dataset with descriptor. For example, you can sort to find all answers with "Denials".
+You will see the summary of the scores, and the dataset with added descriptors. For example, you can sort to find all answers with "Denials".
 
 ![](../.gitbook/assets/cloud/qs_denials.png)
 
