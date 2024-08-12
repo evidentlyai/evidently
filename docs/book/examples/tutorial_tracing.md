@@ -5,8 +5,8 @@ description: How to capture LLM inputs and outputs and view them in Evidently Cl
 In this tutorial, you will learn how to set up tracing for an LLM application to collect inputs and outputs of your generative AI application and view the collected traces in Evidently Cloud. You can later run evaluations on the created datasets. 
 
 You will use the following tools:
-* **Tracely**: An open-source library based on OpenTelemetry that allows you to track the execution of functions and events in your LLM application.
-* **Evidently**: An open-source library that helps run local evaluations of your LLM quality and interact with Evidently Cloud. 
+* **Tracely**: An open-source library based on OpenTelemetry to track events in your LLM application.
+* **Evidently**: An open-source library to run LLM evaluations and interact with Evidently Cloud. 
 * **Evidently Cloud**: A web platform to view traces and run evaluations.
 * **OpenAI**: Used to simulate an LLM application.
 
@@ -54,8 +54,8 @@ from evidently import metrics
 
 Obtain your API keys from Evidently Cloud and OpenAI.
 
-* **Evidently Cloud**: Create an account, set up an Organization and Team. Get the API key ([Token page](https://app.evidently.cloud/token)). ([Step by step instructions](.,/installation/cloud_account.md)).
-* **OpenAI: Obtain your API key from OpenAI**: https://platform.openai.com/api-keys
+* **Evidently Cloud**: Create an account, set up an Organization and Team. Get the API key from the [Token page](https://app.evidently.cloud/token). (Check the [step by step instructions](../installation/cloud_account.md) if you need help).
+* **OpenAI:**  Get your API key from OpenAI. ([Token page](https://platform.openai.com/api-keys)).
 
 Set your API keys:
 ```python
@@ -69,7 +69,7 @@ It is recommended to pass the key as an environment variable. [See Open AI docs]
 
 Set up configuration details:
 * The `address` is the destination backend to store collected traces. In this case, it is Evidently Cloud.
-* `Team_id` is the identification of the Evidently Team which defines who can access collected traces and helps organize your Projects. Go to the ([Team page](https://app.evidently.cloud/teams)), enter the Team and copy the ID.
+* `Team_id` is the identification of the Evidently Team which defines who can access collected traces and helps organize your Projects. Go to the [Team page](https://app.evidently.cloud/teams), enter the selected Team and copy its ID.
 * `Dataset_name` helps identify the resulting Tracing dataset. All data with the same ID would be grouped into single dataset.
 
 ```python
@@ -147,7 +147,7 @@ def pseudo_assistant(prompt, question):
  return response
 ```
 
-Loop through the list of questions and call the traced function pseudo_assistant to get responses while Tracely captures all relevant data.
+Loop through the list of questions and call the traced function `pseudo_assistant` to get responses while `Tracely` captures all relevant data.
 
 ```python
 for question in question_list:
@@ -230,5 +230,8 @@ You can now go to the UI and explore the evaluation results. For example, you ca
  
 To view the evals locally, run `text_evals_report` for the Report and `text_evals_report.datasets().current` for the Dataset with added scores. 
 
-Check the complete [LLM evaluation tutorial](tutorial-llm.md) for more details, and how to run other evaluation methods, including LLM as a judge, or test for specific conditions.  
+# What's next?
 
+Check the complete [LLM evaluation tutorial](tutorial-llm.md) for more details: how to run other evaluation methods, including LLM as a judge, or test for specific conditions. 
+
+Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
