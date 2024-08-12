@@ -90,13 +90,13 @@ You'll see a set of panels with a single data point. As you send more snapshots,
 
 Check out a more in-depth tutorial to learn the key workflows: 
 
-{% content-ref url="tutorial-cloud.md" %}
-[Evidently Cloud Tutorial](tutorial-cloud.md). 
+{% content-ref url="../examples/tutorial-cloud.md" %}
+[Evidently Cloud Tutorial](../examples/tutorial-cloud.md). 
 {% endcontent-ref %}
 
-Working with LLMs? See a Quickstart. 
-{% content-ref url="quickstart-llm.md" %}
-[LLM Evaluation Quickstart](quickstart-llm.md). 
+Working with LLMs? See a Quickstart:
+{% content-ref url="cloud_quickstart_llm.md" %}
+[LLM Evaluation Quickstart](cloud_quickstart_llm.md). 
 {% endcontent-ref %}
 
 Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
