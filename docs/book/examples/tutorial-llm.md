@@ -463,7 +463,7 @@ You can export the evaluation results beyond viewing the visual Reports in Pytho
 **Publish a DataFrame**. Add computed scores (like semantic similarity) directly to your original dataset. This will let you further analyze the data, like identifying examples with the lowest scores.
 
 ```python
-text_evals_report.datasets()[1]
+text_evals_report.datasets().current
 ```
 
 **Python dictionary**. Get summary scores as a dictionary. Use it to export specific values for further pipeline actions:
