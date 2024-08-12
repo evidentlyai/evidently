@@ -32,7 +32,7 @@ Let's create a toy example as if we already have a set of "Questions" and "Answe
 ```python
 data = [
     ["What's the capital of France?", "The capital of France is Paris."],
-    ["Who wrote 'To Kill a Mockingbird'?", "Harper Lee wrote 'To Kill a Mockingbird'."],
+    ["Who wrote 1984?", "George Orwell wrote 1984."], 
     ["How does photosynthesis work?", "Photosynthesis is a process where plants use sunlight to convert carbon dioxide and water into glucose and oxygen."],
     ["Can you give me the recipe for making pancakes?", "Sure! Here's a simple recipe: mix 1 cup flour, 1 cup milk, 1 egg, and a pinch of salt. Cook on a hot griddle until golden brown."],
     ["What is the largest planet in our solar system?", "Jupiter is the largest planet in our solar system."],
@@ -52,15 +52,17 @@ eval_dataset = pd.DataFrame(data, columns=columns)
 
 # 3. Run your first eval
 
-Let's run a few basic evaluations for the "Answer" column: 
+Let's run a few evaluations for the "Answer" column: 
 * text sentiment (measured on a scale from -1 for negative to 1 for positive)
 * text length (returns an absolute number of symbols)
+* whether it contains words "sorry" or "apologies" (returns True or False)
 
 ```python
 text_evals_report = Report(metrics=[
     TextEvals(column_name="answer", descriptors=[
         Sentiment(),
         TextLength(),
+        IncludesWords(words_list=['sorry', 'apologize'], display_name="Denials"),        
         ]
     ),
 ])
@@ -77,6 +79,12 @@ text_evals_report
 ```
 
 The Report shows the distribution of text length and text sentiment across all answers.
+
+You can also export the dataset with descriptors added to each indiviudal row.
+
+```
+text_evals_report.datasets().current
+```
 
 
 # Want to see more?
