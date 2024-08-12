@@ -2,10 +2,10 @@ from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
-from .llm_judges import DeclineLLMJudge
-from .llm_judges import LLMJudgeDescriptor
-from .llm_judges import NegativityLLMJudge
-from .llm_judges import PIILLMJudge
+from .llm_judges import DeclineLLMEval
+from .llm_judges import LLMEval
+from .llm_judges import NegativityLLMEval
+from .llm_judges import PIILLMEval
 from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage
 from .oov_words_percentage_descriptor import OOV
 from .openai_descriptor import OpenAIPrompting
@@ -28,10 +28,10 @@ __all__ = [
     "CustomPairColumnEval",
     "HuggingFaceModel",
     "HuggingFaceToxicityModel",
-    "LLMJudgeDescriptor",
-    "NegativityLLMJudge",
-    "PIILLMJudge",
-    "DeclineLLMJudge",
+    "LLMEval",
+    "NegativityLLMEval",
+    "PIILLMEval",
+    "DeclineLLMEval",
     "OpenAIPrompting",
     "NonLetterCharacterPercentage",
     "OOV",
