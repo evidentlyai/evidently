@@ -1,4 +1,5 @@
-description: How to capture LLM inputs and outputs and view in Evidently Cloud.
+---
+description: How to capture LLM inputs and outputs and view them in Evidently Cloud.
 ---
 
 In this tutorial, you will learn how to set up tracing for an LLM application to collect inputs and outputs of your generative AI application and view the collected traces in Evidently Cloud. You can later run evaluations on the created datasets. 
@@ -227,7 +228,7 @@ ws.add_report(project.id, text_evals_report, include_data=True)
 You can now go to the UI and explore the evaluation results. For example, you can find the longest responses or responses with a negative sentiment.
 
  
-To view the evals locally, run `text_evals_report` for the Report and `text_evals_report.datasets()[1]` for Dataset with added scores. 
+To view the evals locally, run `text_evals_report` for the Report and `text_evals_report.datasets().current` for the Dataset with added scores. 
 
 Check the complete [LLM evaluation tutorial](tutorial-llm.md) for more details, and how to run other evaluation methods, including LLM as a judge, or test for specific conditions.  
 
