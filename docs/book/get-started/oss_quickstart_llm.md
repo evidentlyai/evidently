@@ -86,11 +86,50 @@ You can also export the dataset with descriptors added to each indiviudal row.
 text_evals_report.datasets().current
 ```
 
+# 4. Use LLM as a judge (Optional)
 
-# Want to see more?
+This is optional. To run this eval, you need an OpenAI key.
 
-Check out a more in-depth tutorial to learn key workflows. It covers using LLM-as-a-judge, running conditional Test Suites, monitoring results over time, and more.
+**Pass the OpenAI key**. It is recommended to pass the key as an environment variable. [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for best practices. 
+
+```python
+## import os
+## os.environ["OPENAI_API_KEY"] = "YOUR KEY"
+```
+
+Run a new Report that will also include the `DeclineLLMEval`. This evaluation checks whether the response contains a polite denial. It will return am "OK" or "Denial" label with an explanation. This evaluator will use LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
+
+```python
+text_evals_report = Report(metrics=[
+    TextEvals(column_name="answer", descriptors=[
+        Sentiment(),
+        TextLength(),
+        DeclineLLMEval(),
+        ]
+    ),
+])
+
+text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
+```
+
+View the Report in Python:
+
+```
+text_evals_report
+```
+
+View the dataset with scores and explanation:
+
+```
+text_evals_report.datasets().current
+```
+
+# What's next?
+
+Check out a more in-depth tutorial to learn key workflows. It covers using custom LLM-as-a-judge, running conditional Test Suites, monitoring results over time, and more.
 
 {% content-ref url="../examples/tutorial-llm.md" %}
 [Evidently LLM Tutorial](../examples/tutorial-llm.md). 
 {% endcontent-ref %}
+
+Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
