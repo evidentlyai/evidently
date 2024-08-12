@@ -71,7 +71,7 @@ class GeneratedFeatures(EvidentlyBaseModel):
                 f"Please specify subcolumn for {self.__class__.__name__} feature, possible values: "
                 + ", ".join(self._extract_subcolumn_name(c.name) for c in columns)
             )
-        if len(columns) == 1 and subcolumn is not None:
+        if len(columns) == 1 and subcolumn is not None and self._create_column_name(subcolumn) != columns[0].name:
             raise ValueError(f"{self.__class__.__name__} feature do not have subcolumns")
         try:
             fullname = self._create_column_name(subcolumn)
