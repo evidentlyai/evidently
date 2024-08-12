@@ -98,3 +98,5 @@ Working with LLMs? See a Quickstart.
 {% content-ref url="quickstart-llm.md" %}
 [LLM Evaluation Quickstart](quickstart-llm.md). 
 {% endcontent-ref %}
+
+Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
