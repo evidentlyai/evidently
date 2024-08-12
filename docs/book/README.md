@@ -46,8 +46,6 @@ You can be as hands-off or hands-on as you like: start with Presets, and customi
   * Configure alerts when metrics are out of bounds.
 
 **Docs**:
-* [Quickstart - LLM and text evals](get-started/quickstart-llm.md) 
-* [Quickstart - ML and tabular](get-started/hello-world.md)
 * [Reference: available Metrics](reference/all-metrics.md)
 * [User guide: how to get Reports](tests-and-reports/get-reports.md) 
 </details>
@@ -77,8 +75,6 @@ This interface helps automate your evaluations for regression testing, checks du
   * Configure alerts on failed Tests.
 
 **Docs**:
-* [Tutorial - LLM and text evals](get-started/tutorial-llm.md) 
-* [Quickstart - ML and tabular](get-started/tutorial.md)
 * [Reference: available Tests](reference/all-tests.md)
 * [User guide: how to generate Tests](tests-and-reports/run-tests.md) 
 </details>
@@ -104,8 +100,6 @@ You can use Evidently Cloud or self-host. Evidently Cloud offers extra features
 * For Evidently Cloud: get pre-built Tabs and manage everything in the UI. 
 
 **Docs**:
-* [Get Started - Evidently Cloud](get-started/tutorial-cloud.md)
-* [Get Started - Self-hosting](get-started/tutorial-monitoring.md)
 * [Monitoring user guide](monitoring/monitoring_overview.md)
 </details>
 
