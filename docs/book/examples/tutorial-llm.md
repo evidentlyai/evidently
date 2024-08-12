@@ -9,7 +9,7 @@ Manually reviewing individual outputs doesn't scale. This tutorial shows you how
 You will learn both about the evaluation methods and the workflow to run and track them.
 
 {% hint style="success" %}
-**Want a very simple example first?** This ["Hello World"](../get-started/quickstart-llm.md) will take a couple minutes.
+**Want a very simple example first?** This ["Hello World"](../get-started/oss_quickstart_llm.md) will take a couple minutes.
 {% endhint %}
 
 In this tutorial, you will:
@@ -370,7 +370,7 @@ report.run(reference_data= None,
 report 
 ```
 
-**Create a custom judge**. You can also define your own LLM judge with a custom prompt. To illustrate, let's ask the LLM to judge whether the provided responses are concise and return a `Concise` or `Verbose` label with an explanation. If the LLM is not sure, we ask to return an `Unknown` category.
+**Create a custom judge**. You can also define your own LLM judge with a custom prompt. To illustrate, let's ask the LLM to judge whether the provided responses are concise and return a `Concise` or `Verbose` label with an explanation. (Or `Unknown` if not sure).
 
 ```python
 custom_judge = LLMEval(
@@ -393,7 +393,7 @@ custom_judge = LLMEval(
 )
 ```
 
-Include the `custom_judge` descriptor to the Report. .
+Include the `custom_judge` descriptor to the Report:
 
 ```python
 report = Report(metrics=[
@@ -408,7 +408,7 @@ report.run(reference_data= None,
 report 
 ```
 
-All our responses are concise - great!
+All our responses are concise - great! To see the individual scores, you can publish a dataframe (see Step 5), or send the results to Evidently Cloud.
 
 ![](../.gitbook/assets/cloud/llm_tutorial_conciseness.png) 
 
@@ -475,7 +475,7 @@ In our examples, the semantic similarity always stays above 0.81, which means th
 
 You can export the evaluation results beyond viewing the visual Reports in Python. Here are some options.
 
-**Publish a DataFrame**. Add computed scores (like semantic similarity) directly to your original dataset. This will let you further analyze the data, like identifying examples with the lowest scores.
+**Publish a DataFrame**. Add computed scores (like semantic similarity, or LLM-based scores with an explanation) directly to your original dataset. This will let you further analyze the data, like identifying examples with the lowest scores.
 
 ```python
 text_evals_report.datasets().current
