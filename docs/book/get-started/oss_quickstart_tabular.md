@@ -58,8 +58,24 @@ data_drift_report.run(current_data=iris_frame.iloc[:60], reference_data=iris_fra
 data_drift_report
 ```
 
-# Want to see more?
+# What's next?
 
-* Take the complete [Report & Test Suite Tutorial](tutorial.md) to learn how to run checks like this in detail (15 minutes). You can also evaluate ML model quality, e.g., for classification, regression, and ranking models, and work with text data.
-* Start with ML monitoring. Go through the [Evidently Cloud Quickstart](quickstart-cloud.md) (2 min) to get a dashboard to track metrics over time.
-* Working with LLMs? See an [LLM Evaluation Quicktart](quickstart-llm.md) to see how to run checks for text data.
+Want more details on Reports and Test Suites? See an in-depth tutorial.
+
+{% content-ref url="../examples/tutorial_reports_tests.md" %}
+[Reports and Tests Tutorial](../examples/tutorial_reports_tests.md). 
+{% endcontent-ref %}
+
+Want to set up monitoring? Send the evaluation results to Evidently Cloud for analysis and tracking. See the Quickstart:
+
+{% content-ref url="cloud_quickstart_llm.md" %}
+[Evidently Cloud Quickstart](cloud_quickstart_tabular.md). 
+{% endcontent-ref %}
+
+Working with LLMs? Check the Quickstart:
+
+{% content-ref url="cloud_quickstart_llm.md" %}
+[LLM Evaluation Quickstart](oss_quickstart_llm.md). 
+{% endcontent-ref %}
+
+Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
