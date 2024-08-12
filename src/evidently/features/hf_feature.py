@@ -35,6 +35,9 @@ class HuggingFaceFeature(FeatureTypeFieldMixin, DataFeature):
         result = func(data[self.column_name], **{param: self.params.get(param, None) for param in available_params})
         return result
 
+    def __hash__(self):
+        return DataFeature.__hash__(self)
+
 
 class HuggingFaceToxicityFeature(DataFeature):
     __feature_type__: ClassVar = ColumnType.Numerical

@@ -8,6 +8,7 @@ from enum import Enum
 from functools import lru_cache
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import FrozenSet
@@ -223,6 +224,8 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
         return tuple(get_value_fingerprint(v) for v in value)
     if isinstance(value, (set, frozenset)):
         return tuple(get_value_fingerprint(v) for v in sorted(value, key=str))
+    if isinstance(value, Callable):  # type: ignore
+        return hash(value)
     raise NotImplementedError(
         f"Not implemented for value of type {value.__class__.__module__}.{value.__class__.__name__}"
     )
