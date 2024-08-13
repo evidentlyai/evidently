@@ -1,6 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 from typing import ClassVar
+from typing import Dict
 from typing import Optional
 
 from evidently.base_metric import ColumnName
@@ -17,13 +18,24 @@ class BaseLLMEval(FeatureDescriptor, ABC):
 
     provider: str
     model: str
+    additional_columns: Optional[Dict[str, str]] = None
 
     def feature(self, column_name: str) -> GeneratedFeatures:
+        input_columns: Optional[Dict[str, str]]
+        input_column: Optional[str]
+        if self.additional_columns is None:
+            input_columns = None
+            input_column = column_name
+        else:
+            input_columns = {column_name: "input"}
+            input_columns.update(self.additional_columns)
+            input_column = None
         return LLMJudge(
             display_name=self.display_name or self.name,
             provider=self.provider,
             model=self.model,
-            input_column=column_name,
+            input_column=input_column,
+            input_columns=input_columns,
             template=self.get_template(),
         )
 
