@@ -107,3 +107,18 @@ def test_llm_judge():
     dd = DataDefinition(columns={}, reference_present=False)
     fts = llm_judge.generate_features(data, dd)
     pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
+
+
+def test_multicol_llm_judge():
+    llm_judge = LLMJudge(
+        input_columns={"text": "input", "text2": "input2"},
+        provider="mock",
+        model="",
+        template=BinaryClassificationPromptTemplate(target_category="A", non_target_category="B"),
+    )
+
+    data = pd.DataFrame({"text": ["A", "B"], "text2": ["C", "D"]})
+
+    dd = DataDefinition(columns={}, reference_present=False)
+    fts = llm_judge.generate_features(data, dd)
+    pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
