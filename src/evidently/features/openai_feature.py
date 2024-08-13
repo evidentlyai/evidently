@@ -104,6 +104,9 @@ class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
 
         return pd.DataFrame({self._feature_column_name(): result}, index=data.index)
 
+    def __hash__(self):
+        return GeneratedFeature.__hash__(self)
+
     def _as_column(self) -> ColumnName:
         return self._create_column(self._feature_column_name(), default_display_name=f"OpenAI for {self.column_name}")
 
