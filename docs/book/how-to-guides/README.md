@@ -2,7 +2,7 @@
 description: How-to guides.
 ---
 
-These example notebooks and how-to guides show how to solve specific tasks. 
+These example notebooks and how-to guides show how to solve specific tasks. You can also browse on [GitHub](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions).
 
 Topic | Question| Guide or example 
 | --- | --- | --- 

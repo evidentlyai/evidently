@@ -9,7 +9,7 @@ Manually reviewing individual outputs doesn't scale. This tutorial shows you how
 You will learn both about the evaluation methods and the workflow to run and track them.
 
 {% hint style="success" %}
-**Want a very simple example first?** This ["Hello World"](quickstart-llm.md) will take a couple minutes.
+**Want a very simple example first?** This ["Hello World"](../get-started/oss_quickstart_llm.md) will take a couple minutes.
 {% endhint %}
 
 In this tutorial, you will:
@@ -73,6 +73,7 @@ from evidently.metric_preset import TextEvals
 from evidently.descriptors import *
 from evidently.metrics import *
 from evidently.tests import *
+from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 ```
 
 To send results to Evidently Cloud:
@@ -135,12 +136,13 @@ To be able to save and share results and get a live monitoring dashboard, create
 * **Connect to Evidently Cloud**. Pass your API key to connect. 
 
 ```python
-ws = CloudWorkspace(token="YOUR_API_TOKEN", url="https://app.evidently.cloud")
+ws = CloudWorkspace(token="YOUR_TOKEN", 
+                    url="https://app.evidently.cloud")
 ```
 * **Create a Project**. Create a new Project inside your Team, adding your title and description:
 
 ```python
-project = ws.create_project("My сhatbot project", team_id="YOUR_TEAM_ID")
+project = ws.create_project("My project title", team_id="YOUR_TEAM_ID")
 project.description = "My project description"
 project.save()
 ```
@@ -331,7 +333,7 @@ In each case, the descriptor first downloads the model from HuggingFace to your 
 ![](../.gitbook/assets/cloud/llm_tutorial_neutrality-min.png) 
 
 {% hint style="info" %}
-**Choosing other models**. You can choose other models, e.g. to score texts by topic. See [docs](../customization/llm_as_a_judge.md)  
+**Choosing other models**. You can choose other models, e.g. to score texts by topic. See [docs](../customization/huggingface_descriptor.md).   
 {% endhint %}
 
 ## LLM as a judge
@@ -348,57 +350,70 @@ For more complex or nuanced checks, you can use LLMs as a judge. This requires c
 ## import os
 ## os.environ["OPENAI_API_KEY"] = "YOUR KEY"
 ```
+**Run template evals**. Let's start with built-in prompt templates. 
+* `DeclineLLMEval()` checks if the response contains a denial.
+* `PIILLMEval()` checks if the response contains personally identifiable information. You can also ask to provide for a reasoning of the score.
 
-To illustrate, let's create a prompt asking the LLM to judge whether the provided responses are concise.
-
-```python
-conciseness_prompt = """
-Conciseness refers to the quality of being brief and to the point, while still providing all necessary information.
-
-A concise response should:
-- Provide the necessary information without unnecessary details or repetition.
-- Be brief yet comprehensive enough to address the query.
-- Use simple and direct language to convey the message effectively.
-
-Please evaluate the following chatbot response for conciseness.
-
-response: REPLACE
-
-Use the following categories for conciseness evaluation:
-CONCISE if the response is concise and to the point
-VERBOSE if the response is overly detailed or contains unnecessary information
-UNKNOWN if the information provided is not sufficient to make a clear determination
-
-Return a category only
-"""
-```
-
-Include an `OpenAIPrompting` descriptor to the Report, referring to this prompt. To minimize API calls, we will pass only 10 data rows.
-
-```python
+To minimize API calls, we will pass only 10 data rows.
+ 
+```python	
 report = Report(metrics=[
     TextEvals(column_name="response", descriptors=[
-        OpenAIPrompting(prompt=conciseness_prompt,
-                        prompt_replace_string="REPLACE",
-                        model="gpt-3.5-turbo-instruct",
-                        feature_type="cat",
-                        display_name="Response Conciseness"),
+        DeclineLLMEval(),
+        PIILLMEval(include_reasoning=True), 
     ])
 ])
 
 report.run(reference_data= None,
            current_data= assistant_logs[:10],
            column_mapping=column_mapping)
-
-#report
+report 
 ```
 
-All our responses are concise - great!
+**Create a custom judge**. You can also define your own LLM judge with a custom prompt. To illustrate, let's ask the LLM to judge whether the provided responses are concise and return a `Concise` or `Verbose` label with an explanation. (Or `Unknown` if not sure).
+
+```python
+custom_judge = LLMEval(
+    subcolumn="category",
+    template = BinaryClassificationPromptTemplate(      
+        criteria = """Conciseness refers to the quality of being brief and to the point, while still providing all necessary information.
+            A concise response should:
+            - Provide the necessary information without unnecessary details or repetition.
+            - Be brief yet comprehensive enough to address the query.
+            - Use simple and direct language to convey the message effectively.
+        """,
+        target_category="concise",
+        non_target_category="verbose",
+        uncertainty="unknown",
+        include_reasoning=True,
+        pre_messages=[("system", "You are a judge which evaluates text.")],
+        ),
+    provider = "openai",
+    model = "gpt-4o-mini"
+)
+```
+
+Include the `custom_judge` descriptor to the Report:
+
+```python
+report = Report(metrics=[
+    TextEvals(column_name="response", descriptors=[
+        custom_judge
+    ])
+])
+
+report.run(reference_data= None,
+           current_data= assistant_logs[:10],
+           column_mapping=column_mapping)
+report 
+```
+
+All our responses are concise - great! To see the individual scores, you can publish a dataframe (see Step 5), or send the results to Evidently Cloud.
 
 ![](../.gitbook/assets/cloud/llm_tutorial_conciseness.png) 
 
 {% hint style="info" %}
-**How to create your own judge**. You can create custom prompts, and optionally pass the context or reference answer alongside the response. See [docs](../customization/huggingface_descriptor.md).  
+**How to create your own judge**. You can create custom prompts, and optionally pass the context or reference answer alongside the response. See [docs](../customization/llm_as_a_judge.md)  
 {% endhint %}
 
 ## Metadata summary
@@ -460,10 +475,10 @@ In our examples, the semantic similarity always stays above 0.81, which means th
 
 You can export the evaluation results beyond viewing the visual Reports in Python. Here are some options.
 
-**Publish a DataFrame**. Add computed scores (like semantic similarity) directly to your original dataset. This will let you further analyze the data, like identifying examples with the lowest scores.
+**Publish a DataFrame**. Add computed scores (like semantic similarity, or LLM-based scores with an explanation) directly to your original dataset. This will let you further analyze the data, like identifying examples with the lowest scores.
 
 ```python
-text_evals_report.datasets()[1]
+text_evals_report.datasets().current
 ```
 
 **Python dictionary**. Get summary scores as a dictionary. Use it to export specific values for further pipeline actions:
