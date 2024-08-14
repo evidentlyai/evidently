@@ -7,7 +7,7 @@ from evidently.cli.main import app
 
 @app.command("collector")
 def collector(
-    host: str = Option("0.0.0.0", help="Collector host"),
+    host: str = Option("127.0.0.1", help="Collector host"),
     port: int = Option(8001, help="Collector port"),
     config_path: str = Option(None, help="Path to config file"),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
