@@ -49,6 +49,7 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import plot_correlations
 from evidently.tests.utils import plot_value_counts_tables
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
+from evidently.utils.data_preprocessing import ColumnDefinition
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
@@ -1371,18 +1372,15 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 
     def __init__(self, columns: Optional[List[str]] = None, is_critical: bool = True):
         self.is_critical = is_critical
-        self.columns = columns
+        self.columns: Optional[List[str]] = columns
 
     def generate(self, data_definition: DataDefinition) -> List[TestShareOfOutListValues]:
+        columns: List[ColumnDefinition]
         if self.columns is None:
             columns = data_definition.get_columns(ColumnType.Categorical, features_only=True)
-
         else:
-            columns = [
-                column
-                for column in self.columns
-                if data_definition.get_column(column).column_type == ColumnType.Categorical
-            ]
+            columns = [data_definition.get_column(column) for column in self.columns]
+            columns = [c for c in columns if c.column_type == ColumnType.Categorical]
         return [
             TestShareOfOutListValues(
                 column_name=column.column_name,
