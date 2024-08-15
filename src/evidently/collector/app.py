@@ -269,7 +269,7 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, deb
     )
 
 
-def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: Optional[str] = None):
+def run(host: str = "127.0.0.1", port: int = 8001, config_path: str = CONFIG_PATH, secret: Optional[str] = None):
     app = create_app(config_path, secret)
     uvicorn.run(app, host=host, port=port)
 

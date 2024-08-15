@@ -28,4 +28,4 @@ RUN pip install . \
     && rm -rf /src
 
 WORKDIR /app
-CMD evidently ui
+CMD ["evidently", "ui", "--host", "0.0.0.0"]

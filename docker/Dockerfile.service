@@ -30,4 +30,4 @@ RUN apt-get update && \
     && rm -rf /src
 
 WORKDIR /app
-ENTRYPOINT ["evidently", "ui"]
+ENTRYPOINT ["evidently", "ui", "--host", "0.0.0.0"]
