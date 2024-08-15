@@ -179,6 +179,8 @@ class PolymorphicModel(BaseModel):
 
     def __init_subclass__(cls):
         super().__init_subclass__()
+        if cls == PolymorphicModel:
+            return
 
         typename = cls.__get_type__()
         literal_typename = Literal[typename]
