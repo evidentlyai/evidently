@@ -1,6 +1,6 @@
 In this tutorial, you'll learn how to start with Evidently ML monitoring. You will launch a locally hosted dashboard to visualize the performance of a toy model.
 
-**Note**: If you want to start with ad hoc Reports and Tests without hosting a Monitoring UI service, go here instead: [Quickstart for Evidently Tests and Reports](tutorial.md).
+**Note**: If you want to start with ad hoc Reports and Tests without hosting a Monitoring UI service, go here instead: [Quickstart for Evidently Tests and Reports](../get-started/oss_quickstart_tabular.md).
 
 The tutorial is split into two parts. 
 
@@ -17,7 +17,7 @@ The tutorial is split into two parts.
 **Note**: This guide assumes you run Evidently locally.
 
 {% hint style="info" %}
-**Don't want to self-host the ML monitoring dashboard?** Check out the [Evidently Cloud tutorial](tutorial-cloud.md).
+**Don't want to self-host the ML monitoring dashboard?** Check out the [Evidently Cloud tutorial](../get-started/cloud_quickstart_tabular.md).
 {% endhint %}
 
 # Part 1. Pre-built demo

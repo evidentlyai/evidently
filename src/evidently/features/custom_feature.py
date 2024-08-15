@@ -4,17 +4,20 @@ from typing import Tuple
 
 import pandas as pd
 
+from evidently import ColumnType
 from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
+from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pydantic_utils import FingerprintPart
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class CustomFeature(GeneratedFeature):
+class CustomFeature(FeatureTypeFieldMixin, GeneratedFeature):
     display_name: str
     name: str = Field(default_factory=lambda: str(uuid.uuid4()))
     func: Callable[[pd.DataFrame, DataDefinition], pd.Series]
+    feature_type: ColumnType = ColumnType.Numerical
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         result = self.func(data, data_definition)
@@ -24,11 +27,12 @@ class CustomFeature(GeneratedFeature):
         return self._create_column(self.name)
 
 
-class CustomSingleColumnFeature(GeneratedFeature):
+class CustomSingleColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
     display_name: str
     func: Callable[[pd.Series], pd.Series]
     name: str = Field(default_factory=lambda: str(uuid.uuid4()))
     column_name: str
+    feature_type: ColumnType = ColumnType.Numerical
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         result = self.func(data[self.column_name])
@@ -45,12 +49,13 @@ class CustomSingleColumnFeature(GeneratedFeature):
         )
 
 
-class CustomPairColumnFeature(GeneratedFeature):
+class CustomPairColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
     display_name: str
     func: Callable[[pd.Series, pd.Series], pd.Series]
     name: str = Field(default_factory=lambda: str(uuid.uuid4()))
     first_column: str
     second_column: str
+    feature_type: ColumnType = ColumnType.Numerical
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         result = self.func(data[self.first_column], data[self.second_column])

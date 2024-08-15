@@ -35,7 +35,9 @@ from evidently.collector.config import CONFIG_PATH
 from evidently.collector.config import CollectorConfig
 from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.storage import CollectorStorage
+from evidently.collector.storage import CreateSnapshotEvent
 from evidently.collector.storage import LogEvent
+from evidently.collector.storage import UploadSnapshotEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
 from evidently.ui.components.security import NoSecurityComponent
@@ -126,6 +128,7 @@ async def check_snapshots_factory(service: CollectorServiceConfig, storage: Coll
         if not collector.trigger.is_ready(collector, storage):
             continue
         await create_snapshot(collector, storage)
+        await send_snapshot(collector, storage)
 
 
 async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
@@ -141,23 +144,42 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
                 report.run, reference_data=collector.reference, current_data=current, column_mapping=ColumnMapping()
             )  # FIXME: sync function
             report._inner_suite.raise_for_error()
+            snapshot = report.to_snapshot()
         except Exception as e:
             logger.exception(f"Error running report: {e}")
             storage.log(
-                collector.id, LogEvent(ok=False, error=f"Error running report: {e.__class__.__name__}: {e.args}")
+                collector.id,
+                CreateSnapshotEvent(
+                    snapshot_id=str(report.id),
+                    ok=False,
+                    error=f"Error running report: {e.__class__.__name__}: {e.args}",
+                ),
             )
             return
-        try:
-            await sync_to_thread(
-                collector.workspace.add_snapshot, collector.project_id, report.to_snapshot()
-            )  # FIXME: sync function
-        except Exception as e:
-            logger.exception(f"Error saving snapshot: {e}")
-            storage.log(
-                collector.id, LogEvent(ok=False, error=f"Error saving snapshot: {e.__class__.__name__}: {e.args}")
-            )
-            return
-        storage.log(collector.id, LogEvent(ok=True))
+        storage.add_snapshot(collector.id, snapshot)
+        storage.log(collector.id, CreateSnapshotEvent(snapshot_id=str(snapshot.id), ok=True))
+
+
+async def send_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
+    async with storage.lock(collector.id):
+        for snapshot_item in storage.take_snapshots(collector.id):
+            try:
+                with snapshot_item as snapshot:
+                    await sync_to_thread(
+                        collector.workspace.add_snapshot, collector.project_id, snapshot
+                    )  # FIXME: sync function
+            except Exception as e:
+                logger.exception(f"Error saving snapshot: {e}")
+                storage.log(
+                    collector.id,
+                    UploadSnapshotEvent(
+                        snapshot_id=str(snapshot.id),
+                        ok=False,
+                        error=f"Error saving snapshot: {e.__class__.__name__}: {e.args}",
+                    ),
+                )
+                return
+            storage.log(collector.id, UploadSnapshotEvent(snapshot_id=str(snapshot.id), ok=True))
 
 
 def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, debug: bool = False) -> Litestar:
@@ -247,7 +269,7 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, deb
     )
 
 
-def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: Optional[str] = None):
+def run(host: str = "127.0.0.1", port: int = 8001, config_path: str = CONFIG_PATH, secret: Optional[str] = None):
     app = create_app(config_path, secret)
     uvicorn.run(app, host=host, port=port)
 

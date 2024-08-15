@@ -111,7 +111,7 @@ class FactoryComponent(Component, Generic[DT], ABC):
 
 
 class ServiceComponent(Component):
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"
     port: int = 8000
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:

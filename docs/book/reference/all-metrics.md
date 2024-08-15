@@ -283,13 +283,21 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 
 ## Descriptors: Model-based
 
+General descriptors that you can use to score outputs with custom models or criteria. 
+
 | Descriptor | Parameters |
 | - | - |
+| **LLMEval()** <br><br> Scores the text using the defined prompt and model as LLM-as-a-judge. Provides customizable prompt templates.| See [docs](../customization/llm_as_a_judge.md) for examples and parameters.|
+| **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
+| **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model.| See [docs](../customization/llm_as_a_judge.md) for examples and parameters.|
+
+Specific examples of model and LLM-based descriptors.
+
+| Descriptor | Parameters |
+| - | - |
+| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0: different, 0.5: unrelated, 1: identical). </li></ul> Example use:<br>`ColumnSummaryMetric(column_name=SemanticSimilarity().on(["response", "new_response"]))`. | **Required:** <ul><li>two column names</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
 | **Sentiment()** <ul><li>Analyzes the sentiment of the text. </li><li> Return a score on a scale: -1 (negative) to 1 positive). </li></ul>| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **HuggingFaceToxicityModel()** <ul><li> Detects hate speech using [HuggingFace Model](https://huggingface.co/facebook/roberta-hate-speech-dynabench-r4-target). </li><li> Returns predicted probability for the “hate” label. </li><li> Scale: 0 to 1. </li></ul> | **Optional**: <ul><li>`toxic_label="hate"` (default)</li><li> `display_name`</li></ul> |
-| **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
-| **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model as LLM-as-a-judge.| See [docs](../customization/llm_as_a_judge.md) for examples.|
-| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0: different, 0.5: unrelated, 1: identical). </li></ul> Example use:<br>`ColumnSummaryMetric(column_name=SemanticSimilarity().on(["response", "new_response"]))`. | **Required:** <ul><li>two column names</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Text-Specific Metrics
 

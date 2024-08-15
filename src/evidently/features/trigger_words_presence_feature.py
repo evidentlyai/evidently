@@ -1,5 +1,6 @@
 import re
 from typing import Any
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -12,6 +13,7 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class TriggerWordsPresent(ApplyColumnGeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     words_list: List[str]
     lemmatize: bool = True
@@ -24,7 +26,6 @@ class TriggerWordsPresent(ApplyColumnGeneratedFeature):
         lemmatize: bool = True,
         display_name: Optional[str] = None,
     ):
-        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize

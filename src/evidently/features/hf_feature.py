@@ -1,5 +1,6 @@
 from functools import partial
 from typing import Callable
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -9,10 +10,11 @@ import pandas as pd
 
 from evidently.core import ColumnType
 from evidently.features.generated_features import DataFeature
+from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class HuggingFaceFeature(DataFeature):
+class HuggingFaceFeature(FeatureTypeFieldMixin, DataFeature):
     column_name: str
     model: str
     params: dict
@@ -33,8 +35,12 @@ class HuggingFaceFeature(DataFeature):
         result = func(data[self.column_name], **{param: self.params.get(param, None) for param in available_params})
         return result
 
+    def __hash__(self):
+        return DataFeature.__hash__(self)
+
 
 class HuggingFaceToxicityFeature(DataFeature):
+    __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str
     model: Optional[str]
     toxic_label: Optional[str]
