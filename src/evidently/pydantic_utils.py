@@ -187,20 +187,19 @@ class PolymorphicModel(BaseModel):
 
         type_field = cls.__fields__["type"]
         type_field.default = typename
-        type_field.type_ = type_field.outer_type_ = literal_typename
         type_field.field_info.default = typename
+        type_field.type_ = type_field.outer_type_ = literal_typename
 
         base_class = get_base_class(cls)
         register_loaded_alias(base_class, cls, typename)
         if base_class != cls:
-            base_type_field = base_class.__fields__["type"]
-            base_type_field_type_ = base_type_field.type_
-            if is_union_type(base_type_field_type_):
-                union_args = get_args(base_type_field_type_)
-                new_base_typefield = union_args + (literal_typename,)
+            base_typefield = base_class.__fields__["type"]
+            base_typefield_type = base_typefield.type_
+            if is_union_type(base_typefield_type):
+                subclass_literals = get_args(base_typefield_type) + (literal_typename,)
             else:
-                new_base_typefield = (base_type_field_type_, literal_typename)
-            base_type_field.type_ = base_type_field.outer_type_ = Union[new_base_typefield]
+                subclass_literals = (base_typefield_type, literal_typename)
+            base_typefield.type_ = base_typefield.outer_type_ = Union[subclass_literals]
 
     @classmethod
     def __subtypes__(cls):
