@@ -14,6 +14,7 @@ from typing import Dict
 from typing import FrozenSet
 from typing import Iterable
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Set
 from typing import Tuple
@@ -180,9 +181,25 @@ class PolymorphicModel(BaseModel):
         super().__init_subclass__()
         if cls == PolymorphicModel:
             return
+
         typename = cls.__get_type__()
-        cls.__fields__["type"].default = typename
-        register_loaded_alias(get_base_class(cls), cls, typename)
+        literal_typename = Literal[typename]
+
+        type_field = cls.__fields__["type"]
+        type_field.default = typename
+        type_field.field_info.default = typename
+        type_field.type_ = type_field.outer_type_ = literal_typename
+
+        base_class = get_base_class(cls)
+        register_loaded_alias(base_class, cls, typename)
+        if base_class != cls:
+            base_typefield = base_class.__fields__["type"]
+            base_typefield_type = base_typefield.type_
+            if is_union_type(base_typefield_type):
+                subclass_literals = get_args(base_typefield_type) + (literal_typename,)
+            else:
+                subclass_literals = (base_typefield_type, literal_typename)
+            base_typefield.type_ = base_typefield.outer_type_ = Union[subclass_literals]
 
     @classmethod
     def __subtypes__(cls):
