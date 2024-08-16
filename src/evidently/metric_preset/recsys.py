@@ -69,7 +69,6 @@ class RecsysPreset(MetricPreset):
         user_bias_columns: Optional[List[str]] = None,
         item_bias_columns: Optional[List[str]] = None,
     ):
-        super().__init__()
         self.k = k
         self.min_rel_score = min_rel_score
         self.no_feedback_users = no_feedback_users
@@ -79,6 +78,7 @@ class RecsysPreset(MetricPreset):
         self.item_features = item_features
         self.user_bias_columns = user_bias_columns
         self.item_bias_columns = item_bias_columns
+        super().__init__()
 
     def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         is_train_data = False

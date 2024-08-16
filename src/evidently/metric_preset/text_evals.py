@@ -15,10 +15,13 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TextEvals(MetricPreset):
+    column_name: str
+    descriptors: Optional[List[FeatureDescriptor]] = None
+
     def __init__(self, column_name: str, descriptors: Optional[List[FeatureDescriptor]] = None):
-        super().__init__()
         self.column_name: str = column_name
         self.descriptors: Optional[List[FeatureDescriptor]] = descriptors
+        super().__init__()
 
     def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         descriptors = self.descriptors or [

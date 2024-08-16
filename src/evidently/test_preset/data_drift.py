@@ -61,7 +61,6 @@ class DataDriftTestPreset(TestPreset):
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
-        super().__init__()
         self.columns = columns
         self.embeddings = embeddings
         self.embeddings_drift_method = embeddings_drift_method
@@ -76,6 +75,7 @@ class DataDriftTestPreset(TestPreset):
         self.num_stattest_threshold = num_stattest_threshold
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
+        super().__init__()
 
     def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         embeddings_data = data_definition.embeddings

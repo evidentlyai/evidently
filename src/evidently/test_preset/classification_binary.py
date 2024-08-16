@@ -29,16 +29,20 @@ class BinaryClassificationTestPreset(TestPreset):
     - `TestAccuracyScore`
     """
 
+    stattest: Optional[PossibleStatTestType] = None
+    stattest_threshold: Optional[float] = None
+    probas_threshold: Optional[float] = None
+
     def __init__(
         self,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
         probas_threshold: Optional[float] = None,
     ):
-        super().__init__()
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
         self.probas_threshold = probas_threshold
+        super().__init__()
 
     def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         target = data_definition.get_target_column()

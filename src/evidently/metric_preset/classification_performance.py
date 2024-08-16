@@ -35,10 +35,10 @@ class ClassificationPreset(MetricPreset):
     def __init__(
         self, columns: Optional[List[str]] = None, probas_threshold: Optional[float] = None, k: Optional[int] = None
     ):
-        super().__init__()
         self.columns = columns
         self.probas_threshold = probas_threshold
         self.k = k
+        super().__init__()
 
     def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         result = [

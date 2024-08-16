@@ -34,8 +34,8 @@ class DataStabilityTestPreset(TestPreset):
         self,
         columns: Optional[List[str]] = None,
     ):
-        super().__init__()
         self.columns = columns
+        super().__init__()
 
     def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         return [

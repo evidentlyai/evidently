@@ -42,10 +42,9 @@ class MulticlassClassificationTestPreset(TestPreset):
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        super().__init__()
-
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
+        super().__init__()
 
     def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         target = data_definition.get_target_column()

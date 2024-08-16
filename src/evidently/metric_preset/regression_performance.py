@@ -34,8 +34,8 @@ class RegressionPreset(MetricPreset):
     columns: Optional[List[str]]
 
     def __init__(self, columns: Optional[List[str]] = None):
-        super().__init__()
         self.columns = columns
+        super().__init__()
 
     def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
         return [
