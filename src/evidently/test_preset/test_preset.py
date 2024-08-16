@@ -8,6 +8,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TestPreset(EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
+
     def __init__(self):
         super().__init__()
 
