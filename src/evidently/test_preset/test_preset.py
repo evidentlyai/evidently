@@ -1,19 +1,15 @@
 import abc
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 
-from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.base_metric import BasePreset
+from evidently.tests.base_test import Test
 from evidently.utils.data_preprocessing import DataDefinition
 
 
-class TestPreset(EvidentlyBaseModel):
-    class Config:
-        is_base_type = True
-
-    def __init__(self):
-        super().__init__()
-
+class TestPreset(BasePreset):
     @abc.abstractmethod
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
         raise NotImplementedError

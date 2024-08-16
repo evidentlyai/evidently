@@ -11,6 +11,7 @@ from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfRows
 from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
+from evidently.tests.base_test import Test
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -37,7 +38,7 @@ class DataStabilityTestPreset(TestPreset):
         self.columns = columns
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
         return [
             TestNumberOfRows(),
             TestNumberOfColumns(),

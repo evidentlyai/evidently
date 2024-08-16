@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.base_metric import Metric
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import DataDriftTable
@@ -70,7 +71,9 @@ class DataDriftPreset(MetricPreset):
         self.per_column_stattest_threshold = per_column_stattest_threshold
         super().__init__()
 
-    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[Metric]:
         result = [
             DatasetDriftMetric(
                 columns=self.columns,

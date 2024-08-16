@@ -9,6 +9,7 @@ from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestNumberOfConstantColumns
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestNumberOfDuplicatedRows
+from evidently.tests.base_test import Test
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -34,7 +35,7 @@ class DataQualityTestPreset(TestPreset):
         self.columns = columns
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
         return [
             TestAllColumnsShareOfMissingValues(columns=self.columns),
             TestAllColumnsMostCommonValueShare(columns=self.columns),

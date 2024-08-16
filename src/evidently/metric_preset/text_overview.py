@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.base_metric import Metric
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import SemanticSimilarity
@@ -49,7 +50,9 @@ class TextOverviewPreset(MetricPreset):
         self.descriptors = descriptors
         super().__init__()
 
-    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[Metric]:
         result = []
         if self.descriptors is None:
             descriptors = [

@@ -13,6 +13,7 @@ from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestColumnDrift
 from evidently.tests import TestEmbeddingsDrift
 from evidently.tests import TestShareOfDriftedColumns
+from evidently.tests.base_test import Test
 from evidently.utils.data_drift_utils import add_emb_drift_to_reports
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_preprocessing import DataDefinition
@@ -77,7 +78,7 @@ class DataDriftTestPreset(TestPreset):
         self.per_column_stattest_threshold = per_column_stattest_threshold
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
         embeddings_data = data_definition.embeddings
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))

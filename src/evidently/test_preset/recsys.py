@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 
 from evidently.test_preset.test_preset import TestPreset
@@ -8,6 +9,7 @@ from evidently.tests import TestMAPK
 from evidently.tests import TestNDCGK
 from evidently.tests import TestPrecisionTopK
 from evidently.tests import TestRecallTopK
+from evidently.tests.base_test import Test
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -33,7 +35,7 @@ class RecsysTestPreset(TestPreset):
         self.no_feedback_users = no_feedback_users
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
         return [
             TestPrecisionTopK(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),
             TestRecallTopK(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),

@@ -4,6 +4,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.base_metric import Metric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import DiversityMetric
 from evidently.metrics import FBetaTopKMetric
@@ -80,7 +81,9 @@ class RecsysPreset(MetricPreset):
         self.item_bias_columns = item_bias_columns
         super().__init__()
 
-    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[Metric]:
         is_train_data = False
         if additional_data is not None:
             is_train_data = "current_train_data" in additional_data.keys()

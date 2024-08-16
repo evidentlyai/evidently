@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 
 from evidently.calculations.stattests import PossibleStatTestType
@@ -11,6 +12,7 @@ from evidently.tests import TestLogLoss
 from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallScore
 from evidently.tests import TestRocAuc
+from evidently.tests.base_test import Test
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -44,7 +46,7 @@ class BinaryClassificationTopKTestPreset(TestPreset):
         self.stattest_threshold = stattest_threshold
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
         target = data_definition.get_target_column()
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")

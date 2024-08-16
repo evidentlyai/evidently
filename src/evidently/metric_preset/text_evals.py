@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.base_metric import Metric
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import SentenceCount
@@ -23,7 +24,9 @@ class TextEvals(MetricPreset):
         self.descriptors: Optional[List[FeatureDescriptor]] = descriptors
         super().__init__()
 
-    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[Metric]:
         descriptors = self.descriptors or [
             TextLength(),
             SentenceCount(),

@@ -2,7 +2,6 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Sequence
 
 from evidently.base_metric import Metric
 from evidently.calculations.stattests import PossibleStatTestType
@@ -67,7 +66,7 @@ class TargetDriftPreset(MetricPreset):
 
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
-    ) -> Sequence[Metric]:
+    ) -> List[Metric]:
         target = data_definition.get_target_column()
         prediction = data_definition.get_prediction_columns()
         result: List[Metric] = []
