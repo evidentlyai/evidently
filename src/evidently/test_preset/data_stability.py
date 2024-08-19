@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.test_preset.test_preset import AnyTest
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
@@ -11,7 +12,6 @@ from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfRows
 from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
-from evidently.tests.base_test import Test
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -38,7 +38,9 @@ class DataStabilityTestPreset(TestPreset):
         self.columns = columns
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
+    def generate_tests(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyTest]:
         return [
             TestNumberOfRows(),
             TestNumberOfColumns(),

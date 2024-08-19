@@ -3,8 +3,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import Metric
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
@@ -73,8 +73,8 @@ class DataDriftPreset(MetricPreset):
 
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
-    ) -> List[Metric]:
-        result = [
+    ) -> List[AnyMetric]:
+        result: List[AnyMetric] = [
             DatasetDriftMetric(
                 columns=self.columns,
                 drift_share=self.drift_share,
@@ -106,7 +106,7 @@ class DataDriftPreset(MetricPreset):
         embeddings_data = data_definition.embeddings
         if embeddings_data is None:
             return result
-        result = add_emb_drift_to_reports(
-            result, embeddings_data, self.embeddings, self.embeddings_drift_method, EmbeddingsDriftMetric
+        result += add_emb_drift_to_reports(
+            embeddings_data, self.embeddings, self.embeddings_drift_method, EmbeddingsDriftMetric
         )
         return result

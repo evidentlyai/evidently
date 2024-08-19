@@ -44,11 +44,11 @@ class BaseGenerator(Generic[TObject]):
 
 
 def make_generator_by_columns(
-    base_class: Type,
+    base_class: Type[TObject],
     columns: Optional[Union[str, list]] = None,
     parameters: Optional[Dict] = None,
     skip_id_column: bool = False,
-) -> BaseGenerator:
+) -> BaseGenerator[TObject]:
     """Create a test generator for a columns list with a test class.
 
     Base class is specified with `base_class` parameter.

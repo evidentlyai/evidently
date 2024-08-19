@@ -12,6 +12,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
+from evidently.base_metric import Metric
 from evidently.calculations.stattests import PossibleStatTestType
 
 
@@ -231,12 +232,12 @@ def get_text_data_for_plots(reference_data: pd.Series, current_data: pd.Series):
 
 
 def add_emb_drift_to_reports(
-    result,
     embeddings_data,
     embeddings,
     embeddings_drift_method,
     entity,
-):
+) -> List[Metric]:
+    result: List[Metric] = []
     sets = list(embeddings_data.keys())
     if embeddings is not None:
         sets = np.intersect1d(sets, embeddings)

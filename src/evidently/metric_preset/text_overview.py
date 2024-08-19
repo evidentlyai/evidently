@@ -3,7 +3,6 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import Metric
 from evidently.descriptors import OOV
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import SemanticSimilarity
@@ -11,6 +10,7 @@ from evidently.descriptors import SentenceCount
 from evidently.descriptors import Sentiment
 from evidently.descriptors import TextLength
 from evidently.features.generated_features import FeatureDescriptor
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnSummaryMetric
 from evidently.utils.data_preprocessing import DataDefinition
@@ -52,8 +52,8 @@ class TextOverviewPreset(MetricPreset):
 
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
-    ) -> List[Metric]:
-        result = []
+    ) -> List[AnyMetric]:
+        result: List[AnyMetric] = []
         if self.descriptors is None:
             descriptors = [
                 TextLength(),

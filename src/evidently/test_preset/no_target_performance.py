@@ -8,6 +8,7 @@ import numpy as np
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pipeline.column_mapping import TaskType
+from evidently.test_preset.test_preset import AnyTest
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
@@ -17,7 +18,6 @@ from evidently.tests import TestEmbeddingsDrift
 from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
 from evidently.tests import TestShareOfDriftedColumns
-from evidently.tests.base_test import Test
 from evidently.utils.data_drift_utils import add_emb_drift_to_reports
 from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_preprocessing import DataDefinition
@@ -90,7 +90,9 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self.per_column_stattest_threshold = per_column_stattest_threshold
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
+    def generate_tests(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyTest]:
         embeddings_data = data_definition.embeddings
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))
@@ -152,8 +154,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
 
         if embeddings_data is None:
             return preset_tests
-        preset_tests = add_emb_drift_to_reports(
-            preset_tests,
+        preset_tests += add_emb_drift_to_reports(
             embeddings_data,
             self.embeddings,
             self.embeddings_drift_method,

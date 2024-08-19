@@ -3,7 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import Metric
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import RegressionAbsPercentageErrorPlot
 from evidently.metrics import RegressionErrorBiasTable
@@ -40,7 +40,7 @@ class RegressionPreset(MetricPreset):
 
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
-    ) -> List[Metric]:
+    ) -> List[AnyMetric]:
         return [
             RegressionQualityMetric(),
             RegressionPredictedVsActualScatter(),

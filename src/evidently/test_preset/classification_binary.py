@@ -4,6 +4,7 @@ from typing import List
 from typing import Optional
 
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.test_preset.test_preset import AnyTest
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
 from evidently.tests import TestColumnDrift
@@ -11,7 +12,6 @@ from evidently.tests import TestF1Score
 from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallScore
 from evidently.tests import TestRocAuc
-from evidently.tests.base_test import Test
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -46,7 +46,9 @@ class BinaryClassificationTestPreset(TestPreset):
         self.probas_threshold = probas_threshold
         super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]) -> List[Test]:
+    def generate_tests(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyTest]:
         target = data_definition.get_target_column()
 
         if target is None:

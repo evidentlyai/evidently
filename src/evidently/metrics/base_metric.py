@@ -13,7 +13,7 @@ def generate_column_metrics(
     columns: Optional[Union[str, list]] = None,
     parameters: Optional[Dict] = None,
     skip_id_column: bool = False,
-) -> BaseGenerator:
+) -> BaseGenerator[Metric]:
     """Function for generating metrics for columns"""
     return make_generator_by_columns(
         base_class=metric_class,

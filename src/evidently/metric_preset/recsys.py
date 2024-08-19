@@ -4,7 +4,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently.base_metric import Metric
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import DiversityMetric
 from evidently.metrics import FBetaTopKMetric
@@ -83,11 +83,11 @@ class RecsysPreset(MetricPreset):
 
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
-    ) -> List[Metric]:
+    ) -> List[AnyMetric]:
         is_train_data = False
         if additional_data is not None:
             is_train_data = "current_train_data" in additional_data.keys()
-        metrics = [
+        metrics: List[AnyMetric] = [
             PrecisionTopKMetric(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),
             RecallTopKMetric(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),
             FBetaTopKMetric(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),

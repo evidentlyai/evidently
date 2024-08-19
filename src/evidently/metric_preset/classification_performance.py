@@ -3,7 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.base_metric import Metric
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ClassificationClassBalance
 from evidently.metrics import ClassificationClassSeparationPlot
@@ -43,8 +43,8 @@ class ClassificationPreset(MetricPreset):
 
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
-    ) -> List[Metric]:
-        result = [
+    ) -> List[AnyMetric]:
+        result: List[AnyMetric] = [
             ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k),
             ClassificationClassBalance(),
             ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k),
