@@ -33,6 +33,4 @@ def test_minimal_requirements():
 
 
 def _get_min_version(value):
-    if "," in value:
-        return value.split(",")[0]
-    return value
+    return value.split(",")[0]
