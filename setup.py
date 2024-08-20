@@ -56,7 +56,7 @@ setup_args = dict(
         "scikit-learn>=1.0.1",
         "pandas[parquet]>=1.3.5",
         "numpy>=1.22.0,<2.1",
-        "nltk>=3.6.7",
+        "nltk>=3.6.7,<=3.8.1",
         "scipy>=1.10.0",
         "requests>=2.32.0",
         "PyYAML>=5.4",
