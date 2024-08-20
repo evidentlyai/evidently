@@ -24,7 +24,7 @@
 
 # :new: New release
 
-**Evidently 0.4.25**. LLM evaluation -> [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-llm)
+**Evidently 0.4.25**. LLM evaluation -> [Tutorial](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm)
 
 # :bar_chart: What is Evidently?
 
@@ -92,7 +92,7 @@ conda install -c conda-forge evidently
 # :arrow_forward: Getting started
 
 ### Option 1: Test Suites
-> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/get-started/tutorial) or [LLM evaluation](https://docs.evidentlyai.com/get-started/tutorial-llm).
+> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/tutorials-and-examples/tutorial_reports_tests) or [LLM evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm).
 
 Import the **Test Suite**, evaluation Preset and toy tabular dataset.
 
@@ -169,7 +169,7 @@ data_drift_report.json()
 You can choose other Presets and individual Metrics, including LLM evaluations for text data.
 
 ### Option 3: ML monitoring dashboard
-> This launches a demo project in the Evidently UI. Check complete tutorials for [Self-hosting](https://docs.evidentlyai.com/get-started/tutorial-monitoring) or [Evidently Cloud](https://docs.evidentlyai.com/get-started/tutorial-cloud).
+> This launches a demo project in the Evidently UI. Check tutorials for [Self-hosting](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring) or [Evidently Cloud](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud).
 
 Recommended step: create a virtual environment and activate it.
 ```
@@ -208,12 +208,12 @@ We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
 
 # :books: Documentation
 For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with the tutorials:
-* [Get Started with Tabular and ML Evaluation](https://docs.evidentlyai.com/get-started/tutorial)
-* [Get Started with LLM Evaluation](https://docs.evidentlyai.com/get-started/tutorial-llm)
-* [Self-hosting ML monitoring Dashboard](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
-* [Cloud ML monitoring Dashboard](https://docs.evidentlyai.com/get-started/tutorial-cloud)
+* [Get Started with Tabular and ML Evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial_reports_tests)
+* [Get Started with LLM Evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm)
+* [Self-hosting ML monitoring Dashboard](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring)
+* [Cloud ML monitoring Dashboard](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud)
 
-See more examples in the [Docs](https://docs.evidentlyai.com/examples).
+See more examples in the [Docs]([https://docs.evidentlyai.com/tutorials-and-examples](https://docs.evidentlyai.com/tutorials-and-examples/examples)).
 
 ## How-to guides
 Explore the [How-to guides](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to understand specific features in Evidently.
