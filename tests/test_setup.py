@@ -9,7 +9,9 @@ def test_minimal_requirements():
         lines = {line.strip().split("#")[0] for line in f.readlines()}
         min_reqs = {k.split("[")[0]: v for line in lines if line.strip() for k, v in (line.strip().split("=="),)}
 
-    install_reqs = {k.split("[")[0]: v for r in setup_args["install_requires"] for k, v in (r.split(">="),)}
+    install_reqs = {
+        k.split("[")[0]: v.split(",")[0] for r in setup_args["install_requires"] for k, v in (r.split(">="),)
+    }
     extra = []
     wrong_version = []
     for m, v in install_reqs.items():
