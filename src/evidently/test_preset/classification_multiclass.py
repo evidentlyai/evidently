@@ -1,8 +1,10 @@
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.test_preset.test_preset import AnyTest
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
 from evidently.tests import TestColumnDrift
@@ -42,12 +44,13 @@ class MulticlassClassificationTestPreset(TestPreset):
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
-        super().__init__()
-
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
+        super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyTest]:
         target = data_definition.get_target_column()
 
         if target is None:
@@ -61,7 +64,7 @@ class MulticlassClassificationTestPreset(TestPreset):
                 classification_labels if isinstance(classification_labels, list) else classification_labels.values()
             )
 
-        tests = [
+        tests: List[AnyTest] = [
             TestAccuracyScore(),
             TestF1Score(),
             *[TestPrecisionByClass(label) for label in labels],

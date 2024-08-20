@@ -8,6 +8,7 @@ import numpy as np
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pipeline.column_mapping import TaskType
+from evidently.test_preset.test_preset import AnyTest
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
@@ -73,7 +74,6 @@ class NoTargetPerformanceTestPreset(TestPreset):
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
-        super().__init__()
         self.columns = columns
         self.embeddings = embeddings
         self.embeddings_drift_method = embeddings_drift_method
@@ -87,9 +87,12 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self.cat_stattest_threshold = cat_stattest_threshold
         self.num_stattest_threshold = num_stattest_threshold
         self.text_stattest_threshold = text_stattest_threshold
-        self.per_feature_threshold = per_column_stattest_threshold
+        self.per_column_stattest_threshold = per_column_stattest_threshold
+        super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyTest]:
         embeddings_data = data_definition.embeddings
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))
@@ -140,7 +143,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
                 cat_stattest_threshold=self.cat_stattest_threshold,
                 num_stattest_threshold=self.num_stattest_threshold,
                 text_stattest_threshold=self.text_stattest_threshold,
-                per_column_stattest_threshold=self.per_feature_threshold,
+                per_column_stattest_threshold=self.per_column_stattest_threshold,
             )
         )
         preset_tests.append(TestColumnsType())
@@ -151,8 +154,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
 
         if embeddings_data is None:
             return preset_tests
-        preset_tests = add_emb_drift_to_reports(
-            preset_tests,
+        preset_tests += add_emb_drift_to_reports(
             embeddings_data,
             self.embeddings,
             self.embeddings_drift_method,

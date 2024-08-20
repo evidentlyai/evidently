@@ -4,6 +4,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import DiversityMetric
 from evidently.metrics import FBetaTopKMetric
@@ -69,7 +70,6 @@ class RecsysPreset(MetricPreset):
         user_bias_columns: Optional[List[str]] = None,
         item_bias_columns: Optional[List[str]] = None,
     ):
-        super().__init__()
         self.k = k
         self.min_rel_score = min_rel_score
         self.no_feedback_users = no_feedback_users
@@ -79,12 +79,15 @@ class RecsysPreset(MetricPreset):
         self.item_features = item_features
         self.user_bias_columns = user_bias_columns
         self.item_bias_columns = item_bias_columns
+        super().__init__()
 
-    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyMetric]:
         is_train_data = False
         if additional_data is not None:
             is_train_data = "current_train_data" in additional_data.keys()
-        metrics = [
+        metrics: List[AnyMetric] = [
             PrecisionTopKMetric(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),
             RecallTopKMetric(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),
             FBetaTopKMetric(k=self.k, min_rel_score=self.min_rel_score, no_feedback_users=self.no_feedback_users),

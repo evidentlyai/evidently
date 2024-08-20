@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import DatasetSummaryMetric
@@ -27,10 +28,12 @@ class DataQualityPreset(MetricPreset):
     columns: Optional[List[str]]
 
     def __init__(self, columns: Optional[List[str]] = None):
-        super().__init__()
         self.columns = columns
+        super().__init__()
 
-    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyMetric]:
         return [
             DatasetSummaryMetric(),
             generate_column_metrics(ColumnSummaryMetric, columns=self.columns, skip_id_column=True),

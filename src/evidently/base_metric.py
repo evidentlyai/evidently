@@ -215,6 +215,11 @@ class WithResultFieldPathMetaclass(FrozenBaseMeta):
         return typing_inspect.get_args(next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b)))[0]
 
 
+class BasePreset(EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
+
+
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
     _context: Optional["Context"] = None
 

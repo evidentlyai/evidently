@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.test_preset.test_preset import AnyTest
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsMostCommonValueShare
 from evidently.tests import TestAllColumnsShareOfMissingValues
@@ -31,10 +32,12 @@ class DataQualityTestPreset(TestPreset):
         self,
         columns: Optional[List[str]] = None,
     ):
-        super().__init__()
         self.columns = columns
+        super().__init__()
 
-    def generate_tests(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
+    def generate_tests(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyTest]:
         return [
             TestAllColumnsShareOfMissingValues(columns=self.columns),
             TestAllColumnsMostCommonValueShare(columns=self.columns),

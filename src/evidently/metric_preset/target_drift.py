@@ -2,10 +2,9 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Sequence
 
-from evidently.base_metric import Metric
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnCorrelationsMetric
 from evidently.metrics import ColumnDriftMetric
@@ -52,7 +51,6 @@ class TargetDriftPreset(MetricPreset):
         text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
-        super().__init__()
         self.columns = columns
         self.stattest = stattest
         self.cat_stattest = cat_stattest
@@ -64,13 +62,14 @@ class TargetDriftPreset(MetricPreset):
         self.num_stattest_threshold = num_stattest_threshold
         self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
+        super().__init__()
 
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
-    ) -> Sequence[Metric]:
+    ) -> List[AnyMetric]:
         target = data_definition.get_target_column()
         prediction = data_definition.get_prediction_columns()
-        result: List[Metric] = []
+        result: List[AnyMetric] = []
         columns_by_target = []
 
         if target is not None:

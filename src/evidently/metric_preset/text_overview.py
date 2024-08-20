@@ -10,6 +10,7 @@ from evidently.descriptors import SentenceCount
 from evidently.descriptors import Sentiment
 from evidently.descriptors import TextLength
 from evidently.features.generated_features import FeatureDescriptor
+from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnSummaryMetric
 from evidently.utils.data_preprocessing import DataDefinition
@@ -30,6 +31,7 @@ class TextOverviewPreset(MetricPreset):
     """
 
     columns: List[str]
+    descriptors: Optional[List[FeatureDescriptor]] = None
 
     def __init__(
         self,
@@ -37,7 +39,6 @@ class TextOverviewPreset(MetricPreset):
         columns: Optional[List[str]] = None,
         descriptors: Optional[List[FeatureDescriptor]] = None,
     ):
-        super().__init__()
         if column_name is not None and columns is not None:
             raise ValueError("Cannot specify both `columns` and `columns`.")
         if columns is not None:
@@ -47,9 +48,12 @@ class TextOverviewPreset(MetricPreset):
         else:
             raise ValueError("Must specify either `columns` or `columns`.")
         self.descriptors = descriptors
+        super().__init__()
 
-    def generate_metrics(self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]):
-        result = []
+    def generate_metrics(
+        self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
+    ) -> List[AnyMetric]:
+        result: List[AnyMetric] = []
         if self.descriptors is None:
             descriptors = [
                 TextLength(),

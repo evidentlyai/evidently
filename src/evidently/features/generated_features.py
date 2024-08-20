@@ -208,6 +208,9 @@ class MultiColumnFeatureDescriptor(EvidentlyBaseModel):
 
 
 class FeatureDescriptor(EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
+
     display_name: Optional[str] = None
 
     def for_column(self, column_name: str) -> "ColumnName":

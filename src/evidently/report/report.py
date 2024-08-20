@@ -135,7 +135,7 @@ class Report(ReportBase):
                     self.metadata[METRIC_GENERATORS] = []
                 self.metadata[METRIC_GENERATORS].append(item.__class__.__name__)  # type: ignore[union-attr]
             elif isinstance(item, MetricPreset):
-                metrics = []
+                metrics: List[Metric] = []
 
                 for metric_item in item.generate_metrics(data_definition, additional_data=additional_data):
                     if isinstance(metric_item, BaseGenerator):
