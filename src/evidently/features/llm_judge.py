@@ -3,11 +3,13 @@ from abc import ABC
 from abc import abstractmethod
 from enum import Enum
 from typing import Callable
+from typing import ClassVar
 from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import Union
 
 import pandas as pd
@@ -33,9 +35,14 @@ class LLMResponseParseError(ValueError):
 
 
 class LLMWrapper(ABC):
+    __used_options__: ClassVar[List[Type[Option]]] = []
+
     @abstractmethod
     def complete(self, messages: List[LLMMessage]) -> str:
         raise NotImplementedError
+
+    def get_used_options(self) -> List[Type[Option]]:
+        return self.__used_options__
 
 
 LLMProvider = str
@@ -288,6 +295,8 @@ class OpenAIKey(Option):
 
 @llm_provider("openai", None)
 class OpenAIWrapper(LLMWrapper):
+    __used_options__: ClassVar = [OpenAIKey]
+
     def __init__(self, model: str, options: Options):
         import openai
 
