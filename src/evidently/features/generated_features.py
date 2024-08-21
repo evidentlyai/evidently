@@ -16,6 +16,7 @@ from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
 from evidently.base_metric import TEngineDataType
 from evidently.core import ColumnType
+from evidently.options.base import Options
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -37,7 +38,7 @@ class GeneratedFeatures(EvidentlyBaseModel):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition, options: Options) -> pd.DataFrame:
         """
         generate DataFrame with new features from source data.
 
@@ -46,8 +47,10 @@ class GeneratedFeatures(EvidentlyBaseModel):
         """
         raise NotImplementedError
 
-    def generate_features_renamed(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        features = self.generate_features(data, data_definition)
+    def generate_features_renamed(
+        self, data: pd.DataFrame, data_definition: DataDefinition, options: Options
+    ) -> pd.DataFrame:
+        features = self.generate_features(data, data_definition, options)
         return features.rename(columns={col: self._create_column_name(col) for col in features.columns}).set_index(
             data.index
         )
@@ -124,7 +127,7 @@ class GeneratedFeature(GeneratedFeatures):
         """
         raise NotImplementedError
 
-    def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition, options: Options) -> pd.DataFrame:
         feature = self.generate_feature(data, data_definition)
         assert len(feature.columns) == 1
         return feature

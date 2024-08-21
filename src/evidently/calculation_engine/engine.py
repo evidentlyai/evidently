@@ -21,6 +21,7 @@ from evidently.base_metric import TEngineDataType
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
+from evidently.options.base import Options
 from evidently.pydantic_utils import Fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -60,7 +61,7 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
         converted_data = self.convert_input_data(data)
 
         features_list = self.get_additional_features(converted_data.data_definition)
-        features = self.calculate_additional_features(converted_data, features_list)
+        features = self.calculate_additional_features(converted_data, features_list, context.options)
         context.set_features(features)
         self.inject_additional_features(converted_data, features)
         context.data = converted_data
@@ -91,7 +92,7 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
 
     @abc.abstractmethod
     def calculate_additional_features(
-        self, data: TInputData, features: List[GeneratedFeatures]
+        self, data: TInputData, features: List[GeneratedFeatures], options: Options
     ) -> Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]:
         raise NotImplementedError
 
