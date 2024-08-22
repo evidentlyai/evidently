@@ -1,18 +1,21 @@
 ---
-description: Set up a Project for your use case.
+description: Set up a Project for your evaluation or monitoring use case.
 ---   
+
+Before creating a Project, you need a workspace.
+
+* In Evidently Cloud, your account is your Workspace. As simple as that! [Set up account](../installation/cloud_account.md)
+* In self-hosted deployments, a Workspace is a remote or local directory. [Create workspace](../installation/self_hosting.md)
 
 # Create a Project
 
-## Add a new Project
+You can create a Project using the Python API or directly in the user interace.
+
+## Add a new Project - API
 
 {% hint style="success" %}
 Team management is a Pro feature available in the Evidently Cloud.
 {% endhint %}
-
-{% tabs %}
-
-{% tab title="API" %} 
 
 To create a Project inside a workspace `ws` and team with a `team_id`, assign a name and description, and save the changes:
 
@@ -22,9 +25,9 @@ project.description = "My project description"
 project.save()
 ```
 
-You must always create a Team to be able to add a Project in Evidently Cloud. You can copy your Team ID from the [Teams page](https://app.evidently.cloud/teams) in the UI.
+You must create a Team before adding a Project in Evidently Cloud. To copy your Team ID, go to the [Teams page](https://app.evidently.cloud/teams), select your Team, and copy the ID from there.
 
-In self-hosted installation, you do not need to pass the team ID. To create a Project:
+In self-hosted open-source installation, you do not need to pass the team ID. To create a Project:
 
 ```
 project = ws.create_project("My test project")
@@ -32,9 +35,7 @@ project.description = "My project description"
 project.save()
 ```
 
-{% endtab %}
-
-{% tab title="UI" %} 
+## Add a new Project - UI
 
 Click on the “plus” sign on the home page, create a Team if you do not have one yet and type your Project name and description.
 
@@ -42,15 +43,8 @@ Click on the “plus” sign on the home page, create a Team if you do not have 
 
 After creating a Project, you can click to open a Dashboard. Since there's no data yet, it will be empty. 
 
-{% endtab %}
-
-{% endtabs %}
-
 **Project ID**. Once you run `create_project`, you will see the Project ID. You can later use it to reference the Project. You can also copy the Project ID directly from the UI: it appears above the monitoring Dashboard.
 
-{% hint style="info" %}
-**What's next?** Head to the next section to see how to [send data to a Project](snapshots.md).
-{% endhint %}
 
 ## Connect to a Project
 
@@ -124,5 +118,5 @@ Each Project has the following parameters.
 # What’s next?
 
 Once you create or connect to a Project, you can:
-* [Send snapshots](snapshots.md) using the `add_report` or `add_test_suite` methods. 
-* Configure the monitoring Dashboard in the [user interface](add_dashboard_tabs.md) or via the [Python API](design_dashboard_api.md).
+* [Send snapshots](../monitoring/snapshots.md) using the `add_report` or `add_test_suite` methods. 
+* Configure the monitoring Dashboard in the [user interface](../monitoring/add_dashboard_tabs.md) or via the [Python API](../monitoring/design_dashboard_api.md).
