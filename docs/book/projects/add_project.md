@@ -2,16 +2,6 @@
 description: Set up a Project for your use case.
 ---   
 
-# What is a Project?
-
-A Project helps gather all Reports and Test Suites related to the same use case. Each Project has a dedicated monitoring Dashboard and snapshot storage.
-
-{% hint style="info" %}
-**Should you have one Project for one ML model?** You will often create one project per ML model or dataset, but this is not a strict rule. For example, you can log data from champion/challenger models, or related models in one Project and use Tags to organize them. 
-{% endhint %}
-
-Once you create a Project, you can connect via Python to send data or edit the Dashboard. In Evidently Cloud, you can also the web interface.
-
 # Create a Project
 
 ## Add a new Project
