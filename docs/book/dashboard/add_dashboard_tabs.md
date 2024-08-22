@@ -6,11 +6,14 @@ description: Get a pre-built monitoring Dashboard using templates.
 
 Each Project has a monitoring Dashboard to visualize metrics and test results over time. A Dashboard can have multiple monitoring Panels, such as counters, line or bar plots, etc.
 
+The Dashboard lets you monitor live data or track ad hoc experiments and tests. Use the "Show in order" toggle to switch between two views:
+* Time series view: Displays data points with their actual time intervals (great for live monitoring).
+* Sequential view: Shows results in order with equal spacing (ideal for experiments). 
+
 ![](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
 
-
 {% hint style="info" %}
-**Data source**. To populate the Dashboard, you must send the relevant data inside the snapshots. The Panels will be empty otherwise. Read more about [sending snapshots](snapshots.md).  
+**Data source**. To populate the Dashboard, you must send the evaluation results from Python, or create Reports or Test Suites directly in the UI. The Panels will be empty otherwise.  
 {% endhint %}
 
 Initially, the Dashboard for a new Project is empty. You can organize it and select values to plot. 
