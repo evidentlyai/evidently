@@ -4,12 +4,12 @@ description: Set up a Project for your evaluation or monitoring use case.
 
 Before creating a Project, you need a workspace.
 
-* In Evidently Cloud, your account is your Workspace. As simple as that! [Set up account](../installation/cloud_account.md)
+* In Evidently Cloud, your account is your Workspace. [Set up account and connect from Python](../installation/cloud_account.md)
 * In self-hosted deployments, a Workspace is a remote or local directory. [Create workspace](../installation/self_hosting.md)
 
 # Create a Project
 
-You can create a Project using the Python API or directly in the user interace.
+You can create a Project using the Python API or directly in the user interface.
 
 ## Add a new Project - API
 
@@ -17,7 +17,7 @@ You can create a Project using the Python API or directly in the user interace.
 Team management is a Pro feature available in the Evidently Cloud.
 {% endhint %}
 
-To create a Project inside a workspace `ws` and team with a `team_id`, assign a name and description, and save the changes:
+To create a Project inside a workspace `ws` and Team with a `team_id`, assign a name and description, and save the changes:
 
 ```
 project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
@@ -45,6 +45,7 @@ After creating a Project, you can click to open a Dashboard. Since there's no da
 
 **Project ID**. Once you run `create_project`, you will see the Project ID. You can later use it to reference the Project. You can also copy the Project ID directly from the UI: it appears above the monitoring Dashboard.
 
+# Manage Project
 
 ## Connect to a Project
 
@@ -76,7 +77,7 @@ To find a specific Project by its name, use the `search_project` method:
 ws.search_project("project_name")
 ```
 
-# [DANGER] Delete Project 
+## [DANGER] Delete Project 
 
 {% hint style="danger" %}
 **You are deleting the data in a Project**. If you delete a Project, you will delete all the associated snapshots stored in a Project.
@@ -102,7 +103,7 @@ Go to the "home page", and hover over a Project name. Click on the bin sign and 
 
 {% endtabs %}
 
-## Project parameters
+# Project parameters
 
 Each Project has the following parameters.
 
