@@ -2,7 +2,7 @@
 description: How to self-host the open-source Evidently UI service.
 ---
 
-In addition to using Evidently Python library, you can self-host a UI service to get a monitoring Dashboard and organize the results of your evaluations. This is optional: you can also run evaluations in your Python environment and render results directly in Python or export them elsewhere. 
+In addition to using Evidently Python library, you can self-host a UI service to get a monitoring Dashboard and organize the results of your evaluations. This is optional: you can also run evaluations and render results directly in Python or export them elsewhere.
 
 {% hint style="info" %}
 **Evidently Cloud.** To get a managed version of the Dashboard with extra features, sign up for the free [Evidently Cloud](cloud_account.md) account.
