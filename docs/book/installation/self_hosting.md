@@ -2,7 +2,7 @@
 description: How to self-host the open-source Evidently UI service.
 ---
 
-In addition to using Evidently Python library, you can self-host a UI service to get a monitoring Dashboard and organize the results of your evaluations. This is optional: you can also run evaluations and render results directly in Python or export them elsewhere.
+In addition to using Evidently Python library, you can self-host the UI Service to get a monitoring Dashboard and organize the results of your evaluations. This is optional: you can also run evaluations and render results directly in Python or export them elsewhere.
 
 {% hint style="info" %}
 **Evidently Cloud.** To get a managed version of the Dashboard with extra features, sign up for the free [Evidently Cloud](cloud_account.md) account.
@@ -10,7 +10,12 @@ In addition to using Evidently Python library, you can self-host a UI service to
 
 # 1. Create a Workspace
 
-Once you [install Evidently](install-evidently.md), you will need to create a `workspace`. This designates a remote or local directory where you store the evaluation results (as JSON `snapshots` of Evidently `Reports` or `Test Suites`). The Monitoring UI Service will read the data from this source. 
+Once you [install Evidently](install-evidently.md), you will need to create a `workspace`. This designates a remote or local directory where you will store the evaluation results (as JSON `snapshots` of the Evidently `Reports` or `Test Suites`). The UI Service will read the data from this source. 
+
+There are three scenarios, based on where you run the UI Service and store data. 
+- **Local Workspace**. Both the UI Service and data storage are local.
+- **Remote Workspace**. Both the UI Service and data storage are remote.
+- **Workspace with remote data storage**. You run the UI Service and store data on different servers. 
 
 ## Local Workspace
 
