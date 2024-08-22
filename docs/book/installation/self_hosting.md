@@ -25,7 +25,7 @@ ws = Workspace.create("evidently_ui_workspace")
 You can pass a `path` parameter to specify the path to a local directory.
 
 {% hint style="info" %}
-**Code example** [Self-hosting tutorial](../example/tutorial-monitoring.md) shows a complete Python script to create and populate a local Workspace.
+**Code example** [Self-hosting tutorial](../examples/tutorial-monitoring.md) shows a complete Python script to create and populate a local Workspace.
 {% endhint %}
 
 ## Remote Workspace
