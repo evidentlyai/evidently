@@ -1,7 +1,9 @@
 from litestar import Response
 
+from evidently.errors import EvidentlyError
 
-class EvidentlyServiceError(Exception):
+
+class EvidentlyServiceError(EvidentlyError):
     def to_response(self) -> Response:
         raise NotImplementedError
 

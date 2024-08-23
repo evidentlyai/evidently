@@ -19,6 +19,7 @@ from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import SecretStr
 from evidently.base_metric import ColumnName
+from evidently.errors import EvidentlyError
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import Options
 from evidently.options.option import Option
@@ -30,7 +31,15 @@ LLMMessage = Tuple[str, str]
 LLMResponse = Dict[str, Union[str, float]]
 
 
-class LLMResponseParseError(ValueError):
+class EvidentlyLLMError(EvidentlyError):
+    pass
+
+
+class LLMResponseParseError(EvidentlyLLMError):
+    pass
+
+
+class LLMRequestError(EvidentlyLLMError):
     pass
 
 
@@ -304,8 +313,13 @@ class OpenAIWrapper(LLMWrapper):
         self.client = openai.OpenAI(api_key=options.get(OpenAIKey).get_value())
 
     def complete(self, messages: List[LLMMessage]) -> str:
+        import openai
+
         messages = [{"role": user, "content": msg} for user, msg in messages]
-        response = self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
+        try:
+            response = self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
+        except openai.OpenAIError as e:
+            raise LLMRequestError("Failed to call OpenAI complete API") from e
         content = response.choices[0].message.content
         assert content is not None  # todo: better error
         return content
