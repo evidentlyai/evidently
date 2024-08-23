@@ -183,9 +183,14 @@ class DataFeature(GeneratedFeature):
         return self._create_column(self.name)
 
 
-class GeneralDescriptor(EvidentlyBaseModel):
+class BaseDescriptor(EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
+
     display_name: Optional[str] = None
 
+
+class GeneralDescriptor(BaseDescriptor):
     @abc.abstractmethod
     def feature(self) -> GeneratedFeatures:
         raise NotImplementedError()
@@ -194,9 +199,7 @@ class GeneralDescriptor(EvidentlyBaseModel):
         return self.feature().as_column()
 
 
-class MultiColumnFeatureDescriptor(EvidentlyBaseModel):
-    display_name: Optional[str] = None
-
+class MultiColumnFeatureDescriptor(BaseDescriptor):
     def feature(self, columns: List[str]) -> GeneratedFeature:
         raise NotImplementedError()
 
@@ -207,11 +210,13 @@ class MultiColumnFeatureDescriptor(EvidentlyBaseModel):
         return self.feature(columns).as_column()
 
 
-class FeatureDescriptor(EvidentlyBaseModel):
+class FeatureDescriptor(BaseDescriptor):
     class Config:
         is_base_type = True
 
-    display_name: Optional[str] = None
+    @abc.abstractmethod
+    def feature(self, column_name: str) -> GeneratedFeatures:
+        raise NotImplementedError
 
     def for_column(self, column_name: str) -> "ColumnName":
         feature = self.feature(column_name)
@@ -221,7 +226,3 @@ class FeatureDescriptor(EvidentlyBaseModel):
 
     def on(self, column_name: str) -> "ColumnName":
         return self.for_column(column_name)
-
-    @abc.abstractmethod
-    def feature(self, column_name: str) -> GeneratedFeatures:
-        raise NotImplementedError
