@@ -281,7 +281,7 @@ class OpenAIWrapper(LLMWrapper):
 
     def complete(self, messages: List[LLMMessage]) -> str:
         messages = [{"role": user, "content": msg} for user, msg in messages]
-        response = self.client.chat.completions.create(model="gpt-4o-mini", messages=messages)  # type: ignore[arg-type]
+        response = self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
         content = response.choices[0].message.content
         assert content is not None  # todo: better error
         return content
