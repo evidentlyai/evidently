@@ -1,3 +1,6 @@
+Notebook example on specifying column mapping:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
 
 ## Prediction column(s) in classification 
 
