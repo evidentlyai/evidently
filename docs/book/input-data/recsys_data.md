@@ -1,11 +1,18 @@
 ---
-description: How to pass additional data for ranking and recommendations.
+description: How to define the data schema for ranking and recommendations.
 ---
+
+To evaluate data from recommender systems, you must correctly map the input data schema, and pass an optional additional dataset with training data. 
+
+# Code example
+
+Notebook example on using column mapping and additional data for recommender systems:
+
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_run_recsys_metrics.ipynb" %}
 
 # Column mapping 
 You must define column mapping to run evaluations for recommender or ranking systems on your `current` and (optional) `reference` data. Column mapping helps point to the columns with user ID, item ID, prediction, and target. 
 
-# Recommender systems
 To evaluate the quality of a ranking or a recommendation system, you must pass:
 * The model score or rank as the prediction.
 * The information about user actions (e.g., click, assigned score) as the target. 
@@ -49,11 +56,6 @@ report.run(reference_data=ref, current_data=cur, column_mapping=column_mapping, 
 report
 ```
 
-# Code example
-
-Notebook example on using column mapping and additional data for recommender systems:
-
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_run_recsys_metrics.ipynb" %}
 
 ## Requirements:
 
