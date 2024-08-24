@@ -136,7 +136,7 @@ column_mapping.pos_label = 'churn'
 
 ```
 
-## Binary probabilistic classification,
+## Binary probabilistic classification
 
 ### Option 1 
 
