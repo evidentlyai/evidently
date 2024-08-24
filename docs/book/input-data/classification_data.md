@@ -1,8 +1,8 @@
 ---
-description: How to define the data schema for ranking and recommendations.
+description: How to define the data schema for classification.
 ---
 
-To evaluate data from recommender systems, you must correctly map the input data schema, and pass an optional additional dataset with training data. 
+To evaluate classification model performance, you must correctly map the input data schema. 
 
 # Code example
 
