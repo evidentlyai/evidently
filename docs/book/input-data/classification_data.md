@@ -1,12 +1,21 @@
-Notebook example on specifying column mapping:
+---
+description: How to define the data schema for ranking and recommendations.
+---
+
+To evaluate data from recommender systems, you must correctly map the input data schema, and pass an optional additional dataset with training data. 
+
+# Code example
+
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
 
-## Prediction column(s) in classification 
+# Colummn Mapping 
 
 To evaluate the classification performance, you need both true labels and prediction. Depending on the classification type (e.g., binary, multi-class, probabilistic), you have different options of how to pass the predictions.
 
-### Multiclass classification, option 1
+## Multiclass classification
+
+### Option 1
 
 Target: encoded labels, Preds: encoded labels + Optional[target_names].
 
@@ -39,7 +48,7 @@ or
 column_mapping.target_names = {0:'Setosa', 1:'Versicolor', 2:'Virginica'} 
 ```
 
-### Multiclass classification, option 2
+### Option 2
 
 Target: labels, Preds: labels. 
 
@@ -57,7 +66,7 @@ column_mapping.target = 'target'
 column_mapping.prediction = 'prediction'
 ```
 
-### Multiclass probabilistic classification
+## Multiclass probabilistic classification
 
 Target: labels, Preds: columns named after labels.
 
@@ -78,7 +87,9 @@ column_mapping.prediction = ['Setosa', 'Versicolour', 'Virginica']
 
 Naming the columns after the labels is a requirement. You cannot pass a custom list.
 
-### Binary classification, option 1
+## Binary classification
+
+### Option 1
 
 Target: encoded labels, Preds: encoded labels + pos_label + Optional[target_names]
 
@@ -103,7 +114,7 @@ column_mapping.pos_label = 0
 
 If you pass the target names, they will appear on the visualizations. 
 
-### Binary classification, option 2 
+### Option 2 
 
 Target: labels, Preds: labels + pos_label
 
@@ -125,7 +136,9 @@ column_mapping.pos_label = 'churn'
 
 ```
 
-### Binary probabilistic classification, option 1 
+## Binary probabilistic classification,
+
+### Option 1 
 
 Target: labels, Preds: columns named after labels + pos_label
 
@@ -147,7 +160,7 @@ column_mapping.pos_label = 'churn'
 
 ```
 
-### Binary probabilistic classification, option 2 
+### Option 2 
 
 Target: labels, Preds: a column named like one of the labels + pos_label
 
@@ -168,7 +181,7 @@ column_mapping.pos_label = 'churn'
 ```
 Both naming the column after one of the labels and passing the name of the positive class are requirements.
 
-### Binary probabilistic classification, option 3
+### Option 3
 
 Target: encoded labels, Preds: one column with any name + pos_label
 
