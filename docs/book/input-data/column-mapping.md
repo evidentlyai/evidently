@@ -62,7 +62,7 @@ regression_performance_report.run(reference_data=ref, current_data=cur,column_ma
 regression_performance_report
 ```
 
-# Primary mapping options
+# Column mapping
 
 You can create a `ColumnMapping` object to map your column names and feature types. 
 
@@ -80,6 +80,8 @@ column_mapping.prediction = 'pred' #'pred' is the name of the column(s) with mod
 column_mapping.id = None #there is no ID column in the dataset
 column_mapping.datetime = 'date' #'date' is the name of the column with datetime
 ```
+
+Check detailed instructions on how to map inputs for [classification](classification_data.md) and [ranking and recommendations](recsys_data.md) 
 
 ## Categorical and numerical features
 
@@ -121,9 +123,6 @@ column_mapping.embeddings = {'small_subset': embeddings_data.columns[:10]}
 **Why map them:** to apply embeddings-specific data drift detection methods. 
 {% endhint %}
 
-# Additional mapping options
-
-There are additional mapping options that apply to specific test suites and reports.
 
 ## DateTime features 
 
