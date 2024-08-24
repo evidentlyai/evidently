@@ -9,7 +9,7 @@ To evaluate classification model performance, you must correctly map the input d
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
 
-# Colummn Mapping 
+# Column Mapping 
 
 To evaluate the classification performance, you need both true labels and prediction. Depending on the classification type (e.g., binary, multi-class, probabilistic), you have different options of how to pass the predictions.
 
