@@ -1,7 +1,6 @@
 # Table of contents
 
 * [What is Evidently?](README.md)
-  * [Core Concepts](introduction/core-concepts.md)
 * [Get Started](get-started/README.md)
   * [Evidently Cloud](get-started/quickstart-cloud.md)
       * [Quickstart - LLM tracing](get-started/cloud_quickstart_tracing.md)
@@ -47,7 +46,8 @@
   * [Data for Classification](input-data/classification_data.md)
   * [Data for Recommendations](input-data/recsys_data.md)
   * [Load data to pandas](input-data/load-data-to-pandas.md)
-* [Tests and reports](tests-and-reports/README.md)
+* [Tests and Reports](tests-and-reports/README.md)
+  * [Core features overview](tests-and-reports/introduction.md)
   * [Pre-built reports](tests-and-reports/get-reports.md)
   * [Create a custom report](tests-and-reports/custom-report.md)
   * [Pre-built test suites](tests-and-reports/run-tests.md)
