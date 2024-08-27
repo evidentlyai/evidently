@@ -1,3 +1,7 @@
+---
+description: Introduction to Dashboards.
+---   
+
 # What is a Dashboard?
 
 Each Project has its Dashboard. A Dashboard lets you visualize metrics and test results over time, providing a clear view of the quality of your AI application and data.
