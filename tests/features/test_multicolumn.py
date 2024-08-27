@@ -9,6 +9,7 @@ from evidently.base_metric import ColumnName
 from evidently.features.feature_generator import FeatureGenerator
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.metrics import ColumnSummaryMetric
+from evidently.options.base import Options
 from evidently.report import Report
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -17,7 +18,7 @@ class MultiColumnFeature(GeneratedFeatures):
     source_column: str
     _called_count: int = PrivateAttr(0)
 
-    def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition, options: Options) -> pd.DataFrame:
         self._called_count += 1
         col = data[self.source_column]
         return pd.DataFrame({"+1": col + 1, "+5": col + 5})
