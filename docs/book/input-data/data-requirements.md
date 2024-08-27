@@ -1,63 +1,47 @@
 ---
-description: How to prepare the data to run Evidently reports or tests.
+description: How to prepare the data to run Evidently Reports or Test Suites.
 ---
 
-# Input data
+To run evaluations on your datasets with the Evidently Python library, you should prepare your data in a certain way. This section covers how to do that. 
 
-**TL;DR:** Pass two datasets: reference and current. Use `pandas.DataFrame`. Keep the schema identical. Downsample if too large. As an option, pass only the current data.
+{% hint style="info" %}
+**Looking for something else?**. Check [Tracing](../tracing/tracing_overview.md) to understand how to instrument your application. Check [Datasets](../datasets/datasets_overview.md) to learn how to upload and work with datasets in the user interface. For more details on running evaluations after you prepare the data, see [Reports and Test Suites](../tests-and-reports/introduction.md).
+{% endhint %}
 
-## Data Preparation
+# Input data format
 
-Prepare the input data as a `pandas.DataFrame`. You can also compute some of the metrics on [Spark](../tests-and-reports/spark.md).
+Evidently works with Pandas DataFrames, with some metrics also supported on [Spark](../tests-and-reports/spark.md).
 
-You typically need **two datasets**. In Evidently, we call them `reference` and `current` datasets.
+Your input data should be in **tabular** format. All column names must be strings. The data can include any numerical, categorical, text, DateTime, and ID columns. You can also pass embeddings as numerical features. 
 
-* **Reference** dataset is a baseline for comparison, or an exemplary dataset that helps generate test conditions. This can be training data or earlier production data.
-* **Current** dataset is the dataset you want to evaluate. It can include the most recent production data.
+The structure is flexible. For example, you can pass:
+* **Any tabular dataset**. You can run checks for data quality and drift for any dataset.
+* **Logs of generative LLM application**. Include text inputs, outputs, and metadata.
+* **ML model inferences**. You can analyze prediction logs that include model features (numerical, categorical, embeddings), predictions, and optional target values. 
+
+To run certain evaluations, you must include specific columns. For instance, to evaluate classification quality, you need columns with predicted and actual labels. These should be named "prediction" and "target", or you’ll need to point to the columns that contain them. This process is called **Column Mapping**. You can learn more in the next section.
+
+{% content-ref url="column-mapping.md" %}
+[Column Mapping](column-mapping.md)
+{% endcontent-ref %}
+
+# Reference and current data
+
+Usually, you evaluate a single dataset, which we call the **current** dataset. But in some cases, you might also use a second dataset, known as the **reference** dataset. You pass them simultaneously when running an evaluation.
 
 ![](<../.gitbook/assets/two\_datasets\_classification.png>)
 
-## Single dataset
+When you may need two datasets:
+* **Side-by-side comparison**. If you want to compare model performance or data quality over two different periods or between model versions, you can do this inside one Report. Pass one dataset as `current`, and another as `reference`.
+* **Data drift detection**. To detect distribution shifts, you compare two datasets using methods like distance metrics. You always need two datasets. Use your latest production batch as `current`, and choose a `reference` dataset to compare against, such as your validation data or an earlier production batch.
+* **Automatic Test generation**. If you provide a `reference` dataset, Evidently can automatically set up Test conditions, like expected min-max values for specific columns. This way, you don’t have to write each test condition manually.
 
-If you want to use a **single** dataset without reference, pass it as the **current** dataset.
+If you pass two datasets, the structure of both datasets should be identical. 
 
-It will work for most of the Metrics and Tests. One notable exception is calculating data or prediction drift which always requires two datasets to compare the distributions.
+# Data volume
 
-If you pass a single dataset to generate a **Report**, there will be no side-by-side comparison. The Report will show Metrics (e.g., Data Quality or Regression Performance metrics) for a single dataset.
+Running computationally intensive evaluations on large datasets can take time. This depends on the specific analysis as well as your infrastructure. In many cases, such as for probabilistic data drift detection, it’s more efficient to work with **samples** of your data. For instance, instead of running drift detection on millions of rows, you can apply random or stratified sampling and then compare samples of your data.  
 
-If you pass a single dataset to run **Tests** with no other parameters, Evidently will use the default Test parameters. For example, it will compare the model performance with a dummy model. You can also manually set the Test conditions (e.g., expected min-max value ranges). In this case, the reference dataset is not required.
+Note that Evidently Reports include visualizations, such as plotting values over time, which are aggregated by default. This keeps Reports size manageable, even with millions of evaluated rows. If you prefer to see raw data plots (individual prediction points), you can enable this [option](../customization/report-data-aggregation.md). This will store raw data points inside the Report. However, you should only use this option for small datasets or samples since otherwise, the resulting Report can be too large, and plots will be unreadable. 
 
-{% hint style="info" %}
-The default parameters for each test are listed in the [All tests](../reference/all-tests.md) table.
-{% endhint %}
-
-## Dataset structure
-
-To use Evidently, you need a dataset that contains model prediction logs. It might contain:
-
-* Input feature columns
-* Prediction column
-* Target column (if known)
-* Additional columns such as DateTime and ID
-
-The exact schema requirements differ based on the contents of the Report or Test suite. For example, to evaluate Data Drift or Data Quality, you can pass only the feature columns. To evaluate Model Performance, you also need model prediction and target (true labels or actuals).
-
-If you pass two datasets, the structure of both datasets should be identical. All column names should be `string`.
-
-{% hint style="info" %}
-You can read more about the data schema requirements in the [column mapping section](column-mapping.md).
-{% endhint %}
-
-## Data volume and sampling
-
-To minimize the size of **HTML Reports**, the visualizations are aggregated by default. If you want to see plots with raw data (individual prediction points), you should pass the [corresponding option](../customization/report-data-aggregation.md). Note that when you generate Reports with raw data, they may take time to load. The exact limitation depends on your infrastructure (e.g., memory).
-
-If the dataset is too large, and you want to get raw data plots, you might need to downsample the data before passing the data to Evidently. For instance, you can apply random sampling or stratified sampling. You can also limit the number of columns (e.g., generate the Report only for the most important features).
-
-**Test suites** contain different visualizations and can handle larger input data volumes.
-
-When you have a large volume of data, you can also run calculations in Spark [Spark](../tests-and-reports/spark.md).
-
-## Supported data types
-
-Right now, Evidently works with tabular, raw text data and embeddings. You can also pass a dataset that contains different data types: for example, some columns may contain numerical or categorical data, while others contain text.
+For datasets that don’t fit in memory, you can run calculations using [Spark](../tests-and-reports/spark.md).
