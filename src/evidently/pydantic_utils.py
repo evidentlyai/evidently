@@ -23,6 +23,7 @@ from typing import TypeVar
 from typing import Union
 from typing import get_args
 
+import uuid6
 from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
@@ -33,6 +34,25 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
+
+    UUID7 = uuid6.UUID
+else:
+
+    class Lol(type):
+        def __setattr__(self, key, value):
+            super().__setattr__(key, value)
+
+        def __instancecheck__(self, instance):
+            return isinstance(instance, uuid6.UUID) and instance.version == self._required_version
+
+    class UUID7(uuid6.UUID, metaclass=Lol):
+        _required_version = 7
+
+        @classmethod
+        def __modify_schema__(cls, field_schema: Dict[str, Any]) -> None:
+            field_schema.update(type="string", format=f"uuid{cls._required_version}")
+
+
 T = TypeVar("T")
 
 

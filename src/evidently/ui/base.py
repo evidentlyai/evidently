@@ -17,7 +17,8 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import UUID4
+import uuid6
+
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
@@ -59,7 +60,7 @@ class BlobMetadata(BaseModel):
 
 
 class SnapshotMetadata(BaseModel):
-    id: UUID4
+    id: SnapshotID
     name: Optional[str] = None
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
@@ -126,13 +127,13 @@ class Entity(BaseModel):
 
 class Org(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Org
-    id: OrgID = Field(default_factory=uuid.uuid4)
+    id: OrgID = Field(default_factory=uuid6.uuid7)
     name: str
 
 
 class Team(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Team
-    id: TeamID = Field(default_factory=uuid.uuid4)
+    id: TeamID = Field(default_factory=uuid6.uuid7)
     name: str
     org_id: Optional[OrgID]
 
@@ -141,7 +142,7 @@ UT = TypeVar("UT", bound="User")
 
 
 class User(BaseModel):
-    id: UserID = Field(default_factory=uuid.uuid4)
+    id: UserID = Field(default_factory=uuid6.uuid7)
     name: str
     email: str = ""
 
@@ -162,7 +163,7 @@ class Project(Entity):
     class Config:
         underscore_attrs_are_private = True
 
-    id: ProjectID = Field(default_factory=uuid.uuid4)
+    id: ProjectID = Field(default_factory=uuid6.uuid7)
     name: str
     description: Optional[str] = None
     dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
@@ -224,7 +225,7 @@ class Project(Entity):
     ):
         dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
         template_params = TemplateParams(
-            dashboard_id="pd_" + str(uuid.uuid4()).replace("-", ""),
+            dashboard_id="pd_" + str(uuid6.uuid7()).replace("-", ""),
             dashboard_info=dashboard_info,
             additional_graphs={},
         )

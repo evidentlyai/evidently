@@ -20,7 +20,6 @@ import ujson
 
 import evidently
 from evidently import ColumnMapping
-from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import ErrorResult
@@ -34,6 +33,7 @@ from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
+from evidently.pydantic_utils import UUID7
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
@@ -502,7 +502,7 @@ class SnapshotLinks(BaseModel):
 
 
 class Snapshot(BaseModel):
-    id: UUID4
+    id: UUID7
     name: Optional[str] = None
     timestamp: datetime
     metadata: Dict[str, MetadataValueType]

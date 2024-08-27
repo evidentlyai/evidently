@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 
+import uuid6
 from typer import BadParameter
 from typer import Option
 from typer import echo
@@ -20,6 +21,7 @@ def setup_deterministic_generation_uuid4(seed: int = 8754):
         return fake.uuid4(cast_to=None)
 
     uuid.uuid4 = deterministic_uuid4
+    uuid6.uuid7 = deterministic_uuid4
 
 
 @app.command("ui")

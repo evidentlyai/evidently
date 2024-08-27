@@ -1,10 +1,10 @@
 import datetime
 import os
-import uuid
 from typing import Dict
 
 import pandas as pd
 import pytest
+import uuid6
 from litestar import get
 from litestar.testing import TestClient
 
@@ -57,7 +57,7 @@ def collector_workspace(collector_test_client) -> str:
 class ReportBaseMock(ReportBase):
     def to_snapshot(self):
         return Snapshot(
-            id=uuid.uuid4(),
+            id=uuid6.uuid7(),
             name="mock",
             timestamp=datetime.datetime.now(),
             metadata={},

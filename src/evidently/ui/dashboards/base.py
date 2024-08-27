@@ -10,6 +10,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import uuid6
+
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import validator
@@ -133,7 +135,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     class Config:
         is_base_type = True
 
-    id: PanelID = Field(default_factory=uuid.uuid4)
+    id: PanelID = Field(default_factory=uuid6.uuid7)
     title: str
     filter: ReportFilter
     size: WidgetSize = WidgetSize.FULL
@@ -164,7 +166,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
 
 
 class DashboardTab(BaseModel):
-    id: TabID = Field(default_factory=uuid.uuid4)
+    id: TabID = Field(default_factory=uuid6.uuid7)
     title: Optional[str] = "Untitled"
 
 

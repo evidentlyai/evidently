@@ -1,5 +1,4 @@
 import datetime
-import uuid
 from typing import Dict
 from typing import List
 from typing import NamedTuple
@@ -7,23 +6,26 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+import uuid6
+
 from evidently.base_metric import Metric
+from evidently.pydantic_utils import UUID7
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
 
 BlobID = str
-UserID = uuid.UUID
-TeamID = uuid.UUID
-OrgID = uuid.UUID
+UserID = UUID7
+TeamID = UUID7
+OrgID = UUID7
 RoleID = int
-ProjectID = uuid.UUID
-EntityID = uuid.UUID
-SnapshotID = uuid.UUID
-STR_UUID = Union[str, uuid.UUID]
-PanelID = uuid.UUID
-TabID = uuid.UUID
-DatasetID = uuid.UUID
-ZERO_UUID = uuid.UUID(int=0)
+ProjectID = UUID7
+EntityID = UUID7
+SnapshotID = UUID7
+STR_UUID = Union[str, UUID7]
+PanelID = UUID7
+TabID = UUID7
+DatasetID = UUID7
+ZERO_UUID = uuid6.UUID(int=0, version=7)
 
 
 class TestInfo(NamedTuple):

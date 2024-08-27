@@ -11,6 +11,7 @@ from typing import Type
 from typing import Union
 
 import pandas as pd
+import uuid6
 
 from evidently.base_metric import GenericInputData
 from evidently.calculation_engine.engine import Engine
@@ -112,7 +113,7 @@ class TestSuite(ReportBase):
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
-        self.id = uuid.uuid4()
+        self.id = uuid6.uuid7()
         if self._timestamp is not None:
             self.timestamp = self._timestamp
         else:
@@ -261,7 +262,7 @@ class TestSuite(ReportBase):
             additionalGraphs=[],
         )
         return (
-            "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
+            "evidently_dashboard_" + str(uuid6.uuid7()).replace("-", ""),
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
             {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
         )
