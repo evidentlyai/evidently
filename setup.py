@@ -74,11 +74,6 @@ setup_args = dict(
         "fsspec>=2024.2.0",
         "ujson>=5.4.0",
         "deprecation>=2.1.0",
-        "opentelemetry-api>=1.25.0",
-        "opentelemetry-sdk>=1.25.0",
-        "opentelemetry-proto>=1.25.0",
-        "opentelemetry-exporter-otlp-proto-grpc>=1.25.0",
-        "opentelemetry-exporter-otlp-proto-http>=1.25.0",
     ],
     extras_require={
         "dev": [
