@@ -208,8 +208,6 @@ See usage examples below together with panel-specific parameters.
 ## Counter
 `DashboardPanelCounter` shows a value count or works as a text-only Panel. 
 
-![](../.gitbook/assets/monitoring/panel_counter_example-min.png)
-
 | Parameter | Description |
 |---|---|
 | `value: Optional[PanelValue] = None` | Specifies the value to display. If empty, you get a text-only panel. <br><br>*Refer to the Panel Value section below for examples.* |
@@ -363,8 +361,6 @@ p.dashboard.add_panel(
 ## Test Counter
 
 `DashboardPanelTestSuiteCounter` shows a counter with Test results.
-
-![](../.gitbook/assets/monitoring/panel_tests_counter_example.png)
 
 | Parameter | Description |
 |---|---|
