@@ -39,9 +39,9 @@ def test_precision_value():
 
     results = metric.get_result()
     assert len(results.current) == 3
-    assert results.current[1] == 0.5
-    assert results.current[2] == 0.25
-    assert np.isclose(results.current[3], 0.333333)
+    assert results.current[0] == 0.5
+    assert results.current[1] == 0.25
+    assert np.isclose(results.current[2], 0.333333)
 
 
 def test_precision_value_judged_only():
@@ -60,9 +60,9 @@ def test_precision_value_judged_only():
 
     results = metric.get_result()
     assert len(results.current) == 3
-    assert np.isclose(results.current[1], 0.333333)
-    assert np.isclose(results.current[2], 0.166666)
-    assert np.isclose(results.current[3], 0.222222)
+    assert np.isclose(results.current[0], 0.333333)
+    assert np.isclose(results.current[1], 0.166666)
+    assert np.isclose(results.current[2], 0.222222)
 
 
 def test_precision_value_judged_only_scores():
@@ -81,6 +81,6 @@ def test_precision_value_judged_only_scores():
 
     results = metric.get_result()
     assert len(results.current) == 3
-    assert np.isclose(results.current[1], 0.333333)
-    assert np.isclose(results.current[2], 0.166666)
-    assert np.isclose(results.current[3], 0.222222)
+    assert np.isclose(results.current[0], 0.333333)
+    assert np.isclose(results.current[1], 0.166666)
+    assert np.isclose(results.current[2], 0.222222)
