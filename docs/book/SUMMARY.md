@@ -42,7 +42,7 @@
   * [Tracing overview](tracing/tracing_overview.md)
   * [Set up tracing](tracing/set_up_tracing.md)
 * [Input data](input-data/README.md)
-  * [Data requirements](input-data/data-requirements.md)
+  * [Input data overview](input-data/data-requirements.md)
   * [Column mapping](input-data/column-mapping.md)
   * [Data for Classification](input-data/classification_data.md)
   * [Data for Recommendations](input-data/recsys_data.md)
