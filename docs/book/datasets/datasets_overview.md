@@ -12,7 +12,7 @@ You can bring in existing datasets or capture data from your live production sys
 You can add datasets to the platform in several ways:
 * **Direct upload**. Upload a dataset through the user interface using a CSV file. For automation, use the Python API to upload datasets programmatically. Once uploaded, you can start analyzing the data on the platform.
 * **Created from Traces**. When you use the [Tracing feature](../tracing/tracing_overview.md), Evidently automatically creates a structured tabular dataset. You can curate subsets of this data for focused analysis.
-* **Included with [Reports or Test Suites](../reports-and-tests)**. When running a local evaluation in Python, attach the Dataset associated with a specific Report or Test Suite. This allows you to store raw data alongside summary evaluation results. It’s optional.
+* **Included with [Reports or Test Suites](../tests-and-reports/overview.md)**. When running a local evaluation in Python, attach the Dataset associated with a specific Report or Test Suite. This allows you to store raw data alongside summary evaluation results. It’s optional.
 
 Evidently provides flexibility in how you structure datasets, supporting various workflows. 
 
