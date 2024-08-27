@@ -2,7 +2,7 @@
 description: Working with Datasets on Evidently Platform.
 ---   
 
-To access or upload your datasets, navigate to to the [https://app.evidently.cloud/datasets](Datasets page) in the user interface. 
+To access or upload your datasets, navigate to to the [Datasets page](https://app.evidently.cloud/datasets) in the user interface. 
 
 # Upload a CSV file
 
