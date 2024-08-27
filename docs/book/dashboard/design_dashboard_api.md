@@ -1,14 +1,14 @@
 ---
-description: Design your own Dashboard with custom Panels.
+description: Design your Dashboard with custom Panels.
 ---   
 
 We recommend starting with [pre-built Tabs](add_dashboard_tabs.md) for a quick start. 
 
 # Code example
 
-To see end-to-end examples with custom Panels, check:
-* [Evidently Cloud Tutorial](../get-started/tutorial-cloud.md)
-* [Self-hosting ML Monitoring](../get-started/tutorial-monitoring.md). 
+To see end-to-end code examples with custom Panels, check:
+* [Evidently Cloud Tutorial](../examples/tutorial-cloud.md)
+* [Self-hosting ML Monitoring](../examples/tutorial-monitoring.md). 
 
 You can also explore the [source code](https://github.com/evidentlyai/evidently/tree/d43d33017a0fc4a69f9ff72581fe3f34b4abd45e/src/evidently/ui/demo_projects) for the open-source [live demo dashboards](https://demo.evidentlyai.com/). 
 
@@ -23,14 +23,14 @@ Here is the general flow:
 * Select Panel **parameters**, e.g., aggregation level. 
 * Define the **Panel value(s)** to show: 
   * For Test Panels, specify `test_id`. 
-  * For Metric and Distribution Panels, specify `metric_id` and `field_path`. .
-* Pass `test_args` or `metric_args` to identify the exact value when they repeat in a snapshot. For instance, to plot the mean value of a given column, pass the column name as an argument. 
+  * For Metric and Distribution Panels, specify `metric_id` and `field_path`.
+* If applicable, pass `test_args` or `metric_args` to identify the exact value when they repeat in a snapshot. For instance, to plot the mean value of a given column, pass the column name as an argument. 
 
 This page explains each step in detail.
 
 ## Add a new Panel
 
-You can add monitoring Panels using the Python API, or directly in the user interface (Evidently Cloud only). 
+You can add monitoring Panels using the Python API, or directly in the user interface (Evidently Cloud or Enterprise). 
 
 {% tabs %}
 
@@ -121,7 +121,7 @@ Go back to the web app to see the Dashboard. Refresh the page if needed.
 Multiple tabs is a Pro feature available in the Evidently Cloud.
 {% endhint %}
 
-By default, you add Panels appear to a single monitoring Dashboard. You can create Tabs to organize them. 
+By default, you add all Panels to a single Dashboard view. You can create multiple Tabs to organize them. 
 
 {% tabs %}
 
@@ -261,7 +261,7 @@ project.dashboard.add_panel(
 
 
 ## Plot
-`DashboardPanelPlot` shows individual vales over time.
+`DashboardPanelPlot` shows individual values over time.
 
 | Parameter | Description |
 |---|---|
@@ -359,7 +359,7 @@ p.dashboard.add_panel(
 | Parameter | Description |
 |---|---|
 | `test_filters: List[TestFilter]=[]`<br>`test_id: test_id`<br>`test_arg: List[str]`|Test filters select specific Test(s). Without a filter, the Panel considers the results of all Tests. <br><br>You must reference a `test_id` even if you used a Preset. You can check the Tests included in each Preset [here](https://docs.evidentlyai.com/reference/all-tests).|
-| `statuses: List[statuses]`<br><br>**Available**:<br>`TestStatus.ERROR`, `TestStatus.FAIL`, `TestStatus.SUCCESS`, `TestStatus.WARNING`, `TestStatus.SKIPPED`| Status filters select Tests with a specific outcomes. (E.g., choose the FAIL status to display a counter of failed Tests). Without a filter, the Panel considers Tests with any status.|
+| `statuses: List[statuses]`<br><br>**Available**:<br>`TestStatus.ERROR`, `TestStatus.FAIL`, `TestStatus.SUCCESS`, `TestStatus.WARNING`, `TestStatus.SKIPPED`| Status filters select Tests with specific outcomes. (E.g., choose the FAIL status to display a counter for failed Tests). Without a filter, the Panel considers Tests with any status.|
 | <br>`agg: CounterAgg`<br><br>**Available**:<br>`SUM`, `LAST`  | Data aggregation options:<br>`SUM`: Calculates the sum of Test results from all snapshots (or filtered by Tags). <br>`LAST`: Displays the last available Test result. |
 
 See examples.
@@ -550,7 +550,7 @@ See examples using different `metric_args`:
 
 {% tab title="Column names" %} 
 
-**Column names as arguments**. To shows the mean values of target and prediction on a line plot.  
+**Column names as arguments**. To show the mean values of target and prediction on a line plot.  
 
 ```python
 values=[
@@ -590,7 +590,7 @@ values=[
 
 {% tab title="Metric parameters" %}
 
-**Metric parameters as arguments**. To specify the `euclidean` drift detection method (when results from multiple methods logged inside a snapshot) using `metric_args`:
+**Metric parameters as arguments**. To specify the `euclidean` drift detection method (when results from multiple methods are logged inside a snapshot) using `metric_args`:
 
 ```python
 values=[
@@ -658,4 +658,4 @@ When working in the Evidently Cloud, you can see available fields in the drop-do
 
 {% endtabs %}
 
-Note that there is some data inside the snapshots that you cannot currently plot on a monitoring Dashboard (for example, render data or dictionaries). You can only plot values that exist as individual data points or histograms. 
+Note that some data inside the snapshots cannot currently be plotted on a monitoring Dashboard (for example, render data or dictionaries). You can only plot values that exist as individual data points or histograms. 
