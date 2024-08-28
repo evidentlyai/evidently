@@ -4,7 +4,7 @@ description: Intro to the Projects feature in Evidently.
 
 {% hint style="info" %}
 This feature is available in <mark style="color:black;background-color:lightgray;">Evidently OSS UI</mark>, <mark style="color:white;background-color:darkred;">Evidently Cloud</mark>, <mark style="color:white;background-color:mediumpurple;">Evidently Enterprise</mark>.
-You can run evaluations locally with Evidently Python library without creating a Project.
+You can run also evaluations locally with Evidently Python library without creating a Project.
 {% endhint %}
 
 # What is a Project?
