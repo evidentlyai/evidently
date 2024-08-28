@@ -72,7 +72,7 @@ drift_report.as_dict()
 ```
 
 {% hint style="info" %} 
-***There are more output formats!**. You can also export Report results in different formats like HTML, JSON, dataframe, and more. Refer to the [Output Formats](output_formats.md) for details.
+**There are more output formats!**. You can also export Report results in different formats like HTML, JSON, dataframe, and more. Refer to the [Output Formats](output_formats.md) for details.
 {% endhint %}
 
 **Example 4**. You can customize some of the Presets using parameters. For example, calculate quality metrics for a binary probabilistic classification model with a custom decision threshold:
