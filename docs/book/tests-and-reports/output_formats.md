@@ -2,13 +2,13 @@
 description: How to export the results of evaluations.
 ---   
 
-You can view or export results of the Evidently Reports or Test Suites in multiple formats.
+You can view or export results from Evidently Reports or Test Suites in multiple formats.
 
 # View in Jupyter notebook 
 
-You can directly render the interactive visual summary of the evaluation results in interactive Python environments like Jupyter notebook or Colab. 
+You can directly render the visual summary of evaluation results in interactive Python environments like Jupyter notebook or Colab. 
 
-Simply call the the resulting Python object after you run the Report: 
+After running the Report, simply call the resulting Python object:
 
 ```python
 drift_report
@@ -18,19 +18,19 @@ This will render the HTML object directly in the notebook cell.
 
 # HTML
 
-You can save the interactive visual report as an HTML file, to be able to open it in the browser or share with the team. 
-
-To export HTML as a separate file: 
+You can also save this interactive visual report as an HTML file to open in a browser: 
 
 ```python
 drift_report.save_html(“file.html”)
 ```
 
+This option is useful for sharing Reports with others or if you're working in a Python environment that doesn’t display interactive visuals.
+
 # JSON
 
 You can get the results of the calculation as a JSON. It is useful for storing and exporting results elsewhere.
 
-To get the JSON:
+To view the JSON in Python:
 
 ```python
 drift_report.json()
@@ -44,7 +44,7 @@ drift_report.save_json("file.json")
 
 # Python dictionary
 
-You can get the output in the Python dictionary format. Using a Python object might be more convenient if you want to run automated evaluations as part of your data or ML pipelines, and apply transformations to the output, such as extracting specific values or Test results. 
+You can get the output as a Python dictionary. This format is convenient for automated evaluations in data or ML pipelines, allowing you to transform the output or extract specific values. 
 
 To get the dictionary:
 
@@ -54,48 +54,27 @@ drift_report.as_dict()
 
 # Scored DataFrame
 
-If you generated Text descriptors as part of your evalution, you can get a DataFrame with all generated descriptors added to each row of your original input data.
-
+If you generated text Descriptors during your evaluation, you can retrieve a DataFrame with all generated descriptors added to each row of your original input data.
 
 ```python
 text_evals_report.datasets().current
 ```
 
-This will return the complete original dataset, and new scores.
-
-# DataFrame with Metrics summary
-
-You can get the output with Metric results in tabular format as a DataFrame.
-
-You can export the results for a specific Metric only: 
-
-```python
-drift_report.as_dataframe("DataDriftTable")
-```
-
-You can also export results for the complete Report. In this case, you get a dictionary of dataframes.
-
-```python
-drift_report.as_dataframe()
-```
-
-This will return all relevant values that are computed inside the Metric.
-
+This returns the complete original dataset with new scores.
 
 # Evidently snapshot
 
 You can save the output of a Report or Test Suite as an Evidently JSON `snapshot`.
 
-This is a rich JSON format that allows to store the evaluation results on Evidently platform and monitoring them over time. When you save Reports or Test Suites to the platform, a snapshot is generated automatically, so you typically do not have to think about it as it happens on the background.
+This is a rich JSON format used for storing the evaluation results on Evidently platform. When you save Reports or Test Suites to the platform, a snapshot is generated automatically.
 
-However, you can also explicitly generate and save the output as a snapshot. This JSON format is different is different from using json() or save_json(“file.json”). When using the usual JSON export, you generate a structured output with limited information. You cannot convert this JSON back to HTML. With “snapshot,” you generate a comprehensive summary of the contents and can restore the output in any available Evidently format without accessing the initial raw data. 
-
-
-To save the Report as a snapshot:
+However, you can also generate and save a snapshot explicitly. To save the Report as a snapshot:
 
 ```python
 drift_report.save('snapshot.json')
 ```
+
+This format is different from using `json()` or `save_json("file.json")`. A snapshot contains all supplementary and render data inside, allowing you to restore the output in any available Evidently format without accessing the initial raw data.
 
 To load the snapshot back, use the “load” function. 
 
@@ -103,9 +82,27 @@ To load the snapshot back, use the “load” function.
 loaded_report = Report.load('snapshot.json')
 ```
 
-After you load the snapshot back, you can again view it in Python or export to other formats.
-
+After you load the snapshot back, you can again view it in Python or export it to other formats.
 
 {% hint style="info" %}
 **Generating snaphots**. To better understand how you can upload the evaluation results to the Evidently Platform, check the page on [Generating Snaphots](../get-started/tutorial-monitoring.md).
 {% endhint %}
+
+# DataFrame with Report summary
+
+You can get the Metric results in a tabular format as a DataFrame. This feature is only supported for Reports, and not Test Suites.
+
+To export results for a specific Metric: 
+
+```python
+drift_report.as_dataframe("DataDriftTable")
+```
+
+To export results for the entire Report, which returns a dictionary of DataFrames:
+
+```python
+drift_report.as_dataframe()
+```
+
+This will return all relevant values that are computed inside the Metric.
+
