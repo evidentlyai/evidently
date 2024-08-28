@@ -2,11 +2,11 @@
 description: How to run evaluations for text data with Descriptors. 
 ---
 
-A Descriptor is a row-level score that evaluates a specific quality or dimension of provided text data. A simple example of Descriptor is text length, but it can be more complex, like a label of "relevance" assigned by LLM-based evaluator.
+A Descriptor is a row-level score that evaluates a specific quality or dimension of provided text data. A simple example of Descriptor is text length. It can get more complex, for example, you can use an external LLM evaluator to label each answer as "relevant" or "not relevant", or measure semantic similarity between two answers. All this is implemented through the same Descriptor interfcae.
 
-Once you compute the Descriptor, you can:
-* visualize it in a Report, such as to understand the distribution of Text Length
-* use in a Test Suite, such as to get a True/False result on whether all texts are within expected length range
+You can compute a Descriptor as part of the:
+* Report. This visualize and gives a summary of the computed values, such as to help you understand the distribution of Text Length across all texts.
+* Test Suite. This allows testing a condition, such as to get a True/False result on whether all texts are within expected length range.
 
 {% content-ref url="introduction.md" %}
 [Overview of Reports, Tests and Descriptors](introduction.md)
@@ -66,16 +66,9 @@ Here is the general flow.
 
 By default, we recommend using the `TextEvals` Preset. It is simplified interface to create a Report that summarizes the values of computed Descriptors for a given column. 
 
-
-```python
-report = Report(metrics=[
-    TextEvals(column_name="question", descriptors=[Sentiment(), OOV()]),
-])
-```
-
 **Basic example**. To evaluate Sentiment and Text Length in symbols for the `response` column:
 
-```
+```python
 report = Report(metrics=[
     TextEvals(column_name="response", descriptors=[
         Sentiment(),
@@ -86,14 +79,14 @@ report = Report(metrics=[
 
 Run the Report for your DataFrame `df`:
 
-```
+```python
 report.run(reference_data=None, 
            current_data=df)
 ```
 
 You can access the Report as usual, including exporting the results as HTML, JSON, Python dictionary, etc. To view the interactive Report directly in Jupyter notebook or Colab:
 
-```
+```python
 report 
 ```
 
@@ -119,7 +112,7 @@ df_with_scores = pd.DataFrame(report.datasets().current)
 
 **Display name**. We recommended to add a display name parameter to each Descriptor. It will appear in the visualizations and column names. This is especially useful when you have a lengthy Regular Expression or list of Words when the default generated title can become very long.
 
-```
+```python
 report = Report(metrics=[
     TextEvals(column_name="response", descriptors=[
         Sentiment(display_name="Response sentiment"),
@@ -128,11 +121,26 @@ report = Report(metrics=[
 ])
 ```
 
+**Evaluations for multiple columns at once**. If you want to combine evaluations for multiple columns at once, for example, for "response" and "question" columns, just list multiple Presets in the same Report and include the descriptors you need for each of them.
+
+```python
+report = Report(metrics=[
+    TextEvals(column_name="response", descriptors=[
+        Sentiment(),
+        TextLength(),
+    ]),
+    TextEvals(column_name="question", descriptors=[
+        Sentiment(),
+        TextLength(),
+    ])
+])
+```
+
 **Descriptor parameters**. Some descriptor require parameter you define, such as to specify the exact regular expression or list of words you are testing for.
 
-To test for competitor mentions using `Contains` descriptor:
+To Test for competitor mentions using `Contains` descriptor, you must include the brand as `items` in the list:
 
-```
+```python
 report = Report(metrics=[
     TextEvals(column_name="response", descriptors=[
         Contains(display_name="Competitor Mentions", 
@@ -151,20 +159,28 @@ Some descriptors, like custom LLM judges, may require more complex parameterizat
 **LLM-as-a-judge**. Check the detailed instructions on how to set up [LLM as a jugde](../customization/llm_as_a_judge.md) page.
 {% endhint %}
 
-## Using other Metrics
+## Using Metrics
 
 Under the hood, the `TextEvals` Preset generates a `ColumnSummaryMetric` for each calculated descriptor. You can get the same result by explicitly generating this Metric for the descriptor using the following API:
 
-```
+```python
 report = Report(metrics=[
     ColumnSummaryMetric(TextLength().for_column("response")),
     ColumnSummaryMetric(Sentiment().for_column("response")),
 ])
 ```
 
-On some occasions, you want to use a different Metric, such as `ColumnDriftMetric`. Here is how you can do this:
+**Semantic Similariy**. Using this metric directly is useful to compare Semantic Similarity between two columns. You would need to pass both columns in a lost.
 
+```python
+report = Report(metrics=[
+    ColumnSummaryMetric(column_name=SemanticSimilarity().on(["answer", "reference_answer"]))
+])
 ```
+
+**Text Descriptor Drift detection**. On some occasions, you want to use a different Metric, such as `ColumnDriftMetric`. Here is how you can do this:
+
+```python
 report = Report(metrics=[
    ColumnDriftMetric(column_name = TextLength().for_column("response")),
 ])
@@ -210,6 +226,18 @@ test_suite = TestSuite(tests=[
         on("new_response"),
         category=True,
         eq=0),
+])
+```
+
+**Example 3**. To Test that Semantic similarity between to columns is greater or equal to 0.9:
+
+```python
+test_suite = TestSuite(tests=[
+    TestColumnValueMin(
+        column_name=SemanticSimilarity(
+        display_name="Response Similarity").
+        on(["target_response", "new_response"]),
+        gte=0.9),
 ])
 ```
 
