@@ -2,7 +2,7 @@
 description: Set up a Project for your evaluation or monitoring use case.
 ---   
 
-Before creating a Project, you need a workspace.
+Before creating a Project, you need a Workspace.
 
 * In Evidently Cloud, your account is your Workspace. [Set up an account and connect from Python](../installation/cloud_account.md).
 * In self-hosted deployments, a Workspace is a remote or local directory. [Create a workspace](../installation/self_hosting.md).
@@ -112,7 +112,7 @@ Each Project has the following parameters.
 | `name: str` | Project name. |
 | `id: UUID4 = Field(default_factory=uuid.uuid4)` | Unique identifier of the Project. Assigned automatically. |
 | `description: Optional[str] = None` | Optional description. Visible when you browse Projects. |
-| `dashboard: DashboardConfig` | Dashboard configuration that describes the composition of the monitoring Panels.<br><br>**Note**: See [Dashboard Design](../monitoring/design_dashboard_api.md) for details. You don't need to explicitly pass `DashboardConfig` if you use the `.dashboard.add_panel` method to add Panels. |
+| `dashboard: DashboardConfig` | Dashboard configuration that describes the composition of the monitoring Panels.<br><br>**Note**: See [Dashboard Design](../dashboard/design_dashboard_api.md) for details. You don't need to explicitly pass `DashboardConfig` if you use the `.dashboard.add_panel` method to add Panels. |
 | `date_from: Optional[datetime.datetime] = None` | Start DateTime of the monitoring Dashboard. By default, Evidently shows data for all available periods based on the snapshot timestamps. <br><br>You can set a different DateTime. E.g., to refer to the last 30 days:<br>`from datetime import datetime, timedelta`<br>`datetime.now() + timedelta(-30)`|
 | `date_to: Optional[datetime.datetime] = None` | End DateTime of the monitoring Dashboard. <br>Works the same as above. |
 
