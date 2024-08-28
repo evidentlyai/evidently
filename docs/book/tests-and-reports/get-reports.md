@@ -98,9 +98,11 @@ Refer to the [All metrics](../reference/all-metrics.md) table to see available p
 
 If you want to change the composition of the Report or pass additional parameters, you can [create a custom report](custom-report.md).
 
-**TL;DR:** You can create a custom report from 35+ individual metrics available in the library.  
+# Create a custom Report
 
-# 1. Choose metrics
+You can create a custom report from individual Metrics available in the library.  
+
+## 1. Choose metrics
 
 To design a custom report, you should first define which metrics you want to include. 
 
@@ -110,7 +112,7 @@ You can use Metric Presets as a starting point to explore types of analysis avai
 **Reference**: The complete list of metrics is available in the [All metrics](../reference/all-metrics.md) table. To see interactive examples, refer to the [Example notebooks](../examples/examples.md).
 {% endhint %}
 
-## Dataset-level metrics
+### Dataset-level metrics
 
 Some of the metrics are calculated on the dataset level. For example, there is a metric that evaluates data drift for the whole dataset.
 
@@ -130,7 +132,7 @@ data_drift_dataset_report.run(reference_data=ref, current_data=cur)
 data_drift_dataset_report
 ```
 
-## Column-level metrics
+### Column-level metrics
 
 Some of the metrics are calculated on the column level. For example, to calculate drift in a specific feature or model predictions.
 
@@ -160,7 +162,7 @@ my_report = Report(metrics=[
 ])
 ```
 
-# 2. Set metric parameters
+## 2. Set metric parameters
 
 Some metrics include default parameters. For example, probabilistic classification quality metrics have a default 0.5 decision threshold. You can override the defaults by setting custom parameters. 
 
