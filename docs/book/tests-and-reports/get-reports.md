@@ -47,7 +47,7 @@ data_quality_report
 If nothing else is specified, the Report will run with the default parameters for all columns in the dataset.
 
 {% hint style="info" %} 
-**Available Presets**. There are other Presets: for example, `DataDriftPreset`, `RegressionPreset` and `ClassificationPreset`. Refer to the [Presets overview](../presets/all-presets.md) to understand individual Presets, and to [All metrics](../reference/all-metrics.md) to see all available optionse. 
+**Available Presets**. There are other Presets: for example, `DataDriftPreset`, `RegressionPreset` and `ClassificationPreset`. Refer to the [Presets overview](../presets/all-presets.md) to understand individual Presets, and to [All metrics](../reference/all-metrics.md) to see all available options. 
 {% endhint %}
 
 **Example 2**. You can include multiple Presets in a Report. To combine Data Drift and Data Quality and run them over two datasets, including a reference dataset necessary for data drift evaluation:
@@ -79,11 +79,11 @@ drift_report.as_dict()
 **There are more output formats!**. You can also export Report results in different formats like HTML, JSON, dataframe, and more. Refer to the [Output Formats](output_formats.md) for details.
 {% endhint %}
 
-**Example 4**. You can customize some of the Presets using parameters. For example, calculate quality metrics for a binary probabilistic classification model with a custom decision threshold instead of default 0.5:
+**Example 4**. You can customize some of the Metrics inside the Preset by passing parameters to it. For example, calculate quality metrics for a binary probabilistic classification model with a custom decision threshold instead of default 0.5:
 
 ```python
 dataset_report = Report(metrics=[
-    ClassificationQualityMetric(probas_threshold=0.7),
+    ClassificationPreset(probas_threshold=0.7),
 ])
 ```
 {% hint style="info" %} 
@@ -142,9 +142,9 @@ my_report = Report(metrics=[
 
 ## 2. Set metric parameters
 
-Some Metrics have optional parameters. For example, the data drift detection algorithm automatically selects a drift detection method, but you can pass your choice of method (recommended) as an optional parameter to overrride the defaults.
+Some Metrics have optional parameters. For example, the data drift detection algorithm automatically selects a drift detection method, but you can pass your choice of method (recommended) as an optional parameter to override the defaults.
 
-Some Metrics have required parameters. You cannot run a Metric without specifying it. For example, if you want to calculate the number of values that match a regular expression, you need to specify it. 
+Some Metrics have required parameters. You can only run a Metric when specifying it. For example, if you want to calculate the number of values that match a regular expression, you need to define this expression. 
 
 **Example 1**. How to specify a regular expression (required parameter):
 
