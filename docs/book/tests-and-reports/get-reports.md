@@ -55,7 +55,7 @@ drift_report = Report(metrics=[
 ])
  
 drift_report.run(reference_data=my_ref_dataset,
-                current_data=my_cur_dataset)
+                 current_data=my_cur_dataset)
 drift_report
 ```
 
