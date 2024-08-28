@@ -86,6 +86,15 @@ dataset_report = Report(metrics=[
     ClassificationPreset(probas_threshold=0.7),
 ])
 ```
+
+**Example 5**. You can pass a list of columns to the Preset, so column-specific Metrics are generated only for those columns, not the entire dataset.
+
+```python
+drift_report = Report(metrics=[
+    DataDriftPreset(columns=["age", "position"]),
+])
+```
+
 {% hint style="info" %} 
 Refer to the [All metrics](../reference/all-metrics.md) table to see defaults and available parameters that you can pass for each Preset.
 {% endhint %}
