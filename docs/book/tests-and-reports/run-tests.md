@@ -20,7 +20,7 @@ from evidently.tests import *
 
 Here is the general flow.
 * **Input data**. Prepare data as a Pandas DataFrame. This will be your `current` data to test. You may also pass a `reference` dataset to generate Test conditions from this reference or run data distribution Tests. Check the [input data requirements](../input-data/data-requirements.md).
-* **Schema mapping**. Optionally, define your data schema using [Column Mapping](../input-data/column-mapping.md).
+* **Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but recommended.
 * **Define the Test Suite**. Create a `TestSuite` object and include the selected Tests or Test Presets in the `tests` list.
 * **Set the Test parameters**. Optionally, specify individual test conditions and mark certain tests as non-critical.
 * **Run the Test Suite**. Execute the Test Suite on your `current_data`. If applicable, pass the `reference_data` and `column_mapping`.
