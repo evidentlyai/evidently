@@ -82,48 +82,22 @@ Refer to the [Presets overview](../presets/all-presets.md) to understand the use
 
 # Output formats 
 
-You can get the Test Suite output in different formats. 
+To see the get the Test Suite output as an interactive visual report in Jupyter notebook or Colab, call the resulting object: 
 
-**HTML**. You can get the Test Suite output as an interactive visual report. It is best for exploration and debugging. You can also document test results and share them with the team. 
-
-To see in Jupyter notebook or Colab, call the object: 
 ```python
 data_stability
 ```
 
-To export HTML as a separate file: 
-```python
-data_stability.save_html(“file.html”)
-```
-**JSON**. You can get the Test Suite output as a JSON. It is best for test automation and integration in your prediction pipelines. 
+To get a text summary, use a Python dictionary.
 
-To get the JSON:
-
-```python
-data_stability.json()
-```
-To export JSON as a separate file: 
-
-```python
-data_stability.save_json("file.json")
-```
-
-**Python dictionary**. You can get the Test Suite output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.
-
-To get the dictionary:
 ```python
 data_stability.as_dict()
 ```
 
-**Evidently snapshot**. You can also save the output as an Evidently JSON `snapshot`. This will allow you to visualize the model or data quality over time using the Evidently ML monitoring dashboard.
-
-```python
-data_stability.save("snapshot.json")
-```
-
-{% hint style="info" %}
-**Building a live ML monitoring dashboard**. To better understand how the ML monitoring dashboard works, we recommend going through the [ML Monitoring Quickstart](../get-started/tutorial-monitoring.md) after completing this tutorial.
+{% hint style="info" %} 
+***There are more output formats!**. You can also export and save Report results in different formats: HTML, JSON, dataframe, etc. Refer to the [Output Formats](output_formats.md) for details.
 {% endhint %}
+
 
 # Preset parameters
 
