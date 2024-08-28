@@ -1,5 +1,5 @@
 ---
-description: Intro to the Projects feature in Evidently.
+description: Introduction to Projects in Evidently Platform. 
 ---   
 
 {% hint style="info" %}
