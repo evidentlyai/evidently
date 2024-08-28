@@ -9,7 +9,7 @@ You can run also evaluations locally with Evidently Python library without creat
 
 # What is a Project?
 
-To start using the Evidently web application, you must create at least one Project. 
+To start using the Evidently web application, you must create at least one evaluation or monitoring Project. 
 
 **Home Page**. You can see all your Projects on the home page of the Evidently platform:
 
