@@ -88,9 +88,11 @@ After you load the snapshot back, you can again view it in Python or export it t
 **Generating snaphots**. To better understand how you can upload the evaluation results to the Evidently Platform, check the page on [Generating Snaphots](../get-started/tutorial-monitoring.md).
 {% endhint %}
 
-# DataFrame with Report summary
+# DataFrame with a Report summary
 
-You can get the Metric results in a tabular format as a DataFrame. This feature is only supported for Reports, and not Test Suites.
+**Note**: this export option is only supported for Reports, and not Test Suites.
+
+You can get the Report results in a tabular format as a DataFrame. 
 
 To export results for a specific Metric: 
 
@@ -104,5 +106,4 @@ To export results for the entire Report, which returns a dictionary of DataFrame
 drift_report.as_dataframe()
 ```
 
-This will return all relevant values that are computed inside the Metric.
-
+This will return all relevant values that are computed inside the Metric as the metric result.
