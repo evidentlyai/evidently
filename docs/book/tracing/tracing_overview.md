@@ -1,5 +1,5 @@
 ---
-description: Introduction to Tracing.
+description: Introduction to tracing.
 ---   
 
 This section covers how to instrument your AI application to collect data and send it to Evidently Platform for further evaluation and analysis. 
@@ -10,7 +10,7 @@ This section covers how to instrument your AI application to collect data and se
 **Looking for something else?** You can also run evaluations locally on existing datasets using [Reports and Test Suites](../tests-and-reports/introduction.md), and upload tabular [Datasets](../datasets/datasets_overview.md) to the platform using the Python API. 
 {% endhint %}
 
-# What is LLM Tracing?
+# What is LLM tracing?
 
 Tracing captures a detailed record of how your LLM application operates. It logs the system's inputs and outputs, along with intermediate steps and events, such as function calls. With this data, you can analyze and monitor your LLM system, including running evaluations on the tracing datasets. 
 
