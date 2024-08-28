@@ -142,9 +142,7 @@ my_report = Report(metrics=[
 
 ## 2. Set metric parameters
 
-Some Metrics have optional parameters. For example, the data drift detection algorithm automatically selects a drift detection method, but you can pass your choice of method (recommended) as an optional parameter to override the defaults.
-
-Some Metrics have required parameters. You can only run a Metric when specifying it. For example, if you want to calculate the number of values that match a regular expression, you need to define this expression. 
+Metrics can have optional or required parameters. For example, the data drift detection algorithm selects a method automatically, but you can override this by specifying your preferred method (Optional). To calculate the number of values matching a regular expression, you must always define this expression (Required).
 
 **Example 1**. How to specify a regular expression (required parameter):
 
