@@ -2,6 +2,8 @@
 description: Introduction to Datasets in Evidently Platform. 
 ---   
 
+This section covers how work with Datasets in Evidently Platform.  
+
 Datasets are key for evaluating and monitoring AI products.
 
 They consist of data collected from your application, which you can analyze manually or set up for automated checks. You can bring in existing datasets or capture data from your live production systems or test environments.
