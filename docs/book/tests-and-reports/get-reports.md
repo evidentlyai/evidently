@@ -80,7 +80,7 @@ drift_report.as_dict()
 ```
 
 {% hint style="info" %} 
-***There are more output formats!**. You can also export and save Report results in different formats: HTML, JSON, dataframe, etc. Refer to the [Output Formats](../output_formats.md) for details.
+***There are more output formats!**. You can also export and save Report results in different formats: HTML, JSON, dataframe, etc. Refer to the [Output Formats](output_formats.md) for details.
 {% endhint %}
 
 # Preset parameters 
