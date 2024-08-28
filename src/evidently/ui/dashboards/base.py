@@ -1,6 +1,5 @@
 import datetime
 import traceback
-import uuid
 import warnings
 from functools import wraps
 from typing import TYPE_CHECKING
@@ -230,7 +229,7 @@ class DashboardConfig(BaseModel):
             to_create = tab_descriptor
         if isinstance(tab_descriptor, str):
             try:
-                tab = self._find_tab_by_id(uuid.UUID(tab_descriptor))
+                tab = self._find_tab_by_id(uuid6.UUID(tab_descriptor))
             except ValueError:
                 tab = self._find_tab_by_title(tab_descriptor)
                 to_create = DashboardTab(title=tab_descriptor)

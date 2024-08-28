@@ -38,14 +38,13 @@ if TYPE_CHECKING:
     UUID7 = uuid6.UUID
 else:
 
-    class Lol(type):
-        def __setattr__(self, key, value):
-            super().__setattr__(key, value)
+    class UUIDMeta(type):
+        _required_version: int
 
         def __instancecheck__(self, instance):
             return isinstance(instance, uuid6.UUID) and instance.version == self._required_version
 
-    class UUID7(uuid6.UUID, metaclass=Lol):
+    class UUID7(uuid6.UUID, metaclass=UUIDMeta):
         _required_version = 7
 
         @classmethod

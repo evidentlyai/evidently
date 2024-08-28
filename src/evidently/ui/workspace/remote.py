@@ -3,7 +3,6 @@ import datetime
 import io
 import json
 import urllib.parse
-import uuid
 from json import JSONDecodeError
 from typing import Dict
 from typing import List
@@ -180,7 +179,7 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
             params["team_id"] = str(team.id)
         return self._request("/api/projects", "POST", query_params=params, body=project.dict(), response_model=Project)
 
-    def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
+    def get_project(self, project_id: ProjectID) -> Optional[Project]:
         try:
             return self._request(f"/api/projects/{project_id}/info", "GET", response_model=Project)
         except (HTTPError,) as e:

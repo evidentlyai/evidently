@@ -1,5 +1,4 @@
 import dataclasses
-import uuid
 import warnings
 from collections import Counter
 from datetime import datetime
@@ -34,6 +33,7 @@ from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
+from evidently.ui.type_aliases import SnapshotID
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 
@@ -53,7 +53,7 @@ class TestSuite(ReportBase):
         tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
         options: AnyOptions = None,
         timestamp: Optional[datetime] = None,
-        id: Optional[uuid.UUID] = None,
+        id: Optional[SnapshotID] = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
         name: str = None,

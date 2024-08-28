@@ -1,7 +1,6 @@
 import datetime
 import re
 import typing
-import uuid
 import warnings
 from collections import Counter
 from typing import Any
@@ -23,6 +22,7 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
+from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TestInfo
 from evidently.ui.type_aliases import TestResultPoints
 
@@ -96,7 +96,7 @@ class DashboardPanelTestSuite(DashboardPanel):
     def build(
         self,
         data_storage: "DataStorage",
-        project_id: uuid.UUID,
+        project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
@@ -194,7 +194,7 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
     def build(
         self,
         data_storage: "DataStorage",
-        project_id: uuid.UUID,
+        project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
@@ -213,7 +213,7 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
     def _build_none(
         self,
         data_storage: "DataStorage",
-        project_id: uuid.UUID,
+        project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> Tuple[Counter, str]:
@@ -228,7 +228,7 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
     def _build_last(
         self,
         data_storage: "DataStorage",
-        project_id: uuid.UUID,
+        project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> Tuple[Counter, str]:

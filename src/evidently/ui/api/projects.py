@@ -1,6 +1,5 @@
 import datetime
 import json
-import uuid
 from dataclasses import asdict
 from typing import Callable
 from typing import List
@@ -40,6 +39,8 @@ from evidently.ui.dashboards.test_suites import DashboardPanelTestSuiteCounter
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import ProjectID
+from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 from evidently.utils import NumpyEncoder
@@ -47,7 +48,7 @@ from evidently.utils import NumpyEncoder
 
 @get("/{project_id:uuid}/reports", sync_to_thread=True)
 def list_reports(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -62,7 +63,7 @@ def list_reports(
 
 @get("/{project_id:uuid}/snapshots", sync_to_thread=True)
 def list_snapshots(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -90,7 +91,7 @@ def list_projects(
 
 @get("/{project_id:uuid}/info", sync_to_thread=True)
 def get_project_info(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -117,7 +118,7 @@ def search_projects(
 
 @post("/{project_id:uuid}/info", sync_to_thread=True)
 def update_project_info(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     data: Project,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
@@ -142,7 +143,7 @@ def update_project_info(
 
 @get("/{project_id:uuid}/reload", sync_to_thread=True)
 def reload_project_snapshots(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -156,7 +157,7 @@ def reload_project_snapshots(
 
 @get("/{project_id:uuid}/test_suites", sync_to_thread=True)
 def list_test_suites(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -173,8 +174,8 @@ def list_test_suites(
     sync_to_thread=True,
 )
 def get_snapshot_graph_data(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
-    snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
     graph_id: Annotated[str, Parameter(title="id of graph in snapshot")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
@@ -195,8 +196,8 @@ def get_snapshot_graph_data(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/download", sync_to_thread=True)
 def get_snapshot_download(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
-    snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -225,8 +226,8 @@ def get_snapshot_download(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/data", sync_to_thread=True)
 def get_snapshot_data(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
-    snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -254,8 +255,8 @@ def get_snapshot_data(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/metadata", sync_to_thread=True)
 def get_snapshot_metadata(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
-    snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -279,7 +280,7 @@ def get_snapshot_metadata(
 
 @get("/{project_id:uuid}/dashboard/panels", sync_to_thread=True)
 def list_project_dashboard_panels(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -311,7 +312,7 @@ async def additional_models() -> (
 
 @get("/{project_id:uuid}/dashboard", sync_to_thread=True)
 def project_dashboard(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     # TODO: no datetime, as it unable to validate '2023-07-09T02:03'
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
@@ -349,7 +350,7 @@ def add_project(
 
 @delete("/{project_id:uuid}", sync_to_thread=True)
 def delete_project(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
@@ -360,7 +361,7 @@ def delete_project(
 
 @post("/{project_id:uuid}/snapshots", sync_to_thread=True)
 def add_snapshot(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
     parsed_json: Snapshot,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
@@ -375,8 +376,8 @@ def add_snapshot(
 
 @delete("/{project_id:uuid}/{snapshot_id:uuid}", sync_to_thread=True)
 def delete_snapshot(
-    project_id: Annotated[uuid.UUID, Parameter(title="id of project")],
-    snapshot_id: Annotated[uuid.UUID, Parameter(title="id of snapshot")],
+    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,

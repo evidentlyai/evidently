@@ -1,5 +1,4 @@
 import dataclasses
-import uuid
 import warnings
 from collections import defaultdict
 from datetime import datetime
@@ -34,6 +33,7 @@ from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
+from evidently.ui.type_aliases import SnapshotID
 from evidently.utils.generators import BaseGenerator
 
 METRIC_GENERATORS = "metric_generators"
@@ -51,7 +51,7 @@ class Report(ReportBase):
         metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
         options: AnyOptions = None,
         timestamp: Optional[datetime] = None,
-        id: uuid.UUID = None,
+        id: SnapshotID = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
         model_id: str = None,

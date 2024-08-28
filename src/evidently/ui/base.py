@@ -1,7 +1,6 @@
 import contextlib
 import datetime
 import json
-import uuid
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
@@ -202,7 +201,7 @@ class Project(Entity):
 
     def delete_snapshot(self, snapshot_id: Union[str, SnapshotID]):
         if isinstance(snapshot_id, str):
-            snapshot_id = uuid.UUID(snapshot_id)
+            snapshot_id = uuid6.UUID(snapshot_id)
         self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)
 
     def list_snapshots(self, include_reports: bool = True, include_test_suites: bool = True) -> List[SnapshotMetadata]:
