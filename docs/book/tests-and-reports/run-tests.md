@@ -1,163 +1,138 @@
 ---
-description: How to use Test Presets in Evidently.
+description: How to run Tests and create Test Suites using Evidently Python library.
 ---
 
-**TL;DR**: Evidently has pre-built Test Suites that work out of the box. To use them, simply pass your data and choose the Preset.
+# Code examples
 
-# Installation and prep
+Check the [sample notebooks](../examples/examples.md) for examples of how to generate Test Suites.
 
-After [installation](../installation/install-evidently.md), import the `TestSuite` component and the required `tests` or `presets`:
+# Imports
+
+After [installing Evidently](../installation/install-evidently.md), import the `TestSuite` component and the necessary `test_presets` or `tests` you plan to use:
 
 ```python
 from evidently.test_suite import TestSuite
+from evidently.test_preset import DataQualityTestPreset, DataStabilityTestPreset
 from evidently.tests import *
-from evidently.test_preset import NoTargetPerformanceTestPreset
-from evidently.test_preset import DataQualityTestPreset
-from evidently.test_preset import DataStabilityTestPreset
-from evidently.test_preset import DataDriftTestPreset
-from evidently.test_preset import RegressionTestPreset
-from evidently.test_preset import MulticlassClassificationTestPreset
-from evidently.test_preset import BinaryClassificationTopKTestPreset
-from evidently.test_preset import BinaryClassificationTestPreset
 ```
-You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
+
+# How it works
+
+Here is the general flow.
+* **Input data**. Prepare data as a Pandas DataFrame. This will be your `current` data to test. You may also pass a `reference` dataset to generate Test conditions from this reference or run data distribution Tests. Check the [input data requirements](../input-data/data-requirements.md).
+* **Schema mapping**. Optionally, define your data schema using [Column Mapping](../input-data/column-mapping.md).
+* **Define the Test Suite**. Create a `TestSuite` object and include the selected Tests or Test Presets in the `tests` list.
+* **Set the Test parameters**. Optionally, specify individual test conditions and mark certain tests as non-critical.
+* **Run the Test Suite**. Execute the Test Suite on your `current_data`. If applicable, pass the `reference_data` and `column_mapping`.
+* **Get the results**. Get a visual summary in Jupyter notebook, export the metrics and tests metadata, or upload it to the Evidently Platform.
+
+You can use Test Presets, which are pre-built Test Suites that automatically generate a set of Tests for a specific aspect of the data or model performance, or create your Test Suite by listing Tests one by one.
+
+# Test Presets 
+
+To use a Test Preset, create a `TestSuite` object and include the chosen Preset in the `tests` list. The Tests will run with default parameters for all columns in the dataset. 
+
+Evidently will also automatically generate Test conditions. There are two ways Evidently does it.
+* **Based on the reference dataset**. If you provide a `reference`, Evidently will generate conditions based on it. For example, a Preset may include the `TestShareOfOutRangeValues` Test. It will fail if over 10% of values in the `current` dataset are out of range. Evidently automatically derives the min-max value range for each column from the reference. 10% is an encoded heuristic.
+*  **Based on heuristics**. If you don’t provide a reference, Evidently will run Tests it can using heuristics only. For example, `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model, which Evidently creates automatically. For data quality, Tests like TestNumberOfEmptyRows() or TestNumberOfMissingValues() assume both should be zero.
 
 {% hint style="info" %} 
-Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation.
+**Reference**: Check the default Test conditions in the [All tests](../reference/all-tests.md) table.
 {% endhint %}
 
-# Using test presets 
+**Example 1**. To apply the `DataQualityTestPreset` to a single `curr` dataset, with conditions generated based on heuristics:
 
-Evidently has **Test Presets** that group relevant Tests together. You can use them as templates to check a specific aspect of the data or model performance.
+```python
+data_quality = TestSuite(tests=[
+    DataQualityTestPreset(),
+])
 
-To apply the Preset, create a `TestSuite` object and specify the `presets` to include in the list of `tests`. You must also point to the current and reference dataset (if available).
+data_quality.run(reference_data=None, 
+                   current_data=curr)
+```
 
-If nothing else is specified, the tests will run with the default parameters for all columns in the dataset. Evidently will automatically generate test conditions based on the provided reference dataset or heuristics.
+{% hint style="info" %} 
+**Available Test Presets**. There are other Presets: for example, `DataStabilityTestPreset`, `DataDriftTestPreset` or `RegressionTestPreset`. Refer to the [Presets overview](../presets/all-presets.md) to understand individual Presets, and to [All Tests](../reference/all-tests.md) to see all available options and parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
+{% endhint %}
 
-**Example 1**. To apply the `DataStabilityTestPreset`:
+To get the visual report with Test results, call the object in Jupyter notebook or Colab:
+
+```python
+data_quality
+```
+
+To get the Test results summary, generate a Python dictionary:
+
+```python
+data_quality.as_dict()
+```
+
+{% hint style="info" %} 
+**There are more output formats!**. You can also export the results in formats like HTML, JSON, dataframe, and more. Refer to the [Output Formats](output_formats.md) for details.
+{% endhint %}
+
+**Example 2**. To apply the `DataStabilityTestPreset`, with conditions generated from reference, pass the `reference_data`:
 
 ```python
 data_stability = TestSuite(tests=[
-DataStabilityTestPreset(),
+    DataStabilityTestPreset(),
 ])
-data_stability.run(reference_data=ref, current_data=curr)
+
+data_stability.run(reference_data=ref, 
+                   current_data=curr)
 ```
 
-To get the visual report, call the object in Jupyter notebook or Colab:
 
-```python
-data_stability
-```
-
-**Example 2**. To apply and call `NoTargetPerformanceTestPreset`:
+**Example 3**. To apply the `NoTargetPerformanceTestPreset` with additional parameters: 
 
 ```python
 no_target_performance = TestSuite(tests=[
-NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week']),
+    NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week'], 
+                                  cat_stattest=ks, 
+                                  cat_statest_threshold=0.05),
 ])
-no_target_performance.run(reference_data=ref,current_data=curr)
-no_target_performance
 ```
 
-You can use the `columns` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
-
-# Available presets 
-
-Here are other test presets you can try:
-
-```python
-NoTargetPerformanceTestPreset
-DataStabilityTestPreset
-DataQualityTestPreset
-DataDriftTestPreset
-RegressionTestPreset
-MulticlassClassificationTestPreset
-BinaryClassificationTopKTestPreset
-BinaryClassificationTestPreset
-```
+By selecting specific columns for the Preset, you reduce the number of generated column-level Tests. When you specify the data drift detection method and threshold, it will override the defaults.
 
 {% hint style="info" %} 
-Refer to the [Presets overview](../presets/all-presets.md) to understand the use case for each preset and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
-{% endhint %}
-
-# Output formats 
-
-To see the get the Test Suite output as an interactive visual report in Jupyter notebook or Colab, call the resulting object: 
-
-```python
-data_stability
-```
-
-To get a text summary, use a Python dictionary.
-
-```python
-data_stability.as_dict()
-```
-
-{% hint style="info" %} 
-***There are more output formats!**. You can also export and save Report results in different formats: HTML, JSON, dataframe, etc. Refer to the [Output Formats](output_formats.md) for details.
-{% endhint %}
-
-
-# Preset parameters
-
-You can customize some of the Presets using parameters. For example, you can pass a different data drift detection method:
-
-```python
-no_target_performance = TestSuite(tests=[
-NoTargetPerformanceTestPreset(cat_stattest=ks, cat_statest_threshold=0.05),
-])
-no_target_performance.run(reference_data=ref,current_data=curr)
-no_target_performance
-```
-
-{% hint style="info" %} 
-Refer to the [All tests](../reference/all-tests.md) table to see available parameters that you can pass for each preset. 
+Refer to the [All tests](../reference/all-tests.md) table to see available parameters and defaults for each Test and Test Preset. 
 {% endhint %}
 
 # Custom Test Suite
 
-If you want to change the composition of the Test Suite or set custom test conditions, per Test, can create a custom Test Suite from individual Tests. You can use auto-generated test conditions or pass your own.
+You can use Test Presets as a starting point to explore available analyses. In most cases, you'll want to design your Test Suite to pick specific tests and set conditions more precisely. Here’s how:
+* **Choose individual Tests**. Select the Tests you want to include in your Test Suite.
+* **Pass Test parameters**. Optionally, set custom parameters for applicable Tests.
+* **Set custom conditions**. Optionally, define when Tests should pass or fail.
+* **Mark Test criticality**. Optionally, mark some tests as non-critical to return a Warning instead of Fail.
 
 ## 1. Choose tests
 
-To design a Test Suite, first define which Tests to include. You can use Presets as a starting point to explore available types of analysis. Note that there are additional Tests that are not included in the Presets.   
+First, decide which Tests to include. Tests can be either dataset-level or column-level.
 
 {% hint style="info" %} 
-**Reference**: The complete list of Tests is available in the [All tests](../reference/all-tests.md) table. To see interactive examples, refer to the [Example notebooks](../examples/examples.md).
+**List of available Tests**: The complete list of Tests is available in the [All tests](../reference/all-tests.md) table. To see interactive examples, refer to the [Example notebooks](../examples/examples.md).
 {% endhint %}
 
-There are two types of tests: dataset-level and column-level.
+{% hint style="info" %} 
+**Row-level evaluations**: If you want to generate row-level scores before running the Tests, which are often relevant for text data, read more about [Text Descriptors](text-descriptors.md.md).
+{% endhint %}
 
-### Dataset-level tests
+**Dataset-level Tests**. Some Tests apply to the entire dataset, such as checking the share of drifting features or accuracy drops.
 
-You can apply some of the Tests on the dataset level. For example, to evaluate data drift for the whole dataset. 
-
-Create a `TestSuite` object and specify the `tests` to include:
+To create a custom Test Suite, create a `TestSuite` object and list the `tests` one by one:    
 
 ```python
 data_drift_suite = TestSuite(tests=[
     TestShareOfDriftedColumns(),
-    TestNumberOfDriftedColumns(),
+    TestNumberOfEmptyRows(),
 ])
 ```
 
-To run the Tests and get the visual report:
+**Column-level Tests**. Some Tests focus on individual columns, like checking if a specific column's values stay within a range.
 
-```python
-data_drift_suite.run(
-    reference_data=ref,
-    current_data=curr,
-    column_mapping=ColumnMapping(),
-)
-data_drift_suite
-```
-
-### Column-level tests
-
-You can apply some Tests to the individual columns. For example, to check if a specific feature or model prediction stays within the range. 
-
-To create a custom Test Suite with column-level tests:
+To create a custom Test Suite with column-level Tests, pass the name of the column to each Test:
 
 ```python
 feature_suite = TestSuite(tests=[
@@ -167,18 +142,11 @@ feature_suite = TestSuite(tests=[
 ])
 ```
 
-To run the Tests and get the visual report:
+{% hint style="info" %} 
+**Generating multiple column-level Tests**: To simplify listing many Tests at once, use [Test generator helper function](test-metric-generator.md).
+{% endhint %}
 
-```python
-feature_suite.run(reference_data=ref, current_data=curr)
-feature_suite
-```
-
-### Combining tests
-
-You can freely combine column-level and dataset-level Tests in a single Test Suite. You can also include Presets and individual Tests in the same list.
-
-Here is an example:
+**Combining Tests**. You can combine column-level and dataset-level Tests in a single Test Suite. You can also include Presets and individual Tests together.
 
 ```python
 my_data_quality_tests = TestSuite(tests=[
@@ -186,20 +154,13 @@ my_data_quality_tests = TestSuite(tests=[
     TestColumnAllConstantValues(column_name='education'),
     TestNumberOfDriftedColumns()
 ])
-
-my_data_quality_tests.run(reference_data=ref,current_data=curr)
-my_data_quality_tests
 ```
 
-{% hint style="info" %} 
-**Note**: If you want to generate multiple column-level Tests, you can use [test generator helper function](test-metric-generator.md).
-{% endhint %}
+## 2. Set Test parameters
 
-## 2. Set test parameters
+Tests can have optional or required parameters. 
 
-Some test have **required parameters**.
-
-**Example 1**. If you want to test a quantile value, you need to pass the quantile:
+**Example 1**. To test a quantile value, you need to specify the quantile (Required parameter):
 
 ```python
 column_tests_suite = TestSuite(tests=[
@@ -207,17 +168,16 @@ column_tests_suite = TestSuite(tests=[
 ])
 ```
 
-Some tests have **optional parameters**. They change how the metrics are calculated. If you do not specify it, Evidently will apply a default.
-
-**Example 2:** To override the default drift detection method, pass the chosen statistical test as a parameter: 
+**Example 2:** To override the default drift detection method, pass the chosen statistical method (Optional), or modify the Mean Value Test to use 3 sigmas:
 
 ```python
 dataset_suite = TestSuite(tests=[
     TestShareOfDriftedColumns(stattest=psi),
+    TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
 ])
 ```
 
-**Example 3:** To change the decision threshold for probabilistic classification, pass it as a parameter: 
+**Example 3:** To change the decision threshold for probabilistic classification to 0.8:
 
 ```python
 model_tests = TestSuite(tests=[
@@ -227,61 +187,60 @@ model_tests = TestSuite(tests=[
 ```
 
 {% hint style="info" %} 
-**Reference**: you can browse available test parameters and defaults in the [All tests](../reference/all-tests.md) table.
+**Reference**: you can browse available Test parameters and defaults in the [All tests](../reference/all-tests.md) table.
 {% endhint %}
 
 # 3. Set test conditions
 
-To define when the test should return "pass" or "fail," you must set a condition. For example, you can set the lower boundary for the expected model precision. If the condition is violated, the test fails. 
+You can set up your Test conditions in two ways:
+* **Automatic**. If you don’t specify individual conditions, the defaults (reference or heuristic-based) will apply, just like in Test Presets.
+* **Manual**. You can define when exactly a Test should pass or fail. For example, set a lower boundary for the expected model precision. If the condition is violated, the Test fails.
+  
+You can mix both approaches in the same Test Suite, where some Tests run with defaults and others with custom conditions.
 
-There are several ways to define the conditions for each test in a test suite.  
+### Test condition parameters
 
-### Auto-generated conditions
+Use the following standard parameters to set Test conditions:
 
-If you do not define a Test condition manually, Evidently will use the defaults.
-
-* **Based on the reference dataset**. If you pass the reference, Evidently will auto-generate test conditions. For example,`TestShareOfOutRangeValues` test fails if over 10% of values are out of range. Evidently will automatically derive the value range for each feature. 10% is an encoded heuristic.
-
-* **Based on heuristics**. Some tests can work even without a reference dataset. In this case, Evidently will use heuristics and dummy models. For example, `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model. Evidently will automatically create a dummy model.
-
-{% hint style="info" %} 
-**Reference**: Default test conditions are described in the same [All tests](../reference/all-tests.md) table.
-{% endhint %}
-
-## Custom conditions
-
-You can also set a custom condition for each test to encode your expectations. You can use the standard parameters: 
-
-| Condition parameter name | Explanation                                | Usage Example                                                   |
+| Condition parameter | Explanation                                | Usage Example                                                   |
 |--------------------------|--------------------------------------------|-----------------------------------------------------------------|
-| eq: val                  | test_result == val                         | TestColumnValueMin(column_name=”num_feature”, eq=5)            |
-| not_eq: val              | test_result != val                         | TestColumnValueMin(column_name=”num_feature”, not_eq=0)            |
-| gt: val                  | test_result > val                          | TestColumnValueMin(column_name=”num_feature”, gt=5)            |
-| gte: val                 | test_result >= val                         | TestColumnValueMin(column_name=”num_feature”, gte=5)           |
-| lt: val                  | test_result < val                          | TestColumnValueMin(column_name=”num_feature”, lt=5)            |
-| lte: val                 | test_result <= val                         | TestColumnValueMin(column_name=”num_feature”, lte=5)           |
-| is_in: list              | test_result == one of the values from list | TestColumnValueMin(column_name=”num_feature”, is_in=[3,5,7])   |
-| not_in: list             | test_result != any of the values from list | TestColumnValueMin(column_name=”num_feature”, not_in=[-1,0,1]) |
+| `eq: val`               | equal <br> `test_result == val`                         | TestColumnValueMin(column_name=”col”, eq=5)            |
+| `not_eq: val`             | not equal <br> `test_result != val`                         | TestColumnValueMin(column_name=”col”, not_eq=0)            |
+| `gt: val`                  |  greater than  <br> `test_result > val`                          | TestColumnValueMin(column_name=”col”, gt=5)            |
+| `gte: val`                 | greater than or equal <br> `test_result >= val`                         | TestColumnValueMin(column_name=”col”, gte=5)           |
+| `lt: val`                | less than <br> `test_result < val`                          | TestColumnValueMin(column_name=”col”, lt=5)            |
+| `lte: val`               | less than or equal <br> `test_result <= val`                         | TestColumnValueMin(column_name=”col”, lte=5)           |
+| `is_in: list`              | `test_result ==` one of the values from list | TestColumnValueMin(column_name=”col”, is_in=[3,5,7])   |
+| `not_in: list`             | `test_result !=` any of the values from list | TestColumnValueMin(column_name=”col”, not_in=[-1,0,1]) |
 
-**Example 1**. You can set the upper or lower boundaries of a specific value by defining `gt` (greater than) and `lt` (less than):
+**Example 1**. To Test that the share of values out of range in a specific column is 0, and the share of missing values in another column is less than (`lt`) 20%. 
 
 ```python
 feature_level_tests = TestSuite(tests=[
-TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
-TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
-TestNumberOfOutListValues(column_name='education', lt=0),
+TestShareOfOutRangeValues(column_name='hours-per-week', eq=0),
 TestColumnShareOfMissingValues(column_name='education', lt=0.2),
 ])
 ```
 
-**Example 2**. You can specify both the Test condition (expected precision and recall) and metric parameters (decision threshold) for the classification model quality test:
+**Example 2**. You can specify both the Test condition and parameters together.
+
+In the first Test in the example above, Evidently still automatically derives the feature range from the reference. You can also manually set the range (e.g., between 2 and 10). The Test fails if any value is out of this range:
+
+```python
+feature_level_tests = TestSuite(tests=[
+TestShareOfOutRangeValues(column_name='hours-per-week', left=2, right=10, eq=0),
+])
+```
+
+**Example 3**. To Test that the precision and recall is over 90%, with a set decision for the classification model:
 
 ```python
 model_tests = TestSuite(tests=[
-    TestPrecisionScore(probas_threshold=0.8, gt=0.99),
-    TestRecallScore(probas_threshold=0.8, gt=0.99)
+    TestPrecisionScore(probas_threshold=0.8, gt=0.9),
+    TestRecallScore(probas_threshold=0.8, gt=0.9)
 ])
 ```
+
 
 ### Custom conditions with Approx
 
@@ -291,7 +250,7 @@ If you want to set an upper and/or lower limit to the value, you can use **appro
 approx(value, relative=None, absolute=None)
 ```
 
-To apply `approx`, you need to first import this component:
+To use `approx`, first import this component:
 
 ```python
 from evidently.tests.utils import approx
