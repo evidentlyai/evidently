@@ -153,14 +153,14 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 
 `TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns are required.
 
-**Comoposition**:
+**Composition**:
 * `ColumnSummaryMetric()` for text descriptors for all columns. Descriptors included:
   * `Sentiment()`
   * `SentenceCount()`
   * `OOV()`
   * `TextLength()`
   * `NonLetterCharacterPercentage()` 
-* `SemanticSimilarity()` between each pair of text columns, if there more than one. 
+* `SemanticSimilarity()` between each pair of text columns, if there is more than one. 
 
 **Required parameters**:
 * `column_name` or `columns` list
