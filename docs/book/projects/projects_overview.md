@@ -1,5 +1,5 @@
 ---
-description: What is a Project.
+description: Intro to the Projects feature in Evidently.
 ---   
 
 {% hint style="info" %}
@@ -9,10 +9,16 @@ You can run evaluations locally with Evidently Python library without creating a
 
 # What is a Project?
 
-To start using the Evidently web application, you must create at least one Project.
+To start using the Evidently web application, you must create at least one Project. You can see all your Projects on the home page of the Evidently platform:
 
-A Project helps you organize all data, Reports, and Test Suites related to a specific use case. Each Project has its own Dashboard, alerting rules and is clearly separated from others in the interface.
+![](../.gitbook/assets/cloud/projects-min.png)
 
-A Project can include results from experimental evaluations, regression testing, or ongoing online monitoring. You can organize Projects in a way that suits your workflow: for example, by creating separate Projects for the experimental and production phases, individual Projects for each ML model, or for different components of an LLM-based application. Alternatively, you can group the results within a single Project, using Tags (such as model version, A/B test status, or other dimensions) to differentiate between evaluation results on the dashboard.
+A Project helps you organize all data and evaluations for a specific use case. Each Project has its own Dashboard and alerting rules.
+
+![](../.gitbook/assets/cloud/project_dashboard-min.png)
+
+Inside the Project, you can also access the results of all experimental evaluations, regression testing, or ongoing online monitoring. 
+
+You can organize Projects in a way that suits your workflow: for example, by creating separate Projects for the experimental and production phases, individual Projects for each ML model, or different components of an LLM-based application. Alternatively, you can group the results within a single Project, using Tags (such as model version, A/B test status, or other dimensions) to differentiate between evaluation results on the Dashboard.
 
 Once you create a Project, it gets a unique ID. You can then connect via the Python API or through the UI to send data, edit the Dashboard, and manage the Project.
