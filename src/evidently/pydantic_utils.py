@@ -3,6 +3,7 @@ import hashlib
 import itertools
 import json
 import os
+import uuid
 import warnings
 from enum import Enum
 from functools import lru_cache
@@ -42,7 +43,7 @@ else:
         _required_version: int
 
         def __instancecheck__(self, instance):
-            return isinstance(instance, uuid6.UUID) and instance.version == self._required_version
+            return isinstance(instance, uuid.UUID) and instance.version == self._required_version
 
     class UUID7(uuid6.UUID, metaclass=UUIDMeta):
         _required_version = 7
