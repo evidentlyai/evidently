@@ -30,7 +30,25 @@ class TopKMetricResult(MetricResult):
 
     k: int
     current: pd.Series
+    current_value: float
     reference: Optional[pd.Series] = None
+    reference_value: Optional[float] = None
+
+    def __init__(
+        self,
+        k: int,
+        current: pd.Series,
+        current_value: Optional[float] = None,
+        reference: Optional[pd.Series] = None,
+        reference_value: Optional[float] = None,
+    ):
+        super().__init__(
+            k=k,
+            current=current,
+            current_value=current_value if current_value is not None else current[k - 1],
+            reference=reference,
+            reference_value=reference_value if reference_value is not None or reference is None else reference[k - 1],
+        )
 
 
 class TopKMetric(Metric[TopKMetricResult], abc.ABC):
@@ -56,11 +74,11 @@ class TopKMetric(Metric[TopKMetricResult], abc.ABC):
         if self.no_feedback_users:
             key = f"{self.key()}_include_no_feedback"
 
-        current = pd.Series(index=result.current["k"], data=result.current[key])
+        current = pd.Series(data=result.current[key])
         ref_data = result.reference
         reference: Optional[pd.Series] = None
         if ref_data is not None:
-            reference = pd.Series(index=ref_data["k"], data=ref_data[key])
+            reference = pd.Series(data=ref_data[key])
         return TopKMetricResult(k=self.k, reference=reference, current=current)
 
     @abc.abstractmethod
@@ -76,9 +94,9 @@ class TopKMetricRenderer(MetricRenderer):
     def render_html(self, obj: TopKMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         k = metric_result.k
-        counters = [CounterData.float(label="current", value=metric_result.current[k], precision=3)]
+        counters = [CounterData.float(label="current", value=metric_result.current[k - 1], precision=3)]
         if metric_result.reference is not None:
-            counters.append(CounterData.float(label="reference", value=metric_result.reference[k], precision=3))
+            counters.append(CounterData.float(label="reference", value=metric_result.reference[k - 1], precision=3))
         fig = plot_metric_k(metric_result.current, metric_result.reference, self.yaxis_name)
         header_part = " No feedback users included."
         if not obj.no_feedback_users:

@@ -23,9 +23,9 @@ def test_map_value():
 
     results = metric.get_result()
     assert len(results.current) == 3
+    assert np.isclose(results.current[0], 0.5)
     assert np.isclose(results.current[1], 0.5)
-    assert np.isclose(results.current[2], 0.5)
-    assert np.isclose(results.current[3], 0.6666666)
+    assert np.isclose(results.current[2], 0.6666666)
 
 
 def test_map_value_judged_only():
@@ -44,9 +44,9 @@ def test_map_value_judged_only():
 
     results = metric.get_result()
     assert len(results.current) == 3
+    assert np.isclose(results.current[0], 0.3333333)
     assert np.isclose(results.current[1], 0.3333333)
-    assert np.isclose(results.current[2], 0.3333333)
-    assert np.isclose(results.current[3], 0.4444444)
+    assert np.isclose(results.current[2], 0.4444444)
 
 
 def test_map_value_judged_only_scores():
@@ -65,6 +65,6 @@ def test_map_value_judged_only_scores():
 
     results = metric.get_result()
     assert len(results.current) == 3
+    assert np.isclose(results.current[0], 0.3333333)
     assert np.isclose(results.current[1], 0.3333333)
-    assert np.isclose(results.current[2], 0.3333333)
-    assert np.isclose(results.current[3], 0.4444444)
+    assert np.isclose(results.current[2], 0.4444444)

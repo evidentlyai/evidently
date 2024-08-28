@@ -44,7 +44,7 @@ class HitRateKMetric(Metric[HitRateKMetricResult]):
         for k in range(1, max_k + 1):
             df_k = df[(df.target == 1) & (df.preds <= k)]
             res.append(df_k.users.nunique() / user_num)
-        return pd.Series(index=[x for x in range(1, max_k + 1)], data=res)
+        return pd.Series(data=res)
 
     def calculate(self, data: InputData) -> HitRateKMetricResult:
         curr, ref = get_curr_and_ref_df(data, self.min_rel_score, self.no_feedback_users, True)
@@ -57,6 +57,6 @@ class HitRateKMetric(Metric[HitRateKMetricResult]):
 
 
 @default_renderer(wrap_type=HitRateKMetric)
-class PrecisionTopKMetricRenderer(TopKMetricRenderer):
+class HitRateKMetricRenderer(TopKMetricRenderer):
     yaxis_name = "HitRate@k"
     header = "Hit Rate"
