@@ -10,11 +10,10 @@ import requests
 from litestar.config.app import AppConfig
 from litestar.plugins import InitPluginProtocol
 from litestar.utils import is_class_and_subclass
-from typing_extensions import Buffer
+from msgspec import ValidationError
 from uuid6 import UUID
 
 from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import ValidationError
 from evidently._pydantic_compat import parse_obj_as
 from evidently.pydantic_utils import UUID7
 from evidently.ui.storage.common import SECRET_HEADER_NAME
@@ -64,7 +63,7 @@ def _dec_uuid7(
     if isinstance(value, str):
         value = uuid_type(value)
 
-    elif isinstance(value, Buffer):
+    elif hasattr(value, "__buffer__"):
         value = bytes(value)
         try:
             value = uuid_type(value.decode())
@@ -78,7 +77,7 @@ def _dec_uuid7(
     if not isinstance(value, uuid_type):
         raise ValidationError(f"Invalid UUID: {value!r}")
 
-    if value._required_version != value.version:
+    if value._required_version != value.version:  # type: ignore[attr-defined]
         raise ValidationError(f"Invalid UUID version: {value!r}")
 
     return value

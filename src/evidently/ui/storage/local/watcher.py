@@ -1,8 +1,8 @@
 import os.path
 import re
-import uuid
 from pathlib import Path
 
+import uuid6
 from watchdog.events import EVENT_TYPE_CREATED
 from watchdog.events import EVENT_TYPE_DELETED
 from watchdog.events import EVENT_TYPE_MODIFIED
@@ -96,7 +96,7 @@ class WorkspaceDirHandler(FileSystemEventHandler):
                 return
             self.state.projects[project.id] = project.bind(self.state.project_manager, NO_USER.id)
         if event.event_type == EVENT_TYPE_DELETED:
-            pid = uuid.UUID(project_id)
+            pid = uuid6.UUID(project_id)
             del self.state.projects[pid]
             del self.state.snapshots[pid]
             del self.state.snapshot_data[pid]
@@ -105,8 +105,8 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         project_id, snapshot_id = self.parse_project_and_snapshot_id(event.src_path)
         if project_id is None or snapshot_id is None:
             return
-        pid = uuid.UUID(project_id)
-        sid = uuid.UUID(snapshot_id)
+        pid = uuid6.UUID(project_id)
+        sid = uuid6.UUID(snapshot_id)
         project = self.state.projects.get(pid)
         if project is None:
             return
