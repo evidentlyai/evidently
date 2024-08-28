@@ -1,30 +1,40 @@
 ---
-description: How to work with Metrics and Tests that use text descriptors.
+description: How to run evaluations for text data with Descriptors. 
 ---
 
-**Pre-requisites**:
-* You know how to generate Reports or Test Suites for text data.
-* You know how to pass custom parameters for Reports or Test Suites.
-* You know to specify text data in column mapping.
+A Descriptor is a row-level score that evaluates a specific quality or dimension of provided text data. A simple example of Descriptor is text length, but it can be more complex, like a label of "relevance" assigned by LLM-based evaluator.
 
-Text descriptors are various characteristics of the text datasets computed by Evidently. You can use them across different Metrics, Tests, and Presets and treat Descriptors as if they exist as an extra tabular feature that describes the text dataset.   
+Once you compute the Descriptor, you can:
+* visualize it in a Report, such as to understand the distribution of Text Length
+* use in a Test Suite, such as to get a True/False result on whether all texts are within expected length range
 
-# Code example
+{% content-ref url="introduction.md" %}
+[Overview of Reports, Tests and Descriptors](introduction.md)
+{% endcontent-ref %}
 
-Using descriptors to evaluate LLM outputs:
+# Code examples
+
+Using descriptors to evaluate LLM outputs using `TextEvals` preset:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_evaluate_llm_with_text_descriptors.ipynb" %}
 
 Using descriptors with tabular Metrics and Tests:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_apply_table_metrics_and_tests_to_text_descriptors.ipynb" %}
 
-Using descriptors with text-specific Metrics and Tests:
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_text_descriptors_in_text_specific_metrics.ipynb" %}
+# Imports
 
-# Available descriptors
+After [installing Evidently](../installation/install-evidently.md) import the relevant components (depending on whether you want to get Reports or run Tests) and selected `descriptors`.  
 
-See the list of available descriptors in the [All Metrics](../reference/all-metrics.md) page.
+```python
+from evidently import ColumnMapping
+from evidently.report import Report
+from evidently.test_suite import TestSuite
+from evidently.metric_preset import TextEvals
+from evidently.metrics import ColumnSummaryMetric, ColumnDriftMetric 
+from evidently.tests import TestColumnValueMin, TestColumnValueMean, TestCategoryShare, TestShareOfOutRangeValues
+from evidently.descriptors import Contains, TextLength, Sentiment
+```
 
-**Note**: you must import specific `nltk` components to use all available descriptors:
+**Note**. To run some Descriptors that use vocabulary-based checks (like `IncludesWords` that also checks for variant words, or `OOV` that checks for out-of-vocabulary words), you may need to additionally import `nltk` components:
 
 ```python
 nltk.download('words')
@@ -33,7 +43,29 @@ nltk.download('omw-1.4')
 nltk.download('vader_lexicon')
 ```
 
-By default, we recommend using the `TextEvals` Preset that simplifies creating a Report with a `ColumnSummaryMetric()` for each descriptor:
+# How it works
+
+Here is the general flow.
+
+**Input data**. Prepare the data as a Pandas DataFrame. Include at least one text column. This will be your current data to run evals on. Optionally, prepare the `reference` dataset.
+**Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but highly recommended.
+**Define the Report or Test Suite**. Create a `Report` or a `TestSuite` object with selected checks.
+**Run the Report**. Run the Report on your `current_data`, passing the `column_mapping`. Optionally, pass the `reference_data`.
+**Get the summary results**. Get a visual report in Jupyter notebook, export the metrics, or upload it to Evidently Platform.
+**Get the scored datasets**. If you'd like to see row-level scores, export the Pandas DataFrame with added descriptors. (Or view on Evidently Platform). 
+
+{% hint style="info" %} 
+**Available Descriptors**. See the list of available descriptors in the [All Metrics](../reference/all-metrics.md) page. There are different types of descriptors: from regular expressions and texts statistics to model and LLM-based checks.
+{% endhint %}
+
+{% hint style="info" %} 
+**Reports and Test Suites**. To understand the basic API, read guides on the [running Reports](get-reports.md) and [generating Test Suite](run-tests.md).
+{% endhint %}
+
+## Text Evals
+
+By default, we recommend using the `TextEvals` Preset. It is simplified interface to create a Report that summarizes the values of computed Descriptors for a given column. 
+
 
 ```python
 report = Report(metrics=[
@@ -41,164 +73,176 @@ report = Report(metrics=[
 ])
 ```
 
-You can also reference descriptors in other Evidently Metrics and Tests. In this case, you must explicitly specify the Metric, the Descriptor and the column to apply it to.
+**Basic example**. To evaluate Sentiment and Text Length in symbols for the `response` column:
 
-
-# Descriptors in text-specific metrics
-
-Several Metrics and Presets are specifically created to generate Descriptors from raw text data. For example, `TextDescriptorsDriftMetric()` or `TextDescriptorsCorrelationMetric()`. 
-
-## Default
-To generate the Report using Descriptors, select the relevant Metrics or Presets and apply them to a text column. You must specify the text column in the column mapping.
-
-**Example 1**. To combine several text-related Metrics in a single Report:
-
-```python
-text_specific_metrics_report = Report(metrics=[
-    TextDescriptorsDriftMetric(column_name="Review_Text"),
-    TextDescriptorsDistribution(column_name="Review_Text"),
-    TextDescriptorsCorrelationMetric(column_name="Review_Text"),
-])
 ```
-
-**Example 2**. To generate a text-related Preset:
-
-```python
-text_overview_report = Report(metrics=[
-    TextOverviewPreset(column_name="Review_Text")
-])
-```
-
-In these cases, the defaults will apply:
-* 3 default Descriptors will be calculated.
-* If data drift is evaluated, the default drift detection methods will apply. The defaults are the same as for tabular drift detection.
-* If correlations are calculated, they will include all numerical columns in the dataset and all text Descriptors. 
-
-## Descriptors parameters 
-To customize the text-related Metrics or use non-default descriptors (e.g., `TriggerWordsPresence()` that requires specifying the list of words), you should use the `descriptors` parameter. Pass it to the chosen Metric or Preset. 
-
-**Example 1**. Here is how you specify which Descriptors to include in a specific Metric, the titles for the corresponding Descriptor columns (they will appear in visualizations), and the list of trigger words to track:    
-
-```python
 report = Report(metrics=[
-    TextDescriptorsDriftMetric("Review_Text", descriptors={
-        "Review Text Length" : TextLength(),
-        "Reviews about Dress" : IncludesWords(words_list=['dress', 'gown']),
-        "Review about Blouses" : IncludesWords(words_list=['blouse', 'shirt'])
-    }),
-    TextDescriptorsCorrelationMetric(column_name="Title", descriptors={
-        "Title OOV" : OOV(),
-        "Title Non Letter %" : NonLetterCharacterPercentage(),
-        "Title Length" : TextLength()
-    })
+    TextEvals(column_name="response", descriptors=[
+        Sentiment(),
+        TextLength(),
+    ]),
 ])
 ```
 
-**Example 2**. Here is how to do this for a Preset:
+Run the Report for your DataFrame `df`:
 
-```python
-text_overview_report = Report(metrics=[
-    TextOverviewPreset(column_name="Review_Text", descriptors={
-        "Review Text OOV" : OOV(),
-        "Review Text Non Letter %" : NonLetterCharacterPercentage(),
-        "Review Text Length" : TextLength(),
-        "Reviews about Dress" : IncludesWords(words_list=['dress', 'gown']),
-        "Review about Blouses" : IncludesWords(words_list=['blouse', 'shirt'])
-    })
-])
+```
+report.run(reference_data=None, 
+           current_data=df)
 ```
 
-## "Lemmatize" parameter
+You can access the Report as usual, including exporting the results as HTML, JSON, Python dictionary, etc. To view the interactive Report directly in Jupyter notebook or Colab:
 
-The `IncludesWords()` Descriptor has `lemmatize` parameter. The default is `True`. When you specify the Trigger Words, it will also search for the variant and inflected forms of this word.
-
-You can override the default and set it as `False.` In this case, it will only search for exact matches.
-
-```python
-report = Report(metrics=[
-    TextDescriptorsDriftMetric("Review_Text", descriptors={
-        "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown'], lemmatize='False'),
-        "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
-    })
-])
+```
+report 
 ```
 
-## Descriptors as “virtual columns”
+![](../.gitbook/assets/cloud/llm_report_preview-min.gif)
 
-You can also use Descriptors as if they exist as additional columns in the dataset and refer to them in relevant tabular Metrics and Tests. 
+Additionally, you can export the DataFrame with the generated Descriptor scores added to the original dataset. To view the dataset:
 
-You should use a specific syntax to refer to the “virtual” Descriptor columns.  
-
-**Example 1**. Descriptors in column-level Metrics:
-
-```python
-table_column_metrics_report = Report(metrics=[
-    ColumnSummaryMetric(column_name = TextLength().for_column("Review_Text")),
-    ColumnDriftMetric(column_name = TextLength().for_column("Review_Text")),
-    ColumnCorrelationsMetric(column_name = TextLength().for_column("Review_Text")),
-    ColumnDistributionMetric(column_name = TextLength().for_column("Review_Text")),
-    ColumnValueRangeMetric(column_name = TextLength().for_column("Review_Text"), left=0, right=20)
-    
-])
+```
+report.datasets().current
 ```
 
-For example, when you call `ColumnDriftMetric()` for the "virtual" column `TextLength().for_column("Review_Text")`, you will evaluate statistical distribution drift in the length of texts that appear in the “Review_Text” column.
+![](../.gitbook/assets/reports/descriptors_export.png)
 
-**Example 2**. Descriptors in column-level Tests:
+To create a DataFrame:
 
-```python
-table_column_test_suite = TestSuite(tests=[
-    TestColumnDrift(column_name = TextLength().for_column("Review_Text")),
-    TestValueRange(column_name = TextLength().for_column("Review_Text")),
-    TestNumberOfOutRangeValues(column_name = TextLength().for_column("Review_Text")),
-    TestShareOfOutRangeValues(column_name = TextLength().for_column("Review_Text")),
-    TestMeanInNSigmas(column_name = TextLength().for_column("Review_Text")),
-    TestColumnValueMin(column_name = TextLength().for_column("Review_Text")),
-    TestColumnValueMax(column_name = TextLength().for_column("Review_Text")),
-    TestColumnValueMean(column_name = TextLength().for_column("Review_Text")),
-    TestColumnValueMedian(column_name = TextLength().for_column("Review_Text")),
-    TestColumnValueStd(column_name = TextLength().for_column("Review_Text")),
-    TestColumnQuantile(column_name = TextLength().for_column("Review_Text"), quantile=0.25),
-    
-])
+```
+df_with_scores = pd.DataFrame(report.datasets().current)
 ```
 
-For example, when you call `TestValueRange()` for the “virtual” column `TextLength().for_column("Review_Text")` , you will evaluate whether the length of texts in the column “Review_Text” stays within the specific range. If you do not specify the range manually, Evidently will infer the range from the reference dataset, and apply +/-10% heuristic to generate the test conditions. 
-
-{% hint style="info" %}
-**Test conditions.** Refer to the [All tests](../reference/all-tests.md) table to see the default conditions for individual Tests, and [How to set test conditions](../tests-and-reports/custom-test-suite.md)  to learn how to specify conditions manually.
+{% hint style="info" %} 
+**How to get the outputs**. Check the details on all available [Output Formats](output_formats.md).
 {% endhint %}
 
-**Example 3**. Descriptors in dataset-level Metrics:
+**Display name**. We recommended to add a display name parameter to each Descriptor. It will appear in the visualizations and column names. This is especially useful when you have a lengthy Regular Expression or list of Words when the default generated title can become very long.
 
-```python
-classification_report = Report(metrics=[
-    ClassificationQualityByFeatureTable(columns=["Age", "Review_Text"], descriptors = {
-        "Review_Text":{
-        "Text Length" : TextLength(),
-        "Reviews about Dress" : TriggerWordsPresence(words_list=['dress', 'gown']),
-        "Review about Blouses" : TriggerWordsPresence(words_list=['blouse', 'shirt'])
-    }})
+```
+report = Report(metrics=[
+    TextEvals(column_name="response", descriptors=[
+        Sentiment(display_name="Response sentiment"),
+        TextLength(display_name="Response length"),
+    ]),
+])
 ```
 
-In this case, you will generate the Classification Quality By Feature Metric, which will plot the model performance against virtual features like “whether the reviews contained the word blouse or shirt”). 
+**Descriptor parameters**. Some descriptor require parameter you define, such as to specify the exact regular expression or list of words you are testing for.
 
-**Note**: For dataset-level metrics, you currently cannot exclude Descriptors. All default Descriptors will be included. 
+To test for competitor mentions using `Contains` descriptor:
 
+```
+report = Report(metrics=[
+    TextEvals(column_name="response", descriptors=[
+        Contains(display_name="Competitor Mentions", 
+                items=["AcmeCorp", "YetAnotherCorp"]),
+    ]),
+])
+```
 
-## Display name parameter
+Some descriptors, like custom LLM judges, may require more complex parameterization, but they can be included in the Report just like others.
 
-You can also specify a custom display name for the Metrics. This is useful when you have a lengthy Regular Expression or list of Trigger Words when the default title of the metric can become very long.
+{% hint style="info" %} 
+**Reference**. See the all Descriptor parameters, check the [All Metrics](../reference/all-metrics.md) page.
+{% endhint %}
+
+{% hint style="info" %} 
+**LLM-as-a-judge**. Check the detailed instructions on how to set up [LLM as a jugde](../customization/llm_as_a_judge.md) page.
+{% endhint %}
+
+## Using other Metrics
+
+Under the hood, the `TextEvals` Preset generates a `ColumnSummaryMetric` for each calculated descriptor. You can get the same result by explicitly generating this Metric for the descriptor using the following API:
+
+```
+report = Report(metrics=[
+    ColumnSummaryMetric(TextLength().for_column("response")),
+    ColumnSummaryMetric(Sentiment().for_column("response")),
+])
+```
+
+On some occasions, you want to use a different Metric, such as `ColumnDriftMetric`. Here is how you can do this:
+
+```
+report = Report(metrics=[
+   ColumnDriftMetric(column_name = TextLength().for_column("response")),
+])
+```
+
+In this case, you must pass both `reference` and `current` datasets. Instead of simply returning the summary, the Metric will compare the distribution of the "reponse" Text Length in two datasets and return a drift score. 
+
+You can use other column-level Metrics this way: 
 
 ```python
-table_column_metrics_report = Report(metrics=[
-    ColumnSummaryMetric(column_name = RegExp(reg_exp=r'.*\?.*', display_name="Questions").for_column("Review_Text")),
-    ColumnDriftMetric(column_name = SentenceCount(display_name="SentenceCount").for_column("Review_Text")),
-    ColumnCorrelationsMetric(column_name = WordCount(display_name="WordCount").for_column("Review_Text")),
-    ColumnDistributionMetric(column_name = Sentiment(display_name="Sentiment").for_column("Review_Text")),
-    ColumnValueRangeMetric(column_name = TextLength(display_name="TextLength").for_column("Review_Text"), left=0, right=20)
+report = Report(metrics=[
+    ColumnSummaryMetric(TextLength().for_column("response")),
+    ColumnDriftMetric(TextLength().for_column("response")),
+    ColumnCorrelationsMetric(TextLength().for_column("response")),
+    ColumnDistributionMetric(TextLength().for_column("response")),
+    ColumnValueRangeMetric(TextLength().for_column("response"), left=0, right=20)
 ])
+```
 
-table_column_metrics_report.run(reference_data=reviews_ref, current_data=reviews_cur, column_mapping=column_mapping)
-table_column_metrics_report
+However, in most scenarios it's best to first generate the DataFrame with scores, and then run the evaluations over a new dataset by directly referencing the new added column.
+
+## Run Tests 
+
+More importantly, you can also run Tests with these Descriptors. This allows you to explicitly verify a specific condition and return a Pass or Fail result.
+
+**Example 1**. To Test that the average response sentiment is greater or equal (`gte`) to 0, and that maximum text length is less than or equal (`lte`) to 200 symbols:
+
+```python
+test_suite = TestSuite(tests=[
+    TestColumnValueMean(column_name = Sentiment().on("response"), gte=0),
+    TestColumnValueMax(column_name = TextLength().on("response"), lte=200),
+])
+```
+
+**Example 2**. To Test that the number responses that mention competitors is 0:
+
+```python
+test_suite = TestSuite(tests=[
+    TestCategoryCount(
+        column_name=Contains(
+            items=["AcmeCorp", "YetAnotherCorp"],
+            display_name="Competitor Mentions").
+        on("new_response"),
+        category=True,
+        eq=0),
+])
+```
+
+**Available Tests**. You can use any column-level Tests with Descriptors. Here are the ones that are particularly useful.
+
+For numerical Descriptors:
+
+```python
+test_suite = TestSuite(tests=[
+    TestValueRange(column_name = TextLength().on("response")), #test if response length is within min-max range
+    TestNumberOfOutRangeValues(column_name = TextLength().on("respone")), #test the number of responses with text length out of range
+    TestShareOfOutRangeValues(column_name = TextLength().on("Review_Text")), #test the share of responses with text length out of range
+    TestColumnValueMin(column_name = TextLength().on("Review_Text")), #test the minimum response length
+    TestColumnValueMax(column_name = TextLength().on("Review_Text")), #test the max response length
+    TestColumnValueMean(column_name = TextLength().on("Review_Text")), #test the mean response length
+    TestColumnValueMedian(column_name = TextLength().on("Review_Text")),  #test the median response length
+])
+```
+
+In these examples, the Test conditions are derived from reference. You can also pass custom conditions.
+
+{% hint style="info" %} 
+**Test conditions.** Refer to the [All tests](../reference/all-tests.md) table to see the default conditions for individual Tests, and [How to set test conditions](../tests-and-reports/run_tests.md) to learn how to specify conditions manually.
+{% endhint %}
+
+For categorical descriptors (like those that return "True" or "False" for pattern match, or binary classifiers with LLM-as-a-judge), use `TestCategoryCount` or `TestCategoryShare` tests. To test if the share of responses that contain travel-related words is less than or equal to 20%:
+
+```python
+test_suite = TestSuite(tests=[
+    TestCategoryShare(
+        column_name=IncludesWords(words_list=['booking', 'hotel', 'flight'], display_name="Travel Mentions").
+        on("new_response"),
+        category=True,
+        lte=0.2),
+])
 ```
