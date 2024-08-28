@@ -4,7 +4,7 @@ description: How to generate Reports using Evidently Python library.
 
 # Code examples
 
-To see code examples with generating Reports, check the [Examples section](../examples/examples.md).
+To see code examples with generating Reports, check the sample notebooks in [Examples](../examples/examples.md).
 
 # Imports
 
