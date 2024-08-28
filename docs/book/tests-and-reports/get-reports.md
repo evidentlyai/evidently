@@ -92,17 +92,15 @@ While Presets are a great starting point, you may want to customize the Report b
 
 ## 1. Choose metrics
 
-First, define which Metrics you want to include in your custom Report.
+First, define which Metrics you want to include in your custom Report. Metrics can be either dataset-level or column-level.
 
 {% hint style="info" %} 
-**Reference**: The complete list of Metrics is available in the [All metrics](../reference/all-metrics.md) table. To see interactive examples, check the [Example notebooks](../examples/examples.md).
+**List of available Metrics**: The complete list of Metrics is available in the [All metrics](../reference/all-metrics.md) table. To see interactive examples, check the [Example notebooks](../examples/examples.md).
 {% endhint %}
 
 {% hint style="info" %} 
 **Row-level evaluations**: If you want to generate scores on the row-level, which is often relevant for text data where you score individual texts, read more about [Text Descriptors](text-descriptors.md.md).
 {% endhint %}
-
-Metrics can be either dataset-level or column-level.
 
 **Dataset-level metrics**. Some Metrics evaluate the entire dataset. For example, a Metric that checks for data drift across the whole dataset or calculates accuracy.
 
