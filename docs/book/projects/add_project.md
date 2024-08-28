@@ -120,4 +120,4 @@ Each Project has the following parameters.
 
 Once you create or connect to a Project, you can:
 * [Send snapshots](../dashboard/snapshots.md) using the `add_report` or `add_test_suite` methods. 
-* Configure the monitoring Dashboard in the [user interface](../dashboard/add_dashboard_tabs.md) or via the [Python API](../monitoring/design_dashboard_api.md).
+* Configure the monitoring Dashboard in the [user interface](../dashboard/add_dashboard_tabs.md) or via the [Python API](../dashboard/design_dashboard_api.md).
