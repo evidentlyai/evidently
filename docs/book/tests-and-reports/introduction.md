@@ -1,190 +1,202 @@
-This is an explanatory page to describe the key features and concepts at Evidently. 
+---
+description: Introduction to Reports and Test Suites.
+---   
 
-# TL;DR
+You can use the Evidently Python library as a standalone open-source tool or as part of the Evidently Platform to track and store evaluation results over time.
 
-Evidently helps evaluate, test and monitor ML models in production. 
+This section of the documentation explains the core evaluation API of the Evidently library. This page, specifically, gives a conceptual overview of the components. For detailed API guides, check the links below:
 
-* A **Metric** is a core component of Evidently. You can combine multiple **Metrics** in a **Report**. Reports are best for visual analysis and debugging of your models and data.
+**Reports**. Run evaluations for your dataset:
 
-* A **Test** is a metric with a condition. Each test returns a pass or fail result. You can combine multiple **Tests** in a **Test Suite**. Test Suites are best for automated model checks as part of an ML pipeline.
-
-For both Tests and Metrics, Evidently has **Presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
-
-* A **Snapshot** is a JSON version of the **Report** or a **Test Suite** which contains measurements and test results for a specific period. You can log them over time and run an Evidently Monitoring Dashboard for continuous monitoring.
-
-# Metrics and Reports
-
-## What is a Metric?
-
-A **Metric** is a component that evaluates a specific aspect of the data or model quality. 
-
-A **Metric** can be, literally, a single metric (for example, `DatasetMissingValuesMetric()` returns the share of missing features). It can also be a combination of metrics (for example, `DatasetSummaryMetric()` calculates various descriptive statistics for the dataset). Metrics exist on the dataset level and on the column level. 
-
-Each **Metric** has a visual render. Some visualizations simply return the values:  
-
-![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
-
-Others have rich visualizations. Here is an example of a dataset-level Metric that evaluates the error of a regression model:
-
-![RegressionErrorDistribution](../.gitbook/assets/reports/metric_example_error_distribution-min.png)
-
-Here is an example of a column-level Metric that evaluates the value range of certain feature: 
-
-![ColumnValueRangeMetric](../.gitbook/assets/reports/metric_example_value_range-min.png)
-
-Evidently contains 35+ **Metrics** (with 100+ different measurements) related to data quality, integrity, drift and model performance. You can also implement a custom one.
-
-## What is a Report?
-
-A **Report** is a combination of different Metrics that evaluate data or ML model quality. 
-
-Уou can display an interactive report inside a Jupyter notebook or export it as an HTML file:
-
-![Data Drift report example](../.gitbook/assets/reports/report_example_data_drift-min.png)
-
-The Report output is also available as JSON or Python dictionary. This "text" version returns any new calculated values and, optionally, some other useful information such as histogram bins. You can also define what to include. Example: 
-
-```python
-{'timestamp': '2022-10-26 17:46:47.214403',
- 'metrics': {'DatasetDriftMetric': {'threshold': 0.5,
-   'number_of_columns': 15,
-   'number_of_drifted_columns': 5,
-   'share_of_drifted_columns': 0.3333333333333333,
-   'dataset_drift': False},
-  'DataDriftTable': {'number_of_columns': 15,
-   'number_of_drifted_columns': 5,
-   'share_of_drifted_columns': 0.3333333333333333,
-   'dataset_drift': False,
-   'drift_by_columns': {'age': {'column_name': 'age',
-     'column_type': 'num',
-     'stattest_name': 'Wasserstein distance (normed)',
-     'drift_score': 0.18534692319042428,
-     'drift_detected': True,
-     'threshold': 0.1}}}}}
-```
-
-You can also export the Report output as an Evidently `snapshot`. This is a more complete JSON that allows recreating the original HTML Report. Use this option if you want to enable logging and continuous monitoring of the model or data performance.
-
-You can read more about Monitoring here:
-
-{% content-ref url="../monitoring/monitoring_overview.md" %}
-[Monitoring Overview](monitoring_overview.md)
+{% content-ref url="get-reports.md" %}
+[Get Reports](get-reports.md)
 {% endcontent-ref %}
 
-You can calculate most Reports for a single dataset. If you pass two datasets, they will show a side-by-side comparison.
+**Test Suites**. Run Tests that check defined conditions and return pass/fail results:  
 
-You can generate a Report by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
+{% content-ref url="run-tests.md" %}
+[Run Tests](run-tests.md)
+{% endcontent-ref %}
 
-## What is a Metric Preset?
+**Descriptors**. Run row-level evaluations for text data:
 
-A **Metric Preset** is a pre-built Report that combines Metrics for a particular use case.
+{% content-ref url="text-descriptors.md" %}
+[Text Descriptors](text-descriptors.md)
+{% endcontent-ref %}
 
-You can think of it as a template. For example, there is a Preset to check for Data Drift (`DataDriftPreset`), Data Quality (`DataQualityPreset`), or Regression Performance (`RegressionPreset`). 
+{% hint style="info" %} 
+**Looking for something else?** Explore the platform evaluation workflow or section on live monitoring.
+{% endhint %}
 
-![ColumnValueRangeMetric](../.gitbook/assets/reports/evidently_reports_min.png)
+# Report
 
-You can explore all Metrics and Presets here:
+A Report computes various Metrics to assess data, ML, or LLM quality. You specify the Metrics you want to include, run the Report on your dataset, and get a summary of the results. 
+
+Metrics can help answer various questions, such as:
+* **Gen AI**: Are the texts concise, professional, and true to the source context?
+* **Classification**: How many predictions are correct? What is the recall/precision?
+* **Data Quality**: Are there missing values or duplicates in the dataset?
+* **Recommender Systems**: Are recommendations diverse?
+* **Regression**: Are you over- or under-predicting?
+* **Data Drift**: Is the data your AI system receives different from before?
+  
+You can start with **Metric Presets** which are pre-built combinations of Metrics, designed to evaluate specific aspects of a model, dataset, or AI system's performance.
+
+![](../.gitbook/assets/main/reports-min.png)
+
+You can think of Preset as Report templates that help you get started quickly. For example, there are presets for checking Data Drift, assessing Data Quality, or evaluating Regression Performance.
+
+Here is an example of a Data Drift Report that checks for shifts in data distribution:
+
+![](../.gitbook/assets/reports/overview_drift_report-min.png)
+
+You can also create a custom Report by listing Metrics you’d like to include one by one. Evidently comes with built-in checks, so you can start quickly without building from scratch. You can also add custom evaluations.
+
+See all available Metrics and Presets:
 
 {% content-ref url="../reference/all-metrics.md" %}
 [All metrics](all-metrics.md)
 {% endcontent-ref %}
 
-## When to use Reports
+An Evidently Metric isn't just a single value. It's best to think of it as an “evaluation unit” that includes both the computation results (which can include multiple values) and its visual representation.
 
-You can use Reports at different stages of the ML lifecycle: from exploratory data analysis and model validation to production monitoring and debugging.  
+For example, when you run a `ColumnSummaryMetric`, you'll receive a range of descriptive statistics for the column and a distribution histogram. For monitoring, you can later pull any of these individual values (min, max, mean, etc.) in time.
 
-**Debugging and exploration**. Reports are best for visual analysis of the data or model performance. For example, during model quality evaluation on the training set, when debugging the model quality decay, or comparing two models. 
+![](../.gitbook/assets/reports/overview_num_metric_summary_example-min.png)
 
-**Metric logging**. You can also add a model or data evaluation step in the ML pipeline, get outputs as a JSON or an Evidently `snapshot` and log it to later visualize and track model and data performance over time. 
+This Metric contents will vary based on the column type. For a categorical variable, you will receive a different set of statistics:
 
-**Reporting and documentation**. You can also use Evidently reports to share results with the team and stakeholders or log them as documentation. For example, you can record the model performance results after training.
+![](../.gitbook/assets/reports/overview_cat_metric_summary_example.png)
 
-# Tests and Test Suites
+You can also pass two datasets to the Metric to get a side-by-side comparison.
 
-## What is a Test?
+![](../.gitbook/assets/reports/overview_cat_metric_compare_example.png)
 
-Tests help perform structured data and ML model performance checks. They explicitly verify expectations about your data and model.
+In addition to column-level Metrics like `ColumnSummaryMetric`, you can compute many checks on the Dataset level. For example, `ClassificationQualityByClass` will summarize the metrics like F-score, precision and recall by class. 
 
-A **Test** is a Metric with a condition. It calculates a value and compares it against the defined threshold. 
+![](../.gitbook/assets/reports/overview_class_metric_example-min.png)
 
-If the condition is satisfied, the test returns a **success**. 
+The `DatasetCorrelationsMetric` will summarize the correlations between all columns in the dataset and show a heatmap.
 
-If you choose to get a visual output with the test results, you will see the current value of the metric and the test condition. On expand, you will get a supporting visualization. 
+![](../.gitbook/assets/reports/overview_correlation_metric_example-min.png)
 
-Here is an example of a column-level Test that evaluates the mean value stability:
+You can get Report results in various formats:
+* **Interactive visualizations**. Each Metric has a visual representation like shown above. You can view plots directly in environments like Jupyter Notebook or Colab, or save as an HTML file. 
+* **Raw scores**. You can export as a JSON, Python dictionary, or Pandas dataframe. This includes the calculated values and optional details like histogram bins.
+* **Evidently Snapshot**. If you send the evaluation results to Evidently Cloud, it will be saved as a JSON `snapshot`. This format allows you to recreate the original visual Report. 
 
-![Mean value stability test](../.gitbook/assets/tests/test_example_success_data-min.png)
+When to use Reports:  
+* **Visual analysis, experiments and debugging**. Use Reports as a standalone tool for ad hoc evaluations, data exploration, debugging, and comparing models or prompts.
+* **Metric computation layer for monitoring**. Integrate Reports into your pipeline to log and track model and data performance over time by computing consecutive Reports for different data batches or samples.
+* **AI quality reporting**. Add text comments and create Model Cards or document data and AI quality to share with the team and stakeholders. 
 
-Here is an example of a dataset-level Test that evaluates model error:
+How to generate Reports:
 
-![Root mean square error test](../.gitbook/assets/tests/test_example_success_model-min.png)
+{% content-ref url="get-reports.md" %}
+[Get Reports](get-reports.md)
+{% endcontent-ref %}
 
-If the condition is not satisfied, the Test returns a **fail**:
+# Test Suite
 
-![Data drift per feature test](../.gitbook/assets/tests/test_example_fail-min.png)
+A Test Suite is a collection of Tests designed to verify whether specific conditions are met within a given dataset.
 
-If the Test execution fails, it will return an error. 
+Think of a Test Suite as a more structured way to use Metrics you’d find in a Report, but with added rules. Each Test pairs a Metric with a specific condition. It calculates a value, checks it against your rule, and then tells you if it passed or failed. 
 
-Evidently contains 70+ individual Tests that cover different aspects of model and data quality. 
+For example, you might set up a Test to check that:
+* **Gen AI**: The share of responses labeled “incorrect” by the LLM judge is under 5%.
+* **Classification**: Precision and recall are within +/-10% from the reference quality. 
+* **Data Quality**: The share of missing values in the dataset is under 1%.
+* **Recommender Systems**: The hit rate is over 20%.
+* **Regression**: The model quality is better than the quality of the dummy model.
+* **Data Drift**: The share of drifting features in the dataset is less than 30%.
 
-You can set test conditions on your own or pass the reference dataset to auto-generate test conditions. You can also run most of the Tests using defaults even if you do not pass a reference dataset: the tests will use heuristics and dummy models.
+Here is an example of a Test Suites focused on classification. The same interface works for all types of checks.
 
-## What is a Test Suite?
+![](../.gitbook/assets/tests/overview_test_suite_example-min.png)
 
-In most cases, you’d want to run more than one check. 
+There are also **Test Presets** — pre-built Test Suites designed for specific use cases. They act as templates to help you get started quickly by automatically generating multiple Tests, and deriving Test conditions from the provided reference dataset or heuristics.
 
-You can list multiple Tests and execute them together in a **Test Suite**. You will see a summary of the results:
+For example, the `DataQualityTestPreset` automatically checks for issues like missing values or duplicates, while the `RegressionTestPreset` focuses on evaluating regression model performance.
 
-![Custom test suite example](../.gitbook/assets/tests/test_suite_example-min.png)
+For each Test in a suite, you'll receive one of the following outcomes:
+* **Pass**: the condition was met.
+* **Fail**: the condition wasn’t met.
+* **Warning**: the condition wasn’t met, but the check was labeled as non-critical.
+* **Error**: something went wrong with the Test itself, such as a failure in execution.
+  
+If your Test Suite includes many Tests, you can easily navigate the output by status or specific columns. Clicking an individual Test provides a supporting visual to help debug the outcome.
 
-If you include a lot of Tests, you can navigate the output by groups: 
+![](../.gitbook/assets/tests/overview_test_example-min.png)
 
-![No target performance test suite example](../.gitbook/assets/tests/test_suite_navigation-min.png)
+You can also create a custom Test Suite by combining individual Tests. Just like with Metrics, you can run Tests:
+* on specific columns, such as checking if the mean value of a column stays within a stable range (`TestColumnValueMean`) 
+* on the dataset as a whole, like checking how many rows are completely empty (`TestNumberOfEmptyRows`).
 
-Test output is available as an interactive HTML report, JSON, Python dictionary, or evidently `snapshots` for logging and monitoring.
-
-You can create your Test Suite from individual Tests or use one of the existing **Presets**. 
-
-## What is a Test Preset?
-
-A **Test Preset** is a pre-built Test Suite that combines checks for a particular use case. 
-
-You can think of it as a template to start with. For example, there is a Preset to check for Data Quality (`DataQualityTestPreset`), Data Stability (`DataStabilityTestPreset`), or Regression model performance (`RegressionTestPreset`).
-
-![Regression performance test suite example](../.gitbook/assets/tests/test_preset_example-min.png)
-
-You can explore all Tests and Presets here:
+See all available Tests:
 
 {% content-ref url="../reference/all-tests.md" %}
 [All tests](all-tests.md)
 {% endcontent-ref %}
 
-## When to use Test Suites
+When you create a Test Suite on your own, you can set custom conditions for each Test, or let Evidently assist by using a reference dataset or heuristics to auto-generate test conditions. 
 
-For **test-based monitoring** of production ML models: tests are best suited for integration in ML prediction pipelines. You can easily integrate Evidently Tests with workflow management tools like Airflow.
+Similar to Reports, you can view Test results in Python environments like Jupyter notebook and export the results: as HTML, JSON, a Python dictionary, a Pandas DataFrame, or save a JSON snapshot to view on the Evidently platform.
 
-You can use them to perform batch checks for your data or models. 
+When to use Tests:
 
-For example, you can run the tests when you:
-* get a new batch of the input data 
-* generate a new set of predictions
-* receive a new batch of the labeled data
-* want to check on your model on a schedule
+* **Automated checks in pipelines**. Tests are ideal for integrating into data and ML pipelines. You can perform data validation or evaluation with Test Suites directly as a pipeline step, such as after you pull fresh data. You can add conditional actions — like triggering an alert or halting the pipeline if a Test fails. Evidently Tests easily integrate with orchestrator tools like Airflow.
+* **For continuous testing for production systems**. You can run Tests on your production data to ensure ongoing quality. Structuring your evaluations as Tests can help reduce alert fatigue and simplify configuration when evaluating multiple conditions at once. For example, you can quickly verify that all columns in the input data are within a defined min-max range.
+* **Any batch testing scenarios**. Tests are great for any automated scenario where you need to evaluate batches of data. For example, you can use them in CI/CD pipelines to assess model quality after retraining or to perform regression testing on a golden dataset after updating a prompt.
 
-![Model lifecycle](../.gitbook/assets/tests/test_suite_lifecycle-min.png)
+How to run Test Suites:
 
-You can then build a conditional workflow based on the result of the tests: for example, generate a visual report for debugging, trigger model retraining, or send an alert. You can also visualize the test results over time in the Evidently Monitoring UI.
-
-![](../.gitbook/assets/main/evidently_ml_monitoring_main.png)
-
-**During model development**: you can also use tests during model development and validation. For example, you can run tests to evaluate the data quality of the new feature set or to compare test performance to training.
+{% content-ref url="run-tests.md" %}
+[Run Tests](run-tests.md)
+{% endcontent-ref %}
 
 # Test Suites or Reports?
 
-**Reports** and **Test Suites** are complementary interfaces. 
+**Reports** and **Test Suites** are complementary. You can choose one option or use both.
 
-**Reports** are best for debugging, exploratory and ad hoc analytics. They focus on interactive visualizations and do not require setting any expectations upfront. You can use them, for example, when you just put a model in production and want to closely monitor the performance. It is best to use Reports on smaller datasets or sample your data first.  
+**Reports** are best for debugging, exploratory, and ad hoc analytics. They focus on interactive visualizations and don’t require setting conditions upfront. Use them to run evaluations during experiments and compare datasets, models, or prompts.
 
-**Test Suites** are best for automation. Use them when you can set up expectations upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and models, and you can run them at scale, only reacting to the failure alerts. You can use Test Suites on larger datasets since they do not include heavy visuals.
+**Test Suites** are best for automation, like CI/CD checks. Use them when you can set up conditions upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and systems, and you can run them at scale, only reacting to failure alerts.
 
-You can also use both Reports and Test Suites. For example, run tests for automated model checks and if tests fail, use Reports for visual debugging. 
+You can also use both Reports and Test Suites together. For example, run Tests for automated checks and if they fail, use Reports for visual debugging.
+
+# Descriptors 
+
+When evaluating text data, you'll need **Descriptors**. A Descriptor is a row-level score that assesses a specific quality or dimension of the text.
+
+Say, you want to analyze the length, sentiment, or semantic similarity of your LLM-generated answers compared to the reference. Descriptors let you evaluate each text individually:
+
+![](../.gitbook/assets/reports/descriptors_export.png)
+
+This differs from many ML or data quality metrics that provide a single value for a column or entire dataset (like accuracy). Descriptors give scores at the per-row level, which is useful for debugging—such as finding the shortest responses.
+
+Evidently computes these extra values for each row and adds them to your evaluated dataset. Descriptors can be:
+* **Numerical**. Stats like text length or sentiment score.
+* **Categorical**. Labels like “correct” or “incorrect,” or “true” and “false” for pattern matches or specific conditions.
+* **Strings of text**. For example, reasoning generated by an LLM to explain a score.
+  
+You can create Descriptors that use two columns at once, such as measuring the semantic similarity of one text column to another. 
+
+Once you’ve chosen the Descriptors, you can include them in a Report or Test Suite using column-level Metrics or Tests. This works similarly to other Evidently checks. 
+
+Under the hood, instead of computing a Metric or Test directly for an existing numerical or categorical column, Evidently computes a Metric or Test for a Descriptor that’s generated simultaneously for a text column in your dataset.
+
+For instance, you can compute a ColumnSummaryMetric for Text Length descriptor of your text column that contains "Generated summary”. This will give you all an overview of the length distribution across all texts:
+
+![](../.gitbook/assets/reports/overview_descriptor_metric_example.png)
+
+You can alternatively run a Test that explicitly checks if all text lengths are within a specific defined range:
+
+![](../.gitbook/assets/tests/overview_descriptor_test_example-min.png)
+
+You can access these scores by exporting a Pandas DataFrame or via the Evidently Platform. 
+
+How to generate Descriptors:
+
+{% content-ref url="text-descriptors.md" %}
+[Text Descriptors](text-descriptors.md)
+{% endcontent-ref %}
