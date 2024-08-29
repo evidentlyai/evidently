@@ -35,16 +35,13 @@ Evidently supports all these workflows. [Monitoring](../monitoring/monitoring_ov
 
 # Evaluation workflow
 
-Here is how it works:
-* **Create a [Project](../projects/projects_overview.md)**. This will organize all your evaluations in one place.
-* **Prepare your Dataset**. You can prep your [input data](../input-data/data-requirements.md) locally or [upload it](../datasets/datasets_overview.md) to the Evidently Platform and call it from there.
-* **Run evaluations**. You perform evaluations by generating [Reports or Test Suites](../tests-and-reports/introduction.md) using one of these methods:
+You perform evaluations by generating [Reports or Test Suites](../tests-and-reports/introduction.md) using one of these methods:
   * Local evaluations using the Python library
   * No-code evaluations directly in the UI
 
 ## Evals in Python 
 
-This is perfect for development, CI/CD workflows, or custom evaluation pipelines. Once you run an eval in Python, you upload the results to the Evidently Platform.
+This is perfect for development, CI/CD workflows, or custom evaluation pipelines. Once you run an eval in Python on your dataset, you upload the results to the Evidently Platform.
 
 ![](../.gitbook/assets/cloud/evals_flow_python.png)
 
