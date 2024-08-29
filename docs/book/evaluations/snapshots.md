@@ -29,7 +29,7 @@ project = ws.get_project("PROJECT_ID")
 
 You can prep your input data locally as a Pandas DataFrame or first upload it to the Evidently Platform and call it from there.
 
-* {% hint style="info" %}
+{% hint style="info" %}
 **How to work with datasets**. Check instructions on how to prepare your [input data](../input-data/data-requirements.md) or upload and manage [Datasets](../datasets/datasets_overview.md) on the Platform.
 {% endhint %}
 
@@ -39,7 +39,7 @@ You can prep your input data locally as a Pandas DataFrame or first upload it to
 * Pass the chosen `metrics` or `tests`.
 * Optionally, pass custom parameters for Metric calculations and/or Test conditions.
 
-* {% hint style="info" %}
+{% hint style="info" %}
 **How to run Reports and Tests**. Check detailed guides on how to get [Reports](../tests-and-reports/get-reports.md), run [Test Suites](../tests-and-reports/run-tests.md) or generate [Text Descriptors](../tests-and-reports/text-descriptors.md) for text data evaluation.
 {% endhint %}
 
