@@ -43,7 +43,7 @@ else:
         _required_version: int
 
         def __instancecheck__(self, instance):
-            return isinstance(instance, uuid.UUID) and instance.version == self._required_version
+            return isinstance(instance, uuid.UUID)  # and instance.version == self._required_version
 
     class UUID7(uuid6.UUID, metaclass=UUIDMeta):
         _required_version = 7
@@ -56,18 +56,23 @@ else:
 T = TypeVar("T")
 
 
-def pydantic_type_validator(type_: Type[Any]):
+def pydantic_type_validator(type_: Type[Any], prioritize: bool = False):
     def decorator(f):
         from evidently._pydantic_compat import _VALIDATORS
 
         for cls, validators in _VALIDATORS:
             if cls is type_:
-                validators.append(f)
+                if prioritize:
+                    validators.insert(0, f)
+                else:
+                    validators.append(f)
                 return
-
-        _VALIDATORS.append(
-            (type_, [f]),
-        )
+        if prioritize:
+            _VALIDATORS.insert(0, (type_, [f]))
+        else:
+            _VALIDATORS.append(
+                (type_, [f]),
+            )
 
     return decorator
 
@@ -517,6 +522,13 @@ class FieldPath:
 @pydantic_type_validator(FieldPath)
 def series_validator(value):
     return value.get_path()
+
+
+@pydantic_type_validator(UUID7, prioritize=True)
+def uuid7_validator(value):
+    if isinstance(value, uuid.UUID):
+        return value
+    return uuid6.UUID(value)
 
 
 def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
