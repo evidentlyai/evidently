@@ -165,8 +165,8 @@ The `TextEvals` Preset works by generating a `ColumnSummaryMetric` for each Desc
 
 ```python
 report = Report(metrics=[
-    ColumnSummaryMetric(TextLength().for_column("response")),
-    ColumnSummaryMetric(Sentiment().for_column("response")),
+    ColumnSummaryMetric(TextLength().on("response")),
+    ColumnSummaryMetric(Sentiment().on("response")),
 ])
 ```
 
@@ -182,7 +182,7 @@ report = Report(metrics=[
 
 ```python
 report = Report(metrics=[
-   ColumnDriftMetric(column_name = TextLength().for_column("response")),
+   ColumnDriftMetric(column_name = TextLength().on("response")),
 ])
 ```
 
@@ -192,11 +192,11 @@ You can use other column-level Metrics this way:
 
 ```python
 report = Report(metrics=[
-    ColumnSummaryMetric(TextLength().for_column("response")),
-    ColumnDriftMetric(TextLength().for_column("response")),
-    ColumnCorrelationsMetric(TextLength().for_column("response")),
-    ColumnDistributionMetric(TextLength().for_column("response")),
-    ColumnValueRangeMetric(TextLength().for_column("response"), left=0, right=20)
+    ColumnSummaryMetric(TextLength().on("response")),
+    ColumnDriftMetric(TextLength().on("response")),
+    ColumnCorrelationsMetric(TextLength().on("response")),
+    ColumnDistributionMetric(TextLength().on("response")),
+    ColumnValueRangeMetric(TextLength().on("response"), left=0, right=20)
 ])
 ```
 
