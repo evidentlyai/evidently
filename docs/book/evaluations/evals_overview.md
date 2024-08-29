@@ -46,7 +46,7 @@ Here is how it works:
 
 This is perfect for development, CI/CD workflows, or custom evaluation pipelines. Once you run an eval in Python, you upload the results to the Evidently Platform.
 
-ADD IMG
+![](../.gitbook/assets/cloud/evals_flow_python.png)
 
 You get to choose what you upload:
 * **Results only (Default)**. You can upload just the evaluation outcomes as JSON snapshots. They include column summaries, metric distributions, and test results. For tabular data, this typically provides the necessary insights while keeping data private.
@@ -70,7 +70,7 @@ Here's what you can do:
 * **Evaluate uploaded datasets**. Run evaluations on collected [traces](../tracing/tracing_overview.md) (if you've instrumented your LLM application) or on [Datasets](../datasets/datasets_overview.md) you previously uploaded.
 * **Upload CSV data**. Use a drag-and-drop interface to upload CSV files and run evaluations entirely on the Platform. 
 
-ADD IMG
+![](../.gitbook/assets/cloud/evals_flow_nocode.png)
 
 Once you run the evaluation using a no-code flow, you create the same Report or Test Suite that you would generate using Python.
 
@@ -88,7 +88,7 @@ The result of each evaluation is either a Report (when it's just a summary of me
 
 **Browse the results**. To access them, enter your Project and navigate to the "Reports" or "Test Suites" section in the left menu. Here, you can view all your evaluation artifacts and browse them by tags, time, or metadata. You can also download them as HTML or JSON.
 
-ADD IMG
+![](../.gitbook/assets/cloud/browse_reports-min.png)
 
 To see and compare the results of individual evaluations, click on "Explore" next to the individual Report or Test Suite. 
 
@@ -98,7 +98,7 @@ To see and compare the results of individual evaluations, click on "Explore" nex
 * To see results from a specific evaluation within the Report, use the dropdown menu to select the Metric.
 * To compare Reports side by side, click on "duplicate snapshot" (this will keep the current Metric in view), and then select a different Report for comparison.
 
-ADD IMG
+![](../.gitbook/assets/cloud/explore_view-min.png)
 
 **Dashboard**. As you run multiple evaluations, you can build a Dashboard to visualize results over time. The Dashboard aggregates data from various Reports or Test Suites within a Project, allowing you to track progress, see performance improvements, and monitor how tests perform over time.
 
