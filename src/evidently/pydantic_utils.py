@@ -202,7 +202,7 @@ class PolymorphicModel(BaseModel):
             base_typefield.type_ = base_typefield.outer_type_ = Union[subclass_literals]
 
     @classmethod
-    def __subtypes__(cls: Type[TPM]) -> Tuple[Type["TPM"]]:
+    def __subtypes__(cls: Type[TPM]) -> Tuple[Type["TPM"], ...]:
         return tuple(all_subclasses(cls))
 
     @classmethod
