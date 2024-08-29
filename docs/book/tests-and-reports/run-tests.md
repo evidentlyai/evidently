@@ -1,5 +1,5 @@
 ---
-description: How to run Tests and create Test Suites using Evidently Python library.
+description: How to run Test Suites using Evidently Python library.
 ---
 
 # Code examples
