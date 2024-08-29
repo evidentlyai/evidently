@@ -23,7 +23,7 @@ Here’s a general overview of how batch monitoring works:
 
 **1. Create a monitoring [Project](../projects/add_project.md)**. This will organize all your data and evaluation results in one place.
 
-**2. Configure evaluations**. Decide which [Reports and Test Suites](../tests-and-reports/overview.md) you want to run at regular intervals. These could focus on data quality, data drift, model performance, or LLM output quality.
+**2. Configure evaluations**. Decide which [Reports and Test Suites](../tests-and-reports/introduction.md) you want to run at regular intervals. These could focus on data quality, data drift, model performance, or LLM output quality.
  
 **3. Design monitoring jobs**. Set up jobs to run evaluations at specific points in your prediction pipeline or by querying your prediction database. These jobs will generate JSON snapshots (special versions of Evidently Reports or Test Suites) to upload to the platform.
 
