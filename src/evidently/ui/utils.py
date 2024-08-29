@@ -77,7 +77,7 @@ def _dec_uuid7(
     if not isinstance(value, uuid_type):
         raise ValidationError(f"Invalid UUID: {value!r}")
 
-    if uuid_type._required_version != value.version:
+    if uuid_type._required_version != value.version:  # type: ignore[attr-defined]
         raise ValidationError(f"Invalid UUID version: {value!r}")
 
     return value
