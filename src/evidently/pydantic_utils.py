@@ -202,8 +202,15 @@ class PolymorphicModel(BaseModel):
             base_typefield.type_ = base_typefield.outer_type_ = Union[subclass_literals]
 
     @classmethod
-    def __subtypes__(cls):
-        return Union[tuple(all_subclasses(cls))]
+    def __subtypes__(cls: Type[TPM]) -> Tuple[Type["TPM"], ...]:
+        return tuple(all_subclasses(cls))
+
+    @classmethod
+    def __is_base_type__(cls) -> bool:
+        config = cls.__dict__.get("Config")
+        if config is not None and config.__dict__.get("is_base_type") is not None:
+            return config.is_base_type
+        return False
 
     @classmethod
     def validate(cls: Type[TPM], value: Any) -> TPM:
