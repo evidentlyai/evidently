@@ -5,7 +5,7 @@ description: How to run evaluation workflows in Evidently Platform.
 This documentation section covers how to run evals, whether you're using code or a no-code interface. It also shows you how to explore, compare, and track evaluation results in the Evidently Platform UI.
 
 {% hint style="info" %} 
-**Looking for something else?**  For details on the Python evaluation workflow, check the [Reports and Test Suites](../tests-and-reports/introduction.md). For online evaluations, check [Monitoring](../monitoring/monitoring_overview.md).
+**Looking for something else?**  For details on the Python evaluation workflow, check the [Reports and Test Suites](../tests-and-reports/introduction.md). For online evaluations, check [Monitoring](../monitoring/monitoring_overview.md). To check **what** you can evaluate, browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md).
 {% endhint %}
 
 # When you need evals
