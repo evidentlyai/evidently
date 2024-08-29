@@ -25,7 +25,7 @@ This section of the documentation explains the core evaluation API of the Eviden
 {% endcontent-ref %}
 
 {% hint style="info" %} 
-**Looking for something else?** Explore the platform evaluation workflow or section on live monitoring.
+**Looking for something else?** To check **what** you can evaluate, browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md). To understand workflows on Evidently Platform, check the [evaluation workflow](../evaluations/evals_overview.md) or section on [live monitoring](../monitoring/monitoring_overview.md).
 {% endhint %}
 
 # Report
