@@ -22,9 +22,9 @@ def test_mar_values():
 
     results = metric.get_result()
     assert len(results.current) == 3
+    assert results.current[0] == 0.5
     assert results.current[1] == 0.5
-    assert results.current[2] == 0.5
-    assert results.current[3] == 1
+    assert results.current[2] == 1
 
 
 def test_mar_scores():
@@ -43,6 +43,6 @@ def test_mar_scores():
 
     results = metric.get_result()
     assert len(results.current) == 3
+    assert results.current[0] == 0.5
     assert results.current[1] == 0.5
-    assert results.current[2] == 0.5
-    assert results.current[3] == 1
+    assert results.current[2] == 1

@@ -1,0 +1,2 @@
+class EvidentlyError(Exception):
+    pass

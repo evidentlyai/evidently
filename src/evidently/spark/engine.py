@@ -21,6 +21,7 @@ from evidently.calculation_engine.metric_implementation import MetricImplementat
 from evidently.core import ColumnType
 from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
+from evidently.options.base import Options
 from evidently.spark.base import SparkDataFrame
 from evidently.spark.base import SparkSeries
 from evidently.spark.base import create_data_definition_spark
@@ -125,7 +126,7 @@ class SparkEngine(Engine["SparkMetricImplementation", SparkInputData, SparkDataF
         return create_data_definition_spark(current_data, reference_data, column_mapping)
 
     def calculate_additional_features(
-        self, data: TInputData, features: List[GeneratedFeatures]
+        self, data: TInputData, features: List[GeneratedFeatures], options: Options
     ) -> Dict[GeneratedFeatures, FeatureResult[TEngineDataType]]:
         if len(features) > 0:
             raise NotImplementedError("SparkEngine does not support generated features yet")

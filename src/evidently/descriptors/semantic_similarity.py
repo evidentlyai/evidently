@@ -12,7 +12,7 @@ class SemanticSimilarity(MultiColumnFeatureDescriptor):
         return SemanticSimilarityFeature(columns=columns, display_name=self.display_name)
 
 
-class SemanticSimilatiryDescriptor(FeatureDescriptor):
+class SemanticSimilarityDescriptor(FeatureDescriptor):
     with_column: str
 
     def feature(self, column_name: str) -> GeneratedFeatures:

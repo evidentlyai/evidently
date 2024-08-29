@@ -15,6 +15,7 @@ from evidently.features.llm_judge import LLMMessage
 from evidently.features.llm_judge import LLMResponseParseError
 from evidently.features.llm_judge import LLMWrapper
 from evidently.features.llm_judge import llm_provider
+from evidently.options.base import Options
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -85,7 +86,7 @@ def test_parse_response(
 
 @llm_provider("mock", None)
 class MockLLMWrapper(LLMWrapper):
-    def __init__(self, model: str):
+    def __init__(self, model: str, options: Options):
         self.model = model
 
     def complete(self, messages: List[LLMMessage]) -> str:
@@ -105,7 +106,7 @@ def test_llm_judge():
     data = pd.DataFrame({"text": ["A", "B"]})
 
     dd = DataDefinition(columns={}, reference_present=False)
-    fts = llm_judge.generate_features(data, dd)
+    fts = llm_judge.generate_features(data, dd, Options())
     pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
 
 
@@ -120,5 +121,5 @@ def test_multicol_llm_judge():
     data = pd.DataFrame({"text": ["A", "B"], "text2": ["C", "D"]})
 
     dd = DataDefinition(columns={}, reference_present=False)
-    fts = llm_judge.generate_features(data, dd)
+    fts = llm_judge.generate_features(data, dd, Options())
     pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
