@@ -18,6 +18,27 @@ Check the tutorials:
 [LLM evaluations and monitoring](../examples/tutorial-llm.md)
 {% endcontent-ref %}
 
+# How it works
+Here’s a general overview of how batch monitoring works:
+
+**Create a monitoring [Project](../projects/add_project.md)**. This will organize all your data and evaluation results in one place.
+
+**Configure evaluations**. Decide which [Reports and Test Suites](../tests-and-reports/overview.md) you want to run at regular intervals. These could focus on data quality, data drift, model performance, or LLM output quality.
+ 
+**Design monitoring jobs**. Set up jobs to run evaluations at specific points in your prediction pipeline or by querying your prediction database. These jobs will generate JSON snapshots (special versions of Evidently Reports or Test Suites) to upload to the platform.
+
+Essentially, you're setting up a routine process to run the same evaluation jobs you might run manually during experimentation but now automating them for regular monitoring.
+
+Learn how to generate snapshots:
+
+{% content-ref url="../evaluations/snapshots.md" %}
+[Generate snapshots](../evaluations/snapshots.md)
+{% endcontent-ref %}
+
+{% hint style="info" %}
+**Example**: in a daily scoring pipeline, you could add validation steps to check input data quality and prediction drift. Use the `DataStabilityTestPreset` and `DataDriftTestPreset`, or your selected combination of Metrics or Tests. Another job could compute model quality metrics once the true labels are available, using something like `BinaryClassificationTestPreset`. You can run these jobs via a Python script or manage them using workflow tools like Airflow.
+{% endhint %}
+
 ## Batch 
 
 You can run monitoring jobs using a Python script or a workflow manager tool like Airflow. 
