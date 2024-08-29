@@ -57,7 +57,7 @@ After you compute the Report or Test Suite, use the `add_report` or `add_test_su
 
 # Examples
 
-## Sending snapshots
+## Send snapshots
 
 **Compute and send a Report**. To create and send a Report with data summaries for a single dataset `batch1` to the workspace `ws`:
 
@@ -90,6 +90,16 @@ ws.add_snapshot(project.id, snapshot.load("data_drift_snapshot.json"))
 {% hint style="info" %}
 **Snapshot size**. A single upload to Evidently Cloud should not exceed 50MB for free users or 500MB for the Pro plan. This limitation applies to the size of the resulting JSON, not the dataset itself. For example, a data drift report for 50 columns and 10,000 rows of current and reference data results in a snapshot of approximately 1MB. (For 100 columns x 10,000 rows: ~ 3.5MB; for 100 columns x 100,000 rows: ~ 9MB). However, the size varies depending on the metrics or tests used.
 {% endhint %}
+
+## Add dataset 
+
+When you upload a Report or Test Suite, you can optionally include the Dataset. This will upload the raw dataset you evaluated, together with added Descriptors (if any). This is useful for raw-level debugging and analysis.
+
+Use the `include_data` parameters (defaults to False):
+
+```python
+ws.add_report(project.id, data_report, include_data=True)
+```
 
 ## Add timestamp
 
