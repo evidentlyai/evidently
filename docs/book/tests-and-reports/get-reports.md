@@ -99,6 +99,8 @@ drift_report = Report(metrics=[
 Refer to the [All metrics](../reference/all-metrics.md) table to see defaults and available parameters that you can pass for each Preset.
 {% endhint %}
 
+Evidently Reports include visualizations, such as plotting values over time, which are aggregated by default. This keeps Reports size manageable, even with millions of evaluated rows. If you prefer to see raw data plots (individual prediction points), you can enable this [option](../customization/report-data-aggregation.md). This will store raw data points inside the Report. However, you should only use this option for small datasets or samples since otherwise, the resulting Report can be too large, and plots will be unreadable. 
+
 # Get a custom Report
 
 While Presets are a great starting point, you may want to customize the Report by choosing Metrics or adjusting their parameters even more. To do this, create a custom Report using individual Metrics.
