@@ -72,6 +72,7 @@ Text Evals require a bit more setup. You must choose which column to evaluate an
 * **LLM-based**: use external LLMs to evaluate your text data.
 
 Select specific checks one by one:
+
 ![](../.gitbook/assets/cloud/nocode_choose_evals-min.png)
 
 Each evaluation result is called a **Descriptor**. No matter the method, you’ll get a label or score for every evaluated text. Some, like “Sentiment,” work instantly, while others may need setup.
