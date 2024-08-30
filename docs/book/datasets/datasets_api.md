@@ -54,4 +54,4 @@ Use `include_data` parameter (False by default):
 ws.add_report(project.id, data_report, include_data=True)
 ```
 
-This is optional. Check the docs on generating snapshots for details.
+This is optional. Check the docs on [generating snapshots](../evaluations/snapshots.md) for details.
