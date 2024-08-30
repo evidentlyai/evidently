@@ -34,7 +34,7 @@ Here are example requirements:
 | **Text Evals** | Required (Text) | Optional | Optional | Optional | Optional | Optional |
 | **Data Quality** | Required (Any) | Optional | Optional | Optional | Optional | Optional |
 | **Data Drift** | Required (Any) | Optional | Optional | Optional | Optional | Required |
-| **Target Drift** | Optional | Target and/or prediction required | Target and/or prediction required | Optional | Required |
+| **Target Drift** | Optional | Target and/or prediction required | Target and/or prediction required | Optional | Optional | Required |
 | **Classification** | Optional | Required | Required | Optional | Optional | Optional |
 | **Regression** | Optional | Required | Required | Optional | Optional | Optional |
 
