@@ -4,6 +4,10 @@ description: How to run evaluation workflows in Evidently Platform.
 
 This documentation section covers how to run evals, whether you're using code or a no-code interface. It also shows you how to explore, compare, and track evaluation results in the Evidently Platform UI.
 
+{% hint style="success" %}
+This applies to `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`. 
+{% endhint %}
+
 {% hint style="info" %} 
 **Looking for something else?**  For details on the Python evaluation workflow, check the [Reports and Test Suites](../tests-and-reports/introduction.md). For online evaluations, check [Monitoring](../monitoring/monitoring_overview.md). To check **what** you can evaluate, browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md).
 {% endhint %}
@@ -12,26 +16,14 @@ This documentation section covers how to run evals, whether you're using code or
 
 You need evals at different stages of your AI product development:
 
-**Ad-hoc analysis**. You may run evaluations on the fly whenever you need to troubleshoot an issue or understand a specific trend. Example questions to answer:
-* What are the predictions with the highest error?
-* How often do particular topics come up?
-* How does my system perform on adversarial inputs?
+| When You Need Evals                                       | Example Questions                                                                 |
+|-----------------------------------------------------------|-----------------------------------------------------------------------------------|
+| **Ad-hoc analysis**. You may run evaluations on the fly whenever you need to troubleshoot an issue or understand a specific trend. | <ul><li>What are the predictions with the highest error?</li><li>How often do particular topics come up?</li><li>How does my system perform on adversarial inputs?</li></ul> |
+| **Experimenting**. During development, you may test different parameters, models, or prompts. Evaluations help you compare outcomes and iterate with confidence. | <ul><li>Does the classification precision and recall improve with iterations?</li><li>Which prompt delivers more accurate answers?</li><li>Does switching from GPT to Claude enhance the quality of retrieval?</li></ul> |
+| **Regression Testing**. When you update a model or make a fix, you need to evaluate its quality on new or previous inputs, often as part of CI/CD pipelines. | <ul><li>Does changing the prompt lead to different answers to previous user queries?</li><li>What is the quality of my ML model after retraining it on new data?</li></ul> |
+| **Online evaluations and monitoring**. Once in production, you can automatically assess the live quality of your AI system using incoming data. | <ul><li>Is the environment (input features) changing? Are predictions shifting?</li><li>How professional and concise were the chatbot’s answers today?</li><li>Is version A or B performing better in production?</li></ul> |
 
-**Experimenting**. During development, you may test different parameters, models, or prompts. Evaluations help you compare outcomes and iterate with confidence. Example questions: 
-* Does the classification precision and recall improve with iterations? 
-* Which prompt delivers more accurate answers?
-* Does switching from GPT to Claude enhance the quality of retrieval?
-
-**Regression Testing**. When you update a model or make a fix, you need to evaluate its quality on new or previous inputs, often as part of CI/CD pipelines. Example questions:
-* Does changing the prompt lead to different answers to previous user queries?
-* What is the quality of my ML model after retraining in on new data?
-
-**Online evaluations and monitoring**. Once in production, you can automatically assess the live quality of your AI system using incoming data. Example questions:
-* Is the environment (input features) changing? Are predictions shifting?
-* How professional and concise were the chatbot’s answers today?
-* Is version A or B performing better in production?
-  
-Evidently supports all these workflows. [Monitoring](../monitoring/monitoring_overview.md) is covered separately. Let's start with standalone evaluations.
+Evidently supports all these workflows. 
 
 # Evaluation workflow
 
@@ -83,21 +75,23 @@ The rest of the workflow is the same. After you run your evals with any method, 
 
 The result of each evaluation is either a Report (when it's just a summary of metrics) or a Test Suite (when it also includes pass/fail results on set conditions).
 
-**Browse the results**. To access them, enter your Project and navigate to the "Reports" or "Test Suites" section in the left menu. Here, you can view all your evaluation artifacts and browse them by tags, time, or metadata. You can also download them as HTML or JSON.
+**Browse the results**. To access them, enter your Project and navigate to the "Reports" or "Test Suites" section in the left menu. Here, you can view all your evaluation artifacts and browse them by Tags, time, or metadata. You can also download them as HTML or JSON.
 
 ![](../.gitbook/assets/cloud/browse_reports-min.png)
 
-To see and compare the results of individual evaluations, click on "Explore" next to the individual Report or Test Suite. 
+To see and compare the evaluation results, click on "Explore" next to the individual Report or Test Suite. 
 
-**Explore view**. In the Explore view, you get the generated Report or Test Suite and, if available, the dataset linked to the evaluation.
+**Explore view**. You'll get the Report or Test Suite and, if available, the dataset linked to the evaluation.
 
-* To view the full Report, click on the "dataset" sign at the top to hide the dataset.
+* To view the Report only, click on the "dataset" sign at the top to hide the dataset.
 * To see results from a specific evaluation within the Report, use the dropdown menu to select the Metric.
 * To compare Reports side by side, click on "duplicate snapshot" (this will keep the current Metric in view), and then select a different Report for comparison.
 
 ![](../.gitbook/assets/cloud/explore_view-min.png)
 
-**Dashboard**. As you run multiple evaluations, you can build a Dashboard to visualize results over time. The Dashboard aggregates data from various Reports or Test Suites within a Project, allowing you to track progress, see performance improvements, and monitor how tests perform over time.
+**Dashboard**. As you run multiple evaluations, you can build a Dashboard to visualize results over time. 
+
+The Dashboard aggregates data from various Reports or Test Suites within a Project, allowing you to track progress, see performance improvements, and monitor how tests perform over time.
 
 ![](../.gitbook/assets/cloud/project_dashboard-min.png)
 
