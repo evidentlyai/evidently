@@ -2,7 +2,7 @@
 description: Introduction to Projects in Evidently Platform. 
 ---   
 
-This documentation section describes how to use the Project feature. This only applies if you use the Evidently web application. You can also run evaluations locally with the Evidently Python library without creating a Project.
+This section describes how to use Projects. This applies if you use the Evidently web application. You can also run evaluations locally with the Evidently Python library without creating a Project.
 
 {% hint style="success" %}
 Projects are available in `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`. 
