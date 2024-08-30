@@ -72,7 +72,7 @@
 * 📚 [Datasets](datasets/README.md)
   * [Datasets overview](datasets/datasets_overview.md)
   * [Work with Datasets](datasets/datasets_api.md)
-* ⚙️ [Customization](customization/README.md)
+* 🛠 [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Embeddings drift parameters](customization/embeddings-drift-parameters.md)
   * [Feature importance in data drift](customization/feature-importance.md)
