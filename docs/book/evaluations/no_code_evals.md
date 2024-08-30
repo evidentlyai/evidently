@@ -6,11 +6,11 @@ The platform supports several evaluations directly from the user interface.
 
 | Name                    | Type       | Description                                                                                                                              |
 |-------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Text Evals              | Report     | Analyze text data using methods from regular expressions to LLM judges.                                                     |
-| Data Quality            | Report     | Get descriptive statistics and distribution overviews for all columns in your dataset, including text, categorical, and numerical data.  |
-| Classification Quality  | Report     | Evaluate the quality of a classification model. (Your dataset must have predictions and true labels.)                                    |
-| Regression Quality      | Report     | Evaluate the quality of a regression model. (Your dataset must have predictions and actuals.)                                            |
-| Data Quality Tests      | Test Suite | Automatically check your dataset for issues like missing values, duplicates, etc.                                                        |
+| Text Evals              | Report     | Analyze texts using methods from regular expressions to LLM judges.                                                     |
+| Data Quality            | Report     | Get descriptive statistics and distribution overviews for all columns.  |
+| Classification Quality  | Report     | Evaluate the quality of a classification model.                                |
+| Regression Quality      | Report     | Evaluate the quality of a regression model.                                           |
+| Data Quality Tests      | Test Suite | Automatically check for issues like missing values, duplicates, etc.                                                        |
 
 Before you start, pick a dataset to evaluate. For example, this could be a CSV file containing inputs and outputs of your AI system, like chatbot logs.
 
@@ -77,9 +77,13 @@ Select specific checks one by one:
 
 Each evaluation result is called a **Descriptor**. No matter the method, you’ll get a label or score for every evaluated text. Some, like “Sentiment,” work instantly, while others may need setup.
 
-## Examples
+Here are few examples of Descriptors and how to configure them:
 
-**Include Words**. This Descriptor checks for listed words and returns "True" or "False." Set up these parameters:
+## Words presence
+
+**Include Words**. This Descriptor checks for listed words and returns "True" or "False." 
+
+Set up these parameters:
 * Add a list of words.
 * Choose whether to check for “any” or “all” of the words present.
 * Set the **lemmatize** parameter to check for inflected and variant words automatically.
@@ -88,9 +92,13 @@ Each evaluation result is called a **Descriptor**. No matter the method, you’l
 Example setup:
 ![](../.gitbook/assets/cloud/nocode_includes_words-min.png)
 
+## Semantic Similarity
+
 **Semantic Similarity**. This descriptor converts texts to embeddings and calculates Cosine Similarity between your evaluated column and another column. It scores from 0 to 1 (0: completely different, 0.5: unrelated, 1: identical). It's useful for checking if responses are semantically similar to a question or reference.
 
 Select the column to compare against: ![](../.gitbook/assets/cloud/nocode_semantic_similarity-min.png)
+
+## LLM as a judge
 
 **Custom LLM evaluator**. If you've added your token, use LLM-based evals (built-in or custom) to send your texts to LLMs for grading or scoring. You can choose a specific LLM model from the provider. 
 
@@ -98,13 +106,13 @@ For example, you can create a custom evaluator to classify texts as “cheerful�
 
 ![](../.gitbook/assets/cloud/nocode_llm_judge-min.png)
 
-For a binary classification template, you can configure these parameters:
-* **Reasoning**: choose to include reasoning for the decision (Recommended).
-* **Category** and/or **Score**: have the LLM respond with the category (Recommended) or also return a score.
+For a binary classification template, you can configure:
 * **Criteria**: define custom criteria in free text to clarify the classification task.
-* **Visualize as**: when both Category and Score are computed, choose which to display in the report.
-* **Target/Non-target Category**: labels you want to use. 
+* **Target/Non-target Category**: labels you want to use.
 * **Uncertain Category**: how the model should respond when it can’t decide.
+* **Reasoning**: choose to include explanation (Recommended).
+* **Category** and/or **Score**: have the LLM respond with the category (Recommended) or also return a score.
+* **Visualize as**: when both Category and Score are computed, choose which to display in the report.
 
 {% hint style="info" %}
 **What other evaluators are there?** Check the list of Descriptors on the [All Metrics](../reference/all-metrics.md) page.
