@@ -1,44 +1,29 @@
 ---
-description: Connect to the Evidently Cloud or a self-hosted Workspace.
----   
+description: How to self-host the open-source Evidently UI service.
+---
 
-# What is a Workspace?
-
-You need a workspace to organize your data and Projects. 
-
-* In Evidently Cloud, your account is your Workspace. As simple as that! 
-* In self-hosted deployments, a Workspace is a remote or local directory where you store the snapshots. The Monitoring UI will read the data from this source. 
-
-# Evidently Cloud 
-
-If you do not have one yet, create an [Evidently Cloud account](https://app.evidently.cloud/signup).
-
-**Get the API token**. You will use it to connect with Evidently Cloud Workspace from your Python environment. Use the "key" sign in the left menu to get to the token page, and click "generate token." Save it in a temporary file since it won't be visible once you leave the page.
-
-**Connect to the Workspace**. To connect to the Evidently Cloud Workspace, you must first [install Evidently](../installation/install-evidently.md).
-
-```python
-pip install evidently
-```
-
-Then, run imports and pass your API token to connect: 
-
-```python
-from evidently.ui.workspace.cloud import CloudWorkspace
-
-ws = CloudWorkspace(
-token="YOUR_TOKEN_HERE",
-url="https://app.evidently.cloud")
-```
+In addition to using Evidently Python library, you can self-host the UI Service to get a monitoring Dashboard and organize the results of your evaluations. This is optional: you can also run evaluations and render results directly in Python or export them elsewhere.
 
 {% hint style="info" %}
-**What's next?** Head to the next section to see how to [add your first Project](add_project.md).
+**Evidently Cloud.** To get an instantly available managed version of the Evidently platform with extra features, sign up for the free [Evidently Cloud](cloud_account.md) account.
 {% endhint %}
 
-# Self-hosting
+{% hint style="info" %}
+**Evidently Enterprise.** This page describes self-hosting the open-source version of the platform. To get a scalable self-hosted version with support and extra features, contact us for a [demo of Evidently Enterprise](https://www.evidentlyai.com/get-demo). You can host the platform in your private cloud or on-premises.
+{% endhint %}
+
+# 1. Create a Workspace
+
+Once you [install Evidently](install-evidently.md), you will need to create a `workspace`. This designates a remote or local directory where you will store the evaluation results (as JSON `snapshots` of the Evidently `Reports` or `Test Suites`). The UI Service will read the data from this source. 
+
+There are three scenarios, based on where you run the UI Service and store data. 
+* **Local Workspace**. Both the UI Service and data storage are local.
+* **Remote Workspace**. Both the UI Service and data storage are remote.
+* **Workspace with remote data storage**. You run the UI Service and store data on different servers. 
 
 ## Local Workspace
-In this scenario, you will generate, store the snapshots and run the monitoring UI on the same machine.
+
+In this scenario, you generate, store the snapshots and run the monitoring UI on the same machine.
 
 To create a local Workspace and assign a name:
 
@@ -49,7 +34,7 @@ ws = Workspace.create("evidently_ui_workspace")
 You can pass a `path` parameter to specify the path to a local directory.
 
 {% hint style="info" %}
-**Code example** [Self-hosting tutorial](../get-started/tutorial-monitoring.md) shows a complete Python script to create and populate a local Workspace.
+**Code example** [Self-hosting tutorial](../examples/tutorial-monitoring.md) shows a complete Python script to create and populate a local Workspace.
 {% endhint %}
 
 ## Remote Workspace
@@ -89,7 +74,7 @@ FSSPEC_S3_KEY=my_key FSSPEC_S3_SECRET=my_secret
 evidently ui --workspace s3://my_bucket/workspace
 ```
 
-## Launch the UI service
+# 2. Launch the UI service
 
 To launch the Evidently UI service, you must run a command in the Terminal.
 
@@ -125,7 +110,3 @@ rm -r workspace
 {% hint style="danger" %}
 **You are deleting all the data**. This command will delete the snapshots stored in the folder. To maintain access to the generated snapshots, you must store them elsewhere.
 {% endhint %}
-
-# What’s next?
-
-After you set up a Workspace, you can add and manage Projects. Head to the [next section to see how](add_project.md).

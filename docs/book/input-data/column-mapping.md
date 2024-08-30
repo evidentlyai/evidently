@@ -2,13 +2,15 @@
 description: How to use column mapping in Evidently.
 ---
 
-**TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a `ColumnMapping` object. It works the same way for Test Suites and Reports. 
+Column mapping helps map your input data schema or specify column types. For example, to run evaluation on text data, you must specify which columns in your dataset contain texts. This allows Evidently to process the input data correctly. 
+
+You can create a `ColumnMapping` object in Python prior to generating a Report or Test Suite or map the columns visually when working in the Evidently platform.
+
+You only need to map columns that will be used in your evaluations. 
 
 # Default mapping strategy
 
-Column mapping helps correctly process the input data. 
-
-If the `column_mapping` is not specified or set as `None`, Evidently will use the default mapping strategy.
+If the `column_mapping` is not specified or set as `None`, Evidently will use the default mapping strategy, trying to match the columns automatically.
 
 **Column types**:
 * All columns with numeric types (np.number) will be treated as Numerical. 
@@ -16,25 +18,28 @@ If the `column_mapping` is not specified or set as `None`, Evidently will use th
 * All other columns will be treated as Categorical.
 
 **Dataset structure**:
-* The column named **“id“**  will be treated as an ID column. 
-* The column named **“datetime”** will be treated as a DateTime column. 
-* The column named **“target”** will be treated as a target function.
-* The column named **“prediction”** will be treated as a model prediction.
- 
-ID, DateTime, target, and prediction are utility columns. If provided, the **“datetime”** column will be used as an index for some plots. The **“ID”** column will be excluded from drift analysis. 
+* The column named **"id"**  will be treated as an ID column. 
+* The column named **"datetime"** will be treated as a DateTime column. 
+* The column named **"target"** will be treated as a target column with a true label or value.
+* The column named **"prediction"** will be treated as a model prediction.
 
-Data structure requirements depend on the type of analysis. Here are example requirements:
+# Which columns do you need?
 
-| Report/Test Suite | Feature columns  | Prediction column | Target column  | ID column | Datetime column |
-|---|---|---|---|---|---|
-| Data Quality | Required | Optional | Optional | Optional | Optional |
-| Data Drift | Required | Optional | Optional | Optional | Optional |
-| Target Drift | Optional | Target and/or prediction required | Target and/or prediction required | Optional | Optional |
-| Classification Performance | Optional | Required | Required | Optional | Optional |
-| Regression Performance | Optional | Required | Required | Optional | Optional |
+To run certain types of evaluations, you must include specific columns or provide a reference dataset. For example, to run text evaluations, you must have at least one column labeled as text. To run data drift checks, you always need a reference dataset.
+
+Here are example requirements:
+
+| Evaluation | Feature columns  | Prediction column | Target column  | ID column | Datetime column | Reference dataset
+|---|---|---|---|---|---|---|
+| **Text Evals** | Required (Text) | Optional | Optional | Optional | Optional | Optional |
+| **Data Quality** | Required (Any) | Optional | Optional | Optional | Optional | Optional |
+| **Data Drift** | Required (Any) | Optional | Optional | Optional | Optional | Required |
+| **Target Drift** | Optional | Target and/or prediction required | Target and/or prediction required | Optional | Optional | Required |
+| **Classification** | Optional | Required | Required | Optional | Optional | Optional |
+| **Regression** | Optional | Required | Required | Optional | Optional | Optional |
 
 {% hint style="info" %} 
-**We recommend specifying column mapping manually**. Evidently applies different heuristics and rules to map the input data automatically. To avoid errors, it is always best to set column mapping manually. For example, numerical columns with only 3 different values in the reference data might be incorrectly parsed as categorical features.
+**It's best always to use column mapping**. Without it, Evidently will apply its own heuristics to map the input data automatically. To avoid errors, it's safer to set the column mapping manually.
 {% endhint %}
 
 # Code example
@@ -43,7 +48,13 @@ Notebook example on specifying column mapping:
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_use_column_mapping.ipynb" %}
 
-Once you create a column mapping object, you can pass it to the Report or Test Suite. For example:
+**Imports**. Imports to use column mapping:
+
+```python
+from evidently import ColumnMapping
+```
+
+**Basic API**. Once you create a `ColumnMapping` object, you pass it along with the data when computing the [Report or Test Suite](../tests-and-reports/introduction.md). For example:
 
 ```python
 column_mapping = ColumnMapping()
@@ -53,37 +64,50 @@ column_mapping.prediction = 'prediction'
 column_mapping.numerical_features = numerical_features
 column_mapping.categorical_features = categorical_features
 
-regression_performance_report = Report(metrics=[
+report = Report(metrics=[
     RegressionPreset(),
 ])
 
-regression_performance_report.run(reference_data=ref, current_data=cur,column_mapping=column_mapping)
+report.run(reference_data=ref,
+           current_data=cur,
+           column_mapping=column_mapping)
 
-regression_performance_report
+report
 ```
 
-# Primary mapping options
+# Column mapping
 
-You can create a `ColumnMapping` object to map your column names and feature types. 
+## DateTime and ID
 
-## Dataset structure
-
-To specify the column names for target, prediction, ID or DateTime: 
+To map columns containing DateTime and ID:
 
 ```python
-from evidently import ColumnMapping
-
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'y' #'y' is the name of the column with the target function
-column_mapping.prediction = 'pred' #'pred' is the name of the column(s) with model predictions
-column_mapping.id = None #there is no ID column in the dataset
 column_mapping.datetime = 'date' #'date' is the name of the column with datetime
+column_mapping.id = None #there is no ID column in the dataset
 ```
 
-## Categorical and numerical features
+{% hint style="info" %} 
+**Why map them:** When you map the "datetime" column, it becomes the index for certain plots, giving you richer visualizations in your Reports. If you have a timestamp in your data, it's a good idea to map it. Mapping the "Datetime" and "ID" columns also automatically excludes them from analyses like data drift detection, where it wouldn't add any value.
+{% endhint %}
 
-To split the features into numerical and categorical types: 
+## Target and Prediction
+
+To map columns containing Target and Prediction:
+
+```python
+column_mapping.target = 'y' #'y' is the name of the column with the target function
+column_mapping.prediction = 'pred' #'pred' is the name of the column(s) with model predictions
+```
+
+This matches regression or simple classification tasks. For more complex cases, check detailed instructions on how to map inputs for [classification](classification_data.md) and [ranking and recommendations](recsys_data.md) 
+
+{% hint style="info" %} 
+**Why map them:** If you work with a dataset that contains ML inferences, and want to evaluate Classification, Regression or Ranking quality, you must specify which columns contain predictions and true lables. Mapping Target and/or Prediction is also required to generate the Target Drift Preset.
+{% endhint %}
+
+## Categorical and numerical columns
+
+To split the columns into numerical and categorical types: 
 
 ```python
 column_mapping.numerical_features = ['temp', 'atemp', 'humidity'] #list of numerical features
@@ -91,26 +115,26 @@ column_mapping.categorical_features = ['season', 'holiday'] #list of categorical
 ```
 
 {% hint style="info" %} 
-**Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/data-drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.
+**Why map them:** Column types impact evaluations. For example, the data [drift algorithm](../reference/data-drift-algorithm.md) selects statistical tests based on column type, or `ColumnSummaryMetric` visualizations change with feature type. Manually mapping columns avoids errors, like numerical columns with few unique values being mistaken for categorical.
 {% endhint %}
 
 ## Text data 
 
-To specify that columns contain raw text data: 
+To specify columns that contain text data: 
 
 ```python
 column_mapping.text_features = ['email_subject', 'email_body']
 ```
 
 {% hint style="info" %} 
-**Why map them:** if you want to apply text-specific drift detection methods or call other metrics relevant to text data, you should specify them explicitly. Text columns are also excluded from certain tests and metrics similar to ID column.
+**Why map them:** Always map text columns to enable text-specific evaluations. This also ensures text columns are excluded from Tests and Metrics where they don’t apply. If you don’t map text columns, they’ll be treated as categorical, potentially leading to irrelevant evaluations like raw text distribution histograms.
 {% endhint %}
 
 ## Embeddings features
 
-To specify which columns in your dataset contain embeddings, you can pass a dictionary where keys are embedding names and values are lists of columns. 
+To specify which columns in your dataset contain embeddings, pass a dictionary where keys are embedding names and values are lists of columns. 
 
-Here is an example of how you point to the earlier defined list of columns that contain embeddings:
+Here is an example of how you point to the defined list of columns that contain embeddings:
 
 ```python
 column_mapping = ColumnMapping()
@@ -118,12 +142,8 @@ column_mapping.embeddings = {'small_subset': embeddings_data.columns[:10]}
 ```
 
 {% hint style="info" %} 
-**Why map them:** to apply embeddings-specific data drift detection methods. 
+**Why map them:** To apply embeddings-specific data drift detection methods. 
 {% endhint %}
-
-# Additional mapping options
-
-There are additional mapping options that apply to specific test suites and reports.
 
 ## DateTime features 
 
@@ -132,255 +152,35 @@ You might have temporal features in your dataset. For example, “date of the la
 To map them, define: 
 
 ```python
-column_mapping = ColumnMapping()
 column_mapping.datetime_features = ['last_call_date', 'join_date'] #list of DateTime features
 ```
 
-**Default**: Evidently treats columns with DateTime format (np.datetime64) as DateTime features.
- 
-**Note**: do not confuse DateTime features with the DateTime column, which is used as the x-axis in some plots. You will typically use the DateTime column as a prediction timestamp. 
-
 {% hint style="info" %} 
-**Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the data quality report.
+**What is the difference between DateTime features and DateTime?** Your dataset might have a single DateTime column, usually tied to when a specific data row (like a prediction timestamp) was generated. This column will be used as the x-axis in some plots. A DateTime feature, on the other hand, refers to any time-related column in your dataset, such as those used as input features in a machine learning model that relies on temporal data
+{% endhint %}
+ 
+{% hint style="info" %} 
+**Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the `ColumnSummaryMetric`.
 {% endhint %}
 
 ## Task parameter for target function
 
-In many cases, it is important to differentiate between continuous and discrete targets. This applies to multiple reports and tests, including Data Quality and Target Drift. 
+It’s often important to specify whether your Target column is continuous or discrete. This impacts Data Quality, Data Drift, and Target Drift evaluations for the Target column.
  
 To define it explicitly, specify the task parameter:
 
 ```python
-column_mapping = ColumnMapping()
 column_mapping.target = 'y'
 column_mapping.task = 'regression'
 ```
+
 It accepts the following values: 
 * `regression`
 * `classification`
-* `recsys` (for ranking and recommender systems)
+* `recsys` (for ranking and recommenders)
 
 **Default**: If you don't specify the task, Evidently will use a simple strategy: if the target has a numeric type and the number of unique values > 5: task == ‘regression.’ In all other cases, the task == ‘classification’.
 
 {% hint style="info" %} 
-**Why map it:**  If you have a multi-class problem where classes are encoded as numbers, it might look the same way as a regression problem. Thus it is best to explicitly specify it. It will affect how the target (prediction) is visualized and help pick the correct statistical tests for the target (prediction) drift detection. It will also affect the calculation of statistics and tests that differ for numerical and categorical data types.
+**Why map it:** In a multi-class problem, when classes are encoded as numbers, it can look like a regression problem. Explicitly specifying the target type ensures the right visualizations and statistical tests for the target (prediction) are selected. 
 {% endhint %} 
-
-## Prediction column(s) in classification 
-
-To evaluate the classification performance, you need both true labels and prediction. Depending on the classification type (e.g., binary, multi-class, probabilistic), you have different options of how to pass the predictions.
-
-### Multiclass classification, option 1
-
-Target: encoded labels, Preds: encoded labels + Optional[target_names].
-
-| target | prediction |
-|---|---|
-| 1 | 1 |
-| 0 | 2 |
-| … | … |
-| 2 | 2 |
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = 'prediction'
-column_mapping.target_names = ['Setosa', 'Versicolour', 'Virginica']
-```
-
-If you pass the target names, they will appear on the visualizations. 
-
-You can also pass the target names as a dictionary:
-
-```python
-column_mapping.target_names = {'0':'Setosa', '1':'Versicolor', '2':'Virginica'}
-```
-
-or
-
-```python
-column_mapping.target_names = {0:'Setosa', 1:'Versicolor', 2:'Virginica'} 
-```
-
-### Multiclass classification, option 2
-
-Target: labels, Preds: labels. 
-
-| target | prediction |
-|---|---|
-| ‘Versicolour’ | ‘Versicolour’ |
-| ‘Setosa’ | ‘Virginica’ |
-| … | … |
-| ‘Virginica’ | ‘Virginica’ |
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = 'prediction'
-```
-
-### Multiclass probabilistic classification
-
-Target: labels, Preds: columns named after labels.
-
-| target | ‘Versicolour’ | ‘Setosa’ | ‘Virginica’ |
-|---|---|---|---|
-| ‘Setosa’ | 0.98 | 0.01 | 0.01 |
-| ‘Virginica’ | 0.5 | 0.2 | 0.3 |
-| … | … |  |  |
-| ‘Virginica’ | 0.2 | 0.7 | 0.1 |
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = ['Setosa', 'Versicolour', 'Virginica']
-
-```
-
-Naming the columns after the labels is a requirement. You cannot pass a custom list.
-
-### Binary classification, option 1
-
-Target: encoded labels, Preds: encoded labels + pos_label + Optional[target_names]
-
-| target | prediction |
-|---|---|
-| 1 | 1 |
-| 0 | 1 |
-| … | … |
-| 1 | 0 |
-
-By default, Evidently expects the positive class to be labeled as ‘1’. If you have a different label, specify it explicitly.
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = 'prediction'
-column_mapping.target_names = ['churn', 'not_churn']
-column_mapping.pos_label = 0
-
-```
-
-If you pass the target names, they will appear on the visualizations. 
-
-### Binary classification, option 2 
-
-Target: labels, Preds: labels + pos_label
-
-| target | prediction |
-|---|---|
-| ‘churn’ | ‘churn’ |
-| ‘not_churn’ | ‘churn’ |
-| … | … |
-| ‘churn’ | ‘not_churn’ |
-
-Passing the name of the positive class is a requirement in this case.
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = 'prediction'
-column_mapping.pos_label = 'churn'
-
-```
-
-### Binary probabilistic classification, option 1 
-
-Target: labels, Preds: columns named after labels + pos_label
-
-| target | ‘churn’ | ‘not_churn’ |
-|---|---|---|
-| ‘churn’ | 0.9 | 0.1 |
-| ‘churn’ | 0.7 | 0.3 |
-| … | … |  |
-| ‘not_churn’ | 0.5 | 0.5 |
-
-Passing the name of the positive class is a requirement in this case.
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = ['churn', 'not_churn']
-column_mapping.pos_label = 'churn'
-
-```
-
-### Binary probabilistic classification, option 2 
-
-Target: labels, Preds: a column named like one of the labels + pos_label
-
-| target | ‘not_churn’ |
-|---|---|
-| ‘churn’ | 0.5 |
-| ‘not_churn’ | 0.1 |
-| … | … |
-| ‘churn’ | 0.9 |
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = 'not_churn'
-column_mapping.pos_label = 'churn'
-
-```
-Both naming the column after one of the labels and passing the name of the positive class are requirements.
-
-### Binary probabilistic classification, option 3
-
-Target: encoded labels, Preds: one column with any name + pos_label
-
-| target | prediction |
-|---|---|
-| 1 | 0.5 |
-| 1 | 0.1 |
-| … | … |
-| 0 | 0.9 |
-
-```python
-column_mapping = ColumnMapping()
-
-column_mapping.target = 'target'
-column_mapping.prediction = 'prediction'
-column_mapping.pos_label = 1
-column_mapping.target_names = ['churn', 'not_churn']
-
-```
-If you pass the target names, they will appear on the visualizations.
-
-# Recommender systems
-To evaluate the quality of a ranking or a recommendation system, you must pass:
-* The model score or rank as the prediction.
-* The information about user actions (e.g., click, assigned score) as the target. 
-
-Here are the examples of the expected data inputs.
-
-If the model prediction is a score (expected by default):
-
-| user_id | item_id | prediction (score) | target (interaction result) |
-|---|---|---|---|
-| user_1 | item_1 | 1.95 | 0 |
-| user_1 | item_2 | 0.8 | 1 |
-| user_1 | item_3 | 0.05 | 0 |
-
-If the model prediction is a rank:
-| user_id | item_id | prediction (rank) | target (interaction result) |
-|---|---|---|---|
-| user_1 | item_1 | 1 | 0 |
-| user_1 | item_2 | 2 | 1 |
-| user_1 | item_3 | 3 | 0 |
-
-The **target** column with the interaction result can contain either:
-* a binary label (where `1` is a positive outcome)
-* any true labels or scores (any positive values, where a higher value corresponds to a better recommendation match or a more valuable user action).
-
-You might need to add additional details about your dataset via column mapping:
-* `recommendations_type`: `score` (default) or `rank`. Helps specify whether the prediction column contains ranking or predicted score.
-* `user_id`: helps specify the column that contains user IDs.
-* `item_id`: helps specify the column that contains ranked items.
