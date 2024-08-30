@@ -4,10 +4,6 @@ description: How to run evaluation workflows in Evidently Platform.
 
 This documentation section covers how to run evals, whether you're using code or a no-code interface. It also shows you how to explore, compare, and track evaluation results in the Evidently Platform UI.
 
-{% hint style="success" %}
-This applies to `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`. 
-{% endhint %}
-
 {% hint style="info" %} 
 **Looking for something else?**  For details on the Python evaluation workflow, check the [Reports and Test Suites](../tests-and-reports/introduction.md). For online evaluations, check [Monitoring](../monitoring/monitoring_overview.md). To check **what** you can evaluate, browse [Presets](../presets/all-presets.md), [Metrics](../reference/all-metrics.md) and [Tests](../reference/all-tests.md).
 {% endhint %}
@@ -33,6 +29,10 @@ You perform evaluations by generating [Reports or Test Suites](../tests-and-repo
 
 ## Evals in Python 
 
+{% hint style="success" %}
+Supported in: `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`.
+{% endhint %}
+
 This is perfect for development, CI/CD workflows, or custom evaluation pipelines. Once you run an eval in Python on your dataset, you upload the results to the Evidently Platform.
 
 ![](../.gitbook/assets/cloud/evals_flow_python.png)
@@ -52,6 +52,10 @@ See how to run local evals in detail:
 {% endcontent-ref %}
 
 ## No-code evals
+
+{% hint style="success" %}
+Supported in: `Evidently Cloud` and `Evidently Enterprise`.
+{% endhint %}
 
 With no-code evaluations, you work directly in the user interface. This is great for non-technical users or when you prefer to run evaluations on Evidently infrastructure.
 
@@ -73,6 +77,10 @@ The rest of the workflow is the same. After you run your evals with any method, 
 
 # Evaluation results 
 
+{% hint style="success" %}
+Supported in: Supported in: `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`.
+{% endhint %}
+
 The result of each evaluation is either a Report (when it's just a summary of metrics) or a Test Suite (when it also includes pass/fail results on set conditions).
 
 **Browse the results**. To access them, enter your Project and navigate to the "Reports" or "Test Suites" section in the left menu. Here, you can view all your evaluation artifacts and browse them by Tags, time, or metadata. You can also download them as HTML or JSON.
@@ -83,6 +91,10 @@ To see and compare the evaluation results, click on "Explore" next to the indivi
 
 **Explore view**. You'll get the Report or Test Suite and, if available, the dataset linked to the evaluation.
 
+{% hint style="success" %}
+Supported in: `Evidently Cloud` and `Evidently Enterprise`. In Evidently OSS, you can can access only the Report.
+{% endhint %}
+
 * To view the Report only, click on the "dataset" sign at the top to hide the dataset.
 * To see results from a specific evaluation within the Report, use the dropdown menu to select the Metric.
 * To compare Reports side by side, click on "duplicate snapshot" (this will keep the current Metric in view), and then select a different Report for comparison.
@@ -90,6 +102,10 @@ To see and compare the evaluation results, click on "Explore" next to the indivi
 ![](../.gitbook/assets/cloud/explore_view-min.png)
 
 **Dashboard**. As you run multiple evaluations, you can build a Dashboard to visualize results over time. 
+
+{% hint style="success" %}
+Supported in: Supported in: `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`.
+{% endhint %}
 
 The Dashboard aggregates data from various Reports or Test Suites within a Project, allowing you to track progress, see performance improvements, and monitor how tests perform over time.
 
@@ -100,6 +116,4 @@ How to create a Dashboard:
 {% content-ref url="../dashboard/dashboard_overview.md" %}
 [Dashboard](../dashboard/dashboard_overview.md)
 {% endcontent-ref %}
-
-
 
