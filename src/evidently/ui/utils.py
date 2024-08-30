@@ -1,5 +1,6 @@
 import json
 import urllib.parse
+import uuid
 from typing import Any
 from typing import Optional
 from typing import Type
@@ -7,6 +8,10 @@ from typing import TypeVar
 from typing import Union
 
 import requests
+import uuid6
+from litestar.utils import is_class_and_subclass
+from msgspec import ValidationError
+from uuid6 import UUID
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
@@ -48,3 +53,42 @@ class RemoteClientBase:
 
 def parse_json(body: bytes) -> Any:
     return json.loads(body)
+
+
+def _dec_uuid6(
+    uuid_type: Type[uuid6.UUID],
+    value: Any,
+) -> uuid6.UUID:
+    if isinstance(value, str):
+        value = uuid_type(value)
+
+    if isinstance(value, uuid.UUID):
+        return uuid6.UUID(hex=value.hex)
+
+    elif hasattr(value, "__buffer__"):
+        value = bytes(value)
+        try:
+            value = uuid_type(value.decode())
+        except ValueError:
+            # 16 bytes in big-endian order as the bytes argument fail
+            # the above check
+            value = uuid_type(bytes=value)
+    elif isinstance(value, UUID):
+        value = uuid_type(str(value))
+
+    if not isinstance(value, uuid_type):
+        raise ValidationError(f"Invalid UUID: {value!r}")
+
+    if uuid_type._required_version != value.version:  # type: ignore[attr-defined]
+        raise ValidationError(f"Invalid UUID version: {value!r}")
+
+    return value
+
+
+uuid6_type_decoder = (lambda t: is_class_and_subclass(t, uuid6.UUID), _dec_uuid6)
+
+
+# class PydanticUUID7Plugin(InitPluginProtocol):
+#     def on_app_init(self, app_config: AppConfig) -> AppConfig:
+#         app_config.type_decoders = [uuid6_type_decoder, *(app_config.type_decoders or [])]
+#         return app_config
