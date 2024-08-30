@@ -80,7 +80,7 @@ ws.search_project("project_name")
 ## [DANGER] Delete Project 
 
 {% hint style="danger" %}
-**You are deleting the data in a Project**. If you delete a Project, you will delete all the associated snapshots stored in a Project.
+**You are deleting the data in a Project**. If you delete a Project, you will delete all the snapshots stored inside it.
 {% endhint %}
 
 {% tabs %}
