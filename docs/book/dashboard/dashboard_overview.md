@@ -6,7 +6,7 @@ description: Introduction to Dashboards.
 
 Each Project has its Dashboard. A Dashboard lets you evaluation results over time, providing a clear view of the quality of your AI application and data.
 
-When you create a new Project, the Dashboard starts empty. To populate it, run evaluations (using either code or no-code methods) and add Reports or Test Suites to the Project. Once you have data, you can configure the Dashboard to display the values that matter to you.
+When you create a new Project, the Dashboard starts empty. To populate it, run evaluations (using either [code](../evaluations/snapshots.md) or [no-code](../evaluations/no_code_evals.md) methods) and add Reports or Test Suites to the Project. Once you have data, you can configure the Dashboard to display the values that matter to you.
 
 You can use the Dashboard to monitor live data in production or to keep track of results from batch experiments and tests. The "Show in order" toggle lets you switch between two views:
 * **Time series**. Displays data with actual time intervals, ideal for live monitoring.
