@@ -54,9 +54,8 @@ description: Get started with Evidently Cloud.
         Upload a CSV file to run evaluations directly in the Evidently Cloud.
       </td>
       <td>
-        <a href="cloud_quickstart_nocode.md">→ No-code Quickstart</a>
+        <a href=".../evaluations/no_code_evals.md">→ No-code Quickstart</a>
       </td>
     </tr>
   </tbody>
 </table>
-
