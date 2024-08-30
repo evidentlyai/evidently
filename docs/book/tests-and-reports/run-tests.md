@@ -21,20 +21,22 @@ from evidently.tests import *
 Here is the general flow.
 * **Input data**. Prepare data as a Pandas DataFrame. This will be your `current` data to test. You may also pass a `reference` dataset to generate Test conditions from this reference or run data distribution Tests. Check the [input data requirements](../input-data/data-requirements.md).
 * **Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but highly recommended.
-* **Define the Test Suite**. Create a `TestSuite` object and include the selected Tests or Test Presets in the `tests` list.
-* **Set the Test parameters**. Optionally, specify individual test conditions and mark certain tests as non-critical.
+* **Define the Test Suite**. Create a `TestSuite` object and pass the selected `tests`.
+* **Set the parameters**. Optionally, specify Test conditions and mark certain Tests as non-critical.
 * **Run the Test Suite**. Execute the Test Suite on your `current_data`. If applicable, pass the `reference_data` and `column_mapping`.
-* **Get the results**. Get a visual summary in Jupyter notebook, export the metrics and tests metadata, or upload it to the Evidently Platform.
+* **Get the results**. Get a visual report in Jupyter notebook, export the summary, or send to the Evidently Platform.
 
-You can use Test Presets, which are pre-built Test Suites that automatically generate a set of Tests for a specific aspect of the data or model performance, or create your Test Suite by listing Tests one by one.
+You can use Test Presets or create your Test Suite.
 
 # Test Presets 
 
+Test Presets are pre-built Test Suites that automatically generate a set of Tests for a specific aspect of the data or model performance,
+
 To use a Test Preset, create a `TestSuite` object and include the chosen Preset in the `tests` list. The Tests will run with default parameters for all columns in the dataset. 
 
-Evidently will also automatically generate Test conditions. There are two ways Evidently does it.
+Evidently will also automatically generate Test conditions. There are two ways to do it:
 * **Based on the reference dataset**. If you provide a `reference`, Evidently will generate conditions based on it. For example, a Preset may include the `TestShareOfOutRangeValues` Test. It will fail if over 10% of values in the `current` dataset are out of range. Evidently automatically derives the min-max value range for each column from the reference. 10% is an encoded heuristic.
-*  **Based on heuristics**. If you don’t provide a reference, Evidently will run Tests it can using heuristics only. For example, `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model, which Evidently creates automatically. For data quality, Tests like TestNumberOfEmptyRows() or TestNumberOfMissingValues() assume both should be zero.
+*  **Based on heuristics**. If you don’t provide a reference, Evidently will run Tests it can using heuristics only. For example, `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model, which Evidently creates automatically. For data quality, Tests like `TestNumberOfEmptyRows()` or `TestNumberOfMissingValues()` assume both should be zero.
 
 {% hint style="info" %} 
 **Reference**: Check the default Test conditions in the [All tests](../reference/all-tests.md) table.
@@ -52,7 +54,7 @@ data_quality.run(reference_data=None,
 ```
 
 {% hint style="info" %} 
-**Available Test Presets**. There are other Presets: for example, `DataStabilityTestPreset`, `DataDriftTestPreset` or `RegressionTestPreset`. Refer to the [Presets overview](../presets/all-presets.md) to understand individual Presets, and to [All Tests](../reference/all-tests.md) to see all available options and parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
+**Available Test Presets**. There are others: for example, `DataStabilityTestPreset`, `DataDriftTestPreset` or `RegressionTestPreset`. Refer to the [Presets overview](../presets/all-presets.md) to see individual Presets. For interactive examples, refer to the [example notebooks](../examples/examples.md).
 {% endhint %}
 
 To get the visual report with Test results, call the object in Jupyter notebook or Colab:
@@ -68,7 +70,7 @@ data_quality.as_dict()
 ```
 
 {% hint style="info" %} 
-**There are more output formats!**. You can also export the results in formats like HTML, JSON, dataframe, and more. Refer to the [Output Formats](output_formats.md) for details.
+**There are more output formats!** You can also export the results in formats like HTML, JSON, dataframe, and more. Refer to the [Output Formats](output_formats.md) for details.
 {% endhint %}
 
 **Example 2**. To apply the `DataStabilityTestPreset`, with conditions generated from reference, pass the `reference_data`:
@@ -101,11 +103,11 @@ Refer to the [All tests](../reference/all-tests.md) table to see available param
 
 # Custom Test Suite
 
-You can use Test Presets as a starting point to explore available analyses. In most cases, you'll want to design your Test Suite to pick specific tests and set conditions more precisely. Here’s how:
+You can use Presets as a starting point, but eventually, you'll want to design a Test Suite to pick specific Tests and set conditions more precisely. Here’s how:
 * **Choose individual Tests**. Select the Tests you want to include in your Test Suite.
-* **Pass Test parameters**. Optionally, set custom parameters for applicable Tests.
-* **Set custom conditions**. Optionally, define when Tests should pass or fail.
-* **Mark Test criticality**. Optionally, mark some tests as non-critical to return a Warning instead of Fail.
+* **Pass Test parameters**. Set custom parameters for applicable Tests. (Optional).
+* **Set custom conditions**. Define when Tests should pass or fail. (Optional).
+* **Mark Test criticality**. Mark non-critical Tests to give a Warning instead of Fail. (Optional).
 
 ## 1. Choose tests
 
@@ -119,9 +121,7 @@ First, decide which Tests to include. Tests can be either dataset-level or colum
 **Row-level evaluations**: If you want to generate row-level scores before running the Tests, which are often relevant for text data, read more about [Text Descriptors](text-descriptors.md.md).
 {% endhint %}
 
-**Dataset-level Tests**. Some Tests apply to the entire dataset, such as checking the share of drifting features or accuracy drops.
-
-To create a custom Test Suite, create a `TestSuite` object and list the `tests` one by one:    
+**Dataset-level Tests**. Some Tests apply to the entire dataset, such as checking the share of drifting features or accuracy. To add them to a Test Suite, create a `TestSuite` object and list the `tests` one by one:    
 
 ```python
 data_drift_suite = TestSuite(tests=[
@@ -130,9 +130,7 @@ data_drift_suite = TestSuite(tests=[
 ])
 ```
 
-**Column-level Tests**. Some Tests focus on individual columns, like checking if a specific column's values stay within a range.
-
-To create a custom Test Suite with column-level Tests, pass the name of the column to each Test:
+**Column-level Tests**. Some Tests focus on individual columns, like checking if a specific column's values stay within a range. To include column-level Tests, pass the name of the column to each Test:
 
 ```python
 feature_suite = TestSuite(tests=[
@@ -143,7 +141,7 @@ feature_suite = TestSuite(tests=[
 ```
 
 {% hint style="info" %} 
-**Generating multiple column-level Tests**: To simplify listing many Tests at once, use [Test generator helper function](test-metric-generator.md).
+**Generating many column-level Tests**: To simplify listing many Tests at once, use the [generator helper function](test-metric-generator.md).
 {% endhint %}
 
 **Combining Tests**. You can combine column-level and dataset-level Tests in a single Test Suite. You can also include Presets and individual Tests together.
@@ -190,7 +188,7 @@ model_tests = TestSuite(tests=[
 **Reference**: you can browse available Test parameters and defaults in the [All tests](../reference/all-tests.md) table.
 {% endhint %}
 
-# 3. Set test conditions
+## 3. Set Test conditions
 
 You can set up your Test conditions in two ways:
 * **Automatic**. If you don’t specify individual conditions, the defaults (reference or heuristic-based) will apply, just like in Test Presets.
@@ -198,22 +196,20 @@ You can set up your Test conditions in two ways:
   
 You can mix both approaches in the same Test Suite, where some Tests run with defaults and others with custom conditions.
 
-### Test condition parameters
-
-Use the following standard parameters to set Test conditions:
+Use the following parameters to set Test conditions:
 
 | Condition parameter | Explanation                                | Usage Example                                                   |
 |--------------------------|--------------------------------------------|-----------------------------------------------------------------|
-| `eq: val`               | equal <br> `test_result == val`                         | TestColumnValueMin(column_name=”col”, eq=5)            |
-| `not_eq: val`             | not equal <br> `test_result != val`                         | TestColumnValueMin(column_name=”col”, not_eq=0)            |
-| `gt: val`                  |  greater than  <br> `test_result > val`                          | TestColumnValueMin(column_name=”col”, gt=5)            |
-| `gte: val`                 | greater than or equal <br> `test_result >= val`                         | TestColumnValueMin(column_name=”col”, gte=5)           |
-| `lt: val`                | less than <br> `test_result < val`                          | TestColumnValueMin(column_name=”col”, lt=5)            |
-| `lte: val`               | less than or equal <br> `test_result <= val`                         | TestColumnValueMin(column_name=”col”, lte=5)           |
-| `is_in: list`              | `test_result ==` one of the values from list | TestColumnValueMin(column_name=”col”, is_in=[3,5,7])   |
-| `not_in: list`             | `test_result !=` any of the values from list | TestColumnValueMin(column_name=”col”, not_in=[-1,0,1]) |
+| `eq: val`               | equal <br> `test_result == val`                         | `TestColumnValueMin("col", eq=5)`            |
+| `not_eq: val`             | not equal <br> `test_result != val`                         | `TestColumnValueMin("col", not_eq=0)`            |
+| `gt: val`                  |  greater than  <br> `test_result > val`                          | `TestColumnValueMin("col", gt=5)`            |
+| `gte: val`                 | greater than or equal <br> `test_result >= val`                         | `TestColumnValueMin("col", gte=5)`           |
+| `lt: val`                | less than <br> `test_result < val`                          | `TestColumnValueMin("col", lt=5)`            |
+| `lte: val`               | less than or equal <br> `test_result <= val`                         | `TestColumnValueMin("col", lte=5)`           |
+| `is_in: list`              | `test_result ==` one of the values from list | `TestColumnValueMin("col", is_in=[3,5,7])`   |
+| `not_in: list`             | `test_result !=` any of the values from list | `TestColumnValueMin("col", not_in=[-1,0,1])` |
 
-**Example 1**. To Test that the share of values out of range in a specific column is 0, and the share of missing values in another column is less than (`lt`) 20%. 
+**Example 1**. To Test that no values are out of range, and less than (`lt`) 20% of values are missing: 
 
 ```python
 feature_level_tests = TestSuite(tests=[
@@ -224,7 +220,7 @@ TestColumnShareOfMissingValues(column_name='education', lt=0.2),
 
 **Example 2**. You can specify both the Test condition and parameters together.
 
-In the first Test in the example above, Evidently still automatically derives the feature range from the reference. You can also manually set the range (e.g., between 2 and 10). The Test fails if any value is out of this range:
+In the example above, Evidently automatically derives the feature range from the reference. You can also manually set the range (e.g., between 2 and 10). The Test fails if any value is out of this range:
 
 ```python
 feature_level_tests = TestSuite(tests=[
@@ -268,7 +264,7 @@ lte=approx(5, relative=0.1)
 eq=approx(5, relative=0.1)
 ```
 
-## 4. Set test criticality
+## 4. Set Test criticality
 
 By default, all Tests will return a `Fail` if the Test condition is not fulfilled. If you want to get a `Warning` instead, use the `is_critical` parameter and set it to `False`. Example: 
 
