@@ -6,6 +6,10 @@ This section covers how to instrument your AI application to collect data and se
 
 **Note**: this feature is in active development, expect more detailed documentaton soon.
 
+{% hint style="success" %}
+Tracing uses the open-source `Tracely` library. 
+{% endhint %}
+
 {% hint style="info" %}
 **Looking for something else?** You can also run evaluations locally on existing datasets using [Reports and Test Suites](../tests-and-reports/introduction.md), and upload tabular [Datasets](../datasets/datasets_overview.md) to the platform using the Python API. 
 {% endhint %}
