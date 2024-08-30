@@ -79,6 +79,9 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
 
 
 class BaseLLMPromptTemplate(EvidentlyBaseModel, ABC):
+    class Config:
+        is_base_type = True
+
     @abstractmethod
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[LLMMessage]:
         raise NotImplementedError
