@@ -17,7 +17,7 @@ It's optional: you can also run all evals locally and only upload summary result
 You can add datasets to the platform in several ways:
 * **Direct upload**. Upload a dataset through the user interface using a CSV file. For automation, use the Python API to [upload datasets](datasets_api.md) programmatically. Once uploaded, you can start analyzing the data on the platform.
 * **Created from Traces**. When you use the [Tracing](../tracing/tracing_overview.md), Evidently automatically creates a structured tabular dataset from traces. You can also curate subsets of this data for focused analysis.
-* **Included with [Reports or Test Suites](../tests-and-reports/overview.md)**. When running a local evaluation in Python, attach the Dataset associated with a specific Report or Test Suite. This allows you to store raw data alongside summary evaluation results. It’s optional.
+* **Included with [Reports or Test Suites](../evaluations/snapshots.md)**. When running a local evaluation in Python, attach the Dataset associated with a specific Report or Test Suite. This allows you to store raw data alongside summary evaluation results. It’s optional.
 
 {% content-ref url="datasets_api.md" %}
 [Work with datasets](datasets_api.md)
