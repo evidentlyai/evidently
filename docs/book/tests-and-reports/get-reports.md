@@ -23,7 +23,7 @@ Here is the general flow.
 * **Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but highly recommended.
 * **Define the Report**. Create a `Report` object and include the selected Metrics or Preset in the `metrics` list.
 * **Run the Report**. Run the Report on your `current_data`. If applicable, pass the `reference_data` and `column_mapping`.
-* **Get the results**. Get a visual Report in Jupyter notebook, export the metrics, or upload it to Evidently Platform.
+* **Get the results**. Get a visual Report in Jupyter notebook, export the metrics, or [upload](../evaluations/snapshots.md) it to Evidently Platform.
 
 You can use Metric Presets, which are pre-built Reports that work out of the box, or create a custom Report selecting Metrics one by one.
 
