@@ -2,14 +2,15 @@
 description: Introduction to Projects in Evidently Platform. 
 ---   
 
-{% hint style="info" %}
-This feature is available in <mark style="color:black;background-color:lightgray;">Evidently OSS UI</mark>, <mark style="color:white;background-color:darkred;">Evidently Cloud</mark>, <mark style="color:white;background-color:mediumpurple;">Evidently Enterprise</mark>.
-You can run also evaluations locally with Evidently Python library without creating a Project.
+{% hint style="success" %}
+Projects are available in `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`. 
 {% endhint %}
+
+**Note**: You can also run evaluations locally with the Evidently Python library without creating a Project. You need a Project only if you are using the Evidently web application.
 
 # What is a Project?
 
-To start using the Evidently web application, you must create at least one evaluation or monitoring Project. 
+To start working in the Evidently UI, you must create at least one evaluation or monitoring Project. 
 
 **Home Page**. You can see all your Projects on the home page of the Evidently platform:
 
