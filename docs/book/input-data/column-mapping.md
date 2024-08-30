@@ -54,7 +54,7 @@ Notebook example on specifying column mapping:
 from evidently import ColumnMapping
 ```
 
-**Basic API**. Once you create a `ColumnMapping` object, you pass it along with the data when computing the Report or Test Suite. For example:
+**Basic API**. Once you create a `ColumnMapping` object, you pass it along with the data when computing the [Report or Test Suite](../tests-and-reports/introduction.md). For example:
 
 ```python
 column_mapping = ColumnMapping()
