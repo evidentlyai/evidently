@@ -49,12 +49,12 @@ nltk.download('vader_lexicon')
 
 Here is the general flow.
 
-**Input data**. Prepare the data as a Pandas DataFrame. Include at least one text column. This will be your `current_data` to run evals on. Optionally, prepare the `reference` dataset.
-**Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but highly recommended.
-**Define the Report or Test Suite**. Create a `Report` or a `TestSuite` object with the selected checks.
-**Run the Report**. Run the Report on your `current_data`, passing the `column_mapping`. Optionally, pass the `reference_data`.
-**Get the summary results**. Get a visual report in Jupyter notebook, export the metrics, or upload it to Evidently Platform.
-**Get the scored datasets**. To see row-level scores, export the Pandas DataFrame with added descriptors. (Or view this on Evidently Platform). 
+* **Input data**. Prepare the data as a Pandas DataFrame. Include at least one text column. This will be your `current_data` to run evals on. Optionally, prepare the `reference` dataset.
+* **Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but highly recommended.
+* **Define the Report or Test Suite**. Create a `Report` or a `TestSuite` object with the selected checks.
+* **Run the Report**. Run the Report on your `current_data`, passing the `column_mapping`. Optionally, pass the `reference_data`.
+* **Get the summary results**. Get a visual report in Jupyter notebook, export the metrics, or upload it to Evidently Platform.
+* **Get the scored datasets**. To see row-level scores, export the Pandas DataFrame with added descriptors. (Or view this on Evidently Platform). 
 
 {% hint style="info" %} 
 **Available Descriptors**. See the list of available descriptors in the [All Metrics](../reference/all-metrics.md) page. Descriptors range from regular expressions and text statistics to model and LLM-based checks
