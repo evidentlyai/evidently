@@ -2,11 +2,11 @@
 description: How to evaluate your data in a no-code interface.
 ---   
 
-You can evaluate your data and generate Reports without any coding. The platform supports several evaluations directly from the user interface.
+The platform supports several evaluations directly from the user interface.
 
 | Name                    | Type       | Description                                                                                                                              |
 |-------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Text Evals              | Report     | Analyze text data using customizable methods from regular expressions to LLM judges.                                                     |
+| Text Evals              | Report     | Analyze text data using methods from regular expressions to LLM judges.                                                     |
 | Data Quality            | Report     | Get descriptive statistics and distribution overviews for all columns in your dataset, including text, categorical, and numerical data.  |
 | Classification Quality  | Report     | Evaluate the quality of a classification model. (Your dataset must have predictions and true labels.)                                    |
 | Regression Quality      | Report     | Evaluate the quality of a regression model. (Your dataset must have predictions and actuals.)                                            |
@@ -14,14 +14,12 @@ You can evaluate your data and generate Reports without any coding. The platform
 
 Before you start, pick a dataset to evaluate. For example, this could be a CSV file containing inputs and outputs of your AI system, like chatbot logs.
 
-Here is how you can run the evaluation.
-
-# 1. Create a Project.
+# 1. Create a Project
 
 On the main page of Evidently Platform, click “Create new Project.” Give your Project a title and description to help organize your evaluations.
 
 {% hint style="info" %}
-**What is a Project?**. It's a way to organize your evals and datasets together. Check the [Project](../projects/add_project.md) docs.
+**What is a Project?** It's a way to organize your evals and datasets together. Check the [Project](../projects/add_project.md) docs.
 {% endhint %}
 
 # 2. Start an evaluation
@@ -44,7 +42,7 @@ Your dataset can have any structure, but certain evaluations require specific co
 * **Data quality**: any dataset with categorical, numerical or text columns.
 
 {% hint style="info" %}
-**What are Datasets?**. Learn how to manage and upload [Datasets](../datasets/datasets_overview.md) to the platform.
+**What are Datasets?** Learn how to manage and upload [Datasets](../datasets/datasets_overview.md) to the platform.
 {% endhint %}
 
 # 4. Column Mapping
@@ -53,35 +51,34 @@ Map your data schema. You don't have to fill in all the options: choose what app
 
 ![](../.gitbook/assets/cloud/nocode_column_mapping-min.png)
 
-If you have a timestamp column, map it as "DateTime" for more detailed plots showing how scores change over time.
+If you have a timestamp, map it as a "DateTime." You will get additional plots with score changes in time. 
 
 {% hint style="info" %}
-**What is Column mapping?**. Understand how to map your dataset schema in the [Column Mapping](../input-data/column-mapping.md) docs section.
+**What is Column mapping?** Understand how to map your dataset schema in the [Column Mapping](../input-data/column-mapping.md) docs section.
 {% endhint %}
 
 # 5. Configure the evaluation
 
-Some evaluations (Classification, Regression, and Data Quality) run with default combination of Metrics: there is nothing to customize!
+Some evaluations (Classification, Regression, and Data Quality) run as is. Once you passed the data, hit "Run" to get your Report.
 
 {% hint style="info" %}
-**What is the Raw Data option?**. It keeps raw data points in plots like error time series. This is relevant for very small datasets: generally leave it off.
+**What is the Raw Data option?** It keeps raw data points in plots like error time series. This is relevant for small datasets: generally leave it off.
 {% endhint %}
 
-Text Evals require a bit more setup: you must first choose which column to evaluate and then methods and criteria to use. Broadly, you can choose between the following methods:
+Text Evals require a bit more setup. You must choose which column to evaluate and how. You can choose from the following methods:
 * **Model-based**: use built-in machine learning models, like sentiment analysis.
 * **Regular expressions**: check for specific words or patterns.
 * **Text stats**: measure stats like the number of symbols or sentences.
 * **LLM-based**: use external LLMs to evaluate your text data.
 
+Select specific checks one by one:
 ![](../.gitbook/assets/cloud/nocode_choose_evals-min.png)
 
-Each evaluation result is called a **Descriptor**: regardless of the method, you get a label or score for every evaluated text. You can pick multiple Descriptors at once. Some (like “Sentiment”) work out of the box, others may need a configuration. 
+Each evaluation result is called a **Descriptor**. No matter the method, you’ll get a label or score for every evaluated text. Some, like “Sentiment,” work instantly, while others may need setup.
 
-## Descriptor examples
+## Examples
 
-Here are a few examples. 
-
-***Include Words**. This Descriptor checks for the presence of listed vocabulary words and returns True or False. Set up the following parameters: 
+**Include Words**. This Descriptor checks for listed words and returns "True" or "False." Set up these parameters:
 * Add a list of words.
 * Choose whether to check for “any” or “all” of the words present.
 * Set the **lemmatize** parameter to check for inflected and variant words automatically.
@@ -90,13 +87,11 @@ Here are a few examples.
 Example setup:
 ![](../.gitbook/assets/cloud/nocode_includes_words-min.png)
 
-**Semantic Similarity**. This descriptor converts texts to embeddings and calculates Cosine Similarity between your evaluated column and another column. It scores from 0 to 1 (0: completely different, 0.5: unrelated, 1: identical). Useful for checking if responses are semantically similar to a question or reference.
+**Semantic Similarity**. This descriptor converts texts to embeddings and calculates Cosine Similarity between your evaluated column and another column. It scores from 0 to 1 (0: completely different, 0.5: unrelated, 1: identical). It's useful for checking if responses are semantically similar to a question or reference.
 
-To configure, select the column to compare against:
+Select the column to compare against: ![](../.gitbook/assets/cloud/nocode_semantic_similarity-min.png)
 
-![](../.gitbook/assets/cloud/nocode_semantic_similarity-min.png)
-
-**Custom LLM evaluator**. If you've added your token, use LLM-based evals to send texts from a specified column to LLMs for grading or scoring. You can choose a specific LLM model from the provider. Use built-in evaluators or design your own.
+**Custom LLM evaluator**. If you've added your token, use LLM-based evals (built-in or custom) to send your texts to LLMs for grading or scoring. You can choose a specific LLM model from the provider. 
 
 For example, you can create a custom evaluator to classify texts as “cheerful” or “neutral.” Fill in the parameters, and Evidently will generate the evaluation prompt: 
 
@@ -106,31 +101,30 @@ For a binary classification template, you can configure these parameters:
 * **Reasoning**: choose to include reasoning for the decision (Recommended).
 * **Category** and/or **Score**: have the LLM respond with the category (Recommended) or also return a score.
 * **Criteria**: define custom criteria in free text to clarify the classification task.
-* **Visualize as**: applies when you compute both Category and Score: choose which one to visualize in the Report. 
-* **Target/Non-target Category**: name the labels you want to see. 
-* **Uncertain Category**: Specify how the model should respond when it can’t decide. The default is “unknown,” but you can choose one of your existing categories instead.
+* **Visualize as**: when both Category and Score are computed, choose which to display in the report.
+* **Target/Non-target Category**: labels you want to use. 
+* **Uncertain Category**: how the model should respond when it can’t decide.
 
 {% hint style="info" %}
-**What other evaluators are there?**. Check the list of Descriptors on the [All Metrics](../reference/all-metrics.md) page.
+**What other evaluators are there?** Check the list of Descriptors on the [All Metrics](../reference/all-metrics.md) page.
 {% endhint %}
 
 To add evaluations for another column in the same Report, click “Add Preset,” select “Text Evals,” and follow the same steps for the new column. You can include evals for multiple columns at once.
 
 # 6. Run the evaluation
 
-Before you generate the Report, you can add a Tag. This will help identify it later or reference it later. It's optional.
+Before generating the Report, you can add a Tag to identify or reference the Report later. It's optional.
 
-Click “Run”, and the calculation will start running! It may take some time to process, especially if you have a large dataset. 
+Click “Run”, and the calculation will start! It may take some time to process, especially on a large dataset. 
 
 # 7. View the results
 
-Once your evaluation is complete, you can view the results. You can choose to:
-* see only the Dataset with the added scores, or 
-* go to the **Explore** view, which shows your Dataset alongside a summary Report with score distributions (Recommended).
+Once your evaluation is complete, you can view the results. You can either
+* view the Dataset with the added scores, or 
+* use the **Explore** view to see the Dataset with a summary Report (recommended).
 
-If you have many Metrics, the Explore page will initially show the full long Report. Use the selector at the top to focus on a specific Metric.
+If you have many Metrics, the Explore page will initially show the long Report. Use the selector at the top to focus on a specific Metric.
 
 Here’s what the Explore page might look like with the results from the Cheerfulness evaluator for the “Answer” column:
 
 ![](../.gitbook/assets/cloud/nocode_judge_result-min.png)
-
