@@ -15,6 +15,7 @@ This section covers how to instrument your AI application to collect data and se
 Tracing captures a detailed record of how your LLM application operates. It logs the system's inputs and outputs, along with intermediate steps and events, such as function calls. With this data, you can analyze and monitor your LLM system, including running evaluations on the tracing datasets. 
 
 While traces can have multiple turns, Evidently makes it easy to automatically create tabular datasets from traces for evaluation.
+
 ![](../.gitbook/assets/cloud/qs_tracing_dataset.png)
 
 # What is Tracely?
