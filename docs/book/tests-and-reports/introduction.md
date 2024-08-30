@@ -76,7 +76,7 @@ In addition to column-level Metrics like `ColumnSummaryMetric`, you can compute 
 
 ![](../.gitbook/assets/reports/overview_class_metric_example-min.png)
 
-The `DatasetCorrelationsMetric` will summarize the correlations between all columns in the dataset and show a heatmap.
+The `DatasetCorrelationsMetric` shows the correlations between all columns in the dataset on a heatmap.
 
 ![](../.gitbook/assets/reports/overview_correlation_metric_example-min.png)
 
@@ -98,9 +98,9 @@ How to generate Reports:
 
 # Test Suite
 
-A Test Suite is a collection of Tests designed to verify whether specific conditions are met within a given dataset.
+A Test Suite is a collection of Tests that verify if specific conditions are met within a given dataset.
 
-Think of a Test Suite as a more structured way to use Metrics you’d find in a Report, but with added rules. Each Test pairs a Metric with a specific condition. It calculates a value, checks it against your rule, and then tells you if it passed or failed. 
+Think of a Test Suite as a more structured way to use Metrics you’d find in a Report, but with added rules. Each Test pairs a Metric with a condition. It calculates a value, checks it against your rule, and then tells you if it passed or failed. 
 
 For example, you might set up a Test to check that:
 * **Gen AI**: The share of responses labeled “incorrect” by the LLM judge is under 5%.
@@ -110,11 +110,11 @@ For example, you might set up a Test to check that:
 * **Regression**: The model quality is better than the quality of the dummy model.
 * **Data Drift**: The share of drifting features in the dataset is less than 30%.
 
-Here is an example of a Test Suites focused on classification. The same interface works for all types of checks.
+Here is an example of a classification Test Suites. The same interface works for all types of checks.
 
 ![](../.gitbook/assets/tests/overview_test_suite_example-min.png)
 
-There are also **Test Presets** — pre-built Test Suites designed for specific use cases. They act as templates to help you get started quickly by automatically generating multiple Tests, and deriving Test conditions from the provided reference dataset or heuristics.
+There are also **Test Presets** — pre-built Test Suites designed for specific use cases. They act as templates to help you get started quickly. Presets automatically generate multiple Tests, and derive Test conditions from the reference dataset or heuristics.
 
 For example, the `DataQualityTestPreset` automatically checks for issues like missing values or duplicates, while the `RegressionTestPreset` focuses on evaluating regression model performance.
 
@@ -128,9 +128,11 @@ If your Test Suite includes many Tests, you can easily navigate the output by st
 
 ![](../.gitbook/assets/tests/overview_test_example-min.png)
 
-You can also create a custom Test Suite by combining individual Tests. Just like with Metrics, you can run Tests:
-* on specific columns, such as checking if the mean value of a column stays within a stable range (`TestColumnValueMean`) 
-* on the dataset as a whole, like checking how many rows are completely empty (`TestNumberOfEmptyRows`).
+You can create a custom Test Suite with individual Tests. Just like with Metrics, you can run Tests:
+* on specific columns, such as checking if the mean value is within a stable range (`TestColumnValueMean`) 
+* on the dataset as a whole, like checking how many rows are empty (`TestNumberOfEmptyRows`).
+
+You can set custom conditions for each Test, or let Evidently assist.
 
 See all available Tests:
 
@@ -138,9 +140,7 @@ See all available Tests:
 [All tests](all-tests.md)
 {% endcontent-ref %}
 
-When you create a Test Suite on your own, you can set custom conditions for each Test, or let Evidently assist by using a reference dataset or heuristics to auto-generate test conditions. 
-
-Similar to Reports, you can view Test results in Python environments like Jupyter notebook and export the results: as HTML, JSON, a Python dictionary, a Pandas DataFrame, or save a JSON snapshot to view on the Evidently platform.
+Similar to Reports, you can view Test results in Python environments like Jupyter notebook, export as HTML, JSON, a Python dictionary or a Pandas DataFrame, and save a JSON snapshot to the Evidently platform.
 
 When to use Tests:
 
@@ -154,16 +154,6 @@ How to run Test Suites:
 [Run Tests](run-tests.md)
 {% endcontent-ref %}
 
-# Test Suites or Reports?
-
-**Reports** and **Test Suites** are complementary. You can choose one option or use both.
-
-**Reports** are best for debugging, exploratory, and ad hoc analytics. They focus on interactive visualizations and don’t require setting conditions upfront. Use them to run evaluations during experiments and compare datasets, models, or prompts.
-
-**Test Suites** are best for automation, like CI/CD checks. Use them when you can set up conditions upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and systems, and you can run them at scale, only reacting to failure alerts.
-
-You can also use both Reports and Test Suites together. For example, run Tests for automated checks and if they fail, use Reports for visual debugging.
-
 # Descriptors 
 
 When evaluating text data, you'll need **Descriptors**. A Descriptor is a row-level score that assesses a specific quality or dimension of the text.
@@ -174,9 +164,9 @@ Say, you want to analyze the length, sentiment, or semantic similarity of your L
 
 This differs from many ML or data quality metrics that provide a single value for a column or entire dataset (like accuracy). Descriptors give scores at the per-row level, which is useful for debugging—such as finding the shortest responses.
 
-Evidently computes these extra values for each row and adds them to your evaluated dataset. Descriptors can be:
+Evidently computes these extra values and adds them to your evaluated dataset. Descriptors can be:
 * **Numerical**. Stats like text length or sentiment score.
-* **Categorical**. Labels like “correct” or “incorrect,” or “true” and “false” for pattern matches or specific conditions.
+* **Categorical**. Labels like “correct” or “incorrect,” or “true” and “false” for pattern matches.
 * **Strings of text**. For example, reasoning generated by an LLM to explain a score.
   
 You can create Descriptors that use two columns at once, such as measuring the semantic similarity of one text column to another. 
@@ -185,7 +175,7 @@ Once you’ve chosen the Descriptors, you can include them in a Report or Test S
 
 Under the hood, instead of computing a Metric or Test directly for an existing numerical or categorical column, Evidently computes a Metric or Test for a Descriptor that’s generated simultaneously for a text column in your dataset.
 
-For instance, you can compute a ColumnSummaryMetric for Text Length descriptor of your text column that contains "Generated summary”. This will give you all an overview of the length distribution across all texts:
+For instance, you can compute a `ColumnSummaryMetric` for Text Length descriptor of your text column that contains "Generated summary”. This will give you an overview of the text length across all inputs:
 
 ![](../.gitbook/assets/reports/overview_descriptor_metric_example.png)
 
@@ -200,3 +190,13 @@ How to generate Descriptors:
 {% content-ref url="text-descriptors.md" %}
 [Text Descriptors](text-descriptors.md)
 {% endcontent-ref %}
+
+# Test Suites or Reports?
+
+**Reports** and **Test Suites** are complementary. You can choose one option or use both.
+
+**Reports** are best for debugging, exploratory, and ad hoc analytics. They focus on interactive visualizations and don’t require setting conditions upfront. Use them to run evaluations during experiments and compare datasets, models, or prompts.
+
+**Test Suites** are best for automation, like CI/CD checks. Use them when you can set up conditions upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and systems, and you can run them at scale, only reacting to failure alerts.
+
+You can also use both Reports and Test Suites together. For example, run Tests for automated checks and if they fail, use Reports for visual debugging.
