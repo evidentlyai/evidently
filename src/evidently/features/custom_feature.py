@@ -1,8 +1,8 @@
-import uuid
 from typing import Callable
 from typing import Tuple
 
 import pandas as pd
+import uuid6
 
 from evidently import ColumnType
 from evidently._pydantic_compat import Field
@@ -15,7 +15,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class CustomFeature(FeatureTypeFieldMixin, GeneratedFeature):
     display_name: str
-    name: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = Field(default_factory=lambda: str(uuid6.uuid7()))
     func: Callable[[pd.DataFrame, DataDefinition], pd.Series]
     feature_type: ColumnType = ColumnType.Numerical
 
@@ -30,7 +30,7 @@ class CustomFeature(FeatureTypeFieldMixin, GeneratedFeature):
 class CustomSingleColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
     display_name: str
     func: Callable[[pd.Series], pd.Series]
-    name: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = Field(default_factory=lambda: str(uuid6.uuid7()))
     column_name: str
     feature_type: ColumnType = ColumnType.Numerical
 
@@ -52,7 +52,7 @@ class CustomSingleColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
 class CustomPairColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
     display_name: str
     func: Callable[[pd.Series, pd.Series], pd.Series]
-    name: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = Field(default_factory=lambda: str(uuid6.uuid7()))
     first_column: str
     second_column: str
     feature_type: ColumnType = ColumnType.Numerical

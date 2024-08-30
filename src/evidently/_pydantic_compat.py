@@ -5,8 +5,6 @@ import pydantic
 v = 1 if pydantic.__version__.startswith("1") else 2
 
 if v == 2:
-    from pydantic.v1 import UUID1
-    from pydantic.v1 import UUID4
     from pydantic.v1 import BaseConfig
     from pydantic.v1 import BaseModel
     from pydantic.v1 import Extra
@@ -32,8 +30,6 @@ if v == 2:
         from pydantic.v1.typing import DictStrAny
 
 else:
-    from pydantic import UUID1
-    from pydantic import UUID4
     from pydantic import BaseConfig
     from pydantic import BaseModel
     from pydantic import Extra
@@ -60,8 +56,6 @@ else:
 
 
 __all__ = [
-    "UUID4",
-    "UUID1",
     "BaseConfig",
     "BaseModel",
     "Field",
