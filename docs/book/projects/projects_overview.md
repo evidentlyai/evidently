@@ -2,11 +2,11 @@
 description: Introduction to Projects in Evidently Platform. 
 ---   
 
+This documentation section describes how to use the Project feature. This only applies if you use the Evidently web application. You can also run evaluations locally with the Evidently Python library without creating a Project.
+
 {% hint style="success" %}
 Projects are available in `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`. 
 {% endhint %}
-
-**Note**: You can also run evaluations locally with the Evidently Python library without creating a Project. You need a Project only if you are using the Evidently web application.
 
 # What is a Project?
 
@@ -23,8 +23,8 @@ Each Project has its own Dashboard and alerting rules. Inside the Project, you c
 ![](../.gitbook/assets/cloud/project_dashboard-min.png)
 
 You can organize Projects in a way that suits your workflow, for example:
-* create separate Projects for the experimental and production phases
-* create separate Projects for each ML model or different components of an LLM-based application
+* create separate Projects for the experimental and production phases of your AI use case
+* create separate Projects for each ML model or individual components of an LLM-based application
 * group evaluation results for different models / components within a single Project, but use Tags (such as model version, etc.) to differentiate between them.
 
 Once you create a Project, it gets a unique ID. You can then connect via the Python API or through the UI to send data, edit the Dashboard, and manage the Project.
