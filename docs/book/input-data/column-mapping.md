@@ -31,12 +31,12 @@ Here are example requirements:
 
 | Evaluation | Feature columns  | Prediction column | Target column  | ID column | Datetime column | Reference dataset
 |---|---|---|---|---|---|---|
-| TEXT EVALS | Required (Text type) | Optional | Optional | Optional | Optional | Optional |
-| DATA QUALITY | Required (Any type) | Optional | Optional | Optional | Optional | Optional |
-| DATA DRIFT | Required (Any type) | Optional | Optional | Optional | Optional | Required |
-| TARGET DRIFT | Optional | Target and/or prediction required | Target and/or prediction required | Optional | Required |
-| CLASSIFICATION | Optional | Required | Required | Optional | Optional | Optional |
-| REGRESSION | Optional | Required | Required | Optional | Optional | Optional |
+| **Text Evals** | Required (Text) | Optional | Optional | Optional | Optional | Optional |
+| **Data Quality** | Required (Any) | Optional | Optional | Optional | Optional | Optional |
+| **Data Drift** | Required (Any) | Optional | Optional | Optional | Optional | Required |
+| **Target Drift** | Optional | Target and/or prediction required | Target and/or prediction required | Optional | Required |
+| **Classification** | Optional | Required | Required | Optional | Optional | Optional |
+| **Regression** | Optional | Required | Required | Optional | Optional | Optional |
 
 {% hint style="info" %} 
 **It's best always to use column mapping**. Without it, Evidently will apply its own heuristics to map the input data automatically. To avoid errors, it's safer to set the column mapping manually.
