@@ -4,7 +4,7 @@ description: How to generate Reports using Evidently Python library.
 
 # Code examples
 
-To see code examples with generating Reports, check the sample notebooks in [Examples](../examples/examples.md).
+Check the sample notebooks in [Examples](../examples/examples.md).
 
 # Imports
 
@@ -18,7 +18,7 @@ from evidently.metrics import *
 
 # How it works
 
-Here is the general flow.
+Here is the general flow:
 * **Input data**. Prepare data as a Pandas DataFrame. This will be your `current` data to run evaluations for. For some checks, you may need a second `reference` dataset. Check the [input data requirements](../input-data/data-requirements.md).
 * **Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but highly recommended.
 * **Define the Report**. Create a `Report` object and list the selected `metrics`.
@@ -47,7 +47,7 @@ data_quality_report
 If nothing else is specified, the Report will run with the default parameters for all columns in the dataset.
 
 {% hint style="info" %} 
-**Available Presets**. There are other Presets: for example, `DataDriftPreset`, `RegressionPreset` and `ClassificationPreset`. Refer to the [Presets overview](../presets/all-presets.md) to understand individual Presets, and to [All metrics](../reference/all-metrics.md) to see all available options. 
+**Available Presets**. There are other Presets: for example, `DataDriftPreset`, `RegressionPreset` and `ClassificationPreset`. Check the list of [Presets](../presets/all-presets.md) to understand individual, and all available [Metrics](../reference/all-metrics.md). 
 {% endhint %}
 
 **Example 2**. You can include multiple Presets in a Report. To combine Data Drift and Data Quality and run them over two datasets, including a reference dataset necessary for data drift evaluation:
@@ -66,7 +66,7 @@ drift_report
 It will display the combined Report in Jupyter notebook or Colab. 
 
 {% hint style="info" %} 
-**Raw data in visuals**. All visuals in Reports are aggregated by default. This helps reduce load time and Report size for larger datasets, even those with millions of rows. If you work with smaller datasets or samples, you can pass an [option to generate plots with raw data](../customization/report-data-aggregation.md).
+**Raw data in visuals**. Visuals in the Reports are aggregated. This reduces load time and Report size for larger datasets, even with millions of rows. If you work with small datasets or samples, you can [generate plots with raw data](../customization/report-data-aggregation.md).
 {% endhint %}
 
 **Example 3**. To export the values computed inside the Report, export it as a Python dictionary.
@@ -79,7 +79,7 @@ drift_report.as_dict()
 **There are more output formats!**. You can also export Report results in formats like HTML, JSON, dataframe, and more. Refer to the [Output Formats](output_formats.md) for details.
 {% endhint %}
 
-**Example 4**. You can customize some of the Metrics inside the Preset by passing parameters to it. For example, calculate quality metrics for a binary probabilistic classification model with a custom decision threshold instead of default 0.5:
+**Example 4**. You can customize some of the Metrics inside the Preset. For example, set a custom decision threshold (instead of default 0.5) when computing classification quality metrics:
 
 ```python
 dataset_report = Report(metrics=[
@@ -99,27 +99,25 @@ drift_report = Report(metrics=[
 Refer to the [All metrics](../reference/all-metrics.md) table to see defaults and available parameters that you can pass for each Preset.
 {% endhint %}
 
-Evidently Reports include visualizations, such as plotting values over time, which are aggregated by default. This keeps Reports size manageable, even with millions of evaluated rows. If you prefer to see raw data plots (individual prediction points), you can enable this [option](../customization/report-data-aggregation.md). This will store raw data points inside the Report. However, you should only use this option for small datasets or samples since otherwise, the resulting Report can be too large, and plots will be unreadable. 
-
 # Get a custom Report
 
-While Presets are a great starting point, you may want to customize the Report by choosing Metrics or adjusting their parameters even more. To do this, create a custom Report using individual Metrics.
+While Presets are a great starting point, you may want to customize the Report by choosing Metrics or adjusting their parameters even more. To do this, create a custom Report.
 
 ## 1. Choose metrics
 
 First, define which Metrics you want to include in your custom Report. Metrics can be either dataset-level or column-level.
 
 {% hint style="info" %} 
-**List of available Metrics**: The complete list of Metrics is available in the [All metrics](../reference/all-metrics.md) table. To see interactive examples, check the [Example notebooks](../examples/examples.md).
+**Available Metrics**: See the [All metrics](../reference/all-metrics.md) table. For a preview, check [Example notebooks](../examples/examples.md).
 {% endhint %}
 
 {% hint style="info" %} 
-**Row-level evaluations**: If you want to generate scores on the row-level, which is often relevant for text data where you score individual texts, read more about [Text Descriptors](text-descriptors.md.md).
+**Row-level evals**: To generate row-level scores for text data, check [Text Descriptors](text-descriptors.md.md).
 {% endhint %}
 
 **Dataset-level metrics**. Some Metrics evaluate the entire dataset. For example, a Metric that checks for data drift across the whole dataset or calculates accuracy.
 
-To create a custom Report with dataset-level metrics, create a `Report` object and list the `metrics` one by one:    
+To create a custom Report with dataset-level metrics, create a `Report` object and list the `metrics`:    
 
 ```python
 data_drift_dataset_report = Report(metrics=[
@@ -128,7 +126,7 @@ data_drift_dataset_report = Report(metrics=[
 ])
 ```
 
-**Column-level Metrics**. Some Metrics focus on individual columns, like evaluating distribution drift or summarizing specific columns. To include column-level Metrics, you must pass the name of the column to each such Metric:
+**Column-level Metrics**. Some Metrics focus on individual columns, like evaluating distribution drift or summarizing specific columns. To include column-level Metrics, pass the name of the column to each such Metric:
 
 ```python
 data_drift_column_report = Report(metrics=[
