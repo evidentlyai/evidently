@@ -2,6 +2,10 @@
 description: Introduction to Reports and Test Suites.
 ---   
 
+{% hint style="success" %}
+This applies to `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`. 
+{% endhint %}
+
 You can use the Evidently Python library as a standalone open-source tool or as part of the Evidently Platform to track and store evaluation results over time.
 
 This section of the documentation explains the core evaluation API of the Evidently library. This page, specifically, gives a conceptual overview of the components. For detailed API guides, check the links below:
@@ -52,12 +56,6 @@ Here is an example of a Data Drift Report that checks for shifts in data distrib
 
 You can also create a custom Report by listing Metrics you’d like to include one by one. Evidently comes with built-in checks, so you can start quickly without building from scratch. You can also add custom evaluations.
 
-See all available Metrics and Presets:
-
-{% content-ref url="../reference/all-metrics.md" %}
-[All metrics](all-metrics.md)
-{% endcontent-ref %}
-
 An Evidently Metric isn't just a single value. It's best to think of it as an “evaluation unit” that includes both the computation results (which can include multiple values) and its visual representation.
 
 For example, when you run a `ColumnSummaryMetric`, you'll receive a range of descriptive statistics for the column and a distribution histogram. For monitoring, you can later pull any of these individual values (min, max, mean, etc.) in time.
@@ -79,6 +77,12 @@ In addition to column-level Metrics like `ColumnSummaryMetric`, you can compute 
 The `DatasetCorrelationsMetric` shows the correlations between all columns in the dataset on a heatmap.
 
 ![](../.gitbook/assets/reports/overview_correlation_metric_example-min.png)
+
+There are lots of other checks! See all available Metrics and Presets:
+
+{% content-ref url="../reference/all-metrics.md" %}
+[All metrics](all-metrics.md)
+{% endcontent-ref %}
 
 You can get Report results in various formats:
 * **Interactive visualizations**. Each Metric has a visual representation like shown above. You can view plots directly in environments like Jupyter Notebook or Colab, or save as an HTML file. 
@@ -129,7 +133,7 @@ If your Test Suite includes many Tests, you can easily navigate the output by st
 ![](../.gitbook/assets/tests/overview_test_example-min.png)
 
 You can create a custom Test Suite with individual Tests. Just like with Metrics, you can run Tests:
-* on specific columns, such as checking if the mean value is within a stable range (`TestColumnValueMean`) 
+* on specific columns, like checking if mean value is within a stable range (`TestColumnValueMean`) 
 * on the dataset as a whole, like checking how many rows are empty (`TestNumberOfEmptyRows`).
 
 You can set custom conditions for each Test, or let Evidently assist.
@@ -173,7 +177,7 @@ You can create Descriptors that use two columns at once, such as measuring the s
 
 Once you’ve chosen the Descriptors, you can include them in a Report or Test Suite using column-level Metrics or Tests. This works similarly to other Evidently checks. 
 
-Under the hood, instead of computing a Metric or Test directly for an existing numerical or categorical column, Evidently computes a Metric or Test for a Descriptor that’s generated simultaneously for a text column in your dataset.
+Under the hood, instead of computing a Metric or Test directly for an existing numerical or categorical column, Evidently computes a Metric or Test **for a Descriptor** that’s generated simultaneously for a text column in your dataset.
 
 For instance, you can compute a `ColumnSummaryMetric` for Text Length descriptor of your text column that contains "Generated summary”. This will give you an overview of the text length across all inputs:
 
