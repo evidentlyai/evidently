@@ -19,7 +19,6 @@ from evidently.ui.components.telemetry import TelemetryComponent
 from evidently.ui.config import AppConfig
 from evidently.ui.config import ConfigContext
 from evidently.ui.errors import EvidentlyServiceError
-from evidently.ui.utils import uuid7_type_decoder
 
 
 def evidently_service_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
@@ -44,9 +43,6 @@ class LocalServiceComponent(ServiceComponent):
         if self.debug:
             log_config = create_logging()
             builder.kwargs["logging_config"] = LoggingConfig(**log_config)
-        # builder.kwargs["plugins"] = builder.kwargs.get("pluginc", [])
-        # builder.kwargs["plugins"].append(PydanticUUID7Plugin())
-        builder.kwargs["type_decoders"] = [uuid7_type_decoder]
 
 
 def create_logging() -> dict:

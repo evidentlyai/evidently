@@ -3,7 +3,6 @@ import hashlib
 import itertools
 import json
 import os
-import uuid
 import warnings
 from enum import Enum
 from functools import lru_cache
@@ -24,7 +23,6 @@ from typing import TypeVar
 from typing import Union
 from typing import get_args
 
-import uuid6
 from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
@@ -35,22 +33,6 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
-
-    UUID7 = uuid6.UUID
-else:
-
-    class UUIDMeta(type):
-        _required_version: int
-
-        def __instancecheck__(self, instance):
-            return isinstance(instance, uuid.UUID)  # and instance.version == self._required_version
-
-    class UUID7(uuid6.UUID, metaclass=UUIDMeta):
-        _required_version = 7
-
-        @classmethod
-        def __modify_schema__(cls, field_schema: Dict[str, Any]) -> None:
-            field_schema.update(type="string", format=f"uuid{cls._required_version}")
 
 
 T = TypeVar("T")
@@ -529,13 +511,6 @@ class FieldPath:
 @pydantic_type_validator(FieldPath)
 def series_validator(value):
     return value.get_path()
-
-
-@pydantic_type_validator(UUID7, prioritize=True)
-def uuid7_validator(value):
-    if isinstance(value, uuid.UUID):
-        return value
-    return uuid6.UUID(value)
 
 
 def get_object_hash_deprecated(obj: Union[BaseModel, dict]):

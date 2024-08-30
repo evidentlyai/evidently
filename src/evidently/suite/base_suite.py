@@ -32,7 +32,6 @@ from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
-from evidently.pydantic_utils import UUID7
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
@@ -502,7 +501,7 @@ class SnapshotLinks(BaseModel):
 
 
 class Snapshot(BaseModel):
-    id: UUID7
+    id: SnapshotID
     name: Optional[str] = None
     timestamp: datetime
     metadata: Dict[str, MetadataValueType]
