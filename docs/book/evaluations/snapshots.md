@@ -30,7 +30,7 @@ project = ws.get_project("PROJECT_ID")
 You can prep your input data locally as a Pandas DataFrame or first upload it to the Evidently Platform and call it from there.
 
 {% hint style="info" %}
-**How to work with datasets**. Check instructions on how to prepare your [input data](../input-data/data-requirements.md) or upload and manage [Datasets](../datasets/datasets_overview.md) on the Platform.
+**Working with data**. Check how to prepare your [input data](../input-data/data-requirements.md) or upload and manage [Datasets](../datasets/datasets_overview.md).
 {% endhint %}
 
 **3. Define the snapshot compostion**. Define what you want to evaluate.
@@ -40,7 +40,7 @@ You can prep your input data locally as a Pandas DataFrame or first upload it to
 * Optionally, pass custom parameters for Metric calculations and/or Test conditions.
 
 {% hint style="info" %}
-**How to run Reports and Tests**. Check detailed guides on how to get [Reports](../tests-and-reports/get-reports.md), run [Test Suites](../tests-and-reports/run-tests.md) or generate [Text Descriptors](../tests-and-reports/text-descriptors.md) for text data evaluation.
+**Reports and Tests**. Check how to get [Reports](../tests-and-reports/get-reports.md), run [Test Suites](../tests-and-reports/run-tests.md) or generate [Text Descriptors](../tests-and-reports/text-descriptors.md).
 {% endhint %}
 
 **4. Run the Report or Test Suite**. Execute the evaluation on your dataset.
@@ -59,7 +59,7 @@ After you compute the Report or Test Suite, use the `add_report` or `add_test_su
 
 ## Send snapshots
 
-**Compute and send a Report**. To create and send a Report with data summaries for a single dataset `batch1` to the workspace `ws`:
+**Report**. To create and send a Report with data summaries for a single dataset `batch1` to the workspace `ws`:
 
 ```python
 data_report = Report(
@@ -71,7 +71,7 @@ data_report.run(reference_data=None, current_data=batch1)
 ws.add_report(project.id, data_report)
 ```
 
-**Compute and send a Test Suite**. To create and send a Test Suite with data drift checks, passing current and reference data:
+**Test Suite**. To create and send a Test Suite with data drift checks, passing current and reference data:
 
 ```python
 drift_checks = TestSuite(tests=[
@@ -81,19 +81,19 @@ drift_checks.run(reference_data=reference_batch, current_data=batch1)
 ws.add_test_suite(project.id, drift_checks)
 ```
 
-**Send a snapshot**. The `add_report` or `add_test_suite` methods generate snapshots automatically. If you already have a snapshot (e.g., a previously saved Report), you can load it to Python and add it to your Project:
+**Send a snapshot**. The `add_report` or `add_test_suite` methods generate snapshots automatically. If you already have a snapshot (e.g., you previously saved it), you can load it load and send it to your Project:
 
 ```python
 ws.add_snapshot(project.id, snapshot.load("data_drift_snapshot.json"))
 ```
 
 {% hint style="info" %}
-**Snapshot size**. A single upload to Evidently Cloud should not exceed 50MB for free users or 500MB for the Pro plan. This limitation applies to the size of the resulting JSON, not the dataset itself. For example, a data drift report for 50 columns and 10,000 rows of current and reference data results in a snapshot of approximately 1MB. (For 100 columns x 10,000 rows: ~ 3.5MB; for 100 columns x 100,000 rows: ~ 9MB). However, the size varies depending on the metrics or tests used.
+**Snapshot size**. A single upload to Evidently Cloud should not exceed 50MB (Free plan) or 500MB (Pro plan). This limitation applies to the size of the JSON, not the dataset itself. Example: a data drift report for 50 columns and 10,000 rows of current and reference data results in a snapshot of approximately 1MB. (For 100 columns x 10,000 rows: ~ 3.5MB; for 100 columns x 100,000 rows: ~ 9MB). The size varies depending on the metrics or tests used.
 {% endhint %}
 
 ## Add dataset 
 
-When you upload a Report or Test Suite, you can optionally include the Dataset. This will upload the raw dataset you evaluated, together with added Descriptors (if any). This is useful for raw-level debugging and analysis.
+When you upload a Report or Test Suite, you can optionally include the Dataset you evaluated, together with added Descriptors (if any). This helps with row-level debugging and analysis.
 
 Use the `include_data` parameters (defaults to False):
 
@@ -119,15 +119,15 @@ Since you can assign arbitrary timestamps, you can log snapshots asynchronously 
 
 ## Add tags and metadata
 
-You can include `tags` and `metadata` in snapshots. This is useful for search, data filtering, and results tracking. By adding tags, you can easily visualize data only from a specific subset of your snapshots on a monitoring Panel.
+You can include `tags` and `metadata` in snapshots. This is useful for search and data filtering. By adding **Tags**, you can then visualize data only from a specific subset of your snapshots on a monitoring Panel.
 
 Examples of when to use tags include:
-* You want to identify a specific evaluation run or group of experiments, such as by attaching a model version or test scenario type.
-  You are logging data on production/shadow, champion/challenger, or A/B model versions of some Projects and want to differentiate between them.
+* You want to identify a specific evaluation run or group of experiments by model version or test scenario.
+* You are logging data on production/shadow, champion/challenger, or A/B model versions.
 * You compute snapshots with different reference datasets (for example, to compare distribution drift week-by-week and month-by-month).
 * You have data for multiple models of the same type inside a Project.
 * You capture snapshots for multiple segments in your data.
-* You want to tag individual Reports in a Project so that you can easily find them, e.g., a datasheet card, a model card, etc.
+* You want to tag individual Reports, e.g., a datasheet card, a model card, etc.
 
 **Custom tags**. Pass any custom Tags as a list: 
 
