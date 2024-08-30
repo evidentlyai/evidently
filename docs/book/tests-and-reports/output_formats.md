@@ -85,7 +85,7 @@ loaded_report = Report.load('snapshot.json')
 After you load the snapshot back, you can again view it in Python or export it to other formats.
 
 {% hint style="info" %}
-**Generating snaphots**. To better understand how you can upload the evaluation results to the Evidently Platform, check the page on [Generating Snaphots](../get-started/tutorial-monitoring.md).
+**Generating snaphots**. To better understand how you can upload the evaluation results to the Evidently Platform, check the page on [generating snapshots](../evaluations/snapshots.md).
 {% endhint %}
 
 # DataFrame with a Report summary
