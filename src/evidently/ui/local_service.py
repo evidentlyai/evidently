@@ -19,7 +19,6 @@ from evidently.ui.components.telemetry import TelemetryComponent
 from evidently.ui.config import AppConfig
 from evidently.ui.config import ConfigContext
 from evidently.ui.errors import EvidentlyServiceError
-from evidently.ui.utils import uuid6_type_decoder
 
 
 def evidently_service_exception_handler(_: Request, exc: EvidentlyServiceError) -> Response:
@@ -41,7 +40,6 @@ class LocalServiceComponent(ServiceComponent):
         assert isinstance(ctx, ConfigContext)
         builder.exception_handlers[EvidentlyServiceError] = evidently_service_exception_handler
         builder.kwargs["debug"] = self.debug
-        builder.type_decoders.append(uuid6_type_decoder)
         if self.debug:
             log_config = create_logging()
             builder.kwargs["logging_config"] = LoggingConfig(**log_config)
