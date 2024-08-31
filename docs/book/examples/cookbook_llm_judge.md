@@ -5,8 +5,9 @@ description: How to create and evaluate an LLM judge.
 In this tutorial, we'll show you how to build an evaluator for a LLM system's outputs using another LLM as the judge. This lets you automatically assess the quality of your system's responses based on your custom criteria.
 
 We'll explore two ways to use an LLM as a judge:
-* **Reference-based**: Compare new responses against a reference. This is for regression testing workflows or whenever you have a "ground truth" or approved responses to compare against.
-* **Open-ended**: Evaluate responses based on custom criteria, which helps evaluate new outputs when there's no reference available.
+* **Reference-based**. Compare new responses against a reference. This is for regression testing workflows or whenever you have a "ground truth" or approved responses to compare against.
+* **Open-ended**. Evaluate responses based on custom criteria, which helps evaluate new outputs when there's no reference available.
+  
 By the end, you'll know how to create custom LLM judges and apply them to your data. Our primary focus will be showing how to develop and tune the evaluator, which you can then apply in different contexts, like regression testing or prompt comparison.
 
 # Tutorial scope
@@ -15,13 +16,14 @@ Here's what we'll do:
 * **Create an evaluation dataset**. We'll create a toy Q&A dataset with two responses to each question. We'll add manual labels based on the criteria we want the LLM evaluator to follow later.
 * **Create and run an LLM as a judge**. We'll design an LLM evaluator prompt to determine whether the new response is correct compared to the reference. 
 * **Evaluate the judge**. Compare the LLM judge's evaluations with manual labels to see if they meet the expectations or need tweaking.
+  
 We'll start with the reference-based evaluator, which is more complex because it requires passing two columns to the prompt. Then, we'll create a simpler judge focused on verbosity.
 
 To complete the tutorial, you will need:
 * Basic Python knowledge. 
 * An OpenAI API key to use for LLM evaluator.
 
-To complete the tutorial, use the provided code snippets or run a sample notebook.
+Use the provided code snippets or run a sample notebook.
 
 Jupyter notebook:
 {% embed url="https://github.com/evidentlyai/community-examples/blob/main/tutorials/LLM_as_a_judge_tutorial.ipynb" %}
@@ -217,12 +219,12 @@ REFERENCE:
 
 Explanation:
 * `BinaryClassificationPromptTemplate`: This template instructs the LLM to classify the input into two classes, explain its reasoning, and format everything neatly. You don't have to worry about asking for these details—they're built into the template.
-* `target_category` and `non-target category`: The labels we're aiming for—like "correct" and "incorrect" in our case.
+* `target_category` and `non-target category`: The labels we're aiming for - "correct" and "incorrect" in our case.
 * `criteria`: This is where you describe what the LLM should look for when grading the responses.
 * `include_reasoning`: This asks the LLM to explain its choice.
 * `additional_columns`: This allows you to include not just the primary column (the "new_response") but also the "reference_response" for comparison. You must also add the column name placeholder inside the grading criteria part of the prompt.
   
-In this example, we've set up the prompt to be strict—erring on the side of labeling a correct answer as incorrect is preferable. You can write it differently. This flexibility is one of the key benefits of creating a custom judge.
+In this example, we've set up the prompt to be strict, erring on the side of labeling a correct answer as incorrect is preferable. You can write it differently. This flexibility is one of the key benefits of creating a custom judge.
 
 {% hint style="info" %}
 **What else is there?** Check the docs on [LLM judge feature](../customization/llm_as_a_judge.md).
