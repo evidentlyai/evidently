@@ -165,7 +165,7 @@ pd.set_option('display.max_colwidth', None)
 golden_dataset.head(5)
 ```
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmjudge_data_preview.png)
 
 
 {% hint style="info" %}
@@ -180,7 +180,7 @@ Ultimately, an LLM judge is a small ML system, and it needs its own evals!
 
 Here's the distribution of examples in our small dataset: we have both correct and incorrect responses.
 
-ADD IMG ![](../.gitbook/assets/cloud/add_new_panel_2.gif)
+![](../.gitbook/assets/cookbook/llmjudge_label_dist.png)
 
 # 2. Correctness evaluator 
 
@@ -246,6 +246,8 @@ correctness_report
 
 This will render an HTML report in the notebook cell. Or, use `as_dict()` for a Python dictionary output. 
 
+![](../.gitbook/assets/cookbook/llmjudge_correctness_dist.png)
+
 But since we're refining our LLM evaluator, we don't want just the label distribution: we want to see what the LLM got right and wrong!
 
 {% hint style="info" %}
@@ -300,11 +302,11 @@ Explanation:
   
 We have one type of error each, but overall, the results are pretty good! 
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmjudge_confusion_matrix.png)
 
 We can zoom in on the raw data to see specific errors:
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmjudge_correctness_examples.png)
 
 **Note**: your results and explanations will vary since LLMs are non-deterministic.
 
@@ -354,6 +356,8 @@ verbosity_report.run(reference_data=None,
 verbosity_report
 ```
 
+![](../.gitbook/assets/cookbook/llmjudge_verbosity_dist.png)
+
 Or use `as_dict()` for a Python dictionary output. 
 
 To access the raw results:
@@ -363,7 +367,7 @@ verbosity_report.datasets().current
 ```
 
 Preview:
-ADD IMG
+![](../.gitbook/assets/cookbook/llmjudge_verbosity_examples.png)
 
 Don't fully agree with the results? Use these labels as a starting point, and correct the decision where you see fit - now you've got your golden dataset! Next, iterate on your judge prompt.
 
