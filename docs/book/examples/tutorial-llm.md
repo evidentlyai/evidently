@@ -119,8 +119,12 @@ assistant_logs.head(3)
 
 ![](../.gitbook/assets/cloud/llm_data_preview-min.png)
 
+{% hint style="info" %}
+**How to collect data?**: you can use the open-source `tracely` library to collect the inputs and outputs from your LLM app. Check the [Tracing Quickstart](cloud_quickstart_tracing.md). You can then download the traced Dataset for evaluation. 
+{% endhint %}
+
 {% hint style="success" %}
-**How do I pass my data?** You can import a pandas DataFrame with flexible structure. Include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
+**How to pass an exsiting dataser?** You can import a pandas DataFrame with flexible structure. Include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
 {% endhint %}
 
 # 3. Create a Project 
