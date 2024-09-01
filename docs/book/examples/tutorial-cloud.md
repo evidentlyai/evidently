@@ -18,6 +18,8 @@ You'll need basic knowledge of Python. Once you connect the data, you can contin
 Video version:
 {% embed url="https://youtu.be/ivhhS7extgE" %}
 
+If you're having problems or getting stuck, reach out on [Discord](https://discord.com/invite/xZjKRaNp8b).
+
 # How it all works
 
 Evidently Cloud helps you monitor the performance of ML-powered systems in production: from tracking the quality of incoming data to the accuracy of model predictions.  
