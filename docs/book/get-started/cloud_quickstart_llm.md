@@ -6,6 +6,8 @@ This quickstart shows how to evaluate text data, such as inputs and outputs from
 
 You will run evals locally in Python and send results to Evidently Cloud for analysis and monitoring.
 
+Need help? Ask on [Discord](https://discord.com/invite/xZjKRaNp8b).
+
 # 1. Set up Evidently Cloud 
 
 Set up your Evidently Cloud workspace:
