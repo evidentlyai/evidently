@@ -32,7 +32,13 @@ Evidently LLM Metrics| [Jupyter notebook](https://github.com/evidentlyai/evident
 
 For LLM and text metrics, check the [LLM evaluation tutorial](tutorial-llm.md). 
 
-# Tutorials
+# Tutorials - LLM
+
+Title | Tutorial
+--- | --- 
+How to create LLM judge | [Tutorial](cookbook_llm_judge.md)
+
+# Tutorials - LLM
 
 To better understand the Evidently use cases, refer to the **detailed tutorials** accompanied by the blog posts.
 
