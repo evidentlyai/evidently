@@ -45,6 +45,8 @@ Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai
 
 You can also follow the video version: {% embed url="https://youtu.be/qwn0UqXJptY" %}
 
+If you're having problems or getting stuck, reach out on [Discord](https://discord.com/invite/xZjKRaNp8b).
+
 # 1. Installation and imports
 
 Install Evidently in your Python environment:
