@@ -281,17 +281,13 @@ We can also quantify it! We'll treat this like a classification task to measure 
 Let's create a DataFrame and map our data for classification: the original manual label is the target, and the LLM-provided response is the prediction. 
 
 ```python
-df = pd.DataFrame(report.datasets().current)
+df = pd.DataFrame(correctness_report.datasets().current)
 
 column_mapping = ColumnMapping()
 column_mapping.target = 'label'
 column_mapping.prediction = 'Correctness category'
 column_mapping.pos_label = 'incorrect'
-```
 
-Create and view the classification Report:
-
-```python
 classification_report = Report(metrics=[
     ClassificationQualityMetric(),
     ClassificationClassBalance(),
