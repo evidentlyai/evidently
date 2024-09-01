@@ -197,7 +197,9 @@ text_evals_report.run(reference_data=None,
 text_evals_report
 ```
 
-This calculates the number of symbols in each text and shows a summary. You can see the distribution of text length across all responses and descriptive statistics like the mean or minimal text length.
+This calculates the number of symbols in each text and shows a summary in your notebook cell. (You can also export it in other formats - see step 5).
+
+You can see the distribution of text length across all responses and descriptive statistics like the mean or minimal text length.
 
 ![](../.gitbook/assets/cloud/llm_tutorial_text_length-min.png)
 
@@ -389,7 +391,8 @@ custom_judge = LLMEval(
         pre_messages=[("system", "You are a judge which evaluates text.")],
         ),
     provider = "openai",
-    model = "gpt-4o-mini"
+    model = "gpt-4o-mini",
+    display_name="Conciseness",
 )
 ```
 
