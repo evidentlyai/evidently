@@ -2,7 +2,7 @@
 description: How to create and evaluate an LLM judge. 
 ---
 
-In this tutorial, we'll show you how to build an evaluator for a LLM system's outputs using another LLM as the judge. This lets you automatically assess the quality of your system's responses based on your custom criteria.
+In this tutorial, we'll show you how to build an evaluator for text outputs using another LLM as the judge. This lets you automatically assess the quality of your system's responses based on your custom criteria.
 
 {% hint style="info" %}
 **You can also create LLM judges using no code**. This tutorial shows an open-source workflow that you can run locally using the Evidently Python library. You can also create and run LLM judges on the platform using [no-code interface](../evaluations/no_code_evals.md).
@@ -17,8 +17,8 @@ By the end, you'll know how to create custom LLM judges and apply them to your d
 # Tutorial scope
 
 Here's what we'll do:
-* **Create an evaluation dataset**. We'll create a toy Q&A dataset with two responses to each question. We'll add manual labels based on the criteria we want the LLM evaluator to follow later.
-* **Create and run an LLM as a judge**. We'll design an LLM evaluator prompt to determine whether the new response is correct compared to the reference. 
+* **Create an evaluation dataset**. Ceate a toy Q&A dataset with two responses to each question, and add manual labels based on the criteria we want the LLM evaluator to follow later.
+* **Create and run an LLM as a judge**. Design an LLM evaluator prompt to determine whether the new response is correct compared to the reference. 
 * **Evaluate the judge**. Compare the LLM judge's evaluations with manual labels to see if they meet the expectations or need tweaking.
   
 We'll start with the reference-based evaluator, which is more complex because it requires passing two columns to the prompt. Then, we'll create a simpler judge focused on verbosity.
@@ -226,7 +226,7 @@ Explanation:
 * `target_category` and `non-target category`: The labels we're aiming for - "correct" and "incorrect" in our case.
 * `criteria`: This is where you describe what the LLM should look for when grading the responses.
 * `include_reasoning`: This asks the LLM to explain its choice.
-* `additional_columns`: This allows you to include not just the primary column (the "new_response") but also the "reference_response" for comparison. You must also add the column name placeholder inside the grading criteria part of the prompt.
+* `additional_columns`: This allows you to include not just the primary column (the "new_response") but also the "reference_response" for comparison. You then add this column name placeholder to the grading criteria.
   
 In this example, we've set up the prompt to be strict, erring on the side of labeling a correct answer as incorrect is preferable. You can write it differently. This flexibility is one of the key benefits of creating a custom judge.
 
@@ -272,7 +272,11 @@ correctness_report.datasets().current
 
 This will show a DataFrame with newly added scores and explanations.
 
-But we can also quantify it! We'll treat this like a classification task to measure how accurately the LLM identifies incorrect responses. We'll look at metrics like precision and recall.
+![](../.gitbook/assets/cookbook/llmjudge_correctness_examples.png)
+
+**Note**: your results and explanations will vary since LLMs are non-deterministic.
+
+We can also quantify it! We'll treat this like a classification task to measure how accurately the LLM identifies incorrect responses. We'll look at metrics like precision and recall.
 
 Let's create a DataFrame and map our data for classification: the original manual label is the target, and the LLM-provided response is the prediction. 
 
@@ -306,21 +310,13 @@ Explanation:
 * `ClassificationClassBalance` shows the distribution of classes (correct vs. incorrect) in the dataset.
 * `ClassificationConfusionMatrix` illustrates the types of errors.
   
-We have one type of error each, but overall, the results are pretty good! 
+We have one type of error each, but overall, the results are pretty good! If you want to refine the judge, you can iterate on the prompt and continue improving it. 
 
 ![](../.gitbook/assets/cookbook/llmjudge_confusion_matrix.png)
 
-We can zoom in on the raw data to see specific errors:
-
-![](../.gitbook/assets/cookbook/llmjudge_correctness_examples.png)
-
-**Note**: your results and explanations will vary since LLMs are non-deterministic.
-
-If you want to refine the judge, you can iterate on the prompt and continue improving it. 
-
 # 5. Verbosity evaluator 
 
-Next, let’s create a simpler LLM judge that evaluates the verbosity of the responses. This judge will check whether the responses are concise and to the point. This example is straightforward and only requires evaluating one column.
+Next, let’s create a simpler LLM judge that evaluates the verbosity of the responses. This judge will check whether the responses are concise and to the point. This only requires evaluating one column with the output.
 
 This is perfect for production evaluations where you don’t have a reference answer to compare against.
 
