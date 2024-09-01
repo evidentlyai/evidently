@@ -116,7 +116,7 @@ First, decide which Tests to include. Tests can be either dataset-level or colum
 {% endhint %}
 
 {% hint style="info" %} 
-**Row-level evaluations**: To Test row-level scores for text data, read more about [Text Descriptors](text-descriptors.md.md).
+**Row-level evaluations**: To Test row-level scores for text data, read more about [Text Descriptors](text-descriptors.md).
 {% endhint %}
 
 **Dataset-level Tests**. Some Tests apply to the entire dataset, such as checking the share of drifting features or accuracy. To add them to a Test Suite, create a `TestSuite` object and list the `tests` one by one:    
