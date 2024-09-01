@@ -24,6 +24,7 @@ You will go through the following steps:
 * Customize the report 
 * Run and customize data stability tests 
 
+If you're having problems or getting stuck, reach out on [Discord](https://discord.com/invite/xZjKRaNp8b).
 
 ## 1. Install Evidently
 
