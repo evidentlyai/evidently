@@ -1,20 +1,22 @@
 ---
-description: How to run LLM regression testing.
+description: How to run regession testing for LLM outputs.
 ---
 
-In this tutorial, we'll show you how to run regression testing for LLM outputs: for example, compare new and old responses to the same inputs after you change a prompt.
+In this tutorial, we'll show you how to run regression testing for LLM outputs: for example, compare new and old responses to the same inputs after you change a prompt, model, or anything else in your system. 
+
+When you make changes, you may want to re-run the same inputs and compare the results to find which ones changed significantly. This will allow you to push your updates to production with confidence or find issues to address.
 
 # Tutorial scope
 
 Here's what we'll do:
-* **Create an toy dataset**. Ceate a toy Q&A dataset with questions and reference responses.
-* **Imitate genrating new answers**. Imitate generating new answers to the same question we want to compare.
-* **Create and run a Test Suite**. Compare two sets of answers using LLM-as-a-judge approach to compare correctness and style match.
+* **Create a toy dataset**. Create a toy Q&A dataset with queswe'll and reference responses.
+* **Imitate generating new answers**. Imitate generating new answers to the same question we want to compare.
+* **Create and run a Test Suite**. We'll compare the answers using the LLM-as-a-judge approach to evaluate length, correctness and style match.
 * **Get a monitoring Dashboard**. Build a dashboard to monitor the results of Tests over time.
 
 To complete the tutorial, you will need:
 * Basic Python knowledge. 
-* An OpenAI API key to use for LLM evaluator.
+* An OpenAI API key to use for the LLM evaluator.
 * An Evidently Cloud account to track test results. If not yet, [sign up](../installation/cloud_account.md) for a free account.
 
 Use the provided code snippets or run a sample notebook.
@@ -24,7 +26,7 @@ Jupyter notebook:
 
 Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/community-examples/blob/main/tutorials/Regression_testing_with_debugging).
 
-We will work with a toy dataset, which you can replace with your production data or calls to your LLM app to generate a new a set of answers for the input data.
+We will work with a toy dataset, which you can replace with your production data or calls to your LLM app to generate a new set of answers for the input data.
 
 # 1. Installation and Imports
 
@@ -124,9 +126,9 @@ ref_data.head()
 
 Here is how the data looks:
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmregesting_text_ref.png)
 
-You might want to have a quick look at some data statistics, to help you set conditions for Tests. Let's check text length distribution. This will render a summary Report directly in the notebook cell.
+You might want to have a quick look at some data statistics to help you set conditions for Tests. Let's check the text length distribution. This will render a summary Report directly in the notebook cell.
 
 ```python 
 report = Report(metrics=[
@@ -141,11 +143,11 @@ report.run(reference_data=None,
 report
 ```
 
-If you run the example in non-interactive Python environment, call `report.as_dict()` or `report.json()` instead.
+If you run the example in a non-interactive Python environment, call `report.as_dict()` or `report.json()` instead.
 
 Here is the distribution of text length:
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmregtesting_textlength.png)
 
 # 4. Get new answers
 
@@ -181,7 +183,7 @@ eval_data = pd.DataFrame(data, columns=columns)
 
 Here is the resulting dataset with the added new column:
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmregesting_text_new.png)
 
 {% hint style="info" %}
 **How to run it in production?** In practice, replace this step with calling your LLM app to score the inputs. After you get the new responses, add them to a DataFrame. You can also use our **tracing** library to instrument your app or function and collect traces, that will be automatically converted into a tabular dataset. Evidently will then let you pull a tabular dataset with collected traces. Check the tutorial that shows this [tracing workflow](../tutorial/tutorial_tracing.md). 
@@ -189,18 +191,20 @@ ADD IMG
 
 # 5. Design the Test suite
 
-Now, you must decide on your evaluation metrics. The goal is to compare if the new answers are different to the old ones. You can use some deterministic or embeddings-based metrics like SemanticSimilarity, but often you'd want to make the comparison using more specific criteria you control. In this case, using LLM-as-a-judge is a useful approach that allows you to formulate custom criteria on what you want to detect.
+Now, you must decide on the evaluation metrics. The goal is to compare if the new answers are different from the old ones. 
 
-Let's say we want to Test the following:
-- That all responses are within expected length. Looking at our previous responses, we've set it as between 80 and 200 symbols.
-- That all new responses are giving essentially the same answer without contradiction. We will call this criteria CORRECTNESS and implement it using LLM-as-a-judge.
-- That all new responses are the same in style compared to the reference. We will call this criteria STYLE-MATCH and implement it using LLM-as-a-judge.
+You can use some deterministic or embeddings-based metrics like SemanticSimilarity, but often, you'd want to make the comparison using more specific criteria you control. In this case, using LLM-as-a-judge is a valuable approach that allows you to formulate custom criteria on what you want to detect.
 
-Evidently has a few built-in LLM-based evaluators, but this time we'll write our custom judges.
+Let's say we want to Test that:
+* All responses must be within the expected length. Looking at our previous responses, we've set it as between 80 and 200 symbols.
+* All new responses must give essentially the same answer without contradiction. We will call this criterion CORRECTNESS and implement it using LLM-as-a-judge.
+* That all new responses are the same in style compared to the reference. We will call this criterion STYLE and implement it using LLM-as-a-judge.
+  
+Evidently has a few built-in LLM-based evaluators, but this time we'll write our custom LLM judges.
 
 ## Correctness judge 
 
-Here is how we implement the correctness evaluator, using a built-in Evidenty template for binary classification. Essentially, we are asking LLM to classify every response into correct or not, and give reasoning for that.
+Here is how we implement the correctness evaluator, using a built-in Evidenty template for binary classification. We are asking LLM to classify every response as correct or not based on what is in the `{target_response}` column and give a reasoning for that decision.
 
 ```python
 correctness_eval= LLMEval(
@@ -229,19 +233,19 @@ REFERENCE:
 )
 ```
 
-We strongly recommend splitting evaluationcriteria into individual judges, and using simpler methods like binary classifier for reliability.
+We strongly recommend splitting evaluation criteria into individual judges and using more straightforward grading scale like binary classifiers for reliability.
 
 {% hint style="info" %}
 **Don't forget to evaluate your judge!** Each LLM evaluator is a small ML system you should tune to align with your preferences. We recommend running a couple of iterations to tune it. Check the tutorial on [creating LLM judges](cookbook_llm_judge.md). 
 {% endhint %}
 
 {% hint style="info" %}
-**Docs on LLM judge**. For explanation of each parameter, check the docs on [LLM judge functionality](../customization/llm_as_a_judge.md). 
+**Docs on LLM judge**. For an explanation of each parameter, check the docs on [LLM judge functionality](../customization/llm_as_a_judge.md). 
 {% endhint %}
 
 ## Style judge
 
-Following a similar approach we will a create a judge for style. We add additonal clarifications to specify what we mean by style match. 
+Using a similar approach, we will create a judge for style. We add additonal clarifications to specify what we mean by style match. 
 
 ```python
 style_eval= LLMEval(
@@ -280,11 +284,11 @@ You must focus only on STYLE. Ignore any differences in contents.
 
 Now, we can create a Test Suite that incorporates the correctness evaluation, style matching, and text length checks. 
 * To formulate what we Test, we pick an appropriate Evidently column-level Test like `TestCategoryCount` and `TestShareOfOutRangeValues`. (You can pick other Tests, like `TestColumnValueMin` , `TestColumnValueMean`, etc.)
-* Set additional parameters for the Test, if applicable. For example, we use `left` and `right` parameters to set the allowed range for Text Length. 
-* To set Test condition, we use parameters like `gt` (greater than), `lt` (less than), `eq` (equal), etc.
-* You can also identify some Tests as non-critical. They will give a Warning, but not an Error. This is convenient to divide them visually on monitoring Panels and to set up alerting only for Fails. We mark the style match Test as non-critical.
+* Set additional parameters for each Test, if applicable. For example, we use `left` and `right` parameters to set the allowed range for Text Length. 
+* To set the Test condition, we use parameters like `gt` (greater than), `lt` (less than), `eq` (equal), etc.
+* You can also identify some non-critical Tests, as we do with the Style match check. If such Test fails, it will give a Warning, but not an Error. This helps divide it visually on monitoring Panels and to set up alerting only for Fails. 
 
-Here is how we formulate the complete Test Suite: 
+Here is how we formulate the complete Test Suite. We reference two of our judges, `style_eval` and `correctness_eval,` and point out that they should apply to the `response` column in our dataset. For Text Length, we use a built-in `TextLength()` descriptor.
 
 ```python
 test_suite = TestSuite(tests=[
@@ -306,39 +310,43 @@ test_suite = TestSuite(tests=[
 ])
 ```
 
-Note that in these example we always expect the share of failures to be zero using the `eq=0` condition. For example, you can swap the Test condition for text length for `lte=0.1` which would stand for "less than 10%". In this case, the Test will fail only if > 10% of rows in the dataset will be longer than set range.
+Note that in this example, we always expect the share of failures to be zero using the `eq=0` condition. For example, you can swap the Test condition for text length for `lte=0.1`, which would stand for "less than 10%". In this case, the Test will fail if > 10% of rows in the dataset are longer than the set range.
 
 Allowing some share of Tests to fail is convenient for real-world applications.
 
-You can add additional Tests as you see fit: for regular expressions, word presence, etc. 
+You can add additional Tests as you see fit for regular expressions, word presence, etc. and Tests for other columns in the same Test Suite.
 
 {% hint style="info" %} 
 **Understand Tests**. Learn how to set [custom Test conditions](../tests-and-reports/run-tests.md) and use [Tests with text Descriptors](../tests-and-reports/text-descriptors.md). See the list of [All tests](../reference/all-tests.md). 
 {% endhint %}
 
+{% hint style="info" %} 
+**Understand Descriptors**. See the list of available text Descriptors in the [All metrics](../reference/all-metrucs.md) table. 
+{% endhint %}
+
 # 6. Run the Test Suite
 
-Now that's our Test Suite is ready, let's run it!
+Now that our Test Suite is ready - let's run it!
 
-To apply this Test Suite to the `eval_data` we prepared:
+To apply this Test Suite to the `eval_data`, we prepared earlier:
 
 ```python
 test_suite.run(reference_data=None, current_data=eval_data)
 ```
 
-This will compute the Test Suite! But now we need to see it. You can actually preview the results directly in your Python notebook (call `test_suite`)  but we'll now send it to Evidentlu Cloud, together with the scored data:
+This will compute the Test Suite! But how do you see it? You can actually preview the results directly in your Python notebook (call `test_suite`), but we'll now send it to Evidently Cloud, together with the scored data:
 
 ```python
 ws.add_test_suite(project.id, test_suite, include_data=True)
 ```
 
-Including data is optional, but is useful for most LLM use cases, since you'd want to see not just the aggregate Test results, but also the raw texts to debug when Tests fail.
+Including data is optional but useful for most LLM use cases since you'd want to see not just the aggregate Test results but also the raw texts to debug when Tests fail.
 
-Now, navigate to the Evidently Platform UI. Go to the ([Home Page](https://app.evidently.cloud/)), enter your Project, and find the "Test Suites" section in the left menu. As you enter it, you will see the resulting Test Suite that you can Explore. Once you open this view, you will both the summary Test results, and the Dataset with the added scores and explanations.
+Now, navigate to the Evidently Platform UI. Go to the ([Home Page](https://app.evidently.cloud/)), enter your Project, and find the "Test Suites" section in the left menu. As you enter it, you will see the resulting Test Suite that you can Explore. Once you open this view, you will see both the summary Test results and the Dataset with the added scores and explanations.
 
-You can edit your view by selecting indiviudal Columns. For example, you might want to sort all columns by Text Length - to find the one that failed the Test, or to view the resulst of the style-match Test. 
+You can browse your Dataset view by selecting individual Columns to zoom in on the results of specific evaluations. For example, you might want to sort all columns by Text Length to find the one that is out of bounds or to find the style-mismatched answers as labeled by the LLM judge.
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmregtesting_test_1.png)
 
 **Note**: your explanations will vary since LLMs are non-deterministic.
 
@@ -349,9 +357,9 @@ ADD IMG
 
 # 7. Test again
 
-Now let's say that you made yet another change to the prompt. Our reference dataset stays the same but we generate a new set of answers that we want to compare to this reference. 
+Let's say you made yet another change to the prompt. Our reference dataset stays the same, but we generate a new set of answers that we want to compare to this reference. 
 
-Let's imagine that we got the `eval_data_2` as a result of this change.
+Here is the toy `eval_data_2` to imitate the result of the change.
 
 ```python
 data = [
@@ -390,17 +398,17 @@ ws.add_test_suite(project.id, test_suite, include_data=True)
 
 If you go and open the new Test Suite results, you can again explore the outcomes and explanations.
 
-ADD IMG
+![](../.gitbook/assets/cookbook/llmregtesting_test_2.png)
 
 # 8. Get a Dashboard
 
-You can continue running Test Suites in this manner. As you run multiple Test Suites, you might want to clearly track their results over time. 
+You can continue running Test Suites in this manner. As you run multiple Test Suites, you may want to track their results over time clearly. 
 
-You can easily create a Dashboard to track Test outcomes over time. You can do edit the monitoring Panels in the UI or programmatically. Let's create a couple Panels using Dashboards as code approach.
+You can easily create a Dashboard to track Test outcomes over time. You can edit the monitoring Panels in the UI or programmatically. Let's create a couple of Panels using Dashboards as a code approach.
 
 The following code will add:
-- A counter panel to show the SUCCESS rate of the latest test run.
-- A test monitoring panel to show all test results over time.
+* A counter panel to show the SUCCESS rate of the latest test run.
+* A test monitoring panel to show all test results over time.
 
 ```python
 project.dashboard.add_panel(
@@ -426,8 +434,14 @@ project.dashboard.add_panel(
 project.save()
 ```
 
-When you navigate to the UI, you will now see the Dashhboard that shows the summary of Test results (Success, Failure and Warning) for each Test Suite we ran. As you add more Tests to the same Project, the Dashboard will be automatically updated to show new Test results.
+When you navigate to the UI, you will now see the Dashboard, which shows a summary of Test results (Success, Failure, and Warning) for each Test Suite we ran. As you add more Tests to the same Project, the Panels will be automatically updated to show new Test results.
+
+![](../.gitbook/assets/cookbook/llmregesting_test_dashboard.png)
+
+If you hover over individual Test results, you will able to see the specific Test and conditions.
 
 {% hint style="info" %} 
-**Using Dashboards**. You can design and add other Panels types. Check the [docs on Dashboards](../dashboards/dashboard_overview.md).
+**Using Dashboards**. You can design and add other Panel types. Check the [docs on Dashboards](../dashboards/dashboard_overview.md).
 {% endhint %}
+
+**What's next?** As you design a similar Test Suite for your use case, you can integrate it with CI/CD workflows to run on every change.
