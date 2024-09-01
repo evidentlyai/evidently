@@ -9,7 +9,7 @@ You will run evals locally in Python and send results to Evidently Cloud for ana
 # 1. Set up Evidently Cloud 
 
 Set up your Evidently Cloud workspace:
-* **Sign up** for an [Evidently Cloud account](https://app.evidently.cloud/signup).
+* **Sign up** for a free [Evidently Cloud account](https://app.evidently.cloud/signup).
 * **Create an Organization** when you log in for the first time.
 * **Create a Team**. Click Teams in the left menu, create a Team, and save the Team ID ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
@@ -81,7 +81,7 @@ evaluation_dataset = pd.DataFrame(data, columns=columns)
 
 ```
 {% hint style="info" %}
-**Collecting live data**: use the open-source `tracely` library to collect the inputs and outputs from your LLM app. Check the [Tracing Quickstart](cloud_quickstart_tracing.md). 
+**Collecting live data**: use the open-source `tracely` library to collect the inputs and outputs from your LLM app. Check the [Tracing Quickstart](cloud_quickstart_tracing.md). You can then download the traced dataset for evaluation. 
 {% endhint %}
 
 # 5. Run your first eval
@@ -90,15 +90,14 @@ You have two options:
 * Run evals that work locally.
 * Use LLM-as-a-judge (requires an OpenAI token).
 
-
 {% tabs %}
 
 {% tab title="Only local methods" %} 
 
 **Define your evals**. You will evaluate all "Answers" for:
-* Sentiment (from -1 for negative to 1 for positive)
-* Text length (character count)
-* Presence of "sorry" or "apologize" (True/False)
+* Sentiment: from -1 for negative to 1 for positive
+* Text length: character count
+* Presence of "sorry" or "apologize": True/False
 
 ```python
 text_evals_report = Report(metrics=[
@@ -125,9 +124,9 @@ text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
 ```
 
 **Define your evals**. Evaluate all "Answers" for:
-* Sentiment (from -1 for negative to 1 for positive)
-* Text length (character count)
-* Whether the chatbot denied an answer ("OK" or "Denial" labels with explanations). This uses LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
+* Sentiment: from -1 for negative to 1 for positive)
+* Text length: character count
+* Whether the chatbot denied an answer: returns "OK" or "Denial" labels with explanations. This uses LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
 
 ```python
 text_evals_report = Report(metrics=[
@@ -146,7 +145,7 @@ text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
 
 {% endtabs %}
 
-Each evaluation is a `descriptor`. You can choose from multiple evaluations or create custom ones, including LLM-as-a-judge.
+Each evaluation is a `descriptor`. You can choose from multiple built-in evaluations or create custom ones, including LLM-as-a-judge.
 
 # 6. Send results to Evidently Cloud 
 
@@ -156,7 +155,7 @@ Each evaluation is a `descriptor`. You can choose from multiple evaluations or c
 ws.add_report(project.id, text_evals_report, include_data=True)
 ```
 
-**View the Report** on Evidently Cloud. Open your Project and go to the "Reports" in the left menu. ([Cloud home](https://app.evidently.cloud/)).
+**View the Report** on Evidently Cloud. Go to the [home page](https://app.evidently.cloud/)), open your Project, and navigate to "Reports" in the left.
 
 You will see the scores summary, and the dataset with new descriptor columns. For example, you can sort to find all answers with "Denials".
 
