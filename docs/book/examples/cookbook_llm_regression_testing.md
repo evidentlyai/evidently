@@ -9,7 +9,7 @@ When you make changes, you may want to re-run the same inputs and compare the re
 # Tutorial scope
 
 Here's what we'll do:
-* **Create a toy dataset**. Create a toy Q&A dataset with queswe'll and reference responses.
+* **Create a toy dataset**. Create a toy Q&A dataset with answers nd reference responses.
 * **Imitate generating new answers**. Imitate generating new answers to the same question we want to compare.
 * **Create and run a Test Suite**. We'll compare the answers using the LLM-as-a-judge approach to evaluate length, correctness and style match.
 * **Get a monitoring Dashboard**. Build a dashboard to monitor the results of Tests over time.
@@ -186,7 +186,7 @@ Here is the resulting dataset with the added new column:
 ![](../.gitbook/assets/cookbook/llmregesting_text_new.png)
 
 {% hint style="info" %}
-**How to run it in production?** In practice, replace this step with calling your LLM app to score the inputs. After you get the new responses, add them to a DataFrame. You can also use our **tracing** library to instrument your app or function and collect traces, that will be automatically converted into a tabular dataset. Evidently will then let you pull a tabular dataset with collected traces. Check the tutorial that shows this [tracing workflow](../tutorial/tutorial_tracing.md). 
+**How to run it in production?** In practice, replace this step with calling your LLM app to score the inputs. After you get the new responses, add them to a DataFrame. You can also use our **tracing** library to instrument your app or function and collect traces, that will be automatically converted into a tabular dataset. Evidently will then let you pull a tabular dataset with collected traces. Check the tutorial that shows this [tracing workflow](../examples/tutorial_tracing.md). 
 {% endhint %}
 
 # 5. Design the Test suite
@@ -321,7 +321,7 @@ You can add additional Tests as you see fit for regular expressions, word presen
 {% endhint %}
 
 {% hint style="info" %} 
-**Understand Descriptors**. See the list of available text Descriptors in the [All metrics](../reference/all-metrucs.md) table. 
+**Understand Descriptors**. See the list of available text Descriptors in the [All metrics](../reference/all-metrics.md) table. 
 {% endhint %}
 
 # 6. Run the Test Suite
@@ -441,7 +441,7 @@ When you navigate to the UI, you will now see the Dashboard, which shows a summa
 If you hover over individual Test results, you will able to see the specific Test and conditions.
 
 {% hint style="info" %} 
-**Using Dashboards**. You can design and add other Panel types. Check the [docs on Dashboards](../dashboards/dashboard_overview.md).
+**Using Dashboards**. You can design and add other Panel types. Check the [docs on Dashboards](../dashboard/dashboard_overview.md).
 {% endhint %}
 
 **What's next?** As you design a similar Test Suite for your use case, you can integrate it with CI/CD workflows to run on every change.
