@@ -37,6 +37,7 @@ For LLM and text metrics, check the [LLM evaluation tutorial](tutorial-llm.md).
 Title | Tutorial
 --- | --- 
 How to create LLM judge | [Tutorial](cookbook_llm_judge.md)
+How to run regression testing for LLM products| [Tutorial](cookbook_llm_regression_testing.md)
 
 # Tutorials - ML
 
