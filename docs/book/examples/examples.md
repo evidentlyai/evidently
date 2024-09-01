@@ -38,7 +38,7 @@ Title | Tutorial
 --- | --- 
 How to create LLM judge | [Tutorial](cookbook_llm_judge.md)
 
-# Tutorials - LLM
+# Tutorials - ML
 
 To better understand the Evidently use cases, refer to the **detailed tutorials** accompanied by the blog posts.
 
