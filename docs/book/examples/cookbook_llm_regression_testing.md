@@ -57,7 +57,7 @@ To connect to Evidently Cloud:
 from evidently.ui.workspace.cloud import CloudWorkspace
 ```
 
-(Optional but recommended) To create monitoring panels as code:
+To create monitoring panels as code:
 
 ```python 
 from evidently.ui.dashboards import DashboardPanelPlot
