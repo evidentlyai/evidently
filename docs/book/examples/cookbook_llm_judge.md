@@ -4,6 +4,10 @@ description: How to create and evaluate an LLM judge.
 
 In this tutorial, we'll show you how to build an evaluator for a LLM system's outputs using another LLM as the judge. This lets you automatically assess the quality of your system's responses based on your custom criteria.
 
+{% hint style="info" %}
+**You can also create LLM judges using no code**. This tutorial shows an open-source workflow that you can run locally using the Evidently Python library. You can also create and run LLM judges on the platform using [no-code interface](../evaluations/no_code_evals.md).
+{% endhint %}
+
 We'll explore two ways to use an LLM as a judge:
 * **Reference-based**. Compare new responses against a reference. This is for regression testing workflows or whenever you have a "ground truth" or approved responses to compare against.
 * **Open-ended**. Evaluate responses based on custom criteria, which helps evaluate new outputs when there's no reference available.
