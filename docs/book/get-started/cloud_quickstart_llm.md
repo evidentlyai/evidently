@@ -178,5 +178,3 @@ Explore the full tutorial for advanced workflows: custom LLM judges, conditional
 {% content-ref url="../examples/tutorial-llm.md" %}
 [Evidently LLM Tutorial](../examples/tutorial-llm.md). 
 {% endcontent-ref %}
-
-Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
