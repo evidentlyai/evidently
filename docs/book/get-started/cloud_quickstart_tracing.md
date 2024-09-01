@@ -6,6 +6,8 @@ This quickstart shows how to instrument a simple LLM app to send inputs and outp
 
 You will need an OpenAI key to create a toy LLM app.
 
+Need help? Ask on [Discord](https://discord.com/invite/xZjKRaNp8b).
+
 # 1. Set up Evidently Cloud 
 
 Set up your Evidently Cloud workspace:
@@ -114,5 +116,3 @@ Check out a more in-depth tutorial to learn more about tracing:
 {% content-ref url="../examples/tutorial_tracing.md" %}
 [LLM Tracing Tutorial](../examples/tutorial_tracing.md). 
 {% endcontent-ref %}
-
-Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
