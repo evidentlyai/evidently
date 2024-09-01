@@ -22,9 +22,9 @@ To complete the tutorial, you will need:
 Use the provided code snippets or run a sample notebook.
 
 Jupyter notebook:
-{% embed url="https://github.com/evidentlyai/community-examples/blob/main/tutorials/Regression_testing_with_debugging" %}
+{% embed url="https://github.com/evidentlyai/community-examples/blob/main/tutorials/Regression_testing_with_debugging.ipynb" %}
 
-Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/community-examples/blob/main/tutorials/Regression_testing_with_debugging).
+Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/community-examples/blob/main/tutorials/Regression_testing_with_debugging.ipynb).
 
 We will work with a toy dataset, which you can replace with your production data or calls to your LLM app to generate a new set of answers for the input data.
 
