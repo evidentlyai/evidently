@@ -4,7 +4,7 @@ description: Run your first LLM evaluation using Evidently open-source.
 
 This quickstart shows how to evaluate text data, such as inputs and outputs from your LLM system.
 
-We recommend running this exampple in Jupyter Notebook or Google Colab to render HTML Reports directly in a notebook cell.
+It's best to run this example in Jupyter Notebook or Google Colab so that you can render HTML Reports directly in a notebook cell.
 
 # 1. Installation
 
