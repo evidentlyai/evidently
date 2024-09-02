@@ -27,6 +27,8 @@
   * [Tutorial - Data & ML Monitoring](examples/tutorial-cloud.md)
   * [Tutorial - LLM Evaluation](examples/tutorial-llm.md)
   * [Self-host ML Monitoring](examples/tutorial-monitoring.md)
+  * [LLM as a judge](examples/cookbook_llm_judge.md)
+  * [LLM Regression Testing](examples/cookbook_llm_regression_testing.md) 
 
 ## Setup
   * [Installation](installation/install-evidently.md)

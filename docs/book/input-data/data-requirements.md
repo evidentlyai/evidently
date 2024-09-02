@@ -4,30 +4,35 @@ description: How to prepare the data to run Evidently Reports or Test Suites.
 
 To run evaluations on your datasets with the Evidently Python library, you should prepare your data in a certain way. This section covers how to do that. 
 
+{% hint style="success" %}
+This applies to `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`. 
+{% endhint %}
+
 {% hint style="info" %}
-**Looking for something else?**. Check [Tracing](../tracing/tracing_overview.md) to understand how to instrument your application. Check [Datasets](../datasets/datasets_overview.md) to learn how to upload and work with datasets in the user interface. For more details on running evaluations after you prepare the data, see [Reports and Test Suites](../tests-and-reports/introduction.md).
+**Looking for something else?** Check [Tracing](../tracing/tracing_overview.md) to instrument your app. Check [Datasets](../datasets/datasets_overview.md) to work with datasets in the user interface. To run evaluations after you prepare the data, see [Reports and Test Suites](../tests-and-reports/introduction.md).
 {% endhint %}
 
 # Input data format
 
 Evidently works with Pandas DataFrames, with some metrics also supported on [Spark](../tests-and-reports/spark.md).
 
-Your input data should be in **tabular** format. All column names must be strings. The data can include any numerical, categorical, text, DateTime, and ID columns. You can also pass embeddings as numerical features. 
+Your input data should be in **tabular** format. All column names must be strings. The data can include any numerical, categorical, text, DateTime, and ID columns. You can pass embeddings as numerical features. 
 
 The structure is flexible. For example, you can pass:
 * **Any tabular dataset**. You can run checks for data quality and drift for any dataset.
 * **Logs of generative LLM application**. Include text inputs, outputs, and metadata.
 * **ML model inferences**. You can analyze prediction logs that include model features (numerical, categorical, embeddings), predictions, and optional target values. 
 
-To run certain evaluations, you must include specific columns. For instance, to evaluate classification quality, you need columns with predicted and actual labels. These should be named "prediction" and "target", or you’ll need to point to the columns that contain them. This process is called **Column Mapping**. You can learn more in the next section.
+To run certain evaluations, you must include specific columns. For instance, to evaluate classification quality, you need columns with predicted and actual labels. These should be named "prediction" and "target", or you’ll need to point to the columns that contain them. This process is called **Column Mapping**. 
 
+Learn more in the next section:
 {% content-ref url="column-mapping.md" %}
 [Column Mapping](column-mapping.md)
 {% endcontent-ref %}
 
 # Reference and current data
 
-Usually, you evaluate a single dataset, which we call the **current** dataset. But in some cases, you might also use a second dataset, known as the **reference** dataset. You pass them simultaneously when running an evaluation.
+Usually, you evaluate a single dataset, which we call the **current** dataset. In some cases, you might also use a second dataset, known as the **reference** dataset. You pass them both when running an evaluation.
 
 ![](<../.gitbook/assets/two\_datasets\_classification.png>)
 
@@ -40,6 +45,8 @@ If you pass two datasets, the structure of both datasets should be identical. 
 
 # Data volume
 
-Running computationally intensive evaluations on large datasets can take time. This depends on the specific analysis as well as your infrastructure. In many cases, such as for probabilistic data drift detection, it’s more efficient to work with **samples** of your data. For instance, instead of running drift detection on millions of rows, you can apply random or stratified sampling and then compare samples of your data.  
+Running computationally intensive evaluations on large datasets can take time. This depends on the specific evaluation as well as your infrastructure. 
+
+In many cases, such as for probabilistic data drift detection, it’s more efficient to work with **samples** of your data. For instance, instead of running drift detection on millions of rows, you can apply random or stratified sampling and then compare samples of your data.  
 
 For datasets that don’t fit in memory, you can run calculations using [Spark](../tests-and-reports/spark.md).

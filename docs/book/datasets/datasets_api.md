@@ -22,7 +22,7 @@ To work with Datasets programmatically from Python, you must first [connect to W
 
 Prepare your dataset as a Pandas DataFrame. To upload a dataframe `df` to the specified Project in workspace `ws`, use the `add_dataset` method:
 
-```
+```python
 ws.add_dataset(
     df,
     name = "dataset_name",
@@ -40,7 +40,7 @@ You can also download the Dataset from Evidently platform to your local environm
 
 Use the `load_dataset` method:
 
-```
+```python
 downloaded_df = ws.load_dataset(dataset_id = "YOUR_DATASET_ID") 
 ```
 
@@ -50,7 +50,7 @@ You can also include Datasets when you upload Reports or Test Suites to the plat
 
 Use `include_data` parameter (False by default):
 
-```
+```python
 ws.add_report(project.id, data_report, include_data=True)
 ```
 

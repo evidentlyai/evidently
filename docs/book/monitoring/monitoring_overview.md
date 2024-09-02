@@ -9,8 +9,8 @@ AI quality monitoring automatically evaluates your AI application’s inputs and
 {% endhint %}
 
 Evidently offers several ways to set up monitoring. Consider the following:
-* **Type of AI application**. Do you work with simple tabular data or need to capture complex interactions in LLM-powered systems?
-* **Batch or real-time**. Does your AI system process data in batches, or does it generate predictions live as users interact with it?
+* **Type of AI application**. Do you work with simple tabular data or need to capture complex LLM interactions?
+* **Batch or real-time**. Does your AI system process data in batches, or does it generate predictions live?
 * **Evaluation frequency**. How often do you need to check the system's performance? Is real-time monitoring necessary, or can you evaluate at intervals like hourly or daily?
 * **Where to store prediction logs**. Do you want to store raw data (inferences or traces) together with monitoring metrics, or would you prefer to manage them separately?
   
@@ -20,13 +20,13 @@ Considering these factors will help you choose the best monitoring setup. Here a
 
 **Best for**: LLM-powered applications.
 
-{% hint style="info" %}
-Supported in: Evidently Cloud, Evidently Enterprise. Scheduled evaluations are in beta. Contact our team to try it.
+{% hint style="success" %}
+Supported in: `Evidently Cloud` and `Evidently Enterprise`. Scheduled evaluations are in beta on Evidently Cloud. Contact our team to try it.
 {% endhint %}
 
 How it works:
 * **Instrument your app**. Use the `Tracely` library (based on OpenTelemetry) to capture all relevant data from your application, including inputs, outputs, tool calls, and intermediate steps.
-* **Store raw data**. Evidently Platform stores all raw data, providing a complete record of your system’s activity.
+* **Store raw data**. Evidently Platform stores all raw data, providing a complete record of activity.
 * **Schedule evaluations**. Set up evaluations to run automatically at scheduled times. This will generate Reports or run Tests directly on the Evidently Platform.
 
 ![](../.gitbook/assets/cloud/monitoring_flow_tracing.png)
@@ -48,13 +48,13 @@ Benefits of this approach:
 
 **Best for**: batch ML pipelines, regression testing, and near real-time ML systems that don’t need instant evaluations.
 
-{% hint style="info" %}
-Supported in: Evidently OSS, Evidently Cloud, Evidently Enterprise. 
+{% hint style="success" %}
+Supported in: `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`.
 {% endhint %}
 
 How it works:
 * **Build your evaluation pipeline**. Create a pipeline in your infrastructure to run monitoring jobs. This can be a Python script, cron job, or orchestrated with a tool like Airflow. Run it at regular intervals (e.g., hourly, daily) or trigger it when new data or labels arrive. 
-* **Run metric calculations**. Implement the evaluation step in the pipeline using the Evidently Python library. Select the evaluations, and compute JSON `snapshots` that will summarize data, metrics, and test results. 
+* **Run metric calculations**. Implement the evaluation step in the pipeline using the Evidently Python library. Select the evals, and compute JSON `snapshots` that will summarize data, metrics, and test results. 
 * **Store and visualize snapshots**. Store and monitor results in Evidently Cloud, or in a designated self-hosted workspace.
 
 ![](../.gitbook/assets/cloud/monitoring_flow_batch.png)
@@ -74,8 +74,8 @@ Benefits of this approach:
 
 **Best for**: near real-time integration with an ML prediction service.
 
-{% hint style="info" %}
-Supported in: Evidently OSS, Evidently Cloud, Evidently Enterprise. 
+{% hint style="success" %}
+Supported in: `Evidently OSS`, `Evidently Cloud` and `Evidently Enterprise`.
 {% endhint %}
 
 Near real-time monitoring is for scenarios where you need frequent insights into your AI system's performance. In this setup, data from your ML service is sent directly to a monitoring system, where metrics are calculated on the fly and visualized in an online dashboard.

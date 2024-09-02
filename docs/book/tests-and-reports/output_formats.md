@@ -66,15 +66,17 @@ This returns the complete original dataset with new scores.
 
 You can save the output of a Report or Test Suite as an Evidently JSON `snapshot`.
 
-This is a rich JSON format used for storing the evaluation results on Evidently platform. When you save Reports or Test Suites to the platform, a snapshot is generated automatically.
+{% hint style="info" %}
+**How is a JSON snapshot different from `json()`?**. A snapshot contains all supplementary and render data. This lets you restore the output in any available Evidently format without accessing the initial raw data.
+{% endhint %}
 
-However, you can also generate and save a snapshot explicitly. To save the Report as a snapshot:
+This is a rich JSON format used for storing the evaluation results on Evidently platform. When you save Reports or Test Suites to the platform, a snapshot is generated automatically. However, you can also generate and save a snapshot explicitly. 
+
+To save the Report as a snapshot:
 
 ```python
 drift_report.save('snapshot.json')
 ```
-
-This format is different from using `json()` or `save_json("file.json")`. A snapshot contains all supplementary and render data inside, allowing you to restore the output in any available Evidently format without accessing the initial raw data.
 
 To load the snapshot back, use the “load” function. 
 
@@ -85,7 +87,7 @@ loaded_report = Report.load('snapshot.json')
 After you load the snapshot back, you can again view it in Python or export it to other formats.
 
 {% hint style="info" %}
-**Generating snaphots**. To better understand how you can upload the evaluation results to the Evidently Platform, check the page on [generating snapshots](../evaluations/snapshots.md).
+**Generating snaphots**. Check how to [get snapshots](../evaluations/snapshots.md) and upload the evaluation results to the Evidently Platform.
 {% endhint %}
 
 # DataFrame with a Report summary

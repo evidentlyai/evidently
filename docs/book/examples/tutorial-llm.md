@@ -45,6 +45,8 @@ Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai
 
 You can also follow the video version: {% embed url="https://youtu.be/qwn0UqXJptY" %}
 
+If you're having problems or getting stuck, reach out on [Discord](https://discord.com/invite/xZjKRaNp8b).
+
 # 1. Installation and imports
 
 Install Evidently in your Python environment:
@@ -119,8 +121,12 @@ assistant_logs.head(3)
 
 ![](../.gitbook/assets/cloud/llm_data_preview-min.png)
 
+{% hint style="info" %}
+**How to collect data?**: you can use the open-source `tracely` library to collect the inputs and outputs from your LLM app. Check the [Tracing Quickstart](cloud_quickstart_tracing.md). You can then download the traced Dataset for evaluation. 
+{% endhint %}
+
 {% hint style="success" %}
-**How do I pass my data?** You can import a pandas DataFrame with flexible structure. Include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
+**How to pass an exsiting dataser?** You can import a pandas DataFrame with flexible structure. Include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
 {% endhint %}
 
 # 3. Create a Project 
@@ -197,7 +203,9 @@ text_evals_report.run(reference_data=None,
 text_evals_report
 ```
 
-This calculates the number of symbols in each text and shows a summary. You can see the distribution of text length across all responses and descriptive statistics like the mean or minimal text length.
+This calculates the number of symbols in each text and shows a summary in your notebook cell. (You can also export it in other formats - see step 5).
+
+You can see the distribution of text length across all responses and descriptive statistics like the mean or minimal text length.
 
 ![](../.gitbook/assets/cloud/llm_tutorial_text_length-min.png)
 
@@ -389,7 +397,8 @@ custom_judge = LLMEval(
         pre_messages=[("system", "You are a judge which evaluates text.")],
         ),
     provider = "openai",
-    model = "gpt-4o-mini"
+    model = "gpt-4o-mini",
+    display_name="Conciseness",
 )
 ```
 

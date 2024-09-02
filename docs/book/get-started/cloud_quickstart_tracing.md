@@ -6,10 +6,12 @@ This quickstart shows how to instrument a simple LLM app to send inputs and outp
 
 You will need an OpenAI key to create a toy LLM app.
 
+Need help? Ask on [Discord](https://discord.com/invite/xZjKRaNp8b).
+
 # 1. Set up Evidently Cloud 
 
 Set up your Evidently Cloud workspace:
-* **Sign up**. If you do not have one yet, sign up for an [Evidently Cloud account](https://app.evidently.cloud/signup).
+* **Sign up**. If you do not have one yet, sign up for a free [Evidently Cloud account](https://app.evidently.cloud/signup).
 * **Create an Organization**. When you log in the first time, create and name your Organization.
 * **Create a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
 * **Get your API token**. Click the **Key** icon in the left menu. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
@@ -54,7 +56,7 @@ Initialize the OpenAI client. Pass the token as an environment variable:
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 ```
 
-Set up tracing parameters. Copy the Team ID from the Teams page (https://app.evidently.cloud/teams), and give a name to identify your tracing dataset.
+Set up tracing parameters. Copy the Team ID from the [Teams page](https://app.evidently.cloud/teams), and give a name to identify your tracing dataset.
 
 ```python
 init_tracing(
@@ -111,10 +113,6 @@ Want to run evaluations over this data? See a Quickstart.
 
 Check out a more in-depth tutorial to learn more about tracing:
 
-{% content-ref url="../examples/tutorial-llm.md" %}
+{% content-ref url="../examples/tutorial_tracing.md" %}
 [LLM Tracing Tutorial](../examples/tutorial_tracing.md). 
 {% endcontent-ref %}
-
-Need help? Ask in our [Discord community](https://discord.com/invite/xZjKRaNp8b).
-
-

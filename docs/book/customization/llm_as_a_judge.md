@@ -91,7 +91,8 @@ custom_judge = LLMEval(
         pre_messages=[("system", "You are a judge which evaluates text.")],
         ),
     provider = "openai",
-    model = "gpt-4o-mini"
+    model = "gpt-4o-mini",
+    display_name="Conciseness",
 )
 ```
 
