@@ -12,7 +12,7 @@ def get_unique_not_nan_values_list_from_series(current_data: pd.Series, referenc
 
 
 def get_binned_data(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, n: int, feel_zeroes: bool = True
+    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, n: int, fill_zeroes: bool = True
 ):
     """Split variable into n buckets based on reference quantiles
     Args:
@@ -38,7 +38,7 @@ def get_binned_data(
         reference_percents = np.array([ref_feature_dict[key] / len(reference_data) for key in keys])
         current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
 
-    if feel_zeroes:
+    if fill_zeroes:
         min_non_zero_ref = np.min(reference_percents[reference_percents != 0])
         min_non_zero_cur = np.min(current_percents[current_percents != 0])
 
