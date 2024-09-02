@@ -5,7 +5,7 @@ description: Set up a Project for your evaluation or monitoring use case.
 Before creating a Project, you need a Workspace.
 
 * In Evidently Cloud, your account is your Workspace. [Set up an account and connect from Python](../installation/cloud_account.md).
-* In self-hosted deployments, a Workspace is a remote or local directory. [Create a workspace](../installation/self_hosting.md).
+* In self-hosted deployments, a Workspace is a remote or local directory. [Create and connect to a workspace](../installation/self_hosting.md).
 
 # Create a Project
 
@@ -14,10 +14,10 @@ You can create a Project using the Python API or directly in the user interface.
 ## Add a new Project - API
 
 {% hint style="success" %}
-Team management is a Pro feature available in the Evidently Cloud.
+Team management is a Pro feature available in the `Evidently Cloud` and `Evidently Enterprise`.
 {% endhint %}
 
-In Evidently Cloud, you must create a Team before adding a Project. To get your Team ID, go to the [Teams page](https://app.evidently.cloud/teams), select your Team, and copy the ID from there.
+In Evidently Cloud and Enterprise, you must create a Team before adding a Project. To get your Team ID, go to the [Teams page](https://app.evidently.cloud/teams), select your Team, and copy the ID from there.
 
 To create a Project inside a workspace `ws` and Team with a `team_id`, assign a name and description, and save the changes:
 
@@ -80,7 +80,7 @@ ws.search_project("project_name")
 ## [DANGER] Delete Project 
 
 {% hint style="danger" %}
-**You are deleting the data in a Project**. If you delete a Project, you will delete all the associated snapshots stored in a Project.
+**You are deleting the data in a Project**. If you delete a Project, you will delete all the snapshots stored inside it.
 {% endhint %}
 
 {% tabs %}

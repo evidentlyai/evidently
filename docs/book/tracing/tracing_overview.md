@@ -6,6 +6,10 @@ This section covers how to instrument your AI application to collect data and se
 
 **Note**: this feature is in active development, expect more detailed documentaton soon.
 
+{% hint style="success" %}
+Tracing uses the open-source `Tracely` library. 
+{% endhint %}
+
 {% hint style="info" %}
 **Looking for something else?** You can also run evaluations locally on existing datasets using [Reports and Test Suites](../tests-and-reports/introduction.md), and upload tabular [Datasets](../datasets/datasets_overview.md) to the platform using the Python API. 
 {% endhint %}
@@ -28,4 +32,4 @@ Evidently Platform natively supports instrumentation collected with this library
 
 No, tracing is optional on the Evidently Platform. You can also upload datasets directly, especially for batch tabular data, or run evaluations on local datasets and send the results to the platform.
 
-However, tracing is particularly useful for tracking complex LLM chains. It allows you to see all execution flows, inputs, outputs, and intermediate steps like function calls. You can use tracing during experimental runs and in production, coupled with online evaluations.
+However, tracing is particularly useful for tracking complex LLM chains to see all execution flows. You can use tracing during experimental runs and in production, coupled with online evaluations.

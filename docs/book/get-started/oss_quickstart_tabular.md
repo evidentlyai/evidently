@@ -2,7 +2,7 @@
 description: Run your first evaluation using Evidently open-source, for tabular data.
 ---
 
-You can launch this hello-world example in Jupyter notebook, Colab or other Python environment.
+It's best to run this example in Jupyter Notebook or Google Colab so that you can render HTML Reports directly in a notebook cell.
 
 # Installation 
 

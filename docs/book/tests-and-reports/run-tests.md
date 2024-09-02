@@ -24,19 +24,17 @@ Here is the general flow.
 * **Define the Test Suite**. Create a `TestSuite` object and pass the selected `tests`.
 * **Set the parameters**. Optionally, specify Test conditions and mark certain Tests as non-critical.
 * **Run the Test Suite**. Execute the Test Suite on your `current_data`. If applicable, pass the `reference_data` and `column_mapping`.
-* **Get the results**. Get a visual report in Jupyter notebook, export the summary, or send to the Evidently Platform.
+* **Get the results**. View the results in Jupyter notebook, export the summary, or send to the Evidently Platform.
 
 You can use Test Presets or create your Test Suite.
 
 # Test Presets 
 
-Test Presets are pre-built Test Suites that automatically generate a set of Tests for a specific aspect of the data or model performance,
+Test Presets are pre-built Test Suites that generate Tests for a specific aspect of the data or model performance. 
 
-To use a Test Preset, create a `TestSuite` object and include the chosen Preset in the `tests` list. The Tests will run with default parameters for all columns in the dataset. 
-
-Evidently will also automatically generate Test conditions. There are two ways to do it:
-* **Based on the reference dataset**. If you provide a `reference`, Evidently will generate conditions based on it. For example, a Preset may include the `TestShareOfOutRangeValues` Test. It will fail if over 10% of values in the `current` dataset are out of range. Evidently automatically derives the min-max value range for each column from the reference. 10% is an encoded heuristic.
-*  **Based on heuristics**. If you don’t provide a reference, Evidently will run Tests it can using heuristics only. For example, `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model, which Evidently creates automatically. For data quality, Tests like `TestNumberOfEmptyRows()` or `TestNumberOfMissingValues()` assume both should be zero.
+Evidently also automatically generates Test conditions in two ways:
+* **Based on the reference dataset**. If you provide a `reference`, Evidently derives conditions from it. For example, the `TestShareOfOutRangeValues` will fail if over 10% of `current` values fall outside the min-max range seen in the reference. 10% is an encoded heuristic.
+*  **Based on heuristics**. Without a reference, Evidently uses heuristics. For example, `TestAccuracyScore()` fails if the model performs worse than a dummy model created by Evidently. Data quality Tests like `TestNumberOfEmptyRows()` or `TestNumberOfMissingValues()` assume both should be zero.
 
 {% hint style="info" %} 
 **Reference**: Check the default Test conditions in the [All tests](../reference/all-tests.md) table.
@@ -54,7 +52,7 @@ data_quality.run(reference_data=None,
 ```
 
 {% hint style="info" %} 
-**Available Test Presets**. There are others: for example, `DataStabilityTestPreset`, `DataDriftTestPreset` or `RegressionTestPreset`. Refer to the [Presets overview](../presets/all-presets.md) to see individual Presets. For interactive examples, refer to the [example notebooks](../examples/examples.md).
+**Available Test Presets**. There are others: for example, `DataStabilityTestPreset`, `DataDriftTestPreset` or `RegressionTestPreset`. See all [Presets(../presets/all-presets.md). For interactive preview, check [example notebooks](../examples/examples.md).
 {% endhint %}
 
 To get the visual report with Test results, call the object in Jupyter notebook or Colab:
@@ -114,11 +112,11 @@ You can use Presets as a starting point, but eventually, you'll want to design a
 First, decide which Tests to include. Tests can be either dataset-level or column-level.
 
 {% hint style="info" %} 
-**List of available Tests**: The complete list of Tests is available in the [All tests](../reference/all-tests.md) table. To see interactive examples, refer to the [Example notebooks](../examples/examples.md).
+**Reference**: see [All tests](../reference/all-tests.md) table. To see interactive examples, refer to the [Example notebooks](../examples/examples.md).
 {% endhint %}
 
 {% hint style="info" %} 
-**Row-level evaluations**: If you want to generate row-level scores before running the Tests, which are often relevant for text data, read more about [Text Descriptors](text-descriptors.md.md).
+**Row-level evaluations**: To Test row-level scores for text data, read more about [Text Descriptors](text-descriptors.md).
 {% endhint %}
 
 **Dataset-level Tests**. Some Tests apply to the entire dataset, such as checking the share of drifting features or accuracy. To add them to a Test Suite, create a `TestSuite` object and list the `tests` one by one:    
@@ -198,7 +196,7 @@ You can mix both approaches in the same Test Suite, where some Tests run with de
 
 Use the following parameters to set Test conditions:
 
-| Condition parameter | Explanation                                | Usage Example                                                   |
+| Condition  | Explanation                                | Usage Example                                                   |
 |--------------------------|--------------------------------------------|-----------------------------------------------------------------|
 | `eq: val`               | equal <br> `test_result == val`                         | `TestColumnValueMin("col", eq=5)`            |
 | `not_eq: val`             | not equal <br> `test_result != val`                         | `TestColumnValueMin("col", not_eq=0)`            |
@@ -206,8 +204,8 @@ Use the following parameters to set Test conditions:
 | `gte: val`                 | greater than or equal <br> `test_result >= val`                         | `TestColumnValueMin("col", gte=5)`           |
 | `lt: val`                | less than <br> `test_result < val`                          | `TestColumnValueMin("col", lt=5)`            |
 | `lte: val`               | less than or equal <br> `test_result <= val`                         | `TestColumnValueMin("col", lte=5)`           |
-| `is_in: list`              | `test_result ==` one of the values from list | `TestColumnValueMin("col", is_in=[3,5,7])`   |
-| `not_in: list`             | `test_result !=` any of the values from list | `TestColumnValueMin("col", not_in=[-1,0,1])` |
+| `is_in: list`              | `test_result ==` one of the values  | `TestColumnValueMin("col", is_in=[3,5,7])`   |
+| `not_in: list`             | `test_result !=` any of the values  | `TestColumnValueMin("col", not_in=[-1,0,1])` |
 
 **Example 1**. To Test that no values are out of range, and less than (`lt`) 20% of values are missing: 
 

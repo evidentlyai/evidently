@@ -2,13 +2,13 @@
 description: How to run evaluations for text data with Descriptors. 
 ---
 
-A Descriptor is a row-level score that assesses a specific quality or aspect of text data. A simple example of a Descriptor is text length.
+A Descriptor is a row-level score evaluating a specific characteristic of a text data. A simple example is text length. 
 
-It can be more complex, like using an LLM to label each text as "relevant" or "not relevant" (a categorical Descriptor) or calculate the similarity between two texts (a numerical Descriptor).
+Descriptors range from regular expressions and text statistics to ML- and LLM-based checks. For example, you can calculate the semantic similarity between two texts, or ask LLM to label responses as "relevant" or "not relevant". 
 
 You can use Descriptors in two ways:
-* **In a Report**. This helps visualize and summarize the scores, like how the text length varies across all texts.
-* **In a Test Suite**. This helps check if defined conditions are met, like whether all texts are within a certain length (True/False).
+* **In a Report**. This helps visualize and summarize the scores, like show text length across all texts.
+* **In a Test Suite**. This checks if conditions are met, like if all texts are within a certain length (True/False).
 
 {% content-ref url="introduction.md" %}
 [Overview of Reports, Tests and Descriptors](introduction.md)
@@ -36,7 +36,7 @@ from evidently.tests import TestColumnValueMin, TestColumnValueMean, TestCategor
 from evidently.descriptors import Contains, TextLength, Sentiment
 ```
 
-**Note** To run some Descriptors that use vocabulary-based checks (like `IncludesWords`, which also checks for word variants, or `OOV` for out-of-vocabulary words), you may need to additionally download `nltk` dictionaries:
+**Note**. For some Descriptors that use vocabulary-based checks (like `IncludesWords` or `OOV` for out-of-vocabulary words), you may need to download `nltk` dictionaries:
 
 ```python
 nltk.download('words')
@@ -47,21 +47,21 @@ nltk.download('vader_lexicon')
 
 # How it works
 
-Here is the general flow.
+Here is the general flow to run an evaluation:
 
 * **Input data**. Prepare the data as a Pandas DataFrame. Include at least one text column. This will be your `current_data` to run evals on. Optionally, prepare the `reference` dataset.
 * **Schema mapping**. Define your data schema using [Column Mapping](../input-data/column-mapping.md). Optional, but highly recommended.
 * **Define the Report or Test Suite**. Create a `Report` or a `TestSuite` object with the selected checks.
 * **Run the Report**. Run the Report on your `current_data`, passing the `column_mapping`. Optionally, pass the `reference_data`.
-* **Get the summary results**. Get a visual report in Jupyter notebook, export the metrics, or upload it to Evidently Platform.
+* **Get the summary results**. Get a visual Report in Jupyter notebook, export the metrics, or upload it to Evidently Platform.
 * **Get the scored datasets**. To see row-level scores, export the Pandas DataFrame with added descriptors. (Or view this on Evidently Platform). 
 
 {% hint style="info" %} 
-**Available Descriptors**. See the list of available descriptors in the [All Metrics](../reference/all-metrics.md) page. Descriptors range from regular expressions and text statistics to model and LLM-based checks
+**Available Descriptors**. See Descriptors in the [All Metrics](../reference/all-metrics.md) page. 
 {% endhint %}
 
 {% hint style="info" %} 
-**Reports and Test Suites**. To understand the basic API, read guides on the [running Reports](get-reports.md) and [generating Test Suite](run-tests.md).
+**Reports and Test Suites**. For basic API, read how to [run Reports](get-reports.md) and [Test Suites](run-tests.md).
 {% endhint %}
 
 ## Text Evals
@@ -94,7 +94,7 @@ report
 
 ![](../.gitbook/assets/cloud/llm_report_preview-min.gif)
 
-You can also export the DataFrame with the Descriptor scores added to your original dataset. To see the dataset:
+You can add the Descriptors to your original dataset. To view the DataFrame:
 
 ```
 report.datasets().current
@@ -138,7 +138,7 @@ report = Report(metrics=[
 ])
 ```
 
-**Descriptor parameters**. Some Descriptors have required parameters. For example, if you’re testing for competitor mentions using the `Contains` Descriptor, you’ll want to include the brand names in the `items` list:
+**Descriptor parameters**. Some Descriptors have required parameters. For example, if you’re testing for competitor mentions using the `Contains` Descriptor, you must include the names in the `items` list:
 
 ```python
 report = Report(metrics=[
@@ -161,7 +161,7 @@ Some Descriptors, like custom LLM judges, might require a more complex setup, bu
 
 ## Using Metrics
 
-The `TextEvals` Preset works by generating a `ColumnSummaryMetric` for each Descriptor you calculate. You can achieve the same results by explicitly creating this Metric for each Descriptor using the following API:
+The `TextEvals` Preset works by generating a `ColumnSummaryMetric` for each Descriptor you calculate. You can achieve the same results by explicitly creating this Metric for each Descriptor:
 
 ```python
 report = Report(metrics=[
@@ -186,7 +186,7 @@ report = Report(metrics=[
 ])
 ```
 
-In this case, you’ll need to pass both `reference` and `current` datasets. Instead of just summarizing, the Metric will compare the distribution of "response" Text Length in the two datasets and return a drift score.
+In this case, you’ll need to pass both `reference` and `current` datasets. The Metric will compare the distribution of "response" Text Length in the two datasets and return a drift score.
 
 You can use other column-level Metrics this way: 
 
@@ -204,7 +204,7 @@ However, in most cases, it's better to first generate a DataFrame with the score
 
 ## Run Tests 
 
-You can also run Tests with text Descriptors, allowing you to verify specific conditions and return a Pass or Fail result.
+You can also run Tests with text Descriptors to verify set conditions and return a Pass or Fail result.
 
 **Example 1**. To test that the average response sentiment is greater or equal (`gte`) to 0, and that the maximum text length is less than or equal (`lte`) to 200 characters:
 
@@ -243,36 +243,36 @@ test_suite = TestSuite(tests=[
 
 ![](../.gitbook/assets/tests/test_descriptor_example.png)
 
-**Available Tests**. You can use any column-level Tests with Descriptors. Here are some that are particularly useful:
+**Available Tests**. You can use any column-level Tests with Descriptors. Here are a few particularly useful:
 
 For numerical Descriptors:
 
 ```python
 test_suite = TestSuite(tests=[
-    TestValueRange(column_name = TextLength().on("response")), #test if response length is within min-max range
-    TestNumberOfOutRangeValues(column_name = TextLength().on("response")), #test the number of responses with text length out of range
-    TestShareOfOutRangeValues(column_name = TextLength().on("response")), #test the share of responses with text length out of range
-    TestColumnValueMin(column_name = TextLength().on("response")), #test the minimum response length
-    TestColumnValueMax(column_name = TextLength().on("response")), #test the max response length
-    TestColumnValueMean(column_name = TextLength().on("response")), #test the mean response length
-    TestColumnValueMedian(column_name = TextLength().on("response")),  #test the median response length
+    TestValueRange(column_name = TextLength().on("response")),
+    TestNumberOfOutRangeValues(column_name = TextLength().on("response")),
+    TestShareOfOutRangeValues(column_name = TextLength().on("response")),
+    TestColumnValueMin(column_name = TextLength().on("response")),
+    TestColumnValueMax(column_name = TextLength().on("response")),
+    TestColumnValueMean(column_name = TextLength().on("response")), 
+    TestColumnValueMedian(column_name = TextLength().on("response")),
 ])
 ```
 
-In these examples, the Test conditions must be derived from the `reference`. You can also pass custom conditions.
+In these examples, the Test conditions come from the `reference` dataset. You can also pass custom ones.
 
 {% hint style="info" %} 
-**Test conditions.** Refer to the [All tests](../reference/all-tests.md) table to see the default conditions for individual Tests, and [How to set test conditions](../tests-and-reports/run_tests.md) to learn how to specify conditions manually.
+**Test conditions.** See the list of [All tests](../reference/all-tests.md) with defaults. Learn how to set [custom Test conditions](../tests-and-reports/run-tests.md).
 {% endhint %}
 
-For categorical descriptors (like those that return "True" or "False" for pattern match, or binary classifiers with LLM-as-a-judge), use `TestCategoryCount` or `TestCategoryShare` tests. 
+For categorical Descriptors, use `TestCategoryCount` or `TestCategoryShare` Tests. 
 
 For example, to test if the share of responses that contain travel-related words is less than or equal to 20%:
 
 ```python
 test_suite = TestSuite(tests=[
     TestCategoryShare(
-        column_name=IncludesWords(words_list=['booking', 'hotel', 'flight'], display_name="Travel Mentions").
+        column_name=IncludesWords(words_list=['hotel', 'flight'], display_name="Travel Mentions").
         on("new_response"),
         category=True,
         lte=0.2),

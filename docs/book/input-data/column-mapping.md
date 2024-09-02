@@ -87,7 +87,7 @@ column_mapping.id = None #there is no ID column in the dataset
 ```
 
 {% hint style="info" %} 
-**Why map them:** When you map the "datetime" column, it becomes the index for certain plots, giving you richer visualizations in your Reports. If you have a timestamp in your data, it's a good idea to map it. Mapping the "Datetime" and "ID" columns also automatically excludes them from analyses like data drift detection, where it wouldn't add any value.
+**Why map them:** A "DateTime" column serves as the index for certain plots, giving you richer visualizations in your Reports. If you have a timestamp column, it's always a good idea to map it. Mapping the "Datetime" and "ID" columns also excludes them from analyses like data drift detection, where it wouldn't add any value.
 {% endhint %}
 
 ## Target and Prediction
@@ -95,23 +95,23 @@ column_mapping.id = None #there is no ID column in the dataset
 To map columns containing Target and Prediction:
 
 ```python
-column_mapping.target = 'y' #'y' is the name of the column with the target function
-column_mapping.prediction = 'pred' #'pred' is the name of the column(s) with model predictions
+column_mapping.target = 'y' 
+column_mapping.prediction = 'pred' 
 ```
 
-This matches regression or simple classification tasks. For more complex cases, check detailed instructions on how to map inputs for [classification](classification_data.md) and [ranking and recommendations](recsys_data.md) 
+This matches regression or simple classification tasks. For more complex cases, check detailed instructions on how to map inputs for [classification](classification_data.md) and [ranking and recommendations](recsys_data.md).
 
 {% hint style="info" %} 
-**Why map them:** If you work with a dataset that contains ML inferences, and want to evaluate Classification, Regression or Ranking quality, you must specify which columns contain predictions and true lables. Mapping Target and/or Prediction is also required to generate the Target Drift Preset.
+**Why map them:** If you have a dataset with ML inferences, it's necessary to map where Predictions and Ground Truth are to compute the quality metrics. You also need to map the Target and/or Prediction to generate the Target Drift Preset.
 {% endhint %}
 
 ## Categorical and numerical columns
 
-To split the columns into numerical and categorical types: 
+To split the columns into numerical and categorical types, pass them as lists: 
 
 ```python
-column_mapping.numerical_features = ['temp', 'atemp', 'humidity'] #list of numerical features
-column_mapping.categorical_features = ['season', 'holiday'] #list of categorical features
+column_mapping.numerical_features = ['temp', 'atemp', 'humidity'] 
+column_mapping.categorical_features = ['season', 'holiday'] 
 ```
 
 {% hint style="info" %} 
@@ -149,18 +149,18 @@ column_mapping.embeddings = {'small_subset': embeddings_data.columns[:10]}
 
 You might have temporal features in your dataset. For example, “date of the last contact.” 
  
-To map them, define: 
+To map them, pass them as a list: 
 
 ```python
-column_mapping.datetime_features = ['last_call_date', 'join_date'] #list of DateTime features
+column_mapping.datetime_features = ['last_call_date', 'join_date'] 
 ```
 
 {% hint style="info" %} 
-**What is the difference between DateTime features and DateTime?** Your dataset might have a single DateTime column, usually tied to when a specific data row (like a prediction timestamp) was generated. This column will be used as the x-axis in some plots. A DateTime feature, on the other hand, refers to any time-related column in your dataset, such as those used as input features in a machine learning model that relies on temporal data
+**What is the difference between DateTime features and DateTime?** DateTime is a single timestamp column. It often represents the time when a data row was recorded. Use it if you want to see it as index on the plots. A DateTime feature is any time-related column in your dataset, such as input features in a ML model.
 {% endhint %}
  
 {% hint style="info" %} 
-**Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the `ColumnSummaryMetric`.
+**Why map them:** DateTime feature will be ignored in data drift calculation. Evidently will also calculate appropriate stats and different visualizations for DateTime features in the `ColumnSummaryMetric`.
 {% endhint %}
 
 ## Task parameter for target function
@@ -182,5 +182,5 @@ It accepts the following values:
 **Default**: If you don't specify the task, Evidently will use a simple strategy: if the target has a numeric type and the number of unique values > 5: task == ‘regression.’ In all other cases, the task == ‘classification’.
 
 {% hint style="info" %} 
-**Why map it:** In a multi-class problem, when classes are encoded as numbers, it can look like a regression problem. Explicitly specifying the target type ensures the right visualizations and statistical tests for the target (prediction) are selected. 
+**Why map it:** Classes encoded as numbers may sometimes look like continuous targets. Explicitly specifying the target type ensures the right visualizations and statistical tests for the target (prediction) are selected. 
 {% endhint %} 

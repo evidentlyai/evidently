@@ -23,6 +23,8 @@ Jupyter notebook:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_tracing_tutorial.ipynb" %}
 
 Or click to [open in Colab](https://colab.research.google.com/github/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_tracing_tutorial.ipynb).
+
+If you're having problems or getting stuck, reach out on [Discord](https://discord.com/invite/xZjKRaNp8b).
   
 ## 1. Installation
 Install the necessary libraries:
