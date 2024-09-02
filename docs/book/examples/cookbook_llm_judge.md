@@ -365,6 +365,7 @@ verbosity_report.datasets().current
 ```
 
 Preview:
+
 ![](../.gitbook/assets/cookbook/llmjudge_verbosity_examples.png)
 
 Don't fully agree with the results? Use these labels as a starting point, and correct the decision where you see fit - now you've got your golden dataset! Next, iterate on your judge prompt.
