@@ -104,7 +104,7 @@ from sklearn import datasets
 from evidently.test_suite import TestSuite
 from evidently.test_preset import DataStabilityTestPreset
 
-iris_data = datasets.load_iris(as_frame='auto')
+iris_data = datasets.load_iris(as_frame=True)
 iris_frame = iris_data.frame
 ```
 
@@ -142,7 +142,7 @@ from sklearn import datasets
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset
 
-iris_data = datasets.load_iris(as_frame='auto')
+iris_data = datasets.load_iris(as_frame=True)
 iris_frame = iris_data.frame
 ```
 
