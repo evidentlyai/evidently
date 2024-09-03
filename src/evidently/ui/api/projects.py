@@ -87,6 +87,15 @@ def list_projects(
     log_event("list_projects", project_count=len(projects))
     return projects
 
+@get("/reload", sync_to_thread=True)
+def reload_projects(
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    log_event: Callable,
+    user_id: UserID,
+) -> None:
+    project_manager.metadata._state.reload(force=True)
+    log_event("reload_projects")
+
 
 @get("/{project_id:uuid}/info", sync_to_thread=True)
 def get_project_info(
@@ -394,6 +403,7 @@ def create_projects_api(guard: Callable) -> Router:
                 route_handlers=[
                     additional_models,
                     list_projects,
+                    reload_projects,
                     list_reports,
                     get_project_info,
                     search_projects,
