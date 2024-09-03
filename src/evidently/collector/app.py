@@ -166,7 +166,10 @@ async def send_snapshot(collector: CollectorConfig, storage: CollectorStorage) -
             try:
                 with report_item as report:
                     await sync_to_thread(
-                        collector.workspace._add_report_base, collector.project_id, report, collector.save_dataset
+                        collector.workspace._add_report_base,
+                        collector.project_id,
+                        report,
+                        collector.save_datasets and collector.is_cloud_resolved,  # only save datasets to cloud
                     )  # FIXME: sync function
             except Exception as e:
                 logger.exception(f"Error saving snapshot: {e}")
