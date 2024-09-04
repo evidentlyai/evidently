@@ -500,7 +500,7 @@ class DatasetInputOutputLinks(BaseModel):
 
 class SnapshotLinks(BaseModel):
     datasets: DatasetInputOutputLinks = DatasetInputOutputLinks()
-    computation_config: Optional[ComputationConfigID] = None
+    computation_config_id: Optional[ComputationConfigID] = None
 
 
 class Snapshot(BaseModel):
