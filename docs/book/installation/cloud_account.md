@@ -23,7 +23,7 @@ Go to the **Teams** icon in the left menu, create a Team, and name it. ([Team pa
 You will need an access token to interact with Evidently Cloud from your Python environment.
 
 {% hint style="info" %}
-**Do I always need this?** No, you only for data uploads or evaluations in Python. You can view data, edit dashboards, upload CSVs and run no-code evaluations without the token.
+**Do I always need this?** No, only for data uploads or to run evaluations in Python. You can view data, edit dashboards, upload CSVs and run no-code evaluations without the token.
 {% endhint %}
 
 ## Get a Token
