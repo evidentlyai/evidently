@@ -50,4 +50,4 @@ token="YOUR_TOKEN_HERE",
 url="https://app.evidently.cloud")
 ```
 
-Now, you are all set to start using Evidently Cloud! Choose your [next step](../get-started/quickstart-cloud.md).
+Now, you are all set to start using Evidently Cloud! Create your first Project and choose your [next step](../get-started/quickstart-cloud.md).
