@@ -6,11 +6,11 @@ The platform supports several evaluations directly from the user interface.
 
 | Name                    | Type       | Description                                                                                                                              |
 |-------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Text Evals              | Report     | Analyze texts using methods from regular expressions to LLM judges.                                                     |
-| Data Quality            | Report     | Get descriptive statistics and distribution overviews for all columns.  |
+| Text Evals              | Report     | Analyze text data, from regular expressions to LLM judges.                                                     |
+| Data Quality            | Report     | Get descriptive statistics and distributions for all columns.  |
 | Classification Quality  | Report     | Evaluate the quality of a classification model.                                |
 | Regression Quality      | Report     | Evaluate the quality of a regression model.                                           |
-| Data Quality Tests      | Test Suite | Automatically check for issues like missing values, duplicates, etc.                                                        |
+| Data Quality Tests      | Test Suite | Automatically check for missing values, duplicates, etc.                                                        |
 
 Before you start, pick a dataset to evaluate. For example, this could be a CSV file containing inputs and outputs of your AI system, like chatbot logs.
 
