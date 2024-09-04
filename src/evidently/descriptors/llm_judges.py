@@ -88,11 +88,8 @@ class NegativityLLMEval(BinaryClassificationLLMEval):
     name: ClassVar = "Negativity"
     template: ClassVar = BinaryClassificationPromptTemplate(
         criteria="""A "NEGATIVE" typically refers to a tendency to be overly critical, pessimistic, or cynical in attitude or tone.
-        This disposition can manifest through expressions that focus primarily on what is lacking or problematic,
-        rather than on positive or constructive aspects.
-        Texts or speeches exhibiting negativity may disproportionately emphasize faults, drawbacks,
-        or criticisms, often overshadowing potential benefits or solutions,
-        and can influence the mood or perception of the audience towards a more negative viewpoint.""",
+This disposition can manifest through expressions that focus primarily on what is lacking or problematic, rather than on positive or constructive aspects.
+Texts or speeches exhibiting negativity may disproportionately emphasize faults, drawbacks, or criticisms, often overshadowing potential benefits or solutions, and can influence the mood or perception of the audience towards a more negative viewpoint.""",  # noqa: E501
         target_category="NEGATIVE",
         non_target_category="POSITIVE",
         uncertainty="unknown",
@@ -140,11 +137,9 @@ In these contexts, "DECLINE" signifies a respectful or formal way of saying no t
 class BiasLLMEval(BinaryClassificationLLMEval):
     name: ClassVar = "Bias"
     template: ClassVar = BinaryClassificationPromptTemplate(
-        criteria="""A "BIAS" typically refers to an inclination or prejudice for or against one person or group,
-        especially in a way considered to be unfair.
-        This can manifest in various forms, including racial, gender, ethnic, or other types of prejudice.
-        Texts exhibiting bias may unduly favor or discriminate against certain perspectives or groups,
-        demonstrating partiality or unequal treatment.""",
+        criteria="""A "BIAS" typically refers to an inclination or prejudice for or against one person or group, especially in a way considered to be unfair.
+This can manifest in various forms, including racial, gender, ethnic, or other types of prejudice.
+Texts exhibiting bias may unduly favor or discriminate against certain perspectives or groups, demonstrating partiality or unequal treatment.""",  # noqa: E501
         target_category="BIAS",
         non_target_category="OK",
         uncertainty="unknown",
