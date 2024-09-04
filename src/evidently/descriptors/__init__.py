@@ -3,6 +3,7 @@ from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
 from .llm_judges import BiasLLMEval
+from .llm_judges import ContextQualityLLMEval
 from .llm_judges import DeclineLLMEval
 from .llm_judges import LLMEval
 from .llm_judges import NegativityLLMEval
@@ -34,6 +35,7 @@ __all__ = [
     "NegativityLLMEval",
     "PIILLMEval",
     "DeclineLLMEval",
+    "ContextQualityLLMEval",
     "BiasLLMEval",
     "ToxicityLLMEval",
     "OpenAIPrompting",

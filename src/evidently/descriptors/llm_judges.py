@@ -133,13 +133,24 @@ In these contexts, "DECLINE" signifies a respectful or formal way of saying no t
     model = "gpt-4o-mini"
 
 
-class RelevanceLLMEval(BinaryClassificationLLMEval):
-    name: ClassVar = "Relevance"
+class ContextQualityLLMEval(BinaryClassificationLLMEval):
+    name: ClassVar = "ContextQuality"
 
     template: ClassVar = BinaryClassificationPromptTemplate(
-        criteria="""Relevance of question {question} in context {context}""",
-        target_category="RELEVANT",
-        non_target_category="IRRELEVANT",
+        criteria="""A "VALID" refers to a text which provides sufficient information that supports answering the QUESTION effectively.
+It may include additional content, but as long as the information needed to answer the question  is present,
+it is considered valid.
+
+"INVALID" refers to a text which misses information
+or details required to answer the QUESTION fully or includes information that is contradictory or inconsistent.
+
+        Here is a QUESTION
+        -----question_starts-----
+        {question}
+        -----question_ends-----
+""",
+        target_category="VALID",
+        non_target_category="INVALID",
         uncertainty="unknown",
         include_reasoning=True,
         pre_messages=[("system", "You are a judge which evaluates text.")],
@@ -147,12 +158,11 @@ class RelevanceLLMEval(BinaryClassificationLLMEval):
     provider = "openai"
     model = "gpt-4o-mini"
 
-    context: str
     question: str
 
     def get_input_columns(self, column_name: str) -> Dict[str, str]:
         input_columns = super().get_input_columns(column_name)
-        input_columns.update({self.context: "context", self.question: "question"})
+        input_columns.update({self.question: "question"})
         return input_columns
 
 
