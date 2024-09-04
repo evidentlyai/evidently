@@ -52,6 +52,10 @@ To get the dictionary:
 drift_report.as_dict()
 ```
 
+{% hint style="info" %}
+**Inlcude/exclude**. Check how to [manage verbosity](../customization/json-dict-output.md) of `json` or `as_dict` output.
+{% endhint %}
+
 # Scored DataFrame
 
 If you generated text Descriptors during your evaluation, you can retrieve a DataFrame with all generated descriptors added to each row of your original input data.
@@ -67,7 +71,7 @@ This returns the complete original dataset with new scores.
 You can save the output of a Report or Test Suite as an Evidently JSON `snapshot`.
 
 {% hint style="info" %}
-**How is a JSON snapshot different from `json()`?**. A snapshot contains all supplementary and render data. This lets you restore the output in any available Evidently format without accessing the initial raw data.
+**How is a JSON snapshot different from `json()`?** A snapshot contains all supplementary and render data. This lets you restore the output in any Evidently format (like HTML) without accessing the initial raw data.
 {% endhint %}
 
 This is a rich JSON format used for storing the evaluation results on Evidently platform. When you save Reports or Test Suites to the platform, a snapshot is generated automatically. However, you can also generate and save a snapshot explicitly. 
