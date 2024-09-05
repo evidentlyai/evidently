@@ -121,6 +121,6 @@ def test_create_snapshot_and_get_logs(
 
     data = r.json()
     assert data == [
-        {"error": "", "ok": True, "snapshot_id": snapshot_id, "type": "UploadSnapshot"},
-        {"error": "", "ok": True, "snapshot_id": snapshot_id, "type": "CreateSnapshot"},
+        {"error": "", "ok": True, "report_id": snapshot_id, "type": "UploadReport"},
+        {"error": "", "ok": True, "report_id": snapshot_id, "type": "CreateReport"},
     ]
