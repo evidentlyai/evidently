@@ -123,7 +123,7 @@ class InMemoryStorage(CollectorStorage):
     def add_report(self, id: str, report: ReportBase):
         self._reports[id].append(report)
 
-    def take_reports(self, id: str) -> Sequence[ReportBase]:
+    def take_reports(self, id: str) -> Sequence[ReportPopper]:
         report_list = self._reports.get(id, [])
         while len(report_list) > 0:
             yield ReportPopper(report_list.pop(0), report_list)
