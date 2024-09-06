@@ -1,5 +1,5 @@
 import { Box, Breadcrumbs, Link } from '@mui/material'
-import { useMatches, Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useMatches } from 'react-router-dom'
 
 interface Crumb {
   to: string
@@ -32,9 +32,9 @@ export const BreadCrumbs = () => {
 
   return (
     <Box>
-      <Breadcrumbs aria-label="breadcrumb">
+      <Breadcrumbs aria-label='breadcrumb'>
         {crumbs.map((crumb) => (
-          <Link key={crumb.to} component={RouterLink} color="inherit" to={crumb.to}>
+          <Link key={crumb.to} component={RouterLink} color='inherit' to={crumb.to}>
             {crumb.linkText}
           </Link>
         ))}

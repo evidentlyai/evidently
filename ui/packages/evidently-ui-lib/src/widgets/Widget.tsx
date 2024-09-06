@@ -1,11 +1,11 @@
 import React, { type ReactNode } from 'react'
 import type { WidgetInfo } from '~/api'
 
-import { Grid, Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent, Grid, Typography } from '@mui/material'
 
 import AlertBlock from './AlertBlock'
-import InsightBlock from './InsightBlock'
 import AlertStatBlock from './AlertStatBlock'
+import InsightBlock from './InsightBlock'
 
 /***
  * base part of widget to control:

@@ -25,8 +25,8 @@ const BaseTabs: React.FunctionComponent<BaseTabsProps> = (props) => {
       <Tabs
         value={activeTab}
         onChange={props.onNewTabSelected}
-        indicatorColor="primary"
-        textColor="primary"
+        indicatorColor='primary'
+        textColor='primary'
       >
         {props.tabs.map((ti) => (
           // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered

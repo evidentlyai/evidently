@@ -17,8 +17,8 @@ import LoadableView from '~/components/LoadableVIew'
 
 import BigGraphWidgetContent from '~/widgets/BigGraphWidgetContent'
 import InsightBlock from '~/widgets/InsightBlock'
-import { WidgetRenderer } from '~/widgets/WidgetRenderer'
 import NotImplementedWidgetContent from '~/widgets/NotImplementedWidgetContent'
+import { WidgetRenderer } from '~/widgets/WidgetRenderer'
 
 interface BigTableDetailsProps {
   details: BigTableRowDetails

@@ -98,7 +98,7 @@ export const DashboardParams = ({
         padding={1}
         zIndex={1}
         gap={2}
-        justifyContent="flex-end"
+        justifyContent='flex-end'
         alignItems={'flex-end'}
       >
         <Grid item>
@@ -110,7 +110,7 @@ export const DashboardParams = ({
                   onChange={(event) => setIsDashboardHideDates(event.target.checked)}
                 />
               }
-              label="Show in order"
+              label='Show in order'
             />
           </Box>
         </Grid>
@@ -120,7 +120,7 @@ export const DashboardParams = ({
               <FormControl fullWidth>
                 <InputLabel>Period</InputLabel>
                 <Select
-                  variant="standard"
+                  variant='standard'
                   defaultValue={''}
                   onChange={(event) => {
                     const [valueStr, durationStr] = (event.target.value as string).split(',')
@@ -195,7 +195,7 @@ export const DashboardParams = ({
                       variant: 'standard'
                     }
                   }}
-                  label="From"
+                  label='From'
                   value={date_from}
                   onChange={getOnChangeDate(FILTER_QUERY_PARAMS.FROM)}
                 />
@@ -210,7 +210,7 @@ export const DashboardParams = ({
                       variant: 'standard'
                     }
                   }}
-                  label="To"
+                  label='To'
                   value={date_to}
                   onChange={getOnChangeDate(FILTER_QUERY_PARAMS.TO)}
                 />
@@ -218,7 +218,7 @@ export const DashboardParams = ({
             </Grid>
             <Grid item xs={12}>
               <Collapse unmountOnExit in={!isCorrectTimeInterval}>
-                <Alert severity="error">
+                <Alert severity='error'>
                   <AlertTitle>Error</AlertTitle>
                   {isIncorrectTimeIntervalMessage}
                 </Alert>
@@ -250,7 +250,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
         padding={1}
         zIndex={1}
         gap={2}
-        justifyContent="flex-start"
+        justifyContent='flex-start'
         alignItems={'flex-end'}
       >
         <>
@@ -258,7 +258,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
             <FormControl fullWidth>
               <InputLabel>Period</InputLabel>
               <Select
-                variant="standard"
+                variant='standard'
                 defaultValue={''}
                 onChange={(event) => {
                   const [valueStr, durationStr] = (event.target.value as string).split(',')
@@ -302,7 +302,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
                     error: required ? !dates.dateFrom : undefined
                   }
                 }}
-                label="From"
+                label='From'
                 value={dates?.dateFrom}
                 onChange={(value) => setDates((prev) => ({ ...prev, dateFrom: value }))}
               />
@@ -318,7 +318,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
                     error: required ? !dates.dateTo : undefined
                   }
                 }}
-                label="To"
+                label='To'
                 value={dates?.dateTo}
                 onChange={(value) => setDates((prev) => ({ ...prev, dateTo: value }))}
               />
@@ -329,7 +329,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
               unmountOnExit
               in={Boolean(dates.dateFrom && dates.dateTo && dates.dateFrom?.isAfter(dates.dateTo))}
             >
-              <Alert severity="error">
+              <Alert severity='error'>
                 <AlertTitle>Error</AlertTitle>
                 Incorrect time interval
               </Alert>

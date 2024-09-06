@@ -2,13 +2,13 @@ import React from 'react'
 
 import {
   Button,
+  type ButtonOwnProps,
   ClickAwayListener,
-  Paper,
   Grow,
-  Popper,
   MenuItem,
   MenuList,
-  type ButtonOwnProps
+  Paper,
+  Popper
 } from '@mui/material'
 
 const options = [
@@ -53,11 +53,11 @@ export function DownloadButton(props: {
         disabled={props.disabled}
         variant={props.variant}
         ref={anchorRef}
-        color="primary"
+        color='primary'
         aria-controls={open ? 'split-button-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
-        aria-label="select merge strategy"
-        aria-haspopup="menu"
+        aria-label='select merge strategy'
+        aria-haspopup='menu'
         onClick={handleToggle}
       >
         Download
@@ -72,7 +72,7 @@ export function DownloadButton(props: {
           >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                <MenuList id="split-button-menu">
+                <MenuList id='split-button-menu'>
                   {options.map((option) => (
                     <MenuItem
                       key={option.format}

@@ -45,9 +45,9 @@ const LoadableView = <T,>({ func, children }: LoadableViewProps<T>): JSX.Element
       {state.status === LoadState.Loaded ? (
         children && state.result && children(state.result)
       ) : state.status === LoadState.Failed ? (
-        <Typography align="center">Failed</Typography>
+        <Typography align='center'>Failed</Typography>
       ) : state.status === LoadState.Loading ? (
-        <Box textAlign="center">
+        <Box textAlign='center'>
           <CircularProgress />
         </Box>
       ) : null}

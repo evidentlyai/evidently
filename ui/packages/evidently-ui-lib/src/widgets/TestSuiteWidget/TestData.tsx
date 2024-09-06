@@ -1,10 +1,10 @@
+import { Alert, type AlertColor, AlertTitle, Box, Button, Collapse } from '@mui/material'
 import type React from 'react'
 import { useState } from 'react'
 import type { TestDataInfo, TestState } from '~/api'
-import { Button, Collapse, Alert, AlertTitle, type AlertColor, Box } from '@mui/material'
 
-import { BigTableDetails } from '~/widgets/BigTableWidget/BigTableDetails'
 import ReactMarkdown from 'react-markdown'
+import { BigTableDetails } from '~/widgets/BigTableWidget/BigTableDetails'
 
 const availableStates: TestState[] = ['unknown', 'success', 'warning', 'fail']
 
@@ -38,8 +38,8 @@ const TestData: React.FC<TestDataInfo> = ({ title, description, state, details }
             isDetailsAvailable ? (
               <Button
                 onClick={() => setDetailsPart((prev) => ({ active: !prev.active }))}
-                color="inherit"
-                size="small"
+                color='inherit'
+                size='small'
               >
                 Details
               </Button>

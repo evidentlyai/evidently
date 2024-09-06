@@ -1,7 +1,7 @@
-import React, { type ReactNode, useState } from 'react'
-import { Box, Popover, Typography } from '@mui/material'
 import MaterialTable, { type Column, type Options } from '@material-table/core'
 import WarningIcon from '@mui/icons-material/Warning'
+import { Box, Popover, Typography } from '@mui/material'
+import React, { type ReactNode, useState } from 'react'
 
 import type {
   BigTableDataRow,
@@ -13,11 +13,11 @@ import type {
   WidgetSize
 } from '~/api'
 
+import { BigTableDetails } from './BigTableDetails'
 import { GraphDetails } from './GraphDetails'
+import { HistogramGraphColumn } from './HistogramGraphColumn'
 import { LineGraphColumn } from './LineGraphColumn'
 import { ScatterGraphColumn } from './ScatterGraphColumn'
-import { HistogramGraphColumn } from './HistogramGraphColumn'
-import { BigTableDetails } from './BigTableDetails'
 
 interface BigTableWidgetProps extends BigTableWidgetParams {
   widgetSize: WidgetSize

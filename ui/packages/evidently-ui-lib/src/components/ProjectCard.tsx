@@ -1,6 +1,3 @@
-import type React from 'react'
-import { useEffect, useState } from 'react'
-import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
 import {
   Box,
   Button,
@@ -12,15 +9,18 @@ import {
   Tooltip,
   Typography
 } from '@mui/material'
+import type React from 'react'
+import { useEffect, useState } from 'react'
+import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
 
 import { Add as AddIcon } from '@mui/icons-material'
 
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import { useTheme } from '@mui/material/styles'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import type { ProjectModel } from '~/api/types'
 import type { StrictID } from '~/api/types/utils'
 
@@ -90,29 +90,29 @@ export const EditProjectInfoForm = ({
           {...register('name')}
           error={Boolean(errors.name)}
           helperText={errors.name?.message}
-          placeholder="Name"
+          placeholder='Name'
           InputProps={{
             style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
           }}
           disabled={isDisabled}
-          variant="standard"
+          variant='standard'
         />
         {/* description */}
         <TextField
           {...register('description')}
           error={Boolean(errors.description)}
           helperText={errors.description?.message}
-          placeholder="Description"
+          placeholder='Description'
           disabled={isDisabled}
           fullWidth
           // this `multiline` below causes Material-UI: Too many re-renders
           // multiline
-          variant="standard"
+          variant='standard'
         />
         {/* Submit button */}
         <Box sx={{ display: 'flex', justifyContent: 'right' }}>
           <Button
-            variant="outlined"
+            variant='outlined'
             disabled={
               isDisabled ||
               // we didn't touch any fields
@@ -121,8 +121,8 @@ export const EditProjectInfoForm = ({
               Object.keys(errors).length > 0
             }
             style={{ marginTop: '10px' }}
-            color="primary"
-            type="submit"
+            color='primary'
+            type='submit'
           >
             Save
           </Button>
@@ -138,7 +138,7 @@ export const ProjectInfoCard = ({ project }: { project: StrictID<ProjectModel> }
       <Link component={RouterLink} to={`projects/${project.id}`}>
         <Typography variant={'h6'}>{project.name}</Typography>
       </Link>
-      <Typography style={{ whiteSpace: 'pre-line' }} variant="body1">
+      <Typography style={{ whiteSpace: 'pre-line' }} variant='body1'>
         {project.description}
       </Typography>
     </>
@@ -202,10 +202,10 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
 
           <ToggleButton
             disabled={isDisabled}
-            color="primary"
+            color='primary'
             value={'edit-mode'}
             selected={isEditMode}
-            size="small"
+            size='small'
             sx={{ border: 'none', borderRadius: '50%' }}
             onChange={() => setEditMode((mode) => !mode)}
           >
@@ -241,12 +241,12 @@ export const AddNewProjectButton = () => {
   return (
     <Box py={2}>
       <Box display={'flex'} justifyContent={'center'}>
-        <Tooltip title="Create new project">
+        <Tooltip title='Create new project'>
           <ToggleButton
-            size="small"
+            size='small'
             selected={on}
             disabled={isDisabled}
-            color="primary"
+            color='primary'
             value={'check'}
             sx={{ border: 'none', borderRadius: '50%' }}
             onChange={() => toggle((prev) => !prev)}
@@ -260,7 +260,7 @@ export const AddNewProjectButton = () => {
         <Box p={3} display={'flex'} flexDirection={'column'} rowGap={1}>
           <EditProjectInfoForm
             project={{ name: '', description: '' }}
-            action="create-new-project"
+            action='create-new-project'
           />
         </Box>
       )}

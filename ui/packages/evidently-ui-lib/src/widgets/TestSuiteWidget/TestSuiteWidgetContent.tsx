@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import type { TestSuiteWidgetParams, TestDataInfo, TestGroupData, TestGroupTypeData } from '~/api'
-import TestInfo, { StateToSeverity } from './TestData'
 import { Box, Button, Collapse, Grid, Select } from '@mui/material'
 import { Alert, AlertTitle } from '@mui/material'
+import React, { useState } from 'react'
+import type { TestDataInfo, TestGroupData, TestGroupTypeData, TestSuiteWidgetParams } from '~/api'
+import TestInfo, { StateToSeverity } from './TestData'
 
 type TestSuiteFoldingProps = {
   type: string
@@ -12,7 +12,7 @@ type TestSuiteFoldingProps = {
 const TestSuiteFolding: React.FC<TestSuiteFoldingProps> = ({ type, availableTypes, onChange }) => (
   <>
     <Select
-      variant="standard"
+      variant='standard'
       value={type}
       onChange={(event) => onChange(event.target.value as string)}
       native={true}
@@ -40,8 +40,8 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
           action={
             <Button
               onClick={() => setCollapse((prev) => ({ active: !prev.active }))}
-              color="inherit"
-              size="small"
+              color='inherit'
+              size='small'
             >
               {collapse.active ? 'Hide' : 'Show'}
             </Button>

@@ -26,11 +26,11 @@ type DetermineReturnType<T extends ResponseParserArgs> = T extends {
 }
   ? typeof returnErrorIfResponseNotOk
   : T extends { notThrowExc: false }
-  ? typeof throwErrorIfResponseNotOk
-  : // biome-ignore lint: <explanation>
-  T extends {}
-  ? typeof throwErrorIfResponseNotOk
-  : never
+    ? typeof throwErrorIfResponseNotOk
+    : // biome-ignore lint: <explanation>
+      T extends {}
+      ? typeof throwErrorIfResponseNotOk
+      : never
 
 export function responseParser<T extends ResponseParserArgs>(args?: T): DetermineReturnType<T> {
   if (args?.notThrowExc) {

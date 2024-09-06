@@ -1,8 +1,8 @@
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
 
-import { DashboardWidgets } from '~/components/DashboardWidgets'
-import type { DashboardInfoModel } from '~/api/types'
 import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
+import type { DashboardInfoModel } from '~/api/types'
+import { DashboardWidgets } from '~/components/DashboardWidgets'
 
 export function StandaloneSnapshotWidgets({
   dashboard: { widgets },

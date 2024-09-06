@@ -1,13 +1,13 @@
+import { Grid } from '@mui/material'
 import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
+import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
+import { JSONParseExtended } from '~/api/JsonParser'
+import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import type { crumbFunction } from '~/components/BreadCrumbs'
 import { DashboardContentWidgets } from '~/components/DashboardContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
-import type { crumbFunction } from '~/components/BreadCrumbs'
 import type { LoaderData } from './data'
-import { Grid } from '@mui/material'
-import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
-import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
-import { JSONParseExtended } from '~/api/JsonParser'
 
 export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, boolean> } = {
   crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
@@ -56,7 +56,7 @@ export const SnapshotTemplate = ({ api }: { api: API_CLIENT_TYPE }) => {
               .then(JSONParseExtended<WidgetInfo>)
         })}
       >
-        <Grid container spacing={3} direction="row" alignItems="stretch">
+        <Grid container spacing={3} direction='row' alignItems='stretch'>
           <DashboardContentWidgets widgets={data.widgets} />
         </Grid>
       </DashboardContext.Provider>
