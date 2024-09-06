@@ -103,7 +103,7 @@ setup_args = dict(
             "sentence-transformers>=2.7.0",
         ],
         "spark": ["pyspark>=3.4.0"],
-        "custom_full_fsspec": [
+        "fsspec": [
             "s3fs>=2024.9.0",
             "gcsfs>=2024.9.0",
             # dependencies from fsspec[full]
