@@ -10,10 +10,7 @@
     ],
     "include": ["ui/*/src/**", "ui/packages/*/src/**"],
     "rules": {
-      "recommended": true,
-      "suspicious": {
-        "noArrayIndexKey": "off"
-      }
+      "recommended": true
     }
   }
 }
