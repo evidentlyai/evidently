@@ -103,7 +103,7 @@ setup_args = dict(
             "sentence-transformers>=2.7.0",
         ],
         "spark": ["pyspark>=3.4.0"],
-        "fsspec": ["fsspec[full]>=2024.2.0"],
+        "fsspec": ["fsspec[full]>=2024.9.0"],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )
