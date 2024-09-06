@@ -19,7 +19,7 @@ pnpm install
 
 ## Code quality
 
-We use `biome` to lint, format and sort imports.
+We use `biome` to lint, format and sort imports
 
 ### vscode
 We recommend to use [biome vscode](https://biomejs.dev/reference/vscode) plugin.
