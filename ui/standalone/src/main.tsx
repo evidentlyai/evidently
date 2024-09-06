@@ -5,8 +5,8 @@ import type { AdditionalGraphInfo } from 'evidently-ui-lib/api'
 import { ThemeProvider } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { theme } from 'evidently-ui-lib/theme/v2'
 
-import { StandaloneSnapshotWidgets } from 'evidently-ui-lib/standalone/app'
 import type { DashboardInfoModel } from 'evidently-ui-lib/api/types'
+import { StandaloneSnapshotWidgets } from 'evidently-ui-lib/standalone/app'
 
 export function drawDashboard(
   dashboard: DashboardInfoModel,
