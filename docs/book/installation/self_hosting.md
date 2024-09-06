@@ -9,8 +9,12 @@ In addition to using Evidently Python library, you can self-host the UI Service 
 {% endhint %}
 
 {% hint style="info" %}
-**Evidently Enterprise.** This page describes self-hosting the open-source version of the platform. To get a Enterprise version with support and extra features, [contact us](https://www.evidentlyai.com/get-demo). You can host the platform in your private cloud or on-premises.
+**Evidently Enterprise.** This page explains how to self-host the open-source platform. For the Enterprise version with extra features and support, [contact us](https://www.evidentlyai.com/get-demo). Host it in your cloud or on-premises.
 {% endhint %}
+
+To get a self-hostable Dashboard, you must:
+1. Create a Workspace (local or remote) to store your data.
+2. Launch the UI service.
 
 # 1. Create a Workspace
 
@@ -34,7 +38,7 @@ ws = Workspace.create("evidently_ui_workspace")
 You can pass a `path` parameter to specify the path to a local directory.
 
 {% hint style="info" %}
-**Code example** [Self-hosting tutorial](../examples/tutorial-monitoring.md) shows a complete Python script to create and populate a local Workspace.
+**Code example**. [Self-hosting tutorial](../examples/tutorial-monitoring.md) shows a complete Python script to create and populate a local Workspace.
 {% endhint %}
 
 ## Remote Workspace
