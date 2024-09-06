@@ -27,7 +27,7 @@ def run(config: AppConfig):
 
 
 def get_config(
-    host: str = "0.0.0.0",
+    host: str = "127.0.0.1",
     port: int = 8000,
     workspace: str = "workspace",
     secret: str = None,
@@ -47,7 +47,7 @@ def get_config(
 
 
 def run_local(
-    host: str = "0.0.0.0",
+    host: str = "127.0.0.1",
     port: int = 8000,
     workspace: str = "workspace",
     secret: str = None,

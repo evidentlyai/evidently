@@ -55,7 +55,7 @@ setup_args = dict(
         "statsmodels>=0.12.2",
         "scikit-learn>=1.0.1",
         "pandas[parquet]>=1.3.5",
-        "numpy>=1.22.0",
+        "numpy>=1.22.0,<2.1",
         "nltk>=3.6.7",
         "scipy>=1.10.0",
         "requests>=2.32.0",
@@ -71,14 +71,10 @@ setup_args = dict(
         "dynaconf>=3.2.4",
         "certifi>=2024.7.4",
         "urllib3>=1.26.19",
-        "fsspec>=2024.2.0",
+        "fsspec>=2024.6.1",
         "ujson>=5.4.0",
         "deprecation>=2.1.0",
-        "opentelemetry-api>=1.25.0",
-        "opentelemetry-sdk>=1.25.0",
-        "opentelemetry-proto>=1.25.0",
-        "opentelemetry-exporter-otlp-proto-grpc>=1.25.0",
-        "opentelemetry-exporter-otlp-proto-http>=1.25.0",
+        "cryptography>=43.0.1",
     ],
     extras_require={
         "dev": [
@@ -107,7 +103,11 @@ setup_args = dict(
             "sentence-transformers>=2.7.0",
         ],
         "spark": ["pyspark>=3.4.0"],
-        "fsspec": ["fsspec[full]>=2024.2.0"],
+        "fsspec": [
+            "s3fs>=2024.9.0",
+            "gcsfs>=2024.9.0",
+            # dependencies from fsspec[full]
+        ],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )

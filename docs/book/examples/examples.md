@@ -1,21 +1,26 @@
 ---
-description: Sample notebooks and tutorials
+description: Code examples and tutorials.
 ---
 
-# Quick start
+# Quick Start
 
-This is the best place to start. 
+Check the short Quickstart examples [here](/get-started/README.MD).
 
-Title| Guide 
--- | --
-Evaluation Tutorial: Tabular Data| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial)
-Evaluation Tutorial: LLMs| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-llm)
-Set up Cloud ML monitoring Dashboard| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-cloud)
-Self-host ML monitoring Dashboard| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring)
+# Get Started Tutorials
 
-# Sample notebooks
+Introductory tutorials that walk you through the basic functionality step by step.
 
-Simple examples show different Metrics, Tests and Presets. Head to Colab examples to see the pre-rendered visuals.
+Title| Guide | Code
+-- | -- | --
+LLM Evaluation | [Tutorial](tutorial-llm.md) | [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_evaluation_tutorial.ipynb)
+Data & ML Monitoring | [Tutorial](tutorial-cloud.md) | [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/data_and_ml_monitoring_tutorial.ipynb)
+LLM Tracing| [Tutorial](tracing.md) | [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/llm_tracing_tutorial.ipynb) 
+Intro to Reports & Test Suites (OSS) | [Tutorial](tutorial_reports_tests.md) | [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/getting_started_tutorial.ipynb)
+Self-host ML monitoring Dashboard (OSS)| [Tutorial](https://docs.evidentlyai.com/get-started/tutorial-monitoring) | [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/get_started_monitoring.py)
+
+# Example Reports and Tests 
+
+Simple examples show different local evaluations (Metrics, Tests and Presets) for tabular data and ML. 
 
 Title| Code example | Contents
 -- | -- | --
@@ -25,13 +30,16 @@ Evidently Metric Presets| [Jupyter notebook](https://github.com/evidentlyai/evid
 Evidently Metrics| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/evidently_metrics.ipynb) <br> [Colab](https://colab.research.google.com/drive/1c7HQz920Q-BPazDOujL4PgckuKIzFebn) | <ul><li>All individual metrics (30+) that one can use to create a custom Report.</li><li>How to set simple metric parameters.</li></ul>
 Evidently LLM Metrics| [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_evaluate_llm_with_text_descriptors.ipynb) | <ul><li>Evaluations for Text Data and LLMs</li></ul>
 
-For more examples showing specific features, including text data support, head to the "How to" examples.
+For LLM and text metrics, check the [LLM evaluation tutorial](tutorial-llm.md). 
 
-{% content-ref url="../how-to-guides/README.md" %}
-[How to guides](../how-to-guides/README.md)
-{% endcontent-ref %}
+# Tutorials - LLM
 
-# Tutorials
+Title | Tutorial
+--- | --- 
+How to create LLM judge evaluator | [Tutorial](cookbook_llm_judge.md)
+How to run regression testing for LLM products| [Tutorial](cookbook_llm_regression_testing.md)
+
+# Tutorials - ML
 
 To better understand the Evidently use cases, refer to the **detailed tutorials** accompanied by the blog posts.
 
@@ -45,6 +53,14 @@ Create ML model cards |[Jupyter notebook](https://github.com/evidentlyai/communi
 Use descriptors to monitor text data | [Jupyter notebook](https://github.com/evidentlyai/community-examples/tree/main/tutorials/How_to_add_a_custom_text_descriptor.ipynb) | [Monitoring unstructured data for LLM and NLP with text descriptors](https://www.evidentlyai.com/blog/unstructured-data-monitoring)|  
 
 You can find more examples in the [Community Examples](https://github.com/evidentlyai/community-examples) repository. 
+
+## How to examples
+
+For code examples on specific functionality, check the How-To examples:
+
+{% content-ref url="https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions" %}
+[How to guides]([../how-to-guides/README.md](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions))
+{% endcontent-ref %}
 
 ## Integrations
 

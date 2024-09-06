@@ -1,10 +1,26 @@
+import json
+
 import numpy as np
 import pandas as pd
 
+from evidently._pydantic_compat import parse_obj_as
+from evidently.base_metric import MetricResult
 from evidently.metrics import PrecisionTopKMetric
+from evidently.metrics.recsys.base_top_k import TopKMetricResult
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.column_mapping import RecomType
 from evidently.report import Report
+from evidently.utils import NumpyEncoder
+
+
+def test_value():
+    result = TopKMetricResult(
+        k=2, current=pd.Series([0, 1]), current_value=1, reference=pd.Series([2, 3]), reference_value=3
+    )
+    payload = json.loads(json.dumps(result.dict(), cls=NumpyEncoder))
+    payload2 = {k: v for k, v in payload.items() if not k.endswith("_value")}
+    result2 = parse_obj_as(MetricResult, payload2)
+    assert json.loads(json.dumps(result2.dict(), cls=NumpyEncoder)) == payload
 
 
 def test_precision_value():
@@ -23,9 +39,9 @@ def test_precision_value():
 
     results = metric.get_result()
     assert len(results.current) == 3
-    assert results.current[1] == 0.5
-    assert results.current[2] == 0.25
-    assert np.isclose(results.current[3], 0.333333)
+    assert results.current[0] == 0.5
+    assert results.current[1] == 0.25
+    assert np.isclose(results.current[2], 0.333333)
 
 
 def test_precision_value_judged_only():
@@ -44,9 +60,9 @@ def test_precision_value_judged_only():
 
     results = metric.get_result()
     assert len(results.current) == 3
-    assert np.isclose(results.current[1], 0.333333)
-    assert np.isclose(results.current[2], 0.166666)
-    assert np.isclose(results.current[3], 0.222222)
+    assert np.isclose(results.current[0], 0.333333)
+    assert np.isclose(results.current[1], 0.166666)
+    assert np.isclose(results.current[2], 0.222222)
 
 
 def test_precision_value_judged_only_scores():
@@ -65,6 +81,6 @@ def test_precision_value_judged_only_scores():
 
     results = metric.get_result()
     assert len(results.current) == 3
-    assert np.isclose(results.current[1], 0.333333)
-    assert np.isclose(results.current[2], 0.166666)
-    assert np.isclose(results.current[3], 0.222222)
+    assert np.isclose(results.current[0], 0.333333)
+    assert np.isclose(results.current[1], 0.166666)
+    assert np.isclose(results.current[2], 0.222222)

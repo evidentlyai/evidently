@@ -5,7 +5,6 @@ from .recsys import RecsysPreset
 from .regression_performance import RegressionPreset
 from .target_drift import TargetDriftPreset
 from .text_evals import TextEvals
-from .text_overview import TextOverviewPreset
 
 __all__ = [
     "ClassificationPreset",
@@ -14,6 +13,5 @@ __all__ = [
     "RegressionPreset",
     "TargetDriftPreset",
     "TextEvals",
-    "TextOverviewPreset",
     "RecsysPreset",
 ]

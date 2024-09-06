@@ -1,5 +1,6 @@
 import re
 from typing import Any
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -40,6 +41,7 @@ def _listed_words_present(
 
 
 class WordsPresence(ApplyColumnGeneratedFeature):
+    __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     words_list: List[str]
     mode: str
@@ -54,7 +56,6 @@ class WordsPresence(ApplyColumnGeneratedFeature):
         lemmatize: bool = True,
         display_name: Optional[str] = None,
     ):
-        self.feature_type = ColumnType.Categorical
         self.column_name = column_name
         self.words_list = words_list
         if mode not in ["includes_any", "includes_all", "excludes_any", "excludes_all"]:

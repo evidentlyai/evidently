@@ -78,14 +78,14 @@ class Component(PolymorphicModel, ABC):
     def get_route_handlers(self, ctx: ComponentContext):
         return []
 
-    def get_api_route_handelers(self, ctx: ComponentContext):
+    def get_api_route_handlers(self, ctx: ComponentContext):
         return []
 
     def apply(self, ctx: ComponentContext, builder: AppBuilder):
         builder.dependencies.update(self.get_dependencies(ctx))
         builder.middlewares.extend(self.get_middlewares(ctx))
         builder.route_handlers.extend(self.get_route_handlers(ctx))
-        builder.api_route_handlers.extend(self.get_api_route_handelers(ctx))
+        builder.api_route_handlers.extend(self.get_api_route_handlers(ctx))
 
     def finalize(self, ctx: ComponentContext, app: Litestar):
         pass
@@ -111,7 +111,7 @@ class FactoryComponent(Component, Generic[DT], ABC):
 
 
 class ServiceComponent(Component):
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"
     port: int = 8000
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:

@@ -22,10 +22,13 @@ suite
 **Example 2**. Apply the same Test with a defined custom condition for all columns in the list: 
 
 ```python
-suite = TestSuite(tests=[
-   TestColumnValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
-])
- 
+suite = TestSuite(
+    tests=[
+        TestColumnValueMin(column_name=column_name, gt=0) 
+        for column_name in ["age", "fnlwgt", "education-num"]
+    ]
+)
+
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -37,42 +40,64 @@ You can also use the `generate_column_tests` function to create multiple Tests.
 **Example 1.** Generate the same Test for all the columns in the dataset. It will use defaults if you do not specify the test condition.
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues)])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
+suite = TestSuite(
+    tests=[generate_column_tests(TestColumnShareOfMissingValues)]
+)
 ```
 
 You can also pass a custom Test condition:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="all", parameters={"lt": 0.5})])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
+suite = TestSuite(
+    tests=[
+        generate_column_tests(
+            TestColumnShareOfMissingValues, 
+            columns="all", 
+            parameters={"lt": 0.5}
+        )
+    ]
+)
 ```
 
 **Example 2.**  You can generate Tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns="num")])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
+suite = TestSuite(
+    tests=[
+        generate_column_tests(
+            TestColumnValueMin, 
+            columns="num"
+        )
+    ]
+)
 ```
 
 Here is how you generate tests only for **categorical columns**:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="cat", parameters={"lt": 0.1})])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
+suite = TestSuite(
+    tests=[
+        generate_column_tests(
+            TestColumnShareOfMissingValues, 
+            columns="cat", 
+            parameters={"lt": 0.1}
+        )
+    ]
+)
 ```
  
 You can also generate Tests with a certain condition for a **defined column list**:
  
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns=["age", "fnlwgt", "education-num"],
-                                              parameters={"gt": 0})])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
+suite = TestSuite(
+    tests=[
+        generate_column_tests(
+            TestColumnValueMin, 
+            columns=["age", "fnlwgt", "education-num"],
+            parameters={"gt": 0}
+        )
+    ]
+)
 ```
  
 ## Column parameter
@@ -88,7 +113,7 @@ You can use the parameter `columns` to define a list of columns to which you app
 
 It works the same way for metrics. In this case, you should use `generate_column_metrics` function.
 
-**Example 1**: To generate multiple metrics for all the columns in the list with a custom parameter.
+To generate multiple metrics for all the columns in the list with a custom parameter.
 
 ```python
 metric_generator_report = Report(

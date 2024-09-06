@@ -11,22 +11,21 @@ from typing import Union
 from plotly import graph_objs as go
 
 from evidently.base_metric import Metric
+from evidently.metric_results import Distribution
+from evidently.metric_results import HistogramData
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
+from evidently.ui.dashboards.base import DashboardPanel
+from evidently.ui.dashboards.base import PanelValue
+from evidently.ui.dashboards.base import assign_panel_id
+from evidently.ui.dashboards.utils import CounterAgg
+from evidently.ui.dashboards.utils import HistBarMode
+from evidently.ui.dashboards.utils import PlotType
+from evidently.ui.dashboards.utils import _get_hover_params
+from evidently.ui.dashboards.utils import _get_metric_hover
 from evidently.ui.type_aliases import ProjectID
-
-from ...metric_results import Distribution
-from ...metric_results import HistogramData
-from ...model.widget import BaseWidgetInfo
-from .base import DashboardPanel
-from .base import PanelValue
-from .base import assign_panel_id
-from .utils import CounterAgg
-from .utils import HistBarMode
-from .utils import PlotType
-from .utils import _get_hover_params
-from .utils import _get_metric_hover
 
 if TYPE_CHECKING:
     from evidently.ui.base import DataStorage

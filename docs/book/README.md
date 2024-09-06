@@ -7,11 +7,45 @@ Evidently is available both as an open-source Python library and Evidently Cloud
 
 # Get started
 
-Choose a Quickstart (1-2min) or a Tutorial (15 min) to start.
+<table data-card-size="large" data-view="cards">
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <strong>Evidently Cloud</strong>
+      </td>
+      <td>
+        AI evaluation and observability platform built on top of Evidently Python library. Includes advanced features, collaboration and support.
+      </td>
+      <td>
+        <a href="get-started/cloud_quickstart_llm.md">→ LLM Evals Quickstart</a><br>
+        <a href="get-started/cloud_quickstart_tabular.md">→ Data and ML Quickstart</a><br>
+        <a href="get-started/cloud_quickstart_tracing.md">→ LLM Tracing Quickstart</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Evidently Open-Source</strong>
+      </td>
+      <td>
+        An open-source Python library with 20m+ downloads. Helps evaluate, test and monitor data, ML and LLM-powered systems. 
+      </td>
+      <td>
+        <a href="get-started/oss_quickstart_llm.md">→ LLM Evals Quickstart</a><br>
+        <a href="get-started/oss_quickstart_tabular.md">→ Data and ML Quickstart</a><br>
+        <a href="examples/tutorial-monitoring.md">→ Self-hosted dashboard</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><strong></strong><strong>LLM evaluations</strong><strong></strong></td><td>Run checks for text data and generative LLM outputs.</td><td><p><a href="get-started/quickstart-llm.md">→ LLM Quickstart</a><br><a href="get-started/tutorial-llm.md">→ LLM Tutorial</a></p></td></tr><tr><td><strong></strong><strong>Tabular data checks</strong><strong></strong></td><td>Run evaluations for tabular data and ML models.</td><td><p><a href="get-started/hello-world.md">→ Tabular Quickstart</a><br><a href="get-started/tutorial.md">→ Tabular Tutorial</a></p></td></tr><tr><td><strong></strong><strong>Monitoring Dashboard</strong><strong></strong></td><td>Get a live dashboard to track evaluation results over time.</td><td><p><a href="get-started/quickstart-cloud.md">→ Monitoring Quickstart</a><br><a href="get-started/tutorial-cloud.md">→ Monitoring Tutorial</a></p></td></tr></tbody></table>
-
-You can explore more code [examples](examples/examples.md). 
+You can explore more in-depth [Examples and Tutorials](examples/examples.md). 
 
 # How it works 
 
@@ -46,8 +80,6 @@ You can be as hands-off or hands-on as you like: start with Presets, and customi
   * Configure alerts when metrics are out of bounds.
 
 **Docs**:
-* [Quickstart - LLM and text evals](get-started/quickstart-llm.md) 
-* [Quickstart - ML and tabular](get-started/hello-world.md)
 * [Reference: available Metrics](reference/all-metrics.md)
 * [User guide: how to get Reports](tests-and-reports/get-reports.md) 
 </details>
@@ -77,8 +109,6 @@ This interface helps automate your evaluations for regression testing, checks du
   * Configure alerts on failed Tests.
 
 **Docs**:
-* [Tutorial - LLM and text evals](get-started/tutorial-llm.md) 
-* [Quickstart - ML and tabular](get-started/tutorial.md)
 * [Reference: available Tests](reference/all-tests.md)
 * [User guide: how to generate Tests](tests-and-reports/run-tests.md) 
 </details>
@@ -104,8 +134,6 @@ You can use Evidently Cloud or self-host. Evidently Cloud offers extra features
 * For Evidently Cloud: get pre-built Tabs and manage everything in the UI. 
 
 **Docs**:
-* [Get Started - Evidently Cloud](get-started/tutorial-cloud.md)
-* [Get Started - Self-hosting](get-started/tutorial-monitoring.md)
 * [Monitoring user guide](monitoring/monitoring_overview.md)
 </details>
 

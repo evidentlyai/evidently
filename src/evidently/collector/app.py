@@ -31,11 +31,14 @@ from litestar.types import Send
 from typing_extensions import Annotated
 
 from evidently import ColumnMapping
+from evidently._pydantic_compat import SecretStr
 from evidently.collector.config import CONFIG_PATH
 from evidently.collector.config import CollectorConfig
 from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.storage import CollectorStorage
+from evidently.collector.storage import CreateReportEvent
 from evidently.collector.storage import LogEvent
+from evidently.collector.storage import UploadReportEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
 from evidently.ui.components.security import NoSecurityComponent
@@ -126,6 +129,7 @@ async def check_snapshots_factory(service: CollectorServiceConfig, storage: Coll
         if not collector.trigger.is_ready(collector, storage):
             continue
         await create_snapshot(collector, storage)
+        await send_snapshot(collector, storage)
 
 
 async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
@@ -144,20 +148,41 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
         except Exception as e:
             logger.exception(f"Error running report: {e}")
             storage.log(
-                collector.id, LogEvent(ok=False, error=f"Error running report: {e.__class__.__name__}: {e.args}")
+                collector.id,
+                CreateReportEvent(
+                    report_id=str(report.id),
+                    ok=False,
+                    error=f"Error running report: {e.__class__.__name__}: {e.args}",
+                ),
             )
             return
-        try:
-            await sync_to_thread(
-                collector.workspace.add_snapshot, collector.project_id, report.to_snapshot()
-            )  # FIXME: sync function
-        except Exception as e:
-            logger.exception(f"Error saving snapshot: {e}")
-            storage.log(
-                collector.id, LogEvent(ok=False, error=f"Error saving snapshot: {e.__class__.__name__}: {e.args}")
-            )
-            return
-        storage.log(collector.id, LogEvent(ok=True))
+        storage.add_report(collector.id, report)
+        storage.log(collector.id, CreateReportEvent(report_id=str(report.id), ok=True))
+
+
+async def send_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
+    async with storage.lock(collector.id):
+        for report_item in storage.take_reports(collector.id):
+            try:
+                with report_item as report:
+                    await sync_to_thread(
+                        collector.workspace._add_report_base,
+                        collector.project_id,
+                        report,
+                        collector.save_datasets and collector.is_cloud_resolved,  # only save datasets to cloud
+                    )  # FIXME: sync function
+            except Exception as e:
+                logger.exception(f"Error saving snapshot: {e}")
+                storage.log(
+                    collector.id,
+                    UploadReportEvent(
+                        report_id=str(report.id),
+                        ok=False,
+                        error=f"Error saving snapshot: {e.__class__.__name__}: {e.args}",
+                    ),
+                )
+                return
+            storage.log(collector.id, UploadReportEvent(report_id=str(report.id), ok=True))
 
 
 def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, debug: bool = False) -> Litestar:
@@ -174,7 +199,7 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, deb
     if secret is None:
         security = NoSecurityService(NoSecurityComponent())
     else:
-        security = TokenSecurity(TokenSecurityComponent(token=secret))
+        security = TokenSecurity(TokenSecurityComponent(token=SecretStr(secret)))
 
     def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
@@ -247,7 +272,7 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, deb
     )
 
 
-def run(host: str = "0.0.0.0", port: int = 8001, config_path: str = CONFIG_PATH, secret: Optional[str] = None):
+def run(host: str = "127.0.0.1", port: int = 8001, config_path: str = CONFIG_PATH, secret: Optional[str] = None):
     app = create_app(config_path, secret)
     uvicorn.run(app, host=host, port=port)
 

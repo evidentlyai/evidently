@@ -17,6 +17,7 @@ from evidently.calculation_engine.engine import TInputData
 from evidently.calculation_engine.metric_implementation import MetricImplementation
 from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
+from evidently.options.base import Options
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import create_data_definition
 
@@ -53,13 +54,13 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
         return create_data_definition(reference_data, current_data, column_mapping, categorical_features_cardinality)
 
     def calculate_additional_features(
-        self, data: TInputData, features: List[GeneratedFeatures]
+        self, data: TInputData, features: List[GeneratedFeatures], options: Options
     ) -> Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]]:
         result: Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]] = {}
         for feature in features:
-            current = feature.generate_features_renamed(data.current_data, data.data_definition)
+            current = feature.generate_features_renamed(data.current_data, data.data_definition, options)
             reference = (
-                feature.generate_features_renamed(data.reference_data, data.data_definition)
+                feature.generate_features_renamed(data.reference_data, data.data_definition, options)
                 if data.reference_data is not None
                 else None
             )

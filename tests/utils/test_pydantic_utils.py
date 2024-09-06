@@ -4,11 +4,13 @@ from typing import Union
 
 import pytest
 
+from evidently._pydantic_compat import ValidationError
 from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
 from evidently.core import get_all_fields_tags
+from evidently.pydantic_utils import ALLOWED_TYPE_PREFIXES
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
@@ -331,3 +333,16 @@ def test_fingerprint_default_collision():
         field2: Optional[str] = None
 
     assert A(field1="a").get_fingerprint() != A(field2="a").get_fingerprint()
+
+
+def test_wrong_classpath():
+    class A(EvidentlyBaseModel):
+        f: str
+
+    ALLOWED_TYPE_PREFIXES.append("tests.")
+    a = A(f="asd")
+    assert parse_obj_as(A, a.dict()) == a
+    d = a.dict()
+    d["type"] += "_"
+    with pytest.raises(ValidationError):
+        parse_obj_as(A, d)

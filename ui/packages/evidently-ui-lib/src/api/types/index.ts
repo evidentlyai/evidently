@@ -37,27 +37,12 @@ export type DashboardPanel =
   | DashboardPanelTestSuite
   | DashboardPanelTestSuiteCounter
 
-export type DashboardPanelPlot = StrictID<
-  Omit<Schemas['DashboardPanelPlot'], 'type'> & {
-    type: 'evidently.ui.dashboards.reports.DashboardPanelPlot'
-  }
->
-
-export type DashboardPanelCounter = StrictID<
-  Omit<Schemas['DashboardPanelCounter'], 'type'> & {
-    type: 'evidently.ui.dashboards.reports.DashboardPanelCounter'
-  }
->
-
-export type DashboardPanelDistribution = StrictID<
-  Omit<Schemas['DashboardPanelDistribution'], 'type'> & {
-    type: 'evidently.ui.dashboards.reports.DashboardPanelDistribution'
-  }
->
+export type DashboardPanelPlot = StrictID<Schemas['DashboardPanelPlot']>
+export type DashboardPanelCounter = StrictID<Schemas['DashboardPanelCounter']>
+export type DashboardPanelDistribution = StrictID<Schemas['DashboardPanelDistribution']>
 
 export type DashboardPanelTestSuite = StrictID<
-  Omit<Schemas['DashboardPanelTestSuite'], 'type' | 'filter'> & {
-    type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuite'
+  Omit<Schemas['DashboardPanelTestSuite'], 'filter'> & {
     filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
       // this should always be true
       include_test_suites: true
@@ -66,8 +51,7 @@ export type DashboardPanelTestSuite = StrictID<
 >
 
 export type DashboardPanelTestSuiteCounter = StrictID<
-  Omit<Schemas['DashboardPanelTestSuiteCounter'], 'type' | 'filter'> & {
-    type: 'evidently.ui.dashboards.test_suites.DashboardPanelTestSuiteCounter'
+  Omit<Schemas['DashboardPanelTestSuiteCounter'], 'filter'> & {
     filter: Omit<Schemas['ReportFilter'], 'include_test_suites'> & {
       // this should always be true
       include_test_suites: true
@@ -76,7 +60,6 @@ export type DashboardPanelTestSuiteCounter = StrictID<
 >
 
 export type __EXTENDED_DASHBOARD_PANELS_TESTS_PASSED =
-  | Expect<TYPE_SATISFIED<DashboardPanel, Schemas['DashboardPanel']>>
   | Expect<TYPE_SATISFIED<DashboardPanelPlot, Schemas['DashboardPanelPlot']>>
   | Expect<TYPE_SATISFIED<DashboardPanelCounter, Schemas['DashboardPanelCounter']>>
   | Expect<TYPE_SATISFIED<DashboardPanelDistribution, Schemas['DashboardPanelDistribution']>>

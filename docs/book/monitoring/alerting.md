@@ -3,7 +3,7 @@ description: Get notifications in Slack or email.
 ---   
 
 {% hint style="success" %} 
-Built-in alerting is a Pro feature available in the Evidently Cloud. 
+Built-in alerting is a Pro feature available in the Evidently Cloud and Enterprise. 
 {% endhint %}
 
 To enable alerts, open the Project and navigate to the "Alerts" section in the left menu. You must set:

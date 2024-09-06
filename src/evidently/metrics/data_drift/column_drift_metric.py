@@ -283,8 +283,8 @@ class ColumnDriftMetric(UsesRawDataMixin, ColumnMetric[ColumnDataDriftMetrics]):
         if self.column_name.is_main_dataset():
             column_type = data.data_definition.get_column(self.column_name.name).column_type
         else:
-            if self.column_name._feature_class is not None:
-                column_type = self.column_name._feature_class.feature_type
+            if self.column_name.feature_class is not None:
+                column_type = self.column_name.feature_class.get_type(self.column_name.name)
 
         datetime_column = data.data_definition.get_datetime_column()
         options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)

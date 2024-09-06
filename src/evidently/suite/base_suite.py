@@ -43,6 +43,7 @@ from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestStatus
 from evidently.ui.datasets import inject_feature_types_in_column_mapping
+from evidently.ui.type_aliases import ComputationConfigID
 from evidently.ui.type_aliases import DatasetID
 from evidently.utils import NumpyEncoder
 from evidently.utils import data_preprocessing
@@ -154,12 +155,11 @@ class Context:
         self.features = features
         for feature in features.keys():
             for feature_column in feature.list_columns():
-                feature_class = feature_column.feature_class
                 self.run_metadata.descriptors[feature_column.name] = FeatureDefinition(
                     feature_name=feature_column.name,
                     display_name=feature_column.display_name,
-                    feature_type=feature_class.feature_type,  # type: ignore[union-attr]
-                    feature_class=feature_class.__class__.__name__,
+                    feature_type=feature.get_type(feature_column.name),
+                    feature_class=feature.__class__.__name__,
                 )
 
 
@@ -500,6 +500,7 @@ class DatasetInputOutputLinks(BaseModel):
 
 class SnapshotLinks(BaseModel):
     datasets: DatasetInputOutputLinks = DatasetInputOutputLinks()
+    computation_config_id: Optional[ComputationConfigID] = None
 
 
 class Snapshot(BaseModel):

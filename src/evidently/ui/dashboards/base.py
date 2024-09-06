@@ -130,6 +130,9 @@ def assign_panel_id(f):
 
 
 class DashboardPanel(EnumValueMixin, PolymorphicModel):
+    class Config:
+        is_base_type = True
+
     id: PanelID = Field(default_factory=uuid.uuid4)
     title: str
     filter: ReportFilter

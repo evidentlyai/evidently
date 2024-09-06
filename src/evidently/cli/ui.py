@@ -24,7 +24,7 @@ def setup_deterministic_generation_uuid4(seed: int = 8754):
 
 @app.command("ui")
 def ui(
-    host: str = Option("0.0.0.0", help="Service host"),
+    host: str = Option("127.0.0.1", help="Service host"),
     port: int = Option(8000, help="Service port"),
     workspace: str = Option("workspace", help="Path to workspace"),
     demo_projects: str = Option(

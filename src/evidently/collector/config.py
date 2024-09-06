@@ -1,6 +1,7 @@
 import abc
 import json
 import time
+import warnings
 from typing import Any
 from typing import Dict
 from typing import List
@@ -127,24 +128,29 @@ class CollectorConfig(Config):
     reference_path: Optional[str]
 
     project_id: str
-    org_id: Optional[str] = None
     api_url: str = "http://localhost:8000"
     api_secret: Optional[str] = None
     cache_reference: bool = True
     is_cloud: Optional[bool] = None  # None means autodetect
+    save_datasets: bool = False
 
     _reference: Any = None
     _workspace: Optional[WorkspaceView] = None
 
     @property
+    def is_cloud_resolved(self) -> bool:
+        return self.is_cloud if self.is_cloud is not None else self.api_url == "https://app.evidently.cloud"
+
+    @property
     def workspace(self) -> WorkspaceView:
         if self._workspace is None:
-            is_cloud = self.is_cloud if self.is_cloud is not None else self.api_url == "https://app.evidently.cloud"
-            if is_cloud:
-                if self.api_secret is None or self.org_id is None:
+            if self.is_cloud_resolved:
+                if self.api_secret is None:
                     raise ValueError("Please provide token and org_id for CloudWorkspace")
                 self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url)
             else:
+                if self.save_datasets:
+                    warnings.warn("'save_datasets' is not supported for self-hosted Evidently UI")
                 self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
         return self._workspace
 

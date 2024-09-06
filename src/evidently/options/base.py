@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -11,6 +12,10 @@ from evidently.options.agg_data import DataDefinitionOptions
 from evidently.options.agg_data import RenderOptions
 from evidently.options.option import Option
 
+if TYPE_CHECKING:
+    from evidently._pydantic_compat import AbstractSetIntStr
+    from evidently._pydantic_compat import DictStrAny
+    from evidently._pydantic_compat import MappingIntStrAny
 TypeParam = TypeVar("TypeParam", bound=Option)
 
 
@@ -85,6 +90,36 @@ class Options(BaseModel):
         value_pairs = [(f, getattr(self, f)) for f in self.__fields__ if f != "custom"]
         value_pairs.extend(sorted(list(self.custom.items())))
         return hash((type(self),) + tuple(value_pairs))
+
+    def dict(
+        self,
+        *,
+        include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
+        exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
+        by_alias: bool = False,
+        skip_defaults: Optional[bool] = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+    ) -> "DictStrAny":
+        # todo
+        # for now custom options will not be saved at all
+        # if we want them to be saved, custom field needs to be Dict[str, Option] so it is json-able
+        if exclude is None:
+            exclude = {"custom"}
+        elif isinstance(exclude, set):
+            exclude.add("custom")
+        else:
+            exclude["custom"] = False
+        return super().dict(
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            skip_defaults=skip_defaults,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+        )
 
 
 _option_cls_mapping = {field.type_: name for name, field in Options.__fields__.items()}

@@ -62,7 +62,9 @@ class FeatureGenerator(Runnable):
             additional_data=additional_data or {},
         )
         converted_data = context_engine.convert_input_data(data)
-        result = context_engine.calculate_additional_features(converted_data, self.features)
+        result = context_engine.calculate_additional_features(
+            converted_data, self.features, self._inner_suite.context.options
+        )
         self._inner_suite.context.features = result
 
     def get_features(self, feature: Optional[GeneratedFeatures] = None) -> EngineDatasets[Any]:

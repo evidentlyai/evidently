@@ -162,8 +162,8 @@ class InputData(GenericInputData[pd.DataFrame]):
         return self._determine_type(column), self.get_current_column(column), ref_data
 
     def _determine_type(self, column: Union[str, ColumnName]) -> ColumnType:
-        if isinstance(column, ColumnName) and column._feature_class is not None:
-            column_type = column._feature_class.feature_type
+        if isinstance(column, ColumnName) and column.feature_class is not None:
+            column_type = column.feature_class.get_type(column.name)
         else:
             if isinstance(column, ColumnName):
                 column_name = column.name
@@ -213,6 +213,11 @@ class FieldsDescriptor:
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
     def result_type(cls) -> Type[MetricResult]:
         return typing_inspect.get_args(next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b)))[0]
+
+
+class BasePreset(EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):

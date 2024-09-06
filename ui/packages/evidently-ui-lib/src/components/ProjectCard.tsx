@@ -74,6 +74,7 @@ export const EditProjectInfoForm = ({
           // to project object, then it goes to the action
 
           submit(
+            // @ts-ignore
             {
               ...project,
               name,

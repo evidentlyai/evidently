@@ -55,9 +55,13 @@ def collector_workspace(collector_test_client) -> str:
 
 
 class ReportBaseMock(ReportBase):
+    def __init__(self):
+        super().__init__()
+        self.id = uuid.uuid4()
+
     def to_snapshot(self):
         return Snapshot(
-            id=uuid.uuid4(),
+            id=self.id,
             name="mock",
             timestamp=datetime.datetime.now(),
             metadata={},
