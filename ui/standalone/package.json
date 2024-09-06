@@ -6,7 +6,7 @@
     "dev": "vite",
     "type-check": "tsc --build",
     "build": "vite build",
-    "lint": "biome lint",
+    "code-check": "biome check",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -22,5 +22,5 @@ repos:
   - repo: https://github.com/biomejs/pre-commit
     rev: "v0.4.0"
     hooks:
-      - id: biome-lint
+      - id: biome-ci
         additional_dependencies: ["@biomejs/biome@1.8.3"]
