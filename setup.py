@@ -104,14 +104,9 @@ setup_args = dict(
         ],
         "spark": ["pyspark>=3.4.0"],
         "custom_full_fsspec": [
-            "s3fs",
-            "gcsfs",
-            "adlfs",
-            "ftpfs",
-            "httpfs",
-            "sshfs",
-            "webhdfs",
-            # dependencies from fsspec[full] except ocifs
+            "s3fs>=2024.9.0",
+            "gcsfs>=2024.9.0",
+            # dependencies from fsspec[full]
         ],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
