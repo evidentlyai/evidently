@@ -6,11 +6,11 @@ repos:
       - id: check-merge-conflict
       - id: check-toml
       - id: check-yaml
-        exclude: "(docs|examples)/.*"
+        exclude: '(docs|examples)/.*'
       - id: end-of-file-fixer
-        exclude: "(docs|examples)/.*"
+        exclude: '(docs|examples)/.*'
       - id: trailing-whitespace
-        exclude: "(docs|examples)/.*"
+        exclude: '(docs|examples)/.*'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.3.7"
