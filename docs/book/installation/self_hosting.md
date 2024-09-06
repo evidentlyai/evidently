@@ -23,11 +23,17 @@ Once you [install Evidently](install-evidently.md), you will need to create a `w
 There are three scenarios, based on where you run the UI Service and store data. 
 * **Local Workspace**. Both the UI Service and data storage are local.
 * **Remote Workspace**. Both the UI Service and data storage are remote.
-* **Workspace with remote data storage**. You run the UI Service and store data on different servers. 
+* **Workspace with remote data storage**. You run the UI Service and store data on different servers.
 
 ## Local Workspace
 
 In this scenario, you generate, store the snapshots and run the monitoring UI on the same machine.
+
+Imports:
+```python
+from evidently.ui.workspace import Workspace
+from evidently.ui.workspace import WorkspaceBase
+```
 
 To create a local Workspace and assign a name:
 
@@ -44,6 +50,14 @@ You can pass a `path` parameter to specify the path to a local directory.
 ## Remote Workspace
 
 In this scenario, you send the snapshots to a remote server. You must run the Monitoring UI on the same remote server. It will directly interface with the filesystem where the snapshots are stored.
+
+Imports:
+
+```
+from evidently.ui.remote import RemoteWorkspace
+from evidently.ui.workspace import Workspace
+from evidently.ui.workspace import WorkspaceBase
+```
 
 To create a remote Workspace (UI should be running at this address):
 
