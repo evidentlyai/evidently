@@ -40,17 +40,20 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
             <TableHead>
               <TableRow>
                 <TableCell />
-                {props.metricsValuesHeaders.map((header, index) => (
-                  <TableCell key={header + index}>{header}</TableCell>
+                {props.metricsValuesHeaders.map((header) => (
+                  // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                  <TableCell>{header}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.metrics.map((metric, index) => (
-                <TableRow key={metric.label + index}>
+              {props.metrics.map((metric) => (
+                // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                <TableRow>
                   <TableCell>{metric.label}</TableCell>
-                  {metric.values.map((value, index) => (
-                    <TableCell key={String(value) + index}>{value}</TableCell>
+                  {metric.values.map((value) => (
+                    // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                    <TableCell>{value}</TableCell>
                   ))}
                 </TableRow>
               ))}

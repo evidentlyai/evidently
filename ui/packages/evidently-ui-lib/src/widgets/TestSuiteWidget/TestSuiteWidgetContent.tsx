@@ -52,8 +52,9 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
         </Alert>
         <Collapse in={collapse.active} mountOnEnter={true} unmountOnExit={true}>
           <Grid container spacing={2} style={{ padding: 10, paddingTop: 20 }}>
-            {tests.map((test, idx) => (
-              <Grid item key={idx} xs={12}>
+            {tests.map((test) => (
+              // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+              <Grid item xs={12}>
                 <TestInfo {...test} />
               </Grid>
             ))}
@@ -117,8 +118,9 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({ type, groupsInfo, tests
               ] as [TestGroupData, TestDataInfo[]]
           )
           .sort((a, b) => (a[0].sortIndex ?? 0) - (b[0].sortIndex ?? 0))
-          .map(([key, value], idx) => (
-            <Grid item xs={12} key={idx}>
+          .map(([key, value]) => (
+            // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+            <Grid item xs={12}>
               <TestGroup groupInfo={key} tests={value} />
             </Grid>
           ))}

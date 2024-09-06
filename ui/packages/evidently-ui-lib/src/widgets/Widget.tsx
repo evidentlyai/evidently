@@ -114,8 +114,9 @@ const Widget = (
                       ) : (
                         <div />
                       )}
-                      {alerts.map((alert, idx) => (
-                        <Grid key={idx} item>
+                      {alerts.map((alert) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                        <Grid item>
                           <AlertBlock data={alert} />
                         </Grid>
                       ))}
@@ -150,8 +151,9 @@ const Widget = (
                         ) : (
                           <div />
                         )}
-                        {alerts.map((alert, idx) => (
-                          <Grid key={idx} item xs>
+                        {alerts.map((alert) => (
+                          // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                          <Grid item xs>
                             <AlertBlock data={alert} />
                           </Grid>
                         ))}
@@ -167,8 +169,9 @@ const Widget = (
             </React.Fragment>
           )}
           {isInsightsExists ? (
-            insights?.map((insight, idx) => (
-              <Grid key={idx} item xs sm md>
+            insights?.map((insight) => (
+              // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+              <Grid item xs sm md>
                 <InsightBlock data={insight} />
               </Grid>
             ))
