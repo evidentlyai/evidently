@@ -9,35 +9,35 @@ import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
 from evidently.pydantic_utils import PolymorphicModel
-from evidently.suite.base_suite import Snapshot
+from evidently.suite.base_suite import ReportBase
 
 
 class LogEvent(BaseModel):
     type: str
-    snapshot_id: str
+    report_id: str
     ok: bool
     error: str = ""
 
 
-class CreateSnapshotEvent(LogEvent):
-    type = "CreateSnapshot"
+class CreateReportEvent(LogEvent):
+    type = "CreateReport"
 
 
-class UploadSnapshotEvent(LogEvent):
-    type = "UploadSnapshot"
+class UploadReportEvent(LogEvent):
+    type = "UploadReport"
 
 
-class SnapshotPopper:
-    def __init__(self, value: Snapshot, snapshot_list: List[Snapshot]):
+class ReportPopper:
+    def __init__(self, value: ReportBase, snapshot_list: List[ReportBase]):
         self.value = value
-        self.snapshot_list = snapshot_list
+        self.report_list = snapshot_list
 
-    def __enter__(self) -> Snapshot:
+    def __enter__(self) -> ReportBase:
         return self.value
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is not None:
-            self.snapshot_list.insert(0, self.value)
+            self.report_list.insert(0, self.value)
 
 
 class CollectorStorage(PolymorphicModel):
@@ -77,11 +77,11 @@ class CollectorStorage(PolymorphicModel):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_snapshot(self, id: str, report: Snapshot):
+    def add_report(self, id: str, report: ReportBase):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def take_snapshots(self, id: str) -> Sequence[SnapshotPopper]:
+    def take_reports(self, id: str) -> Sequence[ReportPopper]:
         raise NotImplementedError
 
 
@@ -90,13 +90,13 @@ class InMemoryStorage(CollectorStorage):
 
     _buffers: Dict[str, List[Any]] = {}
     _logs: Dict[str, List[LogEvent]] = {}
-    _snapshots: Dict[str, List[Snapshot]] = {}
+    _reports: Dict[str, List[ReportBase]] = {}
 
     def init(self, id: str):
         super().init(id)
         self._buffers[id] = []
         self._logs[id] = []
-        self._snapshots[id] = []
+        self._reports[id] = []
 
     def append(self, id: str, data: Any):
         self._buffers[id].append(data)
@@ -120,10 +120,10 @@ class InMemoryStorage(CollectorStorage):
     def get_logs(self, id: str) -> List[LogEvent]:
         return self._logs.get(id, [])
 
-    def add_snapshot(self, id: str, report: Snapshot):
-        self._snapshots[id].append(report)
+    def add_report(self, id: str, report: ReportBase):
+        self._reports[id].append(report)
 
-    def take_snapshots(self, id: str) -> Sequence[Snapshot]:
-        snapshot_list = self._snapshots.get(id, [])
-        while len(snapshot_list) > 0:
-            yield SnapshotPopper(snapshot_list.pop(0), snapshot_list)
+    def take_reports(self, id: str) -> Sequence[ReportPopper]:
+        report_list = self._reports.get(id, [])
+        while len(report_list) > 0:
+            yield ReportPopper(report_list.pop(0), report_list)
