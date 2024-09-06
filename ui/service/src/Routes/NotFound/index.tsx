@@ -6,7 +6,7 @@ export default {
   Component: () => {
     return (
       <Box display={'flex'} justifyContent={'center'}>
-        <Typography variant="h4">Page Not Found</Typography>
+        <Typography variant='h4'>Page Not Found</Typography>
       </Box>
     )
   }
