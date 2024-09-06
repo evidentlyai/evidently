@@ -1,4 +1,4 @@
-import { Layout, PlotData } from 'plotly.js-cartesian-dist-min'
+import type { Layout, PlotData } from 'plotly.js-cartesian-dist-min'
 
 // old types
 // It was written by hand :)
@@ -71,9 +71,9 @@ export interface WidgetListParams {
 }
 
 export enum WidgetSize {
-  Small,
-  Medium,
-  Big
+  Small = 0,
+  Medium = 1,
+  Big = 2
 }
 
 export interface AlertStats {
@@ -134,7 +134,9 @@ export interface BigTableRowDetails {
   insights: InsightsParams[]
 }
 
-export type BigTableDataRow = any & { graphId?: string; details?: BigTableRowDetails }
+export type BigTableDataRow =
+  // biome-ignore lint: <explanation>
+  any & { graphId?: string; details?: BigTableRowDetails }
 
 export interface BigTableWidgetParams {
   columns: ColumnDefinition[]
@@ -167,6 +169,7 @@ export interface TestDataInfo {
   title: string
   description: string
   state: TestState
+  // biome-ignore lint: <explanation>
   groups: any
   details?: BigTableRowDetails
 }

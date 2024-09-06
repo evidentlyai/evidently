@@ -1,10 +1,10 @@
-import React from 'react'
 import { Box } from '@mui/material'
+import type React from 'react'
 
 // import {WithStyles, WithTheme} from "@material-ui/core/styles";
 import { ResponsiveLineCanvas } from '@nivo/line'
 
-import { BigTableDataRow, LineGraphOptions } from '~/api'
+import type { BigTableDataRow, LineGraphOptions } from '~/api'
 // import withTheme from "@material-ui/core/styles/withTheme";
 
 interface LineGraphColumnProps extends LineGraphOptions {
@@ -18,6 +18,7 @@ const _LineGraphColumn: React.FunctionComponent<LineGraphColumnProps> = (props) 
         data={[
           {
             id: '1',
+            // biome-ignore lint: FIX IT
             data: props.data[props.xField].map((val: any, idx: number) => ({
               x: val,
               y: props.data[props.yField][idx]

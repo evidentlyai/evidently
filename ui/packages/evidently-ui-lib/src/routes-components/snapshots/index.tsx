@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import {
   Box,
   Button,
-  ButtonOwnProps,
+  type ButtonOwnProps,
   FormControlLabel,
   Grid,
   IconButton,
@@ -20,15 +20,15 @@ import {
 } from '@mui/material'
 
 import {
-  Link as RouterLink,
-  useLoaderData,
-  useParams,
   Outlet,
+  Link as RouterLink,
+  type ShouldRevalidateFunction,
+  useLoaderData,
   useMatches,
-  useSearchParams,
-  useSubmit,
   useNavigation,
-  ShouldRevalidateFunction
+  useParams,
+  useSearchParams,
+  useSubmit
 } from 'react-router-dom'
 
 import { useLocalStorage } from '@uidotdev/usehooks'
@@ -37,19 +37,19 @@ import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 import './override-react18-json-view.css'
 
-import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
+import { Delete as DeleteIcon } from '@mui/icons-material'
+import { Autocomplete } from '@mui/material'
+import dayjs from 'dayjs'
+import invariant from 'tiny-invariant'
+import type { z } from 'zod'
+import type { MetadataModel } from '~/api/types'
+import type { crumbFunction } from '~/components/BreadCrumbs'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
-import { crumbFunction } from '~/components/BreadCrumbs'
-import { Autocomplete } from '@mui/material'
+import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
-import dayjs from 'dayjs'
-import { reloadSnapshotSchema, deleteSnapshotSchema } from './data'
+import type { deleteSnapshotSchema, reloadSnapshotSchema } from './data'
 import type { ReportsLoaderData, TestSuitesLoaderData } from './data'
-import { MetadataModel } from '~/api/types'
-import { Delete as DeleteIcon } from '@mui/icons-material'
-import { z } from 'zod'
-import invariant from 'tiny-invariant'
 
 export const shouldRevalidate: ShouldRevalidateFunction = () => true
 
@@ -167,7 +167,7 @@ export const SnapshotsListTemplate = ({
             onChange={(_, newSelectedTags) => setTags(newSelectedTags)}
             options={ALL_TAGS}
             renderInput={(params) => (
-              <TextField {...params} variant="standard" label="Filter by Tags" />
+              <TextField {...params} variant='standard' label='Filter by Tags' />
             )}
           />
         </Grid>
@@ -177,8 +177,8 @@ export const SnapshotsListTemplate = ({
               fullWidth
               value={metadataQuery}
               onChange={(event) => setMetadataQuery(event.target.value)}
-              variant="standard"
-              label="Search in Metadata"
+              variant='standard'
+              label='Search in Metadata'
             />
             <Box minWidth={220} display={'flex'} justifyContent={'center'}>
               <FormControlLabel
@@ -186,22 +186,22 @@ export const SnapshotsListTemplate = ({
                   <Switch
                     checked={isCollapsedJson}
                     onChange={(event) => setIsCollapsedJson(event.target.checked)}
-                  ></Switch>
+                  />
                 }
-                label="Hide Metadata"
+                label='Hide Metadata'
               />
             </Box>
-            <Box display="flex" justifyContent="flex-end">
+            <Box display='flex' justifyContent='flex-end'>
               <Button
                 sx={{ minWidth: 160 }}
-                variant="outlined"
+                variant='outlined'
                 onClick={() =>
                   submit(
                     { action: 'reload-snapshots' } satisfies z.infer<typeof reloadSnapshotSchema>,
                     { method: 'post', replace: true, encType: 'application/json' }
                   )
                 }
-                color="primary"
+                color='primary'
                 disabled={isNavigation}
               >
                 refresh {type}
@@ -217,7 +217,7 @@ export const SnapshotsListTemplate = ({
     return (
       <>
         {FilterComponent}
-        <Typography my={3} variant="h4" align="center">
+        <Typography my={3} variant='h4' align='center'>
           You don't have any {type} yet.
         </Typography>
       </>
@@ -234,8 +234,8 @@ export const SnapshotsListTemplate = ({
               {type === 'reports'
                 ? 'Report ID'
                 : type === 'test suites'
-                ? 'Test Suite ID'
-                : 'indefined'}
+                  ? 'Test Suite ID'
+                  : 'indefined'}
             </TableCell>
             <TableCell>Tags</TableCell>
             <TableCell>Metadata</TableCell>
@@ -262,9 +262,9 @@ export const SnapshotsListTemplate = ({
                 Timestamp
               </TableSortLabel>
             </TableCell>
-            <TableCell align="center">Actions</TableCell>
+            <TableCell align='center'>Actions</TableCell>
           </TableRow>
-          <TableRow></TableRow>
+          <TableRow />
         </TableHead>
         <TableBody>
           {resultSnapshots.map((snapshot) => (
@@ -290,12 +290,12 @@ export const SnapshotsListTemplate = ({
                 <JsonView
                   collapsed={isCollapsedJson}
                   src={snapshot.metadata}
-                  theme="atom"
+                  theme='atom'
                   enableClipboard={false}
                 />
               </TableCell>
               <TableCell>
-                <Typography variant="body2">
+                <Typography variant='body2'>
                   {dayjs(snapshot.timestamp).locale('en-gb').format('llll')}
                 </Typography>
               </TableCell>
@@ -322,7 +322,7 @@ export const SnapshotsListTemplate = ({
                     />
                   )}
                   <Box>
-                    <Tooltip title="delete snapshot" placement="top">
+                    <Tooltip title='delete snapshot' placement='top'>
                       <IconButton
                         onClick={() => {
                           if (confirm('Are you sure?') === true) {
@@ -335,7 +335,7 @@ export const SnapshotsListTemplate = ({
                             )
                           }
                         }}
-                        color="primary"
+                        color='primary'
                         disabled={isNavigation}
                       >
                         <DeleteIcon />

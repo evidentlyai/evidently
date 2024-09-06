@@ -1,11 +1,12 @@
-import React, { ReactNode, useState } from 'react'
+import type React from 'react'
+import { type ReactNode, useState } from 'react'
 
-import { Paper, Typography, Popover } from '@mui/material'
-import { Theme } from '@mui/material/styles'
+import { Paper, Popover, Typography } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
 
-import { lighten, darken } from '@mui/material/styles'
+import { darken, lighten } from '@mui/material/styles'
 
-import { MetricAlertParams } from '~/api'
+import type { MetricAlertParams } from '~/api'
 
 interface AlertBlockProps {
   data: MetricAlertParams

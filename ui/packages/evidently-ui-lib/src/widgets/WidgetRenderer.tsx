@@ -1,43 +1,48 @@
 import {
-  AdditionalGraphInfo,
-  BigTableWidgetParams,
-  CounterWidgetParams,
-  RichDataParams,
-  MultiTabGraphWidgetParams,
-  MultiTabWidgetParams,
-  PercentWidgetParams,
-  TableWidgetParams,
-  WidgetGroupParams,
-  WidgetListParams,
-  WidgetInfo,
-  WidgetSize,
-  TextWidgetParams,
-  TestSuiteWidgetParams
+  type AdditionalGraphInfo,
+  type BigTableWidgetParams,
+  type CounterWidgetParams,
+  type MultiTabGraphWidgetParams,
+  type MultiTabWidgetParams,
+  type PercentWidgetParams,
+  type RichDataParams,
+  type TableWidgetParams,
+  type TestSuiteWidgetParams,
+  type TextWidgetParams,
+  type WidgetGroupParams,
+  type WidgetInfo,
+  type WidgetListParams,
+  WidgetSize
 } from '~/api'
 
-import Widget from './Widget'
-import CounterWidgetContent from './CounterWidgetContent'
-import ProgressWidgetContent from './ProgressWidgetContent'
 import BigGraphWidgetContent from './BigGraphWidgetContent'
-import WidgetPanel from './WidgetPanel'
-import NotImplementedWidgetContent from './NotImplementedWidgetContent'
-import TabbedGraphWidgetContent from './TabbedGraphWidgetContent'
-import TableWidgetContent from './TableWidgetContent'
 import BigTableWidgetContent from './BigTableWidget/BigTableWidgetContent'
-import TabbedWidgetContent from './TabbedWidgetContent'
+import CounterWidgetContent from './CounterWidgetContent'
+import NotImplementedWidgetContent from './NotImplementedWidgetContent'
+import ProgressWidgetContent from './ProgressWidgetContent'
 import RichDataWidget from './RichDataWidget'
-import WidgetList from './WidgetList'
-import TextWidgetContent from './TextWidgetContent'
+import TabbedGraphWidgetContent from './TabbedGraphWidgetContent'
+import TabbedWidgetContent from './TabbedWidgetContent'
+import TableWidgetContent from './TableWidgetContent'
 import TestSuiteWidgetContent from './TestSuiteWidget/TestSuiteWidgetContent'
+import TextWidgetContent from './TextWidgetContent'
+import Widget from './Widget'
+import WidgetList from './WidgetList'
+import WidgetPanel from './WidgetPanel'
 
 function sizeTransform(size: WidgetSize): 1 | 3 | 6 | 12 {
   if (size === WidgetSize.Small) {
     return 3
-  } else if (size === WidgetSize.Medium) {
+  }
+
+  if (size === WidgetSize.Medium) {
     return 6
-  } else if (size === WidgetSize.Big) {
+  }
+
+  if (size === WidgetSize.Big) {
     return 12
   }
+
   return 12
 }
 

@@ -1,6 +1,6 @@
 import { FetchersErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
-import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { getLoaderAction } from 'evidently-ui-lib/routes-components/home/data'
+import type { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { clientAPI } from '~/api'
 import logoSrc from '~/assets/logo.png'
 

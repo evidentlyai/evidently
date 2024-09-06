@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
-import { Alert, AlertTitle, IconButton, Snackbar, Typography, Box } from '@mui/material'
-import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
-import type { ErrorData, ErrorResponse } from '~/api/types/utils'
-import type { Fetcher } from 'react-router-dom'
 import { Close as CloseIcon } from '@mui/icons-material'
+import { Alert, AlertTitle, Box, IconButton, Snackbar, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
+import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
+import type { Fetcher } from 'react-router-dom'
+import type { ErrorData, ErrorResponse } from '~/api/types/utils'
 
 type ActionErrorData = ErrorData | undefined | null
 
@@ -11,7 +11,7 @@ export const GenericErrorBoundary = () => {
   const error = useRouteError()
 
   return (
-    <Alert severity="error">
+    <Alert severity='error'>
       <AlertTitle>Something went wrong</AlertTitle>
 
       {isRouteErrorResponse(error) && (
@@ -57,7 +57,7 @@ const ErrorAlertSnackBar = ({ data }: { data: ActionErrorData }) => {
         setOpen(false)
       }}
     >
-      <Alert severity="error">
+      <Alert severity='error'>
         <Box display={'flex'} justifyContent={'space-between'} alignItems={'flex-start'} gap={2}>
           <Box>
             <AlertTitle>Something went wrong</AlertTitle>
@@ -75,9 +75,9 @@ const ErrorAlertSnackBar = ({ data }: { data: ActionErrorData }) => {
           </Box>
           <Box>
             <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
+              size='small'
+              aria-label='close'
+              color='inherit'
               onClick={() => {
                 setOpen(false)
               }}

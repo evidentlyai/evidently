@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import BaseTabs, { TabInfo } from './BaseTabs'
+import BaseTabs, { type TabInfo } from './BaseTabs'
 
 /***
  * Provides interactive tabs without needs to control it behavior (ie track active tabs),

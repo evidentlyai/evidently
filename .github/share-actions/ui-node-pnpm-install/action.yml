@@ -1,4 +1,10 @@
 name: UI install
+inputs:
+  args:
+    type: string
+    description: ""
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -15,5 +21,5 @@ runs:
 
     - name: 📥 Install node dependencies
       working-directory: ui
-      run: pnpm i --frozen-lockfile --ignore-scripts
+      run: pnpm i --frozen-lockfile --ignore-scripts ${{ inputs.args }}
       shell: bash

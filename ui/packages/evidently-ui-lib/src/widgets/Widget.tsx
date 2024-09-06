@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react'
-import { WidgetInfo } from '~/api'
+import React, { type ReactNode } from 'react'
+import type { WidgetInfo } from '~/api'
 
-import { Grid, Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent, Grid, Typography } from '@mui/material'
 
 import AlertBlock from './AlertBlock'
-import InsightBlock from './InsightBlock'
 import AlertStatBlock from './AlertStatBlock'
+import InsightBlock from './InsightBlock'
 
 /***
  * base part of widget to control:
@@ -115,6 +115,7 @@ const Widget = (
                         <div />
                       )}
                       {alerts.map((alert) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
                         <Grid item>
                           <AlertBlock data={alert} />
                         </Grid>
@@ -151,6 +152,7 @@ const Widget = (
                           <div />
                         )}
                         {alerts.map((alert) => (
+                          // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
                           <Grid item xs>
                             <AlertBlock data={alert} />
                           </Grid>
@@ -167,7 +169,8 @@ const Widget = (
             </React.Fragment>
           )}
           {isInsightsExists ? (
-            insights!.map((insight) => (
+            insights?.map((insight) => (
+              // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
               <Grid item xs sm md>
                 <InsightBlock data={insight} />
               </Grid>

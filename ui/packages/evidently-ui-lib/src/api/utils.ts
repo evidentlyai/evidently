@@ -1,5 +1,5 @@
+import type { ActionFunction, LoaderFunctionArgs } from 'react-router-dom'
 import type { OptionalID, StrictID } from '~/api/types/utils'
-import { LoaderFunctionArgs, ActionFunction } from 'react-router-dom'
 
 export type ILoaderAction<LoaderData> = {
   loader: (args: LoaderFunctionArgs) => Promise<LoaderData>

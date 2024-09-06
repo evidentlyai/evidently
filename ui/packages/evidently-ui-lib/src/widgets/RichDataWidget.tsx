@@ -15,11 +15,11 @@ import {
 import ExpandLessSharpIcon from '@mui/icons-material/ExpandLessSharp'
 import ExpandMoreSharpIcon from '@mui/icons-material/ExpandMoreSharp'
 
-import { RichDataParams } from '~/api'
+import type { RichDataParams } from '~/api'
 
 import Plot from '~/components/Plot'
-import { BigTableDetails } from './BigTableWidget/BigTableDetails'
 import { useDashboardViewParams } from '~/contexts/DashboardViewParams'
+import { BigTableDetails } from './BigTableWidget/BigTableDetails'
 
 const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: number }> = (
   props
@@ -35,7 +35,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
 
   return (
     <React.Fragment>
-      <Grid container spacing={2} justifyContent="center" alignItems="center">
+      <Grid container spacing={2} justifyContent='center' alignItems='center'>
         <Grid item xs={2}>
           <Typography variant={'h5'}>{props.header}</Typography>
           <Typography variant={'subtitle1'}>{props.description}</Typography>
@@ -45,17 +45,20 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
             <TableHead>
               <TableRow>
                 <TableCell />
-                {props.metricsValuesHeaders.map((header, index) => (
-                  <TableCell key={header + index}>{header}</TableCell>
+                {props.metricsValuesHeaders.map((header) => (
+                  // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                  <TableCell>{header}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.metrics.map((metric, index) => (
-                <TableRow key={metric.label + index}>
+              {props.metrics.map((metric) => (
+                // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                <TableRow>
                   <TableCell>{metric.label}</TableCell>
-                  {metric.values.map((value, index) => (
-                    <TableCell key={String(value) + index}>{value}</TableCell>
+                  {metric.values.map((value) => (
+                    // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                    <TableCell>{value}</TableCell>
                   ))}
                 </TableRow>
               ))}
@@ -88,7 +91,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
           <>
             <Grid item xs={12}>
               <Button
-                variant="outlined"
+                variant='outlined'
                 startIcon={details ? <ExpandLessSharpIcon /> : <ExpandMoreSharpIcon />}
                 onClick={() => setDetails((prevState) => !prevState)}
               >

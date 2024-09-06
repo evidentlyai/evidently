@@ -1,7 +1,7 @@
-import { Outlet, ScrollRestoration, useLoaderData } from 'react-router-dom'
-import { NavigationProgress, BreadCrumbs, ServiceHeader, crumbFunction } from '~/components'
-import type { LoaderData } from './data'
 import { Box } from '@mui/material'
+import { Outlet, ScrollRestoration, useLoaderData } from 'react-router-dom'
+import { BreadCrumbs, NavigationProgress, ServiceHeader, type crumbFunction } from '~/components'
+import type { LoaderData } from './data'
 
 export const HomeComponentTemplate = ({
   logoSrc,

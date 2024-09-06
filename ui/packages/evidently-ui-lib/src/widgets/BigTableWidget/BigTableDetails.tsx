@@ -1,18 +1,24 @@
-import React from 'react'
+import type React from 'react'
 
 import { Box } from '@mui/material'
 
-import { AdditionalGraphInfo, BigTableRowDetails, DetailsPart, WidgetInfo, WidgetSize } from '~/api'
+import type {
+  AdditionalGraphInfo,
+  BigTableRowDetails,
+  DetailsPart,
+  WidgetInfo,
+  WidgetSize
+} from '~/api'
 
-import DashboardContext, { DashboardContextState } from '~/contexts/DashboardContext'
+import DashboardContext, { type DashboardContextState } from '~/contexts/DashboardContext'
 
 import AutoTabs from '~/components/AutoTabs'
 import LoadableView from '~/components/LoadableVIew'
 
 import BigGraphWidgetContent from '~/widgets/BigGraphWidgetContent'
 import InsightBlock from '~/widgets/InsightBlock'
-import { WidgetRenderer } from '~/widgets/WidgetRenderer'
 import NotImplementedWidgetContent from '~/widgets/NotImplementedWidgetContent'
+import { WidgetRenderer } from '~/widgets/WidgetRenderer'
 
 interface BigTableDetailsProps {
   details: BigTableRowDetails
@@ -58,7 +64,9 @@ export const BigTableDetails: React.FunctionComponent<BigTableDetailsProps> = (p
           {props.details.insights === undefined ? (
             <></>
           ) : (
-            props.details.insights.map((row) => <InsightBlock data={row} />)
+            props.details.insights.map((row) => (
+              <InsightBlock key={row.text + row.title + row.severity} data={row} />
+            ))
           )}
         </Box>
       )}
