@@ -71,9 +71,10 @@ setup_args = dict(
         "dynaconf>=3.2.4",
         "certifi>=2024.7.4",
         "urllib3>=1.26.19",
-        "fsspec>=2024.2.0",
+        "fsspec>=2024.6.1",
         "ujson>=5.4.0",
         "deprecation>=2.1.0",
+        "cryptography>=43.0.1",
     ],
     extras_require={
         "dev": [
@@ -102,7 +103,11 @@ setup_args = dict(
             "sentence-transformers>=2.7.0",
         ],
         "spark": ["pyspark>=3.4.0"],
-        "fsspec": ["fsspec[full]>=2024.2.0"],
+        "fsspec": [
+            "s3fs>=2024.9.0",
+            "gcsfs>=2024.9.0",
+            # dependencies from fsspec[full]
+        ],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )

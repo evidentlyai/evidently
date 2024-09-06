@@ -19,11 +19,12 @@ iterative-telemetry==0.0.5
 dynaconf==3.2.4
 pyarrow==14.0.1
 pyspark==3.4.0
-fsspec[full]==2024.2.0
+fsspec==2024.6.1
 certifi==2024.7.4
 urllib3==1.26.19
 ujson==5.4.0
 deprecation==2.1.0
+cryptography==43.0.1
 
 openai==1.16.2
 evaluate==0.4.1
