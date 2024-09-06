@@ -108,7 +108,7 @@ export const DashboardParams = ({
       },
       { preventScrollReset: true, replace: true }
     )
-  }, [innerDatesStateDebounced, isFirstRender])
+  }, [innerDatesStateDebounced])
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
