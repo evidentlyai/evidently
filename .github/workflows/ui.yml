@@ -69,8 +69,6 @@ jobs:
 
       - name: 📥 Install ui dependencies
         uses: ./.github/share-actions/ui-node-pnpm-install
-        with:
-          args: "-w"
 
       - name: 🔬 Check code quality
         working-directory: ui
