@@ -45,7 +45,7 @@ We recommend to use [biome vscode](https://biomejs.dev/reference/vscode) plugin.
 ```bash
 # in `ui` folder
 pnpm code-check          # just check: format, sort imports and lint
-pnpm code-check --write  # check and apply appropriate diff (where possible)
+pnpm code-check --fix  # check and apply appropriate diff (where possible)
 ```
 
 ## Run Service
