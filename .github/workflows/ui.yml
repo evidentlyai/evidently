@@ -58,7 +58,7 @@ jobs:
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
   code-check:
-    name: UI code check
+    name: UI code-check
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && (needs.changed_files.outputs.ui_any_modified == 'true' || needs.changed_files.outputs.evidently_python_any_modified == 'true') }}
