@@ -57,6 +57,23 @@ jobs:
           echo "One or more evidently_python file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
+  code-check:
+    name: UI code-check
+    runs-on: ubuntu-22.04
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && (needs.changed_files.outputs.ui_any_modified == 'true' || needs.changed_files.outputs.evidently_python_any_modified == 'true') }}
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share-actions/ui-node-pnpm-install
+
+      - name: 🔬 Check code quality
+        working-directory: ui
+        run: pnpm code-check
+
   ui-type-check:
     name: UI type-check
     runs-on: ubuntu-22.04
@@ -150,16 +167,8 @@ jobs:
         working-directory: ui
         run: pnpm dlx playwright@1.43.0 install --with-deps
 
-      - uses: actions/cache@v3
-        id: cache-bikes-dataset
-        env:
-          cache-name: cache-bikes-dataset
-        with:
-          path: Bike-Sharing-Dataset.zip
-          key: cache-bikes-dataset
-      - name: Download test data
-        if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
-        run: curl -k https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip
+      - name: 🔍 Get bikes dataset cached
+        uses: ./.github/share-actions/get-bikes-dataset-cached
 
       - name: Run UI
         run: EXPERIMENTAL_DETERMINISTIC_UUID="true" evidently ui --port 8000 --workspace workspace-for-visual-testing --demo-projects all &

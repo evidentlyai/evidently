@@ -1,9 +1,9 @@
-import React from 'react'
+import type React from 'react'
 
-import DashboardContext from '~/contexts/DashboardContext'
+import type { WidgetSize } from '~/api'
 import LoadableView from '~/components/LoadableVIew'
+import DashboardContext from '~/contexts/DashboardContext'
 import BigGraphWidgetContent from '~/widgets/BigGraphWidgetContent'
-import { WidgetSize } from '~/api'
 
 interface RowDetailsProps {
   graphId: string

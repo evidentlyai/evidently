@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react'
+import type React from 'react'
+import type { ReactNode } from 'react'
 
 import { Box, Tab, Tabs } from '@mui/material'
 
@@ -24,14 +25,13 @@ const BaseTabs: React.FunctionComponent<BaseTabsProps> = (props) => {
       <Tabs
         value={activeTab}
         onChange={props.onNewTabSelected}
-        indicatorColor="primary"
-        textColor="primary"
+        indicatorColor='primary'
+        textColor='primary'
       >
-        {props.tabs.map((ti, idx) => (
+        {props.tabs.map((ti) => (
+          // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
           <Tab
-            // className={idx === activeTab ? props.classes.activeTab : props.classes.tab}
             disabled={ti.disabled ?? false}
-            key={idx}
             label={
               <Box className={props.tabStyle}>
                 <Box display={'flex'} sx={{ fontSize: '0.875rem' }}>
@@ -45,7 +45,8 @@ const BaseTabs: React.FunctionComponent<BaseTabsProps> = (props) => {
       </Tabs>
       <Box>
         {props.tabs.map((ti, idx) => (
-          <div key={idx} hidden={(props.activeTab === -1 ? 0 : props.activeTab) !== idx}>
+          // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+          <div hidden={(props.activeTab === -1 ? 0 : props.activeTab) !== idx}>
             {(props.activeTab === -1 ? 0 : props.activeTab) !== idx ? <div /> : ti.tab}
           </div>
         ))}

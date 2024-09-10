@@ -1,5 +1,5 @@
-import { IconButton } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { IconButton } from '@mui/material'
 import { Box } from '@mui/material'
 
 export const TextWithCopyIcon = ({
@@ -13,11 +13,11 @@ export const TextWithCopyIcon = ({
     <Box>
       {showText}
       <IconButton
-        size="small"
+        size='small'
         style={{ marginLeft: 10 }}
         onClick={() => navigator.clipboard.writeText(copyText)}
       >
-        <ContentCopyIcon fontSize="small" />
+        <ContentCopyIcon fontSize='small' />
       </IconButton>
     </Box>
   )

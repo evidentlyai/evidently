@@ -1,5 +1,5 @@
-import { useFetchers, useNavigation, useRevalidator } from 'react-router-dom'
 import { Box, LinearProgress } from '@mui/material'
+import { useFetchers, useNavigation, useRevalidator } from 'react-router-dom'
 
 export const NavigationProgress = () => {
   const navigation = useNavigation()

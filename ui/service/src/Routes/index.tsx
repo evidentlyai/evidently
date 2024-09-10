@@ -1,14 +1,14 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
 
 import {
-  RouteObject,
+  type RouteObject,
   createBrowserRouter
 } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
+import NotFound from './NotFound'
 import HomeRoute from './home'
 import ProjectsRoute from './projects/projectId'
 import ProjectsListRoute from './projectsList'
-import NotFound from './NotFound'
 
 const homeRoute = {
   ...HomeRoute,

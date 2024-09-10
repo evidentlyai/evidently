@@ -1,9 +1,9 @@
-import React from 'react'
+import type React from 'react'
 
 import { Box, Button, Grid, Select } from '@mui/material'
 
+import type { DashboardInfoModel } from '~/api/types'
 import { DashboardContentWidgets } from './DashboardContent'
-import { DashboardInfoModel } from '~/api/types'
 
 interface SummaryViewProps {
   dashboardInfo: DashboardInfoModel
@@ -12,12 +12,12 @@ interface SummaryViewProps {
 const SummaryView: React.FunctionComponent<SummaryViewProps> = (props) => {
   return (
     <Box mt={10} flexGrow={1}>
-      <Grid container spacing={3} direction="row" alignItems="stretch">
+      <Grid container spacing={3} direction='row' alignItems='stretch'>
         <Grid item xs={12} sx={{ display: 'flex', verticalAlign: 'baseline' }}>
           <Select
-            variant="standard"
-            label="Age"
-            labelId="time_range_label"
+            variant='standard'
+            label='Age'
+            labelId='time_range_label'
             value={'recent'}
             inputProps={{
               name: 'age',
@@ -30,10 +30,10 @@ const SummaryView: React.FunctionComponent<SummaryViewProps> = (props) => {
           </Select>
           <Box flexGrow={1} />
           <Box>
-            <Button sx={{ ml: 1 }} variant={'contained'} color="primary">
+            <Button sx={{ ml: 1 }} variant={'contained'} color='primary'>
               Edit
             </Button>
-            <Button sx={{ ml: 1 }} variant={'contained'} color="primary">
+            <Button sx={{ ml: 1 }} variant={'contained'} color='primary'>
               Export
             </Button>
           </Box>

@@ -1,6 +1,6 @@
-import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
-import { VersionModel } from '~/api/types'
-import { GetLoaderAction } from '~/api/utils'
+import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import type { VersionModel } from '~/api/types'
+import type { GetLoaderAction } from '~/api/utils'
 
 export type LoaderData = VersionModel
 

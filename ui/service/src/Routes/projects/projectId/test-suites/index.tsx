@@ -1,9 +1,9 @@
-import { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { injectTestSuitesAPI } from 'evidently-ui-lib/routes-components/snapshots/data'
+import type { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { clientAPI } from '~/api'
 
-import TestSuiteRoute from './testSuiteId'
 import { ActionsErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import TestSuiteRoute from './testSuiteId'
 
 const { loader, action } = injectTestSuitesAPI({ api: clientAPI })
 
@@ -18,7 +18,7 @@ export default {
     const Component = () => (
       <>
         <ActionsErrorSnackbar />
-        <SnapshotsListTemplate type="test suites" />
+        <SnapshotsListTemplate type='test suites' />
       </>
     )
 
