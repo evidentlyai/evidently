@@ -77,6 +77,10 @@ Select specific checks one by one:
 
 Each evaluation result is called a **Descriptor**. No matter the method, you’ll get a label or score for every evaluated text. Some, like “Sentiment,” work instantly, while others may need setup.
 
+{% hint style="info" %}
+**What other evaluators are there?** Check the list of Descriptors on the [All Metrics](../reference/all-metrics.md) page.
+{% endhint %}
+
 Here are few examples of Descriptors and how to configure them:
 
 ## Words presence
