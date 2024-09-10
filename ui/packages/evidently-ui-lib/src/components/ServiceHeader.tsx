@@ -4,11 +4,13 @@ import { AppBar, Button, IconButton, Link, Toolbar, Typography } from '@mui/mate
 export function ServiceHeader({
   version,
   authComponent,
-  logoSrc
+  logoSrc,
+  reloadAllStateButton
 }: {
-  authComponent?: React.ReactNode
   version: string
   logoSrc: string
+  authComponent?: React.ReactNode
+  reloadAllStateButton?: React.ReactNode
 }) {
   return (
     <>
@@ -27,6 +29,7 @@ export function ServiceHeader({
           <Link href={'https://docs.evidentlyai.com/'}>
             <Button>Docs</Button>
           </Link>
+          {reloadAllStateButton}
         </Toolbar>
       </AppBar>
     </>
