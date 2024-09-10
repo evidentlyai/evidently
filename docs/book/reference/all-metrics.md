@@ -255,7 +255,7 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 # Text Evals 
 
-Text Evals only apply to text columns. To compute a Descriptor for a single text column, use a `TextEvals` Preset. 
+Text Evals only apply to text columns. To compute a Descriptor for a single text column, use a `TextEvals` Preset. Read [docs](../tests-and-reports/text-descriptors.md).
 
 You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) to visualize the descriptor, or pick a [Test](all-tests.md) (e.g., `TestColumnValueMin`) to run validations. 
 
@@ -305,7 +305,7 @@ Use pre-trained machine learning models for evaluation.
 
 | Descriptor | Parameters |
 | - | - |
-| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0: different, 0.5: unrelated, 1: identical). </li></ul> Example use:<br>`SemanticSimilarity(with_column="response")` or `ColumnSummaryMetric(column_name=SemanticSimilarity().on(["response", "new_response"]))`. | **Required:** <ul><li>`with_column`</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
+| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0: different, 0.5: unrelated, 1: identical). </li></ul> Example use:<br>`SemanticSimilarity(with_column="response")` | **Required:** <ul><li>`with_column`</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
 | **Sentiment()** <ul><li>Analyzes the sentiment of the text using a word-based model. </li><li> Return a score on a scale: -1 (negative) to 1 positive). </li></ul>| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **HuggingFaceModel()** <br><br> Scores the text using the user-selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
 | **HuggingFaceToxicityModel()** <ul><li> Detects hate speech using [HuggingFace Model](https://huggingface.co/facebook/roberta-hate-speech-dynabench-r4-target). </li><li> Returns predicted probability for the “hate” label. </li><li> Scale: 0 to 1. </li></ul> | **Optional**: <ul><li>`toxic_label="hate"` (default)</li><li> `display_name`</li></ul> |
