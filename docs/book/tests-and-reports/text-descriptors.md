@@ -149,6 +149,16 @@ report = Report(metrics=[
 ])
 ```
 
+**Multi-column descriptors**. Some Descriptors like `SemanticSimilarity` require a second column. Pass it as a parameter:
+
+```python
+report = Report(metrics=[
+    TextEvals(column_name="question", descriptors=[
+        SemanticSimilarity(with_column="response")
+    ]),
+])
+```
+
 Some Descriptors, like custom LLM judges, might require a more complex setup, but you can still include them in the Report just like any other Descriptor.
 
 {% hint style="info" %} 
@@ -170,7 +180,7 @@ report = Report(metrics=[
 ])
 ```
 
-**Semantic Similariy**. To compare Semantic Similarity between two columns, you should use this approach instead of `TextEvals` to be able to process two columns at once. Pass both columns in a list:
+For two-column descriptor like `SemanticSimilarity()`, pass both columns as a list:
 
 ```python
 report = Report(metrics=[
