@@ -4,6 +4,8 @@ description: How to add custom text descriptors.
 
 You can implement custom row-level evaluations for text data that you will later use just like any other descriptor across Metrics and Tests. You can implement descriptors that use a single column or two columns.
 
+Note that if you want to use LLM-based evaluations, you can write custom prompts using [LLM judge templates](llm_as_a_judge.md). 
+
 # Code example
 
 Refer to a How-to example:
