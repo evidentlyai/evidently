@@ -111,8 +111,8 @@ For a binary classification template, you can configure:
 * **Target/Non-target Category**: labels you want to use.
 * **Uncertain Category**: how the model should respond when it can’t decide.
 * **Reasoning**: choose to include explanation (Recommended).
-* **Category** and/or **Score**: have the LLM respond with the category (Recommended) or also return a score.
-* **Visualize as**: when both Category and Score are computed, choose which to display in the report.
+* **Category** and/or **Score**: have the LLM respond with the category (Recommended) or score.
+* **Visualize as**: when both Category and Score are computed, choose which to display in the Report.
 
 {% hint style="info" %}
 **What other evaluators are there?** Check the list of Descriptors on the [All Metrics](../reference/all-metrics.md) page.
