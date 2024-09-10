@@ -12,14 +12,14 @@ export const ReloadAllButton = ({
       <Tooltip title={tooltipTitle}>
         <IconButton
           disabled={fetcher.state !== 'idle'}
-          onClick={() => {
+          onClick={() =>
             fetcher.submit(null, {
               action,
               encType: 'application/json',
               method: 'POST',
               preventScrollReset: true
             })
-          }}
+          }
         >
           <RefreshIcon />
         </IconButton>
