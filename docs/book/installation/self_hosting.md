@@ -5,7 +5,7 @@ description: How to self-host the open-source Evidently UI service.
 In addition to using Evidently Python library, you can self-host the UI Service to get a monitoring Dashboard and organize the results of your evaluations. This is optional: you can also run evaluations and render results directly in Python or export them elsewhere.
 
 {% hint style="info" %}
-**Evidently Cloud.** Sign up for a free [Evidently Cloud](cloud_account.md) account to instantly get a managed version with extra features.
+**Evidently Cloud.** Sign up for a free [Evidently Cloud](cloud_account.md) account to get a managed version with extra features.
 {% endhint %}
 
 {% hint style="info" %}
@@ -92,6 +92,19 @@ FSSPEC_S3_KEY=my_key FSSPEC_S3_SECRET=my_secret
 evidently ui --workspace s3://my_bucket/workspace
 ```
 
+## [DANGER] Delete Workspace
+
+To delete a Workspace (for example, an empty or a test Workspace), run the command from the Terminal:
+
+```
+cd src/evidently/ui/
+rm -r workspace
+```
+
+{% hint style="danger" %}
+**You are deleting all the data**. This command will delete the snapshots stored in the folder. To maintain access to the generated snapshots, you must store them elsewhere.
+{% endhint %}
+
 # 2. Launch the UI service
 
 To launch the Evidently UI service, you must run a command in the Terminal.
@@ -115,16 +128,3 @@ evidently ui --workspace ./workspace --port 8080
 ```
 
 To view the Evidently interface, go to URL http://localhost:8000 or a specified port in your web browser.
-
-## [DANGER] Delete Workspace
-
-To delete a Workspace (for example, an empty or a test Workspace), run the command from the Terminal:
-
-```
-cd src/evidently/ui/
-rm -r workspace
-```
-
-{% hint style="danger" %}
-**You are deleting all the data**. This command will delete the snapshots stored in the folder. To maintain access to the generated snapshots, you must store them elsewhere.
-{% endhint %}
