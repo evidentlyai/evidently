@@ -297,7 +297,7 @@ Use external LLMs with an evaluation prompt to score text data. (Also known as L
 | **NegativityLLMEval()** <br><br> Detects negative texts (containing critical or pessimistic tone). Returns a label (NEGATIVE or POSITIVE) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
 | **BiasLLMEval()** <br><br> Detects biased texts (containing prejudice for or against a person or group). Returns a label (BIAS or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
 | **ToxicityLLMEval()** <br><br> Detects toxic texts (containing harmful, offensive, or derogatory language). Returns a label (TOXICITY or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
-| **ContextQualityLLMEval()** <br><br> Evaluates if CONTEXT is VALID (has sufficient information to answer the QUESTION) or INVALID (has missing or contradictory information). Returns a label (VALID or INVALID) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **ContextQualityLLMEval()** <br><br> Evaluates if CONTEXT is VALID (has sufficient information to answer the QUESTION) or INVALID (has missing or contradictory information). Returns a label (VALID or INVALID) or score.| Run the descriptor over the `context` column and pass the `question` column as a parameter. See [docs](../customization/llm_as_a_judge.md) for parameters.|
 
 ## Descriptors: Model-based
 
