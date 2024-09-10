@@ -169,6 +169,10 @@ Some Descriptors, like custom LLM judges, might require a more complex setup, bu
 **LLM-as-a-judge**. For a detailed guide on setting up LLM-based evals, check the guide to [LLM as a jugde](../customization/llm_as_a_judge.md).
 {% endhint %}
 
+{% hint style="info" %} 
+**Custom descriptors**. You can implement descriptors as Python functions. Check the [guide on custom descriptors](../customization/add-custom-descriptor.md).
+{% endhint %}
+
 ## Using Metrics
 
 The `TextEvals` Preset works by generating a `ColumnSummaryMetric` for each Descriptor you calculate. You can achieve the same results by explicitly creating this Metric for each Descriptor:
