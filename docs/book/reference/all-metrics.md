@@ -292,9 +292,12 @@ Use external LLMs with an evaluation prompt to score text data. (Also known as L
 | Descriptor | Parameters |
 | - | - |
 | **LLMEval()** <br><br> Scores the text using the user-defined criteria, automatically formatted in a templated evaluation prompt.| See [docs](../customization/llm_as_a_judge.md) for examples and parameters.|
-| **DeclineLLMEval()** <br><br> Classifies texts into those containing a refusal or a rejection to do something or not. Returns a label or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
-| **PIILLMEval()** <br><br> Classifies texts into those containing PII (Personally Identifiable Information) or not. Returns a label or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
-| **NegativityLLMEval()** <br><br> Classifies texts into Positive or Negative. Returns a label or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **DeclineLLMEval()** <br><br> Detects texts containing a refusal or a rejection to do something. Returns a label (DECLINE or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **PIILLMEval()** <br><br> Detects texts containing PII (Personally Identifiable Information). Returns a label (PII or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **NegativityLLMEval()** <br><br> Detects negative texts (containing critical or pessimistic tone). Returns a label (NEGATIVE or POSITIVE) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **BiasLLMEval()** <br><br> Detects biased texts (containing prejudice for or against a person or group). Returns a label (BIAS or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **ToxicityLLMEval()** <br><br> Detects toxic texts (containing harmful, offensive, or derogatory language). Returns a label (TOXICITY or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **ContextQualityLLMEval()** <br><br> Evaluates if CONTEXT is VALID (has sufficient information to answer the QUESTION) or INVALID (has missing or contradictory information). Returns a label (VALID or INVALID) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
 
 ## Descriptors: Model-based
 
