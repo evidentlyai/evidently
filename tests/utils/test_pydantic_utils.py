@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Dict
 from typing import Optional
 from typing import Union
@@ -346,3 +347,18 @@ def test_wrong_classpath():
     d["type"] += "_"
     with pytest.raises(ValidationError):
         parse_obj_as(A, d)
+
+
+def test_alias_requied():
+    class RequiredAlias(PolymorphicModel, ABC):
+        class Config:
+            alias_required = True
+
+    with pytest.raises(ValueError):
+
+        class NoAlias(RequiredAlias):
+            pass
+
+    class Alias(RequiredAlias):
+        class Config:
+            type_alias = "alias"

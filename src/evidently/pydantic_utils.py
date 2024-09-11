@@ -1,9 +1,11 @@
 import dataclasses
 import hashlib
+import inspect
 import itertools
 import json
 import os
 import warnings
+from abc import ABC
 from enum import Enum
 from functools import lru_cache
 from typing import TYPE_CHECKING
@@ -160,6 +162,7 @@ FingerprintPart = Union[None, int, str, float, bool, bytes, Tuple["FingerprintPa
 class PolymorphicModel(BaseModel):
     class Config(BaseModel.Config):
         type_alias: ClassVar[Optional[str]] = None
+        alias_required: ClassVar[bool] = False
         is_base_type: ClassVar[bool] = False
 
     __config__: ClassVar[Config]
@@ -169,6 +172,8 @@ class PolymorphicModel(BaseModel):
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
+        if cls.__config__.alias_required and not (inspect.isabstract(cls) or ABC in cls.__bases__):
+            raise ValueError(f"Alias is required for {cls.__name__}")
         return cls.__get_classpath__()
 
     @classmethod
@@ -261,7 +266,10 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
 EBM = TypeVar("EBM", bound="EvidentlyBaseModel")
 
 
-class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
+class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel, ABC):
+    class Config:
+        alias_required = True
+
     def get_fingerprint(self) -> Fingerprint:
         return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
 
@@ -282,7 +290,7 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         return self.__class__(**data)
 
 
-class WithTestAndMetricDependencies(EvidentlyBaseModel):
+class WithTestAndMetricDependencies(EvidentlyBaseModel, ABC):
     def __evidently_dependencies__(self):
         from evidently.base_metric import Metric
         from evidently.tests.base_test import Test
