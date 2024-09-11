@@ -23,6 +23,9 @@ class MockMetricResult(MetricResult):
 
 
 class MockMetric(Metric[MockMetricResult]):
+    class Config:
+        type_alias = "test:MockMetric"
+
     def calculate(self, data: InputData) -> MockMetricResult:
         return MockMetricResult(value="a", series=pd.Series([0]), distribution=Distribution(x=[1, 1], y=[0, 0]))
 

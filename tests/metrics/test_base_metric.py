@@ -49,6 +49,9 @@ def test_metric_generator():
 
 
 class SimpleMetric(Metric[int]):
+    class Config:
+        type_alias = "test:SimpleMetric"
+
     column_name: ColumnName
 
     def __init__(self, column_name: ColumnName):
@@ -60,6 +63,9 @@ class SimpleMetric(Metric[int]):
 
 
 class SimpleMetric2(Metric[int]):
+    class Config:
+        type_alias = "test:SimpleMetric2"
+
     column_name: ColumnName
 
     def __init__(self, column_name: ColumnName):
@@ -71,6 +77,9 @@ class SimpleMetric2(Metric[int]):
 
 
 class SimpleMetricWithFeatures(Metric[int]):
+    class Config:
+        type_alias = "test:SimpleMetricWithFeatures"
+
     column_name: str
     _feature: Optional[GeneratedFeature]
 
@@ -93,6 +102,9 @@ class SimpleMetricWithFeatures(Metric[int]):
 
 
 class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
+    class Config:
+        type_alias = "test:MetricWithAllTextFeatures"
+
     _features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
@@ -107,6 +119,9 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
 
 
 class SimpleGeneratedFeature(GeneratedFeature):
+    class Config:
+        type_alias = "test:SimpleGeneratedFeature"
+
     __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str
 
@@ -123,6 +138,9 @@ class SimpleGeneratedFeature(GeneratedFeature):
 
 
 class LengthFeature(GeneratedFeature):
+    class Config:
+        type_alias = "test:LengthFeature"
+
     __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str
     max_length: Optional[int] = None

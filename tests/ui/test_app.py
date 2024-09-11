@@ -122,6 +122,9 @@ class MockMetricResult(MetricResult):
 
 
 class MockMetric(Metric[MockMetricResult]):
+    class Config:
+        type_alias = "test:MockMetric"
+
     def calculate(self, data: InputData) -> MockMetricResult:
         return MockMetricResult.create(1)
 

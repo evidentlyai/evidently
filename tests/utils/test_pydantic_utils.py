@@ -32,6 +32,9 @@ class MockMetricResult(MetricResult):
 
 def _metric_with_result(result: MetricResult):
     class MockMetric(Metric):
+        class Config:
+            type_alias = "test:MockMetric"
+
         def get_result(self):
             return result
 
@@ -297,11 +300,17 @@ def test_get_field_tags_no_overwrite():
 
 def test_fingerprint_add_new_default_field():
     class A(EvidentlyBaseModel):
+        class Config:
+            type_alias = "test:A"
+
         field1: str
 
     f1 = A(field1="123").get_fingerprint()
 
     class A(EvidentlyBaseModel):
+        class Config:
+            type_alias = "test:A"
+
         field1: str
         field2: str = "321"
 
@@ -313,12 +322,18 @@ def test_fingerprint_add_new_default_field():
 
 def test_fingerprint_reorder_fields():
     class A(EvidentlyBaseModel):
+        class Config:
+            type_alias = "test:A"
+
         field1: str
         field2: str
 
     f1 = A(field1="123", field2="321").get_fingerprint()
 
     class A(EvidentlyBaseModel):
+        class Config:
+            type_alias = "test:A"
+
         field2: str
         field1: str
 
@@ -330,6 +345,9 @@ def test_fingerprint_reorder_fields():
 
 def test_fingerprint_default_collision():
     class A(EvidentlyBaseModel):
+        class Config:
+            type_alias = "test:A"
+
         field1: Optional[str] = None
         field2: Optional[str] = None
 
@@ -338,6 +356,9 @@ def test_fingerprint_default_collision():
 
 def test_wrong_classpath():
     class A(EvidentlyBaseModel):
+        class Config:
+            type_alias = "test:A"
+
         f: str
 
     ALLOWED_TYPE_PREFIXES.append("tests.")
