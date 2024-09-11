@@ -47,3 +47,5 @@ jobs:
         run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
       - name: Run examples
         run: python example_test.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_GIT_DEV }}
