@@ -6,11 +6,11 @@ The platform supports several evaluations directly from the user interface.
 
 | Name                    | Type       | Description                                                                                                                              |
 |-------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Text Evals              | Report     | Analyze texts using methods from regular expressions to LLM judges.                                                     |
-| Data Quality            | Report     | Get descriptive statistics and distribution overviews for all columns.  |
+| Text Evals              | Report     | Analyze text data, from regular expressions to LLM judges.                                                     |
+| Data Quality            | Report     | Get descriptive statistics and distributions for all columns.  |
 | Classification Quality  | Report     | Evaluate the quality of a classification model.                                |
 | Regression Quality      | Report     | Evaluate the quality of a regression model.                                           |
-| Data Quality Tests      | Test Suite | Automatically check for issues like missing values, duplicates, etc.                                                        |
+| Data Quality Tests      | Test Suite | Automatically check for missing values, duplicates, etc.                                                        |
 
 Before you start, pick a dataset to evaluate. For example, this could be a CSV file containing inputs and outputs of your AI system, like chatbot logs.
 
@@ -77,6 +77,10 @@ Select specific checks one by one:
 
 Each evaluation result is called a **Descriptor**. No matter the method, you’ll get a label or score for every evaluated text. Some, like “Sentiment,” work instantly, while others may need setup.
 
+{% hint style="info" %}
+**What other evaluators are there?** Check the list of Descriptors on the [All Metrics](../reference/all-metrics.md) page.
+{% endhint %}
+
 Here are few examples of Descriptors and how to configure them:
 
 ## Words presence
@@ -111,8 +115,8 @@ For a binary classification template, you can configure:
 * **Target/Non-target Category**: labels you want to use.
 * **Uncertain Category**: how the model should respond when it can’t decide.
 * **Reasoning**: choose to include explanation (Recommended).
-* **Category** and/or **Score**: have the LLM respond with the category (Recommended) or also return a score.
-* **Visualize as**: when both Category and Score are computed, choose which to display in the report.
+* **Category** and/or **Score**: have the LLM respond with the category (Recommended) or score.
+* **Visualize as**: when both Category and Score are computed, choose which to display in the Report.
 
 {% hint style="info" %}
 **What other evaluators are there?** Check the list of Descriptors on the [All Metrics](../reference/all-metrics.md) page.
