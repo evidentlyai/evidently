@@ -73,6 +73,9 @@ class DatasetType(Enum):
 
 
 class ColumnName(EnumValueMixin, EvidentlyBaseModel):
+    class Config:
+        type_alias = "builtin:ColumnName"
+
     name: str
     display_name: str
     dataset: DatasetType
