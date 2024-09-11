@@ -1,8 +1,8 @@
+import { Button, Grid } from '@mui/material'
 import React from 'react'
-import { WidgetListParams } from '~/api'
+import type { WidgetListParams } from '~/api'
 import WidgetPanel from './WidgetPanel'
 import { WidgetRenderer } from './WidgetRenderer'
-import { Grid, Button } from '@mui/material'
 
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'

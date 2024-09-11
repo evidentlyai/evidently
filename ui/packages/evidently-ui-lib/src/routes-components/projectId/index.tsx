@@ -1,9 +1,9 @@
 import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/material'
 
-import { Link as RouterLink, Outlet, useMatches, useLoaderData } from 'react-router-dom'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { crumbFunction } from '~/components/BreadCrumbs'
-import { LoaderData } from './data'
+import { Outlet, Link as RouterLink, useLoaderData, useMatches } from 'react-router-dom'
+import type { crumbFunction } from '~/components/BreadCrumbs'
+import type { LoaderData } from './data'
 
 export const handle: { crumb: crumbFunction<LoaderData> } = {
   crumb: (data, { pathname }) => ({ to: pathname, linkText: data?.name || 'undefined' })
@@ -20,25 +20,25 @@ export const ProjectTemplate = ({
 
   return (
     <Box mt={2}>
-      <Grid container spacing={2} direction="row" justifyContent="flex-start" alignItems="flex-end">
+      <Grid container spacing={2} direction='row' justifyContent='flex-start' alignItems='flex-end'>
         <Grid item xs={12}>
-          <Typography sx={{ color: '#aaa' }} variant="body2">
+          <Typography sx={{ color: '#aaa' }} variant='body2'>
             {`project id: ${project.id}`}
             <IconButton
-              size="small"
+              size='small'
               style={{ marginLeft: 10 }}
               onClick={() => {
                 navigator.clipboard.writeText(project.id)
               }}
             >
-              <ContentCopyIcon fontSize="small" />
+              <ContentCopyIcon fontSize='small' />
             </IconButton>
           </Typography>
         </Grid>
       </Grid>
 
       {tabsConfig.length > 0 && (
-        <Tabs value={tabIndex} aria-label="simple tabs example" indicatorColor={'primary'}>
+        <Tabs value={tabIndex} aria-label='simple tabs example' indicatorColor={'primary'}>
           {tabsConfig.map((tab) => (
             <Link key={tab.id} component={RouterLink} to={tab.link}>
               <Tab label={tab.label || tab.id} value={tab.id} />

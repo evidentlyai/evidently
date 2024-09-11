@@ -7,6 +7,7 @@ from typing import Optional
 from typing import TypeVar
 
 from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Extra
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -27,6 +28,12 @@ from evidently.ui.type_aliases import RoleID
 from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
+
+
+class EvidentlyAPIModel(BaseModel):
+    # todo: migrate all models to this base
+    class Config:
+        extra = Extra.forbid
 
 
 class MetricModel(BaseModel):

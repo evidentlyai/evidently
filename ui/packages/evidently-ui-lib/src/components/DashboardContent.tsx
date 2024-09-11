@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react'
-import { WidgetInfo } from '~/api'
+import React, { type FunctionComponent } from 'react'
+import type { WidgetInfo } from '~/api'
 import { WidgetRenderer } from '~/widgets/WidgetRenderer'
 
 export interface DashboardContentProps {

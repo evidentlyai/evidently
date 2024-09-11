@@ -12,16 +12,19 @@ import {
   Switch,
   Typography
 } from '@mui/material'
+
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs, { type Dayjs } from 'dayjs'
 import 'dayjs/locale/en-gb'
 import 'dayjs/plugin/duration'
 
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useDebounce, useIsFirstRender } from '~/hooks'
 import { formatDate } from '~/utils'
 
 type QueryAliases = 'FROM' | 'TO'
@@ -43,8 +46,8 @@ interface DashboardDateFilterProps {
 }
 
 export const getDashboardQueryParams = (searchParams: URLSearchParams) => {
-  let date_from = searchParams.get(FILTER_QUERY_PARAMS.FROM)
-  let date_to = searchParams.get(FILTER_QUERY_PARAMS.TO)
+  const date_from = searchParams.get(FILTER_QUERY_PARAMS.FROM)
+  const date_to = searchParams.get(FILTER_QUERY_PARAMS.TO)
   return { date_from, date_to }
 }
 
@@ -70,26 +73,42 @@ export const DashboardParams = ({
   setIsDashboardHideDates,
   isShowDateFilter
 }: DashboardDateFilterProps & DataRangesProps) => {
+  const isFirstRender = useIsFirstRender()
   const { isCorrectTimeInterval, date_from, date_to, setSearchParams } = useIsCorrectTimeInterval({
     dataRanges
   })
 
+  const [innerDatesState, setInnerStateDates] = useState<{
+    date_from: Dayjs | null
+    date_to: Dayjs | null
+  }>({ date_from, date_to })
+
+  const innerDatesStateDebounced = useDebounce(innerDatesState, 300)
+
   const isIncorrectTimeIntervalMessage = !isCorrectTimeInterval ? 'incorrect time interval' : ''
 
-  const getOnChangeDate = (dateType: QueryLiterals) => (dateValue: dayjs.Dayjs | null) => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fine
+  useEffect(() => {
+    if (isFirstRender) {
+      return
+    }
+
+    const date_to = innerDatesStateDebounced?.date_to?.toDate()
+    const date_from = innerDatesStateDebounced?.date_from?.toDate()
+
     setSearchParams(
       (params) => {
-        params.delete(dateType)
+        params.delete(FILTER_QUERY_PARAMS.FROM)
+        params.delete(FILTER_QUERY_PARAMS.TO)
 
-        if (dateValue) {
-          params.append(dateType, formatDate(dateValue.toDate()))
-        }
+        date_from && params.append(FILTER_QUERY_PARAMS.FROM, formatDate(date_from))
+        date_to && params.append(FILTER_QUERY_PARAMS.TO, formatDate(date_to))
 
         return params
       },
       { preventScrollReset: true, replace: true }
     )
-  }
+  }, [innerDatesStateDebounced])
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
@@ -98,7 +117,7 @@ export const DashboardParams = ({
         padding={1}
         zIndex={1}
         gap={2}
-        justifyContent="flex-end"
+        justifyContent='flex-end'
         alignItems={'flex-end'}
       >
         <Grid item>
@@ -108,9 +127,9 @@ export const DashboardParams = ({
                 <Switch
                   checked={isDashboardHideDates}
                   onChange={(event) => setIsDashboardHideDates(event.target.checked)}
-                ></Switch>
+                />
               }
-              label="Show in order"
+              label='Show in order'
             />
           </Box>
         </Grid>
@@ -120,21 +139,13 @@ export const DashboardParams = ({
               <FormControl fullWidth>
                 <InputLabel>Period</InputLabel>
                 <Select
-                  variant="standard"
+                  variant='standard'
                   defaultValue={''}
                   onChange={(event) => {
                     const [valueStr, durationStr] = (event.target.value as string).split(',')
 
                     if (valueStr === '') {
-                      setSearchParams(
-                        (params) => {
-                          params.delete(FILTER_QUERY_PARAMS.FROM)
-                          params.delete(FILTER_QUERY_PARAMS.TO)
-
-                          return params
-                        },
-                        { preventScrollReset: true, replace: true }
-                      )
+                      setInnerStateDates({ date_from: null, date_to: null })
 
                       return
                     }
@@ -145,28 +156,12 @@ export const DashboardParams = ({
                       duration as dayjs.ManipulateType
                     )
 
-                    setSearchParams(
-                      (params) => {
-                        params.delete(FILTER_QUERY_PARAMS.FROM)
-                        params.delete(FILTER_QUERY_PARAMS.TO)
-
-                        params.append(
-                          FILTER_QUERY_PARAMS.FROM,
-                          formatDate(
-                            lastDate.isBefore(dataRanges.minDate)
-                              ? dataRanges.minDate.toDate()
-                              : lastDate.toDate()
-                          )
-                        )
-                        params.append(
-                          FILTER_QUERY_PARAMS.TO,
-                          formatDate(dataRanges.maxDate.toDate())
-                        )
-
-                        return params
-                      },
-                      { preventScrollReset: true, replace: true }
-                    )
+                    setInnerStateDates({
+                      date_from: lastDate.isBefore(dataRanges.minDate)
+                        ? dataRanges.minDate
+                        : lastDate,
+                      date_to: dataRanges.maxDate
+                    })
                   }}
                 >
                   <MenuItem value={''}>
@@ -195,9 +190,9 @@ export const DashboardParams = ({
                       variant: 'standard'
                     }
                   }}
-                  label="From"
-                  value={date_from}
-                  onChange={getOnChangeDate(FILTER_QUERY_PARAMS.FROM)}
+                  label='From'
+                  value={innerDatesState.date_from}
+                  onChange={(date_from) => setInnerStateDates((prev) => ({ ...prev, date_from }))}
                 />
                 <Box height={1} display={'flex'} alignItems={'center'}>
                   <Typography> - </Typography>
@@ -210,15 +205,15 @@ export const DashboardParams = ({
                       variant: 'standard'
                     }
                   }}
-                  label="To"
-                  value={date_to}
-                  onChange={getOnChangeDate(FILTER_QUERY_PARAMS.TO)}
+                  label='To'
+                  value={innerDatesState.date_to}
+                  onChange={(date_to) => setInnerStateDates((prev) => ({ ...prev, date_to }))}
                 />
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Collapse unmountOnExit in={!isCorrectTimeInterval}>
-                <Alert severity="error">
+                <Alert severity='error'>
                   <AlertTitle>Error</AlertTitle>
                   {isIncorrectTimeIntervalMessage}
                 </Alert>
@@ -250,7 +245,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
         padding={1}
         zIndex={1}
         gap={2}
-        justifyContent="flex-start"
+        justifyContent='flex-start'
         alignItems={'flex-end'}
       >
         <>
@@ -258,7 +253,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
             <FormControl fullWidth>
               <InputLabel>Period</InputLabel>
               <Select
-                variant="standard"
+                variant='standard'
                 defaultValue={''}
                 onChange={(event) => {
                   const [valueStr, durationStr] = (event.target.value as string).split(',')
@@ -299,10 +294,10 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
                 slotProps={{
                   textField: {
                     variant: 'standard',
-                    error: required ? !Boolean(dates.dateFrom) : undefined
+                    error: required ? !dates.dateFrom : undefined
                   }
                 }}
-                label="From"
+                label='From'
                 value={dates?.dateFrom}
                 onChange={(value) => setDates((prev) => ({ ...prev, dateFrom: value }))}
               />
@@ -315,10 +310,10 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
                 slotProps={{
                   textField: {
                     variant: 'standard',
-                    error: required ? !Boolean(dates.dateTo) : undefined
+                    error: required ? !dates.dateTo : undefined
                   }
                 }}
-                label="To"
+                label='To'
                 value={dates?.dateTo}
                 onChange={(value) => setDates((prev) => ({ ...prev, dateTo: value }))}
               />
@@ -329,7 +324,7 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
               unmountOnExit
               in={Boolean(dates.dateFrom && dates.dateTo && dates.dateFrom?.isAfter(dates.dateTo))}
             >
-              <Alert severity="error">
+              <Alert severity='error'>
                 <AlertTitle>Error</AlertTitle>
                 Incorrect time interval
               </Alert>

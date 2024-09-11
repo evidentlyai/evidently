@@ -1,12 +1,12 @@
-import { Box, Chip, IconButton } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import { Box, Chip, IconButton } from '@mui/material'
 
 import { useState } from 'react'
 
 interface TagsProps {
   tags: string[]
   limitTags?: number
-  onClick: (tag: string) => void | undefined
+  onClick: (tag: string) => void
 }
 
 export const HidedTags = ({ onClick, tags, limitTags = 2 }: TagsProps) => {
@@ -25,8 +25,8 @@ export const HidedTags = ({ onClick, tags, limitTags = 2 }: TagsProps) => {
           ))}
       {!isShowFull && tags.length > limitTags && (
         <Chip
-          variant="outlined"
-          key="+N"
+          variant='outlined'
+          key='+N'
           label={`+${tags.length - limitTags}`}
           style={{ margin: 3, borderColor: 'grey' }}
           onClick={() => setShowFull(true)}
@@ -35,7 +35,7 @@ export const HidedTags = ({ onClick, tags, limitTags = 2 }: TagsProps) => {
 
       {tags.length > 0 && isShowFull && (
         <IconButton style={{ margin: 3 }} onClick={() => setShowFull(false)}>
-          <CloseRoundedIcon fontSize="small" />
+          <CloseRoundedIcon fontSize='small' />
         </IconButton>
       )}
     </Box>

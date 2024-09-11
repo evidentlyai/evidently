@@ -31,13 +31,14 @@ from litestar.types import Send
 from typing_extensions import Annotated
 
 from evidently import ColumnMapping
+from evidently._pydantic_compat import SecretStr
 from evidently.collector.config import CONFIG_PATH
 from evidently.collector.config import CollectorConfig
 from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.storage import CollectorStorage
-from evidently.collector.storage import CreateSnapshotEvent
+from evidently.collector.storage import CreateReportEvent
 from evidently.collector.storage import LogEvent
-from evidently.collector.storage import UploadSnapshotEvent
+from evidently.collector.storage import UploadReportEvent
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
 from evidently.ui.components.security import NoSecurityComponent
@@ -144,42 +145,44 @@ async def create_snapshot(collector: CollectorConfig, storage: CollectorStorage)
                 report.run, reference_data=collector.reference, current_data=current, column_mapping=ColumnMapping()
             )  # FIXME: sync function
             report._inner_suite.raise_for_error()
-            snapshot = report.to_snapshot()
         except Exception as e:
             logger.exception(f"Error running report: {e}")
             storage.log(
                 collector.id,
-                CreateSnapshotEvent(
-                    snapshot_id=str(report.id),
+                CreateReportEvent(
+                    report_id=str(report.id),
                     ok=False,
                     error=f"Error running report: {e.__class__.__name__}: {e.args}",
                 ),
             )
             return
-        storage.add_snapshot(collector.id, snapshot)
-        storage.log(collector.id, CreateSnapshotEvent(snapshot_id=str(snapshot.id), ok=True))
+        storage.add_report(collector.id, report)
+        storage.log(collector.id, CreateReportEvent(report_id=str(report.id), ok=True))
 
 
 async def send_snapshot(collector: CollectorConfig, storage: CollectorStorage) -> None:
     async with storage.lock(collector.id):
-        for snapshot_item in storage.take_snapshots(collector.id):
+        for report_item in storage.take_reports(collector.id):
             try:
-                with snapshot_item as snapshot:
+                with report_item as report:
                     await sync_to_thread(
-                        collector.workspace.add_snapshot, collector.project_id, snapshot
+                        collector.workspace._add_report_base,
+                        collector.project_id,
+                        report,
+                        collector.save_datasets and collector.is_cloud_resolved,  # only save datasets to cloud
                     )  # FIXME: sync function
             except Exception as e:
                 logger.exception(f"Error saving snapshot: {e}")
                 storage.log(
                     collector.id,
-                    UploadSnapshotEvent(
-                        snapshot_id=str(snapshot.id),
+                    UploadReportEvent(
+                        report_id=str(report.id),
                         ok=False,
                         error=f"Error saving snapshot: {e.__class__.__name__}: {e.args}",
                     ),
                 )
                 return
-            storage.log(collector.id, UploadSnapshotEvent(snapshot_id=str(snapshot.id), ok=True))
+            storage.log(collector.id, UploadReportEvent(report_id=str(report.id), ok=True))
 
 
 def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, debug: bool = False) -> Litestar:
@@ -196,7 +199,7 @@ def create_app(config_path: str = CONFIG_PATH, secret: Optional[str] = None, deb
     if secret is None:
         security = NoSecurityService(NoSecurityComponent())
     else:
-        security = TokenSecurity(TokenSecurityComponent(token=secret))
+        security = TokenSecurity(TokenSecurityComponent(token=SecretStr(secret)))
 
     def auth_middleware_factory(app: ASGIApp) -> ASGIApp:
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:

@@ -1,6 +1,6 @@
-import React from 'react'
+import type React from 'react'
 
-import { AdditionalGraphInfo } from '~/api'
+import type { AdditionalGraphInfo } from '~/api'
 import Plot from '~/components/Plot'
 import { useDashboardViewParams } from '~/contexts/DashboardViewParams'
 

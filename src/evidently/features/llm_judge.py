@@ -249,6 +249,8 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
 class LLMJudge(GeneratedFeatures):
     """Generic LLM judge generated features"""
 
+    DEFAULT_INPUT_COLUMN: ClassVar = "input"
+
     provider: str
     model: str
 
@@ -268,7 +270,7 @@ class LLMJudge(GeneratedFeatures):
             assert self.input_columns is not None  # todo: validate earlier
             return self.input_columns
 
-        return {self.input_column: "input"}
+        return {self.input_column: self.DEFAULT_INPUT_COLUMN}
 
     def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition, options: Options) -> pd.DataFrame:
         result: List[Dict[str, Union[str, float]]] = []

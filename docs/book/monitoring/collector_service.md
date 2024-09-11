@@ -1,5 +1,5 @@
 ---
-description: Send data in near real-time.
+description: How to send data in near real-time using the Collector service.
 ---   
 
 # Overview

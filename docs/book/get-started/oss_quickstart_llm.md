@@ -4,7 +4,7 @@ description: Run your first LLM evaluation using Evidently open-source.
 
 This quickstart shows how to evaluate text data, such as inputs and outputs from your LLM system.
 
-You can run this in Colab or any Python environment.
+It's best to run this example in Jupyter Notebook or Google Colab so that you can render HTML Reports directly in a notebook cell.
 
 # 1. Installation
 
@@ -82,6 +82,13 @@ You can also export the dataset with added descriptors for each row.
 text_evals_report.datasets().current
 ```
 
+Or get a dictionary with results:
+
+```
+text_evals_report.datasets().as_dict
+```
+
+
 # 4. Use LLM as a judge (Optional)
 
 To run this, you'll need an OpenAI key.
@@ -120,6 +127,12 @@ View the dataset with scores and explanation:
 
 ```
 text_evals_report.datasets().current
+```
+
+Or get a dictionary with results:
+
+```
+text_evals_report.datasets().as_dict
 ```
 
 # What's next?

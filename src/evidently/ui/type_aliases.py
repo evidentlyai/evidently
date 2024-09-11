@@ -25,6 +25,7 @@ STR_UUID = Union[str, uuid.UUID]
 PanelID = uuid.UUID
 TabID = uuid.UUID
 DatasetID = uuid.UUID
+ComputationConfigID = uuid.UUID
 ZERO_UUID = uuid6.UUID(int=0, version=7)
 
 

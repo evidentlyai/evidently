@@ -20,6 +20,8 @@ The tutorial is split into two parts.
 **Don't want to self-host the ML monitoring dashboard?** Check out the [Evidently Cloud tutorial](../get-started/cloud_quickstart_tabular.md).
 {% endhint %}
 
+If you're having problems or getting stuck, reach out on [Discord](https://discord.com/invite/xZjKRaNp8b).
+
 # Part 1. Pre-built demo
 
 ## 1. Create virtual environment

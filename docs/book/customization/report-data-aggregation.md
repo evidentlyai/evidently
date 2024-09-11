@@ -14,7 +14,7 @@ You can refer to an example How-to-notebook:
 
 # Default
 
-Starting from version 0.3.2, all visualizations in Reports are aggregated by default. This helps reduce the size of the resulting HTML.
+Evidently Reports include visualizations, such as plotting values over time, which are aggregated by default. This keeps Reports size manageable, even with millions of evaluated rows.
 
 For example, you can create a custom Report:
 
@@ -37,7 +37,9 @@ Here is how the Scatter Plot in this Report will look:
 
 # Non-aggregated plots for Reports 
 
-If you want to see non-aggregated plots, you can set the `raw_data` parameter as `True` in the render options.
+If you prefer to see raw data plots (individual prediction points), you can enable this option. This will store raw data points inside the Report. 
+
+To see non-aggregated plots, set the `raw_data` parameter as `True` in the render options.
 
 You can set it on the Report level: 
 
@@ -58,7 +60,7 @@ All plots in the Report will be non-aggregated. Here is how the Scatter Plot in 
 ![RegressionPredictedVsActualScatter()](../.gitbook/assets/reports/metric_regression_predvsactual_scatter_non_agg-min.png)
 
 {% hint style="info" %}
-**Consider the data size.** We recommend setting this option for smaller datasets or when you apply sampling. With non-aggregated plots, the HTML will contain all the data on individual data points. They may take significant time to load and be large in size. 
+**Consider the data size.** We recommend setting this option for smaller datasets or when you apply sampling. With non-aggregated plots, the HTML will contain all the data on individual data points. For large datasets this will result in a very large Report and can make the plots unreadable. 
 {% endhint %}
 
 {% hint style="info" %}

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { AdditionalGraphInfo, WidgetInfo } from '~/api'
+import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
 
 class CachedDashboardContextState implements DashboardContextState {
   cachedGraphs: Map<string, AdditionalGraphInfo>

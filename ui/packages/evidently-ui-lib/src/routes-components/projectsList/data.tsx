@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
-import { ProjectModel } from '~/api/types'
+import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import type { ProjectModel } from '~/api/types'
 
-import { StrictID } from '~/api/types/utils'
-import { ensureID, expectJsonRequest, GetLoaderAction } from '~/api/utils'
+import type { StrictID } from '~/api/types/utils'
+import { type GetLoaderAction, ensureID, expectJsonRequest } from '~/api/utils'
 
 export type LoaderData = StrictID<ProjectModel>[]
 

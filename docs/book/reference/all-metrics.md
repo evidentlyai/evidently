@@ -153,14 +153,14 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 
 `TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns are required.
 
-**Comoposition**:
+**Composition**:
 * `ColumnSummaryMetric()` for text descriptors for all columns. Descriptors included:
   * `Sentiment()`
   * `SentenceCount()`
   * `OOV()`
   * `TextLength()`
   * `NonLetterCharacterPercentage()` 
-* `SemanticSimilarity()` between each pair of text columns, if there more than one. 
+* `SemanticSimilarity()` between each pair of text columns, if there is more than one. 
 
 **Required parameters**:
 * `column_name` or `columns` list
@@ -255,11 +255,13 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 # Text Evals 
 
-Text Evals only apply to text columns. To compute a Descriptor for a single text column, use a `TextEvals` Preset. 
+Text Evals only apply to text columns. To compute a Descriptor for a single text column, use a `TextEvals` Preset. Read [docs](../tests-and-reports/text-descriptors.md).
 
 You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric`) to visualize the descriptor, or pick a [Test](all-tests.md) (e.g., `TestColumnValueMin`) to run validations. 
 
-## Descriptors: Patterns
+## Descriptors: Text Patterns
+
+Check for regular expression matches.
 
 | Descriptor | Parameters |
 | - | - |
@@ -273,41 +275,40 @@ You can also explicitly specify the Evidently Metric (e.g., `ColumnSummaryMetric
 
 ## Descriptors: Text stats
 
+Computes descriptive text statistics.
+
 | Descriptor | Parameters |
 | - | - |
-| **TextLength()** <ul><li> Measures the length of the text.</li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **TextLength()** <ul><li> Measures the length of the text in symbols.</li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **OOV()** <ul><li>Calculates the percentage of out-of-vocabulary words based on imported NLTK vocabulary.</li><li> Return a score on a scale: 0 to 100. </li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li><li>`ignore_words: Tuple = ()`</li></ul> |
 | **NonLetterCharacterPercentage()** <ul><li>Calculates the percentage of non-letter characters. </li><li> Return a score on a scale: 0 to 100. </li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul>|
 | **SentenceCount()** <ul><li> Counts the number of sentences in the text. </li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **WordCount()** <ul><li> Counts the number of words in the text.</li><li> Returns an absolute number.</li></ul> | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
+## Descriptors: LLM-based
+
+Use external LLMs with an evaluation prompt to score text data. (Also known as LLM-as-a-judge method).
+
+| Descriptor | Parameters |
+| - | - |
+| **LLMEval()** <br><br> Scores the text using the user-defined criteria, automatically formatted in a templated evaluation prompt.| See [docs](../customization/llm_as_a_judge.md) for examples and parameters.|
+| **DeclineLLMEval()** <br><br> Detects texts containing a refusal or a rejection to do something. Returns a label (DECLINE or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **PIILLMEval()** <br><br> Detects texts containing PII (Personally Identifiable Information). Returns a label (PII or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **NegativityLLMEval()** <br><br> Detects negative texts (containing critical or pessimistic tone). Returns a label (NEGATIVE or POSITIVE) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **BiasLLMEval()** <br><br> Detects biased texts (containing prejudice for or against a person or group). Returns a label (BIAS or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **ToxicityLLMEval()** <br><br> Detects toxic texts (containing harmful, offensive, or derogatory language). Returns a label (TOXICITY or OK) or score.| See [docs](../customization/llm_as_a_judge.md) for parameters.|
+| **ContextQualityLLMEval()** <br><br> Evaluates if CONTEXT is VALID (has sufficient information to answer the QUESTION) or INVALID (has missing or contradictory information). Returns a label (VALID or INVALID) or score.| Run the descriptor over the `context` column and pass the `question` column as a parameter. See [docs](../customization/llm_as_a_judge.md) for parameters.|
+
 ## Descriptors: Model-based
 
-General descriptors that you can use to score outputs with custom models or criteria. 
+Use pre-trained machine learning models for evaluation. 
 
 | Descriptor | Parameters |
 | - | - |
-| **LLMEval()** <br><br> Scores the text using the defined prompt and model as LLM-as-a-judge. Provides customizable prompt templates.| See [docs](../customization/llm_as_a_judge.md) for examples and parameters.|
-| **HuggingFaceModel()** <br><br> Scores the text using the selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
-| **OpenAIPrompting()** <br><br> Scores the text using the defined prompt and OpenAI model.| See [docs](../customization/llm_as_a_judge.md) for examples and parameters.|
-
-Specific examples of model and LLM-based descriptors.
-
-| Descriptor | Parameters |
-| - | - |
-| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0: different, 0.5: unrelated, 1: identical). </li></ul> Example use:<br>`ColumnSummaryMetric(column_name=SemanticSimilarity().on(["response", "new_response"]))`. | **Required:** <ul><li>two column names</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
-| **Sentiment()** <ul><li>Analyzes the sentiment of the text. </li><li> Return a score on a scale: -1 (negative) to 1 positive). </li></ul>| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **Semantic Similarity()** <ul><li>Calculates pairwise semantic similarity between columns.</li><li>Generates text embeddings using a [transformer model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). </li><li>Calculates Cosine Similarity between each pair of texts. </li><li> Return a score on a scale: 0 to 1. (0: different, 0.5: unrelated, 1: identical). </li></ul> Example use:<br>`SemanticSimilarity(with_column="response")` | **Required:** <ul><li>`with_column`</li></ul> **Optional:**<ul><li>`display_name`</li></ul> |
+| **Sentiment()** <ul><li>Analyzes the sentiment of the text using a word-based model. </li><li> Return a score on a scale: -1 (negative) to 1 positive). </li></ul>| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **HuggingFaceModel()** <br><br> Scores the text using the user-selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
 | **HuggingFaceToxicityModel()** <ul><li> Detects hate speech using [HuggingFace Model](https://huggingface.co/facebook/roberta-hate-speech-dynabench-r4-target). </li><li> Returns predicted probability for the “hate” label. </li><li> Scale: 0 to 1. </li></ul> | **Optional**: <ul><li>`toxic_label="hate"` (default)</li><li> `display_name`</li></ul> |
-
-## Text-Specific Metrics
-
-The following metrics only apply to text columns. 
-
-| Metric | Parameters |
-|---|---|
-| **TextDescriptorsDistribution()** <ul><li> Column-level.</li><li>Visualizes distributions for auto-generated text descriptors (`TextLength()`, `OOV()` etc.)</li></ul>  | **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsCorrelationMetric()** <ul><li> Column-level.</li><li>Calculates and visualizes correlations between auto-generated text descriptors and other columns in the dataset.</li></ul> | **Required:**<ul><li>`column_name` </li></ul> |
-| **TextDescriptorsDriftMetric()** <ul><li>  Column-level. </li><li>Calculates data drift for auto-generated text descriptors and visualizes the distributions of text characteristics. </li></ul> | **Required:**<ul><li>`column_name`</li></ul><br> **Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul>|
 
 # Data Drift
 
