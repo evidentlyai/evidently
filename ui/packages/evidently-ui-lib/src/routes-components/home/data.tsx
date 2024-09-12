@@ -5,5 +5,6 @@ import type { GetLoaderAction } from '~/api/utils'
 export type LoaderData = VersionModel
 
 export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ api }) => ({
-  loader: () => api.GET('/api/version').then(responseParser())
+  loader: () => api.GET('/api/version').then(responseParser()),
+  action: () => api.GET('/api/projects/reload').then(responseParser({ notThrowExc: true }))
 })
