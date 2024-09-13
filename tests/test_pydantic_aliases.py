@@ -7,22 +7,28 @@ from typing import Type
 from typing import TypeVar
 
 import evidently
+from evidently.base_metric import BasePreset
 from evidently.base_metric import ColumnName
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.collector.config import CollectorTrigger
+from evidently.collector.storage import CollectorStorage
 from evidently.features.generated_features import BaseDescriptor
-from evidently.features.generated_features import GeneratedFeature
+from evidently.features.generated_features import GeneratedFeatures
+from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pydantic_utils import TYPE_ALIASES
+from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import PolymorphicModel
+from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.pydantic_utils import get_base_class
 from evidently.pydantic_utils import is_not_abstract
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.ui.components.base import Component
+from evidently.ui.dashboards.base import DashboardPanel
 
 T = TypeVar("T")
 
@@ -74,7 +80,7 @@ def test_all_aliases_correct():
     base_class_type_mapping = {
         Metric: "metric",
         Test: "test",
-        GeneratedFeature: "feature",
+        GeneratedFeatures: "feature",
         BaseDescriptor: "descriptor",
         MetricPreset: "metric_preset",
         TestPreset: "test_preset",
@@ -83,10 +89,14 @@ def test_all_aliases_correct():
         TestParameters: "test_parameters",
         ColumnName: "base",
         CollectorTrigger: "collector_trigger",
+        CollectorStorage: "collector_storage",
+        BaseLLMPromptTemplate: "prompt_template",
+        DashboardPanel: "dashboard_panel",
     }
     skip = [Component]
+    skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
     for cls in find_all_subclasses(PolymorphicModel, include_abstract=True):
-        if any(issubclass(cls, s) for s in skip) or not is_not_abstract(cls):
+        if cls in skip_literal or any(issubclass(cls, s) for s in skip) or not is_not_abstract(cls):
             continue
         for base_class, base_type in base_class_type_mapping.items():
             if issubclass(cls, base_class):
