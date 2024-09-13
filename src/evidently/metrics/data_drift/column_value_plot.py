@@ -32,6 +32,7 @@ from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 class ColumnValuePlotResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnValuePlotResults"
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
@@ -48,6 +49,9 @@ class ColumnValuePlotResults(MetricResult):
 
 
 class ColumnValuePlot(UsesRawDataMixin, Metric[ColumnValuePlotResults]):
+    class Config:
+        type_alias = "evidently:metric:ColumnValuePlot"
+
     column_name: str
 
     def __init__(self, column_name: str, options: AnyOptions = None):

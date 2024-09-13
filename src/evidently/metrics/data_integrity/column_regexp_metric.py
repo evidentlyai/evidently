@@ -28,6 +28,7 @@ class DataIntegrityValueByRegexpStat(MetricResult):
     """Statistics about matched by a regular expression values in a column for one dataset"""
 
     class Config:
+        type_alias = "evidently:metric_result:DataIntegrityValueByRegexpStat"
         pd_exclude_fields = {"table_of_matched", "table_of_not_matched"}
 
         field_tags = {
@@ -50,6 +51,7 @@ class DataIntegrityValueByRegexpStat(MetricResult):
 
 class DataIntegrityValueByRegexpMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DataIntegrityValueByRegexpMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -70,6 +72,9 @@ class DataIntegrityValueByRegexpMetricResult(MetricResult):
 
 
 class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ColumnRegExpMetric"
+
     """Count number of values in a column matched or not by a regular expression (regexp)"""
 
     # name of the column that we check

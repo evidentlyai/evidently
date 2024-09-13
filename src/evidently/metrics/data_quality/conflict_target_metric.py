@@ -16,6 +16,7 @@ from evidently.utils.data_operations import process_columns
 
 class ConflictTargetMetricResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ConflictTargetMetricResults"
         field_tags = {
             "number_not_stable_target": {IncludeTags.Current},
             "share_not_stable_target": {IncludeTags.Current},
@@ -30,6 +31,9 @@ class ConflictTargetMetricResults(MetricResult):
 
 
 class ConflictTargetMetric(Metric[ConflictTargetMetricResults]):
+    class Config:
+        type_alias = "evidently:metric:ConflictTargetMetric"
+
     def calculate(self, data: InputData) -> ConflictTargetMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

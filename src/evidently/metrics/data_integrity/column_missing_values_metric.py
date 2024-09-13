@@ -27,6 +27,7 @@ class ColumnMissingValues(MetricResult):
     """Statistics about missing values in a column"""
 
     class Config:
+        type_alias = "evidently:metric_result:ColumnMissingValues"
         pd_exclude_fields = {"different_missing_values"}
         field_tags = {"number_of_rows": {IncludeTags.Extra}, "different_missing_values": {IncludeTags.Extra}}
 
@@ -44,6 +45,7 @@ class ColumnMissingValues(MetricResult):
 
 class ColumnMissingValuesMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnMissingValuesMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -56,6 +58,9 @@ class ColumnMissingValuesMetricResult(MetricResult):
 
 
 class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ColumnMissingValuesMetric"
+
     """Count missing values in a column.
 
     Missing value is a null or NaN value.

@@ -27,6 +27,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class RecsysPreset(MetricPreset):
+    class Config:
+        type_alias = "evidently:metric_preset:RecsysPreset"
+
     """Metric preset for recsys performance analysis.
 
     Contains metrics:

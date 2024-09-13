@@ -13,6 +13,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataQualityPreset(MetricPreset):
+    class Config:
+        type_alias = "evidently:metric_preset:DataQualityPreset"
+
     """Metric preset for Data Quality analysis.
 
     Contains metrics:

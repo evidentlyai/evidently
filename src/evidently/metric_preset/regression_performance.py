@@ -18,6 +18,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class RegressionPreset(MetricPreset):
+    class Config:
+        type_alias = "evidently:metric_preset:RegressionPreset"
+
     """Metric preset for Regression performance analysis.
 
     Contains metrics:

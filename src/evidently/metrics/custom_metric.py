@@ -17,6 +17,9 @@ from evidently.renderers.html_widgets import counter
 
 
 class CustomCallableMetricResult(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:CustomCallableMetricResult"
+
     value: float
 
 
@@ -24,6 +27,9 @@ CustomCallableType = Callable[[InputData], float]
 
 
 class CustomValueMetric(Metric[CustomCallableMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:CustomValueMetric"
+
     func: str
     title: Optional[str] = None
     size: Optional[WidgetSize] = None

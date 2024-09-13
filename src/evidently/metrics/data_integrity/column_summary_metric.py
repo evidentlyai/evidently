@@ -54,6 +54,9 @@ from evidently.utils.visualizations import plot_time_feature_distr
 
 
 class ColumnCharacteristics(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:ColumnCharacteristics"
+
     number_of_rows: int
     count: int
     missing: Optional[int]
@@ -61,6 +64,9 @@ class ColumnCharacteristics(MetricResult):
 
 
 class NumericCharacteristics(ColumnCharacteristics):
+    class Config:
+        type_alias = "evidently:metric_result:NumericCharacteristics"
+
     mean: Optional[Numeric]
     std: Optional[Numeric]
     min: Optional[Numeric]
@@ -77,6 +83,9 @@ class NumericCharacteristics(ColumnCharacteristics):
 
 
 class CategoricalCharacteristics(ColumnCharacteristics):
+    class Config:
+        type_alias = "evidently:metric_result:CategoricalCharacteristics"
+
     unique: Optional[int]
     unique_percentage: Optional[float]
     most_common: Optional[object]
@@ -86,6 +95,9 @@ class CategoricalCharacteristics(ColumnCharacteristics):
 
 
 class DatetimeCharacteristics(ColumnCharacteristics):
+    class Config:
+        type_alias = "evidently:metric_result:DatetimeCharacteristics"
+
     unique: Optional[int]
     unique_percentage: Optional[float]
     most_common: Optional[object]
@@ -95,6 +107,9 @@ class DatetimeCharacteristics(ColumnCharacteristics):
 
 
 class TextCharacteristics(ColumnCharacteristics):
+    class Config:
+        type_alias = "evidently:metric_result:TextCharacteristics"
+
     text_length_min: Optional[float]
     text_length_mean: Optional[float]
     text_length_max: Optional[float]
@@ -108,6 +123,7 @@ class TextCharacteristics(ColumnCharacteristics):
 
 class DataInTimePlots(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DataInTimePlots"
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: pd.DataFrame
@@ -115,6 +131,9 @@ class DataInTimePlots(MetricResult):
 
 
 class DataInTime(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:DataInTime"
+
     data_for_plots: DataInTimePlots
     freq: str
     datetime_name: str
@@ -122,6 +141,7 @@ class DataInTime(MetricResult):
 
 class DataByTarget(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DataByTarget"
         smart_union = True
 
     box_data: Optional[Dict[str, dict]]
@@ -134,6 +154,7 @@ class DataByTarget(MetricResult):
 
 class DataQualityPlot(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DataQualityPlot"
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
@@ -308,6 +329,7 @@ def _split_periods(curr_data: pd.DataFrame, ref_data: pd.DataFrame, feature_name
 
 class ColumnSummaryResult(ColumnMetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnSummaryResult"
         pd_name_mapping = {
             "reference_characteristics": "reference",
             "current_characteristics": "current",
@@ -324,6 +346,9 @@ class ColumnSummaryResult(ColumnMetricResult):
 
 
 class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
+    class Config:
+        type_alias = "evidently:metric:ColumnSummaryMetric"
+
     _generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
     def __init__(self, column_name: Union[str, ColumnName], options: AnyOptions = None):

@@ -34,6 +34,7 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 
 class MoreRegressionMetrics(RegressionMetrics):
     class Config:
+        type_alias = "evidently:metric_result:MoreRegressionMetrics"
         field_tags: Dict[str, Set[IncludeTags]] = {"underperformance": set()}
 
     error_std: float
@@ -43,6 +44,7 @@ class MoreRegressionMetrics(RegressionMetrics):
 
 class RegressionQualityMetricResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionQualityMetricResults"
         dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
         pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_normality", "error_bias"}
         field_tags = {
@@ -74,6 +76,9 @@ class RegressionQualityMetricResults(MetricResult):
 
 
 class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
+    class Config:
+        type_alias = "evidently:metric:RegressionQualityMetric"
+
     def calculate(self, data: InputData) -> RegressionQualityMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

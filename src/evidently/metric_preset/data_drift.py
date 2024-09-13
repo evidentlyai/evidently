@@ -15,6 +15,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataDriftPreset(MetricPreset):
+    class Config:
+        type_alias = "evidently:metric_preset:DataDriftPreset"
+
     """Metric Preset for Data Drift analysis.
 
     Contains metrics:

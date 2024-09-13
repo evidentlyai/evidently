@@ -29,6 +29,7 @@ from evidently.utils.visualizations import plot_scatter
 
 class AggPredActualScatter(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:AggPredActualScatter"
         dict_include = False
         tags = {IncludeTags.Render}
 
@@ -37,6 +38,7 @@ class AggPredActualScatter(MetricResult):
 
 class RegressionPredictedVsActualScatterResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionPredictedVsActualScatterResults"
         dict_include = False
         tags = {IncludeTags.Render}
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
@@ -50,6 +52,9 @@ class RegressionPredictedVsActualScatterResults(MetricResult):
 
 
 class RegressionPredictedVsActualScatter(UsesRawDataMixin, Metric[RegressionPredictedVsActualScatterResults]):
+    class Config:
+        type_alias = "evidently:metric:RegressionPredictedVsActualScatter"
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

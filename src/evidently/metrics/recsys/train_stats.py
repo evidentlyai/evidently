@@ -15,6 +15,7 @@ from evidently.renderers.base_renderer import default_renderer
 
 class TrainStatsResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:TrainStatsResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "current_n_users": {IncludeTags.Current},
@@ -29,6 +30,9 @@ class TrainStatsResult(MetricResult):
 
 
 class TrainStats(Metric[TrainStatsResult]):
+    class Config:
+        type_alias = "evidently:metric:TrainStats"
+
     """Calculates the number of times each item has been rated in the training set"""
 
     def __init__(self, options: AnyOptions = None) -> None:

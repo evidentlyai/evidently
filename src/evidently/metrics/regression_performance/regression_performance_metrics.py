@@ -32,6 +32,7 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 
 class RegressionMetrics(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionMetrics"
         pd_exclude_fields = {"underperformance"}
         field_tags = {"underperformance": {IncludeTags.Extra}}
 
@@ -46,6 +47,7 @@ class RegressionMetrics(MetricResult):
 
 class RegressionPerformanceMetricsResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionPerformanceMetricsResults"
         dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
         pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_bias", "error_normality"}
         field_tags = {
@@ -86,6 +88,9 @@ class RegressionPerformanceMetricsResults(MetricResult):
 
 
 class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
+    class Config:
+        type_alias = "evidently:metric:RegressionPerformanceMetrics"
+
     def get_parameters(self) -> tuple:
         return ()
 

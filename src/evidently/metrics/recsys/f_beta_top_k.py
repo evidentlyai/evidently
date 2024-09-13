@@ -13,6 +13,9 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class FBetaTopKMetric(TopKMetric):
+    class Config:
+        type_alias = "evidently:metric:FBetaTopKMetric"
+
     k: int
     beta: Optional[float]
     min_rel_score: Optional[int]

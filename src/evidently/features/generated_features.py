@@ -188,6 +188,7 @@ class DataFeature(GeneratedFeature):
 
 class BaseDescriptor(EvidentlyBaseModel):
     class Config:
+        type_alias = "evidently:descriptor:BaseDescriptor"
         is_base_type = True
 
     display_name: Optional[str] = None
@@ -203,6 +204,9 @@ class GeneralDescriptor(BaseDescriptor):
 
 
 class MultiColumnFeatureDescriptor(BaseDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:MultiColumnFeatureDescriptor"
+
     def feature(self, columns: List[str]) -> GeneratedFeature:
         raise NotImplementedError()
 

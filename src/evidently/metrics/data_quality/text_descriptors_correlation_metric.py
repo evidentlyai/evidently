@@ -30,6 +30,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class TextDescriptorsCorrelationMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:TextDescriptorsCorrelationMetricResult"
         pd_include = False
         field_tags = {
             "current": {IncludeTags.Current},
@@ -43,6 +44,9 @@ class TextDescriptorsCorrelationMetricResult(MetricResult):
 
 
 class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:TextDescriptorsCorrelationMetric"
+
     """Calculates correlations between each auto-generated text feature for column_name and other dataset columns"""
 
     column_name: str

@@ -36,6 +36,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class RegressionErrorBiasTableResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionErrorBiasTableResults"
         dict_exclude_fields = {"current_plot_data", "reference_plot_data"}
         pd_exclude_fields = {
             "current_plot_data",
@@ -70,6 +71,9 @@ class RegressionErrorBiasTableResults(MetricResult):
 
 class RegressionErrorBiasTable(UsesRawDataMixin, Metric[RegressionErrorBiasTableResults]):
     # by default, we get 5% values for the error bias calculations
+    class Config:
+        type_alias = "evidently:metric:RegressionErrorBiasTable"
+
     TOP_ERROR_DEFAULT: ClassVar[float] = 0.05
     TOP_ERROR_MIN: ClassVar[float] = 0
     TOP_ERROR_MAX: ClassVar[float] = 0.5

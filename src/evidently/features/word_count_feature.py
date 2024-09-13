@@ -10,6 +10,9 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class WordCount(ApplyColumnGeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:WordCount"
+
     __feature_type__: ClassVar = ColumnType.Numerical
     _reg: ClassVar[re.Pattern] = re.compile(r"[^a-zA-Z ]+")
     display_name_template: ClassVar = "Word Count for {column_name}"

@@ -7,6 +7,9 @@ from evidently.features.hf_feature import HuggingFaceToxicityFeature
 
 
 class HuggingFaceModel(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:HuggingFaceModel"
+
     model: str
     params: Optional[dict] = None
 
@@ -20,6 +23,9 @@ class HuggingFaceModel(FeatureDescriptor):
 
 
 class HuggingFaceToxicityModel(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:HuggingFaceToxicityModel"
+
     model: Optional[str] = None
     toxic_label: Optional[str] = None
 

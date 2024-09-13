@@ -6,6 +6,9 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class TriggerWordsPresence(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:TriggerWordsPresence"
+
     words_list: List[str]
     lemmatize: bool = True
 

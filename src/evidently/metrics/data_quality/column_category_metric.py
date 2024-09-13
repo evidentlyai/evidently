@@ -22,6 +22,7 @@ from evidently.renderers.html_widgets import header_text
 
 class CategoryStat(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:CategoryStat"
         field_tags = {"all_num": {IncludeTags.Extra}}
 
     all_num: int
@@ -30,12 +31,16 @@ class CategoryStat(MetricResult):
 
 
 class CountOfValues(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:CountOfValues"
+
     current: HistogramData
     reference: Optional[HistogramData] = None
 
 
 class ColumnCategoryMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnCategoryMetricResult"
         pd_exclude_fields = {"counts"}
         field_tags = {
             "current": {IncludeTags.Current},
@@ -78,6 +83,7 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     """Calculates count and shares of values in the predefined values list"""
 
     class Config:
+        type_alias = "evidently:metric:ColumnCategoryMetric"
         smart_union = True
 
     column_name: ColumnName

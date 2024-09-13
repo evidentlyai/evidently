@@ -27,6 +27,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class PopularityBiasResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:PopularityBiasResult"
         field_tags = {
             "k": {IncludeTags.Parameter},
             "normalize_arp": {IncludeTags.Parameter},
@@ -53,6 +54,9 @@ class PopularityBiasResult(MetricResult):
 
 
 class PopularityBias(Metric[PopularityBiasResult]):
+    class Config:
+        type_alias = "evidently:metric:PopularityBias"
+
     """
     Average Recommendation Popularity
     Aggregate Diversity

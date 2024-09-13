@@ -19,6 +19,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationPreset(MetricPreset):
+    class Config:
+        type_alias = "evidently:metric_preset:ClassificationPreset"
+
     """
     Metrics preset for classification performance.
 

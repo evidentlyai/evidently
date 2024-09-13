@@ -14,6 +14,7 @@ from evidently.renderers.base_renderer import default_renderer
 
 class HitRateKMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:HitRateKMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -26,6 +27,9 @@ class HitRateKMetricResult(MetricResult):
 
 
 class HitRateKMetric(Metric[HitRateKMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:HitRateKMetric"
+
     k: int
     min_rel_score: Optional[int]
     no_feedback_users: bool

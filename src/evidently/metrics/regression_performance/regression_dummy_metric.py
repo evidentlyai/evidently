@@ -21,6 +21,9 @@ from evidently.utils.data_operations import process_columns
 
 
 class RegressionDummyMetricResults(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:RegressionDummyMetricResults"
+
     rmse_default: float
     mean_abs_error_default: float
     mean_abs_perc_error_default: float
@@ -36,6 +39,9 @@ class RegressionDummyMetricResults(MetricResult):
 
 
 class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
+    class Config:
+        type_alias = "evidently:metric:RegressionDummyMetric"
+
     _quality_metric: RegressionQualityMetric
 
     def __init__(self, options: AnyOptions = None):

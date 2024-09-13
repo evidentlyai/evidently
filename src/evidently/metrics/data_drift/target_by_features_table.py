@@ -34,6 +34,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class TargetByFeaturesTableResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:TargetByFeaturesTableResults"
         dict_include = False
         field_tags = {
             "current": {IncludeTags.Current},
@@ -51,6 +52,9 @@ class TargetByFeaturesTableResults(MetricResult):
 
 
 class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResults]):
+    class Config:
+        type_alias = "evidently:metric:TargetByFeaturesTable"
+
     columns: Optional[List[str]]
     _text_features_gen: Optional[
         Dict[

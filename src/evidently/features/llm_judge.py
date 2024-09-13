@@ -114,6 +114,9 @@ class Uncertainty(str, Enum):
 
 
 class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
+    class Config:
+        type_alias = "evidently:prompt_template:BinaryClassificationPromptTemplate"
+
     template: str = (
         """{__criteria__}\n{__task__}\n\n{__as__}\n{{input}}\n{__ae__}\n\n{__instructions__}\n\n{__output_format__}"""
     )
@@ -247,6 +250,9 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
 
 
 class LLMJudge(GeneratedFeatures):
+    class Config:
+        type_alias = "evidently:feature:LLMJudge"
+
     """Generic LLM judge generated features"""
 
     DEFAULT_INPUT_COLUMN: ClassVar = "input"

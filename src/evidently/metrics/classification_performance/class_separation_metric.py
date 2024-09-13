@@ -30,6 +30,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationClassSeparationPlotResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationClassSeparationPlotResults"
         dict_exclude_fields = {"current", "reference"}
         pd_exclude_fields = {"current", "reference"}
         field_tags = {
@@ -72,6 +73,9 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
 
 
 class ClassificationClassSeparationPlot(UsesRawDataMixin, Metric[ClassificationClassSeparationPlotResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationClassSeparationPlot"
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

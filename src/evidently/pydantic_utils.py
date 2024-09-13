@@ -272,6 +272,7 @@ EBM = TypeVar("EBM", bound="EvidentlyBaseModel")
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     class Config:
+        type_alias = "evidently:base:EvidentlyBaseModel"
         alias_required = True
 
     def get_fingerprint(self) -> Fingerprint:
@@ -295,6 +296,9 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
 
 
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
+    class Config:
+        type_alias = "evidently:test:WithTestAndMetricDependencies"
+
     def __evidently_dependencies__(self):
         from evidently.base_metric import Metric
         from evidently.tests.base_test import Test

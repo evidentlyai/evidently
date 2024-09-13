@@ -27,6 +27,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class NoveltyMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:NoveltyMetricResult"
         field_tags = {
             "k": {IncludeTags.Parameter},
             "current_value": {IncludeTags.Current},
@@ -43,6 +44,9 @@ class NoveltyMetricResult(MetricResult):
 
 
 class NoveltyMetric(Metric[NoveltyMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:NoveltyMetric"
+
     """Mean Inverse User Frequency"""
 
     k: int

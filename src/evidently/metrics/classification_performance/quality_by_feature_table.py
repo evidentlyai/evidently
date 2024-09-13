@@ -34,6 +34,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationQualityByFeatureTableResults"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -49,6 +50,9 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
 
 
 class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[ClassificationQualityByFeatureTableResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationQualityByFeatureTable"
+
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
     _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]

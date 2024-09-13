@@ -18,6 +18,9 @@ from evidently.utils.data_operations import process_columns
 
 
 class DatasetDriftMetricResults(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:DatasetDriftMetricResults"
+
     drift_share: float
     number_of_columns: int
     number_of_drifted_columns: int
@@ -28,6 +31,9 @@ class DatasetDriftMetricResults(MetricResult):
 class DatasetDriftMetric(
     WithDriftOptions[DatasetDriftMetricResults],
 ):
+    class Config:
+        type_alias = "evidently:metric:DatasetDriftMetric"
+
     columns: Optional[List[str]]
     drift_share: float
 
