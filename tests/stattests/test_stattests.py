@@ -14,7 +14,7 @@ from evidently.calculations.stattests.fisher_exact_stattest import fisher_exact_
 from evidently.calculations.stattests.g_stattest import g_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
-from evidently.calculations.stattests.mmd_stattest import emperical_mmd
+from evidently.calculations.stattests.mmd_stattest import empirical_mmd
 from evidently.calculations.stattests.t_test import t_test
 from evidently.calculations.stattests.tvd_stattest import tvd_test
 from evidently.core import ColumnType
@@ -139,9 +139,9 @@ def test_cramer_von_mises() -> None:
         # (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.9, 100)), 0.1, 0, True),
     ),
 )
-def test_emperical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:
+def test_empirical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:
     np.random.seed(0)
-    assert emperical_mmd.func(reference, current, "num", threshold) == (
+    assert empirical_mmd.func(reference, current, "num", threshold) == (
         approx(expected_pvalue, abs=1e-2),
         drift_detected,
     )

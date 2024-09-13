@@ -92,7 +92,7 @@ To use the following drift detection methods, pass them using the `stattest` par
 | `ed`<br> Energy distance | tabular data<br>only numerical | returns `distance`<br>drift detected when `distance` >= `threshold`<br>default threshold: 0.1 |
 | `es`<br> Epps-Singleton tes | tabular data<br>only numerical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
 | `t_test`<br> T-Test | tabular data<br>only numerical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
-| `emperical_mmd`<br> Emperical-MMD | tabular data<br>only numerical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
+| `empirical_mmd`<br> Empirical-MMD | tabular data<br>only numerical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
 | `TVD`<br> Total-Variation-Distance | tabular data<br>only categorical | returns `p_value`<br>drift detected when `p_value` < `threshold`<br>default threshold: 0.05 |
 
 # Text drift detection 
