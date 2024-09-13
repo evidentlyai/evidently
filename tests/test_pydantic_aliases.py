@@ -6,7 +6,10 @@ from typing import Set
 from typing import Type
 from typing import TypeVar
 
+import pytest
+
 import evidently
+from evidently._pydantic_compat import import_string
 from evidently.base_metric import BasePreset
 from evidently.base_metric import ColumnName
 from evidently.base_metric import Metric
@@ -76,6 +79,14 @@ def test_all_aliases_registered():
     )
     print(msg)
     assert len(not_registered) == 0, "Not all aliases registered"
+
+
+@pytest.mark.parametrize("classpath", list(TYPE_ALIASES.values()))
+def test_all_registered_classpath_exist(classpath):
+    try:
+        import_string(classpath)
+    except ImportError:
+        assert False, f"wrong classpath registered '{classpath}'"
 
 
 def test_all_aliases_correct():
