@@ -133,7 +133,7 @@ def autoregister(cls: Type["PolymorphicModel"]):
     Can only be used on subclasses that are defined in the same file as base class
     (or if the import of this subclass is guaranteed when base class is imported)
     """
-    register_type_alias(get_base_class(cls), get_classpath(cls), cls.__get_type__())
+    register_type_alias(get_base_class(cls), get_classpath(cls), cls.__get_type__())  # type: ignore[arg-type]
     return cls
 
 
