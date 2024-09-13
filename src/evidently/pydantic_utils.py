@@ -128,6 +128,15 @@ def register_type_alias(base_class: Type["PolymorphicModel"], classpath: str, al
     TYPE_ALIASES[key] = classpath
 
 
+def autoregister(cls: Type["PolymorphicModel"]):
+    """Decorator that automatically registers subclass.
+    Can only be used on subclasses that are defined in the same file as base class
+    (or if the import of this subclass is guaranteed when base class is imported)
+    """
+    register_type_alias(get_base_class(cls), get_classpath(cls), cls.__get_type__())
+    return cls
+
+
 def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["PolymorphicModel"], alias: str):
     if not issubclass(cls, base_class):
         raise ValueError(f"Cannot register alias: {cls.__name__} is not subclass of {base_class.__name__}")
@@ -274,6 +283,7 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     class Config:
         type_alias = "evidently:base:EvidentlyBaseModel"
         alias_required = True
+        is_base_type = True
 
     def get_fingerprint(self) -> Fingerprint:
         return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
@@ -295,6 +305,7 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         return self.__class__(**data)
 
 
+@autoregister
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
     class Config:
         type_alias = "evidently:test:WithTestAndMetricDependencies"

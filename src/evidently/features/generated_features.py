@@ -28,6 +28,9 @@ class FeatureResult(Generic[TEngineDataType]):
 
 
 class GeneratedFeatures(EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
+
     display_name: Optional[str] = None
     """
     Class for computation of additional features.
@@ -195,6 +198,9 @@ class BaseDescriptor(EvidentlyBaseModel):
 
 
 class GeneralDescriptor(BaseDescriptor):
+    class Config:
+        is_base_type = True
+
     @abc.abstractmethod
     def feature(self) -> GeneratedFeatures:
         raise NotImplementedError()
@@ -206,6 +212,7 @@ class GeneralDescriptor(BaseDescriptor):
 class MultiColumnFeatureDescriptor(BaseDescriptor):
     class Config:
         type_alias = "evidently:descriptor:MultiColumnFeatureDescriptor"
+        is_base_type = True
 
     def feature(self, columns: List[str]) -> GeneratedFeature:
         raise NotImplementedError()

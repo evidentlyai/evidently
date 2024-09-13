@@ -14,7 +14,7 @@ from evidently.suite.base_suite import States
 
 class OldTypeSimpleMetric(Metric[int]):
     class Config:
-        type_alias = "test:OldTypeSimpleMetric"
+        alias_required = False
 
     value: int
 
@@ -28,7 +28,7 @@ class OldTypeSimpleMetric(Metric[int]):
 
 class SimpleMetric(Metric[int]):
     class Config:
-        type_alias = "test:SimpleMetric"
+        alias_required = False
 
     value: int
 

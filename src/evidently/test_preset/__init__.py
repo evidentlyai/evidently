@@ -1,5 +1,6 @@
 """Predefined Test Presets for Test Suite"""
 
+from . import _registry
 from .classification_binary import BinaryClassificationTestPreset
 from .classification_binary_topk import BinaryClassificationTopKTestPreset
 from .classification_multiclass import MulticlassClassificationTestPreset
@@ -20,4 +21,5 @@ __all__ = [
     "NoTargetPerformanceTestPreset",
     "RegressionTestPreset",
     "RecsysTestPreset",
+    "_registry",
 ]

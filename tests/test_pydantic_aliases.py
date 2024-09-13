@@ -59,6 +59,8 @@ def test_all_aliases_registered():
     not_registered = []
 
     for cls in find_all_subclasses(PolymorphicModel, include_abstract=True):
+        if cls.__is_base_type__():
+            continue
         classpath = cls.__get_classpath__()
         typename = cls.__get_type__()
         if classpath == typename:
@@ -70,7 +72,7 @@ def test_all_aliases_registered():
 
     msg = "\n".join(
         f'register_type_alias({get_base_class(cls).__name__}, "{cls.__get_classpath__()}", "{cls.__get_type__()}")'
-        for cls in not_registered
+        for cls in sorted(not_registered, key=lambda c: get_base_class(c).__name__ + " " + c.__get_classpath__())
     )
     print(msg)
     assert len(not_registered) == 0, "Not all aliases registered"

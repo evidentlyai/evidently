@@ -9,6 +9,7 @@ import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
 from evidently.pydantic_utils import PolymorphicModel
+from evidently.pydantic_utils import autoregister
 from evidently.suite.base_suite import ReportBase
 
 
@@ -43,6 +44,7 @@ class ReportPopper:
 class CollectorStorage(PolymorphicModel):
     class Config:
         underscore_attrs_are_private = True
+        is_base_type = True
 
     _locks: Dict[str, Lock] = {}
 
@@ -85,6 +87,7 @@ class CollectorStorage(PolymorphicModel):
         raise NotImplementedError
 
 
+@autoregister
 class InMemoryStorage(CollectorStorage):
     class Config:
         type_alias = "evidently:collector_storage:InMemoryStorage"

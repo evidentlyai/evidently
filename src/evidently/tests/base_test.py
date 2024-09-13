@@ -99,6 +99,7 @@ class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc] # py
     class Config:
         type_alias = "evidently:test_parameters:TestParameters"
         field_tags = {"type": {IncludeTags.TypeField}}
+        is_base_type = True
 
 
 class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
@@ -143,6 +144,9 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
 
 
 class Test(WithTestAndMetricDependencies):
+    class Config:
+        is_base_type = True
+
     """
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
     """

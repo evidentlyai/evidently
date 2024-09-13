@@ -33,6 +33,7 @@ from evidently.pydantic_utils import FingerprintPart
 from evidently.pydantic_utils import FrozenBaseMeta
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
+from evidently.pydantic_utils import autoregister
 from evidently.pydantic_utils import get_value_fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -51,6 +52,7 @@ class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetacla
     class Config:
         type_alias = "evidently:metric_result:MetricResult"
         field_tags = {"type": {IncludeTags.TypeField}}
+        is_base_type = True
         alias_required = True
 
 
@@ -74,6 +76,7 @@ class DatasetType(Enum):
     ADDITIONAL = "additional"
 
 
+@autoregister
 class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     class Config:
         type_alias = "evidently:base:ColumnName"
@@ -227,6 +230,9 @@ class BasePreset(EvidentlyBaseModel):
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
+    class Config:
+        is_base_type = True
+
     _context: Optional["Context"] = None
 
     options: Options

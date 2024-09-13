@@ -17,6 +17,7 @@ from plotly import graph_objs as go
 from evidently._pydantic_compat import BaseModel
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import autoregister
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
@@ -86,6 +87,7 @@ class TestFilter(BaseModel):
 descr_re = re.compile(r"\.\s+([A-Z])")
 
 
+@autoregister
 class DashboardPanelTestSuite(DashboardPanel):
     class Config:
         type_alias = "evidently:dashboard_panel:DashboardPanelTestSuite"
@@ -187,6 +189,7 @@ def to_period(time_agg: Optional[str], timestamp: datetime.datetime) -> datetime
     return pd.Series([timestamp], name="dt").dt.to_period(time_agg)[0]
 
 
+@autoregister
 class DashboardPanelTestSuiteCounter(DashboardPanel):
     class Config:
         type_alias = "evidently:dashboard_panel:DashboardPanelTestSuiteCounter"

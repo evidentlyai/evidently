@@ -56,11 +56,15 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]
 
 
 class SimpleField(MetricResult):
+    class Config:
+        alias_required = False
+
     f1: str
 
 
 class ExcludeModel(MetricResult):
     class Config:
+        alias_required = False
         dict_exclude_fields = {"simple"}
 
     simple: SimpleField
@@ -73,6 +77,7 @@ def test_default_json(obj: MetricResult, expected):
 
 class FieldExclude(MetricResult):
     class Config:
+        alias_required = False
         dict_exclude_fields = {"f2"}
 
     f1: str
@@ -81,6 +86,7 @@ class FieldExclude(MetricResult):
 
 class FieldInclude(MetricResult):
     class Config:
+        alias_required = False
         dict_include_fields = {"f1"}
 
     f1: str
@@ -89,6 +95,7 @@ class FieldInclude(MetricResult):
 
 class DictExclude(MetricResult):
     class Config:
+        alias_required = False
         dict_include = False
 
     f1: List[int]
@@ -96,11 +103,17 @@ class DictExclude(MetricResult):
 
 
 class NestedExclude(MetricResult):
+    class Config:
+        alias_required = False
+
     f: str
     nested: DictExclude
 
 
 class Model(MetricResult):
+    class Config:
+        alias_required = False
+
     no: NestedExclude = Field(..., include={"nested": {"f1"}})
     fe: FieldExclude
     feo: FieldExclude = Field(include={"f1", "f2"})
@@ -146,6 +159,9 @@ def test_include_exclude(model: Model, include, exclude, expected):
 
 
 class DictModel(MetricResult):
+    class Config:
+        alias_required = False
+
     de: Dict[str, DictExclude]
     deo: Dict[str, DictExclude] = Field(..., include=True)
     # fe: Dict[str, FieldExclude]
@@ -181,11 +197,13 @@ def test_include_exclude_dict(dict_model: DictModel, include, exclude, expected)
 
 def test_polymorphic():
     class Parent(MetricResult):
-        pass
+        class Config:
+            alias_required = False
 
     class A(Parent):
         class Config:
             dict_include_fields = {"f1"}
+            alias_required = False
 
         f1: str
         f2: str
@@ -193,11 +211,15 @@ def test_polymorphic():
     class B(Parent):
         class Config:
             dict_exclude_fields = {"b"}
+            alias_required = False
 
         a: str
         b: str
 
     class PModel(MetricResult):
+        class Config:
+            alias_required = False
+
         vals: Dict[str, Parent]
 
     assert PModel(vals={"a": A(f1="a", f2="b"), "b": B(a="a", b="b")}).get_dict() == {
@@ -224,10 +246,16 @@ def test_model_enum():
 
 def test_model_list():
     class SimpleField(MetricResult):
+        class Config:
+            alias_required = False
+
         field: str
         field2: str
 
     class Container(MetricResult):
+        class Config:
+            alias_required = False
+
         field: List[SimpleField]
 
     obj = Container(field=[SimpleField(field="a", field2="b")])

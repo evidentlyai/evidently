@@ -18,6 +18,7 @@ from evidently.collector.storage import CollectorStorage
 from evidently.collector.storage import InMemoryStorage
 from evidently.options.base import Options
 from evidently.pydantic_utils import PolymorphicModel
+from evidently.pydantic_utils import autoregister
 from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
@@ -43,13 +44,14 @@ class Config(BaseModel):
 
 class CollectorTrigger(PolymorphicModel):
     class Config:
-        alias_required = True
+        is_base_type = True
 
     @abc.abstractmethod
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
         raise NotImplementedError
 
 
+@autoregister
 class IntervalTrigger(CollectorTrigger):
     class Config:
         type_alias = "evidently:collector_trigger:IntervalTrigger"
@@ -65,6 +67,7 @@ class IntervalTrigger(CollectorTrigger):
         return is_ready
 
 
+@autoregister
 class RowsCountTrigger(CollectorTrigger):
     class Config:
         type_alias = "evidently:collector_trigger:RowsCountTrigger"
@@ -76,6 +79,7 @@ class RowsCountTrigger(CollectorTrigger):
         return buffer_size > 0 and buffer_size >= self.rows_count
 
 
+@autoregister
 class RowsCountOrIntervalTrigger(CollectorTrigger):
     class Config:
         type_alias = "evidently:collector_trigger:RowsCountOrIntervalTrigger"

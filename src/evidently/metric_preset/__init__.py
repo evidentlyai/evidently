@@ -1,3 +1,4 @@
+from . import _registry
 from .classification_performance import ClassificationPreset
 from .data_drift import DataDriftPreset
 from .data_quality import DataQualityPreset
@@ -14,4 +15,5 @@ __all__ = [
     "TargetDriftPreset",
     "TextEvals",
     "RecsysPreset",
+    "_registry",
 ]

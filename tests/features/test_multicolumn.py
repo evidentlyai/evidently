@@ -16,7 +16,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class MultiColumnFeature(GeneratedFeatures):
     class Config:
-        type_alias = "test:MultiColumnFeature"
+        alias_required = False
 
     source_column: str
     _called_count: int = PrivateAttr(0)

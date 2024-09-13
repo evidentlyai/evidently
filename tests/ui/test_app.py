@@ -114,6 +114,9 @@ def test_delete_project(test_client: TestClient, project_manager: ProjectManager
 
 
 class MockMetricResult(MetricResult):
+    class Config:
+        alias_required = False
+
     value: float
 
     @classmethod
@@ -123,7 +126,7 @@ class MockMetricResult(MetricResult):
 
 class MockMetric(Metric[MockMetricResult]):
     class Config:
-        type_alias = "test:MockMetric"
+        alias_required = False
 
     def calculate(self, data: InputData) -> MockMetricResult:
         return MockMetricResult.create(1)

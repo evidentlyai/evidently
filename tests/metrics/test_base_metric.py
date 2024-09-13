@@ -50,7 +50,7 @@ def test_metric_generator():
 
 class SimpleMetric(Metric[int]):
     class Config:
-        type_alias = "test:SimpleMetric"
+        alias_required = False
 
     column_name: ColumnName
 
@@ -64,7 +64,7 @@ class SimpleMetric(Metric[int]):
 
 class SimpleMetric2(Metric[int]):
     class Config:
-        type_alias = "test:SimpleMetric2"
+        alias_required = False
 
     column_name: ColumnName
 
@@ -78,7 +78,7 @@ class SimpleMetric2(Metric[int]):
 
 class SimpleMetricWithFeatures(Metric[int]):
     class Config:
-        type_alias = "test:SimpleMetricWithFeatures"
+        alias_required = False
 
     column_name: str
     _feature: Optional[GeneratedFeature]
@@ -103,7 +103,7 @@ class SimpleMetricWithFeatures(Metric[int]):
 
 class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
     class Config:
-        type_alias = "test:MetricWithAllTextFeatures"
+        alias_required = False
 
     _features: Dict[str, "LengthFeature"]
 
@@ -120,7 +120,7 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
 
 class SimpleGeneratedFeature(GeneratedFeature):
     class Config:
-        type_alias = "test:SimpleGeneratedFeature"
+        alias_required = False
 
     __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str
@@ -139,7 +139,7 @@ class SimpleGeneratedFeature(GeneratedFeature):
 
 class LengthFeature(GeneratedFeature):
     class Config:
-        type_alias = "test:LengthFeature"
+        alias_required = False
 
     __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str
@@ -233,6 +233,9 @@ def test_options_fingerprint_not_specified():
         field: str
 
     class MockMetric(Metric[MetricResult]):
+        class Config:
+            alias_required = False
+
         def calculate(self, data: InputData):
             return MetricResult()
 
@@ -253,6 +256,9 @@ def test_options_fingerprint_specified_type():
             return get_value_fingerprint(self.options.get(MyOption).field)
 
     class MockMetricWithOption(UsesMyOptionMixin, Metric[MetricResult]):
+        class Config:
+            alias_required = False
+
         def calculate(self, data: InputData):
             return MetricResult()
 
