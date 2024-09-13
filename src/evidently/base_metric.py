@@ -50,6 +50,7 @@ class WithFieldsPathMetaclass(ModelMetaclass):
 class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetaclass):  # type: ignore[misc] # pydantic Config
     class Config:
         field_tags = {"type": {IncludeTags.TypeField}}
+        alias_required = True
 
 
 class ErrorResult(BaseResult):
