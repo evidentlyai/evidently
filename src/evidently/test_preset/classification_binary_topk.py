@@ -17,6 +17,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class BinaryClassificationTopKTestPreset(TestPreset):
+    class Config:
+        type_alias = "evidently:test_preset:BinaryClassificationTopKTestPreset"
+
     """
     Binary Classification Tests for Top K threshold.
     Args:

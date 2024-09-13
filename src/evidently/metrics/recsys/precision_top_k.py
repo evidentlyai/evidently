@@ -4,6 +4,9 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class PrecisionTopKMetric(TopKMetric):
+    class Config:
+        type_alias = "evidently:metric:PrecisionTopKMetric"
+
     def key(self):
         return "precision"
 

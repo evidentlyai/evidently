@@ -51,6 +51,9 @@ class CollectorTrigger(PolymorphicModel):
 
 
 class IntervalTrigger(CollectorTrigger):
+    class Config:
+        type_alias = "evidently:collector_trigger:IntervalTrigger"
+
     interval: float = Field(gt=0)
     last_triggered: float = 0
 
@@ -63,6 +66,9 @@ class IntervalTrigger(CollectorTrigger):
 
 
 class RowsCountTrigger(CollectorTrigger):
+    class Config:
+        type_alias = "evidently:collector_trigger:RowsCountTrigger"
+
     rows_count: int = Field(default=1, gt=0)
 
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
@@ -71,6 +77,9 @@ class RowsCountTrigger(CollectorTrigger):
 
 
 class RowsCountOrIntervalTrigger(CollectorTrigger):
+    class Config:
+        type_alias = "evidently:collector_trigger:RowsCountOrIntervalTrigger"
+
     rows_count_trigger: RowsCountTrigger
     interval_trigger: IntervalTrigger
 

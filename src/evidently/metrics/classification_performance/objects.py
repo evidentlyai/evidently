@@ -10,6 +10,9 @@ from evidently.metric_results import Label
 
 
 class ClassMetric(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:ClassMetric"
+
     precision: float
     recall: float
     f1: float
@@ -20,6 +23,9 @@ ClassesMetrics = Dict[Label, ClassMetric]
 
 
 class ClassificationReport(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:ClassificationReport"
+
     classes: ClassesMetrics
     accuracy: float
     macro_avg: ClassMetric = Field(alias="macro avg")

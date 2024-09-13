@@ -49,6 +49,7 @@ class WithFieldsPathMetaclass(ModelMetaclass):
 
 class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetaclass):  # type: ignore[misc] # pydantic Config
     class Config:
+        type_alias = "evidently:metric_result:MetricResult"
         field_tags = {"type": {IncludeTags.TypeField}}
         alias_required = True
 
@@ -221,6 +222,7 @@ class WithResultFieldPathMetaclass(FrozenBaseMeta):
 
 class BasePreset(EvidentlyBaseModel):
     class Config:
+        type_alias = "evidently:base:BasePreset"
         is_base_type = True
 
 
@@ -314,6 +316,7 @@ class UsesRawDataMixin:
 
 class ColumnMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnMetricResult"
         field_tags = {
             "column_name": {IncludeTags.Parameter},
             "column_type": {IncludeTags.Parameter},

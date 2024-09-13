@@ -18,6 +18,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class ClassificationClassBalanceResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationClassBalanceResult"
         dict_exclude_fields = {"plot_data"}
         pd_exclude_fields = {"plot_data"}
 
@@ -25,6 +26,9 @@ class ClassificationClassBalanceResult(MetricResult):
 
 
 class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationClassBalance"
+
     def calculate(self, data: InputData) -> ClassificationClassBalanceResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

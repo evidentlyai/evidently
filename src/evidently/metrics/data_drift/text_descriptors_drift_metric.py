@@ -42,6 +42,9 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 class TextDescriptorsDriftMetricResults(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:TextDescriptorsDriftMetricResults"
+
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float
@@ -51,6 +54,9 @@ class TextDescriptorsDriftMetricResults(MetricResult):
 
 
 class TextDescriptorsDriftMetric(UsesRawDataMixin, Metric[TextDescriptorsDriftMetricResults]):
+    class Config:
+        type_alias = "evidently:metric:TextDescriptorsDriftMetric"
+
     column_name: str
     stattest: Optional[PossibleStatTestType] = None
     stattest_threshold: Optional[float] = None

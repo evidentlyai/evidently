@@ -24,6 +24,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationRocCurveResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationRocCurveResults"
         pd_include = False
 
         field_tags = {"current_roc_curve": {IncludeTags.Current}, "reference_roc_curve": {IncludeTags.Reference}}
@@ -33,6 +34,9 @@ class ClassificationRocCurveResults(MetricResult):
 
 
 class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationRocCurve"
+
     def calculate(self, data: InputData) -> ClassificationRocCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

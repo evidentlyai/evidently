@@ -45,6 +45,7 @@ class DatasetMissingValues(MetricResult):
     """Statistics about missed values in a dataset"""
 
     class Config:
+        type_alias = "evidently:metric_result:DatasetMissingValues"
         pd_exclude_fields = {
             "different_missing_values_by_column",
             "different_missing_values",
@@ -99,6 +100,7 @@ class DatasetMissingValues(MetricResult):
 
 class DatasetMissingValuesMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DatasetMissingValuesMetricResult"
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: DatasetMissingValues
@@ -106,6 +108,9 @@ class DatasetMissingValuesMetricResult(MetricResult):
 
 
 class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:DatasetMissingValuesMetric"
+
     """Count missing values in a dataset.
 
     Missing value is a null or NaN value.

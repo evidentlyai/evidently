@@ -19,6 +19,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class RegressionErrorDistributionResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionErrorDistributionResults"
         dict_exclude_fields = {"current_bins", "reference_bins"}
         pd_exclude_fields = {"current_bins", "reference_bins"}
 
@@ -29,6 +30,9 @@ class RegressionErrorDistributionResults(MetricResult):
 
 
 class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
+    class Config:
+        type_alias = "evidently:metric:RegressionErrorDistribution"
+
     def calculate(self, data: InputData) -> RegressionErrorDistributionResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

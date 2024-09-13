@@ -25,6 +25,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class ColumnDistributionMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnDistributionMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -37,6 +38,9 @@ class ColumnDistributionMetricResult(MetricResult):
 
 
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ColumnDistributionMetric"
+
     """Calculates distribution for the column"""
 
     column_name: ColumnName

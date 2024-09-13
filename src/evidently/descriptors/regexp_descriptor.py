@@ -4,6 +4,9 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class RegExp(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:RegExp"
+
     reg_exp: str
 
     def feature(self, column_name: str) -> GeneratedFeature:

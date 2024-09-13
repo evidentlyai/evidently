@@ -13,6 +13,9 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class NDCGKMetric(Metric[TopKMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:NDCGKMetric"
+
     k: int
     min_rel_score: Optional[int]
     no_feedback_users: bool

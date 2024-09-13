@@ -45,6 +45,7 @@ PRTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 
 class ClassificationPRTableResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationPRTableResults"
         pd_include = False
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
@@ -53,6 +54,9 @@ class ClassificationPRTableResults(MetricResult):
 
 
 class ClassificationPRTable(Metric[ClassificationPRTableResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationPRTable"
+
     def calculate(self, data: InputData) -> ClassificationPRTableResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

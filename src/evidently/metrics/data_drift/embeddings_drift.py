@@ -27,6 +27,7 @@ SAMPLE_CONSTANT = 2500
 
 class EmbeddingsDriftMetricResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:EmbeddingsDriftMetricResults"
         dict_exclude_fields = {
             "reference",
             "current",
@@ -48,6 +49,9 @@ class EmbeddingsDriftMetricResults(MetricResult):
 
 
 class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
+    class Config:
+        type_alias = "evidently:metric:EmbeddingsDriftMetric"
+
     embeddings_name: str
     drift_method: Optional[DriftMethod]
 

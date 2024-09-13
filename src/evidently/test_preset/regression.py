@@ -13,6 +13,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class RegressionTestPreset(TestPreset):
+    class Config:
+        type_alias = "evidently:test_preset:RegressionTestPreset"
+
     """
     Regression performance tests.
 

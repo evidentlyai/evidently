@@ -6,6 +6,9 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class Contains(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:Contains"
+
     items: List[str]
     mode: str = "any"
     case_sensitive: bool = True
@@ -21,6 +24,9 @@ class Contains(FeatureDescriptor):
 
 
 class DoesNotContain(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:DoesNotContain"
+
     items: List[str]
     mode: str = "all"
     case_sensitive: bool = True

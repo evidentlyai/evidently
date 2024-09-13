@@ -29,6 +29,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class DiversityMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DiversityMetricResult"
         field_tags = {
             "k": {IncludeTags.Parameter},
             "current_value": {IncludeTags.Current},
@@ -45,6 +46,9 @@ class DiversityMetricResult(MetricResult):
 
 
 class DiversityMetric(Metric[DiversityMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:DiversityMetric"
+
     """Intra list diversity"""
 
     _pairwise_distance: PairwiseDistance

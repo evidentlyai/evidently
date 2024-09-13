@@ -30,17 +30,24 @@ from evidently.utils.visualizations import plot_top_error_contours
 
 
 class TopData(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:TopData"
+
     mean_err_per_group: Dict[str, Dict[str, float]]
     scatter: RegressionScatter
 
 
 class AggTopData(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:AggTopData"
+
     mean_err_per_group: Dict[str, Dict[str, float]]
     contour: Dict[str, ContourData]
 
 
 class RegressionTopErrorMetricResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionTopErrorMetricResults"
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
@@ -55,6 +62,9 @@ class RegressionTopErrorMetricResults(MetricResult):
 
 
 class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetricResults]):
+    class Config:
+        type_alias = "evidently:metric:RegressionTopErrorMetric"
+
     def calculate(self, data: InputData) -> RegressionTopErrorMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

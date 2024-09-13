@@ -132,6 +132,9 @@ class BaseTopkRecsysRenderer(TestRenderer):
 
 
 class TestPrecisionTopK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestPrecisionTopK"
+
     name: ClassVar = "Precision (top-k)"
     header: str = "Precision"
 
@@ -145,6 +148,9 @@ class TestPrecisionTopKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestRecallTopK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestRecallTopK"
+
     name: ClassVar = "Recall (top-k)"
     header: str = "Recall"
 
@@ -158,6 +164,9 @@ class TestRecallTopKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestFBetaTopK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestFBetaTopK"
+
     name: ClassVar = "F_beta (top-k)"
     header: str = "F_beta"
 
@@ -171,6 +180,9 @@ class TestFBetaTopKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestMAPK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestMAPK"
+
     name: ClassVar = "MAP (top-k)"
     header: str = "MAP"
 
@@ -184,6 +196,9 @@ class TestMAPKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestMARK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestMARK"
+
     name: ClassVar = "MAR (top-k)"
     header: str = "MAR"
 
@@ -197,6 +212,9 @@ class TestMARKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestNDCGK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestNDCGK"
+
     name: ClassVar = "NDCG (top-k)"
     header: str = "NDCG"
 
@@ -210,6 +228,9 @@ class TestNDCGKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestHitRateK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestHitRateK"
+
     name: ClassVar = "Hit Rate (top-k)"
     header: str = "Hit Rate"
 
@@ -223,6 +244,9 @@ class TestHitRateKRenderer(BaseTopkRecsysRenderer):
 
 
 class TestMRRK(BaseTopkRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestMRRK"
+
     name: ClassVar = "MRR (top-k)"
     header: str = "MRR"
 
@@ -330,6 +354,9 @@ class BaseNotRankRecsysTestRenderer(TestRenderer):
 
 
 class TestNovelty(BaseNotRankRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestNovelty"
+
     name: ClassVar = "Novelty (top-k)"
     header: str = "Novelty"
 
@@ -343,6 +370,9 @@ class TestNoveltyRenderer(BaseNotRankRecsysTestRenderer):
 
 
 class TestDiversity(BaseNotRankRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestDiversity"
+
     name: ClassVar = "Diversity (top-k)"
     header: str = "Diversity"
 
@@ -356,6 +386,9 @@ class TestDiversityRenderer(BaseNotRankRecsysTestRenderer):
 
 
 class TestSerendipity(BaseNotRankRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestSerendipity"
+
     name: ClassVar = "Serendipity (top-k)"
     header: str = "Serendipity"
 
@@ -369,6 +402,9 @@ class TestSerendipityRenderer(BaseNotRankRecsysTestRenderer):
 
 
 class TestPersonalization(BaseNotRankRecsysTest):
+    class Config:
+        type_alias = "evidently:test:TestPersonalization"
+
     name: ClassVar = "Personalization (top-k)"
     header: str = "Personalization"
 
@@ -412,6 +448,9 @@ class TestPersonalizationRenderer(TestRenderer):
 
 
 class TestARP(BaseCheckValueTest):
+    class Config:
+        type_alias = "evidently:test:TestARP"
+
     group: ClassVar = RECSYS_GROUP.id
     name: ClassVar = "ARP (top-k)"
     k: int
@@ -468,6 +507,9 @@ class TestARP(BaseCheckValueTest):
 
 
 class TestGiniIndex(BaseCheckValueTest):
+    class Config:
+        type_alias = "evidently:test:TestGiniIndex"
+
     group: ClassVar = RECSYS_GROUP.id
     name: ClassVar = "Gini Index (top-k)"
     k: int
@@ -521,6 +563,9 @@ class TestGiniIndex(BaseCheckValueTest):
 
 
 class TestCoverage(BaseCheckValueTest):
+    class Config:
+        type_alias = "evidently:test:TestCoverage"
+
     group: ClassVar = RECSYS_GROUP.id
     name: ClassVar = "Coverage (top-k)"
     k: int
@@ -599,6 +644,9 @@ class TestPopularityBiasRenderer(TestRenderer):
 
 
 class TestScoreEntropy(BaseCheckValueTest):
+    class Config:
+        type_alias = "evidently:test:TestScoreEntropy"
+
     group: ClassVar = RECSYS_GROUP.id
     name: ClassVar = "Score Entropy (top-k)"
     k: int

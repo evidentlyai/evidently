@@ -24,6 +24,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationPRCurveResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationPRCurveResults"
         pd_include = False
 
         field_tags = {"current_pr_curve": {IncludeTags.Current}, "reference_pr_curve": {IncludeTags.Reference}}
@@ -33,6 +34,9 @@ class ClassificationPRCurveResults(MetricResult):
 
 
 class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationPRCurve"
+
     def calculate(self, data: InputData) -> ClassificationPRCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

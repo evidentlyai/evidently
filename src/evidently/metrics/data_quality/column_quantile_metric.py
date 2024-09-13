@@ -27,6 +27,9 @@ from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
 
 class QuantileStats(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:QuantileStats"
+
     value: float
     # calculated value of the quantile
     distribution: Distribution
@@ -35,6 +38,7 @@ class QuantileStats(MetricResult):
 
 class ColumnQuantileMetricResult(ColumnMetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnQuantileMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -48,6 +52,9 @@ class ColumnQuantileMetricResult(ColumnMetricResult):
 
 
 class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ColumnQuantileMetric"
+
     """Calculates quantile with specified range"""
 
     column_name: ColumnName

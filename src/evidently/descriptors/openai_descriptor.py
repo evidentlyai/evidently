@@ -7,6 +7,9 @@ from evidently.features.openai_feature import OpenAIFeature
 
 
 class OpenAIPrompting(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:OpenAIPrompting"
+
     prompt: str
     prompt_replace_string: str
     context: Optional[str]

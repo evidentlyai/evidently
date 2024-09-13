@@ -11,6 +11,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class SemanticSimilarityFeature(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:SemanticSimilarityFeature"
+
     __feature_type__: ClassVar = ColumnType.Numerical
     columns: List[str]
     model: str = "all-MiniLM-L6-v2"

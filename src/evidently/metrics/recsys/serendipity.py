@@ -29,6 +29,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class SerendipityMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:SerendipityMetricResult"
         field_tags = {
             "k": {IncludeTags.Parameter},
             "current_value": {IncludeTags.Current},
@@ -45,6 +46,9 @@ class SerendipityMetricResult(MetricResult):
 
 
 class SerendipityMetric(Metric[SerendipityMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:SerendipityMetric"
+
     """unusualness * relevance"""
 
     _pairwise_distance: PairwiseDistance

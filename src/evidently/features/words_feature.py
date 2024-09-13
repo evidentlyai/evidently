@@ -41,6 +41,9 @@ def _listed_words_present(
 
 
 class WordsPresence(ApplyColumnGeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:WordsPresence"
+
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     words_list: List[str]
@@ -79,6 +82,9 @@ class WordsPresence(ApplyColumnGeneratedFeature):
 
 
 class IncludesWords(WordsPresence):
+    class Config:
+        type_alias = "evidently:feature:IncludesWords"
+
     def __init__(
         self,
         column_name: str,
@@ -100,6 +106,9 @@ class IncludesWords(WordsPresence):
 
 
 class ExcludesWords(WordsPresence):
+    class Config:
+        type_alias = "evidently:feature:ExcludesWords"
+
     def __init__(
         self,
         column_name: str,

@@ -65,6 +65,9 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestValueMAE(BaseRegressionPerformanceMetricsTest):
+    class Config:
+        type_alias = "evidently:test:TestValueMAE"
+
     name: ClassVar = "Mean Absolute Error (MAE)"
 
     def get_condition(self) -> TestValueCondition:
@@ -101,6 +104,9 @@ class TestValueMAERenderer(TestRenderer):
 
 
 class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
+    class Config:
+        type_alias = "evidently:test:TestValueMAPE"
+
     name: ClassVar = "Mean Absolute Percentage Error (MAPE)"
 
     def get_condition(self) -> TestValueCondition:
@@ -139,6 +145,9 @@ class TestValueMAPERenderer(TestRenderer):
 
 
 class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
+    class Config:
+        type_alias = "evidently:test:TestValueRMSE"
+
     name: ClassVar = "Root Mean Square Error (RMSE)"
 
     def get_condition(self) -> TestValueCondition:
@@ -175,6 +184,9 @@ class TestValueRMSERenderer(TestRenderer):
 
 
 class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
+    class Config:
+        type_alias = "evidently:test:TestValueMeanError"
+
     name: ClassVar = "Mean Error (ME)"
 
     def get_condition(self) -> TestValueCondition:
@@ -218,6 +230,9 @@ class TestValueMeanErrorRenderer(TestRenderer):
 
 
 class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
+    class Config:
+        type_alias = "evidently:test:TestValueAbsMaxError"
+
     name: ClassVar = "Max Absolute Error"
 
     def get_condition(self) -> TestValueCondition:
@@ -250,6 +265,9 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
 
 
 class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
+    class Config:
+        type_alias = "evidently:test:TestValueR2Score"
+
     name: ClassVar = "R2 Score"
 
     def get_condition(self) -> TestValueCondition:

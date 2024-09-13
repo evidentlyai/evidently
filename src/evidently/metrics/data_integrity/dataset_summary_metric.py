@@ -54,6 +54,7 @@ class DatasetSummary(MetricResult):
     """Columns information in a dataset"""
 
     class Config:
+        type_alias = "evidently:metric_result:DatasetSummary"
         dict_exclude_fields = {"columns_type_data"}
         pd_exclude_fields = {"columns_type_data", "nans_by_columns", "number_uniques_by_columns"}
 
@@ -96,6 +97,7 @@ class DatasetSummary(MetricResult):
 
 class DatasetSummaryMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DatasetSummaryMetricResult"
         field_tags = {
             "almost_duplicated_threshold": {IncludeTags.Parameter},
             "current": {IncludeTags.Current},
@@ -108,6 +110,9 @@ class DatasetSummaryMetricResult(MetricResult):
 
 
 class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:DatasetSummaryMetric"
+
     """Common dataset(s) columns/features characteristics"""
 
     # threshold for calculating the number of almost duplicated columns

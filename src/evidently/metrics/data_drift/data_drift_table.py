@@ -36,6 +36,7 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 class DataDriftTableResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DataDriftTableResults"
         dict_exclude_fields = {"dataset_columns"}
         field_tags = {
             "current_fi": {IncludeTags.Extra, IncludeTags.Current},
@@ -53,6 +54,9 @@ class DataDriftTableResults(MetricResult):
 
 
 class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
+    class Config:
+        type_alias = "evidently:metric:DataDriftTable"
+
     columns: Optional[List[str]]
     feature_importance: Optional[bool]
     _feature_importance_metric: Optional[FeatureImportanceMetric]

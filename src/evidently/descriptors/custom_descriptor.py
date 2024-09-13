@@ -13,6 +13,9 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class CustomColumnEval(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:CustomColumnEval"
+
     func: Callable[[pd.Series], pd.Series]
     display_name: str
     feature_type: Union[str, ColumnType]
@@ -29,6 +32,9 @@ class CustomColumnEval(FeatureDescriptor):
 
 
 class CustomPairColumnEval(GeneralDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:CustomPairColumnEval"
+
     func: Callable[[pd.Series, pd.Series], pd.Series]
     display_name: str
     first_column: str

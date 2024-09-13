@@ -20,6 +20,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataDriftTestPreset(TestPreset):
+    class Config:
+        type_alias = "evidently:test_preset:DataDriftTestPreset"
+
     """
     Data Drift tests.
 

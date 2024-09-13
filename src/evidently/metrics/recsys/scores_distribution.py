@@ -27,6 +27,7 @@ from evidently.utils.visualizations import plot_4_distr
 
 class ScoreDistributionResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ScoreDistributionResult"
         field_tags = {
             "k": {IncludeTags.Parameter},
             "current_top_k_distr": {IncludeTags.Current},
@@ -47,6 +48,9 @@ class ScoreDistributionResult(MetricResult):
 
 
 class ScoreDistribution(Metric[ScoreDistributionResult]):
+    class Config:
+        type_alias = "evidently:metric:ScoreDistribution"
+
     k: int
 
     def __init__(self, k: int, options: AnyOptions = None) -> None:

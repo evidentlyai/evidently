@@ -35,6 +35,7 @@ Words = List[str]
 
 class DriftStatsField(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DriftStatsField"
         dict_exclude_fields = {"characteristic_examples", "characteristic_words", "correlations"}
         # todo: after tests PR
         field_tags = {
@@ -55,6 +56,7 @@ class DriftStatsField(MetricResult):
 class ColumnDataDriftMetrics(ColumnMetricResult):
     class Config:
         # todo: change to field_tags: render
+        type_alias = "evidently:metric_result:ColumnDataDriftMetrics"
         dict_exclude_fields = {"scatter"}
         pd_exclude_fields = {"scatter"}
         field_tags = {
@@ -85,6 +87,9 @@ class DatasetDrift:
 
 
 class DatasetDriftMetrics(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:DatasetDriftMetrics"
+
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float

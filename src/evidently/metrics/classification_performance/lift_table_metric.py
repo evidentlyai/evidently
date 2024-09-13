@@ -46,6 +46,7 @@ LiftTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 
 class ClassificationLiftTableResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationLiftTableResults"
         pd_include = False
         field_tags = {
             "current_lift_table": {IncludeTags.Current},
@@ -59,6 +60,9 @@ class ClassificationLiftTableResults(MetricResult):
 
 
 class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationLiftTable"
+
     """
     Evidently metric with inherited behaviour, provides data for lift analysis
 

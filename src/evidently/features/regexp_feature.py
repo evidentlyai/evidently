@@ -10,6 +10,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class RegExp(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:RegExp"
+
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     reg_exp: str

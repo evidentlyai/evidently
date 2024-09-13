@@ -14,6 +14,7 @@ from evidently.renderers.base_renderer import default_renderer
 
 class MRRKMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:MRRKMetricResult"
         field_tags = {
             "k": {IncludeTags.Parameter},
             "current": {IncludeTags.Current},
@@ -26,6 +27,9 @@ class MRRKMetricResult(MetricResult):
 
 
 class MRRKMetric(Metric[MRRKMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:MRRKMetric"
+
     k: int
     min_rel_score: Optional[int]
     no_feedback_users: bool

@@ -10,6 +10,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class BeginsWith(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:BeginsWith"
+
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     case_sensitive: bool
@@ -48,6 +51,9 @@ class BeginsWith(GeneratedFeature):
 
 
 class EndsWith(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:EndsWith"
+
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     case_sensitive: bool

@@ -32,6 +32,9 @@ if TYPE_CHECKING:
 
 
 class DashboardPanelPlot(DashboardPanel):
+    class Config:
+        type_alias = "evidently:dashboard_panel:DashboardPanelPlot"
+
     values: List[PanelValue]
     plot_type: PlotType
 
@@ -90,6 +93,9 @@ class DashboardPanelPlot(DashboardPanel):
 
 
 class DashboardPanelCounter(DashboardPanel):
+    class Config:
+        type_alias = "evidently:dashboard_panel:DashboardPanelCounter"
+
     agg: CounterAgg
     value: Optional[PanelValue] = None
     text: Optional[str] = None
@@ -130,6 +136,9 @@ class DashboardPanelCounter(DashboardPanel):
 
 
 class DashboardPanelDistribution(DashboardPanel):
+    class Config:
+        type_alias = "evidently:dashboard_panel:DashboardPanelDistribution"
+
     value: PanelValue
     barmode: HistBarMode = HistBarMode.STACK
 

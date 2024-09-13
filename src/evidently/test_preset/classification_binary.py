@@ -16,6 +16,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class BinaryClassificationTestPreset(TestPreset):
+    class Config:
+        type_alias = "evidently:test_preset:BinaryClassificationTestPreset"
+
     """
     Binary Classification Tests.
     Args:

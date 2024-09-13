@@ -4,6 +4,9 @@ from evidently.features.semantic_similarity_feature import SemanticSimilarityFea
 
 
 class SemanticSimilarity(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:SemanticSimilarity"
+
     with_column: str
 
     def feature(self, column_name: str) -> GeneratedFeatures:

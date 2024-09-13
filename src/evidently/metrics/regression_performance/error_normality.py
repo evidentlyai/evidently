@@ -25,6 +25,7 @@ from evidently.utils.data_operations import process_columns
 
 class RegressionErrorNormalityResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionErrorNormalityResults"
         dict_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
         pd_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
 
@@ -42,6 +43,9 @@ class RegressionErrorNormalityResults(MetricResult):
 
 
 class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormalityResults]):
+    class Config:
+        type_alias = "evidently:metric:RegressionErrorNormality"
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

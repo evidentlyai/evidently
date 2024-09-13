@@ -86,6 +86,9 @@ class CollectorStorage(PolymorphicModel):
 
 
 class InMemoryStorage(CollectorStorage):
+    class Config:
+        type_alias = "evidently:collector_storage:InMemoryStorage"
+
     max_log_events: int = 10
 
     _buffers: Dict[str, List[Any]] = {}

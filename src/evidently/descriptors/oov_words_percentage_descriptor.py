@@ -6,6 +6,9 @@ from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 
 
 class OOV(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:OOV"
+
     ignore_words: Tuple = ()
 
     def feature(self, column_name: str) -> GeneratedFeature:
