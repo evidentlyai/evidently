@@ -72,14 +72,14 @@ See official pip documentation for examples and explanations: https://pip.pypa.i
 
 ```sh
 cd /path/to/evidently_repo
-pip install -e ".[dev,spark]"
+pip install -e ".[dev]"
 ```
 
 #### Windows
 
 ```sh
 cd C:\path\to\evidently_repo
-pip install -e .[dev,spark]
+pip install -e .[dev]
 ```
 
 ## 5. Run formatters, linters, unit tests
