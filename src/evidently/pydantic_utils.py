@@ -176,7 +176,7 @@ class PolymorphicModel(BaseModel):
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
-        if cls.__config__.alias_required and is_not_abstract():
+        if cls.__config__.alias_required and is_not_abstract(cls):
             raise ValueError(f"Alias is required for {cls.__name__}")
         return cls.__get_classpath__()
 
