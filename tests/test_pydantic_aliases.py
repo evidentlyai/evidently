@@ -7,9 +7,10 @@ from typing import Type
 from typing import TypeVar
 
 import evidently
+from evidently.base_metric import ColumnName
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
-from evidently.features.generated_features import FeatureDescriptor
+from evidently.features.generated_features import BaseDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
@@ -73,12 +74,13 @@ def test_all_aliases_correct():
         Metric: "metric",
         Test: "test",
         GeneratedFeature: "feature",
-        FeatureDescriptor: "descriptor",
+        BaseDescriptor: "descriptor",
         MetricPreset: "metric_preset",
         TestPreset: "test_preset",
         MetricResult: "metric_result",
         DriftMethod: "drift_method",
         TestParameters: "test_parameters",
+        ColumnName: "base",
     }
     skip = [Component]
     for cls in find_all_subclasses(PolymorphicModel, include_abstract=True):

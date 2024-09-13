@@ -42,6 +42,9 @@ class Config(BaseModel):
 
 
 class CollectorTrigger(PolymorphicModel):
+    class Config:
+        alias_required = True
+
     @abc.abstractmethod
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
         raise NotImplementedError
