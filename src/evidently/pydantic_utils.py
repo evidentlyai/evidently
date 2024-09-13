@@ -159,6 +159,10 @@ Fingerprint = str
 FingerprintPart = Union[None, int, str, float, bool, bytes, Tuple["FingerprintPart", ...]]
 
 
+def is_not_abstract(cls):
+    return not (inspect.isabstract(cls) or ABC in cls.__bases__)
+
+
 class PolymorphicModel(BaseModel):
     class Config(BaseModel.Config):
         type_alias: ClassVar[Optional[str]] = None
@@ -172,7 +176,7 @@ class PolymorphicModel(BaseModel):
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
-        if cls.__config__.alias_required and not (inspect.isabstract(cls) or ABC in cls.__bases__):
+        if cls.__config__.alias_required and is_not_abstract():
             raise ValueError(f"Alias is required for {cls.__name__}")
         return cls.__get_classpath__()
 
