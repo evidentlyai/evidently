@@ -166,7 +166,7 @@ def is_not_abstract(cls):
 class PolymorphicModel(BaseModel):
     class Config(BaseModel.Config):
         type_alias: ClassVar[Optional[str]] = None
-        alias_required: ClassVar[bool] = False
+        alias_required: ClassVar[bool] = True
         is_base_type: ClassVar[bool] = False
 
     __config__: ClassVar[Config]

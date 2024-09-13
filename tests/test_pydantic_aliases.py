@@ -10,6 +10,7 @@ import evidently
 from evidently.base_metric import ColumnName
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.collector.config import CollectorTrigger
 from evidently.features.generated_features import BaseDescriptor
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metric_preset.metric_preset import MetricPreset
@@ -81,6 +82,7 @@ def test_all_aliases_correct():
         DriftMethod: "drift_method",
         TestParameters: "test_parameters",
         ColumnName: "base",
+        CollectorTrigger: "collector_trigger",
     }
     skip = [Component]
     for cls in find_all_subclasses(PolymorphicModel, include_abstract=True):
