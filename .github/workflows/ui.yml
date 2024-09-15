@@ -57,25 +57,8 @@ jobs:
           echo "One or more evidently_python file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
-  code-check:
+  ui-code-check:
     name: UI code-check
-    runs-on: ubuntu-22.04
-    needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && (needs.changed_files.outputs.ui_any_modified == 'true' || needs.changed_files.outputs.evidently_python_any_modified == 'true') }}
-
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: 📥 Install ui dependencies
-        uses: ./.github/share-actions/ui-node-pnpm-install
-
-      - name: 🔬 Check code quality
-        working-directory: ui
-        run: pnpm code-check
-
-  ui-type-check:
-    name: UI type-check
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && (needs.changed_files.outputs.ui_any_modified == 'true' || needs.changed_files.outputs.evidently_python_any_modified == 'true') }}
@@ -93,6 +76,10 @@ jobs:
       - name: 🔬 Type check
         working-directory: ui
         run: pnpm type-check
+
+      - name: 🔬 Check code quality
+        working-directory: ui
+        run: pnpm code-check
 
   ui-deps-analyze:
     name: UI deps analyze
