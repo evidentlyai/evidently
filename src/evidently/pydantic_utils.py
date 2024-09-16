@@ -130,7 +130,7 @@ def register_type_alias(base_class: Type["PolymorphicModel"], classpath: str, al
 
         if base_class is PolymorphicModel:
             break
-        base_class = get_base_class(base_class, ensure_parent=True)
+        base_class = get_base_class(base_class, ensure_parent=True)  # type: ignore[arg-type]
         if not base_class.__config__.transitive_aliases:
             break
 
