@@ -256,6 +256,8 @@ class PolymorphicModel(BaseModel):
                 if key in TYPE_ALIASES:
                     classpath = TYPE_ALIASES[key]
                 else:
+                    if "." not in typename:
+                        raise ValueError(f'Unknown alias "{typename}"')
                     classpath = typename
                 if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
                     raise ValueError(f"{classpath} does not match any allowed prefixes")
