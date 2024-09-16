@@ -31,7 +31,7 @@ You can use built-in evaluators that include pre-written prompts for specific cr
 **Imports**. Import the `LLMEval` and built-in evaluators you want to use:
 
 ```python
-from evidently.descriptors import LLMEval, NegativityLLMEval, PIILLMEval, DeclineLLMEval
+from evidently.descriptors import LLMEval, NegativityLLMEval, PIILLMEval, DeclineLLMEval, BiasLLMEval, ToxicityLLMEval, ContextQualityLLMEval
 ```
 
 **Get a Report**. To create a Report, simply list them like any other descriptor:
@@ -54,6 +54,16 @@ report = Report(metrics=[
         NegativityLLMEval(include_category=False),   
         PIILLMEval(include_reasoning=False), 
         DeclineLLMEval(include_score=True)
+    ])
+])
+```
+
+**Run descriptors over two columns**. An evaluator that assesses if the context contains enough information to answer the question requires both columns. Run the evaluation over the `context` column and pass the name of the column containing the `question` as a parameter.
+
+```python
+report = Report(metrics=[
+    TextEvals(column_name="context", descriptors=[
+        ContextQualityLLMEval(question="question"),
     ])
 ])
 ```

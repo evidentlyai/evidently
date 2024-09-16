@@ -1,4 +1,13 @@
-There are two ways to add a custom Metric to Evidently. 
+There are two ways to add a custom Metric or Test to Evidently:
+* Add it as a Python function (Recommended).
+* Implement a custom metric with custom Plotly render.
+
+Implementing a new Metric or Test means that you implement a completely custom column- or dataset-level evaluation.
+
+There are other ways to customize your evaluations that do not require creating Metrics or Tests from scratch:
+* Add a custom descriptor for row-level evaluations. Read on [adding custom text descriptors](add-custom-descriptor.md).
+* Write a custom LLM-based evaluator using templates. Read on [designing LLM judges](llm_as_a_judge.md).
+* Add a custom data drift detection method, re-using the existing Data Drift metric render. Read on [drift method customization](add-custom-drift-method.md) option.
 
 # 1. Add a new Metric or Test as a Python function. (Recommended).
 
@@ -8,8 +17,6 @@ This is a recommended path to add custom Metrics. Using this method, you can sen
 
 Example notebook: 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_build_metric_over_python_function.ipynb" %}
-
-**Note**: if you want to add a custom data drift method, there is a separate [drift method customization](add-custom-drift-method.md) option. In this case, you will re-use the existing render. 
 
 # 2. Implement a new Metric and Test from scratch. 
 

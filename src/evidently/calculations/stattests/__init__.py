@@ -14,7 +14,7 @@ from .jensenshannon import jensenshannon_stat_test
 from .kl_div import kl_div_stat_test
 from .ks_stattest import ks_stat_test
 from .mann_whitney_urank_stattest import mann_whitney_u_stat_test
-from .mmd_stattest import emperical_mmd
+from .mmd_stattest import empirical_mmd
 from .psi import psi_stat_test
 from .registry import PossibleStatTestType
 from .registry import StatTest
@@ -41,7 +41,7 @@ __all__ = [
     "kl_div_stat_test",
     "ks_stat_test",
     "mann_whitney_u_stat_test",
-    "emperical_mmd",
+    "empirical_mmd",
     "psi_stat_test",
     "PossibleStatTestType",
     "StatTest",

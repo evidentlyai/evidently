@@ -97,9 +97,9 @@ You have two options:
 {% tab title="Only local methods" %} 
 
 **Define your evals**. You will evaluate all "Answers" for:
-* Sentiment: from -1 for negative to 1 for positive
-* Text length: character count
-* Presence of "sorry" or "apologize": True/False
+* Sentiment: from -1 for negative to 1 for positive.
+* Text length: character count.
+* Presence of "sorry" or "apologize": True/False.
 
 ```python
 text_evals_report = Report(metrics=[
@@ -118,7 +118,7 @@ text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
 
 {% tab title="LLM as a judge" %}
 
-**Set the OpenAI key** (it's best to set it as an environment variable). [See Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for tips. 
+**Set the OpenAI key**. It's best to set an environment variable: [see Open AI docs](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) for tips. 
 
 ```python
 ## import os
@@ -126,9 +126,9 @@ text_evals_report.run(reference_data=None, current_data=evaluation_dataset)
 ```
 
 **Define your evals**. Evaluate all "Answers" for:
-* Sentiment: from -1 for negative to 1 for positive)
-* Text length: character count
-* Whether the chatbot denied an answer: returns "OK" or "Denial" labels with explanations. This uses LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
+* Sentiment: from -1 for negative to 1 for positive.
+* Text length: character count.
+* Whether the chatbot denied an answer: returns "OK" / "Denial" labels with explanations. This uses LLM-as-a-judge (defaults to `gpt-4o-mini`) with a template Evidently prompt.  
 
 ```python
 text_evals_report = Report(metrics=[
@@ -157,7 +157,7 @@ Each evaluation is a `descriptor`. You can choose from multiple built-in evaluat
 ws.add_report(project.id, text_evals_report, include_data=True)
 ```
 
-**View the Report** on Evidently Cloud. Go to the [home page](https://app.evidently.cloud/)), open your Project, and navigate to "Reports" in the left.
+**View the Report**. Go to [Evidently Cloud](https://app.evidently.cloud/), open your Project, and navigate to "Reports" in the left.
 
 You will see the scores summary, and the dataset with new descriptor columns. For example, you can sort to find all answers with "Denials".
 
