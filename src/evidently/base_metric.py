@@ -226,6 +226,7 @@ class WithResultFieldPathMetaclass(FrozenBaseMeta):
 class BasePreset(EvidentlyBaseModel):
     class Config:
         type_alias = "evidently:base:BasePreset"
+        transitive_aliases = True
         is_base_type = True
 
 

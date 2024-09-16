@@ -121,11 +121,18 @@ LOADED_TYPE_ALIASES: Dict[Tuple[Type["PolymorphicModel"], str], Type["Polymorphi
 
 
 def register_type_alias(base_class: Type["PolymorphicModel"], classpath: str, alias: str):
-    key = (base_class, alias)
+    while True:
+        key = (base_class, alias)
 
-    if key in TYPE_ALIASES and TYPE_ALIASES[key] != classpath and "PYTEST_CURRENT_TEST" not in os.environ:
-        warnings.warn(f"Duplicate key {key} in alias map")
-    TYPE_ALIASES[key] = classpath
+        if key in TYPE_ALIASES and TYPE_ALIASES[key] != classpath and "PYTEST_CURRENT_TEST" not in os.environ:
+            warnings.warn(f"Duplicate key {key} in alias map")
+        TYPE_ALIASES[key] = classpath
+
+        if base_class is PolymorphicModel:
+            break
+        base_class = get_base_class(base_class, ensure_parent=True)
+        if not base_class.__config__.transitive_aliases:
+            break
 
 
 def autoregister(cls: Type["PolymorphicModel"]):
@@ -148,8 +155,10 @@ def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["Polym
 
 
 @lru_cache()
-def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
+def get_base_class(cls: Type["PolymorphicModel"], ensure_parent: bool = False) -> Type["PolymorphicModel"]:
     for cls_ in cls.mro():
+        if ensure_parent and cls_ is cls:
+            continue
         if not issubclass(cls_, PolymorphicModel):
             continue
         config = cls_.__dict__.get("Config")
@@ -174,8 +183,14 @@ def is_not_abstract(cls):
 
 class PolymorphicModel(BaseModel):
     class Config(BaseModel.Config):
+        # value to put into "type" field
         type_alias: ClassVar[Optional[str]] = None
+        # flag to mark alias required. If not required, classpath is used by default
         alias_required: ClassVar[bool] = True
+        # flag to register aliaes for grand-parent base type
+        # eg PolymorphicModel -> A -> B -> C, where A and B are base types. only if A has this flag, C can be parsed as both A and B.
+        transitive_aliases: ClassVar[bool] = False
+        # flag to mark type as base. This means it will be possible to parse all subclasses of it as this type
         is_base_type: ClassVar[bool] = False
 
     __config__: ClassVar[Config]
