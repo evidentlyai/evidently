@@ -94,7 +94,7 @@ def reload_projects(
     log_event: Callable,
     user_id: UserID,
 ) -> None:
-    project_manager.metadata._state.reload(force=True)
+    project_manager.metadata._state.reload(force=True)  # type: ignore
     log_event("reload_projects")
 
 
@@ -415,6 +415,7 @@ def create_projects_api(guard: Callable) -> Router:
                     project_dashboard,
                     list_snapshots,
                     get_snapshot_metadata,
+                    reload_projects,
                 ],
             ),
             Router(
