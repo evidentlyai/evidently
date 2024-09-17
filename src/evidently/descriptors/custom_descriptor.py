@@ -4,12 +4,12 @@ from typing import Union
 import pandas as pd
 
 from evidently.core import ColumnType
+from evidently.core import new_id
 from evidently.features.custom_feature import CustomPairColumnFeature
 from evidently.features.custom_feature import CustomSingleColumnFeature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneralDescriptor
 from evidently.features.generated_features import GeneratedFeature
-from evidently.ui.type_aliases import new_id
 
 
 class CustomColumnEval(FeatureDescriptor):

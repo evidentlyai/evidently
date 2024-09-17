@@ -22,6 +22,7 @@ from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core import new_id
 from evidently.model.dashboard import DashboardInfo
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
@@ -48,7 +49,6 @@ from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.type_aliases import UserID
-from evidently.ui.type_aliases import new_id
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template

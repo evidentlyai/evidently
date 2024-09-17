@@ -38,7 +38,3 @@ TestResultPoints = Dict[datetime.datetime, Dict[Test, TestInfo]]
 PointType = TypeVar("PointType")
 DataPointsAsType = List[Dict[Metric, List[Tuple[datetime.datetime, PointType]]]]
 DataPoints = DataPointsAsType[float]
-
-
-def new_id() -> uuid.UUID:
-    return uuid6.uuid7()

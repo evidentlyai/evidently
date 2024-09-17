@@ -15,6 +15,7 @@ from evidently.base_metric import GenericInputData
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
+from evidently.core import new_id
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import set_source_fingerprint
@@ -33,7 +34,6 @@ from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
 from evidently.ui.type_aliases import SnapshotID
-from evidently.ui.type_aliases import new_id
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 

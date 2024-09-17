@@ -15,6 +15,7 @@ from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import validator
 from evidently.base_metric import Metric
+from evidently.core import new_id
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EnumValueMixin
@@ -30,7 +31,6 @@ from evidently.test_suite import TestSuite
 from evidently.ui.type_aliases import PanelID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TabID
-from evidently.ui.type_aliases import new_id
 
 from .utils import getattr_nested
 

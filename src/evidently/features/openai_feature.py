@@ -7,9 +7,9 @@ import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
+from evidently.core import new_id
 from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.features.generated_features import GeneratedFeature
-from evidently.ui.type_aliases import new_id
 from evidently.utils.data_preprocessing import DataDefinition
 
 _legacy_models = ["gpt-3.5-turbo-instruct", "babbage-002", "davinci-002"]

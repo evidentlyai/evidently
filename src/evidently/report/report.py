@@ -16,6 +16,7 @@ from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
+from evidently.core import new_id
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
@@ -33,7 +34,6 @@ from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.ui.type_aliases import SnapshotID
-from evidently.ui.type_aliases import new_id
 from evidently.utils.generators import BaseGenerator
 
 METRIC_GENERATORS = "metric_generators"

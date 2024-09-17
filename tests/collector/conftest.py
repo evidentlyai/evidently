@@ -13,12 +13,12 @@ from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.config import ReportConfig
 from evidently.collector.config import RowsCountTrigger
 from evidently.core import IncludeOptions
+from evidently.core import new_id
 from evidently.options.base import Options
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
-from evidently.ui.type_aliases import new_id
 from tests.ui.test_app import MockMetric
 from tests.ui.test_app import MockMetricResult
 

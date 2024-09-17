@@ -13,6 +13,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import new_id
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
 from evidently.renderers.base_renderer import MetricRenderer
@@ -29,7 +30,6 @@ from evidently.ui.dashboards import ReportFilter
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.type_aliases import ZERO_UUID
-from evidently.ui.type_aliases import new_id
 from evidently.utils import NumpyEncoder
 from tests.ui.conftest import HEADERS
 from tests.ui.conftest import _dumps
