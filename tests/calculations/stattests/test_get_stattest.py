@@ -22,7 +22,7 @@ from evidently.calculations.stattests import get_stattest
         ("num", "kl_div"),
         ("num", "ks"),
         ("num", "mannw"),
-        ("num", "emperical_mmd"),
+        ("num", "empirical_mmd"),
         ("cat", "psi"),
         ("num", "psi"),
         ("num", "t_test"),

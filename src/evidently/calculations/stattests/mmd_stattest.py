@@ -126,7 +126,7 @@ def _mmd_stattest(
     feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
-    """Run the  emperical maximum mean discrepancy test.
+    """Run the  empirical maximum mean discrepancy test.
     Args:
         reference_data: reference data
         current_data: current data
@@ -144,11 +144,11 @@ def _mmd_stattest(
     return p_value, p_value < threshold
 
 
-emperical_mmd = StatTest(
-    name="emperical_mmd",
-    display_name="emperical_mmd",
+empirical_mmd = StatTest(
+    name="empirical_mmd",
+    display_name="empirical_mmd",
     allowed_feature_types=[ColumnType.Numerical],
     default_threshold=0.1,
 )
 
-register_stattest(emperical_mmd, _mmd_stattest)
+register_stattest(empirical_mmd, _mmd_stattest)
