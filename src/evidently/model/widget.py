@@ -11,9 +11,10 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import uuid6
+
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
-from evidently.ui.type_aliases import new_id
 
 
 @dataclass()
@@ -66,7 +67,7 @@ class AdditionalGraphInfo:
 class PlotlyGraphInfo:
     data: Any
     layout: Any
-    id: str = dataclasses.field(default_factory=lambda: str(new_id()))
+    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
 
 
 class WidgetType(Enum):
@@ -84,7 +85,7 @@ class BaseWidgetInfo:
     type: str
     title: str
     size: int
-    id: str = dataclasses.field(default_factory=lambda: str(new_id()))
+    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
     details: str = ""
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None

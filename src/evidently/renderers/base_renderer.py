@@ -7,12 +7,12 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
+import uuid6
 
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import PlotlyGraphInfo
 from evidently.options import ColorOptions
-from evidently.ui.type_aliases import new_id
 
 if TYPE_CHECKING:
     from evidently.base_metric import Metric
@@ -62,7 +62,7 @@ class MetricRenderer(BaseRenderer):
 class DetailsInfo:
     title: str
     info: BaseWidgetInfo
-    id: str = dataclasses.field(default_factory=lambda: str(new_id()))
+    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
 
 
 @dataclasses.dataclass

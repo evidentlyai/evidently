@@ -41,4 +41,4 @@ DataPoints = DataPointsAsType[float]
 
 
 def new_id() -> uuid.UUID:
-    return new_id()
+    return uuid6.uuid7()
