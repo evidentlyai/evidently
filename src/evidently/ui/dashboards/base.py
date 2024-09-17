@@ -30,6 +30,7 @@ from evidently.test_suite import TestSuite
 from evidently.ui.type_aliases import PanelID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TabID
+from evidently.ui.type_aliases import new_id
 
 from .utils import getattr_nested
 
@@ -134,7 +135,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     class Config:
         is_base_type = True
 
-    id: PanelID = Field(default_factory=uuid6.uuid7)
+    id: PanelID = Field(default_factory=new_id)
     title: str
     filter: ReportFilter
     size: WidgetSize = WidgetSize.FULL
@@ -165,7 +166,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
 
 
 class DashboardTab(BaseModel):
-    id: TabID = Field(default_factory=uuid6.uuid7)
+    id: TabID = Field(default_factory=new_id)
     title: Optional[str] = "Untitled"
 
 

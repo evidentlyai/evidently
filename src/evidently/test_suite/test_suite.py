@@ -10,7 +10,6 @@ from typing import Type
 from typing import Union
 
 import pandas as pd
-import uuid6
 
 from evidently.base_metric import GenericInputData
 from evidently.calculation_engine.engine import Engine
@@ -34,6 +33,7 @@ from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
 from evidently.ui.type_aliases import SnapshotID
+from evidently.ui.type_aliases import new_id
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 
@@ -113,7 +113,7 @@ class TestSuite(ReportBase):
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
-        self.id = uuid6.uuid7()
+        self.id = new_id()
         if self._timestamp is not None:
             self.timestamp = self._timestamp
         else:
@@ -262,7 +262,7 @@ class TestSuite(ReportBase):
             additionalGraphs=[],
         )
         return (
-            "evidently_dashboard_" + str(uuid6.uuid7()).replace("-", ""),
+            "evidently_dashboard_" + str(new_id()).replace("-", ""),
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
             {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
         )

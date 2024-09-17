@@ -2,7 +2,6 @@ from typing import Callable
 from typing import Union
 
 import pandas as pd
-import uuid6
 
 from evidently.core import ColumnType
 from evidently.features.custom_feature import CustomPairColumnFeature
@@ -10,6 +9,7 @@ from evidently.features.custom_feature import CustomSingleColumnFeature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneralDescriptor
 from evidently.features.generated_features import GeneratedFeature
+from evidently.ui.type_aliases import new_id
 
 
 class CustomColumnEval(FeatureDescriptor):
@@ -24,7 +24,7 @@ class CustomColumnEval(FeatureDescriptor):
             column_name=column_name,
             display_name=self.display_name,
             feature_type=ColumnType(self.feature_type),
-            name=self.name or getattr(self.func, "__name__", str(uuid6.uuid7())),
+            name=self.name or getattr(self.func, "__name__", str(new_id())),
         )
 
 

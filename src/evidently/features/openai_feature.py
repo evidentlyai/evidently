@@ -4,12 +4,12 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
-import uuid6
 
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
 from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.features.generated_features import GeneratedFeature
+from evidently.ui.type_aliases import new_id
 from evidently.utils.data_preprocessing import DataDefinition
 
 _legacy_models = ["gpt-3.5-turbo-instruct", "babbage-002", "davinci-002"]
@@ -43,7 +43,7 @@ class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
         openai_params: Optional[dict] = None,
         display_name: Optional[str] = None,
     ):
-        self.feature_id = str(uuid6.uuid7())
+        self.feature_id = str(new_id())
         self.prompt = prompt
         self.prompt_replace_string = prompt_replace_string
         if context is not None and context_column is not None:

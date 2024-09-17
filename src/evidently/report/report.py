@@ -10,7 +10,6 @@ from typing import Type
 from typing import Union
 
 import pandas as pd
-import uuid6
 
 from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
@@ -34,6 +33,7 @@ from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.ui.type_aliases import SnapshotID
+from evidently.ui.type_aliases import new_id
 from evidently.utils.generators import BaseGenerator
 
 METRIC_GENERATORS = "metric_generators"
@@ -97,7 +97,7 @@ class Report(ReportBase):
 
         if current_data is None:
             raise ValueError("Current dataset should be present")
-        self.id = uuid6.uuid7()
+        self.id = new_id()
         if self._timestamp is not None:
             self.timestamp = self._timestamp
         else:
@@ -244,7 +244,7 @@ class Report(ReportBase):
             metrics_results.extend(html_info)
 
         return (
-            "evidently_dashboard_" + str(uuid6.uuid7()).replace("-", ""),
+            "evidently_dashboard_" + str(new_id()).replace("-", ""),
             DashboardInfo("Report", widgets=metrics_results),
             {
                 f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info

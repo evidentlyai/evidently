@@ -8,7 +8,6 @@ from typing import Optional
 
 import deprecation
 import pandas as pd
-import uuid6
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
@@ -18,6 +17,7 @@ from evidently.base_metric import TEngineDataType
 from evidently.core import ColumnType
 from evidently.options.base import Options
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.ui.type_aliases import new_id
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -173,7 +173,7 @@ class ApplyColumnGeneratedFeature(GeneratedFeature):
 
 class DataFeature(GeneratedFeature):
     display_name: str
-    name: str = Field(default_factory=lambda: str(uuid6.uuid7()))
+    name: str = Field(default_factory=lambda: str(new_id()))
 
     @abc.abstractmethod
     def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:

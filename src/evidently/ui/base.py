@@ -48,6 +48,7 @@ from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import TestResultPoints
 from evidently.ui.type_aliases import UserID
+from evidently.ui.type_aliases import new_id
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
@@ -126,13 +127,13 @@ class Entity(BaseModel):
 
 class Org(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Org
-    id: OrgID = Field(default_factory=uuid6.uuid7)
+    id: OrgID = Field(default_factory=new_id)
     name: str
 
 
 class Team(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Team
-    id: TeamID = Field(default_factory=uuid6.uuid7)
+    id: TeamID = Field(default_factory=new_id)
     name: str
     org_id: Optional[OrgID]
 
@@ -141,7 +142,7 @@ UT = TypeVar("UT", bound="User")
 
 
 class User(BaseModel):
-    id: UserID = Field(default_factory=uuid6.uuid7)
+    id: UserID = Field(default_factory=new_id)
     name: str
     email: str = ""
 
@@ -162,7 +163,7 @@ class Project(Entity):
     class Config:
         underscore_attrs_are_private = True
 
-    id: ProjectID = Field(default_factory=uuid6.uuid7)
+    id: ProjectID = Field(default_factory=new_id)
     name: str
     description: Optional[str] = None
     dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
@@ -224,7 +225,7 @@ class Project(Entity):
     ):
         dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
         template_params = TemplateParams(
-            dashboard_id="pd_" + str(uuid6.uuid7()).replace("-", ""),
+            dashboard_id="pd_" + str(new_id()).replace("-", ""),
             dashboard_info=dashboard_info,
             additional_graphs={},
         )

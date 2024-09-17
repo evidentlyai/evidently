@@ -6,7 +6,6 @@ from copy import deepcopy
 from typing import List
 
 import pytest
-import uuid6
 from litestar.testing import TestClient
 
 import evidently
@@ -30,6 +29,7 @@ from evidently.ui.dashboards import ReportFilter
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.type_aliases import ZERO_UUID
+from evidently.ui.type_aliases import new_id
 from evidently.utils import NumpyEncoder
 from tests.ui.conftest import HEADERS
 from tests.ui.conftest import _dumps
@@ -137,7 +137,7 @@ class MockMetricRenderer(MetricRenderer):
 @pytest.fixture
 def mock_snapshot():
     return Snapshot(
-        id=uuid6.uuid7(),
+        id=new_id(),
         name="mock",
         timestamp=datetime.datetime.now(),
         metadata={},
@@ -385,7 +385,7 @@ def test_reload_project(test_client: TestClient, project_manager: ProjectManager
     blob = project_manager.blob
     assert isinstance(blob, FSSpecBlobStorage)
     snapshot_path = os.path.join(blob.base_path, blob.get_snapshot_blob_id(project.id, mock_snapshot))
-    snapshot_id2 = uuid6.uuid7()
+    snapshot_id2 = new_id()
     snapshot2 = deepcopy(mock_snapshot)
     snapshot2.id = snapshot_id2
     snapshot_path2 = snapshot_path.replace(str(mock_snapshot.id), str(snapshot_id2))

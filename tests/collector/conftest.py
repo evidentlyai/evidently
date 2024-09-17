@@ -4,7 +4,6 @@ from typing import Dict
 
 import pandas as pd
 import pytest
-import uuid6
 from litestar import get
 from litestar.testing import TestClient
 
@@ -19,6 +18,7 @@ from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
+from evidently.ui.type_aliases import new_id
 from tests.ui.test_app import MockMetric
 from tests.ui.test_app import MockMetricResult
 
@@ -57,7 +57,7 @@ def collector_workspace(collector_test_client) -> str:
 class ReportBaseMock(ReportBase):
     def __init__(self):
         super().__init__()
-        self.id = uuid6.uuid7()
+        self.id = new_id()
 
     def to_snapshot(self):
         return Snapshot(
