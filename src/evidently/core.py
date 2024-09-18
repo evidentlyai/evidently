@@ -1,3 +1,4 @@
+import uuid
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -12,6 +13,7 @@ from typing import get_args
 
 import numpy as np
 import pandas as pd
+import uuid6
 from typing_inspect import is_literal_type
 
 from evidently._pydantic_compat import SHAPE_DICT
@@ -273,3 +275,7 @@ def get_field_tags(cls: Type[BaseModel], field_name: str) -> Set[IncludeTags]:
 
 def get_all_fields_tags(cls: Type[BaseResult]) -> Dict[str, Set[IncludeTags]]:
     return {field_name: get_field_tags(cls, field_name) for field_name in cls.__fields__}
+
+
+def new_id() -> uuid.UUID:
+    return uuid6.uuid7()

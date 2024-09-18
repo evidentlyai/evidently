@@ -1,6 +1,5 @@
 import datetime
 import os
-import uuid
 from typing import Dict
 
 import pandas as pd
@@ -14,6 +13,7 @@ from evidently.collector.config import CollectorServiceConfig
 from evidently.collector.config import ReportConfig
 from evidently.collector.config import RowsCountTrigger
 from evidently.core import IncludeOptions
+from evidently.core import new_id
 from evidently.options.base import Options
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import ReportBase
@@ -57,7 +57,7 @@ def collector_workspace(collector_test_client) -> str:
 class ReportBaseMock(ReportBase):
     def __init__(self):
         super().__init__()
-        self.id = uuid.uuid4()
+        self.id = new_id()
 
     def to_snapshot(self):
         return Snapshot(

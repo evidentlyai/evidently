@@ -1,6 +1,5 @@
 import datetime
 import traceback
-import uuid
 import warnings
 from functools import wraps
 from typing import TYPE_CHECKING
@@ -10,10 +9,13 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import uuid6
+
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import validator
 from evidently.base_metric import Metric
+from evidently.core import new_id
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EnumValueMixin
@@ -133,7 +135,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     class Config:
         is_base_type = True
 
-    id: PanelID = Field(default_factory=uuid.uuid4)
+    id: PanelID = Field(default_factory=new_id)
     title: str
     filter: ReportFilter
     size: WidgetSize = WidgetSize.FULL
@@ -164,7 +166,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
 
 
 class DashboardTab(BaseModel):
-    id: TabID = Field(default_factory=uuid.uuid4)
+    id: TabID = Field(default_factory=new_id)
     title: Optional[str] = "Untitled"
 
 
@@ -228,7 +230,7 @@ class DashboardConfig(BaseModel):
             to_create = tab_descriptor
         if isinstance(tab_descriptor, str):
             try:
-                tab = self._find_tab_by_id(uuid.UUID(tab_descriptor))
+                tab = self._find_tab_by_id(uuid6.UUID(tab_descriptor))
             except ValueError:
                 tab = self._find_tab_by_title(tab_descriptor)
                 to_create = DashboardTab(title=tab_descriptor)

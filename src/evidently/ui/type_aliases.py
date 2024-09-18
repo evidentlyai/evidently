@@ -7,6 +7,8 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+import uuid6
+
 from evidently.base_metric import Metric
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
@@ -24,7 +26,7 @@ PanelID = uuid.UUID
 TabID = uuid.UUID
 DatasetID = uuid.UUID
 ComputationConfigID = uuid.UUID
-ZERO_UUID = uuid.UUID(int=0)
+ZERO_UUID = uuid6.UUID(int=0, version=7)
 
 
 class TestInfo(NamedTuple):

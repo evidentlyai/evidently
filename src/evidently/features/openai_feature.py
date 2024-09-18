@@ -1,4 +1,3 @@
-import uuid
 from itertools import repeat
 from typing import List
 from typing import Optional
@@ -8,6 +7,7 @@ import pandas as pd
 
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
+from evidently.core import new_id
 from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
@@ -43,7 +43,7 @@ class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
         openai_params: Optional[dict] = None,
         display_name: Optional[str] = None,
     ):
-        self.feature_id = str(uuid.uuid4())
+        self.feature_id = str(new_id())
         self.prompt = prompt
         self.prompt_replace_string = prompt_replace_string
         if context is not None and context_column is not None:

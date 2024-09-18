@@ -33,21 +33,28 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
+
+
 T = TypeVar("T")
 
 
-def pydantic_type_validator(type_: Type[Any]):
+def pydantic_type_validator(type_: Type[Any], prioritize: bool = False):
     def decorator(f):
         from evidently._pydantic_compat import _VALIDATORS
 
         for cls, validators in _VALIDATORS:
             if cls is type_:
-                validators.append(f)
+                if prioritize:
+                    validators.insert(0, f)
+                else:
+                    validators.append(f)
                 return
-
-        _VALIDATORS.append(
-            (type_, [f]),
-        )
+        if prioritize:
+            _VALIDATORS.insert(0, (type_, [f]))
+        else:
+            _VALIDATORS.append(
+                (type_, [f]),
+            )
 
     return decorator
 

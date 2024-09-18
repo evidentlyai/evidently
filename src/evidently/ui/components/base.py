@@ -33,6 +33,7 @@ class AppBuilder:
         self.api_route_handlers: List[ControllerRouterHandler] = []
         self.exception_handlers: ExceptionHandlersMap = {}
         self.middlewares: List[Middleware] = []
+        self.type_decoders: List[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = []
         self.kwargs: Dict[str, Any] = {}
 
     def build_api_router(self):
@@ -45,6 +46,7 @@ class AppBuilder:
             exception_handlers=self.exception_handlers,
             dependencies=self.dependencies,
             middleware=self.middlewares,
+            type_decoders=self.type_decoders,
             **self.kwargs,
         )
 

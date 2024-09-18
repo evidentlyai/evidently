@@ -1,5 +1,4 @@
 import dataclasses
-import uuid
 import warnings
 from typing import TYPE_CHECKING
 from typing import Dict
@@ -8,6 +7,7 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
+import uuid6
 
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -62,7 +62,7 @@ class MetricRenderer(BaseRenderer):
 class DetailsInfo:
     title: str
     info: BaseWidgetInfo
-    id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
 
 
 @dataclasses.dataclass

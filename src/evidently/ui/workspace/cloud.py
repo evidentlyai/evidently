@@ -11,9 +11,9 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import overload
-from uuid import UUID
 
 import pandas as pd
+import uuid6
 from requests import HTTPError
 from requests import Response
 
@@ -288,7 +288,7 @@ class CloudWorkspace(WorkspaceView):
         """Temporary method until we can attach datasets to projects"""
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
         if isinstance(project_id, str):
-            project_id = UUID(project_id)
+            project_id = uuid6.UUID(project_id)
         project = self.get_project(project_id)
         if project is None:
             raise ProjectNotFound()

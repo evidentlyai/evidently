@@ -2,7 +2,6 @@ import contextlib
 import datetime
 import json
 import posixpath
-import uuid
 from collections import defaultdict
 from typing import Dict
 from typing import List
@@ -10,6 +9,7 @@ from typing import Optional
 from typing import Set
 from typing import Type
 
+import uuid6
 from fsspec import AbstractFileSystem
 from fsspec import get_fs_token_paths
 
@@ -166,7 +166,7 @@ class LocalState:
         project = self.projects[project_id]
         self.location.invalidate_cache(path)
         for file in self.location.listdir(path):
-            snapshot_id = uuid.UUID(posixpath.basename(file)[: -len(".json")])
+            snapshot_id = uuid6.UUID(posixpath.basename(file)[: -len(".json")])
             if snapshot_id in self.snapshots[project_id]:
                 continue
             self.reload_snapshot(project, snapshot_id, skip_errors)
@@ -213,7 +213,7 @@ class JsonFileMetadataStorage(MetadataStorage):
     def update_project(self, project: Project) -> Project:
         return self.add_project(project, NO_USER, NO_TEAM)
 
-    def get_project(self, project_id: uuid.UUID) -> Optional[Project]:
+    def get_project(self, project_id: ProjectID) -> Optional[Project]:
         return self.state.projects.get(project_id)
 
     def delete_project(self, project_id: ProjectID):

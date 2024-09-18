@@ -1,7 +1,6 @@
 import contextlib
 import datetime
 import json
-import uuid
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
@@ -17,11 +16,13 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import UUID4
+import uuid6
+
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core import new_id
 from evidently.model.dashboard import DashboardInfo
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
@@ -59,7 +60,7 @@ class BlobMetadata(BaseModel):
 
 
 class SnapshotMetadata(BaseModel):
-    id: UUID4
+    id: SnapshotID
     name: Optional[str] = None
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
@@ -126,13 +127,13 @@ class Entity(BaseModel):
 
 class Org(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Org
-    id: OrgID = Field(default_factory=uuid.uuid4)
+    id: OrgID = Field(default_factory=new_id)
     name: str
 
 
 class Team(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Team
-    id: TeamID = Field(default_factory=uuid.uuid4)
+    id: TeamID = Field(default_factory=new_id)
     name: str
     org_id: Optional[OrgID]
 
@@ -141,7 +142,7 @@ UT = TypeVar("UT", bound="User")
 
 
 class User(BaseModel):
-    id: UserID = Field(default_factory=uuid.uuid4)
+    id: UserID = Field(default_factory=new_id)
     name: str
     email: str = ""
 
@@ -162,7 +163,7 @@ class Project(Entity):
     class Config:
         underscore_attrs_are_private = True
 
-    id: ProjectID = Field(default_factory=uuid.uuid4)
+    id: ProjectID = Field(default_factory=new_id)
     name: str
     description: Optional[str] = None
     dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
@@ -201,7 +202,7 @@ class Project(Entity):
 
     def delete_snapshot(self, snapshot_id: Union[str, SnapshotID]):
         if isinstance(snapshot_id, str):
-            snapshot_id = uuid.UUID(snapshot_id)
+            snapshot_id = uuid6.UUID(snapshot_id)
         self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)
 
     def list_snapshots(self, include_reports: bool = True, include_test_suites: bool = True) -> List[SnapshotMetadata]:
@@ -224,7 +225,7 @@ class Project(Entity):
     ):
         dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
         template_params = TemplateParams(
-            dashboard_id="pd_" + str(uuid.uuid4()).replace("-", ""),
+            dashboard_id="pd_" + str(new_id()).replace("-", ""),
             dashboard_info=dashboard_info,
             additional_graphs={},
         )

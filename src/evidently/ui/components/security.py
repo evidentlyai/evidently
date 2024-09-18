@@ -1,8 +1,8 @@
-import uuid
 from abc import ABC
 from typing import ClassVar
 from typing import Dict
 
+import uuid6
 from litestar import Request
 from litestar.connection import ASGIConnection
 from litestar.di import Provide
@@ -20,6 +20,7 @@ from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.security.service import SecurityService
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import ZERO_UUID
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import UserID
 
 
@@ -89,8 +90,8 @@ class NoSecurityComponent(SimpleSecurity):
     class Config:
         type_alias = "none"
 
-    dummy_user_id: uuid.UUID = uuid.UUID("00000000-0000-0000-0000-000000000001")
-    dummy_org_id: uuid.UUID = uuid.UUID("00000000-0000-0000-0000-000000000002")
+    dummy_user_id: UserID = uuid6.UUID(int=1, version=7)
+    dummy_org_id: OrgID = uuid6.UUID(int=2, version=7)
 
     def get_security(self) -> SecurityService:
         from evidently.ui.security.no_security import NoSecurityService

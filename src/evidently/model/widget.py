@@ -2,7 +2,6 @@
 # coding: utf-8
 # pylint: disable=invalid-name
 import dataclasses
-import uuid
 from dataclasses import dataclass
 from dataclasses import field
 from enum import Enum
@@ -11,6 +10,8 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Union
+
+import uuid6
 
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
@@ -66,7 +67,7 @@ class AdditionalGraphInfo:
 class PlotlyGraphInfo:
     data: Any
     layout: Any
-    id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
 
 
 class WidgetType(Enum):
@@ -84,7 +85,7 @@ class BaseWidgetInfo:
     type: str
     title: str
     size: int
-    id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
     details: str = ""
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None

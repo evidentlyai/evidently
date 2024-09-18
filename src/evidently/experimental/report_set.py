@@ -1,11 +1,11 @@
 import datetime
 import os
-import uuid
 from typing import Dict
 from typing import Optional
 
 from evidently._pydantic_compat import ValidationError
 from evidently.suite.base_suite import Snapshot
+from evidently.ui.type_aliases import SnapshotID
 
 
 def load_snapshots(
@@ -13,7 +13,7 @@ def load_snapshots(
     date_from: Optional[datetime.datetime] = None,
     date_to: Optional[datetime.datetime] = None,
     skip_errors: bool = False,
-) -> Dict[uuid.UUID, Snapshot]:
+) -> Dict[SnapshotID, Snapshot]:
     result = {}
     for file in os.listdir(path):
         filepath = os.path.join(path, file)

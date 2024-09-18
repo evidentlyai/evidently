@@ -1,6 +1,5 @@
 import dataclasses
 import datetime
-import uuid
 from dataclasses import dataclass
 from typing import Dict
 from typing import List
@@ -26,6 +25,7 @@ from evidently.ui.base import User
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import RoleID
+from evidently.ui.type_aliases import SnapshotID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 
@@ -45,7 +45,7 @@ class MetricModel(BaseModel):
 
 
 class ReportModel(BaseModel):
-    id: uuid.UUID
+    id: SnapshotID
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
@@ -72,7 +72,7 @@ class ReportModel(BaseModel):
 
 
 class TestSuiteModel(BaseModel):
-    id: uuid.UUID
+    id: SnapshotID
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]

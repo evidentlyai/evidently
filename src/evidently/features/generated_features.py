@@ -1,6 +1,5 @@
 import abc
 import dataclasses
-import uuid
 from typing import Any
 from typing import ClassVar
 from typing import Generic
@@ -9,6 +8,7 @@ from typing import Optional
 
 import deprecation
 import pandas as pd
+import uuid6
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
@@ -173,7 +173,7 @@ class ApplyColumnGeneratedFeature(GeneratedFeature):
 
 class DataFeature(GeneratedFeature):
     display_name: str
-    name: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = Field(default_factory=lambda: str(uuid6.uuid7()))
 
     @abc.abstractmethod
     def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:

@@ -74,6 +74,7 @@ setup_args = dict(
         "fsspec>=2024.6.1",
         "ujson>=5.4.0",
         "deprecation>=2.1.0",
+        "uuid6>=2024.7.10",
         "cryptography>=43.0.1",
     ],
     extras_require={

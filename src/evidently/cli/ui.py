@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 
+import uuid6
 from typer import BadParameter
 from typer import Option
 from typer import echo
@@ -8,7 +9,7 @@ from typer import echo
 from evidently.cli.main import app
 
 
-def setup_deterministic_generation_uuid4(seed: int = 8754):
+def setup_deterministic_generation_uuid(seed: int = 8754):
     import uuid
 
     from faker import Faker
@@ -16,10 +17,11 @@ def setup_deterministic_generation_uuid4(seed: int = 8754):
     Faker.seed(seed)
     fake = Faker()
 
-    def deterministic_uuid4():
+    def deterministic_uuid():
         return fake.uuid4(cast_to=None)
 
-    uuid.uuid4 = deterministic_uuid4
+    uuid.uuid4 = deterministic_uuid
+    uuid6.uuid7 = deterministic_uuid
 
 
 @app.command("ui")
@@ -36,7 +38,7 @@ def ui(
 ):
     """Start Evidently UI service"""
     if os.environ.get("EXPERIMENTAL_DETERMINISTIC_UUID"):
-        setup_deterministic_generation_uuid4()
+        setup_deterministic_generation_uuid()
 
     from evidently.ui.app import run_local
     from evidently.ui.demo_projects import DEMO_PROJECTS

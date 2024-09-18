@@ -24,6 +24,7 @@ certifi==2024.7.4
 urllib3==1.26.19
 ujson==5.4.0
 deprecation==2.1.0
+uuid6==2024.7.10
 cryptography==43.0.1
 
 openai==1.16.2

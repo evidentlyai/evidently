@@ -6,12 +6,12 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
-from uuid import uuid4
 
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
+from uuid6 import uuid7
 
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
@@ -140,7 +140,7 @@ def plotly_graph_tabs(*, title: str, figures: List[GraphData], size: WidgetSize 
         params={
             "graphs": [
                 {
-                    "id": str(uuid4()),
+                    "id": str(uuid7()),
                     "title": graph.title,
                     "graph": {
                         "data": graph.data,
@@ -339,7 +339,7 @@ def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: Li
         title=title,
         type=WidgetType.TABS.value,
         size=size.value,
-        tabs=[TabInfo(str(uuid4()), tab.title, tab.widget) for tab in tabs],
+        tabs=[TabInfo(str(uuid7()), tab.title, tab.widget) for tab in tabs],
     )
 
 

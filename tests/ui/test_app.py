@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import time
-import uuid
 from copy import deepcopy
 from typing import List
 
@@ -14,6 +13,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import new_id
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
 from evidently.renderers.base_renderer import MetricRenderer
@@ -137,7 +137,7 @@ class MockMetricRenderer(MetricRenderer):
 @pytest.fixture
 def mock_snapshot():
     return Snapshot(
-        id=uuid.uuid4(),
+        id=new_id(),
         name="mock",
         timestamp=datetime.datetime.now(),
         metadata={},
@@ -385,7 +385,7 @@ def test_reload_project(test_client: TestClient, project_manager: ProjectManager
     blob = project_manager.blob
     assert isinstance(blob, FSSpecBlobStorage)
     snapshot_path = os.path.join(blob.base_path, blob.get_snapshot_blob_id(project.id, mock_snapshot))
-    snapshot_id2 = uuid.uuid4()
+    snapshot_id2 = new_id()
     snapshot2 = deepcopy(mock_snapshot)
     snapshot2.id = snapshot_id2
     snapshot_path2 = snapshot_path.replace(str(mock_snapshot.id), str(snapshot_id2))

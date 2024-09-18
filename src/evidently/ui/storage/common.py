@@ -1,4 +1,3 @@
-import uuid
 from typing import ClassVar
 from typing import List
 from typing import Optional
@@ -81,7 +80,7 @@ class NoopAuthManager(AuthManager):
         return None
 
     def check_entity_permission(
-        self, user_id: UserID, entity_type: EntityType, entity_id: uuid.UUID, permission: Permission
+        self, user_id: UserID, entity_type: EntityType, entity_id: EntityID, permission: Permission
     ) -> bool:
         return True
 

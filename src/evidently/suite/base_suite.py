@@ -3,7 +3,6 @@ import copy
 import dataclasses
 import json
 import logging
-import uuid
 from datetime import datetime
 from typing import IO
 from typing import Any
@@ -20,7 +19,6 @@ import ujson
 
 import evidently
 from evidently import ColumnMapping
-from evidently._pydantic_compat import UUID4
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import ErrorResult
@@ -45,6 +43,7 @@ from evidently.tests.base_test import TestStatus
 from evidently.ui.datasets import inject_feature_types_in_column_mapping
 from evidently.ui.type_aliases import ComputationConfigID
 from evidently.ui.type_aliases import DatasetID
+from evidently.ui.type_aliases import SnapshotID
 from evidently.utils import NumpyEncoder
 from evidently.utils import data_preprocessing
 from evidently.utils.dashboard import SaveMode
@@ -504,7 +503,7 @@ class SnapshotLinks(BaseModel):
 
 
 class Snapshot(BaseModel):
-    id: UUID4
+    id: SnapshotID
     name: Optional[str] = None
     timestamp: datetime
     metadata: Dict[str, MetadataValueType]
@@ -570,7 +569,7 @@ class ReportBase(Display, Runnable):
     _inner_suite: Suite
     # collection of all possible common options
     options: Options
-    id: uuid.UUID
+    id: SnapshotID
     name: Optional[str] = None
     timestamp: datetime
     metadata: Dict[str, MetadataValueType] = {}

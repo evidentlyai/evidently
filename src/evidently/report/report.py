@@ -1,5 +1,4 @@
 import dataclasses
-import uuid
 import warnings
 from collections import defaultdict
 from datetime import datetime
@@ -17,6 +16,7 @@ from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.core import IncludeOptions
+from evidently.core import new_id
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metric_results import DatasetColumns
 from evidently.model.dashboard import DashboardInfo
@@ -33,6 +33,7 @@ from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
+from evidently.ui.type_aliases import SnapshotID
 from evidently.utils.generators import BaseGenerator
 
 METRIC_GENERATORS = "metric_generators"
@@ -50,7 +51,7 @@ class Report(ReportBase):
         metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
         options: AnyOptions = None,
         timestamp: Optional[datetime] = None,
-        id: uuid.UUID = None,
+        id: SnapshotID = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
         model_id: str = None,
@@ -96,7 +97,7 @@ class Report(ReportBase):
 
         if current_data is None:
             raise ValueError("Current dataset should be present")
-        self.id = uuid.uuid4()
+        self.id = new_id()
         if self._timestamp is not None:
             self.timestamp = self._timestamp
         else:
@@ -243,7 +244,7 @@ class Report(ReportBase):
             metrics_results.extend(html_info)
 
         return (
-            "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
+            "evidently_dashboard_" + str(new_id()).replace("-", ""),
             DashboardInfo("Report", widgets=metrics_results),
             {
                 f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info

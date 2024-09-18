@@ -1,9 +1,9 @@
-import uuid
 from typing import List
 from typing import Optional
 from typing import Union
 
 import pandas as pd
+import uuid6
 
 from evidently import ColumnMapping
 from evidently.suite.base_suite import Snapshot
@@ -38,12 +38,12 @@ class WorkspaceView(WorkspaceBase):
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
         if isinstance(project_id, str):
-            project_id = uuid.UUID(project_id)
+            project_id = uuid6.UUID(project_id)
         return self.project_manager.get_project(self.user_id, project_id)
 
     def delete_project(self, project_id: STR_UUID):
         if isinstance(project_id, str):
-            project_id = uuid.UUID(project_id)
+            project_id = uuid6.UUID(project_id)
         self.project_manager.delete_project(self.user_id, project_id)
 
     def list_projects(self, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None) -> List[Project]:
@@ -51,14 +51,14 @@ class WorkspaceView(WorkspaceBase):
 
     def add_snapshot(self, project_id: STR_UUID, snapshot: Snapshot):
         if isinstance(project_id, str):
-            project_id = uuid.UUID(project_id)
+            project_id = uuid6.UUID(project_id)
         self.project_manager.add_snapshot(self.user_id, project_id, snapshot)
 
     def delete_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID):
         if isinstance(project_id, str):
-            project_id = uuid.UUID(project_id)
+            project_id = uuid6.UUID(project_id)
         if isinstance(snapshot_id, str):
-            snapshot_id = uuid.UUID(snapshot_id)
+            snapshot_id = uuid6.UUID(snapshot_id)
         self.project_manager.delete_snapshot(self.user_id, project_id, snapshot_id)
 
     def search_project(
