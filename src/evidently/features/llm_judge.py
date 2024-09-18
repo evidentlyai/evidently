@@ -25,6 +25,7 @@ from evidently.options.base import Options
 from evidently.options.option import Option
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import autoregister
 from evidently.utils.data_preprocessing import DataDefinition
 
 LLMMessage = Tuple[str, str]
@@ -113,7 +114,11 @@ class Uncertainty(str, Enum):
     NON_TARGET = "non_target"
 
 
+@autoregister
 class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
+    class Config:
+        type_alias = "evidently:prompt_template:BinaryClassificationPromptTemplate"
+
     template: str = (
         """{__criteria__}\n{__task__}\n\n{__as__}\n{{input}}\n{__ae__}\n\n{__instructions__}\n\n{__output_format__}"""
     )
@@ -247,6 +252,9 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
 
 
 class LLMJudge(GeneratedFeatures):
+    class Config:
+        type_alias = "evidently:feature:LLMJudge"
+
     """Generic LLM judge generated features"""
 
     DEFAULT_INPUT_COLUMN: ClassVar = "input"

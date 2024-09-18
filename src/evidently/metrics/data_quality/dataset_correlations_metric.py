@@ -34,6 +34,7 @@ from evidently.utils.data_preprocessing import PredictionColumns
 
 class CorrelationStats(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:CorrelationStats"
         field_tags = {
             "abs_max_target_features_correlation": {IncludeTags.Extra},
             "abs_max_prediction_features_correlation": {IncludeTags.Extra},
@@ -50,6 +51,7 @@ class CorrelationStats(MetricResult):
 
 class DatasetCorrelation(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DatasetCorrelation"
         dict_exclude_fields = {"correlation", "correlations_calculate"}
         pd_include = False
         pd_exclude_fields = {"correlation", "correlations_calculate"}
@@ -63,6 +65,7 @@ class DatasetCorrelation(MetricResult):
 
 class DatasetCorrelationsMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:DatasetCorrelationsMetricResult"
         dict_exclude_fields = {"target_correlation"}
         pd_exclude_fields = {"target_correlation"}
         field_tags = {
@@ -77,6 +80,9 @@ class DatasetCorrelationsMetricResult(MetricResult):
 
 
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:DatasetCorrelationsMetric"
+
     """Calculate different correlations with target, predictions and features"""
 
     _text_features_gen: Optional[

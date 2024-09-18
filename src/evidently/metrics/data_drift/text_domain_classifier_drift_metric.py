@@ -26,12 +26,16 @@ from evidently.renderers.html_widgets import widget_tabs
 
 
 class TextDomainField(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:TextDomainField"
+
     characteristic_examples: Optional[List[str]]
     characteristic_words: Optional[List[str]]
 
 
 class TextDomainClassifierDriftResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:TextDomainClassifierDriftResult"
         field_tags = {
             "current": {IncludeTags.Current, IncludeTags.Extra},
             "reference": {IncludeTags.Reference, IncludeTags.Extra},
@@ -47,6 +51,9 @@ class TextDomainClassifierDriftResult(MetricResult):
 
 
 class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
+    class Config:
+        type_alias = "evidently:metric:TextDomainClassifierDriftMetric"
+
     text_column_name: str
 
     def __init__(self, text_column_name: str, options: AnyOptions = None) -> None:

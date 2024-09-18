@@ -24,6 +24,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationLiftCurveResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationLiftCurveResults"
         pd_include = False
 
         field_tags = {"current_lift_curve": {IncludeTags.Current}, "reference_lift_curve": {IncludeTags.Reference}}
@@ -33,6 +34,9 @@ class ClassificationLiftCurveResults(MetricResult):
 
 
 class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationLiftCurve"
+
     def calculate(self, data: InputData) -> ClassificationLiftCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target

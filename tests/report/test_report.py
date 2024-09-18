@@ -15,6 +15,7 @@ from evidently.report import Report
 
 class MockMetricResult(MetricResult):
     class Config:
+        alias_required = False
         dict_exclude_fields = {"series"}
 
     value: str
@@ -23,6 +24,9 @@ class MockMetricResult(MetricResult):
 
 
 class MockMetric(Metric[MockMetricResult]):
+    class Config:
+        alias_required = False
+
     def calculate(self, data: InputData) -> MockMetricResult:
         return MockMetricResult(value="a", series=pd.Series([0]), distribution=Distribution(x=[1, 1], y=[0, 0]))
 
@@ -31,7 +35,7 @@ class MockMetric(Metric[MockMetricResult]):
 class MockMetricRenderer(MetricRenderer):
     def render_html(self, obj) -> List[BaseWidgetInfo]:
         # todo?
-        raise NotImplementedError
+        return []
 
 
 def test_as_dict():

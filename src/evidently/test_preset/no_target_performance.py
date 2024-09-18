@@ -24,6 +24,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class NoTargetPerformanceTestPreset(TestPreset):
+    class Config:
+        type_alias = "evidently:test_preset:NoTargetPerformanceTestPreset"
+
     """
     No Target Performance tests.
 

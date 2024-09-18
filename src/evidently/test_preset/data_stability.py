@@ -16,6 +16,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataStabilityTestPreset(TestPreset):
+    class Config:
+        type_alias = "evidently:test_preset:DataStabilityTestPreset"
+
     """
     Data Stability tests.
 

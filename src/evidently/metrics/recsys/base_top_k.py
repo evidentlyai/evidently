@@ -22,6 +22,7 @@ from evidently.utils.visualizations import plot_metric_k
 
 class TopKMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:TopKMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},

@@ -22,6 +22,9 @@ from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class RegressionAbsPercentageErrorPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
+    class Config:
+        type_alias = "evidently:metric:RegressionAbsPercentageErrorPlot"
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

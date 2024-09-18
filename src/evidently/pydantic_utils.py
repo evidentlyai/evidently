@@ -1,9 +1,11 @@
 import dataclasses
 import hashlib
+import inspect
 import itertools
 import json
 import os
 import warnings
+from abc import ABC
 from enum import Enum
 from functools import lru_cache
 from typing import TYPE_CHECKING
@@ -126,11 +128,27 @@ LOADED_TYPE_ALIASES: Dict[Tuple[Type["PolymorphicModel"], str], Type["Polymorphi
 
 
 def register_type_alias(base_class: Type["PolymorphicModel"], classpath: str, alias: str):
-    key = (base_class, alias)
+    while True:
+        key = (base_class, alias)
 
-    if key in TYPE_ALIASES and TYPE_ALIASES[key] != classpath and "PYTEST_CURRENT_TEST" not in os.environ:
-        warnings.warn(f"Duplicate key {key} in alias map")
-    TYPE_ALIASES[key] = classpath
+        if key in TYPE_ALIASES and TYPE_ALIASES[key] != classpath and "PYTEST_CURRENT_TEST" not in os.environ:
+            warnings.warn(f"Duplicate key {key} in alias map")
+        TYPE_ALIASES[key] = classpath
+
+        if base_class is PolymorphicModel:
+            break
+        base_class = get_base_class(base_class, ensure_parent=True)  # type: ignore[arg-type]
+        if not base_class.__config__.transitive_aliases:
+            break
+
+
+def autoregister(cls: Type["PolymorphicModel"]):
+    """Decorator that automatically registers subclass.
+    Can only be used on subclasses that are defined in the same file as base class
+    (or if the import of this subclass is guaranteed when base class is imported)
+    """
+    register_type_alias(get_base_class(cls), get_classpath(cls), cls.__get_type__())  # type: ignore[arg-type]
+    return cls
 
 
 def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["PolymorphicModel"], alias: str):
@@ -144,8 +162,10 @@ def register_loaded_alias(base_class: Type["PolymorphicModel"], cls: Type["Polym
 
 
 @lru_cache()
-def get_base_class(cls: Type["PolymorphicModel"]) -> Type["PolymorphicModel"]:
+def get_base_class(cls: Type["PolymorphicModel"], ensure_parent: bool = False) -> Type["PolymorphicModel"]:
     for cls_ in cls.mro():
+        if ensure_parent and cls_ is cls:
+            continue
         if not issubclass(cls_, PolymorphicModel):
             continue
         config = cls_.__dict__.get("Config")
@@ -164,9 +184,20 @@ Fingerprint = str
 FingerprintPart = Union[None, int, str, float, bool, bytes, Tuple["FingerprintPart", ...]]
 
 
+def is_not_abstract(cls):
+    return not (inspect.isabstract(cls) or ABC in cls.__bases__)
+
+
 class PolymorphicModel(BaseModel):
     class Config(BaseModel.Config):
+        # value to put into "type" field
         type_alias: ClassVar[Optional[str]] = None
+        # flag to mark alias required. If not required, classpath is used by default
+        alias_required: ClassVar[bool] = True
+        # flag to register aliaes for grand-parent base type
+        # eg PolymorphicModel -> A -> B -> C, where A and B are base types. only if A has this flag, C can be parsed as both A and B.
+        transitive_aliases: ClassVar[bool] = False
+        # flag to mark type as base. This means it will be possible to parse all subclasses of it as this type
         is_base_type: ClassVar[bool] = False
 
     __config__: ClassVar[Config]
@@ -176,6 +207,8 @@ class PolymorphicModel(BaseModel):
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
+        if cls.__config__.alias_required and is_not_abstract(cls):
+            raise ValueError(f"Alias is required for {cls.__name__}")
         return cls.__get_classpath__()
 
     @classmethod
@@ -230,6 +263,8 @@ class PolymorphicModel(BaseModel):
                 if key in TYPE_ALIASES:
                     classpath = TYPE_ALIASES[key]
                 else:
+                    if "." not in typename:
+                        raise ValueError(f'Unknown alias "{typename}"')
                     classpath = typename
                 if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
                     raise ValueError(f"{classpath} does not match any allowed prefixes")
@@ -269,6 +304,11 @@ EBM = TypeVar("EBM", bound="EvidentlyBaseModel")
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
+    class Config:
+        type_alias = "evidently:base:EvidentlyBaseModel"
+        alias_required = True
+        is_base_type = True
+
     def get_fingerprint(self) -> Fingerprint:
         return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
 
@@ -289,7 +329,11 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         return self.__class__(**data)
 
 
+@autoregister
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
+    class Config:
+        type_alias = "evidently:test:WithTestAndMetricDependencies"
+
     def __evidently_dependencies__(self):
         from evidently.base_metric import Metric
         from evidently.tests.base_test import Test

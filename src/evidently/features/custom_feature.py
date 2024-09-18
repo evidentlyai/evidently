@@ -14,6 +14,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class CustomFeature(FeatureTypeFieldMixin, GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:CustomFeature"
+
     display_name: str
     name: str = Field(default_factory=lambda: str(new_id()))
     func: Callable[[pd.DataFrame, DataDefinition], pd.Series]
@@ -28,6 +31,9 @@ class CustomFeature(FeatureTypeFieldMixin, GeneratedFeature):
 
 
 class CustomSingleColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:CustomSingleColumnFeature"
+
     display_name: str
     func: Callable[[pd.Series], pd.Series]
     name: str = Field(default_factory=lambda: str(new_id()))
@@ -50,6 +56,9 @@ class CustomSingleColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
 
 
 class CustomPairColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:CustomPairColumnFeature"
+
     display_name: str
     func: Callable[[pd.Series, pd.Series], pd.Series]
     name: str = Field(default_factory=lambda: str(new_id()))

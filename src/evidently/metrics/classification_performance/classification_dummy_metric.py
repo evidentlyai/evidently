@@ -31,6 +31,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationDummyMetricResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationDummyMetricResults"
         dict_exclude_fields = {"metrics_matrix"}
         pd_exclude_fields = {"metrics_matrix"}
 
@@ -43,6 +44,9 @@ class ClassificationDummyMetricResults(MetricResult):
 
 
 class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationDummyMetric"
+
     _quality_metric: ClassificationQualityMetric
 
     def __init__(

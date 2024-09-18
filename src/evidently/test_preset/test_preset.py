@@ -14,6 +14,9 @@ AnyTest = Union[Test, BaseGenerator[Test]]
 
 
 class TestPreset(BasePreset):
+    class Config:
+        is_base_type = True
+
     @abc.abstractmethod
     def generate_tests(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]

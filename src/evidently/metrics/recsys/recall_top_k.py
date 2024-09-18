@@ -4,6 +4,9 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class RecallTopKMetric(TopKMetric):
+    class Config:
+        type_alias = "evidently:metric:RecallTopKMetric"
+
     def key(self):
         return "recall"
 

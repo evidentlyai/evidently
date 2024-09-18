@@ -13,6 +13,7 @@ from evidently.renderers.html_widgets import text_widget
 
 class CommentResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:CommentResults"
         dict_include = False
         tags = {IncludeTags.Render}
 
@@ -20,6 +21,9 @@ class CommentResults(MetricResult):
 
 
 class Comment(Metric[CommentResults]):
+    class Config:
+        type_alias = "evidently:metric:Comment"
+
     text: str
 
     def __init__(self, text: str, options: AnyOptions = None):

@@ -16,6 +16,9 @@ AnyMetric = Union[Metric, BaseGenerator[Metric]]
 class MetricPreset(BasePreset):
     """Base class for metric presets"""
 
+    class Config:
+        is_base_type = True
+
     @abc.abstractmethod
     def generate_metrics(
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]

@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Dict
 from typing import Optional
 from typing import Union
@@ -17,20 +18,32 @@ from evidently.pydantic_utils import PolymorphicModel
 
 
 class MockMetricResultField(MetricResult):
+    class Config:
+        alias_required = False
+
     nested_field: str
 
 
 class ExtendedMockMetricResultField(MockMetricResultField):
+    class Config:
+        alias_required = False
+
     additional_field: str
 
 
 class MockMetricResult(MetricResult):
+    class Config:
+        alias_required = False
+
     field1: MockMetricResultField
     field2: int
 
 
 def _metric_with_result(result: MetricResult):
     class MockMetric(Metric):
+        class Config:
+            alias_required = False
+
         def get_result(self):
             return result
 
@@ -72,6 +85,9 @@ def test_field_path():
 
 
 class MockMetricResultWithDict(MetricResult):
+    class Config:
+        alias_required = False
+
     d: Dict[str, MockMetricResultField]
 
 
@@ -112,7 +128,8 @@ def test_field_path_with_dict():
 
 def test_not_allowed_prefix():
     class SomeModel(PolymorphicModel):
-        pass
+        class Config:
+            alias_required = False
 
     with pytest.raises(ValueError):
         parse_obj_as(SomeModel, {"type": "external.Class"})
@@ -122,6 +139,7 @@ def test_type_alias():
     class SomeModel(PolymorphicModel):
         class Config:
             type_alias = "somemodel"
+            alias_required = False
 
     class SomeModelSubclass(SomeModel):
         pass
@@ -144,6 +162,7 @@ def test_include_exclude():
     class SomeModel(MetricResult):
         class Config:
             field_tags = {"f1": {IncludeTags.Render}}
+            alias_required = False
 
         f1: str
         f2: str
@@ -155,10 +174,14 @@ def test_include_exclude():
     class SomeNestedModel(MetricResult):
         class Config:
             tags = {IncludeTags.Render}
+            alias_required = False
 
         f1: str
 
     class SomeOtherModel(MetricResult):
+        class Config:
+            alias_required = False
+
         f1: str
         f2: SomeNestedModel
         f3: SomeModel
@@ -174,6 +197,7 @@ def test_get_field_tags():
     class SomeModel(MetricResult):
         class Config:
             field_tags = {"f1": {IncludeTags.Render}}
+            alias_required = False
 
         f1: str
         f2: str
@@ -185,10 +209,14 @@ def test_get_field_tags():
     class SomeNestedModel(MetricResult):
         class Config:
             tags = {IncludeTags.Render}
+            alias_required = False
 
         f1: str
 
     class SomeOtherModel(MetricResult):
+        class Config:
+            alias_required = False
+
         f1: str
         f2: SomeNestedModel
         f3: SomeModel
@@ -206,6 +234,7 @@ def test_list_with_tags():
     class SomeModel(MetricResult):
         class Config:
             field_tags = {"f1": {IncludeTags.Render}}
+            alias_required = False
 
         f1: str
         f2: str
@@ -219,10 +248,14 @@ def test_list_with_tags():
     class SomeNestedModel(MetricResult):
         class Config:
             tags = {IncludeTags.Render}
+            alias_required = False
 
         f1: str
 
     class SomeOtherModel(MetricResult):
+        class Config:
+            alias_required = False
+
         f1: str
         f2: SomeNestedModel
         f3: SomeModel
@@ -242,12 +275,14 @@ def test_list_with_tags_with_union():
     class A(MetricResult):
         class Config:
             tags = {IncludeTags.Render}
+            alias_required = False
 
         f1: str
 
     class B(MetricResult):
         class Config:
             tags = {IncludeTags.Render}
+            alias_required = False
 
         f1: str
 
@@ -256,6 +291,9 @@ def test_list_with_tags_with_union():
     assert fp._cls == A
 
     class SomeModel(MetricResult):
+        class Config:
+            alias_required = False
+
         f2: Union[A, B]
         f1: str
 
@@ -271,6 +309,7 @@ def test_get_field_tags_no_overwrite():
     class A(MetricResult):
         class Config:
             field_tags = {"f": {IncludeTags.Current}}
+            alias_required = False
 
         f: str
 
@@ -281,6 +320,7 @@ def test_get_field_tags_no_overwrite():
     class C(MetricResult):
         class Config:
             field_tags = {"f": {IncludeTags.Reference}}
+            alias_required = False
 
         f: A
 
@@ -296,11 +336,17 @@ def test_get_field_tags_no_overwrite():
 
 def test_fingerprint_add_new_default_field():
     class A(EvidentlyBaseModel):
+        class Config:
+            alias_required = False
+
         field1: str
 
     f1 = A(field1="123").get_fingerprint()
 
     class A(EvidentlyBaseModel):
+        class Config:
+            alias_required = False
+
         field1: str
         field2: str = "321"
 
@@ -312,12 +358,18 @@ def test_fingerprint_add_new_default_field():
 
 def test_fingerprint_reorder_fields():
     class A(EvidentlyBaseModel):
+        class Config:
+            alias_required = False
+
         field1: str
         field2: str
 
     f1 = A(field1="123", field2="321").get_fingerprint()
 
     class A(EvidentlyBaseModel):
+        class Config:
+            alias_required = False
+
         field2: str
         field1: str
 
@@ -329,6 +381,9 @@ def test_fingerprint_reorder_fields():
 
 def test_fingerprint_default_collision():
     class A(EvidentlyBaseModel):
+        class Config:
+            alias_required = False
+
         field1: Optional[str] = None
         field2: Optional[str] = None
 
@@ -337,6 +392,9 @@ def test_fingerprint_default_collision():
 
 def test_wrong_classpath():
     class A(EvidentlyBaseModel):
+        class Config:
+            alias_required = False
+
         f: str
 
     ALLOWED_TYPE_PREFIXES.append("tests.")
@@ -346,3 +404,18 @@ def test_wrong_classpath():
     d["type"] += "_"
     with pytest.raises(ValidationError):
         parse_obj_as(A, d)
+
+
+def test_alias_requied():
+    class RequiredAlias(PolymorphicModel, ABC):
+        class Config:
+            alias_required = True
+
+    with pytest.raises(ValueError):
+
+        class NoAlias(RequiredAlias):
+            pass
+
+    class Alias(RequiredAlias):
+        class Config:
+            type_alias = "alias"

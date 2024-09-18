@@ -16,6 +16,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TextEvals(MetricPreset):
+    class Config:
+        type_alias = "evidently:metric_preset:TextEvals"
+
     column_name: str
     descriptors: Optional[List[FeatureDescriptor]] = None
 

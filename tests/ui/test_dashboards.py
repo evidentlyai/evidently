@@ -17,10 +17,16 @@ from evidently.ui.dashboards.utils import getattr_nested
 
 
 class A(MetricResult):
+    class Config:
+        alias_required = False
+
     f: str
 
 
 class B(MetricResult):
+    class Config:
+        alias_required = False
+
     f: Dict[str, A]
     f1: A
 
@@ -44,6 +50,9 @@ def test_panel_value_metric_args_ser():
 
 def test_panel_value_methic_hash_filter():
     class MyMetric(Metric[A]):
+        class Config:
+            alias_required = False
+
         arg: str
 
         def calculate(self, data: InputData) -> TResult:
@@ -59,9 +68,15 @@ def test_panel_value_methic_hash_filter():
 
 def test_metric_hover_template():
     class Nested(EvidentlyBaseModel):
+        class Config:
+            alias_required = False
+
         f: str
 
     class MyMetric(Metric[A]):
+        class Config:
+            alias_required = False
+
         arg: str
         n: Nested
 
@@ -93,6 +108,9 @@ def test_metric_hover_template():
 
 def test_metric_hover_template_column_name():
     class MyMetric(Metric[A]):
+        class Config:
+            alias_required = False
+
         column_name: ColumnName
 
         def calculate(self, data: InputData) -> TResult:

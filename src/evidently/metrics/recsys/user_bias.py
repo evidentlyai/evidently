@@ -20,6 +20,7 @@ from evidently.utils.visualizations import plot_bias
 
 class UserBiasMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:UserBiasMetricResult"
         field_tags = {
             "column_name": {IncludeTags.Parameter},
             "current_train_distr": {IncludeTags.Current},
@@ -36,6 +37,9 @@ class UserBiasMetricResult(MetricResult):
 
 
 class UserBiasMetric(Metric[UserBiasMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:UserBiasMetric"
+
     column_name: str
 
     def __init__(self, column_name: str, options: AnyOptions = None) -> None:

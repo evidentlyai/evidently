@@ -12,6 +12,9 @@ from evidently.metric_results import ScatterData
 
 
 class PredActualScatter(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:PredActualScatter"
+
     predicted: ScatterData
     actual: ScatterData
 
@@ -31,6 +34,9 @@ def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, 
 
 
 class RegressionScatter(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:RegressionScatter"
+
     underestimation: PredActualScatter
     majority: PredActualScatter
     overestimation: PredActualScatter
@@ -38,6 +44,7 @@ class RegressionScatter(MetricResult):
 
 class IntervalSeries(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:IntervalSeries"
         underscore_attrs_are_private = True
 
     bins: List[float]
@@ -69,6 +76,7 @@ class IntervalSeries(MetricResult):
 
 class RegressionMetricScatter(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RegressionMetricScatter"
         smart_union = True
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
@@ -82,6 +90,9 @@ class RegressionMetricScatter(MetricResult):
 
 
 class RegressionMetricsScatter(MetricResult):
+    class Config:
+        type_alias = "evidently:metric_result:RegressionMetricsScatter"
+
     r2_score: RegressionMetricScatter
     rmse: RegressionMetricScatter
     mean_abs_error: RegressionMetricScatter

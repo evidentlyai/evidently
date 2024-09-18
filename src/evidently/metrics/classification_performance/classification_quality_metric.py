@@ -20,6 +20,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationQualityMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationQualityMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -32,6 +33,9 @@ class ClassificationQualityMetricResult(MetricResult):
 
 
 class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationQualityMetric"
+
     _confusion_matrix_metric: ClassificationConfusionMatrix
 
     def __init__(

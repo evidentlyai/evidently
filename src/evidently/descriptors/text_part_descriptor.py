@@ -4,6 +4,9 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class BeginsWith(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:BeginsWith"
+
     prefix: str
     case_sensitive: bool = True
 
@@ -17,6 +20,9 @@ class BeginsWith(FeatureDescriptor):
 
 
 class EndsWith(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:EndsWith"
+
     suffix: str
     case_sensitive: bool = True
 

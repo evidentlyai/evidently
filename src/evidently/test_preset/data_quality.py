@@ -14,6 +14,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataQualityTestPreset(TestPreset):
+    class Config:
+        type_alias = "evidently:test_preset:DataQualityTestPreset"
+
     """
     Data Quality tests.
 

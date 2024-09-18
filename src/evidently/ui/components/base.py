@@ -65,6 +65,8 @@ class Component(PolymorphicModel, ABC):
 
     class Config:
         extra = Extra.forbid
+        alias_required = False
+        is_base_type = True
 
     def __init_subclass__(cls):
         super().__init_subclass__()

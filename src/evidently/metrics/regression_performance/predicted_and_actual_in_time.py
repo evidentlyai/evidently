@@ -22,6 +22,9 @@ from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class RegressionPredictedVsActualPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
+    class Config:
+        type_alias = "evidently:metric:RegressionPredictedVsActualPlot"
+
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
 

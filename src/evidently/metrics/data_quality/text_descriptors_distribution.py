@@ -30,6 +30,7 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 class TextDescriptorsDistributionResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:TextDescriptorsDistributionResult"
         pd_include = False
         field_tags = {
             "current": {IncludeTags.Current},
@@ -43,6 +44,9 @@ class TextDescriptorsDistributionResult(MetricResult):
 
 
 class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
+    class Config:
+        type_alias = "evidently:metric:TextDescriptorsDistribution"
+
     """Calculates distribution for the column"""
 
     column_name: str

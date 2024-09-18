@@ -33,6 +33,7 @@ from evidently.pydantic_utils import FingerprintPart
 from evidently.pydantic_utils import FrozenBaseMeta
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
+from evidently.pydantic_utils import autoregister
 from evidently.pydantic_utils import get_value_fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 
@@ -49,7 +50,10 @@ class WithFieldsPathMetaclass(ModelMetaclass):
 
 class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetaclass):  # type: ignore[misc] # pydantic Config
     class Config:
+        type_alias = "evidently:metric_result:MetricResult"
         field_tags = {"type": {IncludeTags.TypeField}}
+        is_base_type = True
+        alias_required = True
 
 
 class ErrorResult(BaseResult):
@@ -72,7 +76,11 @@ class DatasetType(Enum):
     ADDITIONAL = "additional"
 
 
+@autoregister
 class ColumnName(EnumValueMixin, EvidentlyBaseModel):
+    class Config:
+        type_alias = "evidently:base:ColumnName"
+
     name: str
     display_name: str
     dataset: DatasetType
@@ -217,10 +225,15 @@ class WithResultFieldPathMetaclass(FrozenBaseMeta):
 
 class BasePreset(EvidentlyBaseModel):
     class Config:
+        type_alias = "evidently:base:BasePreset"
+        transitive_aliases = True
         is_base_type = True
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
+    class Config:
+        is_base_type = True
+
     _context: Optional["Context"] = None
 
     options: Options
@@ -310,6 +323,7 @@ class UsesRawDataMixin:
 
 class ColumnMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnMetricResult"
         field_tags = {
             "column_name": {IncludeTags.Parameter},
             "column_type": {IncludeTags.Parameter},

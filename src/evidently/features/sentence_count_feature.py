@@ -10,6 +10,9 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class SentenceCount(ApplyColumnGeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:SentenceCount"
+
     __feature_type__: ClassVar = ColumnType.Numerical
     _reg: ClassVar[re.Pattern] = re.compile(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s")
     display_name_template: ClassVar = "Sentence Count for {column_name}"

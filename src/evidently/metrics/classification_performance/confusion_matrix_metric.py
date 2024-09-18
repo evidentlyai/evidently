@@ -24,6 +24,7 @@ DEFAULT_THRESHOLD = 0.5
 
 class ClassificationConfusionMatrixResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationConfusionMatrixResult"
         field_tags = {
             "current_matrix": {IncludeTags.Current},
             "reference_matrix": {IncludeTags.Reference},
@@ -46,6 +47,9 @@ class ClassificationConfusionMatrixParameters(BaseModel):
 class ClassificationConfusionMatrix(
     ThresholdClassificationMetric[ClassificationConfusionMatrixResult], ClassificationConfusionMatrixParameters
 ):
+    class Config:
+        type_alias = "evidently:metric:ClassificationConfusionMatrix"
+
     def __init__(
         self,
         probas_threshold: Optional[float] = None,

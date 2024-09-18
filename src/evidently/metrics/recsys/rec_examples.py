@@ -27,6 +27,7 @@ from evidently.renderers.html_widgets import table_data
 
 class RecCasesTableResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:RecCasesTableResults"
         pd_include = False
         field_tags = {
             "user_ids": {IncludeTags.Extra},
@@ -44,6 +45,9 @@ class RecCasesTableResults(MetricResult):
 
 
 class RecCasesTable(Metric[RecCasesTableResults]):
+    class Config:
+        type_alias = "evidently:metric:RecCasesTable"
+
     user_ids: Optional[List[Union[int, str]]]
     display_features: Optional[List[str]]
     item_num: Optional[int]

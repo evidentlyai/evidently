@@ -16,6 +16,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class OOVWordsPercentage(ApplyColumnGeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:OOVWordsPercentage"
+
     __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "OOV Words % for {column_name}"
     ignore_words: Tuple = ()

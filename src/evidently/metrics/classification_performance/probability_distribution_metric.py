@@ -23,6 +23,7 @@ from evidently.utils.data_operations import process_columns
 
 class ClassificationProbDistributionResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ClassificationProbDistributionResults"
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
@@ -34,6 +35,9 @@ class ClassificationProbDistributionResults(MetricResult):
 
 
 class ClassificationProbDistribution(Metric[ClassificationProbDistributionResults]):
+    class Config:
+        type_alias = "evidently:metric:ClassificationProbDistribution"
+
     @staticmethod
     def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:
         result = {}

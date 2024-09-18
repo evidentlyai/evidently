@@ -6,6 +6,9 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class ExcludesWords(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:ExcludesWords"
+
     words_list: List[str]
     mode: str = "all"
     lemmatize: bool = True
@@ -21,6 +24,9 @@ class ExcludesWords(FeatureDescriptor):
 
 
 class IncludesWords(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:IncludesWords"
+
     words_list: List[str]
     mode: str = "any"
     lemmatize: bool = True

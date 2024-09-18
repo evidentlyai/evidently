@@ -27,6 +27,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class ColumnCorrelationsMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnCorrelationsMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -54,6 +55,9 @@ class ColumnCorrelationsMetricResult(MetricResult):
 
 
 class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ColumnCorrelationsMetric"
+
     """Calculates correlations between the selected column and all the other columns.
     In the current and reference (if presented) datasets"""
 

@@ -133,6 +133,7 @@ def assign_panel_id(f):
 
 class DashboardPanel(EnumValueMixin, PolymorphicModel):
     class Config:
+        type_alias = "evidently:dashboard_panel:DashboardPanel"
         is_base_type = True
 
     id: PanelID = Field(default_factory=new_id)

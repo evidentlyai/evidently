@@ -23,6 +23,7 @@ SAMPLE_SIZE = 5000
 
 class FeatureImportanceMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:FeatureImportanceMetricResult"
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Optional[Dict[str, float]] = None
@@ -41,6 +42,9 @@ class FeatureImportanceMetricResult(MetricResult):
 
 
 class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:FeatureImportanceMetric"
+
     def calculate(self, data: InputData) -> FeatureImportanceMetricResult:
         if data.additional_data.get("current_feature_importance") is not None:
             return FeatureImportanceMetricResult(

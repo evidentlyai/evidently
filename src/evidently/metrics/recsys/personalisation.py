@@ -26,6 +26,7 @@ from evidently.renderers.html_widgets import widget_tabs
 
 class PersonalizationMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:PersonalizationMetricResult"
         pd_include = False
 
         field_tags = {
@@ -44,6 +45,9 @@ class PersonalizationMetricResult(MetricResult):
 
 
 class PersonalizationMetric(Metric[PersonalizationMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:PersonalizationMetric"
+
     """Mean Inter List"""
 
     k: int

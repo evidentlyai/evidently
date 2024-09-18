@@ -97,11 +97,16 @@ class TestStatus(Enum):
 
 class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc] # pydantic Config
     class Config:
+        type_alias = "evidently:test_parameters:TestParameters"
         field_tags = {"type": {IncludeTags.TypeField}}
+        is_base_type = True
 
 
 class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
     # short name/title from the test class
+    class Config:
+        type_alias = "evidently:metric_result:TestResult"
+
     name: str
     # what was checked, what threshold (current value 13 is not ok with condition less than 5)
     description: str
@@ -139,6 +144,9 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
 
 
 class Test(WithTestAndMetricDependencies):
+    class Config:
+        is_base_type = True
+
     """
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
     """
@@ -271,6 +279,9 @@ class TestValueCondition(ExcludeNoneMixin):
 
 
 class ConditionTestParameters(TestParameters):
+    class Config:
+        type_alias = "evidently:test_parameters:ConditionTestParameters"
+
     condition: TestValueCondition
 
 
@@ -302,10 +313,16 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
 
 
 class CheckValueParameters(ConditionTestParameters):
+    class Config:
+        type_alias = "evidently:test_parameters:CheckValueParameters"
+
     value: Optional[Numeric]
 
 
 class ColumnCheckValueParameters(CheckValueParameters):
+    class Config:
+        type_alias = "evidently:test_parameters:ColumnCheckValueParameters"
+
     column_name: str
 
 

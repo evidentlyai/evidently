@@ -13,6 +13,9 @@ from evidently.suite.base_suite import States
 
 
 class OldTypeSimpleMetric(Metric[int]):
+    class Config:
+        alias_required = False
+
     value: int
 
     def __init__(self, value: int):
@@ -24,6 +27,9 @@ class OldTypeSimpleMetric(Metric[int]):
 
 
 class SimpleMetric(Metric[int]):
+    class Config:
+        alias_required = False
+
     value: int
 
     def __init__(self, value: int):

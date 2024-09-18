@@ -22,6 +22,7 @@ from evidently.utils.visualizations import plot_bias
 
 class ItemBiasMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ItemBiasMetricResult"
         field_tags = {
             "k": {IncludeTags.Parameter},
             "column_name": {IncludeTags.Parameter},
@@ -40,6 +41,9 @@ class ItemBiasMetricResult(MetricResult):
 
 
 class ItemBiasMetric(Metric[ItemBiasMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ItemBiasMetric"
+
     k: int
     column_name: str
 

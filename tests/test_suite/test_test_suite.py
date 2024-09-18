@@ -47,6 +47,9 @@ from evidently.tests.base_test import Test
 
 
 class ErrorTest(Test):
+    class Config:
+        alias_required = False
+
     name = "Error Test"
     group = "example"
 

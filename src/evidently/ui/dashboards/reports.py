@@ -14,6 +14,7 @@ from evidently.base_metric import Metric
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pydantic_utils import autoregister
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
@@ -31,7 +32,11 @@ if TYPE_CHECKING:
     from evidently.ui.base import DataStorage
 
 
+@autoregister
 class DashboardPanelPlot(DashboardPanel):
+    class Config:
+        type_alias = "evidently:dashboard_panel:DashboardPanelPlot"
+
     values: List[PanelValue]
     plot_type: PlotType
 
@@ -89,7 +94,11 @@ class DashboardPanelPlot(DashboardPanel):
         raise ValueError(f"Unsupported plot type {self.plot_type}")
 
 
+@autoregister
 class DashboardPanelCounter(DashboardPanel):
+    class Config:
+        type_alias = "evidently:dashboard_panel:DashboardPanelCounter"
+
     agg: CounterAgg
     value: Optional[PanelValue] = None
     text: Optional[str] = None
@@ -129,7 +138,11 @@ class DashboardPanelCounter(DashboardPanel):
         raise ValueError(f"Unknown agg type {self.agg}")
 
 
+@autoregister
 class DashboardPanelDistribution(DashboardPanel):
+    class Config:
+        type_alias = "evidently:dashboard_panel:DashboardPanelDistribution"
+
     value: PanelValue
     barmode: HistBarMode = HistBarMode.STACK
 

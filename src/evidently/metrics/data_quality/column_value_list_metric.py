@@ -25,6 +25,7 @@ from evidently.renderers.html_widgets import widget_tabs
 
 class ValueListStat(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ValueListStat"
         field_tags = {
             "values_in_list_dist": {IncludeTags.Extra},
             "values_not_in_list_dist": {IncludeTags.Extra},
@@ -64,6 +65,7 @@ class ValueListStat(MetricResult):
 
 class ColumnValueListMetricResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnValueListMetricResult"
         field_tags = {
             "current": {IncludeTags.Current},
             "reference": {IncludeTags.Reference},
@@ -78,6 +80,9 @@ class ColumnValueListMetricResult(MetricResult):
 
 
 class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
+    class Config:
+        type_alias = "evidently:metric:ColumnValueListMetric"
+
     """Calculates count and shares of values in the predefined values list"""
 
     column_name: str

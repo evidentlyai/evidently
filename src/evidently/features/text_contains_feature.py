@@ -11,6 +11,9 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class Contains(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:Contains"
+
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     items: List[str]
@@ -59,6 +62,9 @@ class Contains(GeneratedFeature):
 
 
 class DoesNotContain(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:DoesNotContain"
+
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     items: List[str]

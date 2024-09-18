@@ -18,6 +18,7 @@ from evidently.renderers.base_renderer import default_renderer
 
 class PrecisionRecallCalculationResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:PrecisionRecallCalculationResult"
         pd_include = False
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
@@ -26,6 +27,9 @@ class PrecisionRecallCalculationResult(MetricResult):
 
 
 class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
+    class Config:
+        type_alias = "evidently:metric:PrecisionRecallCalculation"
+
     max_k: int
     min_rel_score: Optional[int]
 

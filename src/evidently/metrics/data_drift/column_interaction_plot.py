@@ -37,6 +37,7 @@ from evidently.utils.visualizations import plot_num_num_rel
 
 class ColumnInteractionPlotResults(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:ColumnInteractionPlotResults"
         dict_include = False
         pd_include = False
         tags = {IncludeTags.Render}
@@ -65,6 +66,9 @@ class ColumnInteractionPlotResults(MetricResult):
 
 
 class ColumnInteractionPlot(UsesRawDataMixin, Metric[ColumnInteractionPlotResults]):
+    class Config:
+        type_alias = "evidently:metric:ColumnInteractionPlot"
+
     x_column: str
     y_column: str
 

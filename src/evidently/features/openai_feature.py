@@ -16,6 +16,9 @@ _legacy_models = ["gpt-3.5-turbo-instruct", "babbage-002", "davinci-002"]
 
 
 class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:OpenAIFeature"
+
     column_name: str
     feature_id: str
     prompt: str

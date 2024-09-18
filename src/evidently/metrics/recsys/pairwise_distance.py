@@ -20,6 +20,7 @@ from evidently.renderers.base_renderer import default_renderer
 
 class PairwiseDistanceResult(MetricResult):
     class Config:
+        type_alias = "evidently:metric_result:PairwiseDistanceResult"
         pd_include = False
         field_tags = {"dist_matrix": {IncludeTags.Extra}}
 
@@ -28,6 +29,9 @@ class PairwiseDistanceResult(MetricResult):
 
 
 class PairwiseDistance(Metric[PairwiseDistanceResult]):
+    class Config:
+        type_alias = "evidently:metric:PairwiseDistance"
+
     k: int
     item_features: List[str]
 

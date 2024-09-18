@@ -19,6 +19,7 @@ from sklearn.model_selection import train_test_split
 from evidently.calculations.stattests import get_stattest
 from evidently.core import ColumnType
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import autoregister
 
 DISTANCE_DICT = {
     "euclidean": euclidean,
@@ -46,12 +47,19 @@ def get_pca_df(
 
 
 class DriftMethod(EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
+
     @abc.abstractmethod
     def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         raise NotImplementedError
 
 
+@autoregister
 class DistanceDriftMethod(DriftMethod):
+    class Config:
+        type_alias = "evidently:drift_method:DistanceDriftMethod"
+
     dist: str = "euclidean"
     threshold: float = 0.2
     bootstrap: Optional[bool] = None
@@ -119,7 +127,11 @@ def calc_roc_auc_random(y_test, i):
     return roc_auc_random
 
 
+@autoregister
 class ModelDriftMethod(DriftMethod):
+    class Config:
+        type_alias = "evidently:drift_method:ModelDriftMethod"
+
     threshold: float = 0.55
     bootstrap: Optional[bool] = None
     quantile_probability: float = 0.95
@@ -174,7 +186,11 @@ def model(
     )
 
 
+@autoregister
 class RatioDriftMethod(DriftMethod):
+    class Config:
+        type_alias = "evidently:drift_method:RatioDriftMethod"
+
     component_stattest: str = "wasserstein"
     component_stattest_threshold: float = 0.1
     threshold: float = 0.2
@@ -249,7 +265,11 @@ def MMD2u_bstrp(K, m, n, x_idx, y_idx):
     )
 
 
+@autoregister
 class MMDDriftMethod(DriftMethod):
+    class Config:
+        type_alias = "evidently:drift_method:MMDDriftMethod"
+
     threshold: float = 0.015
     bootstrap: Optional[bool] = None
     quantile_probability: float = 0.05
