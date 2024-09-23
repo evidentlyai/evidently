@@ -88,7 +88,7 @@ def ui_workspace(tmp_path) -> WorkspaceView:
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 12), reason="infinite loop")
-def test_create_snapshot_and_get_logs(
+async def test_create_snapshot_and_get_logs(
     collector_test_client: TestClient,
     collector_service_config: CollectorServiceConfig,
     mock_collector_config,

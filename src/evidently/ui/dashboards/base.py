@@ -123,8 +123,8 @@ class PanelValue(BaseModel):
 
 def assign_panel_id(f):
     @wraps(f)
-    def inner(self: "DashboardPanel", *args, **kwargs) -> BaseWidgetInfo:
-        r = f(self, *args, **kwargs)
+    async def inner(self: "DashboardPanel", *args, **kwargs) -> BaseWidgetInfo:
+        r = await f(self, *args, **kwargs)
         r.id = str(self.id)
         return r
 
@@ -141,7 +141,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     filter: ReportFilter
     size: WidgetSize = WidgetSize.FULL
 
-    def build(
+    async def build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
@@ -150,7 +150,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
     ) -> BaseWidgetInfo:
         raise NotImplementedError
 
-    def safe_build(
+    async def safe_build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
@@ -158,7 +158,7 @@ class DashboardPanel(EnumValueMixin, PolymorphicModel):
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
         try:
-            return self.build(data_storage, project_id, timestamp_start, timestamp_end)
+            return await self.build(data_storage, project_id, timestamp_start, timestamp_end)
         except Exception as e:
             traceback.print_exc()
             c = counter(counters=[CounterData(f"{e.__class__.__name__}: {e.args[0]}", "Error")])
@@ -247,13 +247,13 @@ class DashboardConfig(BaseModel):
         self.tabs.append(to_create)
         return to_create
 
-    def build(
+    async def build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ):
-        widgets = [p.safe_build(data_storage, project_id, timestamp_start, timestamp_end) for p in self.panels]
+        widgets = [await p.safe_build(data_storage, project_id, timestamp_start, timestamp_end) for p in self.panels]
 
         return DashboardInfo(name=self.name, widgets=widgets)
