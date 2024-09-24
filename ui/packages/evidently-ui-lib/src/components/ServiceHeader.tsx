@@ -1,5 +1,6 @@
-import GitHubIcon from '@mui/icons-material/GitHub'
 import { AppBar, Button, IconButton, Link, Toolbar, Typography } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
+import { DiscordIcon } from '~/components/DiscordSvg'
 
 export function ServiceHeader({
   version,
@@ -12,21 +13,24 @@ export function ServiceHeader({
 }) {
   return (
     <>
-      <AppBar position={'static'} color={'transparent'}>
-        <Toolbar>
+      <AppBar position={'static'} sx={{ borderTop: 'none' }} color={'transparent'}>
+        <Toolbar sx={{ gap: 1 }}>
           <Typography variant='h6' sx={{ flexGrow: 1 }}>
-            <img src={logoSrc} height='55px' alt='evidently logo' />
+            <RouterLink to={'/'}>
+              <img src={logoSrc} height='55px' alt='evidently logo' />
+            </RouterLink>
             <span style={{ verticalAlign: 'super', fontSize: '0.75rem' }}>{version}</span>
           </Typography>
+
           {authComponent}
-          <Link href={'https://github.com/evidentlyai/evidently'}>
-            <IconButton>
-              <GitHubIcon />
-            </IconButton>
-          </Link>
-          <Link href={'https://docs.evidentlyai.com/'}>
-            <Button>Docs</Button>
-          </Link>
+
+          <IconButton component={Link} href={'https://discord.gg/tAHQeuDd'} target='_blank'>
+            <DiscordIcon />
+          </IconButton>
+
+          <Button component={Link} href={'https://docs.evidentlyai.com'} target='_blank'>
+            Docs
+          </Button>
         </Toolbar>
       </AppBar>
     </>
