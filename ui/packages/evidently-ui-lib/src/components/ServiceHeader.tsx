@@ -1,4 +1,4 @@
-import { AppBar, Button, IconButton, Link, Toolbar, Typography } from '@mui/material'
+import { AppBar, Button, Link, Toolbar, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { DiscordIcon } from '~/components/DiscordSvg'
 
@@ -24,9 +24,14 @@ export function ServiceHeader({
 
           {authComponent}
 
-          <IconButton component={Link} href={'https://discord.gg/tAHQeuDd'} target='_blank'>
-            <DiscordIcon />
-          </IconButton>
+          <Button
+            component={Link}
+            startIcon={<DiscordIcon />}
+            href={'https://discord.gg/tAHQeuDd'}
+            target='_blank'
+          >
+            Support
+          </Button>
 
           <Button component={Link} href={'https://docs.evidentlyai.com'} target='_blank'>
             Docs
