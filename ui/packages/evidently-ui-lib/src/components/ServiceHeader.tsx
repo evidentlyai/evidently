@@ -27,13 +27,13 @@ export function ServiceHeader({
           <Button
             component={Link}
             startIcon={<DiscordIcon />}
-            href={'https://discord.gg/tAHQeuDd'}
+            href='https://discord.gg/EJxU68uynY'
             target='_blank'
           >
             Support
           </Button>
 
-          <Button component={Link} href={'https://docs.evidentlyai.com'} target='_blank'>
+          <Button component={Link} href='https://docs.evidentlyai.com' target='_blank'>
             Docs
           </Button>
         </Toolbar>
