@@ -415,7 +415,6 @@ def create_projects_api(guard: Callable) -> Router:
                     project_dashboard,
                     list_snapshots,
                     get_snapshot_metadata,
-                    reload_projects,
                 ],
             ),
             Router(
@@ -427,6 +426,7 @@ def create_projects_api(guard: Callable) -> Router:
                     delete_project,
                     add_snapshot,
                     delete_snapshot,
+                    reload_projects,
                 ],
                 guards=[guard],
             ),
