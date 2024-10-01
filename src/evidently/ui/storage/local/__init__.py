@@ -1,8 +1,7 @@
 from fsspec.implementations.local import LocalFileSystem
 
-from evidently.ui.base import AuthManager
-from evidently.ui.base import ProjectManager
-
+from ...managers.auth import AuthManager
+from ...managers.projects import ProjectManager
 from ..common import NoopAuthManager
 from .base import FSSpecBlobStorage
 from .base import InMemoryDataStorage

@@ -27,7 +27,6 @@ from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -36,6 +35,7 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.errors import ProjectNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import ZERO_UUID

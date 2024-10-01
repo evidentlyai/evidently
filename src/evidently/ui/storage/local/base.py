@@ -24,7 +24,6 @@ from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -33,6 +32,7 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.dashboards.test_suites import to_period
 from evidently.ui.errors import ProjectNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID

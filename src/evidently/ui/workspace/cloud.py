@@ -24,11 +24,11 @@ from evidently.test_suite import TestSuite
 from evidently.ui.api.models import OrgModel
 from evidently.ui.api.models import TeamModel
 from evidently.ui.base import Org
-from evidently.ui.base import ProjectManager
 from evidently.ui.base import Team
 from evidently.ui.errors import OrgNotFound
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID

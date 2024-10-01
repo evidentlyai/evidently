@@ -6,8 +6,8 @@ from evidently.pydantic_utils import register_type_alias
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
 from evidently.ui.base import MetadataStorage
-from evidently.ui.base import ProjectManager
 from evidently.ui.components.base import FactoryComponent
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.storage.local import create_local_project_manager
 
