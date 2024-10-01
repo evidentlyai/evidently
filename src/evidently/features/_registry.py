@@ -74,3 +74,6 @@ register_type_alias(
 register_type_alias(
     GeneratedFeatures, "evidently.features.words_feature.WordsPresence", "evidently:feature:WordsPresence"
 )
+register_type_alias(
+    GeneratedFeatures, "evidently.features.is_json_valid_feature.IsJSONValid", "evidently:feature:IsJSONValid"
+)
