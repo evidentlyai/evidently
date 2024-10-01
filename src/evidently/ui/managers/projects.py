@@ -21,6 +21,9 @@ from evidently.ui.managers.auth import AuthManager
 from evidently.ui.managers.auth import DefaultRole
 from evidently.ui.managers.auth import Permission
 from evidently.ui.managers.base import BaseManager
+from evidently.ui.managers.base import BaseManagerAugmenter
+from evidently.ui.managers.base import after
+from evidently.ui.managers.base import before
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
@@ -37,6 +40,7 @@ class ProjectManager(BaseManager):
         blob: Annotated[BlobStorage, Dependency()],
         data: Annotated[DataStorage, Dependency()],
     ):
+        super().__init__([AuthProjectManagerAugmenter()])
         self.metadata: MetadataStorage = metadata
         self.auth: AuthManager = auth
         self.blob = blob
@@ -66,21 +70,9 @@ class ProjectManager(BaseManager):
     async def add_project(self, project: Project, user_id: UserID, team_id: TeamID) -> Project:
         user = await self.auth.get_or_default_user(user_id)
         team = await self.auth.get_team_or_error(team_id)
-        if not await self.auth.check_entity_permission(
-            user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
-        ):
-            raise NotEnoughPermissions()
         project.team_id = team_id if team_id != ZERO_UUID else None
         project.created_at = project.created_at or datetime.datetime.now()
         project = (await self.metadata.add_project(project, user, team)).bind(self, user.id)
-        await self.auth.grant_entity_role(
-            user.id,
-            EntityType.Project,
-            project.id,
-            user.id,
-            await self.auth.get_default_role(DefaultRole.OWNER, EntityType.Project),
-            skip_permission_check=True,
-        )
         return project
 
     async def update_project(self, user_id: UserID, project: Project):
@@ -191,3 +183,32 @@ class ProjectManager(BaseManager):
         ):
             raise NotEnoughPermissions()
         await self.metadata.reload_snapshots(project_id)
+
+
+class AuthProjectManagerAugmenter(BaseManagerAugmenter[ProjectManager]):
+    @before(ProjectManager.add_project)
+    async def check_permissions(
+        self, project_manager: ProjectManager, project: Project, user_id: UserID, team_id: TeamID
+    ):
+        # todo: make auth part of augmenter
+        user = await project_manager.auth.get_or_default_user(user_id)
+        team = await project_manager.auth.get_team_or_error(team_id)
+        if not await project_manager.auth.check_entity_permission(
+            user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
+        ):
+            raise NotEnoughPermissions()
+
+    @after(ProjectManager.add_project)
+    async def grant_project_permission(
+        self, project_manager: ProjectManager, result: Project, project: Project, user_id: UserID, team_id: TeamID
+    ):
+        # todo: make auth part of augmenter
+        user = await project_manager.auth.get_or_default_user(user_id)
+        await project_manager.auth.grant_entity_role(
+            user.id,
+            EntityType.Project,
+            project.id,
+            user.id,
+            await project_manager.auth.get_default_role(DefaultRole.OWNER, EntityType.Project),
+            skip_permission_check=True,
+        )
