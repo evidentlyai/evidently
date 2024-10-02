@@ -102,6 +102,7 @@ setup_args = dict(
             "evaluate>=0.4.1",
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
+            "rouge-score>=0.1.2",
         ],
         "spark": ["pyspark>=3.4.0"],
         "fsspec": [
