@@ -293,7 +293,7 @@ class Project(Entity):
     reload = sync_api(reload_async)
 
 
-class MetadataStorage(ABC):
+class ProjectMetadataStorage(ABC):
     @abstractmethod
     async def add_project(self, project: Project, user: User, team: Team) -> Project:
         raise NotImplementedError

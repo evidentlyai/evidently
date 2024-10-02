@@ -5,7 +5,7 @@ from typing import ClassVar
 from evidently.pydantic_utils import register_type_alias
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
+from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.components.base import FactoryComponent
 from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
@@ -29,7 +29,7 @@ class LocalStorageComponent(StorageComponent):
         return lambda: create_local_project_manager(self.path, autorefresh=self.autorefresh, auth=NoopAuthManager())
 
 
-class MetadataStorageComponent(FactoryComponent[MetadataStorage], ABC):
+class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
     class Config:
         is_base_type = True
 

@@ -5,7 +5,7 @@ from ...managers.projects import ProjectManager
 from ..common import NoopAuthManager
 from .base import FSSpecBlobStorage
 from .base import InMemoryDataStorage
-from .base import JsonFileMetadataStorage
+from .base import JsonFileProjectMetadataStorage
 from .base import LocalState
 
 
@@ -23,10 +23,10 @@ def start_workspace_watchdog(path: str, state: LocalState):
 def create_local_project_manager(path: str, autorefresh: bool, auth: AuthManager = None) -> ProjectManager:
     state = LocalState.load(path, None)
 
-    metadata = JsonFileMetadataStorage(path=path, local_state=state)
+    metadata = JsonFileProjectMetadataStorage(path=path, local_state=state)
     data = InMemoryDataStorage(path=path, local_state=state)
     project_manager = ProjectManager(
-        metadata=metadata, blob=FSSpecBlobStorage(base_path=path), data=data, auth=auth or NoopAuthManager()
+        metadata=metadata, blob=FSSpecBlobStorage(base_path=path), data=data, auth_manager=auth or NoopAuthManager()
     )
     state.project_manager = project_manager
 

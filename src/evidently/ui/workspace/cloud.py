@@ -37,7 +37,7 @@ from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.workspace.remote import NoopBlobStorage
 from evidently.ui.workspace.remote import NoopDataStorage
-from evidently.ui.workspace.remote import RemoteMetadataStorage
+from evidently.ui.workspace.remote import RemoteProjectMetadataStorage
 from evidently.ui.workspace.remote import T
 from evidently.ui.workspace.view import WorkspaceView
 
@@ -57,7 +57,7 @@ ACCESS_TOKEN_COOKIE = Cookie(
 )
 
 
-class CloudMetadataStorage(RemoteMetadataStorage):
+class CloudMetadataStorage(RemoteProjectMetadataStorage):
     def __init__(self, base_url: str, token: str, token_cookie_name: str):
         self.token = token
         self.token_cookie_name = token_cookie_name
@@ -241,7 +241,7 @@ class CloudWorkspace(WorkspaceView):
             metadata=meta,
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
-            auth=(CloudAuthManager()),
+            auth_manager=(CloudAuthManager()),
         )
         super().__init__(
             user_id,

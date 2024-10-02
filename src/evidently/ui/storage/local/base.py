@@ -22,8 +22,8 @@ from evidently.tests.base_test import Test
 from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
 from evidently.ui.base import Project
+from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -186,7 +186,7 @@ class LocalState:
                 raise ValueError(f"{snapshot_id} is malformed") from e
 
 
-class JsonFileMetadataStorage(MetadataStorage):
+class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     path: str
 
     _state: LocalState = PrivateAttr(None)
