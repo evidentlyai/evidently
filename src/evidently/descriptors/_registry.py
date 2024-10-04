@@ -100,3 +100,6 @@ register_type_alias(
     "evidently.descriptors.custom_descriptor.CustomPairColumnEval",
     "evidently:descriptor:CustomPairColumnEval",
 )
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.is_valid_sql_descriptor.IsValidSQL", "evidently:descriptor:IsValidSQL"
+)
