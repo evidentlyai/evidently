@@ -55,5 +55,6 @@ __all__ = [
     "SentenceCount",
     "Sentiment",
     "RegExp",
+    "WordMatch",
     "_registry",
 ]

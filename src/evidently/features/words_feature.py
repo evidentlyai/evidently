@@ -5,11 +5,15 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
 from evidently._pydantic_compat import PrivateAttr
+from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
+from evidently.features.generated_features import GeneratedFeature
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 def _listed_words_present(
@@ -126,4 +130,64 @@ class ExcludesWords(WordsPresence):
         return (
             f"Text Excludes {self.mode} words [{self.words_list}],"
             f" lemmatize: {self.lemmatize}] for {self.column_name}"
+        )
+
+
+class WordMatchFeature(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:WordMatchFeature"
+
+    __feature_type__: ClassVar = ColumnType.Categorical
+    columns: List[str]
+    mode: str = "any"
+    lemmatize: bool = True
+    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
+
+    def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
+        self.columns = columns
+        if mode not in ("any", "all"):
+            raise ValueError("mode must be either 'all' or 'any'")
+        self.mode = "includes_" + mode
+        self.lemmatize = lemmatize
+        self.display_name = display_name
+        super().__init__()
+
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        generated_col = data[self.columns[0]].fillna("")
+        expected_col = data[self.columns[1]].fillna("")
+
+        return pd.DataFrame(
+            {
+                self._feature_name(): pd.Series(
+                    [
+                        _listed_words_present(
+                            in_str=generated_str,
+                            mode=self.mode,
+                            lemmatize=self.lemmatize,
+                            words_list=expected_words,
+                            lem=self.lem,
+                        )
+                        for generated_str, expected_words in zip(generated_col, expected_col)
+                    ],
+                    index=data.index,
+                )
+            }
+        )
+
+    @property
+    def lem(self):
+        if self._lem is None:
+            import nltk
+
+            nltk.download("wordnet", quiet=True)
+            self._lem = WordNetLemmatizer()
+        return self._lem
+
+    def _feature_name(self):
+        return "_".join([self.columns[0], self.columns[1], str(self.lemmatize), str(self.mode)])
+
+    def _as_column(self) -> "ColumnName":
+        return self._create_column(
+            self._feature_name(),
+            default_display_name=f"WordMatch for {' '.join(self.columns)}.",
         )
