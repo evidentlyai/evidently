@@ -54,13 +54,6 @@ def test_excludes_words(words: List[str], mode: str, lemmatize: bool, expected: 
     assert result.equals(pd.DataFrame(dict([(feature_generator._feature_column_name(), expected)])))
 
 
-input_data = [
-    "Who are you and where are my apples and grapes?",
-    "Apple is red",
-    "Grape is blue",
-]
-
-
 @pytest.mark.parametrize(
     ["mode", "lemmatize", "expected"],
     [
