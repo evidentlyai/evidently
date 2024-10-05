@@ -39,3 +39,17 @@ class IncludesWords(FeatureDescriptor):
             self.lemmatize,
             self.display_name,
         )
+
+
+class WordNoMatch(FeatureDescriptor):
+    class Config:
+        type_alias = "evidently:descriptor:WordNoMatch"
+
+    with_column: str
+    mode: str = "any"
+    lemmatize: bool = True
+
+    def feature(self, column_name: str) -> GeneratedFeature:
+        return words_feature.WordNoMatch(
+            columns=[column_name, self.with_column], mode=self.mode, lemmatize=self.lemmatize
+        )
