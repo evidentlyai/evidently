@@ -133,9 +133,9 @@ class ExcludesWords(WordsPresence):
         )
 
 
-class WordMatchFeature(GeneratedFeature):
+class WordMatch(GeneratedFeature):
     class Config:
-        type_alias = "evidently:feature:WordMatchFeature"
+        type_alias = "evidently:feature:WordMatch"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     columns: List[str]

@@ -43,13 +43,13 @@ class IncludesWords(FeatureDescriptor):
 
 class WordMatch(FeatureDescriptor):
     class Config:
-        type_alias = "evidently:descriptor:WordsMatch"
+        type_alias = "evidently:descriptor:WordMatch"
 
     with_column: str
     mode: str = "any"
     lemmatize: bool = True
 
     def feature(self, column_name: str) -> GeneratedFeature:
-        return words_feature.WordMatchFeature(
+        return words_feature.WordMatch(
             columns=[column_name, self.with_column], mode=self.mode, lemmatize=self.lemmatize
         )

@@ -96,6 +96,9 @@ register_type_alias(
     FeatureDescriptor, "evidently.descriptors.words_descriptor.IncludesWords", "evidently:descriptor:IncludesWords"
 )
 register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.words_descriptor.WordMatch", "evidently:descriptor:WordMatch"
+)
+register_type_alias(
     GeneralDescriptor,
     "evidently.descriptors.custom_descriptor.CustomPairColumnEval",
     "evidently:descriptor:CustomPairColumnEval",
