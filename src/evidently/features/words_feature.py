@@ -133,9 +133,9 @@ class ExcludesWords(WordsPresence):
         )
 
 
-class WordMatch(GeneratedFeature):
+class RowWordPresence(GeneratedFeature):
     class Config:
-        type_alias = "evidently:feature:WordMatch"
+        type_alias = "evidently:feature:RowWordPresence"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     columns: List[str]
@@ -145,9 +145,7 @@ class WordMatch(GeneratedFeature):
 
     def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
         self.columns = columns
-        if mode not in ("any", "all"):
-            raise ValueError("mode must be either 'all' or 'any'")
-        self.mode = "includes_" + mode
+        self.mode = mode
         self.lemmatize = lemmatize
         self.display_name = display_name
         super().__init__()
@@ -184,10 +182,32 @@ class WordMatch(GeneratedFeature):
         return self._lem
 
     def _feature_name(self):
-        return "_".join([self.columns[0], self.columns[1], str(self.lemmatize), str(self.mode)])
+        return "_".join(["RowWordPresence", self.columns[0], self.columns[1], str(self.lemmatize), str(self.mode)])
+
+
+class WordMatch(RowWordPresence):
+    class Config:
+        type_alias = "evidently:feature:WordMatch"
+
+    def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
+        super().__init__(columns=columns, mode="includes_" + mode, lemmatize=lemmatize, display_name=display_name)
 
     def _as_column(self) -> "ColumnName":
         return self._create_column(
             self._feature_name(),
             default_display_name=f"WordMatch for {' '.join(self.columns)}.",
+        )
+
+
+class WordNoMatch(RowWordPresence):
+    class Config:
+        type_alias = "evidently:feature:WordNoMatch"
+
+    def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
+        super().__init__(columns=columns, mode="excludes_" + mode, lemmatize=lemmatize, display_name=display_name)
+
+    def _as_column(self) -> "ColumnName":
+        return self._create_column(
+            self._feature_name(),
+            default_display_name=f"WordNoMatch for {' '.join(self.columns)}.",
         )

@@ -71,6 +71,7 @@ register_type_alias(
 register_type_alias(
     GeneratedFeatures, "evidently.features.words_feature.IncludesWords", "evidently:feature:IncludesWords"
 )
+register_type_alias(GeneratedFeatures, "evidently.words_feature.WordNoMatch", "evidently:feature:WordNoMatch")
 register_type_alias(
     GeneratedFeatures, "evidently.features.words_feature.WordsPresence", "evidently:feature:WordsPresence"
 )
