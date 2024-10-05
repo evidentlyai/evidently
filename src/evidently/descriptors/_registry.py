@@ -100,3 +100,8 @@ register_type_alias(
     "evidently.descriptors.custom_descriptor.CustomPairColumnEval",
     "evidently:descriptor:CustomPairColumnEval",
 )
+register_type_alias(
+    GeneralDescriptor,
+    "evidently.descriptors.json_match_descriptor.JSONMatch",
+    "evidently:descriptor:JSONMatch",
+)
