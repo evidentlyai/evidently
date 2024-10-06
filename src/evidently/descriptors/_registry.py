@@ -73,6 +73,12 @@ register_type_alias(
     "evidently:descriptor:DoesNotContain",
 )
 register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.text_contains_descriptor.ItemMatch", "evidently:descriptor:ItemMatch"
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.text_contains_descriptor.ItemNoMatch", "evidently:descriptor:ItemNoMatch"
+)
+register_type_alias(
     FeatureDescriptor, "evidently.descriptors.text_length_descriptor.TextLength", "evidently:descriptor:TextLength"
 )
 register_type_alias(
