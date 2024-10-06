@@ -25,9 +25,8 @@ from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
+from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -36,6 +35,7 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.errors import ProjectNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import ZERO_UUID
@@ -142,7 +142,7 @@ class RemoteBase:
         return response
 
 
-class RemoteMetadataStorage(MetadataStorage, RemoteBase):
+class RemoteProjectMetadataStorage(ProjectMetadataStorage, RemoteBase):
     def __init__(self, base_url: str, secret: Optional[str] = None):
         self.base_url = base_url
         self.secret = secret
@@ -288,7 +288,7 @@ class RemoteWorkspaceView(WorkspaceView):
         self.base_url = base_url
         self.secret = secret
         pm = ProjectManager(
-            metadata=(RemoteMetadataStorage(base_url=self.base_url, secret=self.secret)),
+            metadata=(RemoteProjectMetadataStorage(base_url=self.base_url, secret=self.secret)),
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
             auth=(NoopAuthManager()),
