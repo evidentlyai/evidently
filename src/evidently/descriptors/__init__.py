@@ -27,6 +27,7 @@ from .word_count_descriptor import WordCount
 from .words_descriptor import ExcludesWords
 from .words_descriptor import IncludesWords
 from .words_descriptor import WordMatch
+from .words_descriptor import WordNoMatch
 
 __all__ = [
     "CustomColumnEval",
@@ -57,5 +58,6 @@ __all__ = [
     "Sentiment",
     "RegExp",
     "WordMatch",
+    "WordNoMatch",
     "_registry",
 ]
