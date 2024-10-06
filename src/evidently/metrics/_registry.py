@@ -138,6 +138,13 @@ register_type_alias(
     "evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric",
     "evidently:metric:DatasetSummaryMetric",
 )
+
+register_type_alias(
+    Metric,
+    "evidently.metrics.data_integrity.rouge_summary_metric.ROUGESummaryMetric",
+    "evidently:metric:ROUGESummaryMetric",
+)
+
 register_type_alias(
     Metric,
     "evidently.metrics.data_quality.column_category_metric.ColumnCategoryMetric",
@@ -569,6 +576,11 @@ register_type_alias(
     MetricResult,
     "evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult",
     "evidently:metric_result:DatasetSummaryMetricResult",
+)
+register_type_alias(
+    MetricResult,
+    "evidently.metrics.data_integrity.rouge_summary_metric.ROUGESummaryMetricResult",
+    "evidently:metric_result:ROUGESummaryMetricResult",
 )
 register_type_alias(
     MetricResult,
