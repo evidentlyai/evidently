@@ -58,10 +58,10 @@ def test_excludes_words(words: List[str], mode: str, lemmatize: bool, expected: 
 @pytest.mark.parametrize(
     ["mode", "lemmatize", "expected"],
     [
-        ("any", False, [True, True, False, False, False]),
-        ("all", False, [False, True, False, False, False]),
-        ("any", True, [False, False, True, True, False]),
-        ("all", True, [False, False, True, False, False]),
+        ("any", False, [True, True, False, False, False, True]),
+        ("all", False, [False, True, False, False, False, True]),
+        ("any", True, [False, False, True, True, False, True]),
+        ("all", True, [False, False, True, False, False, True]),
     ],
 )
 def test_word_match(mode: str, lemmatize: bool, expected: List[bool]):
@@ -72,6 +72,7 @@ def test_word_match(mode: str, lemmatize: bool, expected: List[bool]):
             "Grapes, oranges, apples.",
             "Oranges are more sour than grapes.",
             "This test doesn't have the words.",
+            "You are allowed to cancel at any time, and we guarantee that you will receive a refund.",
         ],
         "expected": [
             ["apples", "grapes", "oranges"],
@@ -79,6 +80,7 @@ def test_word_match(mode: str, lemmatize: bool, expected: List[bool]):
             ["apple", "orange", "grape"],
             ["orange", "sweet", "grape"],
             ["none", "of", "these"],
+            ["guarantee", "allowed", "refund"],
         ],
     }
     df = pd.DataFrame(data)
@@ -94,10 +96,10 @@ def test_word_match(mode: str, lemmatize: bool, expected: List[bool]):
 @pytest.mark.parametrize(
     ["mode", "lemmatize", "expected"],
     [
-        ("any", False, [True, False, True, True, True]),
-        ("all", False, [False, False, True, True, True]),
-        ("any", True, [True, True, False, True, True]),
-        ("all", True, [True, True, False, False, True]),
+        ("any", False, [True, False, True, True, True, False]),
+        ("all", False, [False, False, True, True, True, False]),
+        ("any", True, [True, True, False, True, True, False]),
+        ("all", True, [True, True, False, False, True, False]),
     ],
 )
 def test_word_no_match(mode: str, lemmatize: bool, expected: List[bool]):
@@ -108,6 +110,7 @@ def test_word_no_match(mode: str, lemmatize: bool, expected: List[bool]):
             "Grapes, oranges, apples.",
             "Oranges are more sour than grapes.",
             "This test doesn't have the words.",
+            "You are allowed to cancel at any time, and we guarantee that you will receive a refund.",
         ],
         "forbidden": [
             ["apples", "grapes", "oranges"],
@@ -115,6 +118,7 @@ def test_word_no_match(mode: str, lemmatize: bool, expected: List[bool]):
             ["apple", "orange", "grape"],
             ["orange", "sweet", "grape"],
             ["none", "of", "these"],
+            ["guarantee", "allowed", "refund"],
         ],
     }
     df = pd.DataFrame(data)
