@@ -16,6 +16,7 @@ from evidently.metrics.data_integrity.column_summary_metric import DataQualityPl
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetric
+from evidently.metrics.data_integrity.rouge_summary_metric import ROUGESummaryMetric
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import Error
 from tests.multitest.conftest import NoopOutcome
@@ -203,6 +204,27 @@ def dataset_summary_metric():
         metric=DatasetSummaryMetric(),
         fingerprint="029317ac6b72db123982166fd0ecb588",
         outcomes=NoopOutcome(),
+    )
+
+
+@metric
+def rouge_summary_metric():
+    return TestMetric(
+        name="rouge_summary_metric",
+        metric=ROUGESummaryMetric(column_name="summary", rouge_n=1),
+        fingerprint="bfc616f760b973d2cbfbf0540c7b2c71",
+        outcomes=NoopOutcome(),
+        datasets=[
+            TestDataset(
+                "rouge_summary_metric_data",
+                current=pd.DataFrame(
+                    {
+                        "summary": ["hello there", "general kenobi"],
+                    }
+                ),
+                reference=pd.DataFrame({"summary": ["hello there", "no de"]}),
+            ),
+        ],
     )
 
 
