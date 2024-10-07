@@ -1,4 +1,5 @@
 from . import _registry
+from .contains_link_descriptor import ContainsLink
 from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
@@ -55,5 +56,6 @@ __all__ = [
     "SentenceCount",
     "Sentiment",
     "RegExp",
+    "ContainsLink",
     "_registry",
 ]

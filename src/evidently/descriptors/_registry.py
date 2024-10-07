@@ -100,3 +100,8 @@ register_type_alias(
     "evidently.descriptors.custom_descriptor.CustomPairColumnEval",
     "evidently:descriptor:CustomPairColumnEval",
 )
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.contains_link_descriptor.ContainsLink",
+    "evidently:descriptor:ContainsLink",
+)
