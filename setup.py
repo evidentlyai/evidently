@@ -76,6 +76,7 @@ setup_args = dict(
         "deprecation>=2.1.0",
         "uuid6>=2024.7.10",
         "cryptography>=43.0.1",
+        "evaluate>=0.4.1",
     ],
     extras_require={
         "dev": [
@@ -96,6 +97,7 @@ setup_args = dict(
             "ruff==0.3.7",
             "pre-commit==3.5.0",
             "pytest-asyncio==0.23.7",
+            "evaluate>=0.4.1",
         ],
         "llm": [
             "openai>=1.16.2",
