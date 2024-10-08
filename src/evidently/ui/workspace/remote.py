@@ -143,9 +143,10 @@ class RemoteBase:
 
 
 class RemoteMetadataStorage(MetadataStorage, RemoteBase):
-    def __init__(self, base_url: str, secret: Optional[str] = None):
+    def __init__(self, base_url: str, secret: Optional[str] = None, auth_token: Optional[str] = None):
         self.base_url = base_url
         self.secret = secret
+        self.auth_token = auth_token
 
     def get_url(self):
         return self.base_url
@@ -171,6 +172,8 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
         )
         if self.secret is not None:
             r.headers[SECRET_HEADER_NAME] = self.secret
+        if self.auth_token is not None:
+            r.headers["Authorization"] = f"Bearer {self.auth_token}"
         return r
 
     async def add_project(self, project: Project, user: User, team: Team) -> Project:
@@ -284,11 +287,12 @@ class RemoteWorkspaceView(WorkspaceView):
         except (HTTPError, JSONDecodeError, KeyError, AssertionError) as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
 
-    def __init__(self, base_url: str, secret: Optional[str] = None):
+    def __init__(self, base_url: str, secret: Optional[str] = None, auth_token: Optional[str] = None):
         self.base_url = base_url
         self.secret = secret
+        self.auth_token = auth_token
         pm = ProjectManager(
-            metadata=(RemoteMetadataStorage(base_url=self.base_url, secret=self.secret)),
+            metadata=(RemoteMetadataStorage(base_url=self.base_url, secret=self.secret, auth_token=self.auth_token)),
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
             auth=(NoopAuthManager()),
