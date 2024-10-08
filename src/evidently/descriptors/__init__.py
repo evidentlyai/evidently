@@ -3,7 +3,7 @@ from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
-from .is_json_valid_descriptor import IsJSONValid
+from .is_valid_json_descriptor import IsValidJSON
 from .llm_judges import BiasLLMEval
 from .llm_judges import ContextQualityLLMEval
 from .llm_judges import DeclineLLMEval
@@ -56,6 +56,6 @@ __all__ = [
     "SentenceCount",
     "Sentiment",
     "RegExp",
-    "IsJSONValid",
+    "IsValidJSON",
     "_registry",
 ]

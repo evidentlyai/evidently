@@ -101,5 +101,5 @@ register_type_alias(
     "evidently:descriptor:CustomPairColumnEval",
 )
 register_type_alias(
-    FeatureDescriptor, "evidently.descriptors.is_json_valid_descriptor.IsJSONValid", "evidently:descriptor:IsJSONValid"
+    FeatureDescriptor, "evidently.descriptors.is_json_valid_descriptor.IsValidJSON", "evidently:descriptor:IsValidJSON"
 )
