@@ -2,8 +2,6 @@ from typing import Any
 from typing import ClassVar
 from typing import Optional
 
-import sqlvalidator
-
 from evidently import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
@@ -29,6 +27,8 @@ class IsValidSQL(ApplyColumnGeneratedFeature):
         return self.is_valid_sql(value)
 
     def is_valid_sql(self, query: str) -> bool:
+        import sqlvalidator
+
         queries = query.strip().split(";")  # Split by semicolon
 
         for q in queries:
