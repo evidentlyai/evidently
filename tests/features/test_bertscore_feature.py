@@ -29,7 +29,7 @@ test_data = [
     ],
 )
 def test_bert_score_feature(column_1: str, column_2: str, expected: float):
-    feature_generator = BERTScoreFeature(columns=["column_1", "column_2"])
+    feature_generator = BERTScoreFeature(columns=["column_1", "column_2"], tfidf_weighted=False)
     data = pd.DataFrame(dict(column_1=[column_1], column_2=[column_2]))
 
     result = feature_generator.generate_feature(
