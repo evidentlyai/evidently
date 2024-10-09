@@ -1,54 +1,21 @@
 import abc
 from abc import ABC
 from typing import ClassVar
-from typing import Iterator
 from typing import List
 from typing import Tuple
 
 import pandas as pd
-from llama_index.core.node_parser import SentenceSplitter
 
 from evidently.dataset_generators.base import DatasetGeneratorResult
 from evidently.dataset_generators.llm.base import BaseLLMDatasetGenerator
+from evidently.dataset_generators.llm.chunks import ChunkGenerator
+from evidently.dataset_generators.llm.chunks import LLMChunk
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.llm import BlockPromptTemplate
 from evidently.utils.llm import LLMMessage
 from evidently.utils.llm import LLMWrapper
 from evidently.utils.llm import PromptBlock
 from evidently.utils.llm import PromptTemplate
-
-LLMChunk = str
-
-
-class ChunkGenerator(EvidentlyBaseModel, ABC):
-    @abc.abstractmethod
-    def generate_chunks(self) -> Iterator[LLMChunk]:
-        raise NotImplementedError
-
-
-class FileContextGenerator(ChunkGenerator):
-    class Config:
-        type_alias = "asdfasdfasd"
-
-    path: str
-
-    def generate_chunks(self) -> Iterator[LLMChunk]:
-        with open(self.path) as f:
-            text = f.read()
-        splitter = SentenceSplitter(chunk_size=512, chunk_overlap=20)
-        text_nodes = splitter.split_text(text)
-        yield from text_nodes
-
-
-class SimpleChunkGenerator(ChunkGenerator):
-    class Config:
-        type_alias = "asdfasdasdfafasd"
-
-    chunks: List[LLMChunk]
-
-    def generate_chunks(self) -> Iterator[LLMChunk]:
-        yield from self.chunks
-
 
 Question = str
 Answer = str
@@ -63,7 +30,7 @@ class QuestionGenerator(EvidentlyBaseModel, ABC):
 
 class SimpleQuestionPrompt(BlockPromptTemplate):
     blocks: ClassVar = [
-        PromptBlock.simple("Please generate a question about this:"),
+        PromptBlock.simple("Please generate a question {} about this:"),
         PromptBlock.input("chunk").anchored(),
         PromptBlock.json_output(question="question text", answer="answer text"),
     ]
