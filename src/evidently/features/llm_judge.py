@@ -79,17 +79,6 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
     raise ValueError(f"LLM wrapper for provider {provider} model {model} not found")
 
 
-class WithLLMWrapper:
-    provider: str
-    model: str
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
-
-    def get_llm_wrapper(self, options: Options) -> LLMWrapper:
-        if self._llm_wrapper is None:
-            self._llm_wrapper = get_llm_wrapper(self.provider, self.model, options)
-        return self._llm_wrapper
-
-
 class BaseLLMPromptTemplate(EvidentlyBaseModel, ABC):
     class Config:
         is_base_type = True
@@ -262,7 +251,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
         return self.pre_messages
 
 
-class LLMJudge(GeneratedFeatures, WithLLMWrapper):
+class LLMJudge(GeneratedFeatures):
     class Config:
         type_alias = "evidently:feature:LLMJudge"
 
@@ -270,12 +259,13 @@ class LLMJudge(GeneratedFeatures, WithLLMWrapper):
 
     DEFAULT_INPUT_COLUMN: ClassVar = "input"
 
+    provider: str
+    model: str
+
     input_column: Optional[str] = None
     input_columns: Optional[Dict[str, str]] = None
     template: BaseLLMPromptTemplate
 
-    provider: str
-    model: str
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
