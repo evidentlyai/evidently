@@ -9,8 +9,8 @@ import pandas as pd
 
 from evidently.dataset_generators.base import DatasetGeneratorResult
 from evidently.dataset_generators.llm.base import BaseLLMDatasetGenerator
-from evidently.dataset_generators.llm.chunks import Chunk
-from evidently.dataset_generators.llm.chunks import IndexExtractor
+from evidently.dataset_generators.llm.index import Chunk
+from evidently.dataset_generators.llm.index import IndexExtractor
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.llm import BlockPromptTemplate
 from evidently.utils.llm import LLMMessage

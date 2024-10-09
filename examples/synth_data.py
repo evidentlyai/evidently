@@ -1,7 +1,7 @@
 import os
 
 from evidently.dataset_generators.llm.aaa import PromptQuestionGenerator, QuestionPairGenerator, SimpleQuestionPrompt
-from evidently.dataset_generators.llm.chunks import SimpleIndexExtractor
+from evidently.dataset_generators.llm.index import SimpleIndexExtractor
 from evidently.options.base import Options
 from evidently.ui.workspace import CloudWorkspace
 
