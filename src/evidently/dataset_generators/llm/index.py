@@ -1,6 +1,6 @@
 import abc
-import dataclasses
 from abc import ABC
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 from typing import Optional
@@ -16,7 +16,7 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 Chunk = str
 
 
-@dataclasses.dataclass
+@dataclass
 class DocumentIndex:
     name: str
     chunks: List[Chunk]
@@ -41,6 +41,28 @@ class DocumentIndex:
                 )
             self.collection = collection
         return self.collection
+
+    def find_relevant_chunks(self, question: str, n_results=3) -> List[Chunk]:
+        """
+        Queries the collection with a given question and returns the relevant text chunks.
+
+        Args:
+            question (str): The query or question text to search for.
+            n_results (int): Number of results to retrieve. Default is 3.
+
+        Returns:
+            List[Chunk]: A list of relevant text chunks.
+        """
+        # Perform the query
+        results = self.collection.query(
+            query_texts=question,
+            n_results=n_results,
+        )
+
+        # Extract relevant text chunks from the documents
+        relevant_chunks = [chunk for document in results["documents"] for chunk in document]
+
+        return relevant_chunks
 
 
 class IndexExtractor(EvidentlyBaseModel, ABC):
