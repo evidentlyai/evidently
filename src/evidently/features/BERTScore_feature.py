@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import ClassVar
+from typing import Dict
 from typing import List
 
 import numpy as np
@@ -64,7 +65,7 @@ class BERTScoreFeature(GeneratedFeature):
         M = len(reference_sentences)
 
         # Compute IDF for each unique token
-        token_counts = defaultdict(int)
+        token_counts: Dict[str, int] = defaultdict(int)
         for sentence in reference_sentences:
             tokens = [tokenizer.cls_token] + tokenizer.tokenize(sentence) + [tokenizer.sep_token]
             unique_tokens = set(tokens)
