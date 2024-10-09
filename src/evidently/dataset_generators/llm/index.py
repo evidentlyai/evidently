@@ -1,5 +1,6 @@
 import abc
 from abc import ABC
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 from typing import Optional
@@ -15,6 +16,7 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 Chunk = str
 
 
+@dataclass
 class DocumentIndex:
     name: str
     chunks: List[Chunk]
