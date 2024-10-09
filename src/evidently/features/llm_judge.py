@@ -2,81 +2,29 @@ import json
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
-from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
-from typing import Type
 from typing import Union
 
 import pandas as pd
 
 from evidently import ColumnType
 from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import SecretStr
 from evidently.base_metric import ColumnName
-from evidently.errors import EvidentlyError
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import Options
-from evidently.options.option import Option
 from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import autoregister
 from evidently.utils.data_preprocessing import DataDefinition
-
-LLMMessage = Tuple[str, str]
-LLMResponse = Dict[str, Union[str, float]]
-
-
-class EvidentlyLLMError(EvidentlyError):
-    pass
-
-
-class LLMResponseParseError(EvidentlyLLMError):
-    pass
-
-
-class LLMRequestError(EvidentlyLLMError):
-    pass
-
-
-class LLMWrapper(ABC):
-    __used_options__: ClassVar[List[Type[Option]]] = []
-
-    @abstractmethod
-    def complete(self, messages: List[LLMMessage]) -> str:
-        raise NotImplementedError
-
-    def get_used_options(self) -> List[Type[Option]]:
-        return self.__used_options__
-
-
-LLMProvider = str
-LLMModel = str
-LLMWrapperProvider = Callable[[LLMModel, Options], LLMWrapper]
-_wrappers: Dict[Tuple[LLMProvider, Optional[LLMModel]], LLMWrapperProvider] = {}
-
-
-def llm_provider(name: LLMProvider, model: Optional[LLMModel]):
-    def dec(f: LLMWrapperProvider):
-        _wrappers[(name, model)] = f
-        return f
-
-    return dec
-
-
-def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) -> LLMWrapper:
-    key: Tuple[str, Optional[str]] = (provider, model)
-    if key in _wrappers:
-        return _wrappers[key](model, options)
-    key = (provider, None)
-    if key in _wrappers:
-        return _wrappers[key](model, options)
-    raise ValueError(f"LLM wrapper for provider {provider} model {model} not found")
+from evidently.utils.llm import LLMMessage
+from evidently.utils.llm import LLMResponse
+from evidently.utils.llm import LLMResponseParseError
+from evidently.utils.llm import WithLLMWrapper
 
 
 class BaseLLMPromptTemplate(EvidentlyBaseModel, ABC):
@@ -251,7 +199,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
         return self.pre_messages
 
 
-class LLMJudge(GeneratedFeatures):
+class LLMJudge(GeneratedFeatures, WithLLMWrapper):
     class Config:
         type_alias = "evidently:feature:LLMJudge"
 
@@ -259,19 +207,9 @@ class LLMJudge(GeneratedFeatures):
 
     DEFAULT_INPUT_COLUMN: ClassVar = "input"
 
-    provider: str
-    model: str
-
     input_column: Optional[str] = None
     input_columns: Optional[Dict[str, str]] = None
     template: BaseLLMPromptTemplate
-
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
-
-    def get_llm_wrapper(self, options: Options) -> LLMWrapper:
-        if self._llm_wrapper is None:
-            self._llm_wrapper = get_llm_wrapper(self.provider, self.model, options)
-        return self._llm_wrapper
 
     def get_input_columns(self):
         if self.input_column is None:
@@ -300,50 +238,3 @@ class LLMJudge(GeneratedFeatures):
             subcolumn = self._extract_subcolumn_name(subcolumn)
 
         return self.template.get_type(subcolumn)
-
-
-class OpenAIKey(Option):
-    api_key: Optional[SecretStr] = None
-
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = SecretStr(api_key) if api_key is not None else None
-        super().__init__()
-
-    def get_value(self) -> Optional[str]:
-        if self.api_key is None:
-            return None
-        return self.api_key.get_secret_value()
-
-
-@llm_provider("openai", None)
-class OpenAIWrapper(LLMWrapper):
-    __used_options__: ClassVar = [OpenAIKey]
-
-    def __init__(self, model: str, options: Options):
-        import openai
-
-        self.model = model
-        self.client = openai.OpenAI(api_key=options.get(OpenAIKey).get_value())
-
-    def complete(self, messages: List[LLMMessage]) -> str:
-        import openai
-
-        messages = [{"role": user, "content": msg} for user, msg in messages]
-        try:
-            response = self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
-        except openai.OpenAIError as e:
-            raise LLMRequestError("Failed to call OpenAI complete API") from e
-        content = response.choices[0].message.content
-        assert content is not None  # todo: better error
-        return content
-
-
-@llm_provider("litellm", None)
-class LiteLLMWrapper(LLMWrapper):
-    def __init__(self, model: str):
-        self.model = model
-
-    def complete(self, messages: List[LLMMessage]) -> str:
-        from litellm import completion
-
-        return completion(model=self.model, messages=messages).choices[0].message.content

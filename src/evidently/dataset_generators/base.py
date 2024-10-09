@@ -1,6 +1,12 @@
 from abc import ABC
+from abc import abstractmethod
 
+import pandas as pd
+
+from evidently.options.base import Options
 from evidently.pydantic_utils import EvidentlyBaseModel
+
+DatasetGeneratorResult = pd.DataFrame
 
 
 class BaseDatasetGenerator(EvidentlyBaseModel, ABC):
@@ -8,5 +14,8 @@ class BaseDatasetGenerator(EvidentlyBaseModel, ABC):
         type_alias = "evidently:dataset_generator:BaseDatasetGenerator"
         is_base_type = True
 
-    def generate(self):
-        pass
+    options: Options
+
+    @abstractmethod
+    def generate(self) -> DatasetGeneratorResult:
+        raise NotImplementedError
