@@ -92,6 +92,7 @@ def test_item_match(case: bool, mode: str, expected: List[bool]):
         ],
     }
     df = pd.DataFrame(data)
+    df["expected"] = df["expected"].apply(tuple)
     feature_generator = ItemMatch(columns=["generated", "expected"], case_sensitive=case, mode=mode)
     result = feature_generator.generate_feature(
         data=df,
@@ -130,6 +131,7 @@ def test_item_no_match(case: bool, mode: str, expected: List[bool]):
     }
     feature_generator = ItemNoMatch(columns=["generated", "forbidden"], case_sensitive=case, mode=mode)
     df = pd.DataFrame(data)
+    df["forbidden"] = df["forbidden"].apply(tuple)
     result = feature_generator.generate_feature(
         data=df,
         data_definition=create_data_definition(None, df, ColumnMapping()),
