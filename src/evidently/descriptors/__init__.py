@@ -1,4 +1,5 @@
 from . import _registry
+from .BERTScore_descriptor import BERTScore
 from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
@@ -28,6 +29,7 @@ from .words_descriptor import ExcludesWords
 from .words_descriptor import IncludesWords
 
 __all__ = [
+    "BERTScore",
     "CustomColumnEval",
     "CustomPairColumnEval",
     "HuggingFaceModel",

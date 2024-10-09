@@ -43,6 +43,11 @@ register_type_alias(
     "evidently:feature:SemanticSimilarityFeature",
 )
 register_type_alias(
+    GeneratedFeatures,
+    "evidently.features.BERTScore_feature.BERTScoreFeature",
+    "evidently:feature:BERTScoreFeature",
+)
+register_type_alias(
     GeneratedFeatures, "evidently.features.sentence_count_feature.SentenceCount", "evidently:feature:SentenceCount"
 )
 register_type_alias(GeneratedFeatures, "evidently.features.sentiment_feature.Sentiment", "evidently:feature:Sentiment")
