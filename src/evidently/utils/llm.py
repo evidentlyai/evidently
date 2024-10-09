@@ -27,6 +27,10 @@ class LLMMessage:
     role: str
     content: str
 
+    @classmethod
+    def user(cls, message: str):
+        return LLMMessage("user", message)
+
 
 LLMResponse = Dict[str, Any]
 

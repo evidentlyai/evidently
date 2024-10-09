@@ -12,6 +12,7 @@ from llama_index.core.node_parser import SentenceSplitter
 from evidently.dataset_generators.base import DatasetGeneratorResult
 from evidently.dataset_generators.llm.base import BaseLLMDatasetGenerator
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.utils.llm import LLMMessage
 from evidently.utils.llm import LLMWrapper
 
 LLMChunk = str
@@ -84,7 +85,7 @@ class PromptQuestionGenerator(QuestionGenerator):
     def generate_question(self, wrapper: LLMWrapper, chunk: LLMChunk) -> GeneratedQuestion:
         rendered = self.prompt.template.format(chunk=chunk)
 
-        result = wrapper.complete([("user", rendered)])
+        result = wrapper.complete([LLMMessage.user(rendered)])
         print(result)
         data = json.loads(result)
         return data["question"], data["answer"], chunk
