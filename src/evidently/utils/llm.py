@@ -30,6 +30,10 @@ class LLMMessage:
     def user(cls, message: str):
         return LLMMessage("user", message)
 
+    @classmethod
+    def system(cls, message: str):
+        return LLMMessage("system", message)
+
 
 LLMResponse = Dict[str, Any]
 
@@ -132,7 +136,17 @@ class PromptBlock(EvidentlyBaseModel):
     class Config:
         alias_required = False  # fixme
 
-    def render(self) -> str:
+    def render(self):
+        # )))
+        result = self._render()
+        for field in self.__fields__:
+            placeholder = f"{{{field}}}"
+            if placeholder in result:
+                result = result.replace(placeholder, getattr(self, field))
+        return result
+
+    @abstractmethod
+    def _render(self) -> str:
         raise NotImplementedError
 
     @classmethod
@@ -147,6 +161,14 @@ class PromptBlock(EvidentlyBaseModel):
     def json_output(cls, **fields: Union[str, Tuple[str, str]]):
         return JsonOutputFormatBlock(fields=fields)
 
+    @classmethod
+    def string_list_output(cls, of_what: str):
+        return StringListFormatBlock(of_what=of_what)
+
+    @classmethod
+    def string_output(cls, what: str):
+        return StringFormatBlock(what=what)
+
     def anchored(self, start: str = "__start__", end: str = "__end__"):
         return Anchor(start=start, block=self, end=end)
 
@@ -156,18 +178,19 @@ class Anchor(PromptBlock):
     block: PromptBlock
     end: str
 
-    def render(self) -> str:
+    def _render(self) -> str:
         return f"{self.start}\n{self.block.render()}\n{self.end}"
 
 
 class SimpleBlock(PromptBlock):
     value: str
 
-    def render(self) -> str:
+    def _render(self) -> str:
         return self.value
 
 
-class OutputFormatBlock(PromptBlock):
+class OutputFormatBlock(PromptBlock, ABC):
+    @abstractmethod
     def parse_response(self, response: str) -> Dict[str, str]:
         raise NotImplementedError
 
@@ -175,7 +198,7 @@ class OutputFormatBlock(PromptBlock):
 class JsonOutputFormatBlock(OutputFormatBlock):
     fields: Dict[str, Union[Tuple[str, str], str]]
 
-    def render(self) -> str:
+    def _render(self) -> str:
         values = []
         example_rows = []
         for field, descr in self.fields.items():
@@ -194,6 +217,27 @@ class JsonOutputFormatBlock(OutputFormatBlock):
             return json.loads(response)
         except json.JSONDecodeError as e:
             raise LLMResponseParseError(f"Failed to parse response '{response}' as json") from e
+
+
+class StringListFormatBlock(OutputFormatBlock):
+    of_what: str
+
+    def _render(self) -> str:
+        return f"""Return a list of {self.of_what}.
+This should be only a list of string {self.of_what}, separated by comma"""
+
+    def parse_response(self, response: str) -> Dict[str, str]:
+        return {self.of_what: response.split(",")}
+
+
+class StringFormatBlock(OutputFormatBlock):
+    what: str
+
+    def _render(self) -> str:
+        return f"""Return {self.what} only."""
+
+    def parse_response(self, response: str) -> Dict[str, str]:
+        return {self.what: response}
 
 
 class PromptTemplate(EvidentlyBaseModel):
@@ -215,7 +259,7 @@ class PromptTemplate(EvidentlyBaseModel):
     def get_template(self) -> str:
         return "\n".join(block.render() for block in self.get_blocks())
 
-    def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, str]:
+    def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, Any]:
         output = next((b for b in self.get_blocks() if isinstance(b, OutputFormatBlock)), None)
         if output is None:
             return {"": response}
@@ -225,11 +269,23 @@ class PromptTemplate(EvidentlyBaseModel):
         return parsed
 
 
+AnyBlock = Union[str, PromptBlock, Callable]
+
+
 class BlockPromptTemplate(PromptTemplate):
-    blocks: ClassVar[List[PromptBlock]]
+    blocks: ClassVar[List[AnyBlock]]
 
     def get_blocks(self) -> Sequence[PromptBlock]:
-        return self.blocks
+        return [self._to_block(b) for b in self.blocks]
+
+    def _to_block(self, block: AnyBlock) -> PromptBlock:
+        if isinstance(block, PromptBlock):
+            return block
+        if isinstance(block, str):
+            return PromptBlock.simple(block)
+        if callable(block):
+            return PromptBlock.func(block)
+        raise NotImplementedError(f"Cannot create promt block from {block}")
 
 
 # class BinaryClassificationPromtTemplate(PromptTemplate):
