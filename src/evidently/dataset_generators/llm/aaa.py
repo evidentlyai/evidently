@@ -1,5 +1,4 @@
 import abc
-import json
 from abc import ABC
 from typing import ClassVar
 from typing import Iterator
@@ -12,8 +11,11 @@ from llama_index.core.node_parser import SentenceSplitter
 from evidently.dataset_generators.base import DatasetGeneratorResult
 from evidently.dataset_generators.llm.base import BaseLLMDatasetGenerator
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.utils.llm import BlockPromptTemplate
 from evidently.utils.llm import LLMMessage
 from evidently.utils.llm import LLMWrapper
+from evidently.utils.llm import PromptBlock
+from evidently.utils.llm import PromptTemplate
 
 LLMChunk = str
 
@@ -59,35 +61,24 @@ class QuestionGenerator(EvidentlyBaseModel, ABC):
         raise NotImplementedError
 
 
-class QuestionPrompt(EvidentlyBaseModel):
-    class Config:
-        type_alias = "asdfasdasdfaadsfasfasd"
-
-    template: ClassVar[str] = ""
-
-
-class SimpleQuestionPrompt(QuestionPrompt):
-    class Config:
-        type_alias = "asdfasdasdfaaasdfadsfasfasd"
-
-    template: ClassVar[str] = (
-        'please generate a json with two fields "question" and "answer" with '
-        "question and answer about this: {chunk}. dont use markdown in resposne"
-    )
+class SimpleQuestionPrompt(BlockPromptTemplate):
+    blocks: ClassVar = [
+        PromptBlock.simple("Please generate a question about this:"),
+        PromptBlock.input("chunk").anchored(),
+        PromptBlock.json_output(question="question text", answer="answer text"),
+    ]
 
 
 class PromptQuestionGenerator(QuestionGenerator):
     class Config:
         type_alias = "asdfasdasdfaaasdfdsfasfasd"
 
-    prompt: QuestionPrompt
+    prompt: PromptTemplate
 
     def generate_question(self, wrapper: LLMWrapper, chunk: LLMChunk) -> GeneratedQuestion:
-        rendered = self.prompt.template.format(chunk=chunk)
-
+        rendered = self.prompt.render(chunk=chunk)
         result = wrapper.complete([LLMMessage.user(rendered)])
-        print(result)
-        data = json.loads(result)
+        data = self.prompt.parse(result)
         return data["question"], data["answer"], chunk
 
 

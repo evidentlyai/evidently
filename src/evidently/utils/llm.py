@@ -1,4 +1,5 @@
 import dataclasses
+import json
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
@@ -13,10 +14,8 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import SecretStr
 from evidently.errors import EvidentlyError
-from evidently.features.llm_judge import Uncertainty
 from evidently.options.base import Options
 from evidently.options.option import Option
 from evidently.pydantic_utils import EvidentlyBaseModel
@@ -108,7 +107,7 @@ class OpenAIWrapper(LLMWrapper):
     def complete(self, messages: List[LLMMessage]) -> str:
         import openai
 
-        messages = [{"role": user, "content": msg} for user, msg in messages]
+        messages = [{"role": msg.role, "content": msg.content} for msg in messages]
         try:
             response = self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
         except openai.OpenAIError as e:
@@ -144,7 +143,11 @@ class PromptBlock(EvidentlyBaseModel):
     def input(cls, placeholder_name: str = "input"):
         return SimpleBlock(value=f"{{{placeholder_name}}}")
 
-    def anchored(self, start: str, end: str):
+    @classmethod
+    def json_output(cls, **fields: Union[str, Tuple[str, str]]):
+        return JsonOutputFormatBlock(fields=fields)
+
+    def anchored(self, start: str = "__start__", end: str = "__end__"):
         return Anchor(start=start, block=self, end=end)
 
 
@@ -169,7 +172,7 @@ class OutputFormatBlock(PromptBlock):
         raise NotImplementedError
 
 
-class JsonOutputFormatBlock(PromptBlock):
+class JsonOutputFormatBlock(OutputFormatBlock):
     fields: Dict[str, Union[Tuple[str, str], str]]
 
     def render(self) -> str:
@@ -186,72 +189,92 @@ class JsonOutputFormatBlock(PromptBlock):
         example_rows_str = "\n".join(example_rows)
         return f"Return {', '.join(values)} formatted as json without formatting as follows:\n{{{{\n{example_rows_str}\n}}}}"
 
+    def parse_response(self, response: str) -> Dict[str, str]:
+        try:
+            return json.loads(response)
+        except json.JSONDecodeError as e:
+            raise LLMResponseParseError(f"Failed to parse response '{response}' as json") from e
+
 
 class PromptTemplate(EvidentlyBaseModel):
     class Config:
         alias_required = False  # fixme
 
+    @abstractmethod
     def get_blocks(self) -> Sequence[PromptBlock]:
         raise NotImplementedError
 
     def iterate(self, values: Sequence[Dict[str, str]]) -> Iterator[str]:
-        template = self.render()
+        template = self.get_template()
         for vals in values:
             yield template.format(**vals)
 
-    def render(self) -> str:
+    def render(self, **values: str):
+        return self.get_template().format(**values)
+
+    def get_template(self) -> str:
         return "\n".join(block.render() for block in self.get_blocks())
 
-    def parse(self, response: str) -> Dict[str, str]:
+    def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, str]:
         output = next((b for b in self.get_blocks() if isinstance(b, OutputFormatBlock)), None)
         if output is None:
             return {"": response}
-        return output.parse_response(response)
+        parsed = output.parse_response(response)
+        if keys is not None and set(keys) != set(parsed.keys()):
+            raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}")
+        return parsed
 
 
-class BinaryClassificationPromtTemplate(PromptTemplate):
+class BlockPromptTemplate(PromptTemplate):
+    blocks: ClassVar[List[PromptBlock]]
+
     def get_blocks(self) -> Sequence[PromptBlock]:
-        fields = {}
-        if self.include_category:
-            cat = f"{self.target_category} or {self.non_target_category}"
-            if self.uncertainty == Uncertainty.UNKNOWN:
-                cat += " or UNKNOWN"
-            fields["category"] = (cat, self.output_column)
-        if self.include_score:
-            fields["score"] = ("<score here>", self.output_score_column)
-        if self.include_reasoning:
-            fields["reasoning"] = ('"<reasoning here>"', self.output_reasoning_column)
-        return [
-            PromptBlock.simple(self.criteria),
-            PromptBlock.simple(
-                f"Classify text between {self.anchor_start} and {self.anchor_end} "
-                f"into two categories: {self.target_category} and {self.non_target_category}."
-            ),
-            PromptBlock.input().anchored(self.anchor_start, self.anchor_end),
-            PromptBlock.func(self._instructions),
-            JsonOutputFormatBlock(fields=fields),
-        ]
+        return self.blocks
 
-    criteria: str = ""
-    instructions_template: str = (
-        "Use the following categories for classification:\n{__categories__}\n{__scoring__}\nThink step by step."
-    )
-    anchor_start: str = "___text_starts_here___"
-    anchor_end: str = "___text_ends_here___"
 
-    placeholders: Dict[str, str] = {}
-    target_category: str
-    non_target_category: str
-
-    uncertainty: Uncertainty = Uncertainty.UNKNOWN
-
-    include_category: bool = True
-    include_reasoning: bool = False
-    include_score: bool = False
-    score_range: Tuple[float, float] = (0.0, 1.0)
-
-    output_column: str = "category"
-    output_reasoning_column: str = "reasoning"
-    output_score_column: str = "score"
-
-    pre_messages: List[LLMMessage] = Field(default_factory=list)
+# class BinaryClassificationPromtTemplate(PromptTemplate):
+#     def get_blocks(self) -> Sequence[PromptBlock]:
+#         fields = {}
+#         if self.include_category:
+#             cat = f"{self.target_category} or {self.non_target_category}"
+#             if self.uncertainty == Uncertainty.UNKNOWN:
+#                 cat += " or UNKNOWN"
+#             fields["category"] = (cat, self.output_column)
+#         if self.include_score:
+#             fields["score"] = ("<score here>", self.output_score_column)
+#         if self.include_reasoning:
+#             fields["reasoning"] = ('"<reasoning here>"', self.output_reasoning_column)
+#         return [
+#             PromptBlock.simple(self.criteria),
+#             PromptBlock.simple(
+#                 f"Classify text between {self.anchor_start} and {self.anchor_end} "
+#                 f"into two categories: {self.target_category} and {self.non_target_category}."
+#             ),
+#             PromptBlock.input().anchored(self.anchor_start, self.anchor_end),
+#             PromptBlock.func(self._instructions),
+#             JsonOutputFormatBlock(fields=fields),
+#         ]
+#
+#     criteria: str = ""
+#     instructions_template: str = (
+#         "Use the following categories for classification:\n{__categories__}\n{__scoring__}\nThink step by step."
+#     )
+#     anchor_start: str = "___text_starts_here___"
+#     anchor_end: str = "___text_ends_here___"
+#
+#     placeholders: Dict[str, str] = {}
+#     target_category: str
+#     non_target_category: str
+#
+#     uncertainty: Uncertainty = Uncertainty.UNKNOWN
+#
+#     include_category: bool = True
+#     include_reasoning: bool = False
+#     include_score: bool = False
+#     score_range: Tuple[float, float] = (0.0, 1.0)
+#
+#     output_column: str = "category"
+#     output_reasoning_column: str = "reasoning"
+#     output_score_column: str = "score"
+#
+#     pre_messages: List[LLMMessage] = Field(default_factory=list)
