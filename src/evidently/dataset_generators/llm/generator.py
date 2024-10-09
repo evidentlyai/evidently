@@ -13,7 +13,7 @@ def generate_dataset_from_docs(file_path: Path, num_questions: 2) -> pd.DataFram
     chunks = FileContextGenerator(path=file_path)
     generator = QuestionPairGenerator(
         chunks=chunks,
-        questions=PromptQuestionGenerator(prompt=SimpleQuestionPrompt()),
+        questions=PromptQuestionGenerator(system_promt=SimpleQuestionPrompt()),
         num_questions=num_questions,
         provider="openai",
         model="gpt-4o-mini",
