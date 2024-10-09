@@ -23,31 +23,36 @@ class QuestionPairGenerator(BaseLLMDatasetGenerator):
 
     index: IndexExtractor
     num_questions: int
-    prompt: QuestionGenerationPrompt
-    system_prompt: str = "You are an assisstant who generates questions based on provided context"
-    answer_prompt: BaselineAnswerPrompt
+    questions: QuestionGenerationPrompt
+    questions_system_prompt: str = "You are an assisstant who generates questions based on provided context"
+    answers: BaselineAnswerPrompt
     answer_system_prompt: str = "You are a helpful assistant thet answer a given question directly without any preamble"
 
     def generate(self) -> DatasetGeneratorResult:
         documents = self.index.extract_index()
-        questions: List[Question] = self.generate_questions([chunk for chunk in documents.chunks])
-        relevant_chunks = [[c] for c in documents.chunks]  # fixme
+        chunk_sets = [documents.chunks]
+        questions: List[Question] = self.generate_questions(chunk_sets)
+        relevant_chunks = [documents.chunks for _ in questions]  # fixme
         answers = self.generate_answers(questions, relevant_chunks)
+        print(len(questions), len(answers), len(relevant_chunks))
         return pd.DataFrame({"questions": questions, "answers": answers, "context": relevant_chunks})
 
-    def generate_questions(self, chunks: Sequence[Chunk]) -> List[Question]:
-        context = "\n\n".join(chunks)
-        rendered = self.prompt.render(context=context)
-        result = self.wrapper.complete([LLMMessage.system(self.system_prompt), LLMMessage.user(rendered)])
-        data = self.prompt.parse(result, keys=["questions"])
-        return data["questions"]
+    def generate_questions(self, chunk_sets: Sequence[List[Chunk]]) -> List[Question]:
+        questions = []
+        for chunks in chunk_sets:
+            context = "\n\n".join(chunks)
+            rendered = self.questions.render(context=context, number=self.num_questions)
+            result = self.wrapper.complete([LLMMessage.system(self.questions_system_prompt), LLMMessage.user(rendered)])
+            data = self.questions.parse(result, keys=["questions"])
+            questions.extend(data["questions"])
+        return questions
 
     def generate_answers(self, questions: List[Question], relevent_chunks: List[List[Chunk]]):
         answers = []
         system = LLMMessage.system(self.answer_system_prompt)
         for question, chunks in zip(questions, relevent_chunks):
             answer = self.wrapper.complete(
-                [system, LLMMessage.user(self.answer_prompt.render(question=question, context="\n".join(chunks)))]
+                [system, LLMMessage.user(self.answers.render(question=question, context="\n".join(chunks)))]
             )
             answers.append(answer)
         return answers

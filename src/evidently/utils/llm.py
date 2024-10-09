@@ -224,7 +224,7 @@ class StringListFormatBlock(OutputFormatBlock):
 
     def _render(self) -> str:
         return f"""Return a list of {self.of_what}.
-This should be only a list of string {self.of_what}, separated by comma"""
+This should be only a list of string {self.of_what} separated by commas."""
 
     def parse_response(self, response: str) -> Dict[str, str]:
         return {self.of_what: response.split(",")}
@@ -253,7 +253,7 @@ class PromptTemplate(EvidentlyBaseModel):
         for vals in values:
             yield template.format(**vals)
 
-    def render(self, **values: str):
+    def render(self, **values):
         return self.get_template().format(**values)
 
     def get_template(self) -> str:

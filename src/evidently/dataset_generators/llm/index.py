@@ -72,4 +72,4 @@ class SimpleIndexExtractor(IndexExtractor):
     chunks: List[Chunk]
 
     def extract_index(self) -> DocumentIndex:
-        return DocumentIndex(self.chunks)
+        return DocumentIndex("", chunks=self.chunks)

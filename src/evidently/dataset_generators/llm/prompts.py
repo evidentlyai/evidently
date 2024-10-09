@@ -28,7 +28,6 @@ class NaiveQuestionsPrompt(QuestionGenerationPrompt):
         "Avoid providing any closing statement!",
         PromptBlock.string_list_output("questions"),
     ]
-    number: int
 
 
 class ReformulateQuestionPrompt(QuestionGenerationPrompt):
