@@ -1,13 +1,14 @@
 import os
 
-from evidently.dataset_generators.llm.aaa import PromptQuestionGenerator, QuestionPairGenerator, SimpleChunkGenerator, SimpleQuestionPrompt
+from evidently.dataset_generators.llm.aaa import PromptQuestionGenerator, QuestionPairGenerator, SimpleQuestionPrompt
+from evidently.dataset_generators.llm.chunks import SimpleIndexExtractor
 from evidently.options.base import Options
 from evidently.ui.workspace import CloudWorkspace
 
 
 def main():
     generator = QuestionPairGenerator(
-        chunks=SimpleChunkGenerator(chunks=["I am a banana"]),
+        index=SimpleIndexExtractor(chunks=["I am a banana"]),
         questions=PromptQuestionGenerator(prompt=SimpleQuestionPrompt()),
         num_questions=2,
         provider="openai",

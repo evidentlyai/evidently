@@ -12,7 +12,7 @@ from evidently.options.base import Options
 def generate_dataset_from_docs(file_path: Path, num_questions: 2) -> pd.DataFrame:
     chunks = FileContextGenerator(path=file_path)
     generator = QuestionPairGenerator(
-        chunks=chunks,
+        index=chunks,
         questions=PromptQuestionGenerator(system_promt=SimpleQuestionPrompt()),
         num_questions=num_questions,
         provider="openai",
