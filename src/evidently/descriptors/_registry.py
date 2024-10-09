@@ -101,7 +101,7 @@ register_type_alias(
     "evidently:descriptor:CustomPairColumnEval",
 )
 register_type_alias(
-    GeneralDescriptor,
+    FeatureDescriptor,
     "evidently.descriptors.json_match_descriptor.JSONMatch",
     "evidently:descriptor:JSONMatch",
 )
