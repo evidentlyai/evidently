@@ -3,10 +3,8 @@ from abc import ABC
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
-from typing import Optional
 
 import chromadb
-from chromadb import ClientAPI
 from chromadb.types import Collection
 from chromadb.utils import embedding_functions
 from llama_index.core.node_parser import SentenceSplitter
@@ -21,15 +19,14 @@ class DocumentIndex:
     name: str
     chunks: List[Chunk]
     collection: Collection = None
-    chroma_client: Optional[ClientAPI] = None
 
     def get_collection(self):
         if self.collection is None:
             default_embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
                 model_name="all-MiniLM-L6-v2",
             )
-            self.chroma_client = chromadb.Client()
-            collection = self.chroma_client.get_or_create_collection(
+            chroma_client = chromadb.Client()
+            collection = chroma_client.get_or_create_collection(
                 name=self.name,
                 embedding_function=default_embedding_function,
             )
