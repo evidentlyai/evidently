@@ -8,6 +8,9 @@ from evidently.options.base import Options
 from evidently.ui.workspace import CloudWorkspace
 
 
+def generate_from_file(file_path: str):
+    file_path = "./docs/book/reference"
+    data = DataCollectionProvider.from_files(file_path)
 def main():
     data = DataCollectionProvider.from_chunks(chunks=["I am a banana", "My spoon is too big"])
     generator = QADatasetGenerator(
@@ -17,6 +20,8 @@ def main():
         num_questions=5,
         options=Options.from_any_options(None)
     )
+    generated = generator.generate()
+    return generated
     # print(generator.questions.get_template())
     # json.dumps(generator.dict())
     generated = generator.generate()
@@ -31,6 +36,11 @@ def main():
     generator = QADatasetFromSeedGenerator(
         seed_question="What is 'kek'?",
         num_questions=5,
+
+def generate_from_chunk():
+    data = DataCollectionProvider.from_chunks(chunks=["I am a banana", "My spoon is too big"])
+    generator = QADatasetGenerator(
+        data_collection=data,
         provider="openai",
         model="gpt-4o-mini",
         options=Options.from_any_options(None)
@@ -51,4 +61,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    generate_from_chunk()

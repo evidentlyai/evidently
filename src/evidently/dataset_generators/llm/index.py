@@ -5,6 +5,7 @@ from typing import List
 from typing import Optional
 
 import chromadb
+import PyPDF2
 from chromadb.types import Collection
 from chromadb.utils import embedding_functions
 from llama_index.core.node_parser import SentenceSplitter
@@ -14,6 +15,19 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 Chunk = str
 DEFAULT_CHUNK_SIZE = 512
 DEFAULT_CHUNK_OVERLAP = 20
+
+
+def read_text(filename: Path) -> str:
+    if Path(filename).suffix.lower() == ".pdf":
+        with open(filename, "rb") as file:
+            reader = PyPDF2.PdfReader(file)
+            text = ""
+            for page_num in range(len(reader.pages)):
+                page = reader.pages[page_num]
+                text += page.extract_text()
+            return text
+    else:
+        return Path(filename).read_text()
 
 
 class DataCollectionProvider(EvidentlyBaseModel):
@@ -56,7 +70,7 @@ class FileDataCollectionProvider(DataCollectionProvider):
         paths = [self.path] if file_path.is_file() else glob.glob(os.path.join(self.path, "*"))
 
         for filename in paths:
-            text_nodes.extend(splitter.split_text(Path(filename).read_text()))
+            text_nodes.extend(splitter.split_text(read_text()))
 
         data_collection = DataCollection(name=file_path.name, chunks=text_nodes)
         data_collection.init_collection()
