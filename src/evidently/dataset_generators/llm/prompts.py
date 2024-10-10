@@ -1,7 +1,9 @@
 from typing import ClassVar
+from typing import List
 
 from evidently.utils.llm import BlockPromptTemplate
 from evidently.utils.llm import PromptBlock
+from evidently.utils.llm import WithSystemPrompt
 
 
 class SimpleQuestionPrompt(BlockPromptTemplate):
@@ -22,8 +24,8 @@ class QuestionsFromSeed(BlockPromptTemplate):
     ]
 
 
-class QuestionsFromContext(BlockPromptTemplate):
-    pass
+class QuestionsFromContext(WithSystemPrompt, BlockPromptTemplate):
+    system_prompt: str = "You are an assistant who generates questions based on provided context"
 
 
 class NaiveQuestionsFromContext(QuestionsFromContext):
@@ -38,6 +40,8 @@ class NaiveQuestionsFromContext(QuestionsFromContext):
         PromptBlock.string_list_output("questions"),
     ]
 
+    def generate_questions_from_context(self, context: str, number: int) -> List[str]: ...
+
 
 class ReformulateQuestionPrompt(QuestionsFromContext):
     blocks: ClassVar = [
@@ -47,9 +51,10 @@ The question:""",
         PromptBlock.string_list_output("questions"),
     ]
     number: int
+    system_prompt: str = "You are a smart assistant who helps repharase questions"
 
 
-class BaselineAnswerPrompt(BlockPromptTemplate):
+class BaselineAnswerPrompt(WithSystemPrompt, BlockPromptTemplate):
     blocks: ClassVar = [
         "Your task is to answer the following query:",
         PromptBlock.input("question").anchored(),
@@ -61,3 +66,26 @@ Avoid providing any preamble!
 Avoid providing any closing statement!""",
         PromptBlock.string_output("answer"),
     ]
+    system_prompt: str = "You are a helpful assistant that answer a given question directly without any preamble"
+
+
+#
+# def llm_call(*prompt):
+#     def a(f):
+#         pass
+#     return a
+#
+# class GenerateQuestionFromContextBase(BlockPromptTemplate):
+#     # @llm_call()
+#     # def generate_questions_from_context(self, context: str, number: int) -> List[str]:
+#     #     ...
+#
+# class KekImopl(GenerateQuestionFromContextBase):
+#     blocks: ClassVar = ["Generate {number} conceptual questions based on the provided context and "
+#         "can be answered from the information in the provided context.\n"
+#         "Here is a context",
+#         PromptBlock.input("context").anchored(),
+#         "Remain faithful to the above context.\n"
+#         "Avoid providing any preamble!\n"
+#         "Avoid providing any closing statement!",
+#         PromptBlock.string_list_output("questions"),]

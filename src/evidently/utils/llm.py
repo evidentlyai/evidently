@@ -340,6 +340,18 @@ class PromptTemplate(EvidentlyBaseModel):
             raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}")
         return parsed
 
+    def get_messages(self, **values) -> List[LLMMessage]:
+        return [LLMMessage.user(self.render(**values))]
+
+
+class WithSystemPrompt(PromptTemplate):
+    system_prompt: str
+
+    def get_messages(self, **values) -> List[LLMMessage]:
+        msgs = super().get_messages(**values)
+        msgs.insert(0, LLMMessage.system(self.system_prompt))
+        return msgs
+
 
 AnyBlock = Union[str, PromptBlock, Callable]
 
