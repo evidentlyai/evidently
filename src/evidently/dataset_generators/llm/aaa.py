@@ -9,7 +9,9 @@ from evidently.dataset_generators.base import DatasetGeneratorResult
 from evidently.dataset_generators.llm.base import BaseLLMDatasetGenerator
 from evidently.dataset_generators.llm.index import Chunk
 from evidently.dataset_generators.llm.index import DataCollection
+from evidently.dataset_generators.llm.index import DataCollectionProvider
 from evidently.dataset_generators.llm.prompts import BaselineAnswerPrompt
+from evidently.dataset_generators.llm.prompts import NaiveQuestionsPrompt
 from evidently.dataset_generators.llm.prompts import QuestionGenerationPrompt
 from evidently.utils.llm import LLMMessage
 
@@ -19,20 +21,20 @@ GeneratedQuestion = Tuple[Question, Answer, Chunk]
 ChunkSet = List[Chunk]
 
 
-class DatasetFromDocs(BaseLLMDatasetGenerator):
+class QADatasetGenerator(BaseLLMDatasetGenerator):
     class Config:
         type_alias = "DatasetFromDocs"
         arbitrary_types_allowed = True
 
-    data_collection: DataCollection
+    data_collection: DataCollectionProvider
     num_questions: int
-    questions: QuestionGenerationPrompt
-    questions_system_prompt: str = "You are an assistant who generates questions based on provided context"
-    answers: BaselineAnswerPrompt
-    answer_system_prompt: str = "You are a helpful assistant that answer a given question directly without any preamble"
+    questions: List[QuestionGenerationPrompt] = [NaiveQuestionsPrompt()]
+    # questions_system_prompt: str = "You are an assistant who generates questions based on provided context"
+    answers: BaselineAnswerPrompt = BaselineAnswerPrompt()
+    # answer_system_prompt: str = "You are a helpful assistant that answer a given question directly without any preamble"
 
     def generate(self) -> DatasetGeneratorResult:
-        documents = self.data_collection
+        documents = self.data_collection.get_data_collection()
         chunk_set_count, chunks_in_set_count, questions_per_chunkset = self.get_chunks_and_question_count()
         chunk_sets = self.generate_chunksets(documents, chunk_set_count, chunks_in_set_count)
         questions: List[Question] = self.generate_questions(chunk_sets, questions_per_chunkset)

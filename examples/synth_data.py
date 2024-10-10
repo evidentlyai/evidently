@@ -1,22 +1,36 @@
+import json
 import os
 
-from evidently.dataset_generators.llm.aaa import DatasetFromDocs
-from evidently.dataset_generators.llm.index import DataCollection
+from evidently.dataset_generators.llm.aaa import QADatasetGenerator
+from evidently.dataset_generators.llm.index import DataCollection, DataCollectionProvider
 from evidently.dataset_generators.llm.prompts import BaselineAnswerPrompt, NaiveQuestionsPrompt
 from evidently.options.base import Options
 from evidently.ui.workspace import CloudWorkspace
 
 
 def main():
-    generator = DatasetFromDocs(
-        data_collection=DataCollection.from_chunks(chunks=["I am a banana", "My spoon is too big"]),
-        questions=NaiveQuestionsPrompt(),
+    data = DataCollectionProvider.from_chunks(chunks=["I am a banana", "My spoon is too big"])
+    DataCollectionProvider.from_cloud_tmp_file()
+    generator = QADatasetGenerator(
+        data_collection=data,
+        provider="openai",
+        model="gpt-4o-mini",
+        num_questions=5,
+        options=Options.from_any_options(None)
+    )
+
+    generator = QAScratchDatasetGenerator(
+        task="I need questions about kek",
+        exapmles=["What is kek"],
+        questions=[NaiveQuestionsPrompt(), PIIQuestions()],
         answers=BaselineAnswerPrompt(),
         provider="openai",
         model="gpt-4o-mini",
         num_questions=5,
         options=Options.from_any_options(None)
     )
+
+    json.dumps(generator.dict())
     print(generator.questions.get_template())
     generated = generator.generate()
     for _, a in generated.iterrows():
