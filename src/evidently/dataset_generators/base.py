@@ -13,6 +13,7 @@ class BaseDatasetGenerator(EvidentlyBaseModel, ABC):
     class Config:
         type_alias = "evidently:dataset_generator:BaseDatasetGenerator"
         is_base_type = True
+        alias_required = False  # fixme
 
     options: Options
 

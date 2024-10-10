@@ -13,11 +13,20 @@ class SimpleQuestionPrompt(BlockPromptTemplate):
     question_type: str = "simple"
 
 
-class QuestionGenerationPrompt(BlockPromptTemplate):
+class QuestionsFromSeed(BlockPromptTemplate):
+    blocks: ClassVar = [
+        """Write for me {number} alternative questions quite similar to the question you got.
+        The question: """,
+        PromptBlock.input("seed_question").anchored(),
+        PromptBlock.string_list_output("questions"),
+    ]
+
+
+class QuestionsFromContext(BlockPromptTemplate):
     pass
 
 
-class NaiveQuestionsPrompt(QuestionGenerationPrompt):
+class NaiveQuestionsFromContext(QuestionsFromContext):
     blocks: ClassVar = [
         "Generate {number} conceptual questions based on the provided context and "
         "can be answered from the information in the provided context.\n"
@@ -30,7 +39,7 @@ class NaiveQuestionsPrompt(QuestionGenerationPrompt):
     ]
 
 
-class ReformulateQuestionPrompt(QuestionGenerationPrompt):
+class ReformulateQuestionPrompt(QuestionsFromContext):
     blocks: ClassVar = [
         """Write for me {number} alternative questions quite similar to the question you got.
 The question:""",

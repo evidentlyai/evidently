@@ -18,7 +18,7 @@ DEFAULT_CHUNK_OVERLAP = 20
 
 class DataCollectionProvider(EvidentlyBaseModel):
     class Config:
-        require_alias = False  # fixme
+        alias_required = False  # fixme
 
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
@@ -31,6 +31,19 @@ class DataCollectionProvider(EvidentlyBaseModel):
         cls, path: str, chunk_size: int = DEFAULT_CHUNK_SIZE, chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
     ) -> "DataCollectionProvider":
         return FileDataCollectionProvider(path=path, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+
+    @classmethod
+    def from_chunks(cls, chunks: List[str]):
+        return ChunksDataCollectionProvider(chunks=chunks)
+
+
+class ChunksDataCollectionProvider(DataCollectionProvider):
+    chunks: List[Chunk]
+
+    def get_data_collection(self):
+        dc = DataCollection(name="chunks", chunks=self.chunks)
+        dc.init_collection()
+        return dc
 
 
 class FileDataCollectionProvider(DataCollectionProvider):
@@ -59,17 +72,6 @@ class DataCollection:
         self.name = name
         self.chunks = chunks
         self.collection = collection
-
-    @classmethod
-    def from_chunks(cls, chunks: List[str]):
-        document_index = cls("kb_from_chunks", chunks=chunks)
-        return document_index
-
-    @classmethod
-    def from_files(
-        cls, path: str, chunk_size: int = DEFAULT_CHUNK_SIZE, chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
-    ) -> "DataCollectionProvider":
-        return FileDataCollectionProvider(path=path, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
 
     def init_collection(self):
         if self.collection is None:

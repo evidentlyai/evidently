@@ -11,8 +11,9 @@ from evidently.dataset_generators.llm.index import Chunk
 from evidently.dataset_generators.llm.index import DataCollection
 from evidently.dataset_generators.llm.index import DataCollectionProvider
 from evidently.dataset_generators.llm.prompts import BaselineAnswerPrompt
-from evidently.dataset_generators.llm.prompts import NaiveQuestionsPrompt
-from evidently.dataset_generators.llm.prompts import QuestionGenerationPrompt
+from evidently.dataset_generators.llm.prompts import NaiveQuestionsFromContext
+from evidently.dataset_generators.llm.prompts import QuestionsFromContext
+from evidently.dataset_generators.llm.prompts import QuestionsFromSeed
 from evidently.utils.llm import LLMMessage
 
 Question = str
@@ -22,16 +23,12 @@ ChunkSet = List[Chunk]
 
 
 class QADatasetGenerator(BaseLLMDatasetGenerator):
-    class Config:
-        type_alias = "DatasetFromDocs"
-        arbitrary_types_allowed = True
-
     data_collection: DataCollectionProvider
     num_questions: int
-    questions: List[QuestionGenerationPrompt] = [NaiveQuestionsPrompt()]
-    # questions_system_prompt: str = "You are an assistant who generates questions based on provided context"
+    questions: QuestionsFromContext = NaiveQuestionsFromContext()
+    questions_system_prompt: str = "You are an assistant who generates questions based on provided context"
     answers: BaselineAnswerPrompt = BaselineAnswerPrompt()
-    # answer_system_prompt: str = "You are a helpful assistant that answer a given question directly without any preamble"
+    answer_system_prompt: str = "You are a helpful assistant that answer a given question directly without any preamble"
 
     def generate(self) -> DatasetGeneratorResult:
         documents = self.data_collection.get_data_collection()
@@ -70,3 +67,21 @@ class QADatasetGenerator(BaseLLMDatasetGenerator):
                 for question, chunks in zip(questions, relevant_chunks)
             ]
         )
+
+
+class QADatasetFromSeedGenerator(BaseLLMDatasetGenerator):
+    seed_question: str
+    num_questions: int
+    prompt: QuestionsFromSeed = QuestionsFromSeed()
+    system_prompt: str = "You are a smart assistant who helps repharase questions"
+
+    def generate(self) -> DatasetGeneratorResult:
+        response = self.wrapper.batch_complete_sync(
+            [
+                [
+                    LLMMessage.system(self.system_prompt),
+                    LLMMessage.user(self.prompt.render(number=self.num_questions, seed_question=self.seed_question)),
+                ]
+            ]
+        )
+        return pd.DataFrame({"questions": self.prompt.parse(response[0], keys=["questions"])["questions"]})
