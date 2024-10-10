@@ -45,7 +45,7 @@ def load_md_from_dir(path: Path) -> List[Document]:
     return documents
 
 
-class KnowledgeBase:
+class DataCollection:
     name: str
     chunks: List[Chunk]
     collection: Optional[Collection] = None
@@ -55,10 +55,10 @@ class KnowledgeBase:
         self.chunks = chunks
         self.collection = collection
 
-    @staticmethod
+    @classmethod
     def from_files(
-        path: str, chunk_size: int = DEFAULT_CHUNK_SIZE, chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
-    ) -> "KnowledgeBase":
+        cls, path: str, chunk_size: int = DEFAULT_CHUNK_SIZE, chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
+    ) -> "DataCollection":
         file_path = Path(path)
         # extractor = IndexExtractorFromFile(path=file_path, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         # documents = extractor.load_md_from_dir()
@@ -69,13 +69,13 @@ class KnowledgeBase:
         for document in documents:
             text_nodes.extend(splitter.split_text(document.content))
 
-        document_index = KnowledgeBase(name=file_path.name, chunks=text_nodes)
+        document_index = cls(name=file_path.name, chunks=text_nodes)
         document_index.get_collection()
         return document_index
 
-    @staticmethod
-    def from_chunks(self, chunks: List[str]):
-        document_index = KnowledgeBase("kb_from_chunks", chunks=chunks)
+    @classmethod
+    def from_chunks(cls, chunks: List[str]):
+        document_index = cls("kb_from_chunks", chunks=chunks)
         return document_index
 
     def get_collection(self):
