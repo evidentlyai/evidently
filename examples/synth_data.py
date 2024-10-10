@@ -1,15 +1,15 @@
 import os
 
-from evidently.dataset_generators.llm.aaa import QuestionPairGenerator
-from evidently.dataset_generators.llm.index import SimpleIndexExtractor
+from evidently.dataset_generators.llm.aaa import DatasetFromDocs
+from evidently.dataset_generators.llm.index import DataCollection
 from evidently.dataset_generators.llm.prompts import BaselineAnswerPrompt, NaiveQuestionsPrompt
 from evidently.options.base import Options
 from evidently.ui.workspace import CloudWorkspace
 
 
 def main():
-    generator = QuestionPairGenerator(
-        index=SimpleIndexExtractor(chunks=["I am a banana", "My spoon is too big"]),
+    generator = DatasetFromDocs(
+        data_collection=DataCollection.from_chunks(chunks=["I am a banana", "My spoon is too big"]),
         questions=NaiveQuestionsPrompt(),
         answers=BaselineAnswerPrompt(),
         provider="openai",

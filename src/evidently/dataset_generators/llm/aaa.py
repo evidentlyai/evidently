@@ -24,6 +24,7 @@ ChunkSet = List[Chunk]
 class DatasetFromDocs(BaseLLMDatasetGenerator):
     class Config:
         type_alias = "DatasetFromDocs"
+        arbitrary_types_allowed = True
 
     data_collection: DataCollection
     num_questions: int
@@ -34,8 +35,8 @@ class DatasetFromDocs(BaseLLMDatasetGenerator):
 
     def generate(self) -> DatasetGeneratorResult:
         documents = self.data_collection
-        chunk_set_count, chuns_in_set_count, questions_per_chunkset = self.get_chunks_and_question_count()
-        chunk_sets = self.generate_chunksets(documents, chunk_set_count, chuns_in_set_count)
+        chunk_set_count, chunks_in_set_count, questions_per_chunkset = self.get_chunks_and_question_count()
+        chunk_sets = self.generate_chunksets(documents, chunk_set_count, chunks_in_set_count)
         questions: List[Question] = self.generate_questions(chunk_sets, questions_per_chunkset)
         relevant_chunks = [documents.find_relevant_chunks(q) for q in questions]
         answers = self.generate_answers(questions, relevant_chunks)
