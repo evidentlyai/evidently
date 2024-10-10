@@ -1,4 +1,5 @@
 import abc
+import os
 from abc import ABC
 from dataclasses import dataclass
 from pathlib import Path
@@ -68,6 +69,12 @@ class IndexExtractor(EvidentlyBaseModel, ABC):
         raise NotImplementedError
 
 
+@dataclass
+class Document:
+    id: str
+    content: str
+
+
 class IndexExtractorFromFile(IndexExtractor):
     class Config:
         type_alias = "IndexExtractorFromFile"
@@ -76,11 +83,37 @@ class IndexExtractorFromFile(IndexExtractor):
     chunk_size: int = 512
     chunk_overlap: int = 20
 
+    def load_md_from_dir(self, path: Path) -> List[Document]:
+        """
+        Loads Markdown (.md) files from the specified directory.
+
+        Args:
+            path (str): Path to the directory containing .md files.
+
+        Returns:
+            List[dict]: A list of dictionaries with the text content of each .md file.
+        """
+        documents = []
+
+        if os.path.isfile(path):
+            with open(path, "r", encoding="utf-8") as file:
+                documents.append(Document(id=file.name, content=file.read()))
+            return documents
+
+        for filename in os.listdir(path):
+            file_path = os.path.join(path, filename)
+            with open(file_path, "r", encoding="utf-8") as file:
+                documents.append(Document(id=file.name, content=file.read()))
+
+        return documents
+
     def extract_index(self) -> DocumentIndex:
-        with open(self.path) as f:
-            text = f.read()
+        documents = self.load_md_from_dir(self.path)
         splitter = SentenceSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
-        text_nodes = splitter.split_text(text)
+        text_nodes = []
+        for document in documents:
+            text_nodes.extend(splitter.split_text(document.content))
+
         return DocumentIndex(self.path.name, chunks=text_nodes)
 
 
