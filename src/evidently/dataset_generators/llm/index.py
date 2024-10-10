@@ -1,14 +1,15 @@
 import glob
 import os
+import warnings
 from pathlib import Path
 from typing import List
 from typing import Optional
 
 import chromadb
-import PyPDF2
 from chromadb.types import Collection
 from chromadb.utils import embedding_functions
 from llama_index.core.node_parser import SentenceSplitter
+from pypdf import PdfReader
 
 from evidently.pydantic_utils import EvidentlyBaseModel
 
@@ -16,16 +17,19 @@ Chunk = str
 DEFAULT_CHUNK_SIZE = 512
 DEFAULT_CHUNK_OVERLAP = 20
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+warnings.filterwarnings("ignore", category=FutureWarning)
 
-def read_text(filename: Path) -> str:
-    if Path(filename).suffix.lower() == ".pdf":
-        with open(filename, "rb") as file:
-            reader = PyPDF2.PdfReader(file)
-            text = ""
-            for page_num in range(len(reader.pages)):
-                page = reader.pages[page_num]
-                text += page.extract_text()
-            return text
+
+def read_text(filename: str) -> str:
+    file_path = Path(filename)
+    if file_path.suffix.lower() == ".pdf":
+        reader = PdfReader(file_path)
+        text = ""
+        for page_num in range(len(reader.pages)):
+            page = reader.pages[page_num]
+            text += page.extract_text()
+        return text
     else:
         return Path(filename).read_text()
 
@@ -37,7 +41,7 @@ class DataCollectionProvider(EvidentlyBaseModel):
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
 
-    def get_data_collection(self):
+    def get_data_collection(self) -> "DataCollection":
         raise NotImplementedError
 
     @classmethod
@@ -70,7 +74,8 @@ class FileDataCollectionProvider(DataCollectionProvider):
         paths = [self.path] if file_path.is_file() else glob.glob(os.path.join(self.path, "*"))
 
         for filename in paths:
-            text_nodes.extend(splitter.split_text(read_text()))
+            nodes = splitter.split_text(read_text(filename))
+            text_nodes.extend(nodes)
 
         data_collection = DataCollection(name=file_path.name, chunks=text_nodes)
         data_collection.init_collection()
