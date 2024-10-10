@@ -62,5 +62,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    generate_from_file()
+    main()
+    # generate_from_file()
