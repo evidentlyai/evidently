@@ -10,9 +10,8 @@ from evidently.options.base import Options
 
 
 def generate_dataset_from_docs(file_path: Path, num_questions: 2) -> pd.DataFrame:
-    documents = IndexExtractorFromFile(path=file_path)
     generator = QuestionPairGenerator(
-        index=documents,
+        inpute=IndexExtractorFromFile(path=file_path),
         questions=NaiveQuestionsPrompt(),
         answers=BaselineAnswerPrompt(),
         num_questions=num_questions,
@@ -22,3 +21,12 @@ def generate_dataset_from_docs(file_path: Path, num_questions: 2) -> pd.DataFram
     )
     generated = generator.generate()
     return generated
+
+
+# def generate_dataset_from_chunks(file_path, num_questions: 2) -> pd.DataFrame:
+# RAG
+# kb = KnowledgeBase.from_path(...)
+# generated = QuestionPairGenerator(inpute=kb).generate()
+
+# # From scratch
+# generated = QuestionPairGeneratorFromSamples(inpute=["What is Evidently?"]).generate()
