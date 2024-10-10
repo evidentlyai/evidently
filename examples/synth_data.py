@@ -1,7 +1,7 @@
 import json
 import os
 
-from evidently.dataset_generators.llm.aaa import QADatasetFromSeedGenerator, QADatasetGenerator
+from evidently.dataset_generators.llm.questions import QADatasetFromSeedGenerator, QADatasetGenerator
 from evidently.dataset_generators.llm.index import DataCollection, DataCollectionProvider
 from evidently.dataset_generators.llm.prompts import BaselineAnswerPrompt, NaiveQuestionsFromContext
 from evidently.options.base import Options
