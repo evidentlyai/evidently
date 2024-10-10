@@ -39,7 +39,7 @@ def test_knowledge_base():
     content = get_content()
     with open(file_path, "w") as f:
         f.write(content)
-    knowledge_base = DataCollection.from_files(file_path)
+    knowledge_base = DataCollection.from_files(file_path, chunk_size=50, chunk_overlap=20)
     assert len(knowledge_base.chunks) == 16
     relevant_chunks = knowledge_base.find_relevant_chunks("Who is Sauron?", 3)
     assert len(relevant_chunks) == 3
