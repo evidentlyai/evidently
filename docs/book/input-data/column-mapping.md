@@ -138,7 +138,7 @@ Here is an example of how you point to the defined list of columns that contain 
 
 ```python
 column_mapping = ColumnMapping()
-column_mapping.embeddings = {'small_subset': embeddings_data.columns[:10]}
+column_mapping.collection = {'small_subset': embeddings_data.columns[:10]}
 ```
 
 {% hint style="info" %} 
