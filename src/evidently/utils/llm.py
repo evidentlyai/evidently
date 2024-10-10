@@ -1,7 +1,12 @@
+import asyncio
 import dataclasses
+import datetime
 import json
 from abc import ABC
 from abc import abstractmethod
+from asyncio import Lock
+from asyncio import Semaphore
+from asyncio import sleep
 from typing import Any
 from typing import Callable
 from typing import ClassVar
@@ -19,6 +24,7 @@ from evidently.errors import EvidentlyError
 from evidently.options.base import Options
 from evidently.options.option import Option
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.ui.base import sync_api
 
 
 @dataclasses.dataclass
@@ -50,12 +56,62 @@ class LLMRequestError(EvidentlyLLMError):
     pass
 
 
+class RateLimiter:
+    def __init__(self, rate: Optional[int], interval: datetime.timedelta):
+        self.rate = rate
+        self.interval = interval
+        self.enters = []
+        self.lock = Lock()
+
+    async def __aenter__(self):
+        if self.rate is None:
+            return
+        while True:
+            async with self.lock:
+                await self._clean()
+                if len(self.enters) < self.rate:
+                    self.enters.append(datetime.datetime.now())
+                    break
+            await sleep(0.1)
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    async def _clean(self):
+        now = datetime.datetime.now()
+        self.enters = [e for e in self.enters if now - e < self.interval]
+
+
 class LLMWrapper(ABC):
     __used_options__: ClassVar[List[Type[Option]]] = []
 
     @abstractmethod
-    def complete(self, messages: List[LLMMessage]) -> str:
+    async def complete(self, messages: List[LLMMessage]) -> str:
         raise NotImplementedError
+
+    async def batch_complete(
+        self, messages_batch: List[List[LLMMessage]], batch_size: Optional[int] = None, rpm_limit: Optional[int] = None
+    ) -> List[str]:
+        if batch_size is None:
+            batch_size = self.get_batch_size()
+        if rpm_limit is None:
+            rpm_limit = self.get_rpm_limit()
+        rate_limiter = RateLimiter(rate=rpm_limit, interval=datetime.timedelta(minutes=1))
+        semaphore = Semaphore(batch_size)
+
+        async def work(messages: List[LLMMessage]) -> str:
+            async with semaphore, rate_limiter:
+                return await self.complete(messages)
+
+        return await asyncio.gather(*[work(msgs) for msgs in messages_batch])
+
+    batch_complete_sync = sync_api(batch_complete)
+
+    def get_batch_size(self) -> int:
+        return 100
+
+    def get_rpm_limit(self) -> Optional[int]:
+        return None
 
     def get_used_options(self) -> List[Type[Option]]:
         return self.__used_options__
@@ -87,12 +143,13 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
 
 class OpenAIKey(Option):
     api_key: Optional[SecretStr] = None
+    rpm_limit: int = 500
 
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = SecretStr(api_key) if api_key is not None else None
         super().__init__()
 
-    def get_value(self) -> Optional[str]:
+    def get_api_key(self) -> Optional[str]:
         if self.api_key is None:
             return None
         return self.api_key.get_secret_value()
@@ -103,22 +160,37 @@ class OpenAIWrapper(LLMWrapper):
     __used_options__: ClassVar = [OpenAIKey]
 
     def __init__(self, model: str, options: Options):
+        self.model = model
+        self.options = options.get(OpenAIKey)
+        self._clients = {}
+
+    @property
+    def client(self):
         import openai
 
-        self.model = model
-        self.client = openai.OpenAI(api_key=options.get(OpenAIKey).get_value())
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError as e:
+            raise RuntimeError("Cannot access OpenAIWrapper client without loop") from e
+        loop_id = id(loop)
+        if loop_id not in self._clients:
+            self._clients[loop_id] = openai.AsyncOpenAI(api_key=self.options.get_api_key())
+        return self._clients[loop_id]
 
-    def complete(self, messages: List[LLMMessage]) -> str:
+    async def complete(self, messages: List[LLMMessage]) -> str:
         import openai
 
         messages = [{"role": msg.role, "content": msg.content} for msg in messages]
         try:
-            response = self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
+            response = await self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
         except openai.OpenAIError as e:
             raise LLMRequestError("Failed to call OpenAI complete API") from e
         content = response.choices[0].message.content
         assert content is not None  # todo: better error
         return content
+
+    def get_rpm_limit(self) -> Optional[int]:
+        return self.options.rpm_limit
 
 
 @llm_provider("litellm", None)
@@ -224,7 +296,7 @@ class StringListFormatBlock(OutputFormatBlock):
 
     def _render(self) -> str:
         return f"""Return a list of {self.of_what}.
-This should be only a list of string {self.of_what}, each one on a new line"""
+This should be only a list of string {self.of_what}, each one on a new line with no enumeration"""
 
     def parse_response(self, response: str) -> Dict[str, str]:
         return {self.of_what: response.split("\n")}

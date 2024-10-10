@@ -47,21 +47,24 @@ class QuestionPairGenerator(BaseLLMDatasetGenerator):
         return [[random.choice(documents.chunks) for _ in range(chunks_per_set)] for _ in range(count)]
 
     def generate_questions(self, chunk_sets: Sequence[List[Chunk]], questions_per_chunkset: int) -> List[Question]:
-        questions = []
-        for chunks in chunk_sets:
-            context = "\n\n".join(chunks)
-            rendered = self.questions.render(context=context, number=questions_per_chunkset)
-            result = self.wrapper.complete([LLMMessage.system(self.questions_system_prompt), LLMMessage.user(rendered)])
-            data = self.questions.parse(result, keys=["questions"])
-            questions.extend(data["questions"])
-        return questions
+        system = LLMMessage.system(self.questions_system_prompt)
+        llm_responses = self.wrapper.batch_complete_sync(
+            [
+                [
+                    system,
+                    LLMMessage.user(self.questions.render(context="\n\n".join(chunks), number=questions_per_chunkset)),
+                ]
+                for chunks in chunk_sets
+            ]
+        )
+        questions = [self.questions.parse(response, keys=["questions"])["questions"] for response in llm_responses]
+        return [q for qs in questions for q in qs]
 
-    def generate_answers(self, questions: List[Question], relevent_chunks: List[List[Chunk]]):
-        answers = []
+    def generate_answers(self, questions: List[Question], relevent_chunks: List[List[Chunk]]) -> List[str]:
         system = LLMMessage.system(self.answer_system_prompt)
-        for question, chunks in zip(questions, relevent_chunks):
-            answer = self.wrapper.complete(
+        return self.wrapper.batch_complete_sync(
+            [
                 [system, LLMMessage.user(self.answers.render(question=question, context="\n".join(chunks)))]
-            )
-            answers.append(answer)
-        return answers
+                for question, chunks in zip(questions, relevent_chunks)
+            ]
+        )

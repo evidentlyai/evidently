@@ -40,7 +40,7 @@ class DocumentIndex:
             self.collection = collection
         return self.collection
 
-    def find_relevant_chunks(self, question: str, n_results=3) -> List[Chunk]:
+    def find_relevant_chunks(self, question: str, n_results: int = 3) -> List[Chunk]:
         """
         Queries the collection with a given question and returns the relevant text chunks.
 
@@ -54,7 +54,7 @@ class DocumentIndex:
         # Perform the query
         results = self.get_collection().query(
             query_texts=question,
-            n_results=n_results,
+            n_results=min(n_results, len(self.chunks)),
         )
 
         # Extract relevant text chunks from the documents
