@@ -9,8 +9,6 @@ from evidently.dataset_generators.base import DatasetGeneratorResult
 from evidently.dataset_generators.llm.base import BaseLLMDatasetGenerator
 from evidently.dataset_generators.llm.index import Chunk
 from evidently.dataset_generators.llm.index import DataCollection
-
-# from evidently.dataset_generators.llm.index import IndexExtractor
 from evidently.dataset_generators.llm.prompts import BaselineAnswerPrompt
 from evidently.dataset_generators.llm.prompts import QuestionGenerationPrompt
 from evidently.utils.llm import LLMMessage
@@ -29,9 +27,9 @@ class DatasetFromDocs(BaseLLMDatasetGenerator):
     data_collection: DataCollection
     num_questions: int
     questions: QuestionGenerationPrompt
-    questions_system_prompt: str = "You are an assisstant who generates questions based on provided context"
+    questions_system_prompt: str = "You are an assistant who generates questions based on provided context"
     answers: BaselineAnswerPrompt
-    answer_system_prompt: str = "You are a helpful assistant thet answer a given question directly without any preamble"
+    answer_system_prompt: str = "You are a helpful assistant that answer a given question directly without any preamble"
 
     def generate(self) -> DatasetGeneratorResult:
         documents = self.data_collection
@@ -62,11 +60,11 @@ class DatasetFromDocs(BaseLLMDatasetGenerator):
         questions = [self.questions.parse(response, keys=["questions"])["questions"] for response in llm_responses]
         return [q for qs in questions for q in qs]
 
-    def generate_answers(self, questions: List[Question], relevent_chunks: List[List[Chunk]]) -> List[str]:
+    def generate_answers(self, questions: List[Question], relevant_chunks: List[List[Chunk]]) -> List[str]:
         system = LLMMessage.system(self.answer_system_prompt)
         return self.wrapper.batch_complete_sync(
             [
                 [system, LLMMessage.user(self.answers.render(question=question, context="\n".join(chunks)))]
-                for question, chunks in zip(questions, relevent_chunks)
+                for question, chunks in zip(questions, relevant_chunks)
             ]
         )
