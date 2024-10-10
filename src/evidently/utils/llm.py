@@ -224,10 +224,10 @@ class StringListFormatBlock(OutputFormatBlock):
 
     def _render(self) -> str:
         return f"""Return a list of {self.of_what}.
-This should be only a list of string {self.of_what} separated by commas."""
+This should be only a list of string {self.of_what}, each one on a new line"""
 
     def parse_response(self, response: str) -> Dict[str, str]:
-        return {self.of_what: response.split(",")}
+        return {self.of_what: response.split("\n")}
 
 
 class StringFormatBlock(OutputFormatBlock):

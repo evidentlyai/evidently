@@ -51,7 +51,7 @@ class DocumentIndex:
             List[Chunk]: A list of relevant text chunks.
         """
         # Perform the query
-        results = self.collection.query(
+        results = self.get_collection().query(
             query_texts=question,
             n_results=n_results,
         )
@@ -91,4 +91,4 @@ class SimpleIndexExtractor(IndexExtractor):
     chunks: List[Chunk]
 
     def extract_index(self) -> DocumentIndex:
-        return DocumentIndex("", chunks=self.chunks)
+        return DocumentIndex("inmemory", chunks=self.chunks)
