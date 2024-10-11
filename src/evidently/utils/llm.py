@@ -67,7 +67,7 @@ class RateLimiter:
     def __init__(self, rate: Optional[int], interval: datetime.timedelta):
         self.rate = rate
         self.interval = interval
-        self.enters = []
+        self.enters: List[datetime.datetime] = []
         self.lock = Lock()
 
     async def __aenter__(self):
@@ -208,9 +208,11 @@ class OpenAIWrapper(LLMWrapper):
     __used_options__: ClassVar = [OpenAIKey]
 
     def __init__(self, model: str, options: Options):
+        import openai
+
         self.model = model
         self.options = options.get(OpenAIKey)
-        self._clients = {}
+        self._clients: Dict[int, openai.AsyncOpenAI] = {}
 
     @property
     def client(self):
@@ -246,7 +248,7 @@ class LiteLLMWrapper(LLMWrapper):
     def __init__(self, model: str):
         self.model = model
 
-    def complete(self, messages: List[LLMMessage]) -> str:
+    async def complete(self, messages: List[LLMMessage]) -> str:
         from litellm import completion
 
         return completion(model=self.model, messages=messages).choices[0].message.content
@@ -316,6 +318,9 @@ class OutputFormatBlock(PromptBlock, ABC, Generic[TResult]):
 
 
 class NoopOutputFormat(OutputFormatBlock[str]):
+    def _render(self) -> str:
+        return ""
+
     def parse_response(self, response: str) -> str:
         return response
 
@@ -381,7 +386,7 @@ def llm_call(f: Callable) -> Callable[..., LLMRequest]:
             )
 
         output_format = self.get_output_format()
-        prompt_response_type = _get_genric_arg(output_format)
+        prompt_response_type = _get_genric_arg(output_format.__class__)
         if prompt_response_type != response_type:
             raise TypeError(
                 f"{f} response type ({response_type}) does not correspond to prompt output type {prompt_response_type}"
@@ -399,7 +404,7 @@ def llm_call(f: Callable) -> Callable[..., LLMRequest]:
     return inner
 
 
-def _get_genric_arg(cls):
+def _get_genric_arg(cls: Type):
     return typing_inspect.get_args(next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b)))[0]
 
 
@@ -431,7 +436,9 @@ class PromptTemplate(EvidentlyBaseModel):
         return list(placeholders_re.findall(template))
 
     def get_output_format(self) -> OutputFormatBlock:
-        output = next((b for b in self.get_blocks() if isinstance(b, OutputFormatBlock)), None)
+        output: Optional[OutputFormatBlock] = next(
+            (b for b in self.get_blocks() if isinstance(b, OutputFormatBlock)), None
+        )
         return output if output is not None else NoopOutputFormat()
 
     def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, Any]:
@@ -468,54 +475,6 @@ class BlockPromptTemplate(PromptTemplate):
             return block
         if isinstance(block, str):
             return PromptBlock.simple(block)
-        if callable(block):
-            return PromptBlock.func(block)
+        # if callable(block):  todo
+        #     return PromptBlock.func(block)
         raise NotImplementedError(f"Cannot create promt block from {block}")
-
-
-# class BinaryClassificationPromtTemplate(PromptTemplate):
-#     def get_blocks(self) -> Sequence[PromptBlock]:
-#         fields = {}
-#         if self.include_category:
-#             cat = f"{self.target_category} or {self.non_target_category}"
-#             if self.uncertainty == Uncertainty.UNKNOWN:
-#                 cat += " or UNKNOWN"
-#             fields["category"] = (cat, self.output_column)
-#         if self.include_score:
-#             fields["score"] = ("<score here>", self.output_score_column)
-#         if self.include_reasoning:
-#             fields["reasoning"] = ('"<reasoning here>"', self.output_reasoning_column)
-#         return [
-#             PromptBlock.simple(self.criteria),
-#             PromptBlock.simple(
-#                 f"Classify text between {self.anchor_start} and {self.anchor_end} "
-#                 f"into two categories: {self.target_category} and {self.non_target_category}."
-#             ),
-#             PromptBlock.input().anchored(self.anchor_start, self.anchor_end),
-#             PromptBlock.func(self._instructions),
-#             JsonOutputFormatBlock(fields=fields),
-#         ]
-#
-#     criteria: str = ""
-#     instructions_template: str = (
-#         "Use the following categories for classification:\n{__categories__}\n{__scoring__}\nThink step by step."
-#     )
-#     anchor_start: str = "___text_starts_here___"
-#     anchor_end: str = "___text_ends_here___"
-#
-#     placeholders: Dict[str, str] = {}
-#     target_category: str
-#     non_target_category: str
-#
-#     uncertainty: Uncertainty = Uncertainty.UNKNOWN
-#
-#     include_category: bool = True
-#     include_reasoning: bool = False
-#     include_score: bool = False
-#     score_range: Tuple[float, float] = (0.0, 1.0)
-#
-#     output_column: str = "category"
-#     output_reasoning_column: str = "reasoning"
-#     output_score_column: str = "score"
-#
-#     pre_messages: List[LLMMessage] = Field(default_factory=list)

@@ -1,12 +1,13 @@
 from abc import ABC
 from abc import abstractmethod
+from typing import TypeAlias
 
 import pandas as pd
 
 from evidently.options.base import Options
 from evidently.pydantic_utils import EvidentlyBaseModel
 
-DatasetGeneratorResult = pd.DataFrame
+DatasetGeneratorResult: TypeAlias = pd.DataFrame
 
 
 class BaseDatasetGenerator(EvidentlyBaseModel, ABC):
