@@ -173,7 +173,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: setup.py
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: pip install -e .
       - name: Install wheel
         run: pip install wheel
       - name: Build package
