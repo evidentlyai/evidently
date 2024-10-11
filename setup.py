@@ -55,7 +55,7 @@ setup_args = dict(
         "statsmodels>=0.12.2",
         "scikit-learn>=1.0.1",
         "pandas[parquet]>=1.3.5",
-        "numpy>=1.22.0,<2.1",
+        "numpy>=1.22.5,<2.1",
         "nltk>=3.6.7",
         "scipy>=1.10.0",
         "requests>=2.32.0",
@@ -76,7 +76,6 @@ setup_args = dict(
         "deprecation>=2.1.0",
         "uuid6>=2024.7.10",
         "cryptography>=43.0.1",
-        "chromadb>=0.5.12",
     ],
     extras_require={
         "dev": [
@@ -103,6 +102,7 @@ setup_args = dict(
             "evaluate>=0.4.1",
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
+            "chromadb>=0.5.12",
         ],
         "spark": ["pyspark>=3.4.0"],
         "fsspec": [
