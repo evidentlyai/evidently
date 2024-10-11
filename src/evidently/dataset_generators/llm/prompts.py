@@ -4,6 +4,7 @@ from typing import List
 from evidently.utils.llm import BlockPromptTemplate
 from evidently.utils.llm import PromptBlock
 from evidently.utils.llm import WithSystemPrompt
+from evidently.utils.llm import llm_call
 
 
 class SimpleQuestionPrompt(BlockPromptTemplate):
@@ -23,9 +24,15 @@ class QuestionsFromSeed(BlockPromptTemplate):
         PromptBlock.string_list_output("questions"),
     ]
 
+    @llm_call
+    def generate(self, seed_question: str, number: int) -> List[str]: ...
+
 
 class QuestionsFromContext(WithSystemPrompt, BlockPromptTemplate):
     system_prompt: str = "You are an assistant who generates questions based on provided context"
+
+    @llm_call
+    def generate_questions(self, context: str, number: int) -> List[str]: ...
 
 
 class NaiveQuestionsFromContext(QuestionsFromContext):
@@ -39,8 +46,6 @@ class NaiveQuestionsFromContext(QuestionsFromContext):
         "Avoid providing any closing statement!",
         PromptBlock.string_list_output("questions"),
     ]
-
-    def generate_questions_from_context(self, context: str, number: int) -> List[str]: ...
 
 
 class ReformulateQuestionPrompt(QuestionsFromContext):
@@ -68,24 +73,5 @@ Avoid providing any closing statement!""",
     ]
     system_prompt: str = "You are a helpful assistant that answer a given question directly without any preamble"
 
-
-#
-# def llm_call(*prompt):
-#     def a(f):
-#         pass
-#     return a
-#
-# class GenerateQuestionFromContextBase(BlockPromptTemplate):
-#     # @llm_call()
-#     # def generate_questions_from_context(self, context: str, number: int) -> List[str]:
-#     #     ...
-#
-# class KekImopl(GenerateQuestionFromContextBase):
-#     blocks: ClassVar = ["Generate {number} conceptual questions based on the provided context and "
-#         "can be answered from the information in the provided context.\n"
-#         "Here is a context",
-#         PromptBlock.input("context").anchored(),
-#         "Remain faithful to the above context.\n"
-#         "Avoid providing any preamble!\n"
-#         "Avoid providing any closing statement!",
-#         PromptBlock.string_list_output("questions"),]
+    @llm_call
+    def generate_answers(self, question: str, context: str): ...

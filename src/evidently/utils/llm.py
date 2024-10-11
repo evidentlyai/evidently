@@ -1,22 +1,26 @@
 import asyncio
 import dataclasses
 import datetime
+import inspect
 import json
 from abc import ABC
 from abc import abstractmethod
 from asyncio import Lock
 from asyncio import Semaphore
 from asyncio import sleep
+from functools import wraps
 from typing import Any
 from typing import Callable
 from typing import ClassVar
 from typing import Dict
+from typing import Generic
 from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Type
+from typing import TypeVar
 from typing import Union
 
 from evidently._pydantic_compat import SecretStr
@@ -82,6 +86,17 @@ class RateLimiter:
         self.enters = [e for e in self.enters if now - e < self.interval]
 
 
+TResult = TypeVar("TResult")
+
+
+@dataclasses.dataclass
+class LLMRequest(Generic[TResult]):
+    messages: List[LLMMessage]
+    response_parser: Callable[[str], TResult]
+    response_type: Type[TResult]
+    retries: int = 1
+
+
 class LLMWrapper(ABC):
     __used_options__: ClassVar[List[Type[Option]]] = []
 
@@ -89,7 +104,7 @@ class LLMWrapper(ABC):
     async def complete(self, messages: List[LLMMessage]) -> str:
         raise NotImplementedError
 
-    async def batch_complete(
+    async def complete_batch(
         self, messages_batch: List[List[LLMMessage]], batch_size: Optional[int] = None, rpm_limit: Optional[int] = None
     ) -> List[str]:
         if batch_size is None:
@@ -105,7 +120,33 @@ class LLMWrapper(ABC):
 
         return await asyncio.gather(*[work(msgs) for msgs in messages_batch])
 
-    batch_complete_sync = sync_api(batch_complete)
+    async def run(self, request: LLMRequest[TResult]) -> TResult:
+        num_retries = request.retries
+        error = None
+        while num_retries >= 0:
+            num_retries -= 1
+            try:
+                response = await self.complete(request.messages)
+                return request.response_parser(response)
+            except Exception as e:
+                error = e
+        raise error
+
+    async def run_batch(
+        self, requests: Sequence[LLMRequest[TResult]], batch_size: Optional[int] = None, rpm_limit: Optional[int] = None
+    ) -> List[TResult]:
+        if batch_size is None:
+            batch_size = self.get_batch_size()
+        if rpm_limit is None:
+            rpm_limit = self.get_rpm_limit()
+        rate_limiter = RateLimiter(rate=rpm_limit, interval=datetime.timedelta(minutes=1))
+        semaphore = Semaphore(batch_size)
+
+        async def work(request: LLMRequest[TResult]) -> TResult:
+            async with semaphore, rate_limiter:
+                return await self.run(request)
+
+        return await asyncio.gather(*[work(r) for r in requests])
 
     def get_batch_size(self) -> int:
         return 100
@@ -115,6 +156,10 @@ class LLMWrapper(ABC):
 
     def get_used_options(self) -> List[Type[Option]]:
         return self.__used_options__
+
+    complete_batch_sync = sync_api(complete_batch)
+    run_sync = sync_api(run)
+    run_batch_sync = sync_api(run_batch)
 
 
 LLMProvider = str
@@ -261,13 +306,18 @@ class SimpleBlock(PromptBlock):
         return self.value
 
 
-class OutputFormatBlock(PromptBlock, ABC):
+class OutputFormatBlock(PromptBlock, ABC, Generic[TResult]):
     @abstractmethod
-    def parse_response(self, response: str) -> Dict[str, str]:
+    def parse_response(self, response: str) -> TResult:
         raise NotImplementedError
 
 
-class JsonOutputFormatBlock(OutputFormatBlock):
+class NoopOutputFormat(OutputFormatBlock[str]):
+    def parse_response(self, response: str) -> str:
+        return response
+
+
+class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
     fields: Dict[str, Union[Tuple[str, str], str]]
 
     def _render(self) -> str:
@@ -284,38 +334,59 @@ class JsonOutputFormatBlock(OutputFormatBlock):
         example_rows_str = "\n".join(example_rows)
         return f"Return {', '.join(values)} formatted as json without formatting as follows:\n{{{{\n{example_rows_str}\n}}}}"
 
-    def parse_response(self, response: str) -> Dict[str, str]:
+    def parse_response(self, response: str) -> Dict[str, Any]:
         try:
             return json.loads(response)
         except json.JSONDecodeError as e:
             raise LLMResponseParseError(f"Failed to parse response '{response}' as json") from e
 
 
-class StringListFormatBlock(OutputFormatBlock):
+class StringListFormatBlock(OutputFormatBlock[List[str]]):
     of_what: str
 
     def _render(self) -> str:
         return f"""Return a list of {self.of_what}.
 This should be only a list of string {self.of_what}, each one on a new line with no enumeration"""
 
-    def parse_response(self, response: str) -> Dict[str, str]:
-        return {self.of_what: response.split("\n")}
+    def parse_response(self, response: str) -> List[str]:
+        return response.split("\n")
 
 
-class StringFormatBlock(OutputFormatBlock):
+class StringFormatBlock(OutputFormatBlock[str]):
     what: str
 
     def _render(self) -> str:
         return f"""Return {self.what} only."""
 
-    def parse_response(self, response: str) -> Dict[str, str]:
-        return {self.what: response}
+    def parse_response(self, response: str) -> str:
+        return response
+
+
+def llm_call(f: Callable) -> Callable[..., LLMRequest]:
+    sig = inspect.getfullargspec(f)
+    response_type = sig.annotations.get("return", str)
+
+    @wraps(f)
+    def inner(self: PromptTemplate, *args, **kwargs):
+        kwargs = inspect.getcallargs(f, *args, **kwargs, self=self)
+        del kwargs["self"]
+        # output_format = self.get_output_format()
+        # todo: validate response_type against output_format.response_type
+        # todo: validate sig.annotations against self.list_placeholders
+
+        # todo: validate kwargs against sig.annotations
+        # todo: define response parser with validation against response_type
+
+        return LLMRequest(messages=self.get_messages(**kwargs), response_parser=self.parse, response_type=response_type)
+
+    return inner
 
 
 class PromptTemplate(EvidentlyBaseModel):
     class Config:
         alias_required = False  # fixme
 
+    # __run_func__ : ClassVar[Callable]
     @abstractmethod
     def get_blocks(self) -> Sequence[PromptBlock]:
         raise NotImplementedError
@@ -331,10 +402,12 @@ class PromptTemplate(EvidentlyBaseModel):
     def get_template(self) -> str:
         return "\n".join(block.render() for block in self.get_blocks())
 
-    def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, Any]:
+    def get_output_format(self) -> OutputFormatBlock:
         output = next((b for b in self.get_blocks() if isinstance(b, OutputFormatBlock)), None)
-        if output is None:
-            return {"": response}
+        return output if output is not None else NoopOutputFormat()
+
+    def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, Any]:
+        output = self.get_output_format()
         parsed = output.parse_response(response)
         if keys is not None and set(keys) != set(parsed.keys()):
             raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}")
@@ -344,7 +417,7 @@ class PromptTemplate(EvidentlyBaseModel):
         return [LLMMessage.user(self.render(**values))]
 
 
-class WithSystemPrompt(PromptTemplate):
+class WithSystemPrompt(PromptTemplate, ABC):
     system_prompt: str
 
     def get_messages(self, **values) -> List[LLMMessage]:

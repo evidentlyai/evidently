@@ -43,21 +43,16 @@ class QADatasetGenerator(BaseLLMDatasetGenerator):
         return [[random.choice(documents.chunks) for _ in range(chunks_per_set)] for _ in range(count)]
 
     def generate_questions(self, chunk_sets: Sequence[List[Chunk]], questions_per_chunkset: int) -> List[Question]:
-        llm_responses = self.wrapper.batch_complete_sync(
-            [
-                self.questions.get_messages(context="\n\n".join(chunks), number=questions_per_chunkset)
-                for chunks in chunk_sets
-            ]
+        questions = self.wrapper.run_batch_sync(
+            self.questions.generate_questions(context="\n\n".join(chunks), number=questions_per_chunkset)
+            for chunks in chunk_sets
         )
-        questions = [self.questions.parse(response, keys=["questions"])["questions"] for response in llm_responses]
         return [q for qs in questions for q in qs]
 
     def generate_answers(self, questions: List[Question], relevant_chunks: List[List[Chunk]]) -> List[str]:
-        return self.wrapper.batch_complete_sync(
-            [
-                self.answers.get_messages(question=question, context="\n".join(chunks))
-                for question, chunks in zip(questions, relevant_chunks)
-            ]
+        return self.wrapper.run_batch_sync(
+            self.answers.generate_answers(question=question, context="\n".join(chunks))
+            for question, chunks in zip(questions, relevant_chunks)
         )
 
 
@@ -67,7 +62,8 @@ class QADatasetFromSeedGenerator(BaseLLMDatasetGenerator):
     prompt: QuestionsFromSeed = QuestionsFromSeed()
 
     def generate(self) -> DatasetGeneratorResult:
-        response = self.wrapper.batch_complete_sync(
-            [self.prompt.get_messages(number=self.num_questions, seed_question=self.seed_question)]
+        response = self.wrapper.run_sync(
+            self.prompt.generate(number=self.num_questions, seed_question=self.seed_question)
         )
-        return pd.DataFrame({"questions": self.prompt.parse(response[0], keys=["questions"])["questions"]})
+
+        return pd.DataFrame({"questions": response})
