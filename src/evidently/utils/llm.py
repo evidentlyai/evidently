@@ -3,6 +3,7 @@ import dataclasses
 import datetime
 import inspect
 import json
+import re
 from abc import ABC
 from abc import abstractmethod
 from asyncio import Lock
@@ -22,6 +23,8 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
+
+import typing_inspect
 
 from evidently._pydantic_compat import SecretStr
 from evidently.errors import EvidentlyError
@@ -370,16 +373,37 @@ def llm_call(f: Callable) -> Callable[..., LLMRequest]:
     def inner(self: PromptTemplate, *args, **kwargs):
         kwargs = inspect.getcallargs(f, *args, **kwargs, self=self)
         del kwargs["self"]
-        # output_format = self.get_output_format()
-        # todo: validate response_type against output_format.response_type
-        # todo: validate sig.annotations against self.list_placeholders
+        template = self.get_template()
+        placeholders = self.list_placeholders(template)
+        if set(placeholders) != set(kwargs.keys()):
+            raise TypeError(
+                f"{f} arg signature ({list(kwargs)}) does not correspond to placeholders in prompt ({placeholders})"
+            )
+
+        output_format = self.get_output_format()
+        prompt_response_type = _get_genric_arg(output_format)
+        if prompt_response_type != response_type:
+            raise TypeError(
+                f"{f} response type ({response_type}) does not correspond to prompt output type {prompt_response_type}"
+            )
 
         # todo: validate kwargs against sig.annotations
         # todo: define response parser with validation against response_type
 
-        return LLMRequest(messages=self.get_messages(**kwargs), response_parser=self.parse, response_type=response_type)
+        return LLMRequest(
+            messages=self.get_messages(kwargs, template=template),
+            response_parser=self.parse,
+            response_type=response_type,
+        )
 
     return inner
+
+
+def _get_genric_arg(cls):
+    return typing_inspect.get_args(next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b)))[0]
+
+
+placeholders_re = re.compile(r"\{([a-zA-Z0-9_]+)}")
 
 
 class PromptTemplate(EvidentlyBaseModel):
@@ -394,13 +418,17 @@ class PromptTemplate(EvidentlyBaseModel):
     def iterate(self, values: Sequence[Dict[str, str]]) -> Iterator[str]:
         template = self.get_template()
         for vals in values:
-            yield template.format(**vals)
+            yield self.render(vals, template)
 
-    def render(self, **values):
-        return self.get_template().format(**values)
+    def render(self, values: dict, template: Optional[str] = None):
+        return (template or self.get_template()).format(**values)
 
     def get_template(self) -> str:
         return "\n".join(block.render() for block in self.get_blocks())
+
+    def list_placeholders(self, template: Optional[str] = None):
+        template = template or self.get_template()
+        return list(placeholders_re.findall(template))
 
     def get_output_format(self) -> OutputFormatBlock:
         output = next((b for b in self.get_blocks() if isinstance(b, OutputFormatBlock)), None)
@@ -413,15 +441,15 @@ class PromptTemplate(EvidentlyBaseModel):
             raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}")
         return parsed
 
-    def get_messages(self, **values) -> List[LLMMessage]:
-        return [LLMMessage.user(self.render(**values))]
+    def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:
+        return [LLMMessage.user(self.render(values, template))]
 
 
 class WithSystemPrompt(PromptTemplate, ABC):
     system_prompt: str
 
-    def get_messages(self, **values) -> List[LLMMessage]:
-        msgs = super().get_messages(**values)
+    def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:
+        msgs = super().get_messages(values, template)
         msgs.insert(0, LLMMessage.system(self.system_prompt))
         return msgs
 
