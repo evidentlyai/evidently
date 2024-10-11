@@ -17,7 +17,7 @@ class ExactMatchFeature(GeneratedFeature):
     columns: List[str]
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        return data[self.columns[0]] == data[self.columns[1]]
+        return pd.DataFrame({self._feature_name(): data[self.columns[0]] == data[self.columns[1]]})
 
     def _feature_name(self):
         return "|".join(self.columns)
