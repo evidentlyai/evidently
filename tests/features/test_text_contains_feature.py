@@ -99,8 +99,10 @@ def test_item_match(case: bool, mode: str, expected: List[bool]):
         data_definition=create_data_definition(None, df, ColumnMapping()),
     )
     column_expected = feature_generator._feature_column_name()
+    column_name_obj = feature_generator._as_column()
     expected_df = pd.DataFrame({column_expected: expected})
     assert result.equals(expected_df)
+    assert column_name_obj.display_name == f"Text contains {mode} of defined items"
 
 
 @pytest.mark.parametrize(
@@ -137,5 +139,7 @@ def test_item_no_match(case: bool, mode: str, expected: List[bool]):
         data_definition=create_data_definition(None, df, ColumnMapping()),
     )
     column_expected = feature_generator._feature_column_name()
+    column_name_obj = feature_generator._as_column()
     expected_df = pd.DataFrame({column_expected: expected})
     assert result.equals(expected_df)
+    assert column_name_obj.display_name == f"Text does not contain {mode} of defined items"

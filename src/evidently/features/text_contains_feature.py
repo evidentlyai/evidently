@@ -159,7 +159,7 @@ class ItemMatch(GeneratedFeature):
     def _as_column(self) -> ColumnName:
         return self._create_column(
             self._feature_column_name(),
-            default_display_name=f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
+            default_display_name=f"Text contains {self.mode} of defined items",
         )
 
     def comparison(self, item: str, string: str):
@@ -211,7 +211,7 @@ class ItemNoMatch(GeneratedFeature):
     def _as_column(self) -> ColumnName:
         return self._create_column(
             self._feature_column_name(),
-            default_display_name=f"ItemNoMatch of {self.mode} [{', '.join(self.columns)}] for {self.column_name}",
+            default_display_name=f"Text does not contain {self.mode} of defined items",
         )
 
     def comparison(self, item: str, string: str):
