@@ -195,7 +195,7 @@ class WordMatch(RowWordPresence):
     def _as_column(self) -> "ColumnName":
         return self._create_column(
             self._feature_name(),
-            default_display_name=f"WordMatch for {' '.join(self.columns)}.",
+            default_display_name=f"Text contains {self.mode.split("_")[1]} defined words",
         )
 
 
@@ -209,5 +209,5 @@ class WordNoMatch(RowWordPresence):
     def _as_column(self) -> "ColumnName":
         return self._create_column(
             self._feature_name(),
-            default_display_name=f"WordNoMatch for {' '.join(self.columns)}.",
+            default_display_name=f"Text does not contain {self.mode.split("_")[1]} defined words",
         )
