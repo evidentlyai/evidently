@@ -19,5 +19,5 @@ def test_exact_match_feature(value1: str, value2: str, expected: bool):
     result = feature_generator.generate_feature(
         data=data, data_definition=create_data_definition(None, data, ColumnMapping())
     )
-    result_value = bool(result.iloc[0])
-    assert result_value == expected
+    expected_df = pd.DataFrame([[expected]], columns=["column_1|column_2"])
+    pd.testing.assert_frame_equal(result, expected_df)
