@@ -91,6 +91,8 @@ def test_word_match(mode: str, lemmatize: bool, expected: List[bool]):
         data_definition=create_data_definition(None, df, ColumnMapping()),
     )
     assert result.equals(pd.DataFrame(dict([(feature_generator._feature_name(), expected)])))
+    column_obj = feature_generator._as_column()
+    assert column_obj.display_name == f"Text contains {mode} defined words"
 
 
 @pytest.mark.parametrize(
@@ -129,3 +131,5 @@ def test_word_no_match(mode: str, lemmatize: bool, expected: List[bool]):
         data_definition=create_data_definition(None, df, ColumnMapping()),
     )
     assert result.equals(pd.DataFrame(dict([(feature_generator._feature_name(), expected)])))
+    column_obj = feature_generator._as_column()
+    assert column_obj.display_name == f"Text does not contain {mode} defined words"
