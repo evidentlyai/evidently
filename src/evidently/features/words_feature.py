@@ -193,10 +193,9 @@ class WordMatch(RowWordPresence):
         super().__init__(columns=columns, mode="includes_" + mode, lemmatize=lemmatize, display_name=display_name)
 
     def _as_column(self) -> "ColumnName":
-        split_mode = self.mode.split("_")[1]
         return self._create_column(
             self._feature_name(),
-            default_display_name=f"Text contains {split_mode} defined words",
+            default_display_name=f"Text contains {self.mode.split('_')[1]} defined words",
         )
 
 
@@ -208,8 +207,7 @@ class WordNoMatch(RowWordPresence):
         super().__init__(columns=columns, mode="excludes_" + mode, lemmatize=lemmatize, display_name=display_name)
 
     def _as_column(self) -> "ColumnName":
-        split_mode = self.mode.split("_")[1]
         return self._create_column(
             self._feature_name(),
-            default_display_name=f"Text does not contain {split_mode} defined words",
+            default_display_name=f"Text does not contain {self.mode.split('_')[1]} defined words",
         )
