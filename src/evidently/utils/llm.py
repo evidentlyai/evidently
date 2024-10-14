@@ -439,7 +439,7 @@ class PromptTemplate(EvidentlyBaseModel):
         output: Optional[OutputFormatBlock] = next(
             (b for b in self.get_blocks() if isinstance(b, OutputFormatBlock)), None
         )
-        return output if output is not None else NoopOutputFormat()
+        return output if output is not None else NoopOutputFormat()  # type: ignore[return-value]
 
     def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, Any]:
         output = self.get_output_format()

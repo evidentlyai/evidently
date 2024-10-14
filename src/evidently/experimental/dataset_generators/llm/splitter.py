@@ -86,7 +86,7 @@ class SimpleSplitter(Splitter):
     split_re: ClassVar = re.compile(r"([^,.;。？！]+[,.;。？！]?)")
 
     def split_text(self, text: TextSource) -> Sequence[Chunk]:
-        current_splits = []
+        current_splits: List[str] = []
         current_size = 0
         for split in self.split_re.split(text.get_text()):
             split_size = len(split)
