@@ -103,7 +103,6 @@ setup_args = dict(
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
             "chromadb>=0.4.0",
-            "llama-index>=0.8.42",
         ],
         "spark": ["pyspark>=3.4.0"],
         "fsspec": [

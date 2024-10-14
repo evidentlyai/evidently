@@ -1,5 +1,5 @@
-from evidently.dataset_generators.llm.questions import QADatasetFromSeedGenerator, QADatasetGenerator
-from evidently.dataset_generators.llm.index import DataCollectionProvider
+from evidently.experimental.dataset_generators.llm.questions import QADatasetFromSeedGenerator, QADatasetGenerator
+from evidently.experimental.dataset_generators.llm.index import DataCollectionProvider
 from evidently.options.base import Options
 
 

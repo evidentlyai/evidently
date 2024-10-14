@@ -1,6 +1,5 @@
 import glob
 import os
-import warnings
 from pathlib import Path
 from typing import List
 from typing import Optional
@@ -16,9 +15,6 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 Chunk = str
 DEFAULT_CHUNK_SIZE = 512
 DEFAULT_CHUNK_OVERLAP = 20
-
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 def read_text(filename: str) -> str:
