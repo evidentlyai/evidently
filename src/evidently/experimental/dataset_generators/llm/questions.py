@@ -10,10 +10,10 @@ from evidently.experimental.dataset_generators.llm.base import BaseLLMDatasetGen
 from evidently.experimental.dataset_generators.llm.index import Chunk
 from evidently.experimental.dataset_generators.llm.index import DataCollection
 from evidently.experimental.dataset_generators.llm.index import DataCollectionProvider
-from evidently.experimental.dataset_generators.llm.prompts import BaselineAnswerPrompt
-from evidently.experimental.dataset_generators.llm.prompts import NaiveQuestionsFromContext
-from evidently.experimental.dataset_generators.llm.prompts import QuestionsFromContext
-from evidently.experimental.dataset_generators.llm.prompts import QuestionsFromSeed
+from evidently.experimental.dataset_generators.llm.prompts import BaselineAnswerPromptTemplate
+from evidently.experimental.dataset_generators.llm.prompts import NaiveQuestionsFromContextPromptTemplate
+from evidently.experimental.dataset_generators.llm.prompts import QuestionsFromContextPromptTemplate
+from evidently.experimental.dataset_generators.llm.prompts import QuestionsFromSeedPromptTemplate
 
 Question = str
 Answer = str
@@ -22,10 +22,13 @@ ChunkSet = List[Chunk]
 
 
 class QADatasetGenerator(BaseLLMDatasetGenerator):
+    class Config:
+        type_alias = "evidently:dataset_generator:QADatasetGenerator"
+
     data_collection: DataCollectionProvider
     num_questions: int
-    questions: QuestionsFromContext = NaiveQuestionsFromContext()
-    answers: BaselineAnswerPrompt = BaselineAnswerPrompt()
+    questions: QuestionsFromContextPromptTemplate = NaiveQuestionsFromContextPromptTemplate()
+    answers: BaselineAnswerPromptTemplate = BaselineAnswerPromptTemplate()
 
     def generate(self) -> DatasetGeneratorResult:
         documents = self.data_collection.get_data_collection()
@@ -57,9 +60,12 @@ class QADatasetGenerator(BaseLLMDatasetGenerator):
 
 
 class QADatasetFromSeedGenerator(BaseLLMDatasetGenerator):
+    class Config:
+        type_alias = "evidently:dataset_generator:QADatasetFromSeedGenerator"
+
     seed_question: str
     num_questions: int
-    prompt: QuestionsFromSeed = QuestionsFromSeed()
+    prompt: QuestionsFromSeedPromptTemplate = QuestionsFromSeedPromptTemplate()
 
     def generate(self) -> DatasetGeneratorResult:
         response = self.wrapper.run_sync(

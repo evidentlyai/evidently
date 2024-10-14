@@ -51,7 +51,6 @@ AnySplitter = Union[str, Splitters, "Splitter"]
 class Splitter(EvidentlyBaseModel, ABC):
     class Config:
         is_base_type = True
-        alias_required = False  # fixme
 
     chunk_size: int
     chunk_overlap: int
@@ -83,6 +82,9 @@ class Splitter(EvidentlyBaseModel, ABC):
 
 
 class SimpleSplitter(Splitter):
+    class Config:
+        type_alias = "evidently:splitter:SimpleSplitter"
+
     split_re: ClassVar = re.compile(r"([^,.;。？！]+[,.;。？！]?)")
 
     def split_text(self, text: TextSource) -> Sequence[Chunk]:
@@ -103,6 +105,9 @@ class SimpleSplitter(Splitter):
 
 
 class LlamaIndexSplitter(Splitter):
+    class Config:
+        type_alias = "evidently:splitter:LlamaIndexSplitter"
+
     separator: str = " "
     paragraph_separator: Optional[str] = None
     _splitter = PrivateAttr(None)

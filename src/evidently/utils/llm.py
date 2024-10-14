@@ -256,7 +256,7 @@ class LiteLLMWrapper(LLMWrapper):
 
 class PromptBlock(EvidentlyBaseModel):
     class Config:
-        alias_required = False  # fixme
+        is_base_type = True
 
     def render(self):
         # )))
@@ -296,6 +296,9 @@ class PromptBlock(EvidentlyBaseModel):
 
 
 class Anchor(PromptBlock):
+    class Config:
+        type_alias = "evidently:prompt_block:Anchor"
+
     start: str
     block: PromptBlock
     end: str
@@ -305,6 +308,9 @@ class Anchor(PromptBlock):
 
 
 class SimpleBlock(PromptBlock):
+    class Config:
+        type_alias = "evidently:prompt_block:SimpleBlock"
+
     value: str
 
     def _render(self) -> str:
@@ -318,6 +324,9 @@ class OutputFormatBlock(PromptBlock, ABC, Generic[TResult]):
 
 
 class NoopOutputFormat(OutputFormatBlock[str]):
+    class Config:
+        type_alias = "evidently:prompt_block:NoopOutputFormat"
+
     def _render(self) -> str:
         return ""
 
@@ -326,6 +335,9 @@ class NoopOutputFormat(OutputFormatBlock[str]):
 
 
 class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
+    class Config:
+        type_alias = "evidently:prompt_block:JsonOutputFormatBlock"
+
     fields: Dict[str, Union[Tuple[str, str], str]]
 
     def _render(self) -> str:
@@ -350,6 +362,9 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
 
 
 class StringListFormatBlock(OutputFormatBlock[List[str]]):
+    class Config:
+        type_alias = "evidently:prompt_block:StringListFormatBlock"
+
     of_what: str
 
     def _render(self) -> str:
@@ -361,6 +376,9 @@ This should be only a list of string {self.of_what}, each one on a new line with
 
 
 class StringFormatBlock(OutputFormatBlock[str]):
+    class Config:
+        type_alias = "evidently:prompt_block:StringFormatBlock"
+
     what: str
 
     def _render(self) -> str:
@@ -413,7 +431,7 @@ placeholders_re = re.compile(r"\{([a-zA-Z0-9_]+)}")
 
 class PromptTemplate(EvidentlyBaseModel):
     class Config:
-        alias_required = False  # fixme
+        is_base_type = True
 
     # __run_func__ : ClassVar[Callable]
     @abstractmethod
@@ -465,6 +483,9 @@ AnyBlock = Union[str, PromptBlock, Callable]
 
 
 class BlockPromptTemplate(PromptTemplate):
+    class Config:
+        type_alias = "evidently:prompt_template:BlockPromptTemplate"
+
     blocks: ClassVar[List[AnyBlock]]
 
     def get_blocks(self) -> Sequence[PromptBlock]:

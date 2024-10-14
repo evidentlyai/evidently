@@ -7,7 +7,10 @@ from evidently.utils.llm import WithSystemPrompt
 from evidently.utils.llm import llm_call
 
 
-class SimpleQuestionPrompt(BlockPromptTemplate):
+class SimpleQuestionPromptTemplate(BlockPromptTemplate):
+    class Config:
+        type_alias = "evidently:prompt_template:SimpleQuestionPromptTemplate"
+
     blocks: ClassVar = [
         "Please generate a {question_type} question about this:",
         PromptBlock.input("context").anchored(),
@@ -16,7 +19,10 @@ class SimpleQuestionPrompt(BlockPromptTemplate):
     question_type: str = "simple"
 
 
-class QuestionsFromSeed(BlockPromptTemplate):
+class QuestionsFromSeedPromptTemplate(BlockPromptTemplate):
+    class Config:
+        type_alias = "evidently:prompt_template:QuestionsFromSeedPromptTemplate"
+
     blocks: ClassVar = [
         """Write for me {number} alternative questions quite similar to the question you got.
         The question: """,
@@ -28,14 +34,20 @@ class QuestionsFromSeed(BlockPromptTemplate):
     def generate(self, seed_question: str, number: int) -> List[str]: ...
 
 
-class QuestionsFromContext(WithSystemPrompt, BlockPromptTemplate):
+class QuestionsFromContextPromptTemplate(WithSystemPrompt, BlockPromptTemplate):
+    class Config:
+        type_alias = "evidently:prompt_template:QuestionsFromContextPromptTemplate"
+
     system_prompt: str = "You are an assistant who generates questions based on provided context"
 
     @llm_call
     def generate_questions(self, context: str, number: int) -> List[str]: ...
 
 
-class NaiveQuestionsFromContext(QuestionsFromContext):
+class NaiveQuestionsFromContextPromptTemplate(QuestionsFromContextPromptTemplate):
+    class Config:
+        type_alias = "evidently:prompt_template:NaiveQuestionsFromContextPromptTemplate"
+
     blocks: ClassVar = [
         "Generate {number} conceptual questions based on the provided context and "
         "can be answered from the information in the provided context.\n"
@@ -48,7 +60,10 @@ class NaiveQuestionsFromContext(QuestionsFromContext):
     ]
 
 
-class ReformulateQuestionPrompt(QuestionsFromContext):
+class ReformulateQuestionPromptTemplate(QuestionsFromContextPromptTemplate):
+    class Config:
+        type_alias = "evidently:prompt_template:ReformulateQuestionPromptTemplate"
+
     blocks: ClassVar = [
         """Write for me {number} alternative questions quite similar to the question you got.
 The question:""",
@@ -59,7 +74,10 @@ The question:""",
     system_prompt: str = "You are a smart assistant who helps repharase questions"
 
 
-class BaselineAnswerPrompt(WithSystemPrompt, BlockPromptTemplate):
+class BaselineAnswerPromptTemplate(WithSystemPrompt, BlockPromptTemplate):
+    class Config:
+        type_alias = "evidently:prompt_template:BaselineAnswerPromptTemplate"
+
     blocks: ClassVar = [
         "Your task is to answer the following query:",
         PromptBlock.input("question").anchored(),

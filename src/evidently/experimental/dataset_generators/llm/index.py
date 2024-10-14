@@ -36,7 +36,8 @@ def read_text(filename: str) -> str:
 
 class DataCollectionProvider(EvidentlyBaseModel):
     class Config:
-        alias_required = False  # fixme
+        type_alias = "evidently:base:DataCollectionProvider"
+        is_base_type = True
 
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
@@ -63,6 +64,9 @@ class DataCollectionProvider(EvidentlyBaseModel):
 
 
 class ChunksDataCollectionProvider(DataCollectionProvider):
+    class Config:
+        type_alias = "evidently:data_provider:ChunksDataCollectionProvider"
+
     chunks: List[Chunk]
 
     def get_data_collection(self):
@@ -72,6 +76,9 @@ class ChunksDataCollectionProvider(DataCollectionProvider):
 
 
 class FileDataCollectionProvider(DataCollectionProvider):
+    class Config:
+        type_alias = "evidently:data_provider:FileDataCollectionProvider"
+
     path: str
 
     def get_data_collection(self):
