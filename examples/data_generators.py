@@ -5,7 +5,7 @@ from evidently.options.base import Options
 
 def generate_from_file():
     file_path = "../cloud_quickstart_tracing.pdf"
-    data = DataCollectionProvider.from_files(file_path, chunk_size=50, chunk_overlap=20)
+    data = DataCollectionProvider.from_files(file_path, chunk_size=50, chunk_overlap=20, splitter="simple")
 
     generator = QADatasetGenerator(
         data_collection=data,

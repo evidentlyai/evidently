@@ -47,9 +47,15 @@ class DataCollectionProvider(EvidentlyBaseModel):
 
     @classmethod
     def from_files(
-        cls, path: str, chunk_size: int = DEFAULT_CHUNK_SIZE, chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
+        cls,
+        path: str,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
+        chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
+        splitter: AnySplitter = "llama_index",
     ) -> "DataCollectionProvider":
-        return FileDataCollectionProvider(path=path, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        return FileDataCollectionProvider(
+            path=path, chunk_size=chunk_size, chunk_overlap=chunk_overlap, splitter=splitter
+        )
 
     @classmethod
     def from_chunks(cls, chunks: List[str]):
@@ -92,6 +98,12 @@ class DataCollection:
 
     def init_collection(self):
         if self.collection is None:
+            # fixme: huggingface/tokenizers warns about clean_up_tokenization_spaces
+            import warnings
+
+            os.environ["TOKENIZERS_PARALLELISM"] = "false"
+            warnings.filterwarnings("ignore", category=FutureWarning)
+
             default_embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
                 model_name="all-MiniLM-L6-v2",
             )
