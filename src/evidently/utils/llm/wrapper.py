@@ -18,10 +18,10 @@ from typing import Type
 from typing import TypeVar
 
 from evidently._pydantic_compat import SecretStr
-from evidently.features.llm_judge import LLMMessage
 from evidently.options.base import Options
 from evidently.options.option import Option
 from evidently.ui.base import sync_api
+from evidently.utils.llm.base import LLMMessage
 from evidently.utils.llm.errors import LLMRequestError
 
 TResult = TypeVar("TResult")
