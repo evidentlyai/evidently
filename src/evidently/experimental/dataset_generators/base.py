@@ -1,8 +1,8 @@
 from abc import ABC
 from abc import abstractmethod
-from typing import TypeAlias
 
 import pandas as pd
+from typing_extensions import TypeAlias
 
 from evidently.options.base import Options
 from evidently.pydantic_utils import EvidentlyBaseModel
