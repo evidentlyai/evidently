@@ -5,15 +5,15 @@ from typing import Tuple
 
 import pandas as pd
 
-from evidently.dataset_generators.base import DatasetGeneratorResult
-from evidently.dataset_generators.llm.base import BaseLLMDatasetGenerator
-from evidently.dataset_generators.llm.index import Chunk
-from evidently.dataset_generators.llm.index import DataCollection
-from evidently.dataset_generators.llm.index import DataCollectionProvider
-from evidently.dataset_generators.llm.prompts import BaselineAnswerPrompt
-from evidently.dataset_generators.llm.prompts import NaiveQuestionsFromContext
-from evidently.dataset_generators.llm.prompts import QuestionsFromContext
-from evidently.dataset_generators.llm.prompts import QuestionsFromSeed
+from evidently.experimental.dataset_generators.base import DatasetGeneratorResult
+from evidently.experimental.dataset_generators.llm.base import BaseLLMDatasetGenerator
+from evidently.experimental.dataset_generators.llm.index import Chunk
+from evidently.experimental.dataset_generators.llm.index import DataCollection
+from evidently.experimental.dataset_generators.llm.index import DataCollectionProvider
+from evidently.experimental.dataset_generators.llm.prompts import BaselineAnswerPrompt
+from evidently.experimental.dataset_generators.llm.prompts import NaiveQuestionsFromContext
+from evidently.experimental.dataset_generators.llm.prompts import QuestionsFromContext
+from evidently.experimental.dataset_generators.llm.prompts import QuestionsFromSeed
 
 Question = str
 Answer = str

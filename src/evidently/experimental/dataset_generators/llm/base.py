@@ -1,7 +1,7 @@
 from typing import Optional
 
 from evidently._pydantic_compat import PrivateAttr
-from evidently.dataset_generators.base import BaseDatasetGenerator
+from evidently.experimental.dataset_generators.base import BaseDatasetGenerator
 from evidently.options.base import Options
 from evidently.utils.llm import LLMWrapper
 from evidently.utils.llm import get_llm_wrapper

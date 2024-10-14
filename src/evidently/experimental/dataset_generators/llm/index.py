@@ -8,9 +8,9 @@ from typing import Optional
 import chromadb
 from chromadb.types import Collection
 from chromadb.utils import embedding_functions
-from llama_index.core.node_parser import SentenceSplitter
-from pypdf import PdfReader
 
+from evidently.experimental.dataset_generators.llm.splitter import AnySplitter
+from evidently.experimental.dataset_generators.llm.splitter import Splitter
 from evidently.pydantic_utils import EvidentlyBaseModel
 
 Chunk = str
@@ -24,6 +24,10 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 def read_text(filename: str) -> str:
     file_path = Path(filename)
     if file_path.suffix.lower() == ".pdf":
+        try:
+            from pypdf import PdfReader
+        except ImportError as e:
+            raise ImportError("Please install pypdf to extract context from .pdf files") from e
         reader = PdfReader(file_path)
         text = ""
         for page_num in range(len(reader.pages)):
@@ -40,6 +44,7 @@ class DataCollectionProvider(EvidentlyBaseModel):
 
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
+    splitter: AnySplitter = "llama_index"
 
     def get_data_collection(self) -> "DataCollection":
         raise NotImplementedError
@@ -68,16 +73,13 @@ class FileDataCollectionProvider(DataCollectionProvider):
     path: str
 
     def get_data_collection(self):
-        splitter = SentenceSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
-        text_nodes = []
         file_path = Path(self.path)
         paths = [self.path] if file_path.is_file() else glob.glob(os.path.join(self.path, "*"))
 
-        for filename in paths:
-            nodes = splitter.split_text(read_text(filename))
-            text_nodes.extend(nodes)
+        splitter = Splitter.from_any(self.splitter, self.chunk_size, self.chunk_overlap)
+        chunks = list(splitter.split([read_text(p) for p in paths]))
 
-        data_collection = DataCollection(name=file_path.name, chunks=text_nodes)
+        data_collection = DataCollection(name=file_path.name, chunks=chunks)
         data_collection.init_collection()
         return data_collection
 
