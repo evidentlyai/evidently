@@ -1,10 +1,10 @@
 from typing import ClassVar
 from typing import List
 
-from evidently.utils.llm import BlockPromptTemplate
-from evidently.utils.llm import PromptBlock
-from evidently.utils.llm import WithSystemPrompt
-from evidently.utils.llm import llm_call
+from evidently.utils.llm.prompts import BlockPromptTemplate
+from evidently.utils.llm.prompts import PromptBlock
+from evidently.utils.llm.prompts import WithSystemPrompt
+from evidently.utils.llm.prompts import llm_call
 
 
 class SimpleQuestionPromptTemplate(BlockPromptTemplate):

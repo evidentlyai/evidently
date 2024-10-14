@@ -1,3 +1,4 @@
+import abc
 import glob
 import os
 from pathlib import Path
@@ -34,15 +35,15 @@ def read_text(filename: str) -> str:
         return Path(filename).read_text()
 
 
-class DataCollectionProvider(EvidentlyBaseModel):
+class DataCollectionProvider(EvidentlyBaseModel, abc.ABC):
     class Config:
-        type_alias = "evidently:base:DataCollectionProvider"
         is_base_type = True
 
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
     splitter: AnySplitter = "llama_index"
 
+    @abc.abstractmethod
     def get_data_collection(self) -> "DataCollection":
         raise NotImplementedError
 
@@ -65,7 +66,7 @@ class DataCollectionProvider(EvidentlyBaseModel):
 
 class ChunksDataCollectionProvider(DataCollectionProvider):
     class Config:
-        type_alias = "evidently:data_provider:ChunksDataCollectionProvider"
+        type_alias = "evidently:data_collecton_provider:ChunksDataCollectionProvider"
 
     chunks: List[Chunk]
 
@@ -77,7 +78,7 @@ class ChunksDataCollectionProvider(DataCollectionProvider):
 
 class FileDataCollectionProvider(DataCollectionProvider):
     class Config:
-        type_alias = "evidently:data_provider:FileDataCollectionProvider"
+        type_alias = "evidently:data_collecton_provider:FileDataCollectionProvider"
 
     path: str
 
