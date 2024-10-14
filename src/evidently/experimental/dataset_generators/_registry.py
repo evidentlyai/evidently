@@ -17,12 +17,12 @@ register_type_alias(
 register_type_alias(
     DataCollectionProvider,
     "evidently.experimental.dataset_generators.llm.index.ChunksDataCollectionProvider",
-    "evidently:data_provider:ChunksDataCollectionProvider",
+    "evidently:data_collecton_provider:ChunksDataCollectionProvider",
 )
 register_type_alias(
     DataCollectionProvider,
     "evidently.experimental.dataset_generators.llm.index.FileDataCollectionProvider",
-    "evidently:data_provider:FileDataCollectionProvider",
+    "evidently:data_collecton_provider:FileDataCollectionProvider",
 )
 
 register_type_alias(
