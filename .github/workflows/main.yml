@@ -119,13 +119,9 @@ jobs:
       - name: Run pip-audit
         run: |
           pip-audit \
-          # black ReDoS, we dont use black in prod
-          --ignore-vuln PYSEC-2024-48 \
-          # sklearn TfidfVectorizer leak in github actions
+          \ # sklearn TfidfVectorizer leak in github actions
           --ignore-vuln GHSA-jw8x-6495-233v \
-          # litestar repo CI/CD
-          --ignore-vuln GHSA-4hq2-rpgc-r8r7 \
-          # fastapi ReDoS(needed by chromadb). we don't use fastapi
+          \ # fastapi ReDoS(needed by chromadb). we don't use fastapi
           --ignore-vuln PYSEC-2024-38
       - name: Run Tests
         run: python -m pytest --durations=50
