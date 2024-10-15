@@ -18,7 +18,6 @@ from evidently.options import ColorOptions
 
 if TYPE_CHECKING:
     from evidently.base_metric import Metric
-    from evidently.base_metric import TResult
     from evidently.core import IncludeOptions
     from evidently.tests.base_test import Test
 
@@ -36,8 +35,11 @@ class BaseRenderer:
             self.color_options = color_options
 
 
-class MetricRenderer(BaseRenderer):
-    def render_pandas(self, obj: "Metric[TResult]") -> pd.DataFrame:
+TMetric = TypeVar("TMetric", bound="Metric")
+
+
+class MetricRenderer(Generic[TMetric], BaseRenderer):
+    def render_pandas(self, obj: TMetric) -> pd.DataFrame:
         result = obj.get_result()
         if not result.__config__.pd_include:
             warnings.warn(
@@ -48,7 +50,7 @@ class MetricRenderer(BaseRenderer):
 
     def render_json(
         self,
-        obj: "Metric[TResult]",
+        obj: TMetric,
         include_render: bool = False,
         include: "IncludeOptions" = None,
         exclude: "IncludeOptions" = None,
@@ -56,7 +58,7 @@ class MetricRenderer(BaseRenderer):
         result = obj.get_result()
         return result.get_dict(include_render=include_render, include=include, exclude=exclude)
 
-    def render_html(self, obj) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: TMetric) -> List[BaseWidgetInfo]:
         raise NotImplementedError()
 
 
