@@ -2,8 +2,10 @@ import dataclasses
 import warnings
 from typing import TYPE_CHECKING
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 import pandas as pd
@@ -78,14 +80,17 @@ class TestHtmlInfo:
         return self
 
 
-class TestRenderer(BaseRenderer):
-    def html_description(self, obj: "Test"):
+TTest = TypeVar("TTest", bound="Test")
+
+
+class TestRenderer(Generic[TTest], BaseRenderer):
+    def html_description(self, obj: TTest):
         return obj.get_result().description
 
-    def json_description(self, obj: "Test"):
+    def json_description(self, obj: TTest):
         return obj.get_result().description
 
-    def render_html(self, obj: "Test") -> TestHtmlInfo:
+    def render_html(self, obj: TTest) -> TestHtmlInfo:
         result = obj.get_result()
         return TestHtmlInfo(
             name=result.name,
@@ -97,7 +102,7 @@ class TestRenderer(BaseRenderer):
 
     def render_json(
         self,
-        obj: "Test",
+        obj: TTest,
         include_render: bool = False,
         include: "IncludeOptions" = None,
         exclude: "IncludeOptions" = None,
