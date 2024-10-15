@@ -64,7 +64,7 @@ class DataLoader:
     def load(self, filename: str, data_options: DataOptions, sampling_options: SamplingOptions = None):
         sampling_opts = SamplingOptions("none", 0, 0) if sampling_options is None else sampling_options
         parse_dates = [data_options.date_column] if data_options.date_column else False
-        return pd.read_csv(
+        return pd.read_csv(  # type: ignore[call-overload]
             filename,
             header=0 if data_options.header else None,
             sep=data_options.separator,
