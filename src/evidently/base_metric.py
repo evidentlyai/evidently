@@ -18,6 +18,7 @@ from typing import Union
 import pandas as pd
 import typing_inspect
 
+from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import ModelMetaclass
 from evidently._pydantic_compat import PrivateAttr
 from evidently.core import BaseResult
@@ -236,7 +237,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
 
     _context: Optional["Context"] = None
 
-    options: Options
+    options: Options = Field(default_factory=Options)
 
     fields: ClassVar[FieldsDescriptor] = FieldsDescriptor()
     # resulting options will be determined via
