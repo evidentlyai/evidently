@@ -388,7 +388,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         )
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
-        pass
+        raise NotImplementedError()
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
