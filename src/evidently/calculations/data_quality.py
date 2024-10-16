@@ -449,10 +449,10 @@ def calculate_category_correlation(
 
 def calculate_numerical_correlation(
     column_display_name: str,
-    column: pd.Series,
+    column: Optional[pd.Series],
     features: pd.DataFrame,
 ) -> List[ColumnCorrelations]:
-    if column.empty or features.empty:
+    if column is None or column.empty or features.empty:
         return []
 
     result = []
