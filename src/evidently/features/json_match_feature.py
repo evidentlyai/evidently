@@ -13,9 +13,6 @@ class JSONMatch(FeatureTypeFieldMixin, GeneratedFeature):
     class Config:
         type_alias = "evidently:feature:JSONMatch"
 
-    display_name: str
-    # func: Callable[[pd.Series, pd.Series], pd.Series]
-    name: str = "is_json_match"
     first_column: str
     second_column: str
     feature_type: ColumnType = ColumnType.Categorical
@@ -34,10 +31,16 @@ class JSONMatch(FeatureTypeFieldMixin, GeneratedFeature):
                 # Return False if either of the JSONs is invalid
                 return False
 
-        data[self.name] = data.apply(
+        data[self._feature_column_name()] = data.apply(
             lambda x: compare_json_objects(x[self.first_column], x[self.second_column]), axis=1
         )
-        return pd.DataFrame(data[self.name])
+        return pd.DataFrame(data[self._feature_column_name()])
 
     def _as_column(self) -> "ColumnName":
-        return self._create_column(self.name)
+        return self._create_column(
+            self._feature_column_name(),
+            default_display_name=f"JSON match for columns {self.first_column} and {self.second_column}",
+        )
+
+    def _feature_column_name(self):
+        return f"JSON match for {self.first_column} and {self.second_column}"
