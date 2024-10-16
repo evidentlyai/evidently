@@ -261,7 +261,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     [data.get_current_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
                     axis=1,
                 )
-                curr_text_df.columns = list(self._text_features_gen[col].keys())
+                curr_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
                 text_columns.append(list(curr_text_df.columns))
                 curr_df = pd.concat(
                     [
@@ -276,7 +276,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                         [data.get_reference_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
                         axis=1,
                     )
-                    ref_text_df.columns = list(self._text_features_gen[col].keys())
+                    ref_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
                     ref_df = pd.concat(
                         [
                             ref_df.copy().reset_index(drop=True),

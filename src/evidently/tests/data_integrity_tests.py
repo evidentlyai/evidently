@@ -1146,7 +1146,7 @@ class TestColumnRegExpRenderer(TestRenderer):
 
         if metric_result.current.table_of_not_matched:
             curr_df = pd.DataFrame(metric_result.current.table_of_not_matched.items())
-            curr_df.columns = ["x", "count"]
+            curr_df.columns = pd.Index(["x", "count"])
 
         else:
             curr_df = pd.DataFrame(columns=["x", "count"])
@@ -1155,7 +1155,7 @@ class TestColumnRegExpRenderer(TestRenderer):
 
         if metric_result.reference is not None and metric_result.reference.table_of_not_matched:
             ref_df = pd.DataFrame(metric_result.reference.table_of_not_matched.items())
-            ref_df.columns = ["x", "count"]
+            ref_df.columns = pd.Index(["x", "count"])
 
         additional_plots = plot_value_counts_tables_ref_curr(
             column_name, curr_df, ref_df, f"{column_name}_ColumnValueRegExp"
