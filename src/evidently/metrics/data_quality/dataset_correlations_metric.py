@@ -140,8 +140,14 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         # fill diagonal with 1 values for getting abs max values
         np.fill_diagonal(correlation_matrix.values, 0)
 
-        if prediction_name in correlation_matrix and target_name in correlation_matrix:
-            target_prediction_correlation = correlation_matrix.loc[prediction_name, target_name]
+        target_prediction_correlation: Optional[pd.DataFrame]
+        if (
+            prediction_name is not None
+            and target_name is not None
+            and prediction_name in correlation_matrix
+            and target_name in correlation_matrix
+        ):
+            target_prediction_correlation = correlation_matrix.loc[prediction_name, target_name]  # type: ignore[assignment]
 
             if pd.isnull(target_prediction_correlation):
                 target_prediction_correlation = None
@@ -149,8 +155,10 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         else:
             target_prediction_correlation = None
 
-        if target_name in correlation_matrix:
-            abs_max_target_features_correlation = correlation_matrix.loc[target_name, columns_corr].abs().max()
+        abs_max_target_features_correlation: Optional[pd.Series]
+        if target_name is not None and target_name in correlation_matrix:
+            cols = [target_name] + columns_corr
+            abs_max_target_features_correlation = correlation_matrix.loc[cols].abs().max()
 
             if pd.isnull(abs_max_target_features_correlation):
                 abs_max_target_features_correlation = None
@@ -158,8 +166,10 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         else:
             abs_max_target_features_correlation = None
 
-        if prediction_name in correlation_matrix:
-            abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, columns_corr].abs().max()
+        abs_max_prediction_features_correlation: Optional[pd.Series]
+        if prediction_name is not None and prediction_name in correlation_matrix:
+            cols = [prediction_name] + columns_corr
+            abs_max_prediction_features_correlation = correlation_matrix.loc[cols].abs().max()
 
             if pd.isnull(abs_max_prediction_features_correlation):
                 abs_max_prediction_features_correlation = None
