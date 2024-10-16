@@ -1389,10 +1389,10 @@ def plot_metric_k(curr_data: pd.Series, ref_data: Optional[pd.Series], yaxis_nam
 
 
 def plot_bias(
-    curr: Distribution,
-    curr_train: Distribution,
-    ref: Optional[Distribution],
-    ref_train: Optional[Distribution],
+    curr: HistogramData,
+    curr_train: HistogramData,
+    ref: Optional[HistogramData],
+    ref_train: Optional[HistogramData],
     xaxis_name: str,
 ):
     color_options = ColorOptions()
@@ -1444,10 +1444,10 @@ def plot_bias(
 
 
 def plot_4_distr(
-    curr_1: Distribution,
-    curr_2: Optional[Distribution],
-    ref_1: Optional[Distribution],
-    ref_2: Optional[Distribution],
+    curr_1: HistogramData,
+    curr_2: Optional[HistogramData],
+    ref_1: Optional[HistogramData],
+    ref_2: Optional[HistogramData],
     name_1: str,
     name_2: str,
     xaxis_name: str,
