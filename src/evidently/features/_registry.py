@@ -27,6 +27,11 @@ register_type_alias(
     "evidently.features.hf_feature.HuggingFaceToxicityFeature",
     "evidently:feature:HuggingFaceToxicityFeature",
 )
+register_type_alias(
+    GeneratedFeatures,
+    "evidently.features.json_schema_match_feature.JSONSchemaMatch",
+    "evidently:feature:JSONSchemaMatch",
+)
 register_type_alias(GeneratedFeatures, "evidently.features.llm_judge.LLMJudge", "evidently:feature:LLMJudge")
 register_type_alias(
     GeneratedFeatures,
