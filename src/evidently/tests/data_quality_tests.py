@@ -411,9 +411,10 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
             return (diff.abs() > self.corr_diff).sum().sum() / 2
 
         current_correlations = current_correlations[self.column_name.display_name]
-        if reference_correlations is not None:
-            reference_correlations = reference_correlations[self.column_name.display_name]
-        diff = reference_correlations - current_correlations
+        if reference_correlations is None:
+            raise ValueError("Reference is required for test")
+        reference_correlations_data = reference_correlations[self.column_name.display_name]
+        diff = reference_correlations_data - current_correlations
         return (diff.abs() > self.corr_diff).sum()
 
     def get_description(self, value: Numeric) -> str:
@@ -1708,7 +1709,7 @@ class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
 @default_renderer(wrap_type=TestCategoryShare)
 class TestCategoryRenderer(TestRenderer):
     @staticmethod
-    def _get_number_and_percents(s: pd.Series, num: int) -> pd.DataFrame:
+    def _get_number_and_percents(s: pd.Series, num: int) -> pd.Series:
         """Get a string with missing values numbers and percents from info for results table"""
         return s.astype(str) + " (" + (s / num * 100).round(2).astype(str) + "%)"
 
