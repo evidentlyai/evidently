@@ -1727,7 +1727,7 @@ class TestCategoryRenderer(TestRenderer):
             ref_df = ref_df.copy()
             replace.append(("reference value counts", n_ref))
             df = curr_df.merge(ref_df, on="x", how="outer")
-            df.columns = ["value", "current value counts", "reference value counts"]
+            df.columns = pd.Index(["value", "current value counts", "reference value counts"])
             df[["current value counts", "reference value counts"]] = df[
                 ["current value counts", "reference value counts"]
             ].fillna(0.0)
@@ -1735,7 +1735,7 @@ class TestCategoryRenderer(TestRenderer):
 
         else:
             df = curr_df
-            df.columns = ["value", "current value counts"]
+            df.columns = pd.Index(["value", "current value counts"])
             df.sort_values("current value counts", ascending=False, inplace=True)
         for col, n in replace:
             df[col] = self._get_number_and_percents(df[col].fillna(0), n)

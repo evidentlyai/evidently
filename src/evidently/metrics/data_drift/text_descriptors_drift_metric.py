@@ -115,13 +115,13 @@ class TextDescriptorsDriftMetric(UsesRawDataMixin, Metric[TextDescriptorsDriftMe
             [data.get_current_column(x.as_column()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
-        curr_text_df.columns = list(self.generated_text_features.keys())
+        curr_text_df.columns = pd.Index(list(self.generated_text_features.keys()))
 
         ref_text_df = pd.concat(
             [data.get_reference_column(x.as_column()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
-        ref_text_df.columns = list(self.generated_text_features.keys())
+        ref_text_df.columns = pd.Index(list(self.generated_text_features.keys()))
         # text_dataset_columns = DatasetColumns(num_feature_names=curr_text_df.columns)
         text_dataset_columns = process_columns(ref_text_df, ColumnMapping(numerical_features=ref_text_df.columns))
 
