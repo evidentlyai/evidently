@@ -92,7 +92,7 @@ setup_args = dict(
             "types-python-dateutil==2.8.19",
             "types-ujson>=5.4.0",
             "pillow==10.3.0",
-            "httpx==0.24.1",
+            "httpx==0.27.0",
             "ruff==0.3.7",
             "pre-commit==3.5.0",
             "pytest-asyncio==0.23.7",
@@ -103,6 +103,7 @@ setup_args = dict(
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
             "sqlvalidator>=0.0.20",
+            "chromadb>=0.4.0",
         ],
         "spark": ["pyspark>=3.4.0"],
         "fsspec": [

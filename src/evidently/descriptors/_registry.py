@@ -16,6 +16,11 @@ register_type_alias(
     "evidently:descriptor:HuggingFaceToxicityModel",
 )
 register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.json_schema_match_descriptor.JSONSchemaMatch",
+    "evidently:descriptor:JSONSchemaMatch",
+)
+register_type_alias(
     FeatureDescriptor, "evidently.descriptors.llm_judges.BiasLLMEval", "evidently:descriptor:BiasLLMEval"
 )
 register_type_alias(
@@ -71,6 +76,12 @@ register_type_alias(
     FeatureDescriptor,
     "evidently.descriptors.text_contains_descriptor.DoesNotContain",
     "evidently:descriptor:DoesNotContain",
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.text_contains_descriptor.ItemMatch", "evidently:descriptor:ItemMatch"
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.text_contains_descriptor.ItemNoMatch", "evidently:descriptor:ItemNoMatch"
 )
 register_type_alias(
     FeatureDescriptor, "evidently.descriptors.text_length_descriptor.TextLength", "evidently:descriptor:TextLength"
