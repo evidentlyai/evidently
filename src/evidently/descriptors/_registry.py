@@ -16,6 +16,11 @@ register_type_alias(
     "evidently:descriptor:HuggingFaceToxicityModel",
 )
 register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.json_schema_match_descriptor.JSONSchemaMatch",
+    "evidently:descriptor:JSONSchemaMatch",
+)
+register_type_alias(
     FeatureDescriptor, "evidently.descriptors.llm_judges.BiasLLMEval", "evidently:descriptor:BiasLLMEval"
 )
 register_type_alias(

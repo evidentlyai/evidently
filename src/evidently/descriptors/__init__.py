@@ -4,6 +4,7 @@ from .custom_descriptor import CustomPairColumnEval
 from .exact_match_descriptor import ExactMatch
 from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
+from .json_schema_match_descriptor import JSONSchemaMatch
 from .llm_judges import BiasLLMEval
 from .llm_judges import ContextQualityLLMEval
 from .llm_judges import DeclineLLMEval
@@ -61,5 +62,6 @@ __all__ = [
     "Sentiment",
     "ExactMatch",
     "RegExp",
+    "JSONSchemaMatch",
     "_registry",
 ]
