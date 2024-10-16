@@ -630,7 +630,7 @@ class TestColumnValueFeatureRenderer(TestRenderer):
         info.with_details(f"{obj.name} {column_name}", plotly_figure(title="", figure=fig))
         return info
 
-    def _feature_render_html(self, obj):
+    def _feature_render_html(self, obj: BaseFeatureDataQualityMetricsTest):
         column_name = obj.column_name
         info = super().render_html(obj)
         metric_result: ColumnSummaryResult = obj.metric.get_result()
