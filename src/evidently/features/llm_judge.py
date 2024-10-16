@@ -188,7 +188,7 @@ class LLMJudge(GeneratedFeatures):
         return {self.input_column: self.DEFAULT_INPUT_COLUMN}
 
     def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition, options: Options) -> pd.DataFrame:
-        result: List[dict] = self.get_llm_wrapper(options).run_batch_sync(
+        result = self.get_llm_wrapper(options).run_batch_sync(
             requests=self.template.iterate_messages(data, self.get_input_columns())
         )
 
