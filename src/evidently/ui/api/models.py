@@ -110,14 +110,14 @@ class DashboardInfoModel:
         return cls(**dataclasses.asdict(dashboard_info))
 
     @classmethod
-    def from_project_with_time_range(
+    async def from_project_with_time_range(
         cls,
         project: Project,
         timestamp_start: Optional[datetime.datetime] = None,
         timestamp_end: Optional[datetime.datetime] = None,
     ):
         time_range: Dict[str, Optional[datetime.datetime]]
-        snapshots = project.list_snapshots()
+        snapshots = await project.list_snapshots_async()
         if len(snapshots) == 0:
             time_range = {"min_timestamp": None, "max_timestamp": None}
         else:
@@ -126,7 +126,7 @@ class DashboardInfoModel:
                 max_timestamp=max(r.timestamp for r in snapshots),
             )
 
-        info = project.build_dashboard_info(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
+        info = await project.build_dashboard_info_async(timestamp_start=timestamp_start, timestamp_end=timestamp_end)
 
         return cls(
             name=info.name,

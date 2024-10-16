@@ -173,13 +173,13 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
             r.headers[SECRET_HEADER_NAME] = self.secret
         return r
 
-    def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(self, project: Project, user: User, team: Team) -> Project:
         params = {}
         if team is not None and team.id is not None and team.id != ZERO_UUID:
             params["team_id"] = str(team.id)
         return self._request("/api/projects", "POST", query_params=params, body=project.dict(), response_model=Project)
 
-    def get_project(self, project_id: ProjectID) -> Optional[Project]:
+    async def get_project(self, project_id: ProjectID) -> Optional[Project]:
         try:
             return self._request(f"/api/projects/{project_id}/info", "GET", response_model=Project)
         except (HTTPError,) as e:
@@ -191,25 +191,25 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
             except (ValueError, AttributeError):
                 raise e
 
-    def delete_project(self, project_id: ProjectID):
+    async def delete_project(self, project_id: ProjectID):
         return self._request(f"/api/projects/{project_id}", "DELETE")
 
-    def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
+    async def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         return self._request("/api/projects", "GET", response_model=List[Project])
 
-    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
+    async def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
         return self._request(f"/api/projects/{project_id}/snapshots", "POST", body=snapshot.dict())
 
-    def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
+    async def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
         return self._request(f"/api/projects/{project_id}/{snapshot_id}", "DELETE")
 
-    def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
+    async def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         return self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[Project])
 
-    def list_snapshots(
+    async def list_snapshots(
         self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
     ) -> List[SnapshotMetadata]:
-        project = self.get_project(project_id)
+        project = await self.get_project(project_id)
         if project is None:
             raise ProjectNotFound()
         return [
@@ -219,18 +219,18 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
             )
         ]
 
-    def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
-        project = self.get_project(project_id)
+    async def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
+        project = await self.get_project(project_id)
         if project is None:
             raise ProjectNotFound()
         return self._request(
             f"/api/projects/{project_id}/{snapshot_id}/metadata", "GET", response_model=SnapshotMetadata
         ).bind(project)
 
-    def update_project(self, project: Project) -> Project:
+    async def update_project(self, project: Project) -> Project:
         return self._request(f"/api/projects/{project.id}/info", "POST", body=project.dict(), response_model=Project)
 
-    def reload_snapshots(self, project_id: ProjectID):
+    async def reload_snapshots(self, project_id: ProjectID):
         self._request(f"/api/projects/{project_id}/reload", "GET")
 
 
@@ -239,21 +239,21 @@ class NoopBlobStorage(BlobStorage):
     def open_blob(self, id: BlobID):
         yield io.BytesIO(b"")
 
-    def put_blob(self, path: str, obj):
+    async def put_blob(self, path: str, obj):
         pass
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         return ""
 
-    def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
+    async def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
         return BlobMetadata(id=blob_id, size=0)
 
 
 class NoopDataStorage(DataStorage):
-    def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
+    async def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
 
-    def load_test_results(
+    async def load_test_results(
         self,
         project_id: ProjectID,
         filter: ReportFilter,
@@ -264,7 +264,7 @@ class NoopDataStorage(DataStorage):
     ) -> TestResultPoints:
         return {}
 
-    def load_points_as_type(
+    async def load_points_as_type(
         self,
         cls: Type[PointType],
         project_id: ProjectID,

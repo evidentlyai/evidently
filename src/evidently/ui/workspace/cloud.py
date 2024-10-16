@@ -314,5 +314,5 @@ class CloudWorkspace(WorkspaceView):
 
 
 class CloudAuthManager(NoopAuthManager):
-    def get_team(self, team_id: TeamID) -> Optional[Team]:
+    async def get_team(self, team_id: TeamID) -> Optional[Team]:
         return Team(id=team_id, name="", org_id=ZERO_UUID)

@@ -16,6 +16,9 @@ from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.collector.config import CollectorTrigger
 from evidently.collector.storage import CollectorStorage
+from evidently.experimental.dataset_generators.base import BaseDatasetGenerator
+from evidently.experimental.dataset_generators.llm.index import DataCollectionProvider
+from evidently.experimental.dataset_generators.llm.splitter import Splitter
 from evidently.features.generated_features import BaseDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
@@ -32,6 +35,8 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestParameters
 from evidently.ui.components.base import Component
 from evidently.ui.dashboards.base import DashboardPanel
+from evidently.utils.llm.prompts import PromptBlock
+from evidently.utils.llm.prompts import PromptTemplate
 
 T = TypeVar("T")
 
@@ -105,6 +110,11 @@ def test_all_aliases_correct():
         CollectorStorage: "collector_storage",
         BaseLLMPromptTemplate: "prompt_template",
         DashboardPanel: "dashboard_panel",
+        BaseDatasetGenerator: "dataset_generator",
+        Splitter: "splitter",
+        DataCollectionProvider: "data_collecton_provider",
+        PromptBlock: "prompt_block",
+        PromptTemplate: "prompt_template",
     }
     skip = [Component]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
