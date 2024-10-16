@@ -12,11 +12,11 @@ import pytest
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.features.llm_judge import LLMJudge
 from evidently.features.llm_judge import LLMMessage
-from evidently.features.llm_judge import LLMResponseParseError
 from evidently.features.llm_judge import LLMWrapper
-from evidently.features.llm_judge import llm_provider
 from evidently.options.base import Options
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.llm.errors import LLMResponseParseError
+from evidently.utils.llm.wrapper import llm_provider
 
 
 def _LLMPromptTemplate(
@@ -74,14 +74,15 @@ def _LLMPromptTemplate(
     ],
 )
 def test_parse_response(
-    template: _LLMPromptTemplate, results: Dict[str, Union[LLMResponseParseError, Dict[str, Union[str, float]]]]
+    template: BinaryClassificationPromptTemplate,
+    results: Dict[str, Union[LLMResponseParseError, Dict[str, Union[str, float]]]],
 ):
     for response, expected_result in results.items():
         if isinstance(expected_result, LLMResponseParseError):
             with pytest.raises(expected_result.__class__):
-                template.parse_response(response)
+                template.parse(response)
         else:
-            assert template.parse_response(response) == expected_result
+            assert template.parse(response) == expected_result
 
 
 @llm_provider("mock", None)
@@ -89,12 +90,13 @@ class MockLLMWrapper(LLMWrapper):
     def __init__(self, model: str, options: Options):
         self.model = model
 
-    def complete(self, messages: List[LLMMessage]) -> str:
-        text = messages[-1][1]
+    async def complete(self, messages: List[LLMMessage]) -> str:
+        text = messages[-1].content
         cat = re.findall("___text_starts_here___\n(.*)\n___text_ends_here___", text)[0][0]
         return json.dumps({"category": cat})
 
 
+@pytest.mark.asyncio
 def test_llm_judge():
     llm_judge = LLMJudge(
         input_column="text",
@@ -110,6 +112,7 @@ def test_llm_judge():
     pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
 
 
+@pytest.mark.asyncio
 def test_multicol_llm_judge():
     llm_judge = LLMJudge(
         input_columns={"text": "input", "text2": "input2"},
