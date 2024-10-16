@@ -116,11 +116,6 @@ jobs:
         run: pip install -r requirements.min.txt
       - name: Install package
         run: pip install -e .[dev,spark,fsspec,llm]
-      - name: Run pip-audit
-        run: |
-          pip-audit \
-          --ignore-vuln GHSA-jw8x-6495-233v \
-          --ignore-vuln PYSEC-2024-38
       - name: Run Tests
         run: python -m pytest --durations=50
   test:
