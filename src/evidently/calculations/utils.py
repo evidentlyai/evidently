@@ -125,7 +125,7 @@ def prepare_box_data(
     for df, name in zip(dfs, names):
         data = df.groupby(cat_feature_name, observed=False)[num_feature_name]
         df_for_plot = data.quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
-        df_for_plot.columns = [cat_feature_name, "q", num_feature_name]
+        df_for_plot.columns = pd.Index([cat_feature_name, "q", num_feature_name])
         res_df = {}
         values = df_for_plot[cat_feature_name].unique()
 
