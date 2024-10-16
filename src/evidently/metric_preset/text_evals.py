@@ -4,6 +4,7 @@ from typing import List
 from typing import Optional
 
 from evidently.descriptors import OOV
+from evidently.descriptors import ContainsLink
 from evidently.descriptors import NonLetterCharacterPercentage
 from evidently.descriptors import SentenceCount
 from evidently.descriptors import Sentiment
@@ -36,5 +37,6 @@ class TextEvals(MetricPreset):
             Sentiment(),
             OOV(),
             NonLetterCharacterPercentage(),
+            ContainsLink(),
         ]
         return [ColumnSummaryMetric(desc.on(self.column_name)) for desc in descriptors]
