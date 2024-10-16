@@ -9,7 +9,6 @@ from evidently import ColumnMapping
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
-from evidently.ui.base import async_to_sync
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import DatasetID
@@ -17,6 +16,7 @@ from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
 from evidently.ui.workspace.base import WorkspaceBase
+from evidently.utils.sync import async_to_sync
 
 
 class WorkspaceView(WorkspaceBase):

@@ -29,6 +29,9 @@ from evidently.utils.llm.wrapper import get_llm_wrapper
 
 
 class BaseLLMPromptTemplate(PromptTemplate):
+    class Config:
+        is_base_type = True
+
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[LLMRequest]:
         template = self.get_template()
         for _, column_values in data[list(input_columns)].rename(columns=input_columns).iterrows():
