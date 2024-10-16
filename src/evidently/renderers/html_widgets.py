@@ -731,7 +731,7 @@ def get_pr_rec_plot_data(
 
 def get_lift_plot_data(
     current_lift_curve: LiftCurve,
-    reference_lift_curve: Optional[PRCurve],
+    reference_lift_curve: Optional[LiftCurve],
     color_options: ColorOptions,
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     """
