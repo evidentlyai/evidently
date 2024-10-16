@@ -112,13 +112,13 @@ class FSSpecBlobStorage(BlobStorage):
         with self.location.open(blob_id) as f:
             yield f
 
-    def put_blob(self, blob_id: BlobID, obj) -> BlobID:
+    async def put_blob(self, blob_id: BlobID, obj) -> BlobID:
         self.location.makedirs(posixpath.dirname(blob_id))
         with self.location.open(blob_id, "w") as f:
             f.write(obj)
         return blob_id
 
-    def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
+    async def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
         return BlobMetadata(id=blob_id, size=self.location.size(blob_id))
 
 
@@ -201,7 +201,7 @@ class JsonFileMetadataStorage(MetadataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(self, project: Project, user: User, team: Team) -> Project:
         project_id = str(project.id)
         self.state.location.makedirs(posixpath.join(project_id, SNAPSHOTS))
         with self.state.location.open(posixpath.join(project_id, METADATA_PATH), "w") as f:
@@ -210,33 +210,33 @@ class JsonFileMetadataStorage(MetadataStorage):
         self.state.reload_snapshots(project.id, force=True)
         return project
 
-    def update_project(self, project: Project) -> Project:
-        return self.add_project(project, NO_USER, NO_TEAM)
+    async def update_project(self, project: Project) -> Project:
+        return await self.add_project(project, NO_USER, NO_TEAM)
 
-    def get_project(self, project_id: ProjectID) -> Optional[Project]:
+    async def get_project(self, project_id: ProjectID) -> Optional[Project]:
         return self.state.projects.get(project_id)
 
-    def delete_project(self, project_id: ProjectID):
+    async def delete_project(self, project_id: ProjectID):
         if project_id in self.state.projects:
             del self.state.projects[project_id]
         path = str(project_id)
         if self.state.location.exists(path):
             self.state.location.rmtree(path)
 
-    def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
+    async def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         projects = [p for p in self.state.projects.values() if project_ids is None or p.id in project_ids]
         default_date = datetime.datetime.fromisoformat("1900-01-01T00:00:00")
         projects.sort(key=lambda x: x.created_at or default_date, reverse=True)
         return projects
 
-    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
-        project = self.get_project(project_id)
+    async def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
+        project = await self.get_project(project_id)
         if project is None:
             raise ProjectNotFound()
         self.state.snapshots[project_id][snapshot.id] = SnapshotMetadata.from_snapshot(snapshot, blob).bind(project)
         self.state.snapshot_data[project_id][snapshot.id] = snapshot
 
-    def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
+    async def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
         if project_id in self.state.projects and snapshot_id in self.state.snapshots[project_id]:
             del self.state.snapshots[project_id][snapshot_id]
             del self.state.snapshot_data[project_id][snapshot_id]
@@ -244,14 +244,14 @@ class JsonFileMetadataStorage(MetadataStorage):
         if self.state.location.exists(path):
             self.state.location.rmtree(path)
 
-    def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
+    async def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         return [
             p
             for p in self.state.projects.values()
             if p.name == project_name and (project_ids is None or p.id in project_ids)
         ]
 
-    def list_snapshots(
+    async def list_snapshots(
         self, project_id: ProjectID, include_reports: bool = True, include_test_suites: bool = True
     ) -> List[SnapshotMetadata]:
         return [
@@ -260,10 +260,10 @@ class JsonFileMetadataStorage(MetadataStorage):
             if (include_reports and s.is_report) or (include_test_suites and not s.is_report)
         ]
 
-    def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
+    async def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
         return self.state.snapshots[project_id][snapshot_id]
 
-    def reload_snapshots(self, project_id: ProjectID):
+    async def reload_snapshots(self, project_id: ProjectID):
         self.state.reload_snapshots(project_id=project_id, force=True)
 
 
@@ -282,10 +282,10 @@ class InMemoryDataStorage(DataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
+    async def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass
 
-    def load_test_results(
+    async def load_test_results(
         self,
         project_id: ProjectID,
         filter: ReportFilter,
@@ -309,7 +309,7 @@ class InMemoryDataStorage(DataStorage):
 
         return points
 
-    def load_points_as_type(
+    async def load_points_as_type(
         self,
         cls: Type[PointType],
         project_id: ProjectID,

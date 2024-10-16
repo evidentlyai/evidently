@@ -1,12 +1,19 @@
+import asyncio
 import contextlib
 import datetime
 import json
+import threading
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
+from functools import wraps
+from typing import IO
 from typing import Any
+from typing import Awaitable
+from typing import Callable
 from typing import ClassVar
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import NamedTuple
 from typing import Optional
@@ -53,6 +60,30 @@ from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
 
+_loop = asyncio.new_event_loop()
+
+_thr = threading.Thread(target=_loop.run_forever, name="Async Runner", daemon=True)
+
+
+TA = TypeVar("TA")
+
+
+def async_to_sync(awaitable: Awaitable[TA]) -> TA:
+    try:
+        asyncio.get_running_loop()
+        # we are in sync context but inside a running loop
+        if not _thr.is_alive():
+            _thr.start()
+        future = asyncio.run_coroutine_threadsafe(awaitable, _loop)
+        return future.result()
+    except RuntimeError:
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+        try:
+            return new_loop.run_until_complete(awaitable)
+        finally:
+            new_loop.close()
+
 
 class BlobMetadata(BaseModel):
     id: BlobID
@@ -77,11 +108,11 @@ class SnapshotMetadata(BaseModel):
     def project(self):
         return self._project
 
-    def load(self) -> Snapshot:
-        return self.project.project_manager.load_snapshot(self.project._user_id, self.project.id, self.id)
+    async def load(self) -> Snapshot:
+        return await self.project.project_manager.load_snapshot(self.project._user_id, self.project.id, self.id)
 
-    def as_report_base(self) -> ReportBase:
-        value = self.load()
+    async def as_report_base(self) -> ReportBase:
+        value = await self.load()
         return value.as_report() if value.is_report else value.as_test_suite()
 
     def bind(self, project: "Project"):
@@ -100,16 +131,16 @@ class SnapshotMetadata(BaseModel):
             blob=blob,
         )
 
-    @property
-    def dashboard_info(self):
+    async def get_dashboard_info(self):
         if self._dashboard_info is None:
-            _, self._dashboard_info, self._additional_graphs = self.as_report_base()._build_dashboard_info()
+            report = await self.as_report_base()
+            _, self._dashboard_info, self._additional_graphs = report._build_dashboard_info()
         return self._dashboard_info
 
-    @property
-    def additional_graphs(self):
+    async def get_additional_graphs(self):
         if self._additional_graphs is None:
-            _, self._dashboard_info, self._additional_graphs = self.as_report_base()._build_dashboard_info()
+            report = await self.as_report_base()
+            _, self._dashboard_info, self._additional_graphs = report._build_dashboard_info()
         return self._additional_graphs
 
 
@@ -157,6 +188,14 @@ def _default_dashboard():
     return DashboardConfig(name="", panels=[])
 
 
+def sync_api(f: Callable[..., Awaitable[TA]]) -> Callable[..., TA]:
+    @wraps(f)
+    def sync_call(*args, **kwargs):
+        return async_to_sync(f(*args, **kwargs))
+
+    return sync_call
+
+
 class Project(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Project
 
@@ -190,40 +229,42 @@ class Project(Entity):
             raise ValueError("Project is not binded")
         return self._project_manager
 
-    def save(self):
-        self.project_manager.update_project(self._user_id, self)
+    async def save_async(self):
+        await self.project_manager.update_project(self._user_id, self)
         return self
 
-    def load_snapshot(self, snapshot_id: SnapshotID) -> Snapshot:
-        return self.project_manager.load_snapshot(self._user_id, self.id, snapshot_id)
+    async def load_snapshot_async(self, snapshot_id: SnapshotID) -> Snapshot:
+        return await self.project_manager.load_snapshot(self._user_id, self.id, snapshot_id)
 
-    def add_snapshot(self, snapshot: Snapshot):
-        self.project_manager.add_snapshot(self._user_id, self.id, snapshot)
+    async def add_snapshot_async(self, snapshot: Snapshot):
+        await self.project_manager.add_snapshot(self._user_id, self.id, snapshot)
 
-    def delete_snapshot(self, snapshot_id: Union[str, SnapshotID]):
+    async def delete_snapshot_async(self, snapshot_id: Union[str, SnapshotID]):
         if isinstance(snapshot_id, str):
             snapshot_id = uuid6.UUID(snapshot_id)
-        self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)
+        await self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)
 
-    def list_snapshots(self, include_reports: bool = True, include_test_suites: bool = True) -> List[SnapshotMetadata]:
-        return self.project_manager.list_snapshots(self._user_id, self.id, include_reports, include_test_suites)
+    async def list_snapshots_async(
+        self, include_reports: bool = True, include_test_suites: bool = True
+    ) -> List[SnapshotMetadata]:
+        return await self.project_manager.list_snapshots(self._user_id, self.id, include_reports, include_test_suites)
 
-    def get_snapshot_metadata(self, id: SnapshotID) -> SnapshotMetadata:
-        return self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)
+    async def get_snapshot_metadata_async(self, id: SnapshotID) -> SnapshotMetadata:
+        return await self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)
 
-    def build_dashboard_info(
+    async def build_dashboard_info_async(
         self,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DashboardInfo:
-        return self.dashboard.build(self.project_manager.data, self.id, timestamp_start, timestamp_end)
+        return await self.dashboard.build(self.project_manager.data, self.id, timestamp_start, timestamp_end)
 
-    def show_dashboard(
+    async def show_dashboard_async(
         self,
         timestamp_start: Optional[datetime.datetime] = None,
         timestamp_end: Optional[datetime.datetime] = None,
     ):
-        dashboard_info = self.build_dashboard_info(timestamp_start, timestamp_end)
+        dashboard_info = await self.build_dashboard_info_async(timestamp_start, timestamp_end)
         template_params = TemplateParams(
             dashboard_id="pd_" + str(new_id()).replace("-", ""),
             dashboard_info=dashboard_info,
@@ -237,46 +278,56 @@ class Project(Entity):
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
-    def reload(self, reload_snapshots: bool = False):
+    async def reload_async(self, reload_snapshots: bool = False):
         # fixme: reload snapshots
-        project = self.project_manager.get_project(self._user_id, self.id)
+        project = await self.project_manager.get_project(self._user_id, self.id)
         self.__dict__.update(project.__dict__)
 
         if reload_snapshots:
-            self.project_manager.reload_snapshots(self._user_id, self.id)
+            await self.project_manager.reload_snapshots(self._user_id, self.id)
+
+    save = sync_api(save_async)
+    load_snapshot = sync_api(load_snapshot_async)
+    delete_snapshot = sync_api(delete_snapshot_async)
+    list_snapshots = sync_api(list_snapshots_async)
+    show_dashboard = sync_api(show_dashboard_async)
+    build_dashboard_info = sync_api(build_dashboard_info_async)
+    get_snapshot_metadata = sync_api(get_snapshot_metadata_async)
+    add_snapshot = sync_api(add_snapshot_async)
+    reload = sync_api(reload_async)
 
 
 class MetadataStorage(ABC):
     @abstractmethod
-    def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(self, project: Project, user: User, team: Team) -> Project:
         raise NotImplementedError
 
     @abstractmethod
-    def get_project(self, project_id: ProjectID) -> Optional[Project]:
+    async def get_project(self, project_id: ProjectID) -> Optional[Project]:
         raise NotImplementedError
 
     @abstractmethod
-    def delete_project(self, project_id: ProjectID):
+    async def delete_project(self, project_id: ProjectID):
         raise NotImplementedError
 
     @abstractmethod
-    def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
+    async def list_projects(self, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         raise NotImplementedError
 
     @abstractmethod
-    def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
+    async def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot, blob: "BlobMetadata"):
         raise NotImplementedError
 
     @abstractmethod
-    def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
+    async def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
         raise NotImplementedError
 
     @abstractmethod
-    def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
+    async def search_project(self, project_name: str, project_ids: Optional[Set[ProjectID]]) -> List[Project]:
         raise NotImplementedError
 
     @abstractmethod
-    def list_snapshots(
+    async def list_snapshots(
         self,
         project_id: ProjectID,
         include_reports: bool = True,
@@ -285,45 +336,46 @@ class MetadataStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
+    async def get_snapshot_metadata(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotMetadata:
         raise NotImplementedError
 
     @abstractmethod
-    def update_project(self, project: Project) -> Project:
+    async def update_project(self, project: Project) -> Project:
         raise NotImplementedError
 
     @abstractmethod
-    def reload_snapshots(self, project_id: ProjectID):
+    async def reload_snapshots(self, project_id: ProjectID):
         raise NotImplementedError
 
 
 class BlobStorage(ABC):
     @abstractmethod
     @contextlib.contextmanager
-    def open_blob(self, id: BlobID):
+    def open_blob(self, id: BlobID) -> Iterator[IO]:
         raise NotImplementedError
 
-    def put_blob(self, blob_id: str, obj):
+    @abstractmethod
+    async def put_blob(self, blob_id: str, obj):
         raise NotImplementedError
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         raise NotImplementedError
 
-    def put_snapshot(self, project_id: ProjectID, snapshot: Snapshot) -> BlobMetadata:
+    async def put_snapshot(self, project_id: ProjectID, snapshot: Snapshot) -> BlobMetadata:
         id = self.get_snapshot_blob_id(project_id, snapshot)
-        self.put_blob(id, json.dumps(snapshot.dict(), cls=NumpyEncoder))
-        return self.get_blob_metadata(id)
+        await self.put_blob(id, json.dumps(snapshot.dict(), cls=NumpyEncoder))
+        return await self.get_blob_metadata(id)
 
-    def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
+    async def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
         raise NotImplementedError
 
 
 class DataStorage(ABC):
     @abstractmethod
-    def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
+    async def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         raise NotImplementedError
 
-    def load_points(
+    async def load_points(
         self,
         project_id: ProjectID,
         filter: "ReportFilter",
@@ -331,7 +383,7 @@ class DataStorage(ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPoints:
-        return self.load_points_as_type(float, project_id, filter, values, timestamp_start, timestamp_end)
+        return await self.load_points_as_type(float, project_id, filter, values, timestamp_start, timestamp_end)
 
     @staticmethod
     def parse_value(cls: Type[PointType], value: Any) -> PointType:
@@ -342,7 +394,7 @@ class DataStorage(ABC):
         return parse_obj_as(cls, value)
 
     @abstractmethod
-    def load_test_results(
+    async def load_test_results(
         self,
         project_id: ProjectID,
         filter: "ReportFilter",
@@ -354,7 +406,7 @@ class DataStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def load_points_as_type(
+    async def load_points_as_type(
         self,
         cls: Type[PointType],
         project_id: ProjectID,
@@ -493,28 +545,28 @@ class UserWithRoles(NamedTuple):
 class AuthManager(ABC):
     allow_default_user: bool = True
 
-    def refresh_default_roles(self):
+    async def refresh_default_roles(self):
         for (
             default_role,
             entity_type,
         ), permissions in DEFAULT_ROLE_PERMISSIONS.items():
-            role = self.get_default_role(default_role, entity_type)
+            role = await self.get_default_role(default_role, entity_type)
             if role.permissions != permissions:
                 role.permissions = permissions
-                self.update_role(role)
+                await self.update_role(role)
 
     @abstractmethod
-    def update_role(self, role: Role):
+    async def update_role(self, role: Role):
         raise NotImplementedError
 
     @abstractmethod
-    def get_available_project_ids(
+    async def get_available_project_ids(
         self, user_id: UserID, team_id: Optional[TeamID], org_id: Optional[OrgID]
     ) -> Optional[Set[ProjectID]]:
         raise NotImplementedError
 
     @abstractmethod
-    def check_entity_permission(
+    async def check_entity_permission(
         self,
         user_id: UserID,
         entity_type: EntityType,
@@ -524,86 +576,86 @@ class AuthManager(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create_user(self, user_id: UserID, name: Optional[str]) -> User:
+    async def create_user(self, user_id: UserID, name: Optional[str]) -> User:
         raise NotImplementedError
 
     @abstractmethod
-    def get_user(self, user_id: UserID) -> Optional[User]:
+    async def get_user(self, user_id: UserID) -> Optional[User]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_default_user(self) -> User:
+    async def get_default_user(self) -> User:
         raise NotImplementedError
 
-    def get_or_create_user(self, user_id: UserID) -> User:
-        user = self.get_user(user_id)
+    async def get_or_create_user(self, user_id: UserID) -> User:
+        user = await self.get_user(user_id)
         if user is None:
-            user = self.create_user(user_id, str(user_id))
+            user = await self.create_user(user_id, str(user_id))
         return user
 
     @abstractmethod
-    def _create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
+    async def _create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
         raise NotImplementedError
 
-    def create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
-        if not self.check_entity_permission(author, EntityType.Org, org_id, Permission.ORG_CREATE_TEAM):
+    async def create_team(self, author: UserID, team: Team, org_id: OrgID) -> Team:
+        if not await self.check_entity_permission(author, EntityType.Org, org_id, Permission.ORG_CREATE_TEAM):
             raise NotEnoughPermissions()
-        return self._create_team(author, team, org_id)
+        return await self._create_team(author, team, org_id)
 
     @abstractmethod
-    def get_team(self, team_id: TeamID) -> Optional[Team]:
+    async def get_team(self, team_id: TeamID) -> Optional[Team]:
         raise NotImplementedError
 
-    def get_team_or_error(self, team_id: TeamID) -> Team:
-        team = self.get_team(team_id)
+    async def get_team_or_error(self, team_id: TeamID) -> Team:
+        team = await self.get_team(team_id)
         if team is None:
             raise TeamNotFound()
         return team
 
     @abstractmethod
-    def create_org(self, owner: UserID, org: Org):
+    async def create_org(self, owner: UserID, org: Org):
         raise NotImplementedError
 
     @abstractmethod
-    def get_org(self, org_id: OrgID) -> Optional[Org]:
+    async def get_org(self, org_id: OrgID) -> Optional[Org]:
         raise NotImplementedError
 
-    def delete_org(self, user_id: UserID, org_id: OrgID):
-        if not self.check_entity_permission(user_id, EntityType.Org, org_id, Permission.ORG_DELETE):
+    async def delete_org(self, user_id: UserID, org_id: OrgID):
+        if not await self.check_entity_permission(user_id, EntityType.Org, org_id, Permission.ORG_DELETE):
             raise NotEnoughPermissions()
-        self._delete_org(org_id)
+        await self._delete_org(org_id)
 
     @abstractmethod
-    def _delete_org(self, org_id: OrgID):
+    async def _delete_org(self, org_id: OrgID):
         raise NotImplementedError
 
-    def get_org_or_error(self, org_id: OrgID) -> Org:
-        org = self.get_org(org_id)
+    async def get_org_or_error(self, org_id: OrgID) -> Org:
+        org = await self.get_org(org_id)
         if org is None:
             raise OrgNotFound()
         return org
 
-    def get_or_default_user(self, user_id: UserID) -> User:
-        return self.get_or_create_user(user_id) if user_id is not None else self.get_default_user()
+    async def get_or_default_user(self, user_id: UserID) -> User:
+        return await self.get_or_create_user(user_id) if user_id is not None else await self.get_default_user()
 
     @abstractmethod
-    def _delete_team(self, team_id: TeamID):
+    async def _delete_team(self, team_id: TeamID):
         raise NotImplementedError
 
-    def delete_team(self, user_id: UserID, team_id: TeamID):
-        if not self.check_entity_permission(user_id, EntityType.Team, team_id, Permission.TEAM_DELETE):
+    async def delete_team(self, user_id: UserID, team_id: TeamID):
+        if not await self.check_entity_permission(user_id, EntityType.Team, team_id, Permission.TEAM_DELETE):
             raise NotEnoughPermissions()
-        self._delete_team(team_id)
+        await self._delete_team(team_id)
 
     @abstractmethod
-    def get_default_role(self, default_role: DefaultRole, entity_type: Optional[EntityType]) -> Role:
+    async def get_default_role(self, default_role: DefaultRole, entity_type: Optional[EntityType]) -> Role:
         raise NotImplementedError
 
     @abstractmethod
-    def _grant_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
+    async def _grant_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
         raise NotImplementedError
 
-    def grant_entity_role(
+    async def grant_entity_role(
         self,
         manager: UserID,
         entity_type: EntityType,
@@ -612,17 +664,17 @@ class AuthManager(ABC):
         role: Role,
         skip_permission_check: bool = False,
     ):
-        if not skip_permission_check and not self.check_entity_permission(
+        if not skip_permission_check and not await self.check_entity_permission(
             manager, entity_type, entity_id, Permission.GRANT_ROLE
         ):
             raise NotEnoughPermissions()
-        self._grant_entity_role(entity_type, entity_id, user_id, role)
+        await self._grant_entity_role(entity_type, entity_id, user_id, role)
 
     @abstractmethod
-    def _revoke_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
+    async def _revoke_entity_role(self, entity_type: EntityType, entity_id: EntityID, user_id: UserID, role: Role):
         raise NotImplementedError
 
-    def revoke_entity_role(
+    async def revoke_entity_role(
         self,
         manager: UserID,
         entity_type: EntityType,
@@ -630,56 +682,56 @@ class AuthManager(ABC):
         user_id: UserID,
         role: Role,
     ):
-        if not self.check_entity_permission(manager, entity_type, entity_id, Permission.REVOKE_ROLE):
+        if not await self.check_entity_permission(manager, entity_type, entity_id, Permission.REVOKE_ROLE):
             raise NotEnoughPermissions()
         if manager == user_id:
             raise NotEnoughPermissions()
-        self._revoke_entity_role(entity_type, entity_id, user_id, role)
+        await self._revoke_entity_role(entity_type, entity_id, user_id, role)
 
     @abstractmethod
-    def _list_entity_users(
+    async def _list_entity_users(
         self, entity_type: EntityType, entity_id: EntityID, read_permission: Permission
     ) -> List[User]:
         raise NotImplementedError
 
-    def list_entity_users(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
-        if not self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+    async def list_entity_users(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
+        if not await self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
             raise ENTITY_NOT_FOUND_ERROR[entity_type]()
-        return self._list_entity_users(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
+        return await self._list_entity_users(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
 
     @abstractmethod
-    def _list_entity_users_with_roles(
+    async def _list_entity_users_with_roles(
         self, entity_type: EntityType, entity_id: EntityID, read_permission: Permission
     ) -> List[UserWithRoles]:
         raise NotImplementedError
 
-    def list_entity_users_with_roles(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
-        if not self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+    async def list_entity_users_with_roles(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
+        if not await self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
             raise ENTITY_NOT_FOUND_ERROR[entity_type]()
-        return self._list_entity_users_with_roles(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
+        return await self._list_entity_users_with_roles(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
 
     @abstractmethod
-    def list_user_teams(self, user_id: UserID, org_id: Optional[OrgID]) -> List[Team]:
+    async def list_user_teams(self, user_id: UserID, org_id: Optional[OrgID]) -> List[Team]:
         raise NotImplementedError
 
     @abstractmethod
-    def list_user_orgs(self, user_id: UserID) -> List[Org]:
+    async def list_user_orgs(self, user_id: UserID) -> List[Org]:
         raise NotImplementedError
 
     @abstractmethod
-    def list_user_entity_permissions(
+    async def list_user_entity_permissions(
         self, user_id: UserID, entity_type: EntityType, entity_id: EntityID
     ) -> Set[Permission]:
         raise NotImplementedError
 
     @abstractmethod
-    def list_user_entity_roles(
+    async def list_user_entity_roles(
         self, user_id: UserID, entity_type: EntityType, entity_id: EntityID
     ) -> List[Tuple[EntityType, EntityID, Role]]:
         raise NotImplementedError
 
     @abstractmethod
-    def list_roles(self, entity_type: Optional[EntityType]) -> List[Role]:
+    async def list_roles(self, entity_type: Optional[EntityType]) -> List[Role]:
         raise NotImplementedError
 
 
@@ -696,7 +748,7 @@ class ProjectManager:
         self.data: DataStorage = data
         self.auth: AuthManager = auth
 
-    def create_project(
+    async def create_project(
         self,
         name: str,
         user_id: UserID,
@@ -705,7 +757,7 @@ class ProjectManager:
     ) -> Project:
         from evidently.ui.dashboards import DashboardConfig
 
-        project = self.add_project(
+        project = await self.add_project(
             Project(
                 name=name,
                 description=description,
@@ -717,117 +769,131 @@ class ProjectManager:
         )
         return project
 
-    def add_project(self, project: Project, user_id: UserID, team_id: TeamID) -> Project:
-        user = self.auth.get_or_default_user(user_id)
-        team = self.auth.get_team_or_error(team_id)
-        if not self.auth.check_entity_permission(user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT):
+    async def add_project(self, project: Project, user_id: UserID, team_id: TeamID) -> Project:
+        user = await self.auth.get_or_default_user(user_id)
+        team = await self.auth.get_team_or_error(team_id)
+        if not await self.auth.check_entity_permission(
+            user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
+        ):
             raise NotEnoughPermissions()
         project.team_id = team_id if team_id != ZERO_UUID else None
         project.created_at = project.created_at or datetime.datetime.now()
-        project = self.metadata.add_project(project, user, team).bind(self, user.id)
-        self.auth.grant_entity_role(
+        project = (await self.metadata.add_project(project, user, team)).bind(self, user.id)
+        await self.auth.grant_entity_role(
             user.id,
             EntityType.Project,
             project.id,
             user.id,
-            self.auth.get_default_role(DefaultRole.OWNER, EntityType.Project),
+            await self.auth.get_default_role(DefaultRole.OWNER, EntityType.Project),
             skip_permission_check=True,
         )
         return project
 
-    def update_project(self, user_id: UserID, project: Project):
-        user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(user.id, EntityType.Project, project.id, Permission.PROJECT_WRITE):
+    async def update_project(self, user_id: UserID, project: Project):
+        user = await self.auth.get_or_default_user(user_id)
+        if not await self.auth.check_entity_permission(
+            user.id, EntityType.Project, project.id, Permission.PROJECT_WRITE
+        ):
             raise ProjectNotFound()
-        return self.metadata.update_project(project)
+        return await self.metadata.update_project(project)
 
-    def get_project(self, user_id: UserID, project_id: ProjectID) -> Optional[Project]:
-        user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(user.id, EntityType.Project, project_id, Permission.PROJECT_READ):
+    async def get_project(self, user_id: UserID, project_id: ProjectID) -> Optional[Project]:
+        user = await self.auth.get_or_default_user(user_id)
+        if not await self.auth.check_entity_permission(
+            user.id, EntityType.Project, project_id, Permission.PROJECT_READ
+        ):
             raise ProjectNotFound()
-        project = self.metadata.get_project(project_id)
+        project = await self.metadata.get_project(project_id)
         if project is None:
             return None
         return project.bind(self, user.id)
 
-    def delete_project(self, user_id: UserID, project_id: ProjectID):
-        user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(user.id, EntityType.Project, project_id, Permission.PROJECT_DELETE):
+    async def delete_project(self, user_id: UserID, project_id: ProjectID):
+        user = await self.auth.get_or_default_user(user_id)
+        if not await self.auth.check_entity_permission(
+            user.id, EntityType.Project, project_id, Permission.PROJECT_DELETE
+        ):
             raise ProjectNotFound()
-        return self.metadata.delete_project(project_id)
+        return await self.metadata.delete_project(project_id)
 
-    def list_projects(self, user_id: UserID, team_id: Optional[TeamID], org_id: Optional[OrgID]) -> List[Project]:
-        user = self.auth.get_or_default_user(user_id)
-        project_ids = self.auth.get_available_project_ids(user.id, team_id, org_id)
-        return [p.bind(self, user.id) for p in self.metadata.list_projects(project_ids)]
+    async def list_projects(self, user_id: UserID, team_id: Optional[TeamID], org_id: Optional[OrgID]) -> List[Project]:
+        user = await self.auth.get_or_default_user(user_id)
+        project_ids = await self.auth.get_available_project_ids(user.id, team_id, org_id)
+        return [p.bind(self, user.id) for p in await self.metadata.list_projects(project_ids)]
 
-    def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot):
-        user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(
+    async def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot):
+        user = await self.auth.get_or_default_user(user_id)
+        if not await self.auth.check_entity_permission(
             user.id, EntityType.Project, project_id, Permission.PROJECT_SNAPSHOT_ADD
         ):
             raise ProjectNotFound()  # todo: better exception
-        blob = self.blob.put_snapshot(project_id, snapshot)
-        self.metadata.add_snapshot(project_id, snapshot, blob)
-        self.data.extract_points(project_id, snapshot)
+        blob = await self.blob.put_snapshot(project_id, snapshot)
+        await self.metadata.add_snapshot(project_id, snapshot, blob)
+        await self.data.extract_points(project_id, snapshot)
 
-    def delete_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID):
-        user = self.auth.get_or_default_user(user_id)
-        if not self.auth.check_entity_permission(
+    async def delete_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID):
+        user = await self.auth.get_or_default_user(user_id)
+        if not await self.auth.check_entity_permission(
             user.id, EntityType.Project, project_id, Permission.PROJECT_SNAPSHOT_DELETE
         ):
             raise ProjectNotFound()  # todo: better exception
         # todo
         # self.data.remove_points(project_id, snapshot_id)
         # self.blob.delete_snapshot(project_id, snapshot_id)
-        self.metadata.delete_snapshot(project_id, snapshot_id)
+        await self.metadata.delete_snapshot(project_id, snapshot_id)
 
-    def search_project(
+    async def search_project(
         self,
         user_id: UserID,
         project_name: str,
         team_id: Optional[TeamID],
         org_id: Optional[OrgID],
     ) -> List[Project]:
-        user = self.auth.get_or_default_user(user_id)
-        project_ids = self.auth.get_available_project_ids(user.id, team_id, org_id)
-        return [p.bind(self, user.id) for p in self.metadata.search_project(project_name, project_ids)]
+        user = await self.auth.get_or_default_user(user_id)
+        project_ids = await self.auth.get_available_project_ids(user.id, team_id, org_id)
+        return [p.bind(self, user.id) for p in await self.metadata.search_project(project_name, project_ids)]
 
-    def list_snapshots(
+    async def list_snapshots(
         self,
         user_id: UserID,
         project_id: ProjectID,
         include_reports: bool = True,
         include_test_suites: bool = True,
     ) -> List[SnapshotMetadata]:
-        if not self.auth.check_entity_permission(user_id, EntityType.Project, project_id, Permission.PROJECT_READ):
+        if not await self.auth.check_entity_permission(
+            user_id, EntityType.Project, project_id, Permission.PROJECT_READ
+        ):
             raise NotEnoughPermissions()
-        snapshots = self.metadata.list_snapshots(project_id, include_reports, include_test_suites)
+        snapshots = await self.metadata.list_snapshots(project_id, include_reports, include_test_suites)
         for s in snapshots:
             s.project.bind(self, user_id)
         return snapshots
 
-    def load_snapshot(
+    async def load_snapshot(
         self,
         user_id: UserID,
         project_id: ProjectID,
         snapshot: Union[SnapshotID, SnapshotMetadata],
     ) -> Snapshot:
         if isinstance(snapshot, SnapshotID):
-            snapshot = self.get_snapshot_metadata(user_id, project_id, snapshot)
+            snapshot = await self.get_snapshot_metadata(user_id, project_id, snapshot)
         with self.blob.open_blob(snapshot.blob.id) as f:
             return parse_obj_as(Snapshot, json.load(f))
 
-    def get_snapshot_metadata(
+    async def get_snapshot_metadata(
         self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID
     ) -> SnapshotMetadata:
-        if not self.auth.check_entity_permission(user_id, EntityType.Project, project_id, Permission.PROJECT_READ):
+        if not await self.auth.check_entity_permission(
+            user_id, EntityType.Project, project_id, Permission.PROJECT_READ
+        ):
             raise NotEnoughPermissions()
-        meta = self.metadata.get_snapshot_metadata(project_id, snapshot_id)
+        meta = await self.metadata.get_snapshot_metadata(project_id, snapshot_id)
         meta.project.bind(self, user_id)
         return meta
 
-    def reload_snapshots(self, user_id: UserID, project_id: ProjectID):
-        if not self.auth.check_entity_permission(user_id, EntityType.Project, project_id, Permission.PROJECT_READ):
+    async def reload_snapshots(self, user_id: UserID, project_id: ProjectID):
+        if not await self.auth.check_entity_permission(
+            user_id, EntityType.Project, project_id, Permission.PROJECT_READ
+        ):
             raise NotEnoughPermissions()
-        self.metadata.reload_snapshots(project_id)
+        await self.metadata.reload_snapshots(project_id)

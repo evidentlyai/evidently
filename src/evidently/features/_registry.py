@@ -53,6 +53,12 @@ register_type_alias(
     GeneratedFeatures, "evidently.features.text_contains_feature.DoesNotContain", "evidently:feature:DoesNotContain"
 )
 register_type_alias(
+    GeneratedFeatures, "evidently.features.text_contains_feature.ItemMatch", "evidently:feature:ItemMatch"
+)
+register_type_alias(
+    GeneratedFeatures, "evidently.features.text_contains_feature.ItemNoMatch", "evidently:feature:ItemNoMatch"
+)
+register_type_alias(
     GeneratedFeatures, "evidently.features.text_length_feature.TextLength", "evidently:feature:TextLength"
 )
 register_type_alias(

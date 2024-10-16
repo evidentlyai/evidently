@@ -41,14 +41,14 @@ class DashboardPanelPlot(DashboardPanel):
     plot_type: PlotType
 
     @assign_panel_id
-    def build(
+    async def build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ):
-        points = data_storage.load_points(project_id, self.filter, self.values, timestamp_start, timestamp_end)
+        points = await data_storage.load_points(project_id, self.filter, self.values, timestamp_start, timestamp_end)
         # list[dict[metric, point]]
         all_metrics: Set[Metric] = set(m for data in points for m in data.keys())
         hover_params = _get_hover_params(all_metrics)
@@ -104,7 +104,7 @@ class DashboardPanelCounter(DashboardPanel):
     text: Optional[str] = None
 
     @assign_panel_id
-    def build(
+    async def build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
@@ -115,7 +115,9 @@ class DashboardPanelCounter(DashboardPanel):
             return counter(counters=[CounterData(self.title, self.text or "")], size=self.size)
         if self.value is None:
             raise ValueError("Counters with agg should have value")
-        points = data_storage.load_points(project_id, self.filter, [self.value], timestamp_start, timestamp_end)[0]
+        points = (
+            await data_storage.load_points(project_id, self.filter, [self.value], timestamp_start, timestamp_end)
+        )[0]
         value = self._get_counter_value(points)
         if int(value) != value:
             ct = CounterData.float(self.text or "", value, 3)
@@ -147,7 +149,7 @@ class DashboardPanelDistribution(DashboardPanel):
     barmode: HistBarMode = HistBarMode.STACK
 
     @assign_panel_id
-    def build(
+    async def build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
@@ -155,15 +157,15 @@ class DashboardPanelDistribution(DashboardPanel):
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
         bins_for_hists: Dict[Metric, List[Tuple[datetime.datetime, Union[HistogramData, Distribution]]]] = (
-            data_storage.load_points_as_type(
+            await data_storage.load_points_as_type(
                 Union[HistogramData, Distribution],  # type: ignore[arg-type]
                 project_id,
                 self.filter,
                 [self.value],
                 timestamp_start,
                 timestamp_end,
-            )[0]
-        )
+            )
+        )[0]
         if len(bins_for_hists) == 0:
             raise ValueError(f"Cannot build hist from {self.value}")
         if len(bins_for_hists) > 1:

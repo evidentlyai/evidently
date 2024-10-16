@@ -98,7 +98,7 @@ class DashboardPanelTestSuite(DashboardPanel):
     time_agg: Optional[str] = None
 
     @assign_panel_id
-    def build(
+    async def build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
@@ -106,7 +106,7 @@ class DashboardPanelTestSuite(DashboardPanel):
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
         self.filter.include_test_suites = True
-        points: TestResultPoints = data_storage.load_test_results(
+        points: TestResultPoints = await data_storage.load_test_results(
             project_id, self.filter, self.test_filters, self.time_agg, timestamp_start, timestamp_end
         )
 
@@ -200,7 +200,7 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
     statuses: List[TestStatus] = [TestStatus.SUCCESS]
 
     @assign_panel_id
-    def build(
+    async def build(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
@@ -208,9 +208,9 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
         if self.agg == CounterAgg.NONE:
-            statuses, postfix = self._build_none(data_storage, project_id, timestamp_start, timestamp_end)
+            statuses, postfix = await self._build_none(data_storage, project_id, timestamp_start, timestamp_end)
         elif self.agg == CounterAgg.LAST:
-            statuses, postfix = self._build_last(data_storage, project_id, timestamp_start, timestamp_end)
+            statuses, postfix = await self._build_last(data_storage, project_id, timestamp_start, timestamp_end)
         else:
             raise ValueError(f"TestSuite Counter does not support agg {self.agg}")
 
@@ -219,14 +219,14 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
         statuses_join = ", ".join(s.value for s in self.statuses)
         return counter(counters=[CounterData(f"{value}/{total} {statuses_join}{postfix}", self.title)], size=self.size)
 
-    def _build_none(
+    async def _build_none(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> Tuple[Counter, str]:
-        points = data_storage.load_test_results(
+        points = await data_storage.load_test_results(
             project_id, self.filter, self.test_filters, None, timestamp_start, timestamp_end
         )
         statuses: typing.Counter[TestStatus] = Counter()
@@ -234,14 +234,14 @@ class DashboardPanelTestSuiteCounter(DashboardPanel):
             statuses.update(v.status for v in values.values())
         return statuses, ""
 
-    def _build_last(
+    async def _build_last(
         self,
         data_storage: "DataStorage",
         project_id: ProjectID,
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> Tuple[Counter, str]:
-        points = data_storage.load_test_results(
+        points = await data_storage.load_test_results(
             project_id, self.filter, self.test_filters, None, timestamp_start, timestamp_end
         )
 
