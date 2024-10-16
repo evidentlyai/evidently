@@ -37,7 +37,7 @@ class ConfigContext(ComponentContext):
     def get_component(self, type_: Type[T]) -> T:
         for cls in self.components_mapping:
             if issubclass(cls, type_):
-                return self.components_mapping[cls]
+                return self.components_mapping[cls]  # type: ignore[return-value]
         raise ValueError(f"Component of type {type_.__name__} not found")
 
     @property
