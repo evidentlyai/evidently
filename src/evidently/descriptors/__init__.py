@@ -4,6 +4,7 @@ from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
+from .json_schema_match_descriptor import JSONSchemaMatch
 from .llm_judges import BiasLLMEval
 from .llm_judges import ContextQualityLLMEval
 from .llm_judges import DeclineLLMEval
@@ -20,6 +21,8 @@ from .sentence_count_descriptor import SentenceCount
 from .sentiment_descriptor import Sentiment
 from .text_contains_descriptor import Contains
 from .text_contains_descriptor import DoesNotContain
+from .text_contains_descriptor import ItemMatch
+from .text_contains_descriptor import ItemNoMatch
 from .text_length_descriptor import TextLength
 from .text_part_descriptor import BeginsWith
 from .text_part_descriptor import EndsWith
@@ -48,6 +51,8 @@ __all__ = [
     "EndsWith",
     "DoesNotContain",
     "IncludesWords",
+    "ItemMatch",
+    "ItemNoMatch",
     "ExcludesWords",
     "TextLength",
     "TriggerWordsPresence",
@@ -57,5 +62,6 @@ __all__ = [
     "Sentiment",
     "RegExp",
     "ContainsLink",
+    "JSONSchemaMatch",
     "_registry",
 ]
