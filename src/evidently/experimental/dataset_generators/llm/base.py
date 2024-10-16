@@ -7,10 +7,7 @@ from evidently.utils.llm.wrapper import LLMWrapper
 from evidently.utils.llm.wrapper import get_llm_wrapper
 
 
-class BaseLLMDatasetGenerator(
-    # fixme WithLLMWrapper,
-    BaseDatasetGenerator
-):
+class BaseLLMDatasetGenerator(BaseDatasetGenerator):
     provider: str
     model: str
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
