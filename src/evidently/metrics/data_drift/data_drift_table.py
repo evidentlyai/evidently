@@ -13,6 +13,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.core import IncludeTags
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import HistogramData
+from evidently.metric_results import ScatterData
 from evidently.metrics.data_drift.base import WithDriftOptions
 from evidently.metrics.data_drift.feature_importance import FeatureImportanceMetric
 from evidently.model.widget import BaseWidgetInfo
@@ -221,9 +222,11 @@ class DataDriftTableRenderer(MetricRenderer):
             data_drift = "Detected" if data.drift_detected else "Not Detected"
             if data.column_type == "num" and data.scatter is not None:
                 if not agg_data:
+                    if not isinstance(data.scatter, ScatterData):
+                        raise ValueError("data.scatter has incompatible type")
                     scatter_fig = plot_scatter_for_data_drift(
-                        curr_y=data.scatter.scatter[data.column_name],
-                        curr_x=data.scatter.scatter[data.scatter.x_name],
+                        curr_y=data.scatter.scatter[data.column_name].tolist(),
+                        curr_x=data.scatter.scatter[data.scatter.x_name].tolist(),
                         y0=data.scatter.plot_shape["y0"],
                         y1=data.scatter.plot_shape["y1"],
                         y_name=data.column_name,
