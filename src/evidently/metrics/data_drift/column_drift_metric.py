@@ -144,12 +144,12 @@ def get_one_column_drift(
                         column.name: current_feature_data.values,
                         "Timestamp": None if datetime_data is None else datetime_data.values,
                     },
-                    index=index_data.values,
+                    index=index_data.values,  # type: ignore[arg-type]
                 ),
                 column.name,
                 datetime_name,
             )
-            current_scatter["current (mean)"] = df
+            current_scatter["current (mean)"] = df  # type: ignore[assignment]
             if prefix is None:
                 x_name = "Index binned"
             else:
@@ -281,7 +281,8 @@ class ColumnDriftMetric(UsesRawDataMixin, ColumnMetric[ColumnDataDriftMetrics]):
             reference_feature_data = data.get_reference_column(self.column_name)
         except ColumnNotFound as ex:
             raise ValueError(f"Cannot find column '{ex.column_name}' in reference dataset")
-
+        if reference_feature_data is None:
+            raise ValueError(f"Cannot find column '{self.column_name.display_name}' in reference dataset")
         column_type = ColumnType.Numerical
         if self.column_name.is_main_dataset():
             column_type = data.data_definition.get_column(self.column_name.name).column_type
@@ -299,7 +300,7 @@ class ColumnDriftMetric(UsesRawDataMixin, ColumnMetric[ColumnDataDriftMetrics]):
             current_feature_data=current_feature_data,
             reference_feature_data=reference_feature_data,
             column=self.column_name,
-            index_data=data.current_data.index,
+            index_data=data.current_data.index.to_series(),
             column_type=column_type,
             datetime_data=data.current_data[datetime_column.column_name] if datetime_column else None,
             data_definition=data.data_definition,
@@ -338,9 +339,11 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         # fig_json = fig.to_plotly_json()
         if result.scatter is not None:
             if obj.get_options().render_options.raw_data:
+                if not isinstance(result.scatter, ScatterField):
+                    raise ValueError("Result have incompatible type")
                 scatter_fig = plot_scatter_for_data_drift(
-                    curr_y=result.scatter.scatter[result.column_name],
-                    curr_x=result.scatter.scatter[result.scatter.x_name],
+                    curr_y=result.scatter.scatter[result.column_name].tolist(),
+                    curr_x=result.scatter.scatter[result.scatter.x_name].tolist(),
                     y0=result.scatter.plot_shape["y0"],
                     y1=result.scatter.plot_shape["y1"],
                     y_name=result.column_name,
