@@ -117,7 +117,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
         curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         ref_predictions = None
         if ref_df is not None:
-            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            ref_predictions = get_prediction_data(ref_df, dataset_columns, data.column_mapping.pos_label)
         if self.columns is None:
             columns = (
                 dataset_columns.num_feature_names
