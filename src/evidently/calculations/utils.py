@@ -42,13 +42,27 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     return result
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False):
+def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna: bool = False):
     result = {}
-    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+    hist_df = (
+        curr.astype(str)
+        .value_counts(  # type: ignore[call-overload]
+            normalize=normalize,
+            dropna=dropna,
+        )
+        .reset_index()
+    )
     hist_df.columns = ["x", "count"]
     result["current"] = hist_df
     if ref is not None:
-        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+        hist_df = (
+            ref.astype(str)
+            .value_counts(  # type: ignore[call-overload]
+                normalize=normalize,
+                dropna=dropna,
+            )
+            .reset_index()
+        )
         hist_df.columns = ["x", "count"]
         result["reference"] = hist_df
     return result
@@ -56,10 +70,10 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
 
 def get_count_values(col1: pd.Series, col2: pd.Series, col1_name: str, col2_name: str):
     df = pd.DataFrame({col2_name: col2, col1_name: col1})
-    df = df.groupby([col2_name, col1_name], observed=False).size()
-    df.name = "count_objects"
-    df = df.reset_index()
-    return df[df["count_objects"] > 0]
+    grouped = df.groupby([col2_name, col1_name], observed=False).size()
+    grouped.name = "count_objects"
+    grouped.reset_index(inplace=True)
+    return grouped[grouped["count_objects"] > 0]
 
 
 def get_data_for_cat_cat_plot(
@@ -124,7 +138,7 @@ def prepare_box_data(
     res = {}
     for df, name in zip(dfs, names):
         data = df.groupby(cat_feature_name, observed=False)[num_feature_name]
-        df_for_plot = data.quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
+        df_for_plot = data.quantile(np.array([0, 0.25, 0.5, 0.75, 1])).reset_index()
         df_for_plot.columns = pd.Index([cat_feature_name, "q", num_feature_name])
         res_df = {}
         values = df_for_plot[cat_feature_name].unique()
@@ -231,11 +245,13 @@ def transform_df_to_time_count_view(
     column_data: pd.Series,
 ):
     df = pd.DataFrame({"period": period_data, datetime_column_name: datetime_data, data_column_name: column_data})
-    df = df.groupby(["period", data_column_name]).size()
-    df.name = "num"
-    df = df.reset_index()
-    df[datetime_column_name] = df["period"].dt.to_timestamp()
-    return df[df["num"] > 0]
+    grouped = df.groupby(["period", data_column_name]).size()
+    if not isinstance(grouped, pd.Series):
+        raise ValueError("grouped has incorrect type")
+    grouped.name = "num"
+    grouped.reset_index(inplace=True)
+    grouped[datetime_column_name] = grouped["period"].dt.to_timestamp()
+    return grouped[grouped["num"] > 0]
 
 
 def prepare_data_for_date_cat(date_curr, date_ref, datetime_name, cat_name, cat_curr, cat_ref):
