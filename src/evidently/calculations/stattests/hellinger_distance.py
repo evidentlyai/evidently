@@ -59,8 +59,8 @@ def _hellinger_distance(
 
     if feature_type == ColumnType.Categorical:
         dd: DefaultDict[int, int] = defaultdict(int)
-        ref = (reference_data.value_counts() / len(reference_data)).to_dict(dd)
-        curr = (current_data.value_counts() / len(current_data)).to_dict(dd)
+        ref = (reference_data.value_counts() / len(reference_data)).to_dict(into=dd)
+        curr = (current_data.value_counts() / len(current_data)).to_dict(into=dd)
 
         hellinger_distance = 0.0
         for key in keys:
@@ -73,8 +73,8 @@ def _hellinger_distance(
 
     else:
         bins = np.histogram_bin_edges(keys, bins="sturges")
-        h1 = np.histogram(reference_data.values, bins=bins, density=True)[0]
-        h2 = np.histogram(current_data.values, bins=bins, density=True)[0]
+        h1 = np.histogram(reference_data.to_numpy(), bins=bins, density=True)[0]
+        h2 = np.histogram(current_data.to_numpy(), bins=bins, density=True)[0]
 
         bin_width = (max(bins) - min(bins)) / (len(bins) - 1)
 
