@@ -115,5 +115,7 @@ register_type_alias(
     FeatureDescriptor,
     "evidently.descriptors.json_match_descriptor.JSONMatch",
     "evidently:descriptor:JSONMatch",
+)
+register_type_alias(
     FeatureDescriptor, "evidently.descriptors.is_valid_json_descriptor.IsValidJSON", "evidently:descriptor:IsValidJSON"
 )
