@@ -684,20 +684,28 @@ def plot_num_num_rel(
 
 
 def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False) -> Histogram:
-    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+    hist_df = (
+        curr.astype(str)
+        .value_counts(normalize=normalize, dropna=dropna)  # type: ignore[call-overload]
+        .reset_index()
+    )
     hist_df.columns = ["x", "count"]
     current = HistogramData.from_df(hist_df)
 
     reference = None
     if ref is not None:
-        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
+        hist_df = (
+            ref.astype(str)
+            .value_counts(normalize=normalize, dropna=dropna)  # type: ignore[call-overload]
+            .reset_index()
+        )
         hist_df.columns = ["x", "count"]
         reference = HistogramData.from_df(hist_df)
     return Histogram(current=current, reference=reference)
 
 
 def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
-    value_counts = column.value_counts(normalize=normalize, dropna=False)
+    value_counts = column.value_counts(normalize=normalize, dropna=False)  # type: ignore[call-overload]
 
     # filter out na values if it amount == 0
     new_values = [(k, v) for k, v in value_counts.items() if (not pd.isna(k) or v > 0)]
@@ -1217,13 +1225,14 @@ def prepare_df_for_time_index_plot(
     if datetime_name is not None:
         if prefix is None and freq is None:
             prefix, freq = choose_agg_period(df[datetime_name], None)
-        plot_df = df.copy()
-        plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
-        plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
-        plot_df["per"] = plot_df["per"].dt.to_timestamp()
-        return plot_df, prefix
-    plot_df = df[column_name].reset_index().sort_values(index_name)
-    plot_df["per"] = pd.cut(plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False)
+        dt_plot_df: pd.DataFrame = df.copy()
+        dt_plot_df["per"] = dt_plot_df[datetime_name].dt.to_period(freq=freq)
+        dt_plot_df = dt_plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
+        dt_plot_df["per"] = dt_plot_df["per"].dt.to_timestamp()
+        return dt_plot_df, prefix
+    plot_df: pd.DataFrame = df[column_name].reset_index().sort_values(index_name)
+    new_bins = OPTIMAL_POINTS if bins is None else bins
+    plot_df["per"] = pd.cut(plot_df[index_name], bins=new_bins, labels=False)  # type: ignore[call-overload]
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
 
