@@ -31,6 +31,8 @@ from .trigger_words_presence_descriptor import TriggerWordsPresence
 from .word_count_descriptor import WordCount
 from .words_descriptor import ExcludesWords
 from .words_descriptor import IncludesWords
+from .words_descriptor import WordMatch
+from .words_descriptor import WordNoMatch
 
 __all__ = [
     "CustomColumnEval",
@@ -63,6 +65,8 @@ __all__ = [
     "Sentiment",
     "ExactMatch",
     "RegExp",
+    "WordMatch",
+    "WordNoMatch",
     "IsValidJSON",
     "JSONSchemaMatch",
     "_registry",
