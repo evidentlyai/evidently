@@ -145,8 +145,9 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         # mape default values
         # optimal constant for mape
         s = data.current_data[target_name]
-        inv_y = 1 / s[s != 0].values
-        w = inv_y / sum(inv_y)
+        # TODO: fix typing
+        inv_y = 1 / s[s != 0].values  # type: ignore[operator]
+        w = inv_y / sum(inv_y)  # type: ignore[operator,arg-type]
         idxs = np.argsort(w)
         sorted_w = w[idxs]
         sorted_w_cumsum = np.cumsum(sorted_w)
@@ -219,7 +220,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         err_curr = data.current_data[prediction_name] - data.current_data[target_name]
         err_ref = None
 
-        if is_ref_data:
+        if data.reference_data is not None:
             err_ref = data.reference_data[prediction_name] - data.reference_data[target_name]
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
