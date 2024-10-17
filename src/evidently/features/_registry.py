@@ -29,6 +29,11 @@ register_type_alias(
 )
 register_type_alias(
     GeneratedFeatures,
+    "evidently.features.is_valid_python_feature.IsValidPython",
+    "evidently:feature:IsValidPython",
+)
+register_type_alias(
+    GeneratedFeatures,
     "evidently.features.json_schema_match_feature.JSONSchemaMatch",
     "evidently:feature:JSONSchemaMatch",
 )
