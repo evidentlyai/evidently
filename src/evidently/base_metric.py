@@ -237,7 +237,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
 
     _context: Optional["Context"] = None
 
-    options: Options = Field(default_factory=Options)
+    options: Optional[Options] = Field(default=None)
 
     fields: ClassVar[FieldsDescriptor] = FieldsDescriptor()
     # resulting options will be determined via
