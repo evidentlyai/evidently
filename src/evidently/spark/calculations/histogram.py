@@ -39,7 +39,7 @@ def get_histogram(
     bin_edges = np.array([min_val + step * i for i in range(nbinsx + 1)])
 
     if density:
-        db = np.array(np.diff(bin_edges), float)
+        db: np.ndarray = np.array(np.diff(bin_edges), float)
 
         return (n / db / n.sum()).tolist(), bin_edges
 
