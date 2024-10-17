@@ -1,4 +1,5 @@
 from . import _registry
+from .contains_link_descriptor import ContainsLink
 from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .exact_match_descriptor import ExactMatch
@@ -63,6 +64,7 @@ __all__ = [
     "Sentiment",
     "ExactMatch",
     "RegExp",
+    "ContainsLink",
     "IsValidJSON",
     "JSONSchemaMatch",
     "_registry",
