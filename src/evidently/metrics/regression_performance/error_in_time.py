@@ -1,3 +1,4 @@
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -9,7 +10,6 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import UsesRawDataMixin
 from evidently.metric_results import ColumnAggScatterResult
-from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -46,8 +46,8 @@ class RegressionErrorPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df.copy(), target_name, prediction_name, datetime_column_name)
             ref_error = ref_df[prediction_name] - ref_df[target_name]
-        current_scatter = {}
-        reference_scatter: Optional[Union[dict, ColumnScatter]] = None
+        current_scatter: Dict[str, Union[pd.Series, pd.DataFrame]] = {}
+        reference_scatter: Optional[Dict[str, Union[pd.Series, pd.DataFrame]]] = None
         raw_data = self.get_options().render_options.raw_data
         if raw_data:
             current_scatter["Predicted - Actual"] = curr_error
@@ -55,13 +55,17 @@ class RegressionErrorPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
                 current_scatter["x"] = curr_df[datetime_column_name]
                 x_name = "Timestamp"
             else:
-                current_scatter["x"] = curr_df.index
+                current_scatter["x"] = curr_df.index.to_series()
                 x_name = "Index"
 
             if ref_df is not None:
+                if ref_error is None:
+                    raise ValueError("ref_error is None but required")
                 reference_scatter = {}
                 reference_scatter["Predicted - Actual"] = ref_error
-                reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
+                reference_scatter["x"] = (
+                    ref_df[datetime_column_name] if datetime_column_name else ref_df.index.to_series()
+                )
 
             return ColumnScatterResult(
                 current=current_scatter,
@@ -96,7 +100,13 @@ class RegressionErrorPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
             x_name_ref=x_name_ref,
         )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df: pd.DataFrame,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ) -> pd.DataFrame:
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(
@@ -105,9 +115,11 @@ class RegressionErrorPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
                 inplace=True,
                 subset=[target_name, prediction_name, datetime_column_name],
             )
-            return result.sort_values(datetime_column_name)
+            result.sort_values(datetime_column_name, inplace=True)
+            return result
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
-        return result.sort_index()
+        result.sort_index(inplace=True)
+        return result
 
 
 @default_renderer(wrap_type=RegressionErrorPlot)
