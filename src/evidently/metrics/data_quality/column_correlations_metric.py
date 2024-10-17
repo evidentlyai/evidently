@@ -110,6 +110,8 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
 
         reference_correlations = None
         if reference_data is not None:
+            if data.reference_data is None:
+                raise ValueError("data.reference_data was not set but part of it available")
             reference_correlations = self._calculate_correlation(
                 self.column_name,
                 reference_data,

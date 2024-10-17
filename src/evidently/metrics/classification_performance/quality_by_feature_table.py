@@ -117,7 +117,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
         curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         ref_predictions = None
         if ref_df is not None:
-            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            ref_predictions = get_prediction_data(ref_df, dataset_columns, data.column_mapping.pos_label)
         if self.columns is None:
             columns = (
                 dataset_columns.num_feature_names
@@ -143,7 +143,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
                 columns.remove(column)
                 columns += list(features.keys())
                 curr_text_df = pd.concat([data.get_current_column(x.as_column()) for x in features.values()], axis=1)
-                curr_text_df.columns = list(features.keys())
+                curr_text_df.columns = pd.Index(list(features.keys()))
                 curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
 
                 if ref_df is not None:
@@ -151,7 +151,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
                         [data.get_reference_column(x.as_column()) for x in features.values()],
                         axis=1,
                     )
-                    ref_text_df.columns = list(features.keys())
+                    ref_text_df.columns = pd.Index(list(features.keys()))
                     ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
 
         table_columns = set(columns + [target_name])

@@ -130,7 +130,13 @@ class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetric
             agg_data=True,
         )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df: pd.DataFrame,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ) -> pd.DataFrame:
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(
@@ -139,9 +145,11 @@ class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetric
                 inplace=True,
                 subset=[target_name, prediction_name, datetime_column_name],
             )
-            return result.sort_values(datetime_column_name)
+            result.sort_values(datetime_column_name, inplace=True)
+            return result
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
-        return result.sort_index()
+        result.sort_index(inplace=True)
+        return result
 
     @staticmethod
     def _get_data_for_scatter(df: pd.DataFrame, target_name: str, prediction_name: str) -> RegressionScatter:
