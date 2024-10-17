@@ -57,13 +57,13 @@ def prepare_df_for_time_index_plot(
             sf.floor(sf.col("_2") / (ptp / (OPTIMAL_POINTS - 1))).alias(PERIOD_COL),
         )
     )
-    plot_df = (
+    plot_df_pandas = (
         plot_df.groupby(PERIOD_COL)
         .agg(sf.mean(column_name).alias("mean"), sf.stddev(column_name).alias("std"))
         .toPandas()
         .sort_values(PERIOD_COL)  # type: ignore[attr-defined]
     )
-    return plot_df, None
+    return plot_df_pandas, None
 
 
 def choose_agg_period(
