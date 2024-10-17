@@ -88,3 +88,9 @@ register_type_alias(
 register_type_alias(
     GeneratedFeatures, "evidently.features.is_valid_sql_feature.IsValidSQL", "evidently:feature:IsValidSQL"
 )
+register_type_alias(
+    GeneratedFeatures, "evidently.features.exact_match_feature.ExactMatchFeature", "evidently:feature:ExactMatchFeature"
+)
+register_type_alias(
+    GeneratedFeatures, "evidently.features.is_valid_json_feature.IsValidJSON", "evidently:feature:IsValidJSON"
+)
