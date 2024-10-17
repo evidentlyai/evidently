@@ -112,6 +112,9 @@ register_type_alias(
     "evidently:descriptor:CustomPairColumnEval",
 )
 register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.is_valid_sql_descriptor.IsValidSQL", "evidently:descriptor:IsValidSQL"
+)
+register_type_alias(
     FeatureDescriptor, "evidently.descriptors.exact_match_descriptor.ExactMatch", "evidently:descriptor:ExactMatch"
 )
 register_type_alias(
