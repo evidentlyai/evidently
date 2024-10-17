@@ -9,14 +9,17 @@ from typing import Union
 import pandas as pd
 import pytest
 
+from evidently.descriptors import NegativityLLMEval
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.features.llm_judge import LLMJudge
 from evidently.features.llm_judge import LLMMessage
-from evidently.features.llm_judge import LLMResponseParseError
 from evidently.features.llm_judge import LLMWrapper
-from evidently.features.llm_judge import llm_provider
+from evidently.metric_preset import TextEvals
 from evidently.options.base import Options
+from evidently.report import Report
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.llm.errors import LLMResponseParseError
+from evidently.utils.llm.wrapper import llm_provider
 
 
 def _LLMPromptTemplate(
@@ -74,14 +77,15 @@ def _LLMPromptTemplate(
     ],
 )
 def test_parse_response(
-    template: _LLMPromptTemplate, results: Dict[str, Union[LLMResponseParseError, Dict[str, Union[str, float]]]]
+    template: BinaryClassificationPromptTemplate,
+    results: Dict[str, Union[LLMResponseParseError, Dict[str, Union[str, float]]]],
 ):
     for response, expected_result in results.items():
         if isinstance(expected_result, LLMResponseParseError):
             with pytest.raises(expected_result.__class__):
-                template.parse_response(response)
+                template.parse(response)
         else:
-            assert template.parse_response(response) == expected_result
+            assert template.parse(response) == expected_result
 
 
 @llm_provider("mock", None)
@@ -89,12 +93,13 @@ class MockLLMWrapper(LLMWrapper):
     def __init__(self, model: str, options: Options):
         self.model = model
 
-    def complete(self, messages: List[LLMMessage]) -> str:
-        text = messages[-1][1]
+    async def complete(self, messages: List[LLMMessage]) -> str:
+        text = messages[-1].content
         cat = re.findall("___text_starts_here___\n(.*)\n___text_ends_here___", text)[0][0]
         return json.dumps({"category": cat})
 
 
+@pytest.mark.asyncio
 def test_llm_judge():
     llm_judge = LLMJudge(
         input_column="text",
@@ -110,6 +115,7 @@ def test_llm_judge():
     pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
 
 
+@pytest.mark.asyncio
 def test_multicol_llm_judge():
     llm_judge = LLMJudge(
         input_columns={"text": "input", "text2": "input2"},
@@ -123,3 +129,41 @@ def test_multicol_llm_judge():
     dd = DataDefinition(columns={}, reference_present=False)
     fts = llm_judge.generate_features(data, dd, Options())
     pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
+
+
+def test_run_snapshot_with_llm_judge():
+    data = pd.DataFrame({"text": ["A", "B"], "text2": ["C", "D"]})
+    neg_eval = NegativityLLMEval(
+        input_columns={"text": "input", "text2": "input2"},
+        provider="mock",
+        model="",
+        template=BinaryClassificationPromptTemplate(target_category="A", non_target_category="B"),
+    )
+    report = Report(metrics=[TextEvals("text", descriptors=[neg_eval])])
+
+    report.run(current_data=data, reference_data=None)
+    report._inner_suite.raise_for_error()
+    assert report.as_dict() == {
+        "metrics": [
+            {
+                "metric": "ColumnSummaryMetric",
+                "result": {
+                    "column_name": "Negativity category",
+                    "column_type": "cat",
+                    "current_characteristics": {
+                        "count": 2,
+                        "missing": 0,
+                        "missing_percentage": 0.0,
+                        "most_common": "A",
+                        "most_common_percentage": 50.0,
+                        "new_in_current_values_count": None,
+                        "number_of_rows": 2,
+                        "unique": 2,
+                        "unique_percentage": 100.0,
+                        "unused_in_current_values_count": None,
+                    },
+                    "reference_characteristics": None,
+                },
+            }
+        ]
+    }

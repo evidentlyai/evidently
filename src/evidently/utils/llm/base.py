@@ -3,7 +3,7 @@ from typing import Any
 from typing import Dict
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(unsafe_hash=True, frozen=True)
 class LLMMessage:
     role: str
     content: str
