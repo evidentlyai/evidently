@@ -540,9 +540,12 @@ class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
             oov = data.get_current_column(generated_text_features["oov"].as_column())
             non_letter_char = data.get_current_column(generated_text_features["non_letter_char"].as_column())
         else:
-            text_length = data.get_reference_column(generated_text_features["text_length"].as_column())
-            oov = data.get_reference_column(generated_text_features["oov"].as_column())
-            non_letter_char = data.get_reference_column(generated_text_features["non_letter_char"].as_column())
+            text_length_ref = data.get_reference_column(generated_text_features["text_length"].as_column())
+            oov_ref = data.get_reference_column(generated_text_features["oov"].as_column())
+            non_letter_char_ref = data.get_reference_column(generated_text_features["non_letter_char"].as_column())
+            if text_length_ref is None or oov_ref is None or non_letter_char_ref is None:
+                raise ValueError("Reference required but not present in data")
+            (text_length, oov, non_letter_char) = (text_length_ref, oov_ref, non_letter_char_ref)
 
         return TextCharacteristics(
             number_of_rows=number_of_rows,
