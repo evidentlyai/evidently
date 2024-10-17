@@ -23,11 +23,11 @@ from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Snapshot
-from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards import CounterAgg
 from evidently.ui.dashboards import DashboardPanelCounter
 from evidently.ui.dashboards import ReportFilter
 from evidently.ui.dashboards.base import DashboardPanel
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.utils import NumpyEncoder
