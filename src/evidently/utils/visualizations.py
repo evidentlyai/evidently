@@ -579,7 +579,11 @@ def make_hist_for_num_plot(curr: pd.Series, ref: Optional[pd.Series] = None, cal
 
 
 def plot_cat_cat_rel(
-    curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str, color_options: ColorOptions
+    curr: pd.DataFrame,
+    ref: Optional[pd.DataFrame],
+    target_name: str,
+    feature_name: str,
+    color_options: ColorOptions,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
