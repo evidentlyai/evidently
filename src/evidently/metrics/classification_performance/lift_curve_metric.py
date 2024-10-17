@@ -1,3 +1,5 @@
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -9,6 +11,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_lift_table
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.core import IncludeTags
+from evidently.metric_results import Label
 from evidently.metric_results import LiftCurve
 from evidently.metric_results import LiftCurveData
 from evidently.metric_results import PredictionData
@@ -62,9 +65,9 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
         labels = prediction.labels
         if prediction.prediction_probas is None:
             raise ValueError("Lift Curve can be calculated only " "on binary probabilistic predictions")
-        binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
-        lift_curve = {}
-        lift_table = {}
+        binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
+        lift_curve: LiftCurve = {}
+        lift_table: Dict[Label, Any] = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
@@ -90,7 +93,6 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                 max_lift=[i[9] for i in lift_table[prediction.prediction_probas.columns[0]]],
                 relative_lift=[i[10] for i in lift_table[prediction.prediction_probas.columns[0]]],
                 percent=[i[11] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                # percent = lift_table[prediction.prediction_probas.columns[0]][0][11],
             )
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
@@ -106,7 +108,6 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                 lift_table[label] = calculate_lift_table(binded)
 
             for label in labels:
-                # lift_curve[int(prediction.prediction_probas.columns[0])] = LiftCurveData(
                 lift_curve[label] = LiftCurveData(
                     lift=[i[8] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     top=[i[0] for i in lift_table[prediction.prediction_probas.columns[0]]],
@@ -120,7 +121,6 @@ class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
                     max_lift=[i[9] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     relative_lift=[i[10] for i in lift_table[prediction.prediction_probas.columns[0]]],
                     percent=[i[11] for i in lift_table[prediction.prediction_probas.columns[0]]],
-                    # percent = lift_table[prediction.prediction_probas.columns[0]][0][11],
                 )
         return lift_curve
 
