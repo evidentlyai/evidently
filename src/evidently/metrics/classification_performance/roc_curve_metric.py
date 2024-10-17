@@ -60,8 +60,8 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         labels = prediction.labels
         if prediction.prediction_probas is None:
             raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
-        binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
-        roc_curve = {}
+        binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
+        roc_curve: ROCCurve = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
