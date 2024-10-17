@@ -1,6 +1,7 @@
 from . import _registry
 from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
+from .exact_match_descriptor import ExactMatch
 from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
 from .is_valid_json_descriptor import IsValidJSON
@@ -61,6 +62,7 @@ __all__ = [
     "SemanticSimilarity",
     "SentenceCount",
     "Sentiment",
+    "ExactMatch",
     "RegExp",
     "IsValidJSON",
     "JSONSchemaMatch",
