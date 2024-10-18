@@ -143,12 +143,14 @@ class GenericInputData(Generic[TEngineDataType]):
 
 class InputData(GenericInputData[pd.DataFrame]):
     @staticmethod
-    def _get_by_column_name(dataset: pd.DataFrame, additional: pd.DataFrame, column: ColumnName) -> pd.Series:
+    def _get_by_column_name(dataset: pd.DataFrame, additional: Optional[pd.DataFrame], column: ColumnName) -> pd.Series:
         if column.dataset == DatasetType.MAIN:
             if column.name not in dataset.columns:
                 raise ColumnNotFound(column.name)
             return dataset[column.name]
         if column.dataset == DatasetType.ADDITIONAL:
+            if additional is None:
+                raise ValueError("no additional dataset is provided, but field requested")
             return additional[column.name]
         raise ValueError("unknown column data")
 
@@ -220,8 +222,11 @@ class FieldsDescriptor:
 
 
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
+    @classmethod
     def result_type(cls) -> Type[MetricResult]:
-        return typing_inspect.get_args(next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b)))[0]
+        return typing_inspect.get_args(
+            next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b))  # type: ignore[attr-defined]
+        )[0]
 
 
 class BasePreset(EvidentlyBaseModel):
