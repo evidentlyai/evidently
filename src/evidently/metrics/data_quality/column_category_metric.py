@@ -50,7 +50,7 @@ class ColumnCategoryMetricResult(MetricResult):
         }
         smart_union = True
 
-    def __init__(self, **data):
+    def __init__(self, **data) -> None:
         """for backward compatibility"""
         if "counts_of_values" in data:
             counts_of_values: Dict[str, pd.DataFrame] = data.pop("counts_of_values")
