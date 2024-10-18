@@ -28,6 +28,7 @@ from typing import get_args
 from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
+from evidently._pydantic_compat import BaseConfig
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import ModelMetaclass
@@ -189,7 +190,7 @@ def is_not_abstract(cls):
 
 
 class PolymorphicModel(BaseModel):
-    class Config(BaseModel.Config):
+    class Config(BaseConfig):
         # value to put into "type" field
         type_alias: ClassVar[Optional[str]] = None
         # flag to mark alias required. If not required, classpath is used by default
@@ -200,7 +201,7 @@ class PolymorphicModel(BaseModel):
         # flag to mark type as base. This means it will be possible to parse all subclasses of it as this type
         is_base_type: ClassVar[bool] = False
 
-    __config__: ClassVar[Config]
+    __config__: ClassVar[Type[Config]] = Config
 
     @classmethod
     def __get_type__(cls):
@@ -272,7 +273,7 @@ class PolymorphicModel(BaseModel):
                     subcls = import_string(classpath)
                 except ImportError as e:
                     raise ValueError(f"Error importing subclass from '{classpath}'") from e
-            return subcls.validate(value)
+            return subcls.validate(value)  # type: ignore[return-value]
         return super().validate(value)  # type: ignore[misc]
 
 
