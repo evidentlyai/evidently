@@ -63,14 +63,13 @@ class WordsPresence(ApplyColumnGeneratedFeature):
         lemmatize: bool = True,
         display_name: Optional[str] = None,
     ):
-        self.column_name = column_name
         self.words_list = words_list
         if mode not in ["includes_any", "includes_all", "excludes_any", "excludes_all"]:
             raise ValueError("mode must be either 'includes_any', 'includes_all', 'excludes_any' or 'excludes_all'")
         self.mode = mode
         self.lemmatize = lemmatize
         self.display_name = display_name
-        super().__init__()
+        super().__init__(column_name=column_name)
 
     @property
     def lem(self):
