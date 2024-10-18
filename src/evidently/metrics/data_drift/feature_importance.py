@@ -72,9 +72,9 @@ def get_feature_importance_from_samples(
 
     for col in [x.column_name for x in cat_cols]:
         enc = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
-        curr_sampled_data[col] = enc.fit_transform(curr_sampled_data[col].astype(str).values.reshape(-1, 1))
+        curr_sampled_data[col] = enc.fit_transform(curr_sampled_data[col].astype(str).to_numpy().reshape(-1, 1))
         if ref_sampled_data is not None:
-            ref_sampled_data[col] = enc.fit_transform(ref_sampled_data[col].astype(str).values.reshape(-1, 1))
+            ref_sampled_data[col] = enc.fit_transform(ref_sampled_data[col].astype(str).to_numpy().reshape(-1, 1))
 
     task = data_definition.task
     target_column = data_definition.get_target_column()
