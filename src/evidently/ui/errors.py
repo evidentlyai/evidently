@@ -12,6 +12,8 @@ class EntityNotFound(EvidentlyServiceError):
     entity_name: str = ""
 
     def to_response(self) -> Response:
+        e = self
+        print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         return Response(
             status_code=404,
             content={"detail": f"{self.entity_name} not found"},
