@@ -146,7 +146,7 @@ def _error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuant
 
 
 def _stable_value_counts(series: pd.Series):
-    return series.value_counts().reindex(pd.unique(series))
+    return series.value_counts().reindex(pd.unique(series.to_numpy()))
 
 
 def _error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
