@@ -2,6 +2,7 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -56,7 +57,13 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
 
         return RegressionErrorDistributionResults(current_bins=current_bins, reference_bins=reference_bins)
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df: pd.DataFrame,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ) -> pd.DataFrame:
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(
@@ -65,9 +72,11 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
                 inplace=True,
                 subset=[target_name, prediction_name, datetime_column_name],
             )
-            return result.sort_values(datetime_column_name)
+            result.sort_values(datetime_column_name, inplace=True)
+            return result
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
-        return result.sort_index()
+        result.sort_index(inplace=True)
+        return result
 
 
 @default_renderer(wrap_type=RegressionErrorDistribution)

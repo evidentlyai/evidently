@@ -225,7 +225,7 @@ def get_prediction_data(
     return PredictionData(
         predictions=data[prediction],
         prediction_probas=None,
-        labels=data[prediction].unique().tolist(),
+        labels=data[prediction].unique().tolist(),  # type: ignore[operator]
     )
 
 
@@ -376,7 +376,7 @@ def calculate_metrics(
         f1 = metrics.f1_score(target, prediction.predictions, average="macro")
     if prediction.prediction_probas is not None:
         binaraized_target = (
-            target.astype(str).values.reshape(-1, 1) == list(prediction.prediction_probas.columns.astype(str))
+            target.astype(str).to_numpy().reshape(-1, 1) == list(prediction.prediction_probas.columns.astype(str))
         ).astype(int)
         prediction_probas_array = prediction.prediction_probas.to_numpy()
         roc_auc = metrics.roc_auc_score(binaraized_target, prediction_probas_array, average="macro")

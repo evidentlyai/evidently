@@ -58,8 +58,8 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
         labels = prediction.labels
         if prediction.prediction_probas is None:
             raise ValueError("PR Curve can be calculated only on binary probabilistic predictions")
-        binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
-        pr_curve = {}
+        binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
+        pr_curve: PRCurve = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]

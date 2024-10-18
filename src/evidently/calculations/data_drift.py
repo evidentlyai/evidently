@@ -210,7 +210,7 @@ def get_one_column_drift(
                 current_scatter["Timestamp"] = current_data[datetime_column_name]
                 x_name = "Timestamp"
             else:
-                current_scatter["Index"] = current_data.index
+                current_scatter["Index"] = current_data.index.to_series()
                 x_name = "Index"
         else:
             current_scatter = {}
@@ -225,7 +225,8 @@ def get_one_column_drift(
                 column_name,
                 datetime_column_name,
             )
-            current_scatter["current (mean)"] = df
+            # TODO: assignment DataFrame to Series
+            current_scatter["current (mean)"] = df  # type: ignore[assignment]
             if prefix is None:
                 x_name = "Index binned"
             else:
@@ -295,8 +296,13 @@ def get_one_column_drift(
             if len(new_values) > 0:
                 raise ValueError(f"Values {new_values} not presented in 'target_names'")
             else:
-                current_column = current_column.map(dataset_columns.target_names)
-                reference_column = reference_column.map(dataset_columns.target_names)
+                target_names_mapping = (
+                    dataset_columns.target_names
+                    if isinstance(dataset_columns.target_names, dict)
+                    else {idx: value for (idx, value) in enumerate(dataset_columns.target_names)}
+                )
+                current_column = current_column.map(target_names_mapping)
+                reference_column = reference_column.map(target_names_mapping)
         current_distribution, reference_distribution = get_distribution_for_column(
             column_type=column_type.value,
             current=current_column,

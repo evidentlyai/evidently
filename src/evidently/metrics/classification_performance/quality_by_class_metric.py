@@ -90,7 +90,9 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
 
         current_roc_aucs = None
         if prediction.prediction_probas is not None:
-            binaraized_target = (target.values.reshape(-1, 1) == list(prediction.prediction_probas.columns)).astype(int)
+            binaraized_target = (target.to_numpy().reshape(-1, 1) == list(prediction.prediction_probas.columns)).astype(
+                int
+            )
             current_roc_aucs = sklearn.metrics.roc_auc_score(
                 binaraized_target, prediction.prediction_probas, average=None
             ).tolist()
@@ -108,7 +110,7 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
             ).classes
             if ref_prediction.prediction_probas is not None:
                 binaraized_target = (
-                    ref_target.values.reshape(-1, 1) == list(ref_prediction.prediction_probas.columns)
+                    ref_target.to_numpy().reshape(-1, 1) == list(ref_prediction.prediction_probas.columns)
                 ).astype(int)
                 reference_roc_aucs = sklearn.metrics.roc_auc_score(
                     binaraized_target, ref_prediction.prediction_probas, average=None

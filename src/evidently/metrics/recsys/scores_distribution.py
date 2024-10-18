@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import pandas as pd
 from scipy.special import softmax
@@ -57,11 +58,16 @@ class ScoreDistribution(Metric[ScoreDistributionResult]):
         self.k = k
         super().__init__(options=options)
 
-    def get_distr(self, df, user_id, prediction_name):
+    def get_distr(
+        self,
+        df: pd.DataFrame,
+        user_id: Optional[str],
+        prediction_name: str,
+    ) -> Tuple[Distribution, Optional[Distribution], float]:
         df["rank"] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
         top_k = df.loc[df["rank"] <= self.k, prediction_name]
         if self.k == df["rank"].max:
-            other: pd.Series = None
+            other: Optional[pd.Series] = None
         else:
             other = df.loc[df["rank"] > self.k, prediction_name]
         top_k_distr, other_distr = get_distribution_for_column(column_type="num", current=top_k, reference=other)

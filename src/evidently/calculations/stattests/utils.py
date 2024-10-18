@@ -100,17 +100,16 @@ def generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data
     if len(unique_categories) != 2:
         unique_categories.add("placeholder")
 
-    unique_categories = list(unique_categories)  # type: ignore
-    unique_categories = dict(zip(unique_categories, [0, 1]))  # type: ignore
+    unique_categories_mapping = dict(zip(list(unique_categories), [0, 1]))
 
-    reference_data = reference_data.map(unique_categories).values
-    current_data = current_data.map(unique_categories).values
+    ref_data = reference_data.map(unique_categories_mapping).to_numpy()
+    curr_data = current_data.map(unique_categories_mapping).to_numpy()
 
-    zero_ref = reference_data.size - np.count_nonzero(reference_data)
-    one_ref = np.count_nonzero(reference_data)
+    zero_ref = ref_data.size - np.count_nonzero(ref_data)
+    one_ref = np.count_nonzero(ref_data)
 
-    zero_cur = current_data.size - np.count_nonzero(current_data)
-    one_cur = np.count_nonzero(current_data)
+    zero_cur = curr_data.size - np.count_nonzero(curr_data)
+    one_cur = np.count_nonzero(curr_data)
 
     contingency_table = np.array([[one_cur, zero_cur], [one_ref, zero_ref]])
 

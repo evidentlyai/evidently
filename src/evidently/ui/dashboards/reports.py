@@ -156,7 +156,7 @@ class DashboardPanelDistribution(DashboardPanel):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
-        bins_for_hists: Dict[Metric, List[Tuple[datetime.datetime, Union[HistogramData, Distribution]]]] = (
+        bins_for_hists: Dict[Metric, List[Tuple[datetime.datetime, Union[HistogramData, Distribution]]]] = (  # type: ignore[assignment]
             await data_storage.load_points_as_type(
                 Union[HistogramData, Distribution],  # type: ignore[arg-type]
                 project_id,

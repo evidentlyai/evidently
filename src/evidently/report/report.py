@@ -6,6 +6,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import Union
 
@@ -217,7 +218,7 @@ class Report(ReportBase):
             raise ValueError(f"Metric group {group} not found in this report")
         return result[group]
 
-    def _build_dashboard_info(self):
+    def _build_dashboard_info(self) -> Tuple[str, DashboardInfo, Dict[str, dict]]:
         metrics_results: List[BaseWidgetInfo] = []
         additional_graphs = []
 
@@ -237,7 +238,6 @@ class Report(ReportBase):
                 for additional_graph in info_item.get_additional_graphs():
                     if isinstance(additional_graph, AdditionalGraphInfo):
                         additional_graphs.append(DetailsInfo("", additional_graph.params, additional_graph.id))
-
                     else:
                         additional_graphs.append(DetailsInfo("", additional_graph, additional_graph.id))
 

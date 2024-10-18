@@ -53,8 +53,8 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
     for name in prediction_names:
         df_name = df.copy()
         df_name[target_name] = (df_name[target_name] == name).astype(int)
-        df_for_plot = df_name.groupby(target_name)[name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
-        df_for_plot.columns = [target_name, "q", name]
+        df_for_plot = df_name.groupby(target_name)[name].quantile(np.array([0, 0.25, 0.5, 0.75, 1])).reset_index()
+        df_for_plot.columns = pd.Index([target_name, "q", name])
         res_df = pd.DataFrame()
         values = df_for_plot[target_name].unique()
 
@@ -108,9 +108,9 @@ class ClassificationClassSeparationPlot(UsesRawDataMixin, Metric[ClassificationC
                 reference=column_scatter_from_df(reference_plot, True),
                 target_name=target_name,
             )
-        current_plot = prepare_box_data(current_plot, target_name, prediction_names)
+        current_plot = prepare_box_data(current_plot, target_name, prediction_names.tolist())
         if reference_plot is not None:
-            reference_plot = prepare_box_data(reference_plot, target_name, prediction_names)
+            reference_plot = prepare_box_data(reference_plot, target_name, prediction_names.tolist())
         return ClassificationClassSeparationPlotResults(
             current=current_plot,
             reference=reference_plot,

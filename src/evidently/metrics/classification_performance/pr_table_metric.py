@@ -74,12 +74,12 @@ class ClassificationPRTable(Metric[ClassificationPRTableResults]):
             reference=ref_pr_table,
         )
 
-    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData):
+    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData) -> PRTable:
         labels = prediction.labels
         if prediction.prediction_probas is None:
             raise ValueError("PR Table can be calculated only on binary probabilistic predictions")
-        binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
-        pr_table = {}
+        binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
+        pr_table: PRTable = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
