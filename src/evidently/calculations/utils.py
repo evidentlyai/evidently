@@ -72,7 +72,7 @@ def get_count_values(col1: pd.Series, col2: pd.Series, col1_name: str, col2_name
     df = pd.DataFrame({col2_name: col2, col1_name: col1})
     grouped = df.groupby([col2_name, col1_name], observed=False).size()
     grouped.name = "count_objects"
-    grouped.reset_index(inplace=True)
+    grouped = grouped.reset_index()
     return grouped[grouped["count_objects"] > 0]
 
 
@@ -249,7 +249,7 @@ def transform_df_to_time_count_view(
     if not isinstance(grouped, pd.Series):
         raise ValueError("grouped has incorrect type")
     grouped.name = "num"
-    grouped.reset_index(inplace=True)
+    grouped = grouped.reset_index()
     grouped[datetime_column_name] = grouped["period"].dt.to_timestamp()
     return grouped[grouped["num"] > 0]
 

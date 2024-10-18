@@ -222,7 +222,6 @@ class FieldsDescriptor:
 
 
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
-    @classmethod
     def result_type(cls) -> Type[MetricResult]:
         return typing_inspect.get_args(
             next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b))  # type: ignore[attr-defined]

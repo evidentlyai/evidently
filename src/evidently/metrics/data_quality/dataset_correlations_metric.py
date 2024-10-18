@@ -158,7 +158,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         abs_max_target_features_correlation: Optional[pd.Series]
         if target_name is not None and target_name in correlation_matrix:
             cols = [target_name] + columns_corr
-            abs_max_target_features_correlation = correlation_matrix.loc[cols].abs().max()
+            abs_max_target_features_correlation = correlation_matrix.loc[cols].abs().max().max()
 
             if pd.isnull(abs_max_target_features_correlation):
                 abs_max_target_features_correlation = None
@@ -169,7 +169,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         abs_max_prediction_features_correlation: Optional[pd.Series]
         if prediction_name is not None and prediction_name in correlation_matrix:
             cols = [prediction_name] + columns_corr
-            abs_max_prediction_features_correlation = correlation_matrix.loc[cols].abs().max()
+            abs_max_prediction_features_correlation = correlation_matrix.loc[cols].abs().max().max()
 
             if pd.isnull(abs_max_prediction_features_correlation):
                 abs_max_prediction_features_correlation = None
