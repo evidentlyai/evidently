@@ -221,10 +221,12 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         current_data = result.current.plot_data
         # todo: better typing
         assert current_data is not None
-        reference_data = result.reference.plot_data if result.reference is not None else None
+        if result.reference is None:
+            raise ValueError("reference is not set but required")
+        reference_data = result.reference.plot_data
         target_name = result.target_name
         curr_predictions = result.current.predictions
-        ref_predictions = result.reference.predictions if result.reference is not None else None
+        ref_predictions = result.reference.predictions
         columns = result.columns
         task = result.task
         if curr_predictions is not None and ref_predictions is not None:
