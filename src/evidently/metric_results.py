@@ -236,9 +236,9 @@ def df_from_column_scatter(value: ColumnScatter) -> pd.DataFrame:
 def column_scatter_from_df(df: Optional[pd.DataFrame], with_index: bool) -> Optional[ColumnScatter]:
     if df is None:
         return None
-    data = {column: df[column] for column in df.columns}
+    data: ColumnScatter = {column: df[column] for column in df.columns}
     if with_index:
-        data["index"] = df.index
+        data["index"] = df.index.to_series()
     return data
 
 
@@ -291,8 +291,9 @@ class ColumnAggScatterResult(ColumnScatterResult):
         type_alias = "evidently:metric_result:ColumnAggScatterResult"
         field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
-    current: ColumnAggScatter
-    reference: Optional[ColumnAggScatter]
+    # TODO: fix type collision with super type
+    current: ColumnAggScatter  # type: ignore[assignment]
+    reference: Optional[ColumnAggScatter]  # type: ignore[assignment]
 
 
 PlotData = List[float]
