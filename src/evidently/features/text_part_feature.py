@@ -35,12 +35,12 @@ class BeginsWith(GeneratedFeature):
         return f"{self.column_name}.{self.prefix}.{self.case_sensitive}"
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        data = data[self.column_name]
+        column_data = data[self.column_name]
         substr = self.prefix
         if not self.case_sensitive:
-            data = data.str.casefold()
+            column_data = column_data.str.casefold()
             substr = substr.casefold()
-        calculated = data.str.startswith(substr)
+        calculated = column_data.str.startswith(substr)
         return pd.DataFrame({self._feature_column_name(): calculated})
 
     def _as_column(self) -> ColumnName:
@@ -76,12 +76,12 @@ class EndsWith(GeneratedFeature):
         return f"{self.column_name}.{self.suffix}.{self.case_sensitive}"
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        data = data[self.column_name]
+        column_data = data[self.column_name]
         substr = self.suffix
         if not self.case_sensitive:
-            data = data.str.casefold()
+            column_data = column_data.str.casefold()
             substr = substr.casefold()
-        calculated = data.str.endswith(substr)
+        calculated = column_data.str.endswith(substr)
         return pd.DataFrame({self._feature_column_name(): calculated})
 
     def _as_column(self) -> ColumnName:
