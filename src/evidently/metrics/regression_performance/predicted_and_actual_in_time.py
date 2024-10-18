@@ -52,28 +52,35 @@ class RegressionPredictedVsActualPlot(UsesRawDataMixin, Metric[ColumnScatterResu
                 current_scatter["x"] = curr_df[datetime_column_name]
                 x_name = "Timestamp"
             else:
-                current_scatter["x"] = curr_df.index
+                current_scatter["x"] = curr_df.index.to_series()
                 x_name = "Index"
             if ref_df is not None:
                 reference_scatter = {}
                 reference_scatter["Predicted"] = ref_df[prediction_name]
                 reference_scatter["Actual"] = ref_df[target_name]
-                reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
+                reference_scatter["x"] = (
+                    ref_df[datetime_column_name] if datetime_column_name else ref_df.index.to_series()
+                )
             return ColumnScatterResult(
                 current=current_scatter,
                 reference=reference_scatter,
                 x_name=x_name,
             )
-        current_scatter = {}
+        agg_current_scatter = {}
+        agg_reference_scatter = None
         plot_df, prefix = prepare_df_for_time_index_plot(curr_df, prediction_name, datetime_column_name)
-        current_scatter["Predicted"] = plot_df
-        current_scatter["Actual"], _ = prepare_df_for_time_index_plot(curr_df, target_name, datetime_column_name)
+        agg_current_scatter["Predicted"] = plot_df
+        agg_current_scatter["Actual"], _ = prepare_df_for_time_index_plot(curr_df, target_name, datetime_column_name)
         x_name_ref: Optional[str] = None
         if ref_df is not None:
-            reference_scatter = {}
+            agg_reference_scatter = {}
             plot_df, prefix_ref = prepare_df_for_time_index_plot(ref_df, prediction_name, datetime_column_name)
-            reference_scatter["Predicted"] = plot_df
-            reference_scatter["Actual"], _ = prepare_df_for_time_index_plot(ref_df, target_name, datetime_column_name)
+            agg_reference_scatter["Predicted"] = plot_df
+            agg_reference_scatter["Actual"], _ = prepare_df_for_time_index_plot(
+                ref_df,
+                target_name,
+                datetime_column_name,
+            )
             if datetime_column_name is None:
                 x_name_ref = "Index binned"
             else:
@@ -82,11 +89,8 @@ class RegressionPredictedVsActualPlot(UsesRawDataMixin, Metric[ColumnScatterResu
             x_name = "Index binned"
         else:
             x_name = datetime_column_name + f" ({prefix})"
-        cls = ColumnScatterResult
-        if not raw_data:
-            cls = ColumnAggScatterResult
-        return cls(
-            current=current_scatter,
+        return ColumnAggScatterResult(
+            current=agg_current_scatter,
             reference=reference_scatter,
             x_name=x_name,
             x_name_ref=x_name_ref,
