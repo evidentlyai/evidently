@@ -29,11 +29,10 @@ class TriggerWordsPresent(ApplyColumnGeneratedFeature):
         lemmatize: bool = True,
         display_name: Optional[str] = None,
     ):
-        self.column_name = column_name
         self.words_list = words_list
         self.lemmatize = lemmatize
         self.display_name = display_name
-        super().__init__()
+        super().__init__(column_name=column_name)
 
     @property
     def lem(self):

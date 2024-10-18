@@ -19,9 +19,8 @@ class SentenceCount(ApplyColumnGeneratedFeature):
     column_name: str
 
     def __init__(self, column_name: str, display_name: Optional[str] = None):
-        self.column_name = column_name
         self.display_name = display_name
-        super().__init__()
+        super().__init__(column_name=column_name)
 
     def apply(self, value: Any):
         if value is None or (isinstance(value, float) and np.isnan(value)):
