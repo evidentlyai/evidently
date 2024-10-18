@@ -586,7 +586,8 @@ def _get_column_type(
                     f" Returning type from reference"
                 )
                 cur_type = ref_type
-            if not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type):
+            # TODO: add proper type check
+            if not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type):  # type: ignore[arg-type]
                 logging.warning(
                     f"Column {column_name} have different types in reference {ref_type} and current {cur_type}."
                     f" Returning type from reference"
