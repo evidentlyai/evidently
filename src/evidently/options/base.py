@@ -109,8 +109,10 @@ class Options(BaseModel):
             exclude = {"custom"}
         elif isinstance(exclude, set):
             exclude.add("custom")
-        else:
+        elif isinstance(exclude, dict):
             exclude["custom"] = False
+        else:
+            raise TypeError("exclude must be either a dict or a set")
         return super().dict(
             include=include,
             exclude=exclude,
