@@ -32,6 +32,7 @@ from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_integrity.column_summary_metric import ColumnSummaryMetric
 from .data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
 from .data_integrity.dataset_summary_metric import DatasetSummaryMetric
+from .data_integrity.rouge_summary_metric import ROUGESummaryMetric
 from .data_quality.column_category_metric import ColumnCategoryMetric
 from .data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from .data_quality.column_distribution_metric import ColumnDistributionMetric
@@ -99,6 +100,7 @@ __all__ = [
     "ColumnSummaryMetric",
     "DatasetMissingValuesMetric",
     "DatasetSummaryMetric",
+    "ROUGESummaryMetric",
     "ColumnCategoryMetric",
     "ColumnCorrelationsMetric",
     "ColumnDistributionMetric",
