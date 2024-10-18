@@ -613,7 +613,7 @@ def get_heatmaps_widget(
 
         # show values if thw heatmap is small
         if len(columns) < 15:
-            heatmap_text = np.round(data, 2).astype(str)
+            heatmap_text: Optional[pd.DataFrame] = np.round(data, 2).astype(str)  # type: ignore[assignment]
             heatmap_text_template: Optional[str] = "%{text}"
 
         else:
