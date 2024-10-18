@@ -26,10 +26,9 @@ class OOVWordsPercentage(ApplyColumnGeneratedFeature):
     _eng_words: Set
 
     def __init__(self, column_name: str, ignore_words=(), display_name: Optional[str] = None):
-        self.column_name = column_name
         self.ignore_words = ignore_words
         self.display_name = display_name
-        super().__init__()
+        super().__init__(column_name=column_name)
 
     def apply(self, value: Any):
         if value is None or (isinstance(value, float) and np.isnan(value)):
