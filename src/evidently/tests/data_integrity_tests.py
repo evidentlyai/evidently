@@ -7,7 +7,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pandas.core.dtypes.common import infer_dtype_from_object
+from pandas.core.dtypes.common import infer_dtype_from_object  # type: ignore[attr-defined]
 
 from evidently.base_metric import ColumnName
 from evidently.metrics import ColumnRegExpMetric
