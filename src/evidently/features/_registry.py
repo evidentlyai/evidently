@@ -90,6 +90,7 @@ register_type_alias(GeneratedFeatures, "evidently.features.words_feature.WordNoM
 register_type_alias(
     GeneratedFeatures, "evidently.features.words_feature.WordsPresence", "evidently:feature:WordsPresence"
 )
+register_type_alias(GeneratedFeatures, "evidently.features.json_match_feature.JSONMatch", "evidently:feature:JSONMatch")
 register_type_alias(
     GeneratedFeatures, "evidently.features.exact_match_feature.ExactMatchFeature", "evidently:feature:ExactMatchFeature"
 )
