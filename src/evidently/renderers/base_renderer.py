@@ -1,6 +1,7 @@
 import dataclasses
 import warnings
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -65,7 +66,7 @@ class MetricRenderer(Generic[TMetric], BaseRenderer):
 @dataclasses.dataclass
 class DetailsInfo:
     title: str
-    info: BaseWidgetInfo
+    info: Union[BaseWidgetInfo, Any]
     id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
 
 
