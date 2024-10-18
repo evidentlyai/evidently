@@ -115,14 +115,14 @@ class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
                 else:
                     values_not_in_list[value] = value_counts[value]
 
-            number_in_list = sum(values_in_list.values())
+            number_in_list = sum(values_in_list.values())  # type: ignore[arg-type]
             share_in_list = number_in_list / rows_count
             number_not_in_list = rows_count - number_in_list
             share_not_in_list = number_not_in_list / rows_count
             # fill other values from list with zeroes
             for value in values:
                 if value not in values_in_list:
-                    values_in_list[value] = 0
+                    values_in_list[value] = 0  # type: ignore[assignment]
 
         return ValueListStat(
             number_in_list=number_in_list,
