@@ -693,7 +693,7 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
         .value_counts(normalize=normalize, dropna=dropna)  # type: ignore[call-overload]
         .reset_index()
     )
-    hist_df.columns = ["x", "count"]
+    hist_df.columns = pd.Index(["x", "count"])
     current = HistogramData.from_df(hist_df)
 
     reference = None
@@ -703,7 +703,7 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
             .value_counts(normalize=normalize, dropna=dropna)  # type: ignore[call-overload]
             .reset_index()
         )
-        hist_df.columns = ["x", "count"]
+        hist_df.columns = pd.Index(["x", "count"])
         reference = HistogramData.from_df(hist_df)
     return Histogram(current=current, reference=reference)
 
@@ -712,7 +712,7 @@ def get_distribution_for_category_column(column: pd.Series, normalize: bool = Fa
     value_counts = column.value_counts(normalize=normalize, dropna=False)  # type: ignore[call-overload]
 
     # filter out na values if it amount == 0
-    new_values = [(k, v) for k, v in value_counts.items() if (not pd.isna(k) or v > 0)]
+    new_values = [(k, v) for k, v in value_counts.items() if (not pd.isna(k) or v > 0)]  # type: ignore[call-overload]
 
     return Distribution(
         x=[x[0] for x in new_values],
