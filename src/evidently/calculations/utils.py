@@ -52,7 +52,7 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
         )
         .reset_index()
     )
-    hist_df.columns = ["x", "count"]
+    hist_df.columns = pd.Index(["x", "count"])
     result["current"] = hist_df
     if ref is not None:
         hist_df = (
@@ -63,7 +63,7 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
             )
             .reset_index()
         )
-        hist_df.columns = ["x", "count"]
+        hist_df.columns = pd.Index(["x", "count"])
         result["reference"] = hist_df
     return result
 
