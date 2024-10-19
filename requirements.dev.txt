@@ -4,6 +4,7 @@ setuptools==65.5.1; python_version < '3.12'
 setuptools==68.2.2; python_version >= '3.12'
 jupyter==1.0.0
 mypy==1.1.1
+pandas-stubs
 pytest==7.4.4
 pytest-asyncio==0.23.7
 types-PyYAML==6.0.1

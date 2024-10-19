@@ -85,6 +85,7 @@ setup_args = dict(
             "setuptools==68.2.2; python_version >= '3.12'",
             "jupyter==1.0.0",
             "mypy==1.1.1",
+            "pandas-stubs",
             "pytest==7.4.4",
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
