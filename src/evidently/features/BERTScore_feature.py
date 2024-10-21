@@ -5,8 +5,6 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-import torch
-from torch.nn.functional import cosine_similarity
 from transformers import BertModel
 from transformers import BertTokenizer
 
@@ -39,10 +37,8 @@ class BERTScoreFeature(GeneratedFeature):
         )
 
         # Get embeddings
-        with torch.no_grad():
-            embeddings_first = model(**tokens_first).last_hidden_state
-            embeddings_second = model(**tokens_second).last_hidden_state
-
+        embeddings_first = model(**tokens_first).last_hidden_state.detach().numpy()
+        embeddings_second = model(**tokens_second).last_hidden_state.detach().numpy()
         # Obtain IDF scores
         idf_scores = self.compute_idf_scores(data[self.columns[0]], data[self.columns[1]], tokenizer)
 
@@ -74,39 +70,43 @@ class BERTScoreFeature(GeneratedFeature):
 
         idf_scores = {token: -np.log(count / M) for token, count in token_counts.items()}
 
-        # Convert IDF scores to tensors
-        def convert_to_idf_tensors(sentences):
-            idf_tensors = []
+        # Convert IDF scores to numpy arrays
+        def convert_to_idf_arrays(sentences):
+            idf_arrays = []
             for sentence in sentences:
                 tokens = tokenizer.tokenize(sentence)
 
                 # Add special tokens
                 tokens = [tokenizer.cls_token] + tokens + [tokenizer.sep_token]
                 # Compute IDF scores for each token including plus one smoothing
-                idf_tensor = torch.tensor([idf_scores.get(token, 0) + 1 for token in tokens])
-                idf_tensors.append(idf_tensor)
+                idf_array = np.array([idf_scores.get(token, 0) + 1 for token in tokens])
+                idf_arrays.append(idf_array)
             # Pad sequences to the same length
-            return torch.nn.utils.rnn.pad_sequence(idf_tensors, batch_first=True)
+            max_len = max(len(arr) for arr in idf_arrays)
+            idf_arrays = np.array([np.pad(arr, (0, max_len - len(arr)), "constant") for arr in idf_arrays])
+            return idf_arrays
 
-        idf_tensors1 = convert_to_idf_tensors(col1.fillna("").tolist())
-        idf_tensors2 = convert_to_idf_tensors(col2.fillna("").tolist())
-        return idf_tensors1, idf_tensors2
+        idf_arrays1 = convert_to_idf_arrays(col1.fillna("").tolist())
+        idf_arrays2 = convert_to_idf_arrays(col2.fillna("").tolist())
+        return idf_arrays1, idf_arrays2
 
     def max_similarity(self, embeddings1, embeddings2):
         # Compute max cosine similarity for each token in embeddings1 with respect to embeddings2
-        similarity_matrix = cosine_similarity(embeddings1.unsqueeze(1), embeddings2.unsqueeze(0), dim=-1)
-        return similarity_matrix.max(dim=1).values
+        similarity_matrix = np.dot(embeddings1, embeddings2.T) / (
+            np.linalg.norm(embeddings1, axis=1, keepdims=True) * np.linalg.norm(embeddings2, axis=1, keepdims=True).T
+        )
+        return similarity_matrix.max(axis=1)
 
     def calculate_scores(self, emb1, emb2, idf_scores, index):
         if self.tfidf_weighted:
             weighted_scores = np.multiply(self.max_similarity(emb1, emb2), idf_scores[0][index])
-            recall = weighted_scores.sum().item() / idf_scores[0][index].sum().item()
+            recall = weighted_scores.sum() / idf_scores[0][index].sum()
 
             weighted_scores = np.multiply(self.max_similarity(emb2, emb1), idf_scores[1][index])
-            precision = weighted_scores.sum().item() / idf_scores[1][index].sum().item()
+            precision = weighted_scores.sum() / idf_scores[1][index].sum()
         else:
-            recall = self.max_similarity(emb1, emb2).mean().item()
-            precision = self.max_similarity(emb2, emb1).mean().item()
+            recall = self.max_similarity(emb1, emb2).mean()
+            precision = self.max_similarity(emb2, emb1).mean()
         return recall, precision
 
     def _feature_name(self):
