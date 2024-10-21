@@ -151,8 +151,8 @@ jobs:
         uses: ./.github/share-actions/ui-node-pnpm-install
 
       - name: Install Playwright Browsers
-        working-directory: ui
-        run: pnpm dlx playwright@1.43.0 install --with-deps
+        working-directory: ui/service
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
@@ -162,7 +162,7 @@ jobs:
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
-        run: pnpm wait-on tcp:127.0.0.1:8000 -t 200000
+        run: pnpm wait-on tcp:127.0.0.1:8000 -t 4m
 
       - name: Run Service Playwright tests
         working-directory: ui/service

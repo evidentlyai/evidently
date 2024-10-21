@@ -27,6 +27,11 @@ register_type_alias(
     "evidently.features.hf_feature.HuggingFaceToxicityFeature",
     "evidently:feature:HuggingFaceToxicityFeature",
 )
+register_type_alias(
+    GeneratedFeatures,
+    "evidently.features.json_schema_match_feature.JSONSchemaMatch",
+    "evidently:feature:JSONSchemaMatch",
+)
 register_type_alias(GeneratedFeatures, "evidently.features.llm_judge.LLMJudge", "evidently:feature:LLMJudge")
 register_type_alias(
     GeneratedFeatures,
@@ -53,6 +58,12 @@ register_type_alias(
     GeneratedFeatures, "evidently.features.text_contains_feature.DoesNotContain", "evidently:feature:DoesNotContain"
 )
 register_type_alias(
+    GeneratedFeatures, "evidently.features.text_contains_feature.ItemMatch", "evidently:feature:ItemMatch"
+)
+register_type_alias(
+    GeneratedFeatures, "evidently.features.text_contains_feature.ItemNoMatch", "evidently:feature:ItemNoMatch"
+)
+register_type_alias(
     GeneratedFeatures, "evidently.features.text_length_feature.TextLength", "evidently:feature:TextLength"
 )
 register_type_alias(
@@ -75,3 +86,9 @@ register_type_alias(
     GeneratedFeatures, "evidently.features.words_feature.WordsPresence", "evidently:feature:WordsPresence"
 )
 register_type_alias(GeneratedFeatures, "evidently.features.json_match_feature.JSONMatch", "evidently:feature:JSONMatch")
+register_type_alias(
+    GeneratedFeatures, "evidently.features.exact_match_feature.ExactMatchFeature", "evidently:feature:ExactMatchFeature"
+)
+register_type_alias(
+    GeneratedFeatures, "evidently.features.is_valid_json_feature.IsValidJSON", "evidently:feature:IsValidJSON"
+)
