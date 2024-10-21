@@ -1,4 +1,5 @@
 from . import _registry
+from .BERTScore_descriptor import BERTScore
 from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .exact_match_descriptor import ExactMatch
@@ -35,6 +36,7 @@ from .words_descriptor import WordMatch
 from .words_descriptor import WordNoMatch
 
 __all__ = [
+    "BERTScore",
     "CustomColumnEval",
     "CustomPairColumnEval",
     "HuggingFaceModel",
