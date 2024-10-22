@@ -10,10 +10,10 @@ This page links to the **description** of each preset. To see the code and inter
 
 Metric presets are **pre-built reports** that help with visual exploration, debugging and documentation of the data and model performance. You can also use them to calculate and log metrics as JSON or Python dictionary.
 
-|         |                                                        |                                                                                                                                                                                      |
-| ------- | ------------------------------------------------------ |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|         |                                                        |   |
+| ------- | ------------------------------------------------------ | - |
 | [**Data Quality**](data-quality.md)<br><br>Shows the dataset statistics and feature behavior. <br><br> **Requirements**: model inputs. | [**Data Drift**](data-drift.md)<br><br>Explores the distribution shift in the model features. <br><br>**Requirements**: model inputs, a reference dataset. | [**Target Drift**](target-drift.md)<br><br>Explores the distribution shift in the model predictions. <br><br>**Requirements:** model predictions and/or target, a reference dataset. |
-| [**Classification**](class-performance.md)<br><br>Evaluates the classification model quality and errors. <br><br>**Requirements**: model predictions and true labels. | [**Regression**](reg-performance.md)<br><br>Evaluates the regression model quality and errors. <br><br>**Requirements**: model predictions and actuals. |                                                                                                                                                                                      |
+| [**Classification**](class-performance.md)<br><br>Evaluates the classification model quality and errors. <br><br>**Requirements**: model predictions and true labels. | [**Regression**](reg-performance.md)<br><br>Evaluates the regression model quality and errors. <br><br>**Requirements**: model predictions and actuals. | [**Text Overview**](text-overview.md)<br><br>Evaluates text data drift and descriptive statistics. <br><br>**Requirements**: model inputs (raw text data) |
 
 # Test Presets
 
