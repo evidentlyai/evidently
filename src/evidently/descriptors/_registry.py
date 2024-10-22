@@ -118,6 +118,11 @@ register_type_alias(
     "evidently:descriptor:CustomPairColumnEval",
 )
 register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.contains_link_descriptor.ContainsLink",
+    "evidently:descriptor:ContainsLink",
+)
+register_type_alias(
     FeatureDescriptor, "evidently.descriptors.exact_match_descriptor.ExactMatch", "evidently:descriptor:ExactMatch"
 )
 register_type_alias(
