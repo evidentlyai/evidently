@@ -149,29 +149,6 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 
 <details>
   
-<summary>Text Overview Preset</summary>
-
-`TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns are required.
-
-**Composition**:
-* `ColumnSummaryMetric()` for text descriptors for all columns. Descriptors included:
-  * `Sentiment()`
-  * `SentenceCount()`
-  * `OOV()`
-  * `TextLength()`
-  * `NonLetterCharacterPercentage()` 
-* `SemanticSimilarity()` between each pair of text columns, if there is more than one. 
-
-**Required parameters**:
-* `column_name` or `columns` list
-
-**Optional parameters**:
-* `descriptors` list
-
-</details>
-
-<details>
-  
 <summary>Text Evals</summary>
 
 `TextEvals()` provides a simplified interface to list `Descriptors` for a given text column. It it returns a summary of evaluation results.
