@@ -173,13 +173,12 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
     >
       <Box style={{ position: 'absolute', top: '5px', right: '5px' }}>
         <Box
-          sx={{
+          sx={(theme) => ({
             opacity: 0,
-            transition: (theme) =>
-              theme.transitions.create('opacity', {
-                duration: theme.transitions.duration.enteringScreen
-              })
-          }}
+            transition: theme.transitions.create('opacity', {
+              duration: theme.transitions.duration.enteringScreen
+            })
+          })}
           className={'action-buttons'}
           display={'flex'}
           columnGap={1}
@@ -214,7 +213,6 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
           </ToggleButton>
         </Box>
       </Box>
-
       {isEditMode ? (
         <EditProjectInfoForm project={project} action={'edit-project'} />
       ) : (

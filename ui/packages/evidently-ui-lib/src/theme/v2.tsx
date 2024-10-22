@@ -7,6 +7,7 @@ const mainRed = '#ed0500'
 const borderColorGrey = '#ded5d5'
 
 export const theme = createTheme({
+  colorSchemes: { dark: {}, light: {} },
   shape: { borderRadius: 5 },
   palette: {
     primary: { main: colors.grey[900], light: colors.grey[200] },

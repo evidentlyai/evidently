@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import type { AdditionalGraphInfo } from 'evidently-ui-lib/api'
-import { ThemeProvider } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { CssBaseline, ThemeProvider } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { theme } from 'evidently-ui-lib/theme/v2'
 
 import type { DashboardInfoModel } from 'evidently-ui-lib/api/types'
@@ -18,6 +18,7 @@ export function drawDashboard(
     ReactDOM.createRoot(element).render(
       <React.StrictMode>
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <StandaloneSnapshotWidgets dashboard={dashboard} additionalGraphs={additionalGraphs} />
         </ThemeProvider>
       </React.StrictMode>
