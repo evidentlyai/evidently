@@ -177,7 +177,7 @@ def inline_iframe_html_template(params: TemplateParams):
                 window.evidentlyResizeIframeInterval = setInterval(() => {
                   document
                     .querySelectorAll('iframe.evidently-ui-iframe')
-                    .forEach((iframe) => resizeIFrameHeightToFitContent(iframe))
+                    .forEach((iframe) => (iframe?.checkVisibility() ?? true) && resizeIFrameHeightToFitContent(iframe))
                 }, INTERVAL)
 
                 const getIframeHeight = (iframe) => iframe.contentWindow.document.body.scrollHeight
