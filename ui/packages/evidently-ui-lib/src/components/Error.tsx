@@ -58,36 +58,38 @@ const ErrorAlertSnackBar = ({ data }: { data: ActionErrorData }) => {
         setOpen(false)
       }}
     >
-      <AlertThemed severity='error'>
-        <Box display={'flex'} justifyContent={'space-between'} alignItems={'flex-start'} gap={2}>
-          <Box>
-            <AlertTitle>Something went wrong</AlertTitle>
-            {error.current && (
-              <Typography fontWeight={'bold'}>
-                {[
-                  typeof error.current.status_code === 'number' &&
-                    `Status: ${error.current.status_code}`,
-                  typeof error.current.detail === 'string' && error.current.detail
-                ]
-                  .filter(Boolean)
-                  .join(', ')}
-              </Typography>
-            )}
+      <Box>
+        <AlertThemed severity='error' forseFilled>
+          <Box display={'flex'} justifyContent={'space-between'} alignItems={'flex-start'} gap={2}>
+            <Box>
+              <AlertTitle>Something went wrong</AlertTitle>
+              {error.current && (
+                <Typography fontWeight={'bold'}>
+                  {[
+                    typeof error.current.status_code === 'number' &&
+                      `Status: ${error.current.status_code}`,
+                    typeof error.current.detail === 'string' && error.current.detail
+                  ]
+                    .filter(Boolean)
+                    .join(', ')}
+                </Typography>
+              )}
+            </Box>
+            <Box>
+              <IconButton
+                size='small'
+                aria-label='close'
+                color='inherit'
+                onClick={() => {
+                  setOpen(false)
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
           </Box>
-          <Box>
-            <IconButton
-              size='small'
-              aria-label='close'
-              color='inherit'
-              onClick={() => {
-                setOpen(false)
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
-        </Box>
-      </AlertThemed>
+        </AlertThemed>
+      </Box>
     </Snackbar>
   )
 }
