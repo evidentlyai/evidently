@@ -11,12 +11,12 @@ interface BigGraphWidgetProps extends AdditionalGraphInfo {
 
 const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (props) => {
   const viewParams = useDashboardViewParams()
-  const tMode = useThemeMode()
+  const mode = useThemeMode()
   const isHistogram = props.data.some(({ type }) => type === 'histogram')
   const isCastXaxisToCategory = viewParams?.isXaxisAsCategorical && !isHistogram
 
   const tOverride =
-    tMode === 'dark'
+    mode === 'dark'
       ? {
           template: {
             ...darkPlotlyLayoutTemplate,

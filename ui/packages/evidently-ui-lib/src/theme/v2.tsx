@@ -4,17 +4,24 @@ import { createTheme } from '@mui/material/styles'
 const { transitions } = createTheme()
 
 const mainRed = '#ed0500'
-const borderColorGrey = '#ded5d5'
 
 export const theme = createTheme({
-  colorSchemes: { dark: {}, light: {} },
-  shape: { borderRadius: 5 },
-  palette: {
-    primary: { main: colors.grey[900], light: colors.grey[200] },
-    // we use `secondary` color for interactive elements
-    secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] },
-    background: { default: '#fff', paper: '#fff' }
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: { main: colors.grey[900], light: colors.grey[200] },
+        secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] },
+        background: { default: '#fff', paper: '#fff' }
+      }
+    },
+    dark: {
+      palette: {
+        primary: { main: '#fff' },
+        secondary: { main: mainRed }
+      }
+    }
   },
+  shape: { borderRadius: 5 },
   components: {
     MuiLink: {
       styleOverrides: {
@@ -22,45 +29,20 @@ export const theme = createTheme({
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
-          '&:hover': {
-            color: mainRed
-          }
+          '&:hover': { color: mainRed }
         }
       }
     },
     MuiTabs: {
-      styleOverrides: { flexContainer: { gap: '10px' }, indicator: { backgroundColor: mainRed } }
-    },
-    MuiButton: {
       styleOverrides: {
-        contained: {
-          '&:hover': { background: colors.grey[800] }
-        },
-        outlined: {
-          '&:hover': {
-            color: mainRed,
-            borderColor: mainRed,
-            background: '#fff'
-          }
-        },
-        text: {
-          '&:hover': {
-            color: mainRed,
-            borderColor: mainRed
-          }
-        }
+        flexContainer: { gap: '10px' },
+        indicator: { backgroundColor: mainRed }
       }
     },
     MuiTab: {
       defaultProps: { color: 'secondary' },
       styleOverrides: {
-        root: {
-          fontSize: '1rem',
-          borderRadius: '5px',
-          '&:hover': {
-            background: colors.grey[200]
-          }
-        }
+        root: { fontSize: '1rem', borderRadius: '5px' }
       }
     },
     MuiIconButton: {
@@ -69,10 +51,7 @@ export const theme = createTheme({
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
-          color: colors.grey[900],
-          '&:hover': {
-            color: mainRed
-          }
+          '&:hover': { color: mainRed }
         }
       }
     },
@@ -84,12 +63,8 @@ export const theme = createTheme({
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
-          color: colors.grey[900],
           '&:hover': { color: mainRed },
-          '&.Mui-disabled': {
-            border: 'unset',
-            background: colors.grey[100]
-          }
+          '&.Mui-disabled': { border: 'unset' }
         }
       }
     },
@@ -97,7 +72,7 @@ export const theme = createTheme({
     MuiLinearProgress: { defaultProps: { color: 'secondary' } },
     MuiPaper: {
       styleOverrides: {
-        root: { boxShadow: 'unset', border: '1px solid', borderColor: borderColorGrey }
+        root: { boxShadow: 'unset' }
       }
     }
   },

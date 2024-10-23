@@ -165,6 +165,8 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
       sx={{
         m: 1,
         p: 2,
+        border: '1px solid',
+        borderColor: (theme) => theme.palette.divider,
         position: 'relative',
         '&:hover .action-buttons': {
           opacity: 1

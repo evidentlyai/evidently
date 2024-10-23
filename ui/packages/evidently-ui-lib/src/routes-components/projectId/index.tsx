@@ -22,7 +22,7 @@ export const ProjectTemplate = ({
     <Box mt={2}>
       <Grid container spacing={2} direction='row' justifyContent='flex-start' alignItems='flex-end'>
         <Grid item xs={12}>
-          <Typography variant='subtitle2'>
+          <Typography sx={{ color: '#aaa' }}>
             {`project id: ${project.id}`}
             <IconButton
               size='small'

@@ -19,7 +19,11 @@ export const ThemeToggle = () => {
   const id = open ? 'simple-popover' : undefined
 
   if (!mode) {
-    return null
+    return (
+      <IconButton aria-describedby={id}>
+        {tMode === 'dark' ? <DarkModeIcon /> : <LightModeIcon />}
+      </IconButton>
+    )
   }
 
   return (
@@ -44,7 +48,10 @@ export const ThemeToggle = () => {
         <Select
           size={'small'}
           value={mode}
-          onChange={(event) => setMode(event.target.value as 'system' | 'light' | 'dark')}
+          onChange={(event) => {
+            setMode(event.target.value as 'system' | 'light' | 'dark')
+            handleClose()
+          }}
         >
           <MenuItem value='system'>System</MenuItem>
           <MenuItem value='light'>Light</MenuItem>

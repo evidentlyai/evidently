@@ -148,7 +148,6 @@ def file_html_template(params: TemplateParams):
     </head>
     <body>
     <div id="root_{params.dashboard_id}">
-        <h1 class="center-align">Loading...</h1>
     </div>
     <script>var global = globalThis</script>
     {lib_block}
