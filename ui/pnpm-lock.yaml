@@ -41,6 +41,9 @@ importers:
       '@uidotdev/usehooks':
         specifier: ^2.4.1
         version: 2.4.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@uiw/react-json-view':
+        specifier: 2.0.0-alpha.30
+        version: 2.0.0-alpha.30(@babel/runtime@7.25.7)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       dayjs:
         specifier: ^1.11.10
         version: 1.11.10
@@ -71,9 +74,6 @@ importers:
       react-router-dom:
         specifier: ^6.16.0
         version: 6.16.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      react18-json-view:
-        specifier: ^0.2.6
-        version: 0.2.6(react@18.2.0)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.1
@@ -1100,6 +1100,13 @@ packages:
     resolution: {integrity: sha512-1I+RwWyS+kdv3Mv0Vmc+p0dPYH0DTRAo04HLyXReYBL9AeseDWUJyi4THuksBJcu9F0Pih69Ak150VDnqbVnXg==}
     engines: {node: '>=16'}
     peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
+  '@uiw/react-json-view@2.0.0-alpha.30':
+    resolution: {integrity: sha512-ufvvirUQcITU9s4R12b7hn/t7ngLCYp1KbBxE+eAD35o3Ey+uxfKvgWmIwGFhV3hFXXxMJ8SHQKwl/ywNCHsDA==}
+    peerDependencies:
+      '@babel/runtime': '>=7.10.0'
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
@@ -2185,11 +2192,6 @@ packages:
     peerDependencies:
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
-
-  react18-json-view@0.2.6:
-    resolution: {integrity: sha512-RHAY880UwC7SClyQBoij50q2InpSrj5zmP2DCL73vEaaVTyj/QbMPBk4FRKMQ7LF8FSxhh+VI6mK3AhlBaCBxw==}
-    peerDependencies:
-      react: '>=16.8.0'
 
   react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
@@ -3498,6 +3500,12 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
+  '@uiw/react-json-view@2.0.0-alpha.30(@babel/runtime@7.25.7)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      '@babel/runtime': 7.25.7
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+
   '@ungap/structured-clone@1.2.0': {}
 
   '@vitejs/plugin-react-swc@3.7.0(vite@5.2.12)':
@@ -4797,10 +4805,6 @@ snapshots:
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-
-  react18-json-view@0.2.6(react@18.2.0):
-    dependencies:
-      react: 18.2.0
 
   react@18.2.0:
     dependencies:
