@@ -194,8 +194,8 @@ class OpenAIWrapper(LLMWrapper):
         messages = [{"role": msg.role, "content": msg.content} for msg in messages]
         try:
             response = await self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
-        except openai.OpenAIError as e:
-            raise LLMRequestError("Failed to call OpenAI complete API") from e
+        except openai.APIError as e:
+            raise LLMRequestError(f"Failed to call OpenAI complete API: {e.message}") from e
         content = response.choices[0].message.content
         assert content is not None  # todo: better error
         return content
