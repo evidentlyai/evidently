@@ -1,3 +1,4 @@
+import { useTheme } from '@mui/material'
 import JsonView, { type JsonViewProps } from '@uiw/react-json-view'
 import { githubDarkTheme } from '@uiw/react-json-view/githubDark'
 import { githubLightTheme } from '@uiw/react-json-view/githubLight'
@@ -11,12 +12,19 @@ export const JsonViewThemed: React.FC<
 > = ({ ...props }) => {
   const mode = useThemeMode()
 
+  const {
+    palette: {
+      primary: { main }
+    }
+  } = useTheme()
+
   const theme = useMemo(
     () => ({
       ...(mode === 'light' ? githubLightTheme : githubDarkTheme),
-      '--w-rjv-background-color': 'transparent'
+      '--w-rjv-background-color': 'transparent',
+      '--w-rjv-ellipsis-color': main
     }),
-    [mode]
+    [mode, main]
   )
 
   return <JsonView {...props} style={theme} displayObjectSize={false} displayDataTypes={false} />
