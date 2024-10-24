@@ -5,7 +5,9 @@ import { useMemo } from 'react'
 import { useThemeMode } from '~/hooks/theme'
 
 export const JsonViewThemed: React.FC<
-  React.PropsWithRef<Omit<JsonViewProps<object>, 'style' | 'displayObjectSize'>>
+  React.PropsWithRef<
+    Omit<JsonViewProps<object>, 'style' | 'displayObjectSize' | 'displayDataTypes'>
+  >
 > = ({ ...props }) => {
   const mode = useThemeMode()
 
@@ -17,5 +19,5 @@ export const JsonViewThemed: React.FC<
     [mode]
   )
 
-  return <JsonView {...props} style={theme} displayObjectSize={false} />
+  return <JsonView {...props} style={theme} displayObjectSize={false} displayDataTypes={false} />
 }
