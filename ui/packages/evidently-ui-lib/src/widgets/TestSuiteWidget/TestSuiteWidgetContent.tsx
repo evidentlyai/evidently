@@ -1,7 +1,8 @@
 import { Box, Button, Collapse, Grid, Select } from '@mui/material'
-import { Alert, AlertTitle } from '@mui/material'
+import { AlertTitle } from '@mui/material'
 import React, { useState } from 'react'
 import type { TestDataInfo, TestGroupData, TestGroupTypeData, TestSuiteWidgetParams } from '~/api'
+import { AlertThemed } from '~/components/AlertThemed'
 import TestInfo, { StateToSeverity } from './TestData'
 
 type TestSuiteFoldingProps = {
@@ -34,7 +35,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
   return (
     <>
       <Box mt={2} px={2}>
-        <Alert
+        <AlertThemed
           severity={StateToSeverity(groupInfo.severity ?? 'unknown')}
           icon={false}
           action={
@@ -49,7 +50,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
         >
           <AlertTitle>{groupInfo.title}</AlertTitle>
           {groupInfo.description}
-        </Alert>
+        </AlertThemed>
         <Collapse in={collapse.active} mountOnEnter={true} unmountOnExit={true}>
           <Grid container spacing={2} style={{ padding: 10, paddingTop: 20 }}>
             {tests.map((test) => (

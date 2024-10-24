@@ -1,6 +1,7 @@
 import { AppBar, Button, Link, Toolbar, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { DiscordIcon } from '~/components/DiscordSvg'
+import { ThemeToggle } from './ThemeToggle'
 
 export function ServiceHeader({
   version,
@@ -36,6 +37,8 @@ export function ServiceHeader({
           <Button component={Link} href='https://docs.evidentlyai.com' target='_blank'>
             Docs
           </Button>
+
+          <ThemeToggle />
         </Toolbar>
       </AppBar>
     </>
