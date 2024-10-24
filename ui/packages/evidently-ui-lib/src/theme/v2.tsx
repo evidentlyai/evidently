@@ -66,12 +66,10 @@ export const theme = createTheme({
             duration: transitions.duration.enteringScreen
           }),
           color: 'inherit',
-          '&:hover': { color: mainRed },
           '&.Mui-disabled': { border: 'unset' }
         }
       }
     },
-    MuiToggleButtonGroup: { defaultProps: { color: 'secondary' } },
     MuiLinearProgress: { defaultProps: { color: 'secondary' } },
     MuiPaper: {
       styleOverrides: {
