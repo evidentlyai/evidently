@@ -9,14 +9,15 @@ export const theme = createTheme({
   colorSchemes: {
     light: {
       palette: {
-        primary: { main: colors.grey[900], light: colors.grey[200] },
-        secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] },
-        background: { default: '#fff', paper: '#fff' }
+        text: { primary: '#09090b' },
+        primary: { main: '#09090b', light: colors.grey[200] },
+        secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] }
       }
     },
     dark: {
       palette: {
-        primary: { main: '#fff' },
+        text: { primary: '#fafafa' },
+        primary: { main: '#fafafa', light: colors.grey[900] },
         secondary: { main: mainRed }
       }
     }
@@ -51,6 +52,7 @@ export const theme = createTheme({
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
+          color: 'inherit',
           '&:hover': { color: mainRed }
         }
       }
@@ -63,6 +65,7 @@ export const theme = createTheme({
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
+          color: 'inherit',
           '&:hover': { color: mainRed },
           '&.Mui-disabled': { border: 'unset' }
         }
