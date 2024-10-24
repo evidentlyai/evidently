@@ -24,6 +24,17 @@ export const theme = createTheme({
   },
   shape: { borderRadius: 5 },
   components: {
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          '&:-webkit-autofill': {
+            transitionDelay: '9999s',
+            transitionProperty: 'background-color, box-shadow, color'
+          }
+        }
+      }
+    },
+
     MuiLink: {
       styleOverrides: {
         root: {
