@@ -385,6 +385,7 @@ class DataStorage(ABC):
 class Permission(Enum):
     GRANT_ROLE = "all_grant_role"
     REVOKE_ROLE = "all_revoke_role"
+    LIST_USERS = "all_list_users"
 
     ORG_READ = "org_read"
     ORG_WRITE = "org_write"
@@ -419,11 +420,13 @@ class DefaultRole(Enum):
     OWNER = "owner"
     EDITOR = "editor"
     VIEWER = "viewer"
+    DEMO_VIEWER = "demo_viewer"
 
 
 DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
     (DefaultRole.OWNER, None): set(Permission),
     (DefaultRole.EDITOR, EntityType.Org): {
+        Permission.LIST_USERS,
         Permission.ORG_READ,
         Permission.ORG_CREATE_TEAM,
         Permission.TEAM_READ,
@@ -438,6 +441,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Team): {
+        Permission.LIST_USERS,
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.TEAM_CREATE_PROJECT,
@@ -450,29 +454,36 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Project): {
+        Permission.LIST_USERS,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
     },
     (DefaultRole.EDITOR, EntityType.Dataset): {
+        Permission.LIST_USERS,
         Permission.DATASET_READ,
         Permission.DATASET_WRITE,
         Permission.DATASET_DELETE,
     },
     (DefaultRole.VIEWER, EntityType.Org): {
+        Permission.LIST_USERS,
         Permission.ORG_READ,
     },
     (DefaultRole.VIEWER, EntityType.Team): {
+        Permission.LIST_USERS,
         Permission.TEAM_READ,
         Permission.PROJECT_READ,
         Permission.DATASET_READ,
     },
     (DefaultRole.VIEWER, EntityType.Project): {
+        Permission.LIST_USERS,
         Permission.PROJECT_READ,
     },
     (DefaultRole.VIEWER, EntityType.Dataset): {
+        Permission.LIST_USERS,
         Permission.DATASET_READ,
     },
+    (DefaultRole.DEMO_VIEWER, None): {Permission.PROJECT_READ},
 }
 
 
@@ -659,9 +670,9 @@ class AuthManager(ABC):
         raise NotImplementedError
 
     async def list_entity_users(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
-        if not await self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+        if not await self.check_entity_permission(user_id, entity_type, entity_id, Permission.LIST_USERS):
             raise ENTITY_NOT_FOUND_ERROR[entity_type]()
-        return await self._list_entity_users(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
+        return await self._list_entity_users(entity_type, entity_id, Permission.LIST_USERS)
 
     @abstractmethod
     async def _list_entity_users_with_roles(
@@ -670,9 +681,9 @@ class AuthManager(ABC):
         raise NotImplementedError
 
     async def list_entity_users_with_roles(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
-        if not await self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+        if not await self.check_entity_permission(user_id, entity_type, entity_id, Permission.LIST_USERS):
             raise ENTITY_NOT_FOUND_ERROR[entity_type]()
-        return await self._list_entity_users_with_roles(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
+        return await self._list_entity_users_with_roles(entity_type, entity_id, Permission.LIST_USERS)
 
     @abstractmethod
     async def list_user_teams(self, user_id: UserID, org_id: Optional[OrgID]) -> List[Team]:
