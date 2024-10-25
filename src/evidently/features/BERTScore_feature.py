@@ -5,8 +5,6 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-from transformers import BertModel
-from transformers import BertTokenizer
 
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
@@ -25,6 +23,9 @@ class BERTScoreFeature(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         # Load BERT model and tokenizer
+        from transformers import BertModel
+        from transformers import BertTokenizer
+
         tokenizer = BertTokenizer.from_pretrained(self.model)
         model = BertModel.from_pretrained(self.model)
 
