@@ -14,7 +14,17 @@ export function ServiceHeader({
 }) {
   return (
     <>
-      <AppBar position={'static'} sx={{ borderTop: 'none' }} color={'transparent'}>
+      <AppBar
+        position={'static'}
+        sx={{
+          borderLeft: 'none',
+          borderRight: 'none',
+          borderTop: 'none',
+          borderBottom: '1px solid',
+          borderColor: (t) => t.palette.divider
+        }}
+        color={'transparent'}
+      >
         <Toolbar sx={{ gap: 1 }}>
           <Typography variant='h6' sx={{ flexGrow: 1 }}>
             <RouterLink to={'/'}>
