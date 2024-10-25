@@ -50,7 +50,7 @@ class ColumnCategoryMetricResult(MetricResult):
         }
         smart_union = True
 
-    def __init__(self, **data):
+    def __init__(self, **data) -> None:
         """for backward compatibility"""
         if "counts_of_values" in data:
             counts_of_values: Dict[str, pd.DataFrame] = data.pop("counts_of_values")
@@ -105,12 +105,12 @@ class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
 
         counts_of_values = {}
         current_counts = current_column.value_counts(dropna=False).reset_index()
-        current_counts.columns = ["x", "count"]
+        current_counts.columns = pd.Index(["x", "count"])
         counts_of_values["current"] = current_counts.head(10)
         counts_of_values["current"].index = counts_of_values["current"].index.astype("str")
         if reference_column is not None:
             reference_counts = reference_column.value_counts(dropna=False).reset_index()
-            reference_counts.columns = ["x", "count"]
+            reference_counts.columns = pd.Index(["x", "count"])
             counts_of_values["reference"] = reference_counts.head(10)
             counts_of_values["reference"].index = counts_of_values["reference"].index.astype("str")
 

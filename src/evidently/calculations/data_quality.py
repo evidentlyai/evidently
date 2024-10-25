@@ -4,6 +4,7 @@ import dataclasses
 from typing import Callable
 from typing import Dict
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -187,7 +188,8 @@ def get_features_stats(feature: pd.Series, feature_type: ColumnType) -> FeatureQ
 
     if feature_type == ColumnType.Numerical:
         # round most common feature value for numeric features to 1e-5
-        if not np.issubdtype(feature, np.number):
+        # TODO: Fix this check
+        if not np.issubdtype(feature, np.number):  # type: ignore[arg-type]
             feature = feature.astype(float)
         if isinstance(result.most_common_value, float):
             result.most_common_value = np.round(result.most_common_value, 5)
@@ -197,11 +199,12 @@ def get_features_stats(feature: pd.Series, feature_type: ColumnType) -> FeatureQ
         result.min = np.round(feature.min(), 2)
         common_stats = dict(feature.describe())
         std = common_stats["std"]
-        result.std = np.round(std, 2)
-        result.mean = np.round(common_stats["mean"], 2)
-        result.percentile_25 = np.round(common_stats["25%"], 2)
-        result.percentile_50 = np.round(common_stats["50%"], 2)
-        result.percentile_75 = np.round(common_stats["75%"], 2)
+        # TODO: Fix assignment types
+        result.std = np.round(std, 2)  # type: ignore[assignment]
+        result.mean = np.round(common_stats["mean"], 2)  # type: ignore[assignment]
+        result.percentile_25 = np.round(common_stats["25%"], 2)  # type: ignore[assignment]
+        result.percentile_50 = np.round(common_stats["50%"], 2)  # type: ignore[assignment]
+        result.percentile_75 = np.round(common_stats["75%"], 2)  # type: ignore[assignment]
 
     if feature_type == ColumnType.Datetime:
         # cast datetime value to str for datetime features
@@ -449,15 +452,17 @@ def calculate_category_correlation(
 
 def calculate_numerical_correlation(
     column_display_name: str,
-    column: pd.Series,
+    column: Optional[pd.Series],
     features: pd.DataFrame,
 ) -> List[ColumnCorrelations]:
-    if column.empty or features.empty:
+    if column is None or column.empty or features.empty:
         return []
 
     result = []
 
-    for kind in ["pearson", "spearman", "kendall"]:
+    kind: Literal["pearson", "spearman", "kendall"]
+    kinds: List[Literal["pearson", "spearman", "kendall"]] = ["pearson", "spearman", "kendall"]
+    for kind in kinds:
         correlations_columns = []
         correlations_values = []
 
@@ -465,7 +470,8 @@ def calculate_numerical_correlation(
             correlations_columns.append(other_column_name)
             correlations_values.append(
                 column.replace([np.inf, -np.inf], np.nan).corr(
-                    features[other_column_name].replace([np.inf, -np.inf], np.nan), method=kind
+                    features[other_column_name].replace([np.inf, -np.inf], np.nan),
+                    method=kind,
                 )
             )
 
@@ -473,7 +479,7 @@ def calculate_numerical_correlation(
             ColumnCorrelations(
                 column_name=column_display_name,
                 kind=kind,
-                values=Distribution(x=correlations_columns, y=correlations_values),
+                values=DistributionIncluded(x=correlations_columns, y=correlations_values),
             )
         )
 

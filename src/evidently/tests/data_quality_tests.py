@@ -388,7 +388,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         )
 
     def get_condition_from_reference(self, reference: Optional[DatasetCorrelation]) -> TestValueCondition:
-        pass
+        raise NotImplementedError()
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -411,9 +411,10 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
             return (diff.abs() > self.corr_diff).sum().sum() / 2
 
         current_correlations = current_correlations[self.column_name.display_name]
-        if reference_correlations is not None:
-            reference_correlations = reference_correlations[self.column_name.display_name]
-        diff = reference_correlations - current_correlations
+        if reference_correlations is None:
+            raise ValueError("Reference is required for test")
+        reference_correlations_data = reference_correlations[self.column_name.display_name]
+        diff = reference_correlations_data - current_correlations
         return (diff.abs() > self.corr_diff).sum()
 
     def get_description(self, value: Numeric) -> str:
@@ -629,7 +630,7 @@ class TestColumnValueFeatureRenderer(TestRenderer):
         info.with_details(f"{obj.name} {column_name}", plotly_figure(title="", figure=fig))
         return info
 
-    def _feature_render_html(self, obj):
+    def _feature_render_html(self, obj: BaseFeatureDataQualityMetricsTest):
         column_name = obj.column_name
         info = super().render_html(obj)
         metric_result: ColumnSummaryResult = obj.metric.get_result()
@@ -1708,7 +1709,7 @@ class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
 @default_renderer(wrap_type=TestCategoryShare)
 class TestCategoryRenderer(TestRenderer):
     @staticmethod
-    def _get_number_and_percents(s: pd.Series, num: int) -> pd.DataFrame:
+    def _get_number_and_percents(s: pd.Series, num: int) -> pd.Series:
         """Get a string with missing values numbers and percents from info for results table"""
         return s.astype(str) + " (" + (s / num * 100).round(2).astype(str) + "%)"
 
@@ -1727,7 +1728,7 @@ class TestCategoryRenderer(TestRenderer):
             ref_df = ref_df.copy()
             replace.append(("reference value counts", n_ref))
             df = curr_df.merge(ref_df, on="x", how="outer")
-            df.columns = ["value", "current value counts", "reference value counts"]
+            df.columns = pd.Index(["value", "current value counts", "reference value counts"])
             df[["current value counts", "reference value counts"]] = df[
                 ["current value counts", "reference value counts"]
             ].fillna(0.0)
@@ -1735,7 +1736,7 @@ class TestCategoryRenderer(TestRenderer):
 
         else:
             df = curr_df
-            df.columns = ["value", "current value counts"]
+            df.columns = pd.Index(["value", "current value counts"])
             df.sort_values("current value counts", ascending=False, inplace=True)
         for col, n in replace:
             df[col] = self._get_number_and_percents(df[col].fillna(0), n)

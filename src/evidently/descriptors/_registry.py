@@ -107,6 +107,12 @@ register_type_alias(
     FeatureDescriptor, "evidently.descriptors.words_descriptor.IncludesWords", "evidently:descriptor:IncludesWords"
 )
 register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.words_descriptor.WordMatch", "evidently:descriptor:WordMatch"
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.words_descriptor.WordNoMatch", "evidently:descriptor:WordNoMatch"
+)
+register_type_alias(
     GeneralDescriptor,
     "evidently.descriptors.custom_descriptor.CustomPairColumnEval",
     "evidently:descriptor:CustomPairColumnEval",
@@ -115,6 +121,11 @@ register_type_alias(
     FeatureDescriptor,
     "evidently.descriptors.json_match_descriptor.JSONMatch",
     "evidently:descriptor:JSONMatch",
+)
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.contains_link_descriptor.ContainsLink",
+    "evidently:descriptor:ContainsLink",
 )
 register_type_alias(
     FeatureDescriptor, "evidently.descriptors.exact_match_descriptor.ExactMatch", "evidently:descriptor:ExactMatch"
