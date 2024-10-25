@@ -119,6 +119,11 @@ register_type_alias(
 )
 register_type_alias(
     FeatureDescriptor,
+    "evidently.descriptors.json_match_descriptor.JSONMatch",
+    "evidently:descriptor:JSONMatch",
+)
+register_type_alias(
+    FeatureDescriptor,
     "evidently.descriptors.contains_link_descriptor.ContainsLink",
     "evidently:descriptor:ContainsLink",
 )
