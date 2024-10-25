@@ -1,16 +1,16 @@
-import { AppBar, Button, Link, Toolbar, Typography } from '@mui/material'
+import { AppBar, Button, IconButton, Link, Stack, Toolbar } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { DiscordIcon } from '~/components/DiscordSvg'
-import { ThemeToggle } from './ThemeToggle'
+import { ThemeToggle } from '~/components/ThemeToggle'
 
 export function ServiceHeader({
+  LogoSvg,
   version,
-  authComponent,
-  logoSrc
+  authComponent
 }: {
+  LogoSvg: () => JSX.Element
   authComponent?: React.ReactNode
   version: string
-  logoSrc: string
 }) {
   return (
     <>
@@ -26,12 +26,20 @@ export function ServiceHeader({
         color={'transparent'}
       >
         <Toolbar sx={{ gap: 1 }}>
-          <Typography variant='h6' sx={{ flexGrow: 1 }}>
-            <RouterLink to={'/'}>
-              <img src={logoSrc} height='55px' alt='evidently logo' />
-            </RouterLink>
-            <span style={{ verticalAlign: 'super', fontSize: '0.75rem' }}>{version}</span>
-          </Typography>
+          <Stack flexGrow={1} justifyContent={'flex-start'} direction={'row'}>
+            <Stack direction={'row'} alignItems={'flex-end'} gap={1}>
+              <IconButton
+                component={RouterLink}
+                to={'/'}
+                sx={{
+                  '&:hover': { borderRadius: '5px', color: (t) => t.palette.text.secondary }
+                }}
+              >
+                <LogoSvg />
+              </IconButton>
+              <span style={{ verticalAlign: 'super', fontSize: '0.75rem' }}>{version}</span>
+            </Stack>
+          </Stack>
 
           {authComponent}
 
