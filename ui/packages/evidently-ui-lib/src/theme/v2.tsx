@@ -6,6 +6,7 @@ const { transitions } = createTheme()
 const mainRed = '#ed0500'
 
 export const theme = createTheme({
+  cssVariables: { colorSchemeSelector: 'class' },
   colorSchemes: {
     light: {
       palette: {
