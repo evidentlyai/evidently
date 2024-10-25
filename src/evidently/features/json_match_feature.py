@@ -18,7 +18,7 @@ class JSONMatch(FeatureTypeFieldMixin, GeneratedFeature):
     feature_type: ColumnType = ColumnType.Categorical
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
-        def compare_json_objects(first_json_object: str, second_json_object: str) -> pd.Series:
+        def compare_json_objects(first_json_object: str, second_json_object: str) -> bool:
             try:
                 # Load both JSON strings into dictionaries
                 first_json = json.loads(first_json_object)
