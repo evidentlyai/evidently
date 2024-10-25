@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 
 import type { AdditionalGraphInfo } from 'evidently-ui-lib/api'
 import { Box, CssBaseline, ThemeProvider } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { theme } from 'evidently-ui-lib/theme/v2'
+import { theme } from 'evidently-ui-lib/theme/index'
 
 import type { DashboardInfoModel } from 'evidently-ui-lib/api/types'
 import { ThemeToggle } from 'evidently-ui-lib/components/ThemeToggle'
