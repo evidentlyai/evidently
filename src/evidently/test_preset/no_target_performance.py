@@ -97,17 +97,18 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
     ) -> List[AnyTest]:
         embeddings_data = data_definition.embeddings
+        columns = self.columns
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))
-            if self.columns is None:
-                self.columns = list(
+            if columns is None:
+                columns = list(
                     np.setdiff1d(
                         [column.column_name for column in data_definition.get_columns(features_only=True)],
                         embs,
                     )
                 )
             else:
-                self.columns = list(np.setdiff1d(self.columns, embs))
+                columns = list(np.setdiff1d(columns, embs))
 
         preset_tests: List = []
 
@@ -150,10 +151,10 @@ class NoTargetPerformanceTestPreset(TestPreset):
             )
         )
         preset_tests.append(TestColumnsType())
-        preset_tests.append(TestAllColumnsShareOfMissingValues(columns=self.columns))
-        preset_tests.append(TestNumColumnsOutOfRangeValues(columns=self.columns))
-        preset_tests.append(TestCatColumnsOutOfListValues(columns=self.columns))
-        preset_tests.append(TestNumColumnsMeanInNSigmas(columns=self.columns))
+        preset_tests.append(TestAllColumnsShareOfMissingValues(columns=columns))
+        preset_tests.append(TestNumColumnsOutOfRangeValues(columns=columns))
+        preset_tests.append(TestCatColumnsOutOfListValues(columns=columns))
+        preset_tests.append(TestNumColumnsMeanInNSigmas(columns=columns))
 
         if embeddings_data is None:
             return preset_tests

@@ -31,7 +31,7 @@ class NDCGKMetric(Metric[TopKMetricResult]):
     def calculate(self, data: InputData) -> TopKMetricResult:
         curr, ref = get_curr_and_ref_df(data, self.min_rel_score, self.no_feedback_users, False)
         current = self.calculate_ndcg(curr, self.k)
-        reference: Optional[dict] = None
+        reference: Optional[pd.Series] = None
         if ref is not None:
             reference = self.calculate_ndcg(ref, self.k)
 

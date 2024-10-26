@@ -3,10 +3,12 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
+import pandas as pd
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import UsesRawDataMixin
+from evidently.metric_results import ColumnAggScatter
 from evidently.metric_results import ColumnAggScatterResult
 from evidently.metric_results import ColumnScatter
 from evidently.metric_results import ColumnScatterResult
@@ -53,35 +55,38 @@ class RegressionAbsPercentageErrorPlot(UsesRawDataMixin, Metric[ColumnScatterRes
         reference_scatter: Optional[Union[ColumnScatter, dict]] = None
         raw_data = self.get_options().render_options.raw_data
         if raw_data:
-            current_scatter = {}
+            current_scatter: ColumnScatter = {}
             current_scatter["Absolute Percentage Error"] = curr_df["Absolute Percentage Error"]
             if datetime_column_name is not None:
                 current_scatter["x"] = curr_df[datetime_column_name]
                 x_name = "Timestamp"
             else:
-                current_scatter["x"] = curr_df.index
+                current_scatter["x"] = curr_df.index.to_series()
                 x_name = "Index"
 
             if ref_df is not None:
                 reference_scatter = {}
                 reference_scatter["Absolute Percentage Error"] = ref_df["Absolute Percentage Error"]
-                reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
+                reference_scatter["x"] = (
+                    ref_df[datetime_column_name] if datetime_column_name else ref_df.index.to_series()
+                )
 
             return ColumnScatterResult(
                 current=current_scatter,
                 reference=reference_scatter,
                 x_name=x_name,
             )
-        current_scatter = {}
+        agg_current_scatter: ColumnAggScatter = {}
+        agg_reference_scatter: Optional[ColumnAggScatter] = None
         plot_df, prefix = prepare_df_for_time_index_plot(curr_df, "Absolute Percentage Error", datetime_column_name)
-        current_scatter["Absolute Percentage Error"] = plot_df
+        agg_current_scatter["Absolute Percentage Error"] = plot_df
         x_name_ref: Optional[str] = None
         if ref_df is not None:
-            reference_scatter = {}
+            agg_reference_scatter = {}
             plot_df, prefix_ref = prepare_df_for_time_index_plot(
                 ref_df, "Absolute Percentage Error", datetime_column_name
             )
-            reference_scatter["Absolute Percentage Error"] = plot_df
+            agg_reference_scatter["Absolute Percentage Error"] = plot_df
             if datetime_column_name is None:
                 x_name_ref = "Index binned"
             else:
@@ -90,18 +95,21 @@ class RegressionAbsPercentageErrorPlot(UsesRawDataMixin, Metric[ColumnScatterRes
             x_name = "Index binned"
         else:
             x_name = datetime_column_name + f" ({prefix})"
-        cls = ColumnScatterResult
-        if not raw_data:
-            cls = ColumnAggScatterResult
 
-        return cls(
-            current=current_scatter,
-            reference=reference_scatter,
+        return ColumnAggScatterResult(
+            current=agg_current_scatter,
+            reference=agg_reference_scatter,
             x_name=x_name,
             x_name_ref=x_name_ref,
         )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df: pd.DataFrame,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ) -> pd.DataFrame:
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(
@@ -110,9 +118,11 @@ class RegressionAbsPercentageErrorPlot(UsesRawDataMixin, Metric[ColumnScatterRes
                 inplace=True,
                 subset=[target_name, prediction_name, datetime_column_name],
             )
-            return result.sort_values(datetime_column_name)
+            result.sort_values(datetime_column_name, inplace=True)
+            return result
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
-        return result.sort_index()
+        result.sort_index(inplace=True)
+        return result
 
 
 @default_renderer(wrap_type=RegressionAbsPercentageErrorPlot)

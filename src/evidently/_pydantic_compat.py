@@ -30,13 +30,13 @@ if v == 2:
         from pydantic.v1.typing import DictStrAny
 
 else:
-    from pydantic import BaseConfig
-    from pydantic import BaseModel
-    from pydantic import Extra
-    from pydantic import Field
+    from pydantic import BaseConfig  # type: ignore[assignment]
+    from pydantic import BaseModel  # type: ignore[assignment]
+    from pydantic import Extra  # type: ignore[assignment]
+    from pydantic import Field  # type: ignore[assignment]
     from pydantic import PrivateAttr
-    from pydantic import SecretStr
-    from pydantic import ValidationError
+    from pydantic import SecretStr  # type: ignore[assignment]
+    from pydantic import ValidationError  # type: ignore[assignment]
     from pydantic import parse_obj_as
     from pydantic import validator
     from pydantic.fields import SHAPE_DICT  # type: ignore[attr-defined,no-redef]

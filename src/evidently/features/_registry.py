@@ -83,7 +83,16 @@ register_type_alias(
     GeneratedFeatures, "evidently.features.words_feature.IncludesWords", "evidently:feature:IncludesWords"
 )
 register_type_alias(
+    GeneratedFeatures, "evidently.features.words_feature.RowWordPresence", "evidently:feature:RowWordPresence"
+)
+register_type_alias(GeneratedFeatures, "evidently.features.words_feature.WordMatch", "evidently:feature:WordMatch")
+register_type_alias(GeneratedFeatures, "evidently.features.words_feature.WordNoMatch", "evidently:feature:WordNoMatch")
+register_type_alias(
     GeneratedFeatures, "evidently.features.words_feature.WordsPresence", "evidently:feature:WordsPresence"
+)
+register_type_alias(GeneratedFeatures, "evidently.features.json_match_feature.JSONMatch", "evidently:feature:JSONMatch")
+register_type_alias(
+    GeneratedFeatures, "evidently.features.contains_link_feature.ContainsLink", "evidently:feature:ContainsLink"
 )
 register_type_alias(
     GeneratedFeatures, "evidently.features.is_valid_sql_feature.IsValidSQL", "evidently:feature:IsValidSQL"

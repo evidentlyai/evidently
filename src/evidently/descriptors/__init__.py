@@ -1,4 +1,5 @@
 from . import _registry
+from .contains_link_descriptor import ContainsLink
 from .custom_descriptor import CustomColumnEval
 from .custom_descriptor import CustomPairColumnEval
 from .exact_match_descriptor import ExactMatch
@@ -6,6 +7,7 @@ from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
 from .is_valid_json_descriptor import IsValidJSON
 from .is_valid_sql_descriptor import IsValidSQL
+from .json_match_descriptor import JSONMatch
 from .json_schema_match_descriptor import JSONSchemaMatch
 from .llm_judges import BiasLLMEval
 from .llm_judges import ContextQualityLLMEval
@@ -32,6 +34,8 @@ from .trigger_words_presence_descriptor import TriggerWordsPresence
 from .word_count_descriptor import WordCount
 from .words_descriptor import ExcludesWords
 from .words_descriptor import IncludesWords
+from .words_descriptor import WordMatch
+from .words_descriptor import WordNoMatch
 
 __all__ = [
     "CustomColumnEval",
@@ -64,8 +68,12 @@ __all__ = [
     "Sentiment",
     "ExactMatch",
     "RegExp",
+    "ContainsLink",
+    "WordMatch",
+    "WordNoMatch",
     "IsValidJSON",
     "IsValidSQL",
     "JSONSchemaMatch",
     "_registry",
+    "JSONMatch",
 ]

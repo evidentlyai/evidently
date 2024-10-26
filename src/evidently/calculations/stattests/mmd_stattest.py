@@ -136,10 +136,10 @@ def _mmd_stattest(
         p_value: p-value
         test_result: whether the drift is detected
     """
-    reference_data = reference_data.values.reshape(-1, 1)
-    current_data = current_data.values.reshape(-1, 1)
+    transformed_ref = reference_data.to_numpy().reshape(-1, 1)
+    transformed_curr = current_data.to_numpy().reshape(-1, 1)
 
-    p_value, mmd = mmd_pval(reference_data, current_data)
+    p_value, mmd = mmd_pval(transformed_ref, transformed_curr)
 
     return p_value, p_value < threshold
 

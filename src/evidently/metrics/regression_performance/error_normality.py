@@ -82,7 +82,13 @@ class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormality
             reference_theoretical=reference_theoretical,
         )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df: pd.DataFrame,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ) -> pd.DataFrame:
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(
@@ -91,9 +97,11 @@ class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormality
                 inplace=True,
                 subset=[target_name, prediction_name, datetime_column_name],
             )
-            return result.sort_values(datetime_column_name)
+            result.sort_values(datetime_column_name, inplace=True)
+            return result
         result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
-        return result.sort_index()
+        result.sort_index(inplace=True)
+        return result
 
     def _get_theoretical_line(self, res: Any):
         x = [res[0][0][0], res[0][0][-1]]
@@ -104,7 +112,7 @@ class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormality
         df = pd.DataFrame({"x": res[0][0], "y": res[0][1]})
         if not agg_data:
             return df
-        df["bin"] = pd.cut(err_data.sort_values().values, bins=10, labels=False, retbins=False)
+        df["bin"] = pd.cut(err_data.sort_values().to_numpy(), bins=10, labels=False, retbins=False)
         return (
             df.groupby("bin", group_keys=False)
             .apply(lambda x: x.sample(n=min(100, x.shape[0]), random_state=0))

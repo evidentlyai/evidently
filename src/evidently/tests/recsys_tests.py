@@ -1,7 +1,9 @@
 import abc
 from typing import ClassVar
+from typing import Generic
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 from evidently.metric_results import HistogramData
@@ -267,13 +269,16 @@ BaseNotRankRecsysType = Union[
 ]
 
 
-class BaseNotRankRecsysTest(BaseCheckValueTest, abc.ABC):
+TBaseNotRankRecsysType = TypeVar("TBaseNotRankRecsysType")
+
+
+class BaseNotRankRecsysTest(Generic[TBaseNotRankRecsysType], BaseCheckValueTest, abc.ABC):
     group: ClassVar = RECSYS_GROUP.id
     header: str
     k: int
     min_rel_score: Optional[int]
     item_features: Optional[List[str]]
-    _metric: BaseNotRankRecsysType
+    _metric: TBaseNotRankRecsysType
 
     def __init__(
         self,
@@ -323,7 +328,7 @@ class BaseNotRankRecsysTest(BaseCheckValueTest, abc.ABC):
         return f"{self.header}@{self.k} is {value:.3}. The test threshold is {self.get_condition()}"
 
     @abc.abstractmethod
-    def get_metric(self, k, min_rel_score, item_features) -> BaseTopKRecsysType:
+    def get_metric(self, k, min_rel_score, item_features) -> TBaseNotRankRecsysType:
         raise NotImplementedError()
 
     @property
@@ -353,14 +358,14 @@ class BaseNotRankRecsysTestRenderer(TestRenderer):
         return info
 
 
-class TestNovelty(BaseNotRankRecsysTest):
+class TestNovelty(BaseNotRankRecsysTest[NoveltyMetric]):
     class Config:
         type_alias = "evidently:test:TestNovelty"
 
     name: ClassVar = "Novelty (top-k)"
     header: str = "Novelty"
 
-    def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
+    def get_metric(self, k, min_rel_score, item_features) -> NoveltyMetric:
         return NoveltyMetric(k=k)
 
 
@@ -369,14 +374,14 @@ class TestNoveltyRenderer(BaseNotRankRecsysTestRenderer):
     xaxis_name = "novelty by user"
 
 
-class TestDiversity(BaseNotRankRecsysTest):
+class TestDiversity(BaseNotRankRecsysTest[DiversityMetric]):
     class Config:
         type_alias = "evidently:test:TestDiversity"
 
     name: ClassVar = "Diversity (top-k)"
     header: str = "Diversity"
 
-    def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
+    def get_metric(self, k, min_rel_score, item_features) -> DiversityMetric:
         return DiversityMetric(k=k, item_features=item_features)
 
 
@@ -385,14 +390,14 @@ class TestDiversityRenderer(BaseNotRankRecsysTestRenderer):
     xaxis_name = "intra list diversity by user"
 
 
-class TestSerendipity(BaseNotRankRecsysTest):
+class TestSerendipity(BaseNotRankRecsysTest[SerendipityMetric]):
     class Config:
         type_alias = "evidently:test:TestSerendipity"
 
     name: ClassVar = "Serendipity (top-k)"
     header: str = "Serendipity"
 
-    def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
+    def get_metric(self, k, min_rel_score, item_features) -> SerendipityMetric:
         return SerendipityMetric(k=k, min_rel_score=min_rel_score, item_features=item_features)
 
 
@@ -401,14 +406,14 @@ class TestSerendipityRenderer(BaseNotRankRecsysTestRenderer):
     xaxis_name = "serendipity by user"
 
 
-class TestPersonalization(BaseNotRankRecsysTest):
+class TestPersonalization(BaseNotRankRecsysTest[PersonalizationMetric]):
     class Config:
         type_alias = "evidently:test:TestPersonalization"
 
     name: ClassVar = "Personalization (top-k)"
     header: str = "Personalization"
 
-    def get_metric(self, k, min_rel_score, item_features) -> BaseNotRankRecsysType:
+    def get_metric(self, k, min_rel_score, item_features) -> PersonalizationMetric:
         return PersonalizationMetric(k=k)
 
 

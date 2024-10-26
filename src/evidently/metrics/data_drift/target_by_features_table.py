@@ -167,7 +167,7 @@ class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResult
                     [data.get_current_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
                     axis=1,
                 )
-                curr_text_df.columns = list(self._text_features_gen[col].keys())
+                curr_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
                 curr_df = pd.concat(
                     [
                         curr_df.reset_index(drop=True),
@@ -181,7 +181,7 @@ class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResult
                         [data.get_reference_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
                         axis=1,
                     )
-                    ref_text_df.columns = list(self._text_features_gen[col].keys())
+                    ref_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
                     ref_df = pd.concat(
                         [
                             ref_df.reset_index(drop=True),
@@ -221,10 +221,12 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         current_data = result.current.plot_data
         # todo: better typing
         assert current_data is not None
-        reference_data = result.reference.plot_data if result.reference is not None else None
+        if result.reference is None:
+            raise ValueError("reference is not set but required")
+        reference_data = result.reference.plot_data
         target_name = result.target_name
         curr_predictions = result.current.predictions
-        ref_predictions = result.reference.predictions if result.reference is not None else None
+        ref_predictions = result.reference.predictions
         columns = result.columns
         task = result.task
         if curr_predictions is not None and ref_predictions is not None:

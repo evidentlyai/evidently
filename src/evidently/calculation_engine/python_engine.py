@@ -71,8 +71,8 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
     def merge_additional_features(
         self, features: Dict[GeneratedFeatures, FeatureResult[pd.DataFrame]]
     ) -> EngineDatasets[pd.DataFrame]:
-        currents: List[pd.DataFrame] = []
-        references: List[pd.DataFrame] = []
+        currents = []
+        references = []
 
         for feature, result in features.items():
             currents.append(result.current)
@@ -84,15 +84,13 @@ class PythonEngine(Engine["PythonMetricImplementation", InputData, pd.DataFrame]
         elif len(currents) == 1:
             current = currents[0]
         else:
-            cur, *currents = currents
-            current = cur.join(currents)
+            current = currents[0].join(currents[1:])  # type: ignore[arg-type]
 
         if len(references) == 0:
             return EngineDatasets(current=current, reference=None)
         if len(references) == 1:
             return EngineDatasets(current=current, reference=references[0])
-        ref, *references = references
-        return EngineDatasets(current=current, reference=ref.join(references))
+        return EngineDatasets(current=current, reference=references[0].join(references[1:]))  # type: ignore[arg-type]
 
     def get_metric_implementation(self, metric):
         impl = super().get_metric_implementation(metric)

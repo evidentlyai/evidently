@@ -186,7 +186,7 @@ class DashboardPanelTestSuite(DashboardPanel):
 def to_period(time_agg: Optional[str], timestamp: datetime.datetime) -> datetime.datetime:
     if time_agg is None:
         return timestamp
-    return pd.Series([timestamp], name="dt").dt.to_period(time_agg)[0]
+    return pd.Series([timestamp], name="dt").dt.to_period(time_agg)[0].to_timestamp()
 
 
 @autoregister
