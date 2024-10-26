@@ -31,7 +31,7 @@ class QuestionsFromSeedPromptTemplate(BlockPromptTemplate):
     ]
 
     @llm_call
-    def generate(self, seed_question: str, number: int) -> List[str]: ...
+    def generate(self, seed_question: str, number: int) -> List[str]: ...  # type: ignore[empty-body]
 
 
 class QuestionsFromContextPromptTemplate(WithSystemPrompt, BlockPromptTemplate):
@@ -41,7 +41,7 @@ class QuestionsFromContextPromptTemplate(WithSystemPrompt, BlockPromptTemplate):
     system_prompt: str = "You are an assistant who generates questions based on provided context"
 
     @llm_call
-    def generate_questions(self, context: str, number: int) -> List[str]: ...
+    def generate_questions(self, context: str, number: int) -> List[str]: ...  # type: ignore[empty-body]
 
 
 class NaiveQuestionsFromContextPromptTemplate(QuestionsFromContextPromptTemplate):

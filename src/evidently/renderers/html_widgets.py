@@ -613,7 +613,7 @@ def get_heatmaps_widget(
 
         # show values if thw heatmap is small
         if len(columns) < 15:
-            heatmap_text = np.round(data, 2).astype(str)
+            heatmap_text: Optional[pd.DataFrame] = np.round(data, 2).astype(str)  # type: ignore[assignment]
             heatmap_text_template: Optional[str] = "%{text}"
 
         else:
@@ -731,7 +731,7 @@ def get_pr_rec_plot_data(
 
 def get_lift_plot_data(
     current_lift_curve: LiftCurve,
-    reference_lift_curve: Optional[PRCurve],
+    reference_lift_curve: Optional[LiftCurve],
     color_options: ColorOptions,
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     """

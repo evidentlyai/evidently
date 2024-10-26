@@ -70,8 +70,8 @@ class MulticlassClassificationTestPreset(TestPreset):
         tests: List[AnyTest] = [
             TestAccuracyScore(),
             TestF1Score(),
-            *[TestPrecisionByClass(label) for label in labels],
-            *[TestRecallByClass(label) for label in labels],
+            *[TestPrecisionByClass(label=label) for label in labels],
+            *[TestRecallByClass(label=label) for label in labels],
             TestNumberOfRows(),
             TestColumnDrift(
                 column_name=target.column_name,

@@ -208,7 +208,7 @@ def _cramer_von_mises(
         p_value: p-value
         test_result: whether the drift is detected
     """
-    res = _cvm_2samp(reference_data.values, current_data.values)
+    res = _cvm_2samp(reference_data.to_numpy(), current_data.to_numpy())
     return res.pvalue, res.pvalue <= threshold
 
 
