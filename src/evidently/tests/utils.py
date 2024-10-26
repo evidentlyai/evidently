@@ -1,4 +1,5 @@
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Tuple
 
@@ -193,7 +194,7 @@ def dataframes_to_table(
     columns: List[str],
     table_id: str,
     sort_by: str = "curr",
-    na_position: str = "first",
+    na_position: Literal["first", "last"] = "first",
     asc: bool = False,
 ):
     display_columns = ["display"]

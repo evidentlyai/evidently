@@ -12,8 +12,8 @@ excludes = [
     "comparing_custom_statest_with_classic_distributions.py",
     "how_to_evaluate_llm_with_text_descriptors.py",
     "how_to_run_drift_report_for_text_data.py",  # too slow & torch version conflict?
-    "llm_evaluation_tutorial.ipynb",  # cloud usage
-    "llm_tracing_tutorial.ipynb",  # cloud usage
+    "llm_evaluation_tutorial.py",  # cloud usage
+    "llm_tracing_tutorial.py",  # cloud usage
 ]
 
 

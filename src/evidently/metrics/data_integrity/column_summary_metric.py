@@ -204,20 +204,20 @@ def plot_data(
     elif column_type == ColumnType.Datetime:
         prefix, freq = choose_agg_period(current_data, reference_data)
         curr_data = current_data.dt.to_period(freq=freq).value_counts().reset_index()
-        curr_data.columns = ["x", "number_of_items"]
+        curr_data.columns = pd.Index(["x", "number_of_items"])
         curr_data["x"] = curr_data["x"].dt.to_timestamp()
         reference = None
         if reference_data is not None:
             ref_data = reference_data.dt.to_period(freq=freq).value_counts().reset_index()
-            ref_data.columns = ["x", "number_of_items"]
+            ref_data.columns = pd.Index(["x", "number_of_items"])
             ref_data["x"] = ref_data["x"].dt.to_timestamp()
             max_ref_date = ref_data["x"].max()
             min_curr_date = curr_data["x"].min()
             if max_ref_date == min_curr_date:
                 curr_data, ref_data = _split_periods(curr_data, ref_data, "x")
             reference = ref_data
-            reference.columns = ["x", "count"]
-        curr_data.columns = ["x", "count"]
+            reference.columns = pd.Index(["x", "count"])
+        curr_data.columns = pd.Index(["x", "count"])
         data_hist = Histogram(
             current=HistogramData.from_df(curr_data),
             reference=HistogramData.from_df(reference) if reference is not None else None,
@@ -458,11 +458,11 @@ class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
         if column_type in [ColumnType.Categorical, ColumnType.Numerical]:
             counts_of_values = {}
             current_counts = column_current_data.value_counts(dropna=False).reset_index()
-            current_counts.columns = ["x", "count"]
+            current_counts.columns = pd.Index(["x", "count"])
             counts_of_values["current"] = current_counts.head(10)
             if column_reference_data is not None:
                 reference_counts = column_reference_data.value_counts(dropna=False).reset_index()
-                reference_counts.columns = ["x", "count"]
+                reference_counts.columns = pd.Index(["x", "count"])
                 counts_of_values["reference"] = reference_counts.head(10)
 
         return ColumnSummaryResult(
@@ -540,9 +540,12 @@ class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
             oov = data.get_current_column(generated_text_features["oov"].as_column())
             non_letter_char = data.get_current_column(generated_text_features["non_letter_char"].as_column())
         else:
-            text_length = data.get_reference_column(generated_text_features["text_length"].as_column())
-            oov = data.get_reference_column(generated_text_features["oov"].as_column())
-            non_letter_char = data.get_reference_column(generated_text_features["non_letter_char"].as_column())
+            text_length_ref = data.get_reference_column(generated_text_features["text_length"].as_column())
+            oov_ref = data.get_reference_column(generated_text_features["oov"].as_column())
+            non_letter_char_ref = data.get_reference_column(generated_text_features["non_letter_char"].as_column())
+            if text_length_ref is None or oov_ref is None or non_letter_char_ref is None:
+                raise ValueError("Reference required but not present in data")
+            (text_length, oov, non_letter_char) = (text_length_ref, oov_ref, non_letter_char_ref)
 
         return TextCharacteristics(
             number_of_rows=number_of_rows,

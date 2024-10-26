@@ -37,7 +37,7 @@ class ConfigContext(ComponentContext):
     def get_component(self, type_: Type[T]) -> T:
         for cls in self.components_mapping:
             if issubclass(cls, type_):
-                return self.components_mapping[cls]
+                return self.components_mapping[cls]  # type: ignore[return-value]
         raise ValueError(f"Component of type {type_.__name__} not found")
 
     @property
@@ -117,8 +117,13 @@ def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
             continue
         if section in ("renamed_vars", "dict_itemiterator"):
             continue
-        if section in config_type.__fields__:
-            component = parse_obj_as(config_type.__fields__[section].type_, component_dict)
+        if section == "additional_components":
+            for subsection, compoennt_subdict in component_dict.items():
+                component = parse_obj_as(SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component), compoennt_subdict)
+                components[subsection] = component
+        elif section in config_type.__fields__:
+            type_ = config_type.__fields__[section].type_
+            component = parse_obj_as(type_, component_dict)
             named_components[section] = component
         elif section in SECTION_COMPONENT_TYPE_MAPPING:
             component = parse_obj_as(SECTION_COMPONENT_TYPE_MAPPING[section], component_dict)

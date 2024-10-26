@@ -96,14 +96,14 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
             [data.get_current_column(x.as_column()) for x in list(self.generated_text_features.values())],
             axis=1,
         )
-        curr_text_df.columns = list(self.generated_text_features.keys())
+        curr_text_df.columns = pd.Index(list(self.generated_text_features.keys()))
         ref_df = None
         if data.reference_data is not None:
             ref_text_df = pd.concat(
                 [data.get_reference_column(x.as_column()) for x in list(self.generated_text_features.values())],
                 axis=1,
             )
-            ref_text_df.columns = list(self.generated_text_features.keys())
+            ref_text_df.columns = pd.Index(list(self.generated_text_features.keys()))
             ref_df = pd.concat(
                 [
                     data.reference_data.copy().reset_index(drop=True),
