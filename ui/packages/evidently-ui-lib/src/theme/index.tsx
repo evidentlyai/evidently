@@ -83,9 +83,8 @@ export const theme = createTheme({
     },
     MuiLinearProgress: { defaultProps: { color: 'secondary' } },
     MuiPaper: {
-      styleOverrides: {
-        root: { boxShadow: 'unset' }
-      }
+      defaultProps: { sx: { border: '1px solid', borderColor: (t) => t.palette.divider } },
+      styleOverrides: { root: { boxShadow: 'unset' } }
     }
   },
   typography: {

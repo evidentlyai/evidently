@@ -71,7 +71,7 @@ const Widget = (
   const isInsightsExists = insights === undefined ? false : insights.length > 0
 
   const Component = (
-    <Card sx={{ border: '1px solid', borderColor: (theme) => theme.palette.divider }} elevation={0}>
+    <Card elevation={0}>
       <CardContent>
         <Grid container spacing={1} direction={'column'}>
           {alertsPosition === 'row' ? (
