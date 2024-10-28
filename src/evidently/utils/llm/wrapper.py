@@ -17,8 +17,6 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
-from httpx import Headers
-
 from evidently._pydantic_compat import SecretStr
 from evidently.options.base import Options
 from evidently.options.option import Option
@@ -195,10 +193,7 @@ class OpenAIWrapper(LLMWrapper):
 
         messages = [{"role": msg.role, "content": msg.content} for msg in messages]
         try:
-            headers = Headers([("Connection", "close")])
-            response = await self.client.chat.completions.create(
-                model=self.model, messages=messages, extra_headers=headers
-            )  # type: ignore[arg-type]
+            response = await self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
         except openai.APIError as e:
             raise LLMRequestError(f"Failed to call OpenAI complete API: {e.message}") from e
         content = response.choices[0].message.content
