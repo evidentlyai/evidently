@@ -115,9 +115,7 @@ jobs:
       - name: Install minimal dependencies
         run: pip install -r requirements.min.txt
       - name: Install package
-        run: pip install -e .[dev,spark,fsspec]
-      - name: Run pip-audit
-        run: pip-audit --ignore-vuln PYSEC-2024-48 --ignore-vuln GHSA-jw8x-6495-233v --ignore-vuln GHSA-4hq2-rpgc-r8r7
+        run: pip install -e .[dev,spark,fsspec,llm]
       - name: Run Tests
         run: python -m pytest --durations=50
   test:
@@ -155,7 +153,7 @@ jobs:
         uses: ./.github/share-actions/get-bikes-dataset-cached
 
       - name: Install package
-        run: pip install -e .[dev,spark,fsspec]
+        run: pip install -e .[dev,spark,fsspec,llm]
       - name: Run Tests
         run: python -m pytest --durations=50
 
@@ -173,7 +171,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: setup.py
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: pip install -e .
       - name: Install wheel
         run: pip install wheel
       - name: Build package

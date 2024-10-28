@@ -76,6 +76,7 @@ setup_args = dict(
         "deprecation>=2.1.0",
         "uuid6>=2024.7.10",
         "cryptography>=43.0.1",
+        "evaluate>=0.4.1",
     ],
     extras_require={
         "dev": [
@@ -96,12 +97,15 @@ setup_args = dict(
             "ruff==0.3.7",
             "pre-commit==3.5.0",
             "pytest-asyncio==0.23.7",
+            "evaluate>=0.4.1",
         ],
         "llm": [
             "openai>=1.16.2",
             "evaluate>=0.4.1",
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
+            "rouge-score>=0.1.2",
+            "chromadb>=0.4.0",
         ],
         "spark": ["pyspark>=3.4.0"],
         "fsspec": [

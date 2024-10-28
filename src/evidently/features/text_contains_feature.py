@@ -112,3 +112,109 @@ class DoesNotContain(GeneratedFeature):
         if self.case_sensitive:
             return item in string
         return item.casefold() in string.casefold()
+
+
+class ItemMatch(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:ItemMatch"
+
+    __feature_type__: ClassVar = ColumnType.Categorical
+    columns: List[str]
+    case_sensitive: bool
+    mode: str
+
+    def __init__(
+        self,
+        columns: List[str],
+        case_sensitive: bool = True,
+        mode: str = "any",
+        display_name: Optional[str] = None,
+    ):
+        if len(columns) != 2:
+            raise ValueError("two columns must be provided")
+        self.columns = columns
+        self.display_name = display_name
+        self.case_sensitive = case_sensitive
+        if mode not in ["any", "all"]:
+            raise ValueError("mode must be either 'any' or 'all'")
+        self.mode = mode
+        super().__init__()
+
+    def _feature_column_name(self) -> str:
+        return f"{self.columns[0]}_{self.columns[1]}" + "_item_match_" + str(self.case_sensitive) + "_" + self.mode
+
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        if self.mode == "any":
+            calculated = data.apply(
+                lambda row: any(self.comparison(word, row[self.columns[0]]) for word in row[self.columns[1]]),
+                axis=1,
+            )
+        else:
+            calculated = data.apply(
+                lambda row: all(self.comparison(word, row[self.columns[0]]) for word in row[self.columns[1]]),
+                axis=1,
+            )
+        return pd.DataFrame({self._feature_column_name(): calculated})
+
+    def _as_column(self) -> ColumnName:
+        return self._create_column(
+            self._feature_column_name(),
+            default_display_name=f"Text contains {self.mode} of defined items",
+        )
+
+    def comparison(self, item: str, string: str):
+        if self.case_sensitive:
+            return item in string
+        return item.casefold() in string.casefold()
+
+
+class ItemNoMatch(GeneratedFeature):
+    class Config:
+        type_alias = "evidently:feature:ItemNoMatch"
+
+    __feature_type__: ClassVar = ColumnType.Categorical
+    columns: List[str]
+    case_sensitive: bool
+    mode: str
+
+    def __init__(
+        self,
+        columns: List[str],
+        case_sensitive: bool = True,
+        mode: str = "any",
+        display_name: Optional[str] = None,
+    ):
+        self.columns = columns
+        self.display_name = display_name
+        self.case_sensitive = case_sensitive
+        if mode not in ["any", "all"]:
+            raise ValueError("mode must be either 'any' or 'all'")
+        self.mode = mode
+        super().__init__()
+
+    def _feature_column_name(self) -> str:
+        return f"{self.columns[0]}_{self.columns[1]}" + "_item_no_match_" + str(self.case_sensitive) + "_" + self.mode
+
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+        if self.mode == "any":
+            calculated = data.apply(
+                lambda row: not any(self.comparison(word, row[self.columns[0]]) for word in row[self.columns[1]]),
+                axis=1,
+            )
+        else:
+            calculated = data.apply(
+                lambda row: not all(self.comparison(word, row[self.columns[0]]) for word in row[self.columns[1]]),
+                axis=1,
+            )
+        return pd.DataFrame({self._feature_column_name(): calculated})
+
+    def _as_column(self) -> ColumnName:
+        return self._create_column(
+            self._feature_column_name(),
+            default_display_name=f"Text does not contain {self.mode} of defined items",
+        )
+
+    def comparison(self, item: str, string: str):
+        if self.case_sensitive:
+            return item in string
+        return item.casefold() in string.casefold()
