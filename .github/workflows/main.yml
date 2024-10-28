@@ -103,6 +103,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.8"
+          architecture: "x64"
           cache: "pip"
           cache-dependency-path: requirements.min.txt
 
@@ -138,7 +139,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-          architecture: "x64"
           cache: "pip"
           cache-dependency-path: setup.py
       - uses: actions/cache@v4
