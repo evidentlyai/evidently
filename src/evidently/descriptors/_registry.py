@@ -17,6 +17,11 @@ register_type_alias(
 )
 register_type_alias(
     FeatureDescriptor,
+    "evidently.descriptors.is_valid_python_descriptor.IsValidPython",
+    "evidently:descriptor:IsValidPython",
+)
+register_type_alias(
+    FeatureDescriptor,
     "evidently.descriptors.json_schema_match_descriptor.JSONSchemaMatch",
     "evidently:descriptor:JSONSchemaMatch",
 )
@@ -107,7 +112,29 @@ register_type_alias(
     FeatureDescriptor, "evidently.descriptors.words_descriptor.IncludesWords", "evidently:descriptor:IncludesWords"
 )
 register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.words_descriptor.WordMatch", "evidently:descriptor:WordMatch"
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.words_descriptor.WordNoMatch", "evidently:descriptor:WordNoMatch"
+)
+register_type_alias(
     GeneralDescriptor,
     "evidently.descriptors.custom_descriptor.CustomPairColumnEval",
     "evidently:descriptor:CustomPairColumnEval",
+)
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.json_match_descriptor.JSONMatch",
+    "evidently:descriptor:JSONMatch",
+)
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.contains_link_descriptor.ContainsLink",
+    "evidently:descriptor:ContainsLink",
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.exact_match_descriptor.ExactMatch", "evidently:descriptor:ExactMatch"
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.is_valid_json_descriptor.IsValidJSON", "evidently:descriptor:IsValidJSON"
 )

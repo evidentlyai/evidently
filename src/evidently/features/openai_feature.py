@@ -56,12 +56,11 @@ class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
         self.context_replace_string = context_replace_string
         self.openai_params = openai_params or {}
         self.model = model
-        self.feature_type = ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical
         self.column_name = column_name
         self.display_name = display_name
         self.check_mode = check_mode
         self.possible_values = [v.lower() for v in possible_values] if possible_values else None
-        super().__init__()
+        super().__init__(feature_type=ColumnType.Categorical if feature_type == "cat" else ColumnType.Numerical)
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         from openai import OpenAI

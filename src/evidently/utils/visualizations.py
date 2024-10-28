@@ -579,7 +579,11 @@ def make_hist_for_num_plot(curr: pd.Series, ref: Optional[pd.Series] = None, cal
 
 
 def plot_cat_cat_rel(
-    curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str, color_options: ColorOptions
+    curr: pd.DataFrame,
+    ref: Optional[pd.DataFrame],
+    target_name: str,
+    feature_name: str,
+    color_options: ColorOptions,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
@@ -684,23 +688,31 @@ def plot_num_num_rel(
 
 
 def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False) -> Histogram:
-    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
-    hist_df.columns = ["x", "count"]
+    hist_df = (
+        curr.astype(str)
+        .value_counts(normalize=normalize, dropna=dropna)  # type: ignore[call-overload]
+        .reset_index()
+    )
+    hist_df.columns = pd.Index(["x", "count"])
     current = HistogramData.from_df(hist_df)
 
     reference = None
     if ref is not None:
-        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
-        hist_df.columns = ["x", "count"]
+        hist_df = (
+            ref.astype(str)
+            .value_counts(normalize=normalize, dropna=dropna)  # type: ignore[call-overload]
+            .reset_index()
+        )
+        hist_df.columns = pd.Index(["x", "count"])
         reference = HistogramData.from_df(hist_df)
     return Histogram(current=current, reference=reference)
 
 
 def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
-    value_counts = column.value_counts(normalize=normalize, dropna=False)
+    value_counts = column.value_counts(normalize=normalize, dropna=False)  # type: ignore[call-overload]
 
     # filter out na values if it amount == 0
-    new_values = [(k, v) for k, v in value_counts.items() if (not pd.isna(k) or v > 0)]
+    new_values = [(k, v) for k, v in value_counts.items() if (not pd.isna(k) or v > 0)]  # type: ignore[call-overload]
 
     return Distribution(
         x=[x[0] for x in new_values],
@@ -1217,13 +1229,14 @@ def prepare_df_for_time_index_plot(
     if datetime_name is not None:
         if prefix is None and freq is None:
             prefix, freq = choose_agg_period(df[datetime_name], None)
-        plot_df = df.copy()
-        plot_df["per"] = plot_df[datetime_name].dt.to_period(freq=freq)
-        plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
-        plot_df["per"] = plot_df["per"].dt.to_timestamp()
-        return plot_df, prefix
-    plot_df = df[column_name].reset_index().sort_values(index_name)
-    plot_df["per"] = pd.cut(plot_df[index_name], OPTIMAL_POINTS if bins is None else bins, labels=False)
+        dt_plot_df: pd.DataFrame = df.copy()
+        dt_plot_df["per"] = dt_plot_df[datetime_name].dt.to_period(freq=freq)
+        dt_plot_df = dt_plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
+        dt_plot_df["per"] = dt_plot_df["per"].dt.to_timestamp()
+        return dt_plot_df, prefix
+    plot_df: pd.DataFrame = df[column_name].reset_index().sort_values(index_name)
+    new_bins = OPTIMAL_POINTS if bins is None else bins
+    plot_df["per"] = pd.cut(plot_df[index_name], bins=new_bins, labels=False)  # type: ignore[call-overload]
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
     return plot_df, None
 
@@ -1389,10 +1402,10 @@ def plot_metric_k(curr_data: pd.Series, ref_data: Optional[pd.Series], yaxis_nam
 
 
 def plot_bias(
-    curr: Distribution,
-    curr_train: Distribution,
-    ref: Optional[Distribution],
-    ref_train: Optional[Distribution],
+    curr: HistogramData,
+    curr_train: HistogramData,
+    ref: Optional[HistogramData],
+    ref_train: Optional[HistogramData],
     xaxis_name: str,
 ):
     color_options = ColorOptions()
@@ -1444,10 +1457,10 @@ def plot_bias(
 
 
 def plot_4_distr(
-    curr_1: Distribution,
-    curr_2: Optional[Distribution],
-    ref_1: Optional[Distribution],
-    ref_2: Optional[Distribution],
+    curr_1: HistogramData,
+    curr_2: Optional[HistogramData],
+    ref_1: Optional[HistogramData],
+    ref_2: Optional[HistogramData],
     name_1: str,
     name_2: str,
     xaxis_name: str,

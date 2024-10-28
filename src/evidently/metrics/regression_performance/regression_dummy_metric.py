@@ -84,8 +84,8 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
         # mape default values
         # optimal constant for mape
         s = data.current_data[target_name]
-        inv_y = 1 / s[s != 0].values
-        w = inv_y / sum(inv_y)
+        inv_y = 1.0 / s[s != 0].values  # type: ignore[operator]
+        w = inv_y / sum(inv_y)  # type: ignore[operator,arg-type]
         idxs = np.argsort(w)
         sorted_w = w[idxs]
         sorted_w_cumsum = np.cumsum(sorted_w)
@@ -126,8 +126,8 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
             # mape default values
             # optimal constant for mape
             s = data.reference_data[target_name]
-            inv_y = 1 / s[s != 0].values
-            w = inv_y / sum(inv_y)
+            inv_y = 1.0 / s[s != 0].values  # type: ignore[operator]
+            w = inv_y / sum(inv_y)  # type: ignore[operator,arg-type]
             idxs = np.argsort(w)
             sorted_w = w[idxs]
             sorted_w_cumsum = np.cumsum(sorted_w)
@@ -210,5 +210,9 @@ class RegressionDummyMetricRenderer(MetricRenderer):
 
         return [
             header_text(label="Dummy Regression Quality"),
-            table_data(column_names=columns, data=np.around(in_table_data, 3).values, title=""),
+            table_data(
+                column_names=columns,
+                data=np.around(in_table_data, 3).values,  # type: ignore[attr-defined]
+                title="",
+            ),
         ]

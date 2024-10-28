@@ -42,7 +42,7 @@ jobs:
         if: matrix.minimal
         run: pip install -r requirements.min.txt
       - name: Prepare examples dependencies
-        run: pip install catboost sentence-transformers
+        run: pip install catboost sentence-transformers openai
       - name: Export examples
         run: jupyter nbconvert --to python examples/*/*.ipynb --output-dir example_scripts
       - name: Run examples

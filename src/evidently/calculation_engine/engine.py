@@ -117,8 +117,6 @@ class Engine(Generic[TMetricImplementation, TInputData, TEngineDataType]):
                 continue
             for feature in required_features:
                 fp = feature.get_fingerprint()
-                if fp in feature:
-                    continue
                 features[fp] = feature
         return list(features.values())
 

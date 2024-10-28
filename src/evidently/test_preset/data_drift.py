@@ -85,21 +85,22 @@ class DataDriftTestPreset(TestPreset):
         self, data_definition: DataDefinition, additional_data: Optional[Dict[str, Any]]
     ) -> List[AnyTest]:
         embeddings_data = data_definition.embeddings
+        columns = self.columns
         if embeddings_data is not None:
             embs = list(set(v for values in embeddings_data.values() for v in values))
-            if self.columns is None:
-                self.columns = list(
+            if columns is None:
+                columns = list(
                     np.setdiff1d(
                         [column.column_name for column in data_definition.get_columns(features_only=True)],
                         embs,
                     )
                 )
             else:
-                self.columns = list(np.setdiff1d(self.columns, embs))
+                columns = list(np.setdiff1d(columns, embs))
 
         preset_tests: list = [
             TestShareOfDriftedColumns(
-                columns=self.columns,
+                columns=columns,
                 lt=0.3 if self.drift_share is None else self.drift_share,
                 stattest=self.stattest,
                 cat_stattest=self.cat_stattest,
@@ -164,7 +165,7 @@ class DataDriftTestPreset(TestPreset):
 
         preset_tests.append(
             TestAllFeaturesValueDrift(
-                self.columns,
+                columns,
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
