@@ -38,8 +38,8 @@ def async_to_sync(awaitable: Awaitable[TA]) -> TA:
         # we are in sync context but inside a running loop
         print("loop", loop)
 
-        if not _thr.is_alive():
-            print("start loop", loop)
+        if not loop.is_running():
+            print("loop is not running", loop)
             new_loop = asyncio.new_event_loop()
             asyncio.set_event_loop(new_loop)
             try:
@@ -50,7 +50,8 @@ def async_to_sync(awaitable: Awaitable[TA]) -> TA:
         future = asyncio.run_coroutine_threadsafe(awaitable, _loop)
         return future.result()
 
-    except RuntimeError:
+    except RuntimeError as e:
+        print("RuntimeError, creating new_event_loop", e)
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         try:
