@@ -33,10 +33,6 @@ import {
 
 import { useLocalStorage } from '@uidotdev/usehooks'
 
-import JsonView from 'react18-json-view'
-import 'react18-json-view/src/style.css'
-import './override-react18-json-view.css'
-
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import { Autocomplete } from '@mui/material'
 import dayjs from 'dayjs'
@@ -46,6 +42,7 @@ import type { MetadataModel } from '~/api/types'
 import type { crumbFunction } from '~/components/BreadCrumbs'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
+import { JsonViewThemed } from '~/components/JsonView'
 import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 import type { deleteSnapshotSchema, reloadSnapshotSchema } from './data'
@@ -287,10 +284,9 @@ export const SnapshotsListTemplate = ({
                 </Box>
               </TableCell>
               <TableCell>
-                <JsonView
+                <JsonViewThemed
                   collapsed={isCollapsedJson}
-                  src={snapshot.metadata}
-                  theme='atom'
+                  value={snapshot.metadata}
                   enableClipboard={false}
                 />
               </TableCell>

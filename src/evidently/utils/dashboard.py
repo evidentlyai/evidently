@@ -148,7 +148,6 @@ def file_html_template(params: TemplateParams):
     </head>
     <body>
     <div id="root_{params.dashboard_id}">
-        <h1 class="center-align">Loading...</h1>
     </div>
     <script>var global = globalThis</script>
     {lib_block}
@@ -178,7 +177,7 @@ def inline_iframe_html_template(params: TemplateParams):
                 window.evidentlyResizeIframeInterval = setInterval(() => {
                   document
                     .querySelectorAll('iframe.evidently-ui-iframe')
-                    .forEach((iframe) => resizeIFrameHeightToFitContent(iframe))
+                    .forEach((iframe) => (iframe?.checkVisibility() ?? true) && resizeIFrameHeightToFitContent(iframe))
                 }, INTERVAL)
 
                 const getIframeHeight = (iframe) => iframe.contentWindow.document.body.scrollHeight
