@@ -1,5 +1,5 @@
 ---
-description: How to run regession testing for LLM outputs.
+description: How to run regression testing for LLM outputs.
 ---
 
 In this tutorial, we’ll show you how to do regression testing for LLM outputs. You’ll learn how to compare new and old responses after changing a prompt, model, or anything else in your system. By re-running the same inputs, you can spot any significant changes. This helps you push updates with confidence or identify issues to fix.

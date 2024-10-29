@@ -277,7 +277,7 @@ Update dataset by predictions type:
 
     set predicted_labels column by threshold
 
-- (multy label classification) if predictions is a list and its length is greater than 2
+- (multi label classification) if predictions is a list and its length is greater than 2
 
     set predicted_labels from probability values in columns by prediction column
 
