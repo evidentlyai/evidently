@@ -126,7 +126,7 @@ assistant_logs.head(3)
 {% endhint %}
 
 {% hint style="success" %}
-**How to pass an exsiting dataser?** You can import a pandas DataFrame with flexible structure. Include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
+**How to pass an existing dataset?** You can import a pandas DataFrame with flexible structure. Include any text columns (e.g., inputs and responses), DateTime, and optional metadata like ID, feedback, model type, etc. If you have multi-turn conversations, parse them into a table by session or input-output pairs.
 {% endhint %}
 
 # 3. Create a Project 
@@ -617,7 +617,7 @@ You will instantly get a dashboard with evaluation results over time.
 
 ![](../.gitbook/assets/cloud/create_tabs-min.gif)
 
-In the "Desriptors" tab, you will see how the distributions of the text evaluation results. For example, you can notice a dip in mean Sentiment in the fourth evaluation run. 
+In the "Descriptors" tab, you will see how the distributions of the text evaluation results. For example, you can notice a dip in mean Sentiment in the fourth evaluation run. 
 
 ![](../.gitbook/assets/cloud/llm_tutorial_sentiment_over_time-min.png) 
 
@@ -711,7 +711,7 @@ project.save()
 
 When can you use these Test Suites? Here are two ideas:
 * **Regression testing**. Run Test Suites whenever you change prompt or app parameters to compare new responses with references or against set criteria.
-* **Continous testing**. Run Test Suites periodically over production logs to check that the output quality stays within expectations.
+* **Continuous testing**. Run Test Suites periodically over production logs to check that the output quality stays within expectations.
 
 You can also set up alerts to get a notification if your Tests contain failures. 
 
