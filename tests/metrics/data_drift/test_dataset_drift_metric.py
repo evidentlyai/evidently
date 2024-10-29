@@ -73,7 +73,7 @@ from evidently.report import Report
             ),
             ColumnMapping(prediction=["label_a", "label_b"]),
         ),
-        # multy classification
+        # multi classification
         (
             pd.DataFrame(
                 {

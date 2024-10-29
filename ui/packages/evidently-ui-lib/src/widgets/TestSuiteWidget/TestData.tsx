@@ -1,9 +1,10 @@
-import { Alert, type AlertColor, AlertTitle, Box, Button, Collapse } from '@mui/material'
+import { type AlertColor, AlertTitle, Box, Button, Collapse } from '@mui/material'
 import type React from 'react'
 import { useState } from 'react'
 import type { TestDataInfo, TestState } from '~/api'
 
 import ReactMarkdown from 'react-markdown'
+import { AlertThemed } from '~/components/AlertThemed'
 import { BigTableDetails } from '~/widgets/BigTableWidget/BigTableDetails'
 
 const availableStates: TestState[] = ['unknown', 'success', 'warning', 'fail']
@@ -32,7 +33,7 @@ const TestData: React.FC<TestDataInfo> = ({ title, description, state, details }
   return (
     <>
       <Box>
-        <Alert
+        <AlertThemed
           severity={StateToSeverity(state)}
           action={
             isDetailsAvailable ? (
@@ -48,7 +49,7 @@ const TestData: React.FC<TestDataInfo> = ({ title, description, state, details }
         >
           <AlertTitle>{title}</AlertTitle>
           <ReactMarkdown>{description}</ReactMarkdown>
-        </Alert>
+        </AlertThemed>
         {!isDetailsAvailable ? (
           <></>
         ) : (

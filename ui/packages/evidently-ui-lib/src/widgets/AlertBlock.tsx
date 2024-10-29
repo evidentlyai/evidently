@@ -33,6 +33,10 @@ const AlertBlock: React.FunctionComponent<AlertBlockProps> = (props) => {
       elevation={0}
       onClick={(event) => setState((s) => ({ open: !s.open, anchorEl: event.currentTarget }))}
       sx={[
+        {
+          border: '1px solid',
+          borderColor: (t) => t.palette.divider
+        },
         // info by default
         {
           color: (theme) => getColor(theme)(theme.palette.info.main, 0.6),

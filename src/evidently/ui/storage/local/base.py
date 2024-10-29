@@ -296,10 +296,14 @@ class InMemoryDataStorage(DataStorage):
     ) -> TestResultPoints:
         points: Dict[datetime.datetime, Dict[Test, TestInfo]] = defaultdict(dict)
         for report in (s.as_test_suite() for s in self.state.snapshot_data[project_id].values() if not s.is_report):
-            if not filter.filter(report):
+            if not (
+                filter.filter(report)
+                and isinstance(report, TestSuite)
+                and (timestamp_start is None or report.timestamp >= timestamp_start)
+                and (timestamp_end is None or report.timestamp < timestamp_end)
+            ):
                 continue
-            if not isinstance(report, TestSuite):
-                continue
+
             ts = to_period(time_agg, report.timestamp)
             if test_filters:
                 for test_filter in test_filters:

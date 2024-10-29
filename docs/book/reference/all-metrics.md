@@ -281,6 +281,7 @@ Check for regular expression matches.
 | **JSONSchemaMatch()** <ul><li>Checks if the text contains a JSON object matching the **expected_schema**. Supports exact (**exact=True**) or minimal (**exact=False**) matching, with optional strict type validation (**validate_types=True**).  </li><li>Returns True/False for each row. </li></ul> Example use:<br> `JSONSchemaMatch(expected_schema={"name": str, "age": int}, exact_match=False, validate_types=True)`| **Required:** <br>`expected_schema: Dict[str, type]`<br><br>**Optional:**<ul><li>`exact_match = True` or `False`</li><li>`validate_types = True` or `False`</li></ul> |
 | **JSONMatch()** <ul><li>Compares two columns of a dataframe and checks whether the two objects in each row of the dataframe are matching JSON's or not. </li><li>Returns True/False for every input. </li></ul> Example use:<br> `JSONMatch(with_column="column_2")`| **Required:** <br> `with_column : str` <br><br>**Optional:**<ul><li>`display_name`</li> |
 | **ContainsLink()** <ul><li>Checks if the text contains at least one valid URL. </li><li>Returns True/False for each row. </li></ul> Example use:<br> `ContainsLink(column_name='column_1')`| **Required:** <br>`column_name: str`<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **IsValidPython()** <ul><li>Checks if the text is valid Python code without syntax errors.</li><li>Returns True/False for every input. </li></ul> Example use:<br> `IsValidPython(column_name='column_1')`| **Required:** <br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Descriptors: Text stats
 

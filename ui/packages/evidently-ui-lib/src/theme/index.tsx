@@ -4,62 +4,57 @@ import { createTheme } from '@mui/material/styles'
 const { transitions } = createTheme()
 
 const mainRed = '#ed0500'
-const borderColorGrey = '#ded5d5'
 
 export const theme = createTheme({
-  shape: { borderRadius: 5 },
-  palette: {
-    primary: { main: colors.grey[900], light: colors.grey[200] },
-    // we use `secondary` color for interactive elements
-    secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] },
-    background: { default: '#fff', paper: '#fff' }
+  cssVariables: { colorSchemeSelector: 'class' },
+  colorSchemes: {
+    light: {
+      palette: {
+        text: { primary: '#09090b' },
+        primary: { main: '#09090b', light: colors.grey[200] },
+        secondary: { main: mainRed, dark: '#c10400', light: colors.grey[200] }
+      }
+    },
+    dark: {
+      palette: {
+        text: { primary: '#fafafa' },
+        primary: { main: '#fafafa', light: colors.grey[900] },
+        secondary: { main: mainRed }
+      }
+    }
   },
+  shape: { borderRadius: 5 },
   components: {
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          '&:-webkit-autofill': {
+            transitionDelay: '9999s',
+            transitionProperty: 'background-color, box-shadow, color'
+          }
+        }
+      }
+    },
     MuiLink: {
       styleOverrides: {
         root: {
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
-          '&:hover': {
-            color: mainRed
-          }
+          '&:hover': { color: mainRed }
         }
       }
     },
     MuiTabs: {
-      styleOverrides: { flexContainer: { gap: '10px' }, indicator: { backgroundColor: mainRed } }
-    },
-    MuiButton: {
       styleOverrides: {
-        contained: {
-          '&:hover': { background: colors.grey[800] }
-        },
-        outlined: {
-          '&:hover': {
-            color: mainRed,
-            borderColor: mainRed,
-            background: '#fff'
-          }
-        },
-        text: {
-          '&:hover': {
-            color: mainRed,
-            borderColor: mainRed
-          }
-        }
+        flexContainer: { gap: '10px' },
+        indicator: { backgroundColor: mainRed }
       }
     },
     MuiTab: {
       defaultProps: { color: 'secondary' },
       styleOverrides: {
-        root: {
-          fontSize: '1rem',
-          borderRadius: '5px',
-          '&:hover': {
-            background: colors.grey[200]
-          }
-        }
+        root: { fontSize: '1rem', borderRadius: '5px' }
       }
     },
     MuiIconButton: {
@@ -68,10 +63,8 @@ export const theme = createTheme({
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
-          color: colors.grey[900],
-          '&:hover': {
-            color: mainRed
-          }
+          color: 'inherit',
+          '&:hover': { color: mainRed }
         }
       }
     },
@@ -83,21 +76,15 @@ export const theme = createTheme({
           transition: transitions.create('color', {
             duration: transitions.duration.enteringScreen
           }),
-          color: colors.grey[900],
-          '&:hover': { color: mainRed },
-          '&.Mui-disabled': {
-            border: 'unset',
-            background: colors.grey[100]
-          }
+          color: 'inherit',
+          '&.Mui-disabled': { border: 'unset' }
         }
       }
     },
-    MuiToggleButtonGroup: { defaultProps: { color: 'secondary' } },
     MuiLinearProgress: { defaultProps: { color: 'secondary' } },
     MuiPaper: {
-      styleOverrides: {
-        root: { boxShadow: 'unset', border: '1px solid', borderColor: borderColorGrey }
-      }
+      defaultProps: { sx: { border: '1px solid', borderColor: (t) => t.palette.divider } },
+      styleOverrides: { root: { boxShadow: 'unset' } }
     }
   },
   typography: {
