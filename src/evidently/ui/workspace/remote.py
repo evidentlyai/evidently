@@ -291,7 +291,7 @@ class RemoteWorkspaceView(WorkspaceView):
             metadata=(RemoteProjectMetadataStorage(base_url=self.base_url, secret=self.secret)),
             blob=(NoopBlobStorage()),
             data=(NoopDataStorage()),
-            auth=(NoopAuthManager()),
+            auth_manager=(NoopAuthManager()),
         )
         super().__init__(None, pm)
         self.verify()

@@ -1,12 +1,12 @@
 import datetime
 import json
-from typing import Annotated
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
 
 from litestar.params import Dependency
+from typing_extensions import Annotated
 
 from evidently._pydantic_compat import parse_obj_as
 from evidently.suite.base_suite import Snapshot
@@ -199,6 +199,7 @@ class ProjectManager(BaseManager):
         project = await self.get_project(user_id, project_id)
         if project is None:
             raise ProjectNotFound()
+        assert project.team_id is not None
         team = await self.auth_manager.get_team(project.team_id)
         if team is None:
             raise TeamNotFound()
