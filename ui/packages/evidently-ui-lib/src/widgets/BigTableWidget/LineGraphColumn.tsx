@@ -5,6 +5,7 @@ import type React from 'react'
 import { ResponsiveLineCanvas } from '@nivo/line'
 
 import type { BigTableDataRow, LineGraphOptions } from '~/api'
+import { useNivoTheme } from '~/hooks/theme'
 // import withTheme from "@material-ui/core/styles/withTheme";
 
 interface LineGraphColumnProps extends LineGraphOptions {
@@ -12,6 +13,7 @@ interface LineGraphColumnProps extends LineGraphOptions {
 }
 
 const _LineGraphColumn: React.FunctionComponent<LineGraphColumnProps> = (props) => {
+  const theme = useNivoTheme()
   return (
     <Box sx={{ maxWidth: 200, height: 50 }}>
       <ResponsiveLineCanvas
@@ -25,6 +27,7 @@ const _LineGraphColumn: React.FunctionComponent<LineGraphColumnProps> = (props) 
             }))
           }
         ]}
+        theme={theme}
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
         xScale={{ type: 'linear', min: 0, max: 25 }}
         axisTop={null}

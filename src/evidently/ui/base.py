@@ -1,17 +1,12 @@
-import asyncio
 import contextlib
 import datetime
 import json
-import threading
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
-from functools import wraps
 from typing import IO
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Awaitable
-from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import Iterator
@@ -52,33 +47,10 @@ from evidently.ui.type_aliases import UserID
 from evidently.utils import NumpyEncoder
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
+from evidently.utils.sync import sync_api
 
 if TYPE_CHECKING:
     from evidently.ui.managers.projects import ProjectManager
-
-_loop = asyncio.new_event_loop()
-
-_thr = threading.Thread(target=_loop.run_forever, name="Async Runner", daemon=True)
-
-
-TA = TypeVar("TA")
-
-
-def async_to_sync(awaitable: Awaitable[TA]) -> TA:
-    try:
-        asyncio.get_running_loop()
-        # we are in sync context but inside a running loop
-        if not _thr.is_alive():
-            _thr.start()
-        future = asyncio.run_coroutine_threadsafe(awaitable, _loop)
-        return future.result()
-    except RuntimeError:
-        new_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(new_loop)
-        try:
-            return new_loop.run_until_complete(awaitable)
-        finally:
-            new_loop.close()
 
 
 class BlobMetadata(BaseModel):
@@ -182,14 +154,6 @@ def _default_dashboard():
     from evidently.ui.dashboards import DashboardConfig
 
     return DashboardConfig(name="", panels=[])
-
-
-def sync_api(f: Callable[..., Awaitable[TA]]) -> Callable[..., TA]:
-    @wraps(f)
-    def sync_call(*args, **kwargs):
-        return async_to_sync(f(*args, **kwargs))
-
-    return sync_call
 
 
 class Project(Entity):

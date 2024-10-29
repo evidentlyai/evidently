@@ -27,8 +27,7 @@ class HuggingFaceFeature(FeatureTypeFieldMixin, DataFeature):
         self.model = model
         self.params = params
         self.display_name = display_name
-        self.feature_type = _model_type(model)
-        super().__init__()
+        super().__init__(feature_type=_model_type(model))
 
     def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
         val = _models.get(self.model)
@@ -60,10 +59,9 @@ class HuggingFaceToxicityFeature(DataFeature):
         toxic_label: Optional[str] = None,
     ):
         self.column_name = column_name
-        self.display_name = display_name
         self.model = model
         self.toxic_label = toxic_label
-        super().__init__()
+        super().__init__(display_name=display_name)
 
     def generate_data(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.Series:
         return _toxicity(self.model, self.toxic_label, data[self.column_name])

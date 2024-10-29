@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import IO
 from typing import Any
 from typing import Dict
-from typing import Iterator
+from typing import Generator
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -90,7 +90,7 @@ def find_metric_renderer(obj, renderers: RenderersDefinitions) -> MetricRenderer
     raise KeyError(f"No renderer found for {obj}")
 
 
-def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Union[Metric, Test]]]:
+def _discover_dependencies(test: Union[Metric, Test]) -> Generator[Tuple[str, Union[Metric, Test]], None, None]:
     if hasattr(test, "__evidently_dependencies__"):
         yield from test.__evidently_dependencies__()  # type: ignore[union-attr]
         return
@@ -480,7 +480,7 @@ class DatasetLinks(BaseModel):
     current: Optional[DatasetID] = None
     additional: Dict[str, DatasetID] = {}
 
-    def __iter__(self) -> Iterator[Tuple[str, DatasetID]]:
+    def __iter__(self) -> Generator[Tuple[str, DatasetID], None, None]:
         if self.reference is not None:
             yield "reference", self.reference
         if self.current is not None:
@@ -492,14 +492,15 @@ class DatasetInputOutputLinks(BaseModel):
     input: DatasetLinks = DatasetLinks()
     output: DatasetLinks = DatasetLinks()
 
-    def __iter__(self) -> Iterator[Tuple[str, str, DatasetID]]:
-        yield from (("input", subtype, dataset_id) for subtype, dataset_id in self.input)
-        yield from (("output", subtype, dataset_id) for subtype, dataset_id in self.output)
+    def __iter__(self) -> Generator[Tuple[str, Tuple[str, DatasetID]], None, None]:
+        yield from (("input", (subtype, dataset_id)) for subtype, dataset_id in self.input)
+        yield from (("output", (subtype, dataset_id)) for subtype, dataset_id in self.output)
 
 
 class SnapshotLinks(BaseModel):
     datasets: DatasetInputOutputLinks = DatasetInputOutputLinks()
     computation_config_id: Optional[ComputationConfigID] = None
+    task_id: Optional[str] = None
 
 
 class Snapshot(BaseModel):

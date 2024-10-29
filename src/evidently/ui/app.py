@@ -4,6 +4,7 @@ import uvicorn
 
 from evidently._pydantic_compat import SecretStr
 from evidently.ui.components.base import AppBuilder
+from evidently.ui.components.storage import LocalStorageComponent
 from evidently.ui.config import AppConfig
 from evidently.ui.config import load_config
 from evidently.ui.config import settings
@@ -37,6 +38,8 @@ def get_config(
     config = load_config(LocalConfig, settings)
     config.service.host = host
     config.service.port = port
+    if not isinstance(config.storage, LocalStorageComponent):
+        raise ValueError("Storage component is not a LocalStorageComponent")
     config.storage.path = workspace
 
     secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)

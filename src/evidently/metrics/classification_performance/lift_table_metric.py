@@ -105,7 +105,7 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
         labels = prediction.labels
         if prediction.prediction_probas is None:
             raise ValueError("Lift Table can be calculated only on " "binary probabilistic predictions")
-        binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
+        binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
         lift_table = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
