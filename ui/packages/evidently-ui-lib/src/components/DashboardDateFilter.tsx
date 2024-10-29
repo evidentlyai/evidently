@@ -1,5 +1,4 @@
 import {
-  Alert,
   AlertTitle,
   Box,
   Collapse,
@@ -26,6 +25,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useDebounce, useIsFirstRender } from '~/hooks'
 import { formatDate } from '~/utils'
+import { AlertThemed } from './AlertThemed'
 
 type QueryAliases = 'FROM' | 'TO'
 type QueryLiterals = 'date_from' | 'date_to'
@@ -213,10 +213,10 @@ export const DashboardParams = ({
             </Grid>
             <Grid item xs={12}>
               <Collapse unmountOnExit in={!isCorrectTimeInterval}>
-                <Alert severity='error'>
+                <AlertThemed severity='error'>
                   <AlertTitle>Error</AlertTitle>
                   {isIncorrectTimeIntervalMessage}
-                </Alert>
+                </AlertThemed>
               </Collapse>
             </Grid>
           </>
@@ -324,10 +324,10 @@ export const DateFilter = ({ dates, setDates, required = false }: DateFilterProp
               unmountOnExit
               in={Boolean(dates.dateFrom && dates.dateTo && dates.dateFrom?.isAfter(dates.dateTo))}
             >
-              <Alert severity='error'>
+              <AlertThemed severity='error'>
                 <AlertTitle>Error</AlertTitle>
                 Incorrect time interval
-              </Alert>
+              </AlertThemed>
             </Collapse>
           </Grid>
         </>

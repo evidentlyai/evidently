@@ -1,8 +1,8 @@
 import { FetchersErrorSnackbar, GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import { EvidentlyLogoSvg } from 'evidently-ui-lib/components/LogoSvg'
 import { getLoaderAction } from 'evidently-ui-lib/routes-components/home/data'
 import type { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { clientAPI } from '~/api'
-import logoSrc from '~/assets/logo.png'
 
 const { loader } = getLoaderAction({ api: clientAPI })
 
@@ -17,7 +17,7 @@ export default {
       return (
         <>
           <FetchersErrorSnackbar />
-          <HomeComponentTemplate logoSrc={logoSrc} />
+          <HomeComponentTemplate LogoSvg={EvidentlyLogoSvg} />
         </>
       )
     }

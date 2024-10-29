@@ -4,7 +4,7 @@ description: Introduction to tracing.
 
 This section covers how to instrument your AI application to collect data and send it to Evidently Platform for further evaluation and analysis. 
 
-**Note**: this feature is in active development, expect more detailed documentaton soon.
+**Note**: this feature is in active development, expect more detailed documentation soon.
 
 {% hint style="success" %}
 Tracing uses the open-source `Tracely` library. 
