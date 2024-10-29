@@ -319,7 +319,8 @@ Use pre-trained machine learning models for evaluation.
 | **Sentiment()** <ul><li>Analyzes the sentiment of the text using a word-based model. </li><li> Return a score on a scale: -1 (negative) to 1 positive). </li></ul>| **Required:**<br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **HuggingFaceModel()** <br><br> Scores the text using the user-selected HuggingFace model.| See [docs](../customization/huggingface_descriptor.md) with some example models (classification by topic, emotion, etc.)|
 | **HuggingFaceToxicityModel()** <ul><li> Detects hate speech using [HuggingFace Model](https://huggingface.co/facebook/roberta-hate-speech-dynabench-r4-target). </li><li> Returns predicted probability for the “hate” label. </li><li> Scale: 0 to 1. </li></ul> | **Optional**: <ul><li>`toxic_label="hate"` (default)</li><li> `display_name`</li></ul> |
-
+| **BERTScore()** <ul><li> Calculates similarity between two text columns based on token embeddings from a pre-trained BERT model.</li> <li>Returns [BERTScore](https://arxiv.org/pdf/1904.09675) (F1 Score) based on cosine similarity between token embeddings.</li></ul> | **Required:** <ul><li> `with_column` </li></ul> **Optional:** <ul><li> `model`:Name of the pre-trained BERT model to use (default: `"bert-base-uncased"`).</li><li>`tfidf_weighted`: Boolean indicating if embeddings should be weighted with inverse document frequency (IDF) scores (default: `False`).</li><li>`display_name`</li></ul> |
+  
 # Data Drift
 
 **Defaults for Data Drift**. By default, all data drift metrics use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a drift detection method based on feature type and volume. You always need a reference dataset.

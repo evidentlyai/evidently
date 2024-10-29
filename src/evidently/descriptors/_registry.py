@@ -68,6 +68,11 @@ register_type_alias(
 )
 register_type_alias(
     FeatureDescriptor,
+    "evidently.descriptors.BERTScore_descriptor.BERTScore",
+    "evidently:descriptor:BERTScore",
+)
+register_type_alias(
+    FeatureDescriptor,
     "evidently.descriptors.sentence_count_descriptor.SentenceCount",
     "evidently:descriptor:SentenceCount",
 )
