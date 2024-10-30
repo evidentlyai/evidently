@@ -1,11 +1,11 @@
 from inspect import Parameter
 from inspect import Signature
-from typing import Annotated
 from typing import Any
 from typing import Dict
 from typing import Type
 
 from litestar.params import Dependency
+from typing_extensions import Annotated
 
 
 def replace_signature(annotations: Dict[str, Any], return_annotation=..., is_method=False):
