@@ -6,6 +6,7 @@ from typing import Type
 
 from litestar.params import Dependency
 from typing_extensions import Annotated
+from typing_inspect import is_classvar
 
 
 def replace_signature(annotations: Dict[str, Any], return_annotation=..., is_method=False):
@@ -24,28 +25,41 @@ def replace_signature(annotations: Dict[str, Any], return_annotation=..., is_met
 
 
 class ProviderGetter:
-    def __get__(self, instance, owner: Type["BaseManager"]):
+    def __get__(self, instance, owner: Type["BaseDependant"]):
         deps = _get_manager_deps(owner)
 
-        @replace_signature({name: Annotated[cls, Dependency()] for name, cls in deps.items()}, None)
+        @replace_signature({name: Annotated[cls, Dependency(skip_validation=True)] for name, cls in deps.items()}, None)
         async def provide(**kwargs):
             obj = owner(**kwargs)
-            obj.post_provide()
+            await obj.post_provide()
             return obj
 
+        provide.__name__ = f"{owner.__name__}.provide"
         return provide
 
 
-class BaseManager:
+class BaseDependant:
+    """Base class that allows to define dependencies as class fields"""
+
     provide = ProviderGetter()
 
     def __init__(self, **dependencies):
         for k, v in dependencies.items():
             setattr(self, k, v)
 
-    def post_provide(self):
+    async def post_provide(self):
         pass
 
 
-def _get_manager_deps(manager_type: Type[BaseManager]) -> Dict[str, Type]:
-    return manager_type.__annotations__
+def _get_manager_deps(dependant_type: Type[BaseDependant]) -> Dict[str, Type]:
+    return {
+        name: cls
+        for bt in dependant_type.mro()
+        if issubclass(bt, BaseDependant)
+        for name, cls in bt.__annotations__.items()
+        if not is_classvar(cls)
+    }
+
+
+class BaseManager(BaseDependant):
+    pass

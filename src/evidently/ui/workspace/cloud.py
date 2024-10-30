@@ -238,9 +238,9 @@ class CloudWorkspace(WorkspaceView):
         )
 
         pm = ProjectManager(
-            metadata=meta,
-            blob=(NoopBlobStorage()),
-            data=(NoopDataStorage()),
+            project_metadata=meta,
+            blob_storage=(NoopBlobStorage()),
+            data_storage=(NoopDataStorage()),
             auth_manager=(CloudAuthManager()),
         )
         super().__init__(
@@ -249,16 +249,16 @@ class CloudWorkspace(WorkspaceView):
         )
 
     def create_org(self, name: str) -> Org:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_org(Org(name=name)).to_org()
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.create_org(Org(name=name)).to_org()
 
     def list_orgs(self) -> List[Org]:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return [o.to_org() for o in self.project_manager.metadata.list_orgs()]
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return [o.to_org() for o in self.project_manager.project_metadata.list_orgs()]
 
     def create_team(self, name: str, org_id: OrgID) -> Team:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_team(Team(name=name, org_id=org_id), org_id).to_team()
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.create_team(Team(name=name, org_id=org_id), org_id).to_team()
 
     def add_dataset(
         self,
@@ -269,7 +269,7 @@ class CloudWorkspace(WorkspaceView):
         column_mapping: Optional[ColumnMapping] = None,
     ) -> DatasetID:
         file: Union[NamedBytesIO, BinaryIO]
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
         org_id, team_id = self._get_org_id_team_id(project_id)
         if isinstance(data_or_path, str):
             file = open(data_or_path, "rb")
@@ -280,13 +280,15 @@ class CloudWorkspace(WorkspaceView):
         else:
             raise NotImplementedError(f"Add datasets is not implemented for {get_classpath(data_or_path.__class__)}")
         try:
-            return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description, column_mapping)
+            return self.project_manager.project_metadata.add_dataset(
+                file, name, org_id, team_id, description, column_mapping
+            )
         finally:
             file.close()
 
     def _get_org_id_team_id(self, project_id: STR_UUID) -> Tuple[OrgID, TeamID]:
         """Temporary method until we can attach datasets to projects"""
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
         if isinstance(project_id, str):
             project_id = uuid6.UUID(project_id)
         project = self.get_project(project_id)
@@ -294,7 +296,7 @@ class CloudWorkspace(WorkspaceView):
             raise ProjectNotFound()
         if project.team_id is None:
             raise TeamNotFound()
-        teams = self.project_manager.metadata._request(
+        teams = self.project_manager.project_metadata._request(
             "/api/teams/info", "GET", query_params={"team_ids": [project.team_id]}, response_model=Dict[TeamID, Team]
         )
         team = teams[project.team_id]
@@ -303,8 +305,8 @@ class CloudWorkspace(WorkspaceView):
         return team.org_id, team.id
 
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.load_dataset(dataset_id)
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.load_dataset(dataset_id)
 
     def add_report_with_data(self, project_id: STR_UUID, report: Report):
         self.add_report(project_id, report)

@@ -26,7 +26,10 @@ def create_local_project_manager(path: str, autorefresh: bool, auth: AuthManager
     metadata = JsonFileProjectMetadataStorage(path=path, local_state=state)
     data = InMemoryDataStorage(path=path, local_state=state)
     project_manager = ProjectManager(
-        metadata=metadata, blob=FSSpecBlobStorage(base_path=path), data=data, auth_manager=auth or NoopAuthManager()
+        project_metadata=metadata,
+        blob_storage=FSSpecBlobStorage(base_path=path),
+        data_storage=data,
+        auth_manager=auth or NoopAuthManager(),
     )
     state.project_manager = project_manager
 

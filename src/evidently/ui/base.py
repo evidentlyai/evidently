@@ -217,7 +217,7 @@ class Project(Entity):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DashboardInfo:
-        return await self.dashboard.build(self.project_manager.data, self.id, timestamp_start, timestamp_end)
+        return await self.dashboard.build(self.project_manager.data_storage, self.id, timestamp_start, timestamp_end)
 
     async def show_dashboard_async(
         self,

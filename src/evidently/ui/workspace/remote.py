@@ -279,7 +279,7 @@ class NoopDataStorage(DataStorage):
 class RemoteWorkspaceView(WorkspaceView):
     def verify(self):
         try:
-            response = self.project_manager.metadata._request("/api/version", "GET")
+            response = self.project_manager.project_metadata._request("/api/version", "GET")
             assert response.json()["application"] == EVIDENTLY_APPLICATION_NAME
         except (HTTPError, JSONDecodeError, KeyError, AssertionError) as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
@@ -288,9 +288,9 @@ class RemoteWorkspaceView(WorkspaceView):
         self.base_url = base_url
         self.secret = secret
         pm = ProjectManager(
-            metadata=(RemoteProjectMetadataStorage(base_url=self.base_url, secret=self.secret)),
-            blob=(NoopBlobStorage()),
-            data=(NoopDataStorage()),
+            project_metadata=(RemoteProjectMetadataStorage(base_url=self.base_url, secret=self.secret)),
+            blob_storage=(NoopBlobStorage()),
+            data_storage=(NoopDataStorage()),
             auth_manager=(NoopAuthManager()),
         )
         super().__init__(None, pm)

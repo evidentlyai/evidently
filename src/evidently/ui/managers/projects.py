@@ -33,17 +33,24 @@ from evidently.ui.type_aliases import UserID
 
 
 class ProjectManager(BaseManager):
+    project_metadata: ProjectMetadataStorage
+    auth_manager: AuthManager
+    blob_storage: BlobStorage
+    data_storage: DataStorage
+
     def __init__(
         self,
-        metadata: Annotated[ProjectMetadataStorage, Dependency()],
+        project_metadata: Annotated[ProjectMetadataStorage, Dependency()],
         auth_manager: Annotated[AuthManager, Dependency()],
-        blob: Annotated[BlobStorage, Dependency()],
-        data: Annotated[DataStorage, Dependency()],
+        blob_storage: Annotated[BlobStorage, Dependency()],
+        data_storage: Annotated[DataStorage, Dependency()],
+        **dependencies,
     ):
-        self.metadata: ProjectMetadataStorage = metadata
+        super().__init__(**dependencies)
+        self.project_metadata: ProjectMetadataStorage = project_metadata
         self.auth_manager: AuthManager = auth_manager
-        self.blob = blob
-        self.data = data
+        self.blob_storage = blob_storage
+        self.data_storage = data_storage
 
     async def create_project(
         self,
@@ -75,7 +82,7 @@ class ProjectManager(BaseManager):
             raise NotEnoughPermissions()
         project.team_id = team_id if team_id != ZERO_UUID else None
         project.created_at = project.created_at or datetime.datetime.now()
-        project = (await self.metadata.add_project(project, user, team)).bind(self, user.id)
+        project = (await self.project_metadata.add_project(project, user, team)).bind(self, user.id)
         await self.auth_manager.grant_entity_role(
             user.id,
             EntityType.Project,
@@ -92,7 +99,7 @@ class ProjectManager(BaseManager):
             user.id, EntityType.Project, project.id, Permission.PROJECT_WRITE
         ):
             raise NotEnoughPermissions()
-        return await self.metadata.update_project(project)
+        return await self.project_metadata.update_project(project)
 
     async def get_project(self, user_id: UserID, project_id: ProjectID) -> Optional[Project]:
         user = await self.auth_manager.get_or_default_user(user_id)
@@ -100,7 +107,7 @@ class ProjectManager(BaseManager):
             user.id, EntityType.Project, project_id, Permission.PROJECT_READ
         ):
             raise ProjectNotFound()
-        project = await self.metadata.get_project(project_id)
+        project = await self.project_metadata.get_project(project_id)
         if project is None:
             return None
         return project.bind(self, user.id)
@@ -111,12 +118,12 @@ class ProjectManager(BaseManager):
             user.id, EntityType.Project, project_id, Permission.PROJECT_DELETE
         ):
             raise ProjectNotFound()
-        return await self.metadata.delete_project(project_id)
+        return await self.project_metadata.delete_project(project_id)
 
     async def list_projects(self, user_id: UserID, team_id: Optional[TeamID], org_id: Optional[OrgID]) -> List[Project]:
         user = await self.auth_manager.get_or_default_user(user_id)
         project_ids = await self.auth_manager.get_available_project_ids(user.id, team_id, org_id)
-        return [p.bind(self, user.id) for p in await self.metadata.list_projects(project_ids)]
+        return [p.bind(self, user.id) for p in await self.project_metadata.list_projects(project_ids)]
 
     async def search_project(
         self,
@@ -127,7 +134,7 @@ class ProjectManager(BaseManager):
     ) -> List[Project]:
         user = await self.auth_manager.get_or_default_user(user_id)
         project_ids = await self.auth_manager.get_available_project_ids(user.id, team_id, org_id)
-        return [p.bind(self, user.id) for p in await self.metadata.search_project(project_name, project_ids)]
+        return [p.bind(self, user.id) for p in await self.project_metadata.search_project(project_name, project_ids)]
 
     async def add_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot: Snapshot):
         user = await self.auth_manager.get_or_default_user(user_id)
@@ -135,9 +142,9 @@ class ProjectManager(BaseManager):
             user.id, EntityType.Project, project_id, Permission.PROJECT_SNAPSHOT_ADD
         ):
             raise ProjectNotFound()  # todo: better exception
-        blob = await self.blob.put_snapshot(project_id, snapshot)
-        await self.metadata.add_snapshot(project_id, snapshot, blob)
-        await self.data.extract_points(project_id, snapshot)
+        blob = await self.blob_storage.put_snapshot(project_id, snapshot)
+        await self.project_metadata.add_snapshot(project_id, snapshot, blob)
+        await self.data_storage.extract_points(project_id, snapshot)
 
     async def delete_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID):
         user = await self.auth_manager.get_or_default_user(user_id)
@@ -148,7 +155,7 @@ class ProjectManager(BaseManager):
         # todo
         # self.data.remove_points(project_id, snapshot_id)
         # self.blob.delete_snapshot(project_id, snapshot_id)
-        await self.metadata.delete_snapshot(project_id, snapshot_id)
+        await self.project_metadata.delete_snapshot(project_id, snapshot_id)
 
     async def list_snapshots(
         self,
@@ -161,7 +168,7 @@ class ProjectManager(BaseManager):
             user_id, EntityType.Project, project_id, Permission.PROJECT_READ
         ):
             raise NotEnoughPermissions()
-        snapshots = await self.metadata.list_snapshots(project_id, include_reports, include_test_suites)
+        snapshots = await self.project_metadata.list_snapshots(project_id, include_reports, include_test_suites)
         for s in snapshots:
             s.project.bind(self, user_id)
         return snapshots
@@ -174,7 +181,7 @@ class ProjectManager(BaseManager):
     ) -> Snapshot:
         if isinstance(snapshot, SnapshotID):
             snapshot = await self.get_snapshot_metadata(user_id, project_id, snapshot)
-        with self.blob.open_blob(snapshot.blob.id) as f:
+        with self.blob_storage.open_blob(snapshot.blob.id) as f:
             return parse_obj_as(Snapshot, json.load(f))
 
     async def get_snapshot_metadata(
@@ -184,7 +191,7 @@ class ProjectManager(BaseManager):
             user_id, EntityType.Project, project_id, Permission.PROJECT_READ
         ):
             raise NotEnoughPermissions()
-        meta = await self.metadata.get_snapshot_metadata(project_id, snapshot_id)
+        meta = await self.project_metadata.get_snapshot_metadata(project_id, snapshot_id)
         meta.project.bind(self, user_id)
         return meta
 
@@ -193,7 +200,7 @@ class ProjectManager(BaseManager):
             user_id, EntityType.Project, project_id, Permission.PROJECT_READ
         ):
             raise NotEnoughPermissions()
-        await self.metadata.reload_snapshots(project_id)
+        await self.project_metadata.reload_snapshots(project_id)
 
     async def get_project_with_team(self, user_id: UserID, project_id: ProjectID) -> Tuple[Project, Team]:
         project = await self.get_project(user_id, project_id)

@@ -408,7 +408,7 @@ async def test_reload_project(test_client: TestClient, project_manager: ProjectM
     await project_manager.add_snapshot(ZERO_UUID, project.id, mock_snapshot)
     assert len(await project_manager.list_snapshots(ZERO_UUID, project.id)) == 1
 
-    blob = project_manager.blob
+    blob = project_manager.blob_storage
     assert isinstance(blob, FSSpecBlobStorage)
     snapshot_path = os.path.join(blob.base_path, blob.get_snapshot_blob_id(project.id, mock_snapshot))
     snapshot_id2 = new_id()
