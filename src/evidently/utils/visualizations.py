@@ -234,9 +234,9 @@ def plot_distr_with_cond_perc_button(
         lines.append((value, value_name))
         dict_style[value_name] = "solid"
 
-    max_y = np.max([np.max(x["y"]) for x in pd.Series(fig.data_storage)[visible]])
+    max_y = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[visible]])
     not_visible = [not x for x in visible]
-    max_y_perc = np.max([np.max(x["y"]) for x in pd.Series(fig.data_storage)[not_visible]])
+    max_y_perc = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[not_visible]])
 
     if len(lines) > 0:
         for line, name in lines:

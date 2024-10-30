@@ -46,7 +46,7 @@ def _detect_dataset_drift(reference, production, column_mapping):
 
 def load_data_execute(**context):
     data = datasets.load_boston()
-    data_frame = pd.DataFrame(data.data_storage, columns=data.feature_names)
+    data_frame = pd.DataFrame(data.data, columns=data.feature_names)
 
     data_columns = ColumnMapping()
     data_columns.numerical_features = [
