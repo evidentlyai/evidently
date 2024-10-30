@@ -4,5 +4,5 @@ from src.utils.models import Base
 
 if __name__ == "__main__":
     engine = create_engine(MONITORING_DB_URI)
-    Base.project_metadata.create_all(engine)
+    Base.metadata.create_all(engine)
     print("Database created successfully")
