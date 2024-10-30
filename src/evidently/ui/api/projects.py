@@ -47,7 +47,6 @@ from evidently.utils import NumpyEncoder
 
 
 async def path_project_dependency(
-    # project_id: Annotated[ProjectID, Dependency()],
     request: Request,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     user_id: UserID,

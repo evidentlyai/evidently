@@ -91,7 +91,7 @@ class ProjectManager(BaseManager):
         if not await self.auth_manager.check_entity_permission(
             user.id, EntityType.Project, project.id, Permission.PROJECT_WRITE
         ):
-            raise ProjectNotFound()
+            raise NotEnoughPermissions()
         return await self.metadata.update_project(project)
 
     async def get_project(self, user_id: UserID, project_id: ProjectID) -> Optional[Project]:
