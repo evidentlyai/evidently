@@ -34,6 +34,7 @@ from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import DatasetID
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.workspace.remote import NoopBlobStorage
 from evidently.ui.workspace.remote import NoopDataStorage
@@ -187,7 +188,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         file: BinaryIO,
         name: str,
         org_id: OrgID,
-        team_id: TeamID,
+        project_id: ProjectID,
         description: Optional[str],
         column_mapping: Optional[ColumnMapping],
     ) -> DatasetID:
@@ -201,7 +202,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
                 "file": file,
                 "column_mapping": cm_payload,
             },
-            query_params={"org_id": org_id, "team_id": team_id},
+            query_params={"org_id": org_id, "project_id": project_id},
             form_data=True,
         )
         return DatasetID(response.json()["dataset_id"])
@@ -270,7 +271,7 @@ class CloudWorkspace(WorkspaceView):
     ) -> DatasetID:
         file: Union[NamedBytesIO, BinaryIO]
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        org_id, team_id = self._get_org_id_team_id(project_id)
+        org_id, _ = self._get_org_id_team_id(project_id)
         if isinstance(data_or_path, str):
             file = open(data_or_path, "rb")
         elif isinstance(data_or_path, pd.DataFrame):
@@ -280,7 +281,9 @@ class CloudWorkspace(WorkspaceView):
         else:
             raise NotImplementedError(f"Add datasets is not implemented for {get_classpath(data_or_path.__class__)}")
         try:
-            return self.project_manager.metadata.add_dataset(file, name, org_id, team_id, description, column_mapping)
+            return self.project_manager.metadata.add_dataset(
+                file, name, org_id, project_id, description, column_mapping
+            )
         finally:
             file.close()
 
