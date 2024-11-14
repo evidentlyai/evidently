@@ -73,12 +73,12 @@ It is recommended to pass the key as an environment variable. [See Open AI docs]
 
 Set up configuration details:
 * The `address` is the destination backend to store collected traces. In this case, it is Evidently Cloud.
-* `Team_id` is the identification of the Evidently Team which defines who can access collected traces and helps organize your Projects. Go to the [Team page](https://app.evidently.cloud/teams), enter the selected Team and copy its ID.
+* `Project_id` is the identification of the Evidently Project. Go to the [Projects page](https://app.evidently.cloud/projects), enter the selected Project and copy its ID.
 * `Dataset_name` helps identify the resulting Tracing dataset. All data with the same ID would be grouped into single dataset.
 
 ```python
 address="https://app.evidently.cloud/"
-team_id="YOUR_TEAM_ID"
+project_id="YOUR_PROJECT_ID"
 dataset_name="YOUR_TRACING_DATASET_NAME"
 ```
 
@@ -87,7 +87,7 @@ Initialize tracing:
 init_tracing(
  address=address,
  api_key=my_token,
- team_id=team_id,
+ project_id=project_id,
  export_name=dataset_name
  )
 ```
@@ -196,12 +196,8 @@ Preview the dataset with `traced_data.head()`.
 You can run evaluations on this dataset using the Evidently Python library. You can generate the Reports to view them locally or send them to Evidently Cloud.
 For example, let’s evaluate the length and sentiment of the responses, and whether they include the word "Certainly".
 
-Create an evaluation Project in Evidently Cloud. This will allow you to organize your evaluations and track results over time.
-
 ```python
-project = ws.create_project("Trace Evals", team_id=team_id)
-project.description = "Evaluation example"
-project.save()
+project = ws.get_project(project_id)
 ```
 
 Define the evaluations:
