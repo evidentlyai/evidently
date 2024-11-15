@@ -9,6 +9,7 @@ from evidently import ColumnMapping
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectManager
+from evidently.ui.datasets import DatasetSourceType
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import DatasetID
@@ -82,6 +83,7 @@ class WorkspaceView(WorkspaceBase):
         project_id: STR_UUID,
         description: Optional[str] = None,
         column_mapping: Optional[ColumnMapping] = None,
+        dataset_source: DatasetSourceType = DatasetSourceType.file,
     ) -> DatasetID:
         raise NotImplementedError("Adding datasets is not supported yet")
 

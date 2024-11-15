@@ -26,6 +26,7 @@ from evidently.ui.api.models import TeamModel
 from evidently.ui.base import Org
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import Team
+from evidently.ui.datasets import DatasetSourceType
 from evidently.ui.errors import OrgNotFound
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.errors import TeamNotFound
@@ -190,6 +191,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
         project_id: ProjectID,
         description: Optional[str],
         column_mapping: Optional[ColumnMapping],
+        dataset_source: DatasetSourceType = DatasetSourceType.file,
     ) -> DatasetID:
         cm_payload = json.dumps(dataclasses.asdict(column_mapping)) if column_mapping is not None else None
         response: Response = self._request(
@@ -200,6 +202,7 @@ class CloudMetadataStorage(RemoteMetadataStorage):
                 "description": description,
                 "file": file,
                 "column_mapping": cm_payload,
+                "source_type": dataset_source.value,
             },
             query_params={"project_id": project_id},
             form_data=True,
@@ -267,6 +270,7 @@ class CloudWorkspace(WorkspaceView):
         project_id: STR_UUID,
         description: Optional[str] = None,
         column_mapping: Optional[ColumnMapping] = None,
+        dataset_source: DatasetSourceType = DatasetSourceType.file,
     ) -> DatasetID:
         file: Union[NamedBytesIO, BinaryIO]
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
@@ -279,7 +283,9 @@ class CloudWorkspace(WorkspaceView):
         else:
             raise NotImplementedError(f"Add datasets is not implemented for {get_classpath(data_or_path.__class__)}")
         try:
-            return self.project_manager.metadata.add_dataset(file, name, project_id, description, column_mapping)
+            return self.project_manager.metadata.add_dataset(
+                file, name, project_id, description, column_mapping, dataset_source
+            )
         finally:
             file.close()
 
