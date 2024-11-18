@@ -52,7 +52,7 @@ data_quality.run(reference_data=None,
 ```
 
 {% hint style="info" %} 
-**Available Test Presets**. There are others: for example, `DataStabilityTestPreset`, `DataDriftTestPreset` or `RegressionTestPreset`. See all [Presets(../presets/all-presets.md). For interactive preview, check [example notebooks](../examples/examples.md).
+**Available Test Presets**. There are others: for example, `DataStabilityTestPreset`, `DataDriftTestPreset` or `RegressionTestPreset`. See all [Presets](../presets/all-presets.md). For interactive preview, check [example notebooks](../examples/examples.md).
 {% endhint %}
 
 To get the visual report with Test results, call the object in Jupyter notebook or Colab:
