@@ -282,9 +282,11 @@ class CloudWorkspace(WorkspaceView):
             file.seek(0)
         else:
             raise NotImplementedError(f"Add datasets is not implemented for {get_classpath(data_or_path.__class__)}")
+        if isinstance(project_id, str):
+            project_id = ProjectID(project_id)
         try:
             return self.project_manager.metadata.add_dataset(
-                file, name, ProjectID(project_id), description, column_mapping, dataset_source
+                file, name, project_id, description, column_mapping, dataset_source
             )
         finally:
             file.close()
