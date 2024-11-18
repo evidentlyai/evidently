@@ -14,6 +14,7 @@ class DatasetSourceType(Enum):
     tracing = 2
     snapshot_builder = 3
     dataset = 4
+    datagen = 5
 
 
 def inject_feature_types_in_column_mapping(
