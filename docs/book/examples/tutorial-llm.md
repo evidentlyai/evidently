@@ -458,12 +458,10 @@ To compute the Semantic Similarity:
 
 ```python
 text_evals_report = Report(metrics=[
-    ColumnSummaryMetric(
-        column_name=SemanticSimilarity(
-            display_name="Response-Question Similarity"
-        )
-        .on(["response", "question"])
-    )
+    TextEvals(column_name="response", descriptors=[
+        SemanticSimilarity(with_column="question", 
+                           display_name="Response-Question Similarity"),
+    ])
 ])
 
 text_evals_report.run(reference_data=None,
